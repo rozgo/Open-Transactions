@@ -198,7 +198,7 @@
 				83E651D3122E32B200320598 /* Makefile */,
 				8306A36D11C202D100A8AFDC /* libcrypto.a */,
 				8306A36E11C202D200A8AFDC /* libssl.a */,
-				8392314B11B9B02500AF54AF /* irlxml */,
+				8392314B11B9B02500AF54AF /* irrxml */,
 				83C0953811B238BB00FDCACD /* Lucre */,
 				5073E0CA09E734BC00EC74B6 /* Configuration Files */,
 				08FB77ACFE841707C02AAC07 /* Source */,
@@ -296,7 +296,7 @@
 			name = "Configuration Files";
 			sourceTree = "<group>";
 		};
-		8392314B11B9B02500AF54AF /* irlxml */ = {
+		8392314B11B9B02500AF54AF /* irrxml */ = {
 			isa = PBXGroup;
 			children = (
 				8392314C11B9B02500AF54AF /* CXMLReaderImpl.h */,
@@ -308,7 +308,7 @@
 				8392315211B9B02500AF54AF /* irrXML.cpp */,
 				8392315311B9B02500AF54AF /* irrXML.h */,
 			);
-			path = irlxml;
+			path = irrxml;
 			sourceTree = "<group>";
 		};
 		83C0953811B238BB00FDCACD /* Lucre */ = {

@@ -23,8 +23,8 @@ PROGRAM = transaction.exe
 #
 
 INCLUDEDIRS = \
-	-I/home/ben/work/openssl-1.0.0/include \
-	-I../OTLib/irlxml \
+	-I/usr/local/ssl/include \
+	-I../OTLib/irrxml \
 	-I../OTLib \
 	-I./SSL-Example \
 	-I./
@@ -34,8 +34,12 @@ LIBDIRS = \
 	-L../OTLib 
 
 
-LIBS = $(LIBDIRS) -lOTLib /home/ben/work/openssl-1.0.0/libssl.a \
-	/home/ben/work/openssl-1.0.0/libcrypto.a
+LIBS = $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib
+
+#LIBS = $(LIBDIRS) -lOTLib ../OTLib/libssl.a \
+#	../OTLib/libcrypto.a
+# LIBS = $(LIBDIRS) -lOTLib /home/ben/work/openssl-1.0.0/libssl.a \
+#         /home/ben/work/openssl-1.0.0/libcrypto.a
 
 #
 # The CXXSOURCES macro contains a list of source files.
@@ -103,9 +107,9 @@ testserver.o: testserver.cpp
 # Clean target: "make -f Makefile.Linux clean" to remove unwanted objects and executables.
 #
 
-.ifndef RM
-RM=rm
-.endif
+ifndef RM
+	RM=rm
+endif
 
 clean:
 	$(RM) -f $(CXXOBJECTS) $(COBJECTS) $(PROGRAM)

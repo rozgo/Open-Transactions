@@ -91,7 +91,7 @@
 #include <sstream>
 #include <string>
 
-#include "irlxml/irrXML.h"
+#include "irrxml/irrXML.h"
 
 #include "OTServerContract.h"
 #include "OTStringXML.h"

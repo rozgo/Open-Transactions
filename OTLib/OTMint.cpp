@@ -82,7 +82,7 @@
  ************************************************************************************/
 
 
-#include "irlxml/irrXML.h"
+#include "irrxml/irrXML.h"
 
 using namespace irr;
 using namespace io;

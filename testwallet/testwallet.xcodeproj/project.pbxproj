@@ -75,7 +75,7 @@
 				83E651D7122E32E700320598 /* Makefile.OT_API */,
 				83E651D8122E32E700320598 /* Makefile.testwallet */,
 				83C5F50A122E10D600964E36 /* libOTLib.a */,
-				83C095C111B3276900FDCACD /* irlxml */,
+				83C095C111B3276900FDCACD /* irrxml */,
 				83C095BB11B2860700FDCACD /* wallet.xml */,
 				83923BC311BDA44200AF54AF /* SSL-Example */,
 				08FB7795FE84155DC02AAC07 /* Source */,
@@ -117,7 +117,7 @@
 			path = "SSL-Example";
 			sourceTree = "<group>";
 		};
-		83C095C111B3276900FDCACD /* irlxml */ = {
+		83C095C111B3276900FDCACD /* irrxml */ = {
 			isa = PBXGroup;
 			children = (
 				83C095C211B3276900FDCACD /* CXMLReaderImpl.h */,
@@ -129,7 +129,7 @@
 				83C095C811B3276900FDCACD /* irrXML.cpp */,
 				83C095C911B3276900FDCACD /* irrXML.h */,
 			);
-			path = irlxml;
+			path = irrxml;
 			sourceTree = "<group>";
 		};
 		C6859E8C029090F304C91782 /* Documentation */ = {

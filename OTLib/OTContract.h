@@ -96,7 +96,7 @@ extern "C"
 #include <map>
 #include <string>
 
-#include "irlxml/irrXML.h"
+#include "irrxml/irrXML.h"
 
 #include "OTIdentifier.h"
 

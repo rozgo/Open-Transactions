@@ -24,7 +24,7 @@ PROGRAM = signcontract
 
 INCLUDEDIRS = \
 	-I/usr/local/ssl/include \
-	-I../../OTLib/irlxml \
+	-I../../OTLib/irrxml \
 	-I../../OTLib \
 	-I./
 

@@ -74,7 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\easyzlib.h" />
-    <ClInclude Include="..\irlxml\irrXML.h" />
+    <ClInclude Include="..\irrxml\irrXML.h" />
     <ClInclude Include="..\Lucre\bank.h" />
     <ClInclude Include="..\OTAccount.h" />
     <ClInclude Include="..\OTASCIIArmor.h" />
@@ -111,7 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\easyzlib.c" />
-    <ClCompile Include="..\irlxml\irrXML.cpp" />
+    <ClCompile Include="..\irrxml\irrXML.cpp" />
     <ClCompile Include="..\Lucre\bankimp.cpp" />
     <ClCompile Include="..\OTAccount.cpp" />
     <ClCompile Include="..\OTASCIIArmor.cpp" />

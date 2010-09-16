@@ -3,21 +3,24 @@ NOTES on the Version:
 
 // ---------------------------------------------------------------------
 
-            Now it's easier than ever to use Open Transactions in your
-            Java and C++ applications, for Mac, Linux, and Windows!
+   0.23 --- Android version! (In support of our upcoming Android client.)
 
    0.22 --- EASY Makefiles and project files are now available for the
             JNI Java interface, as well as the high-level C++ API.
             
+            Now it's easier than ever to use Open Transactions in your
+            Java and C++ applications, for Mac, Linux, and Windows!
+
             Makefiles are supplied for MAC and LINUX, as well as project
-            files for XCode on Mac and MS Visual C++ 2010 Express on Windows. 
+            files for XCode on Mac and MS Visual C++ 2010 Express on
+            Windows. 
  
             "FiatCash" (the first client, on Android) is humming along
             and hopefully we'll have some basic version soon up on Github.
 
             Negative transactions are no longer allowed for vouchers,
-            account transfers, or cash withdrawals. They are still, however,
-            allowed for cheques, which serve as invoices.
+            account transfers, or cash withdrawals. They are still,
+            however, allowed for cheques, which serve as invoices.
 
             Various global variable issues were cleaned up...
 
@@ -27,20 +30,21 @@ NOTES on the Version:
            (In the same code base.)
            
            This distribution comes with gcc Makefiles for Mac and Linux,
-           as well as XCode project files for Mac and Microsoft VC++ project
-           files for Windows.
+           as well as XCode project files for Mac and Microsoft VC++
+           project files for Windows.
            
            The Windows port was at the request of an Android developer who
-           has begun work on a wallet (client app) that he calls "FiatCash".
+           has begun work on a wallet (client app) that he calls
+           "FiatCash".
            He will be building it on Windows, in Java, using the Open
-           Transactions JNI interface to talk to the library. When complete,
-           the wallet software will run on Android phones.
+           Transactions JNI interface to talk to the library. When
+           complete, the wallet software will run on Android phones.
            
            INVOICES: Imagine that you hand someone an invoice. He runs it
-           through his bank account and the money is automatically transferred
-           to you, with receipts on both sides. This is the same thing as
-           a cheque with a negative amount. Thus, "negative cheques" can be
-           used as invoices. (Already operational.)
+           through his bank account and the money is automatically
+           transferred to you, with receipts on both sides. This is the
+           same thing as a cheque with a negative amount. Thus, "negative
+           cheques" can be used as invoices. (Already operational.)
            
            Assorted:
            
@@ -51,8 +55,9 @@ NOTES on the Version:
            used to have some large stack-allocations) as well as a bug fix
            in the socket code for the server / test client.
 
-           The client cert expired, so I re-created all the certs. If you have
-           any problem with your own, just install the new version to fix it.
+           The client cert expired, so I re-created all the certs. If you
+           have any problem with your own, just install the new version to
+           fix it.
            
 // ---------------------------------------------------------------------
 

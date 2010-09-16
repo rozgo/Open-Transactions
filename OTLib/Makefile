@@ -23,8 +23,8 @@ PROGRAM = libOTLib.a
 #
 
 INCLUDEDIRS = \
-	-I/home/ben/work/openssl-1.0.0/include \
-	-I./irlxml \
+	-I/usr/local/ssl/include \
+	-I./irrxml \
 	-I./Lucre \
 	-I./
 
@@ -53,7 +53,7 @@ LIBS = -lssl -lcrypto
 
 LUCRESOURCES = Lucre/bankimp.cpp
 
-IRRXMLSOURCES = irlxml/irrXML.cpp      
+IRRXMLSOURCES = irrxml/irrXML.cpp      
 
 CSOURCES = easyzlib.c
 
@@ -90,8 +90,10 @@ CXXSOURCES = $(LUCRESOURCES) $(IRRXMLSOURCES) \
 
 CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
 COBJECTS   = $(CSOURCES:.c=.o)
-CXXFLAGS   = $(INCLUDEDIRS) -Wall -Werror
-CFLAGS     = $(INCLUDEDIRS) -Wall -Werror
+#CXXFLAGS   = $(INCLUDEDIRS) -Wall -Werror
+#CFLAGS     = $(INCLUDEDIRS) -Wall -Werror
+CXXFLAGS   = $(INCLUDEDIRS) -Wall 
+CFLAGS     = $(INCLUDEDIRS) -Wall 
 CXX = g++
 CC = gcc
 LDFLAGS = $(LIBDIRS) $(LIBS)
@@ -119,8 +121,8 @@ $(PROGRAM): $(CXXOBJECTS) $(COBJECTS)
 easyzlib.o: easyzlib.c easyzlib.h
 	$(CC) $(CFLAGS) -c -o easyzlib.o easyzlib.c 
 
-irlxml/irrXML.o: irlxml/irrXML.cpp irlxml/irrXML.h
-	$(CXX) $(CXXFLAGS) -c -o irlxml/irrXML.o irlxml/irrXML.cpp
+irrxml/irrXML.o: irrxml/irrXML.cpp irrxml/irrXML.h
+	$(CXX) $(CXXFLAGS) -c -o irrxml/irrXML.o irrxml/irrXML.cpp
 
 Lucre/bankimp.o: Lucre/bankimp.cpp Lucre/bank.h
 	$(CXX) $(CXXFLAGS) -c -o Lucre/bankimp.o Lucre/bankimp.cpp
@@ -189,9 +191,9 @@ OTDataCheck.o: OTDataCheck.cpp OTDataCheck.h
 # Clean target: "make -f Makefile.Linux clean" to remove unwanted objects and executables.
 #
 
-.ifndef RM
-RM=rm
-.endif
+ifndef RM
+	RM=rm
+endif
 
 clean:
 	$(RM) -f $(CXXOBJECTS) $(COBJECTS) $(PROGRAM)
