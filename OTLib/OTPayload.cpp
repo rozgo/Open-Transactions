@@ -87,7 +87,7 @@
 
 #include "OTDataCheck.h"
 
-#include "irlxml/irrXML.h"
+#include "irrxml/irrXML.h"
 
 #include "OTData.h"
 #include "OTString.h"

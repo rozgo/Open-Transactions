@@ -85,7 +85,7 @@
 #ifndef __OTMESSAGE_H__
 #define __OTMESSAGE_H__
 
-#include "irlxml/irrXML.h"
+#include "irrxml/irrXML.h"
 using namespace irr; // irrXML is located in the namespace irr::io
 using namespace io;
 

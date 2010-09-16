@@ -86,7 +86,7 @@
 #define __OTSTRING_XML_H__
 
 
-#include "irlxml/irrXML.h"
+#include "irrxml/irrXML.h"
 
 #include "OTString.h"
 

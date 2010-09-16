@@ -101,7 +101,7 @@ extern "C"
 #include <sstream>
 #include <string>
 
-#include "irlxml/irrXML.h"
+#include "irrxml/irrXML.h"
 
 using namespace irr;
 using namespace io;
@@ -293,7 +293,7 @@ const OTPseudonym * OTContract::GetContractPublicNym()
 	
 	for (mapOfNyms::iterator ii = m_mapNyms.begin(); ii != m_mapNyms.end(); ++ii)
 	{		
-		if ((pNym = (*ii).second))
+		if (pNym = (*ii).second)
 		{
 			if ((*ii).first == "contract") // TODO have a place for hardcoded values like this.
 			{							   // We're saying here that every contract has to have a key tag called "contract"
@@ -319,7 +319,7 @@ const OTAsymmetricKey * OTContract::GetContractPublicKey()
 	
 	for (mapOfNyms::iterator ii = m_mapNyms.begin(); ii != m_mapNyms.end(); ++ii)
 	{		
-		if ((pNym = (*ii).second))
+		if (pNym = (*ii).second)
 		{
 			if ((*ii).first == "contract") // TODO have a place for hardcoded values like this.
 			{							   // We're saying here that every contract has a key tag called "contract"
@@ -457,7 +457,7 @@ bool OTContract::SignContract(const OTPseudonym & theNym)
 	bool bSigned = false;
 	OTSignature * pSig = NULL;
 
-	if ((pSig = new OTSignature()))
+	if (pSig = new OTSignature())
 	{
 		bSigned = SignContract(theNym, *pSig);
 
@@ -537,25 +537,32 @@ bool OTContract::SignContractDefaultHash(const EVP_PKEY * pkey, OTSignature & th
 	
 	// Since the idea of this special code is that we're using 2 hash algorithms,
 	// let's look them up and see what they are.
+	// addendum: unless we're on Android... then there's only 1 hash algorithm.
+	
+	
 	const EVP_MD * digest1 = OTIdentifier::GetOpenSSLDigestByName(OTIdentifier::HashAlgorithm1); // SHA-512
-	const EVP_MD * digest2 = OTIdentifier::GetOpenSSLDigestByName(OTIdentifier::HashAlgorithm2); // WHIRLPOOL
-	
-	
-	if (NULL == digest1 || NULL == digest2)
+	if (NULL == digest1)
 	{
 		fprintf(stderr, "Failure to load message digest algorithm in OTContract::SignContractDefaultHash\n");
 		RSA_free(pRsaKey);
 		return false;
 	}
-	
-	
+
 	// hash the contents of the contract with HashAlgorithm1 (SHA-512)
 	EVP_MD_CTX_init   (&mdHash1_ctx);
 	EVP_DigestInit    (&mdHash1_ctx, digest1);
 	EVP_DigestUpdate  (&mdHash1_ctx, m_xmlUnsigned.Get(), m_xmlUnsigned.GetLength()); // input	
 	EVP_DigestFinal   (&mdHash1_ctx, pOutputHash1, &uDigest1Len); // output
 	EVP_MD_CTX_cleanup(&mdHash1_ctx); // cleanup
-	
+
+#ifndef ANDROID
+	const EVP_MD * digest2 = OTIdentifier::GetOpenSSLDigestByName(OTIdentifier::HashAlgorithm2); // WHIRLPOOL
+	if (NULL == digest2)
+	{
+		fprintf(stderr, "Failure to load message digest algorithm in OTContract::SignContractDefaultHash\n");
+		RSA_free(pRsaKey);
+		return false;
+	}
 	
 	// hash the same contents with HashAlgorithm2 (WHIRLPOOL)
 	EVP_MD_CTX_init   (&mdHash2_ctx);
@@ -566,11 +573,16 @@ bool OTContract::SignContractDefaultHash(const EVP_PKEY * pkey, OTSignature & th
 	
 	
 	// XOR the two together
-	for (unsigned i = 0; i < (uDigest1Len > uDigest2Len ? uDigest2Len : uDigest1Len); i++)
+	for (int i = 0; i < (uDigest1Len > uDigest2Len ? uDigest2Len : uDigest1Len); i++)
 	{
 		pDigest[i] = ((pOutputHash1[i]) ^ (pOutputHash2[i]));
 	}
-	
+#else // ANDROID
+	for (int i = 0; i < uDigest1Len; i++)
+	{
+		pDigest[i] = (pOutputHash1[i]);
+	}	
+#endif // ANDROID
 	
 	// ---------------------------------------------------------
 	
@@ -646,16 +658,13 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	// Since the idea of this special code is that we're using 2 hash algorithms,
 	// let's look them up and see what they are.
 	const EVP_MD * digest1 = OTIdentifier::GetOpenSSLDigestByName(OTIdentifier::HashAlgorithm1); // SHA-512
-	const EVP_MD * digest2 = OTIdentifier::GetOpenSSLDigestByName(OTIdentifier::HashAlgorithm2); // WHIRLPOOL
-	
-	
-	if (NULL == digest1 || NULL == digest2)
+	if (NULL == digest1)
 	{
 		fprintf(stderr, "Failure to load message digest algorithm in OTContract::VerifyContractDefaultHash\n");
 		RSA_free(pRsaKey);
 		return false;
 	}
-	
+
 	// hash the contents of the contract with HashAlgorithm1 (SHA-512)
 	EVP_MD_CTX_init   (&mdHash1_ctx);
 	EVP_DigestInit    (&mdHash1_ctx, digest1);
@@ -663,6 +672,15 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	EVP_DigestFinal   (&mdHash1_ctx, pOutputHash1, &uDigest1Len); // output
 	EVP_MD_CTX_cleanup(&mdHash1_ctx); // cleanup
 	
+#ifndef ANDROID
+	const EVP_MD * digest2 = OTIdentifier::GetOpenSSLDigestByName(OTIdentifier::HashAlgorithm2); // WHIRLPOOL
+	if (NULL == digest2)
+	{
+		fprintf(stderr, "Failure to load message digest algorithm in OTContract::VerifyContractDefaultHash\n");
+		RSA_free(pRsaKey);
+		return false;
+	}
+
 	// hash the same contents with HashAlgorithm2 (WHIRLPOOL)
 	EVP_MD_CTX_init   (&mdHash2_ctx);
 	EVP_DigestInit    (&mdHash2_ctx, digest2);
@@ -671,11 +689,16 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	EVP_MD_CTX_cleanup(&mdHash2_ctx); // cleanup
 	
 	// XOR the two together
-	for (unsigned i = 0; i < (uDigest1Len > uDigest2Len ? uDigest2Len : uDigest1Len); i++)
+	for (int i = 0; i < (uDigest1Len > uDigest2Len ? uDigest2Len : uDigest1Len); i++)
 	{
 		pDigest[i] = ((pOutputHash1[i]) ^ (pOutputHash2[i]));
 	}
-
+#else // ANDROID
+	for (int i = 0; i < uDigest1Len; i++)
+	{
+		pDigest[i] = (pOutputHash1[i]);
+	}	
+#endif // ANDROID
 		
 	// Now we have the exact content in pDigest that we should also see if we decrypt
 	// the signature that was passed in.
@@ -970,7 +993,7 @@ bool OTContract::VerifySignature(const OTPseudonym & theNym)
 	for (listOfSignatures::iterator ii = m_listSignatures.begin(); 
 		 ii != m_listSignatures.end(); ++ii)
 	{
-		if ((pSig = *ii))
+		if (pSig = *ii)
 		{
 			if (VerifySignature(theNym, *pSig))
 				return true;
@@ -1149,7 +1172,7 @@ bool OTContract::SaveContract(OTString & strContract)
 	for (listOfSignatures::iterator ii = m_listSignatures.begin(); 
 		 ii != m_listSignatures.end(); ++ii)
 	{
-		if ((pSig = *ii))
+		if (pSig = *ii)
 		{
 			strContract.Concatenate("-----BEGIN %s SIGNATURE-----\n"
 									"Version: Open Transactions 0.2\n"
@@ -1360,7 +1383,7 @@ bool OTContract::ParseRawFile()
 				bSignatureMode = true;
 				bContentMode   = false;
 				
-				if ((pSig = new OTSignature()))
+				if (pSig = new OTSignature())
 				{
 					m_listSignatures.push_back(pSig);
 				}
@@ -1503,11 +1526,12 @@ bool OTContract::LoadContractXML()
 	{
 		switch(xml->getNodeType())
 		{
-			default:
+			case EXN_TEXT:
+//				else
 				{
 					// unknown element type
-					fprintf(stderr, "unknown element type in OTContract::LoadContractXML: %s, type: %d, value: %s\n", 
-						xml->getNodeName(), xml->getNodeType(), xml->getNodeData());
+					fprintf(stderr, "unknown text element type in OTContract::LoadContractXML: %s, value: %s\n", 
+							xml->getNodeName(), xml->getNodeData());
 				}
 				break;
 			case EXN_ELEMENT:

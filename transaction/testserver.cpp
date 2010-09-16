@@ -179,7 +179,7 @@ int main (int argc, char **argv)
 	}
 #endif
 
-	fprintf(stdout, "\n\nWelcome to Open Transactions, version %s.\n\n", "0.21");
+	fprintf(stdout, "\n\nWelcome to Open Transactions, version %s.\n\n", "0.23");
 	
 	// -----------------------------------------------------------------------
 

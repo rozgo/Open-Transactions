@@ -9,6 +9,10 @@ GETTING STARTED:
    folder as this README file. You agree to the terms.  
 
 2) See INSTALL for instructions on building the 3 projects.
+   There are versions for Android, Windows, and Mac/Linux/FreeBSD.
+
+   (For those of you with Mac/Linux/FreeBSD, you can probably just type 'make'
+   in this folder and build the library, server, and test client.) 
 
 3) You can *ignore* the ssl folder and the docs/SSL-NOTES.txt file unless 
    you want to wipe and re-create the test certs and keys for the client

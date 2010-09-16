@@ -217,7 +217,7 @@ int main (int argc, char **argv)
 	int nExpectResponse = 0;
 	
 	fprintf(stderr,"\n\nWelcome to Open Transactions, version %s.\n"
-			"You may wish to 'load' then 'connect' then 'stat'.\n", "0.21");
+			"You may wish to 'load' then 'connect' then 'stat'.\n", "0.23");
 //	fprintf(stderr,"Starting client loop. u_header size in C code is %d.\n", OT_CMD_HEADER_SIZE);
 	
 	for(;;)

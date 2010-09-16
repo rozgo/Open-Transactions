@@ -86,16 +86,17 @@
 
 extern "C"
 {
+#include <openssl/crypto.h>
+	
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <openssl/sha.h>
-#include <openssl/whrlpool.h>
-#include <openssl/crypto.h>
 	
+#ifndef ANDROID // Android thus far only supports OpenSSL 0.9.8k 
+#include <openssl/whrlpool.h>
 	
 	// Just trying to get Whirlpool working since they added it to OpenSSL
 	//
-
 	static int init(EVP_MD_CTX *ctx)
 	{ return WHIRLPOOL_Init((WHIRLPOOL_CTX*)ctx->md_data); }
 	
@@ -121,7 +122,8 @@ extern "C"
 		WHIRLPOOL_BBLOCK/8,
 		sizeof(EVP_MD *)+sizeof(WHIRLPOOL_CTX),
 	};
-
+#endif // ANDROID
+	
 }
 
 #include <cstdio>
@@ -164,7 +166,7 @@ OTIdentifier::OTIdentifier(const OTPseudonym &theNym)  : OTData() // Get the Nym
 
 OTIdentifier::~OTIdentifier()
 {
-
+	
 }
 
 void OTIdentifier::CopyTo(unsigned char * szNewLocation) const
@@ -180,13 +182,13 @@ void OTIdentifier::CopyTo(unsigned char * szNewLocation) const
 
 // --------------------
 /*
-SHA256_CTX context;
-unsigned char md[SHA256_DIGEST_LENGTH];
-
-SHA256_Init(&context);
-SHA256_Update(&context, (unsigned char*)input, length);
-SHA256_Final(md, &context);
-*/
+ SHA256_CTX context;
+ unsigned char md[SHA256_DIGEST_LENGTH];
+ 
+ SHA256_Init(&context);
+ SHA256_Update(&context, (unsigned char*)input, length);
+ SHA256_Final(md, &context);
+ */
 // ----------------------
 
 
@@ -197,7 +199,12 @@ SHA256_Final(md, &context);
 // Smart, eh?  So I named it in his honor.
 // (I have chosen SHA-256 and RIPEMD-256.)
 //
+
+#ifndef ANDROID
 const OTString OTIdentifier::DefaultHashAlgorithm("SAMY");
+#else
+const OTString OTIdentifier::DefaultHashAlgorithm("SHA512");
+#endif // ANDROID
 
 const OTString OTIdentifier::HashAlgorithm1("SHA512");
 const OTString OTIdentifier::HashAlgorithm2("WHIRLPOOL");
@@ -218,140 +225,142 @@ const EVP_MD * OTIdentifier::GetOpenSSLDigestByName(const OTString & theName)
 		return EVP_sha384();
 	else if (theName.Compare("SHA512"))
 		return EVP_sha512();
+#ifndef ANDROID
 	else if (theName.Compare("WHIRLPOOL"))
 		return &whirlpool_md;
+#endif
 	return NULL;
 }
 /*
-const EVP_MD * GetDigestByName(const OTString & theName) 
-{
-	if (theName.Compare("SHA1"))
-		return EVP_sha1();
-	else if (theName.Compare("SHA224"))
-		return EVP_sha224();
-	else if (theName.Compare("SHA256"))
-		return EVP_sha256();
-	else if (theName.Compare("SHA384"))
-		return EVP_sha384();
-	else if (theName.Compare("SHA512"))
-		return EVP_sha512();
-	//	else if (theName.Compare("RMD256"))
-	//		return EVP_ripemd256();
-	else
-		return NULL;
-}
-*/
+ const EVP_MD * GetDigestByName(const OTString & theName) 
+ {
+ if (theName.Compare("SHA1"))
+ return EVP_sha1();
+ else if (theName.Compare("SHA224"))
+ return EVP_sha224();
+ else if (theName.Compare("SHA256"))
+ return EVP_sha256();
+ else if (theName.Compare("SHA384"))
+ return EVP_sha384();
+ else if (theName.Compare("SHA512"))
+ return EVP_sha512();
+ //	else if (theName.Compare("RMD256"))
+ //		return EVP_ripemd256();
+ else
+ return NULL;
+ }
+ */
 
 
 /*
-bool getSHA1Hash(const std::string& p_file, std::string& result, bool p_upperCase) 
-{ 
-	try 
-	{ 
-		SHA1 hash; 
-		FileSource(p_file.c_str(),true, new HashFilter(hash, new HexEncoder(new StringSink(result),p_upperCase))); 
-	} 
-	catch (const std::exception& e) { 
-		return false;
-	} 
-	return true; 
-} 
-*/
+ bool getSHA1Hash(const std::string& p_file, std::string& result, bool p_upperCase) 
+ { 
+ try 
+ { 
+ SHA1 hash; 
+ FileSource(p_file.c_str(),true, new HashFilter(hash, new HexEncoder(new StringSink(result),p_upperCase))); 
+ } 
+ catch (const std::exception& e) { 
+ return false;
+ } 
+ return true; 
+ } 
+ */
 
 /*
  // OpenSSL installed Whirlpool, so I'm going to try their version.
  // The below functions are implemented via Crypto++ by Wei Dai.
  
-// Read a file, digest it with Whirlpool, and store the result inside this object.
-bool OTIdentifier::DigestFileWhirlpool(const OTString& strFilename) 
-{ 
-	bool bUpperCase = true;
-	std::string result;
-	
-	try 
-	{ 
-		Whirlpool hash; 
-		FileSource(strFilename.Get(), true, new HashFilter(hash, 
-				new HexEncoder(new StringSink(result), bUpperCase))); 
-	} 
-	catch (const std::exception& e) { 
-		return false;
-	} 
-	OTString strResult(result.c_str());
-	SetString(strResult);
-	return true; 
-} 
-
-// Digest a string using Whirlpool and store it in this (as binary hash object)
-bool OTIdentifier::DigestStringWhirlpool(const OTString& theSource) 
-{ 
-	bool bUpperCase = true;
-	std::string result, source=theSource.Get();
-	
-	try 
-	{ 
-		Whirlpool hash; 
-		StringSource(source, true, new HashFilter(hash, 
-					new HexEncoder(new StringSink(result),bUpperCase))); 
-	} 
-	catch (const std::exception& e) { 
-		return false;
-	} 
-	
-	OTString strResult(result.c_str());
-	SetString(strResult);
-	return true; 
-} 
-
-
-// Digest a chunk of binary data and store the result inside this object.
-bool OTIdentifier::DigestBinaryWhirlpool(const OTData& theSource) 
-{ 
-	bool bUpperCase = true;
-	std::string result;
-	
-	try 
-	{ 
-		Whirlpool hash; 		
-		ArraySource((const byte*)theSource.GetPointer(), theSource.GetSize(), true, new HashFilter(hash, 
-					new HexEncoder(new StringSink(result),bUpperCase))); 
-	} 
-	catch (const std::exception& e) { 
-		return false;
-	} 
-	
-	OTString strResult(result.c_str());
-	SetString(strResult);
-	return true; 
-} 
-
-
-void OTIdentifier::DigestStringWhirlpool(const std::string & theSource, std::string & theOutput)
-{
-	Whirlpool whirlpool;
-	HashFilter theFilter(whirlpool);
-
-	ChannelSwitch channelSwitch;
-	channelSwitch.AddDefaultRoute(theFilter);
-	
-	StringSource(theSource, true, &channelSwitch);
-		
-	HexEncoder encoder(new StringSink(theOutput), false);
-	
-	fprintf(stderr, "%s: ", theFilter.AlgorithmName().c_str());
-	theFilter.TransferTo(encoder);
-}
-*/
+ // Read a file, digest it with Whirlpool, and store the result inside this object.
+ bool OTIdentifier::DigestFileWhirlpool(const OTString& strFilename) 
+ { 
+ bool bUpperCase = true;
+ std::string result;
+ 
+ try 
+ { 
+ Whirlpool hash; 
+ FileSource(strFilename.Get(), true, new HashFilter(hash, 
+ new HexEncoder(new StringSink(result), bUpperCase))); 
+ } 
+ catch (const std::exception& e) { 
+ return false;
+ } 
+ OTString strResult(result.c_str());
+ SetString(strResult);
+ return true; 
+ } 
+ 
+ // Digest a string using Whirlpool and store it in this (as binary hash object)
+ bool OTIdentifier::DigestStringWhirlpool(const OTString& theSource) 
+ { 
+ bool bUpperCase = true;
+ std::string result, source=theSource.Get();
+ 
+ try 
+ { 
+ Whirlpool hash; 
+ StringSource(source, true, new HashFilter(hash, 
+ new HexEncoder(new StringSink(result),bUpperCase))); 
+ } 
+ catch (const std::exception& e) { 
+ return false;
+ } 
+ 
+ OTString strResult(result.c_str());
+ SetString(strResult);
+ return true; 
+ } 
+ 
+ 
+ // Digest a chunk of binary data and store the result inside this object.
+ bool OTIdentifier::DigestBinaryWhirlpool(const OTData& theSource) 
+ { 
+ bool bUpperCase = true;
+ std::string result;
+ 
+ try 
+ { 
+ Whirlpool hash; 		
+ ArraySource((const byte*)theSource.GetPointer(), theSource.GetSize(), true, new HashFilter(hash, 
+ new HexEncoder(new StringSink(result),bUpperCase))); 
+ } 
+ catch (const std::exception& e) { 
+ return false;
+ } 
+ 
+ OTString strResult(result.c_str());
+ SetString(strResult);
+ return true; 
+ } 
+ 
+ 
+ void OTIdentifier::DigestStringWhirlpool(const std::string & theSource, std::string & theOutput)
+ {
+ Whirlpool whirlpool;
+ HashFilter theFilter(whirlpool);
+ 
+ ChannelSwitch channelSwitch;
+ channelSwitch.AddDefaultRoute(theFilter);
+ 
+ StringSource(theSource, true, &channelSwitch);
+ 
+ HexEncoder encoder(new StringSink(theOutput), false);
+ 
+ fprintf(stderr, "%s: ", theFilter.AlgorithmName().c_str());
+ theFilter.TransferTo(encoder);
+ }
+ */
 
 
 /*
-unsigned char *RIPEMD160(const unsigned char *d, unsigned long n,
-						 unsigned char *md);
-int RIPEMD160_Init(RIPEMD160_CTX *c);
-int RIPEMD160_Update(RIPEMD_CTX *c, const void *data,
-					 unsigned long len);
-int RIPEMD160_Final(unsigned char *md, RIPEMD160_CTX *c);
-*/
+ unsigned char *RIPEMD160(const unsigned char *d, unsigned long n,
+ unsigned char *md);
+ int RIPEMD160_Init(RIPEMD160_CTX *c);
+ int RIPEMD160_Update(RIPEMD_CTX *c, const void *data,
+ unsigned long len);
+ int RIPEMD160_Final(unsigned char *md, RIPEMD160_CTX *c);
+ */
 
 /* 
  const OTString OTIdentifier::DefaultHashAlgorithm("SAMY");
@@ -364,6 +373,7 @@ int RIPEMD160_Final(unsigned char *md, RIPEMD160_CTX *c);
 // This method implements the SAMY hash
 bool OTIdentifier::CalculateDigest(const OTString & strInput)
 {
+#ifndef ANDROID // SHA512 on Android; no whirlpool until OpenSSL 1.0.0a is added.
 	OTIdentifier idSecondHash;
 	
 	if (idSecondHash.CalculateDigest(strInput, HashAlgorithm2) &&
@@ -375,13 +385,21 @@ bool OTIdentifier::CalculateDigest(const OTString & strInput)
 		// Next we XOR them together for the final product.
 		return XOR(idSecondHash);
 	}
+#else // ANDROID
+	if (CalculateDigest(strInput, HashAlgorithm1))
+	{
+		return true;
+	}	
+#endif // ANDROID
 	
 	return false;
 }
 
+
 // This method implements the SAMY hash
 bool OTIdentifier::CalculateDigest(const OTData & dataInput)
 {
+#ifndef ANDROID // SHA512 on Android; no whirlpool until OpenSSL 1.0.0a is added.
 	OTIdentifier idSecondHash;
 	
 	if (idSecondHash.CalculateDigest(dataInput, HashAlgorithm2) &&
@@ -393,6 +411,12 @@ bool OTIdentifier::CalculateDigest(const OTData & dataInput)
 		// Next we XOR them together for the final product.
 		return XOR(idSecondHash);
 	}
+#else // ANDROID
+	if (CalculateDigest(dataInput, HashAlgorithm1))
+	{
+		return true;
+	}	
+#endif // ANDROID
 	
 	return false;
 }
@@ -411,10 +435,10 @@ bool OTIdentifier::CalculateDigestInternal(const OTString & strInput, const OTSt
 	{
 		return CalculateDigest(strInput);
 	}
-//	else if (strHashAlgorithm.Compare("WHIRLPOOL"))
-//	{
-//		return DigestStringWhirlpool(strInput);
-//	}
+	//	else if (strHashAlgorithm.Compare("WHIRLPOOL"))
+	//	{
+	//		return DigestStringWhirlpool(strInput);
+	//	}
 	
 	return false;
 }
@@ -433,10 +457,10 @@ bool OTIdentifier::CalculateDigestInternal(const OTData & dataInput, const OTStr
 	{
 		return CalculateDigest(dataInput);
 	}
-//	else if (strHashAlgorithm.Compare("WHIRLPOOL"))
-//	{
-//		return DigestBinaryWhirlpool(dataInput);
-//	}
+	//	else if (strHashAlgorithm.Compare("WHIRLPOOL"))
+	//	{
+	//		return DigestBinaryWhirlpool(dataInput);
+	//	}
 	
 	return false;	
 }
@@ -479,10 +503,10 @@ bool OTIdentifier::CalculateDigest(const OTString & strInput, const OTString & s
 	EVP_DigestFinal_ex(&mdctx, md_value, &md_len);
 	EVP_MD_CTX_cleanup(&mdctx);
 	
-//	fprintf(stderr, "Calculated %s digest.\n", strHashAlgorithm.Get());
+	//	fprintf(stderr, "Calculated %s digest.\n", strHashAlgorithm.Get());
 	
-//	for (int i = 0; i < md_len; i++) fprintf(stderr, "%02x", md_value[i]);
-//	fprintf(stderr, "\n");
+	//	for (int i = 0; i < md_len; i++) fprintf(stderr, "%02x", md_value[i]);
+	//	fprintf(stderr, "\n");
 	
 	Assign(md_value, md_len);
 	
@@ -522,10 +546,10 @@ bool OTIdentifier::CalculateDigest(const OTData & dataInput, const OTString & st
 	EVP_DigestFinal_ex(&mdctx, md_value, &md_len);
 	EVP_MD_CTX_cleanup(&mdctx);
 	
-//	fprintf(stderr, "Calculated %s digest.\n", strHashAlgorithm.Get());
+	//	fprintf(stderr, "Calculated %s digest.\n", strHashAlgorithm.Get());
 	
-//	for (int i = 0; i < md_len; i++) fprintf(stderr, "%02x", md_value[i]);
-//	fprintf(stderr, "\n");
+	//	for (int i = 0; i < md_len; i++) fprintf(stderr, "%02x", md_value[i]);
+	//	fprintf(stderr, "\n");
 	
 	Assign(md_value, md_len);
 	
@@ -537,7 +561,7 @@ bool OTIdentifier::XOR(const OTIdentifier & theInput)
 {
 	// Go with the smallest of the two
 	const long lSize = (GetSize() > theInput.GetSize() ? theInput.GetSize() : GetSize());
-				  
+	
 	for (int i = 0; i < lSize; i++)
 	{
 		((char*)GetPointer())[i] ^= ((char*)theInput.GetPointer())[i];
@@ -580,7 +604,7 @@ void OTIdentifier::SetString(const OTString & theStr)
 	{
 		tempArray = new unsigned char[MAX_STRING_LENGTH];
 	}
-
+	
 	tempArray[0] = '\0';
 	// _end _WIN32
 	
@@ -602,13 +626,13 @@ void OTIdentifier::SetString(const OTString & theStr)
 		ca[0] = c;
 		ca[1] = d;
 		ca[2] = 0;
-	
+		
 #ifdef _WIN32
 		sscanf_s(ca, "%2x", &shTemp);
 #else
 		sscanf(ca, "%2x", &shTemp);
 #endif
-
+		
 		// at this point, the string has been converted into the unsigned int.
 		
 		// Even though the number is stored in an unsigned int right now,
@@ -620,7 +644,7 @@ void OTIdentifier::SetString(const OTString & theStr)
 		// This way we have reconstructed the binary array.
 		conv.sh = shTemp;
 		tempArray[i] = conv.c[0];
-
+		
 		shTemp=0;
 		conv.sh = 0;
 		
@@ -635,7 +659,7 @@ void OTIdentifier::SetString(const OTString & theStr)
  for (i = 0; i < md_len; i++) fprintf(stderr, "%02x", md_value[i]);
  fprintf(stderr, "\n");
  
-*/
+ */
 
 // This Identifier is stored in binary form.
 // But what if you want a pretty hex string version of it?
@@ -650,7 +674,7 @@ void OTIdentifier::GetString(OTString & theStr) const
 	
 	unsigned char cByte = 0;
 	
-	for(uint32_t i = 0; i < GetSize(); i++)
+	for(long i = 0; i < GetSize(); i++)
 	{
 		cByte = ((unsigned char *)GetPointer())[i];
 		
