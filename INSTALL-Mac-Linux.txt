@@ -4,9 +4,10 @@ OpenTransactions for MAC and LINUX
 
 
  --- Open Transactions is currently built on:
-     - Linux Ubuntu 2.6.32 using gcc.
+     - Linux Ubuntu 2.6.32 and FreeBSD using g++/gcc.
      - Mac OS X 10.6.4 (Snow Leopard) using XCode as well as gcc
      - Windows 7 using MS Visual C++ 2010 Express.
+     - Android 8 using NDK.
  
  --- OpenSSL version 1.0.0a (at least) is necessary, since the SAMY hash 
      uses WHRLPOOL. (XOR'd with SHA-512.) WHIRLPOOL is a new addition to 

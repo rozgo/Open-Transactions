@@ -3,6 +3,8 @@ NOTES on the Version:
 
 // ---------------------------------------------------------------------
 
+   0.24 --- FreeBSD working! (In support of Ben Laurie.)
+
    0.23 --- Android version! (In support of our upcoming Android client.)
 
    0.22 --- EASY Makefiles and project files are now available for the

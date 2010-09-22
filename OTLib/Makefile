@@ -22,6 +22,17 @@ PROGRAM = libOTLib.a
 # executable must be linked against.
 #
 
+#
+# Make sure the first directory below has YOUR computer's path to the
+# OpenSSL include files. This is the one I use for Mac and Linux:
+#
+#        -I/usr/local/ssl/include \    
+#
+# Or, if you prefer, the FreeBSD path to the OpenSSL include files:
+#
+#        -I/usr/local/include \  
+#
+
 INCLUDEDIRS = \
 	-I/usr/local/ssl/include \
 	-I./irrxml \
@@ -190,10 +201,7 @@ OTDataCheck.o: OTDataCheck.cpp OTDataCheck.h
 #
 # Clean target: "make -f Makefile.Linux clean" to remove unwanted objects and executables.
 #
-
-ifndef RM
-	RM=rm
-endif
+RM=rm
 
 clean:
 	$(RM) -f $(CXXOBJECTS) $(COBJECTS) $(PROGRAM)
