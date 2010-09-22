@@ -870,12 +870,19 @@ bool OTMint::VerifyToken(OTPseudonym & theNotary, OTString & theCleartextToken, 
 		{
 			bReturnValue = true;
 			
-			// BIG TODO: When a token is redeemed, need to store it in the spent token database.
+			// (Done): When a token is redeemed, need to store it in the spent token database.
 			// Right now I can verify the token, but unless I check it against a database, then 
 			// even though the signature verifies, it doesn't stop people from redeeming the same
 			// token again and again and again.
 			//
-			// note to self: also need to make sure issuer has double-entries for total amount outstanding.
+			// (done): also need to make sure issuer has double-entries for total amount outstanding.
+			//
+			// UPDATE: These are both done now.  The Spent Token database is implemented in the transaction server,
+			// (not OTLib proper) and the same server also now keeps a cash account to match all cash withdrawals.
+			// (Meaning, if 10,000 clams total have been withdrawn by various users, then the server actually has
+			// a clam account containing 10,000 clams. As the cash comes in for redemption, the server debits it from
+			// this account again before sending it to its final destination. This way the server tracks total outstanding
+			// amount, as an additional level of security after the blind signature itself.)
 		}
 	}
 	

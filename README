@@ -5,9 +5,6 @@ WHAT IS Open Transactions ?
 -- It's a solid, easy-to-use, CRYPTO and DIGITAL CASH LIBRARY.
 -- Including an operational CLIENT and SERVER. 
 -- It's OPEN SOURCE, and encapsulates a COMPLETE PROTOCOL for transactions.
--- It's object-oriented, and written in C++ using OpenSSL.
--- High-level API in Java! (JNI) 
--- Builds on: **Windows, Mac OS X and LINUX**   
 -- Featuring: 
 ................UNTRACEABLE DIGITAL CASH (real blinded tokens.)
 ................SECURE NUMBERED ACCOUNTS (an account is a pgp key.)
@@ -16,6 +13,10 @@ WHAT IS Open Transactions ?
 ................ANYONE AN ISSUER
 ................SIGNED XML CONTRACTS
 ................MANY DIGITAL INSTRUMENTS: Cheques, Cash, Vouchers, Transfers...
+
+-- Builds on: Android, Windows, Mac OS X, Linux, and FreeBSD.
+-- It's object-oriented, and written in C++ using OpenSSL.
+-- High-level API and JNI, for easy access if you use Java, JRuby, or Jython. 
 
 
 IN DETAIL, THE SOFTWARE FEATURES:

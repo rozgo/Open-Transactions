@@ -3,7 +3,7 @@ OpenTransactions for ANDROID
 
 
  --- Open Transactions is currently built on:
-     - Linux Ubuntu 2.6.32 using gcc.
+     - Linux Ubuntu 2.6.32 and FreeBSD using g++.
      - Mac OS X 10.6.4 (Snow Leopard) using XCode as well as gcc
      - Windows 7 using MS Visual C++ 2010 Express.
      - Android 8 using NDK.

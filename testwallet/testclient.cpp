@@ -131,8 +131,8 @@ extern OTPseudonym *g_pTemporaryNym;
 
 #else
 
-//#define SERVER_PATH_DEFAULT	"/Users/REDACTED/Projects/Open-Transactions/testwallet"
-#define SERVER_PATH_DEFAULT	"/home/ben/git-work/Open-Transactions/testwallet"
+#define SERVER_PATH_DEFAULT	"/Users/REDACTED/Projects/Open-Transactions/testwallet"
+//#define SERVER_PATH_DEFAULT	"/home/ben/git-work/Open-Transactions/testwallet"
 #define CA_FILE             "SSL-Example/ca.crt"
 #define KEY_FILE            "SSL-Example/client.pem"
 
@@ -217,7 +217,7 @@ int main (int argc, char **argv)
 	int nExpectResponse = 0;
 	
 	fprintf(stderr,"\n\nWelcome to Open Transactions, version %s.\n"
-			"You may wish to 'load' then 'connect' then 'stat'.\n", "0.23");
+			"You may wish to 'load' then 'connect' then 'stat'.\n", "0.24");
 //	fprintf(stderr,"Starting client loop. u_header size in C code is %d.\n", OT_CMD_HEADER_SIZE);
 	
 	for(;;)
