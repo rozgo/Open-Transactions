@@ -96,6 +96,7 @@ using namespace io;
 #include "OTPseudonym.h"
 #include "OTEnvelope.h"
 #include "OTASCIIArmor.h"
+#include "OTLog.h"
 
 
 
@@ -175,7 +176,7 @@ int OTPurse::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		m_UserID.SetString(strUserID);
 		m_ServerID.SetString(strServerID);
 		
-		fprintf(stderr, "Loaded purse...\n ServerID:\n%s\n UserID: %s\n Asset ID: %s\n----------\n", strServerID.Get(),
+		OTLog::vOutput(0, "Loaded purse...\n ServerID:\n%s\n UserID: %s\n Asset ID: %s\n----------\n", strServerID.Get(),
 				strUserID.Get(), strAssetID.Get());
 		
 		return 1;
@@ -206,7 +207,7 @@ int OTPurse::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			return 1;
 		}
 		else {
-			fprintf(stderr, "Error in OTPurse::ProcessXMLNode: missing text for token.\n");
+			OTLog::Error("Error in OTPurse::ProcessXMLNode: missing text for token.\n");
 			return (-1); // error condition
 		}
 	}	
@@ -215,7 +216,7 @@ int OTPurse::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 
 
 
-bool OTPurse::SaveContractWallet(FILE * fl)	
+bool OTPurse::SaveContractWallet(std::ofstream & ofs)	
 {
 	return true;
 }
@@ -260,7 +261,7 @@ OTToken * OTPurse::Pop(const OTPseudonym & theOwner)
 	OTASCIIArmor * pArmor =  m_dequeTokens.front();
 	m_dequeTokens.pop_front();
 	
-//	fprintf(stderr, "$$$$$$$$$$$$$$ ARMORED TEXT in PURSE POP:\n--------->%s<-----------\n", pArmor->Get());
+//	OTLog::vError("$$$$$$$$$$$$$$ ARMORED TEXT in PURSE POP:\n--------->%s<-----------\n", pArmor->Get());
 	
 	// Copy the token contents into an Envelope, and delete the pointer.
 	OTEnvelope theEnvelope(*pArmor);
@@ -271,7 +272,7 @@ OTToken * OTPurse::Pop(const OTPseudonym & theOwner)
 	OTString strToken;
 	theEnvelope.Open(theOwner, strToken);
 	
-//	fprintf(stderr, "$$$$$$$$$$$$$$$ OPENED ENVELOPE TEXT in PURSE POP:\n--------->%s<-----------\n", strToken.Get());
+//	OTLog::vError("$$$$$$$$$$$$$$$ OPENED ENVELOPE TEXT in PURSE POP:\n--------->%s<-----------\n", strToken.Get());
 
 	// Create a new token with the same server and asset IDs as this purse.
 	OTToken * pToken =  new OTToken(*this);
@@ -284,7 +285,7 @@ OTToken * OTPurse::Pop(const OTPseudonym & theOwner)
 		delete pToken;
 		pToken = NULL;
 		
-		fprintf(stderr, "ERROR: Token with wrong asset type in OTPurse::Pop\n");
+		OTLog::Error("ERROR: Token with wrong asset type in OTPurse::Pop\n");
 	}
 	
 	// CALLER is responsible to delete this token.
@@ -302,13 +303,13 @@ bool OTPurse::Push(const OTPseudonym & theOwner, const OTToken & theToken)
 	{
 		OTString strToken(theToken);
 		
-//		fprintf(stderr, "$$$$$$$$$$$$$$$  PUSHING token to Purse:\n---------->%s<-------------\n", strToken.Get());
+//		OTLog::vError("$$$$$$$$$$$$$$$  PUSHING token to Purse:\n---------->%s<-------------\n", strToken.Get());
 		
 		OTEnvelope theEnvelope;
 		theEnvelope.Seal(theOwner, strToken);
 		
 		OTASCIIArmor * pArmor = new OTASCIIArmor(theEnvelope);
-//		fprintf(stderr, "$$$$$$$$$$$$$$$  PUSHING token to Purse in armored form:\n---------->%s<-------------\n", 
+//		OTLog::vError("$$$$$$$$$$$$$$$  PUSHING token to Purse in armored form:\n---------->%s<-------------\n", 
 //				pArmor->Get());
 
 		m_dequeTokens.push_front(pArmor);
@@ -317,7 +318,7 @@ bool OTPurse::Push(const OTPseudonym & theOwner, const OTToken & theToken)
 	}
 	else {
 		OTString strPurseAssetType(m_AssetID), strTokenAssetType(theToken.GetAssetID());
-		fprintf(stderr, "ERROR: Tried to push token with wrong asset type in OTPurse::Push\nPurse Asset Type:\n%s\n"
+		OTLog::vError("ERROR: Tried to push token with wrong asset type in OTPurse::Push\nPurse Asset Type:\n%s\n"
 				"Token Asset Type:\n%s\n", strPurseAssetType.Get(), strTokenAssetType.Get());
 		
 		return false;

@@ -47,6 +47,20 @@
 		83A158B811B0B89300B05397 /* OTglobal.h in Headers */ = {isa = PBXBuildFile; fileRef = 83A158B711B0B89300B05397 /* OTglobal.h */; };
 		83A158BC11B0B8A100B05397 /* OTString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83A158BB11B0B8A100B05397 /* OTString.cpp */; };
 		83A158C011B0B8A700B05397 /* OTString.h in Headers */ = {isa = PBXBuildFile; fileRef = 83A158BF11B0B8A700B05397 /* OTString.h */; };
+		83A7D1281245E83F00DE6C1B /* OTAgreement.h in Headers */ = {isa = PBXBuildFile; fileRef = 83A7D1261245E83F00DE6C1B /* OTAgreement.h */; };
+		83A7D1291245E83F00DE6C1B /* OTAgreement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83A7D1271245E83F00DE6C1B /* OTAgreement.cpp */; };
+		83A7D12E1245E85D00DE6C1B /* OTCron.h in Headers */ = {isa = PBXBuildFile; fileRef = 83A7D12C1245E85D00DE6C1B /* OTCron.h */; };
+		83A7D12F1245E85D00DE6C1B /* OTCron.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83A7D12D1245E85D00DE6C1B /* OTCron.cpp */; };
+		83A7D1341245E88600DE6C1B /* OTCronItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 83A7D1321245E88600DE6C1B /* OTCronItem.h */; };
+		83A7D1351245E88600DE6C1B /* OTCronItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83A7D1331245E88600DE6C1B /* OTCronItem.cpp */; };
+		83A7D13A1245E8B000DE6C1B /* OTTrade.h in Headers */ = {isa = PBXBuildFile; fileRef = 83A7D1381245E8B000DE6C1B /* OTTrade.h */; };
+		83A7D13B1245E8B000DE6C1B /* OTTrade.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83A7D1391245E8B000DE6C1B /* OTTrade.cpp */; };
+		83A7D1401245E8CD00DE6C1B /* OTOffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 83A7D13E1245E8CD00DE6C1B /* OTOffer.h */; };
+		83A7D1411245E8CD00DE6C1B /* OTOffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83A7D13F1245E8CD00DE6C1B /* OTOffer.cpp */; };
+		83A7D1461245E8DD00DE6C1B /* OTMarket.h in Headers */ = {isa = PBXBuildFile; fileRef = 83A7D1441245E8DD00DE6C1B /* OTMarket.h */; };
+		83A7D1471245E8DD00DE6C1B /* OTMarket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83A7D1451245E8DD00DE6C1B /* OTMarket.cpp */; };
+		83A7D1631246C8A600DE6C1B /* OTLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 83A7D1611246C8A600DE6C1B /* OTLog.h */; };
+		83A7D1641246C8A600DE6C1B /* OTLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83A7D1621246C8A600DE6C1B /* OTLog.cpp */; };
 		83AC18D5120D5E8400C5A816 /* OTInstrument.h in Headers */ = {isa = PBXBuildFile; fileRef = 83AC18D3120D5E8400C5A816 /* OTInstrument.h */; };
 		83AC18D6120D5E8400C5A816 /* OTInstrument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83AC18D4120D5E8400C5A816 /* OTInstrument.cpp */; };
 		83AC18DB120D5E9D00C5A816 /* OTCheque.h in Headers */ = {isa = PBXBuildFile; fileRef = 83AC18D9120D5E9D00C5A816 /* OTCheque.h */; };
@@ -134,6 +148,20 @@
 		83A158B711B0B89300B05397 /* OTglobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTglobal.h; sourceTree = "<group>"; };
 		83A158BB11B0B8A100B05397 /* OTString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OTString.cpp; sourceTree = "<group>"; };
 		83A158BF11B0B8A700B05397 /* OTString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTString.h; sourceTree = "<group>"; };
+		83A7D1261245E83F00DE6C1B /* OTAgreement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTAgreement.h; sourceTree = "<group>"; };
+		83A7D1271245E83F00DE6C1B /* OTAgreement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OTAgreement.cpp; sourceTree = "<group>"; };
+		83A7D12C1245E85D00DE6C1B /* OTCron.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTCron.h; sourceTree = "<group>"; };
+		83A7D12D1245E85D00DE6C1B /* OTCron.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OTCron.cpp; sourceTree = "<group>"; };
+		83A7D1321245E88600DE6C1B /* OTCronItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTCronItem.h; sourceTree = "<group>"; };
+		83A7D1331245E88600DE6C1B /* OTCronItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OTCronItem.cpp; sourceTree = "<group>"; };
+		83A7D1381245E8B000DE6C1B /* OTTrade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTTrade.h; sourceTree = "<group>"; };
+		83A7D1391245E8B000DE6C1B /* OTTrade.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OTTrade.cpp; sourceTree = "<group>"; };
+		83A7D13E1245E8CD00DE6C1B /* OTOffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTOffer.h; sourceTree = "<group>"; };
+		83A7D13F1245E8CD00DE6C1B /* OTOffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OTOffer.cpp; sourceTree = "<group>"; };
+		83A7D1441245E8DD00DE6C1B /* OTMarket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTMarket.h; sourceTree = "<group>"; };
+		83A7D1451245E8DD00DE6C1B /* OTMarket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OTMarket.cpp; sourceTree = "<group>"; };
+		83A7D1611246C8A600DE6C1B /* OTLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTLog.h; sourceTree = "<group>"; };
+		83A7D1621246C8A600DE6C1B /* OTLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OTLog.cpp; sourceTree = "<group>"; };
 		83AC18D3120D5E8400C5A816 /* OTInstrument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTInstrument.h; sourceTree = "<group>"; };
 		83AC18D4120D5E8400C5A816 /* OTInstrument.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OTInstrument.cpp; sourceTree = "<group>"; };
 		83AC18D9120D5E9D00C5A816 /* OTCheque.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTCheque.h; sourceTree = "<group>"; };
@@ -220,6 +248,20 @@
 		08FB77ACFE841707C02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				83A7D1611246C8A600DE6C1B /* OTLog.h */,
+				83A7D1621246C8A600DE6C1B /* OTLog.cpp */,
+				83A7D1441245E8DD00DE6C1B /* OTMarket.h */,
+				83A7D1451245E8DD00DE6C1B /* OTMarket.cpp */,
+				83A7D13E1245E8CD00DE6C1B /* OTOffer.h */,
+				83A7D13F1245E8CD00DE6C1B /* OTOffer.cpp */,
+				83A7D1381245E8B000DE6C1B /* OTTrade.h */,
+				83A7D1391245E8B000DE6C1B /* OTTrade.cpp */,
+				83A7D1261245E83F00DE6C1B /* OTAgreement.h */,
+				83A7D1271245E83F00DE6C1B /* OTAgreement.cpp */,
+				83A7D1321245E88600DE6C1B /* OTCronItem.h */,
+				83A7D1331245E88600DE6C1B /* OTCronItem.cpp */,
+				83A7D12C1245E85D00DE6C1B /* OTCron.h */,
+				83A7D12D1245E85D00DE6C1B /* OTCron.cpp */,
 				83C5F49C122E0B7000964E36 /* OTWallet.h */,
 				83C5F49B122E0B7000964E36 /* OTWallet.cpp */,
 				8377234B1216B401003712F8 /* OTSignedFile.h */,
@@ -364,6 +406,13 @@
 				8377234D1216B401003712F8 /* OTSignedFile.h in Headers */,
 				83C5F49E122E0B7000964E36 /* OTWallet.h in Headers */,
 				83C5F4B9122E0CBC00964E36 /* OTMessageBuffer.h in Headers */,
+				83A7D1281245E83F00DE6C1B /* OTAgreement.h in Headers */,
+				83A7D12E1245E85D00DE6C1B /* OTCron.h in Headers */,
+				83A7D1341245E88600DE6C1B /* OTCronItem.h in Headers */,
+				83A7D13A1245E8B000DE6C1B /* OTTrade.h in Headers */,
+				83A7D1401245E8CD00DE6C1B /* OTOffer.h in Headers */,
+				83A7D1461245E8DD00DE6C1B /* OTMarket.h in Headers */,
+				83A7D1631246C8A600DE6C1B /* OTLog.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -449,6 +498,13 @@
 				83C5F49D122E0B7000964E36 /* OTWallet.cpp in Sources */,
 				83C5F4B8122E0CBC00964E36 /* OTMessageBuffer.cpp in Sources */,
 				83E651D4122E32B200320598 /* Makefile in Sources */,
+				83A7D1291245E83F00DE6C1B /* OTAgreement.cpp in Sources */,
+				83A7D12F1245E85D00DE6C1B /* OTCron.cpp in Sources */,
+				83A7D1351245E88600DE6C1B /* OTCronItem.cpp in Sources */,
+				83A7D13B1245E8B000DE6C1B /* OTTrade.cpp in Sources */,
+				83A7D1411245E8CD00DE6C1B /* OTOffer.cpp in Sources */,
+				83A7D1471245E8DD00DE6C1B /* OTMarket.cpp in Sources */,
+				83A7D1641246C8A600DE6C1B /* OTLog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

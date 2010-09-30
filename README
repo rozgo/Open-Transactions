@@ -16,23 +16,23 @@ WHAT IS Open Transactions ?
 
 -- Builds on: Android, Windows, Mac OS X, Linux, and FreeBSD.
 -- It's object-oriented, and written in C++ using OpenSSL.
--- High-level API and JNI, for easy access if you use Java, JRuby, or Jython. 
+-- High-level API and JNI, for easy access in Java, JRuby, or Jython. 
 
 
 IN DETAIL, THE SOFTWARE FEATURES:
 
--- UNTRACEABLE DIGITAL CASH: Fully implemented! Cash withdrawals of any asset
-type, using Lucre. (Ben Laurie's implementation of Wagner's variant on
-Chaumian blinding.) Once cash is withdrawn, the server has no way of tracking
-it or linking it back to its next deposit.
+-- UNTRACEABLE DIGITAL CASH: Fully implemented! Cash withdrawals of any 
+asset type, using Lucre. (Ben Laurie's implementation of Wagner's variant
+on Chaumian blinding.) Once cash is withdrawn, the server has no way of
+tracking it or linking it back to its next deposit.
 
 REPEAT: Digital Bearer Certificates--with denominations, mints, expiring
 tokens, spent token database, the works--fully-operational and ready to
 integrate with your mixnets, your digital gold currency (or silver), your
-anonymous network nodes, your bittorrent clients, your remailers, your secure
-voip apps, your nym servers, your snazzy, new, file-sharing client, and your
-censorship-resistant, distributed data store. This is what you have been
-waiting for! Real, open-source, digital cash.
+anonymous network nodes, your bittorrent clients, your remailers, your
+secure voip apps, your nym servers, your snazzy, new, file-sharing client, 
+and your censorship-resistant, distributed data store. This is what you 
+have been waiting for! Real, open-source, digital cash.
 
 As well as...
 

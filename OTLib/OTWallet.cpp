@@ -91,6 +91,7 @@
 #include "OTPseudonym.h"
 
 #include "OTWallet.h"
+#include "OTLog.h"
 
 #include "OTAssetContract.h"
 #include "OTServerContract.h"
@@ -174,17 +175,15 @@ OTServerContract * OTWallet::GetServerContract(const OTIdentifier & SERVER_ID)
 
 	for (mapOfServers::iterator ii = m_mapServers.begin(); ii != m_mapServers.end(); ++ii)
 	{
-		if ((pServer = (*ii).second)) // if not null
-		{
-			OTIdentifier id_CurrentContract;
-			pServer->GetIdentifier(id_CurrentContract);
-			
-			if (id_CurrentContract == SERVER_ID)
-				return (OTServerContract *)pServer;
-		}
-		else {
-			fprintf(stderr, "NULL server pointer in OTWallet::m_mapServers, OTWallet::GetServerContract");
-		}
+		pServer = (*ii).second;
+		
+		OT_ASSERT_MSG((NULL != pServer), "NULL server pointer in OTWallet::m_mapServers, OTWallet::GetServerContract");
+		
+		OTIdentifier id_CurrentContract;
+		pServer->GetIdentifier(id_CurrentContract);
+		
+		if (id_CurrentContract == SERVER_ID)
+			return (OTServerContract *)pServer;
 	}
 	
 	return NULL;
@@ -200,17 +199,15 @@ OTPseudonym * OTWallet::GetNymByID(const OTIdentifier & NYM_ID)
 	
 	for (mapOfNyms::iterator ii = m_mapNyms.begin(); ii != m_mapNyms.end(); ++ii)
 	{		
-		if ((pNym = (*ii).second)) // if not null
-		{
-			OTIdentifier id_CurrentNym;
-			pNym->GetIdentifier(id_CurrentNym);
-			
-			if (id_CurrentNym == NYM_ID)
-				return pNym;
-		}
-		else {
-			fprintf(stderr, "NULL pseudonym pointer in OTWallet::GetNymByID.");
-		}		
+		pNym = (*ii).second;
+		
+		OT_ASSERT_MSG((NULL != pNym), "NULL pseudonym pointer in OTWallet::GetNymByID.");
+
+		OTIdentifier id_CurrentNym;
+		pNym->GetIdentifier(id_CurrentNym);
+		
+		if (id_CurrentNym == NYM_ID)
+			return pNym;
 	}	
 	
 	return NULL;
@@ -348,15 +345,14 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 	
 	OTPseudonym * pNym = NULL;
 	
+	
 	for (mapOfNyms::iterator ii = m_mapNyms.begin(); ii != m_mapNyms.end(); ++ii)
 	{		
-		if ((pNym = (*ii).second))
-		{
-			pNym->DisplayStatistics(strOutput);
-		}
-		else {
-			fprintf(stderr, "NULL pseudonym pointer in OTWallet::m_mapNyms, OTWallet::DisplayStatistics.");
-		}		
+		pNym = (*ii).second;
+		
+		OT_ASSERT_MSG((NULL != pNym), "NULL pseudonym pointer in OTWallet::m_mapNyms, OTWallet::DisplayStatistics.");
+
+		pNym->DisplayStatistics(strOutput);
 	}
 	
 	// ---------------------------------------------------------------
@@ -366,17 +362,11 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 	
 	for (mapOfContracts::iterator ii = m_mapContracts.begin(); ii != m_mapContracts.end(); ++ii)
 	{
-		if (pContract = (*ii).second)
-		{
-			pContract->SaveContractWallet(fl);
-			
-			// ----------------------------------------
-		}
-		else 
-		{
-			fprintf(stderr, "NULL contract pointer in OTWallet::m_mapContracts, OTWallet::SaveWallet: %s",
-					szFilename);
-		}
+		pContract = (*ii).second;
+	 
+		OT_ASSERT_MSG(NULL != pContract, "NULL contract pointer in OTWallet::m_mapContracts, OTWallet::SaveWallet");
+	 
+		pContract->SaveContractWallet(fl);
 	}
 	
 	// ---------------------------------------------------------------
@@ -385,16 +375,11 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 	
 	for (mapOfServers::iterator ii = m_mapServers.begin(); ii != m_mapServers.end(); ++ii)
 	{
-		if (pServer = (*ii).second)
-		{
+		pServer = (*ii).second;
+	 
+		OT_ASSERT_MSG(NULL != pServer, "NULL server pointer in OTWallet::m_mapServers, OTWallet::SaveWallet");
+	 
 			pServer->SaveContractWallet(fl);
-			
-			// ----------------------------------------
-		}
-		else {
-			fprintf(stderr, "NULL server pointer in OTWallet::m_mapServers, OTWallet::SaveWallet: %s",
-					szFilename);
-		}
 	}
 	
 	// ---------------------------------------------------------------
@@ -407,18 +392,15 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 	
 	for (mapOfAccounts::iterator ii = m_mapAccounts.begin(); ii != m_mapAccounts.end(); ++ii)
 	{
-		if ((pAccount = (*ii).second))
-		{
-			OTString strContents;
-			pAccount->SaveContents(strContents);
-			
-			strOutput.Concatenate(strContents);
-			strOutput.Concatenate("-------------------------------------------------\n");
-			// ----------------------------------------
-		}
-		else {
-			fprintf(stderr, "NULL account pointer in OTWallet::m_mapAccounts, OTWallet::DisplayStatistics");
-		}
+		pAccount = (*ii).second;
+		
+		OT_ASSERT_MSG(NULL != pAccount, "NULL account pointer in OTWallet::m_mapAccounts, OTWallet::DisplayStatistics");
+		
+		OTString strContents;
+		pAccount->SaveContents(strContents);
+		
+		strOutput.Concatenate(strContents);
+		strOutput.Concatenate("-------------------------------------------------\n");
 	}
 	
 	// ---------------------------------------------------------------
@@ -429,12 +411,9 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 
 int OTWallet::SaveWallet(const char * szFilename)
 {	
-	if (NULL == szFilename)
-	{
-		fprintf(stderr, "Null filename sent to OTWallet::SaveWallet\n");
-		return 0;
-	}
-	
+	OT_ASSERT_MSG(NULL != szFilename, "Null filename sent to OTWallet::SaveWallet\n");
+
+	/*
 #ifdef _WIN32
 	FILE * fl = NULL;
 	errno_t err = fopen_s(&fl, szFilename, "wb");
@@ -444,14 +423,26 @@ int OTWallet::SaveWallet(const char * szFilename)
 
 	if (NULL == fl)
 	{
-		fprintf(stderr, "Error opening file in OTWallet::SaveWallet: %s\n", szFilename);
+		OTLog::vOutput(0, "Failed opening file in OTWallet::SaveWallet: %s\n", szFilename);
 		return 0;
 	}
+	*/
+	
+	std::ofstream ofs(szFilename, std::ios::binary);
+	
+	if (ofs.fail())
+	{
+		OTLog::vOutput(0, "Failed opening file in OTWallet::SaveWallet: %s\n", szFilename);
+		return 0;
+	}
+
+	ofs.clear();
 	
 	// ---------------------------------------------------------------
 	
-	fprintf(fl, "<?xml version=\"1.0\"?>\n<wallet name=\"%s\" version=\"%s\">\n\n",
-			m_strName.Get(), m_strVersion.Get());
+	ofs << "<?xml version=\"1.0\"?>\n<wallet name=\"" << m_strName.Get() <<
+	"\" version=\"" << m_strVersion.Get() <<
+	"\">\n\n";
 	
 	//mapOfNyms			m_mapNyms;		// So far no file writing for these (and none needed...)
 	//mapOfContracts	m_mapContracts; // This is what I'm testing now, which includes the other 3.
@@ -461,15 +452,12 @@ int OTWallet::SaveWallet(const char * szFilename)
 	OTPseudonym * pNym = NULL;
 	
 	for (mapOfNyms::iterator ii = m_mapNyms.begin(); ii != m_mapNyms.end(); ++ii)
-	{		
-		if ((pNym = (*ii).second))
-		{
-			pNym->SavePseudonymWallet(fl);
-		}
-		else {
-			fprintf(stderr, "NULL pseudonym pointer in OTWallet::m_mapNyms, OTWallet::SaveWallet: %s",
-					szFilename);
-		}		
+	{	
+		pNym = (*ii).second;
+		
+		OT_ASSERT_MSG(NULL != pNym, "NULL pseudonym pointer in OTWallet::m_mapNyms, OTWallet::SaveWallet");
+		
+		pNym->SavePseudonymWallet(ofs);
 	}
 
 	// ---------------------------------------------------------------
@@ -478,38 +466,34 @@ int OTWallet::SaveWallet(const char * szFilename)
 	
 	for (mapOfContracts::iterator ii = m_mapContracts.begin(); ii != m_mapContracts.end(); ++ii)
 	{
-		if ((pContract = (*ii).second))
-		{
-			pContract->SaveContractWallet(fl);
+		pContract = (*ii).second;
+		
+		OT_ASSERT_MSG(NULL != pContract, "NULL contract pointer in OTWallet::m_mapContracts, OTWallet::SaveWallet");
+		
+		pContract->SaveContractWallet(ofs);
 
-			//TODO remove this test code---------------
-			// Used for putting new signatures on contracts
+		//TODO remove this test code---------------
+		// Used for putting new signatures on contracts
 /*
-			{
-				// Right now it's configured to sign with USER public key, not server.
-//				OTString strNewFile, strIdentifier("1"); // This is where I've got the server Nym
-				OTString strNewFile;
-				pContract->GetFilename(strNewFile);
-				strNewFile.Concatenate("NEW");
+		{
+			// Right now it's configured to sign with USER public key, not server.
+//			OTString strNewFile, strIdentifier("1"); // This is where I've got the server Nym
+			OTString strNewFile;
+			pContract->GetFilename(strNewFile);
+			strNewFile.Concatenate("NEW");
+		
+//			OTPseudonym theSigningNym;
+//			theSigningNym.SetIdentifier(strIdentifier);
 			
-//				OTPseudonym theSigningNym;
-//				theSigningNym.SetIdentifier(strIdentifier);
-				
-//				if (theSigningNym.Loadx509CertAndPrivateKey()) // with ID 1 in the certs folder.
+//			if (theSigningNym.Loadx509CertAndPrivateKey()) // with ID 1 in the certs folder.
 				if (g_pTemporaryNym)
 					pContract->SignContract(*g_pTemporaryNym);						
 
-				//TODO remove this test code.
-				pContract->SaveContract(strNewFile.Get());
-			}
+			//TODO remove this test code.
+			pContract->SaveContract(strNewFile.Get());
+		}
 */
-			// ----------------------------------------
-		}
-		else 
-		{
-			fprintf(stderr, "NULL contract pointer in OTWallet::m_mapContracts, OTWallet::SaveWallet: %s",
-					szFilename);
-		}
+		// ----------------------------------------
 	}
 	
 	// ---------------------------------------------------------------
@@ -518,34 +502,31 @@ int OTWallet::SaveWallet(const char * szFilename)
 	
 	for (mapOfServers::iterator ii = m_mapServers.begin(); ii != m_mapServers.end(); ++ii)
 	{
-		if ((pServer = (*ii).second))
-		{
-			pServer->SaveContractWallet(fl);
-			/*
-			//TODO remove this test code---------------
-			// Used for putting new signatures on contracts
+		pServer = (*ii).second;
 		
-			{
-				OTString strNewFile, strIdentifier("1");
-				pServer->GetFilename(strNewFile);
-				strNewFile.Concatenate("NEW");
-				
-				OTPseudonym theSigningNym;
-				theSigningNym.SetIdentifier(strIdentifier);
-				
-				if (theSigningNym.Loadx509CertAndPrivateKey()) // with ID 1 in the certs folder
-					pServer->SignContract(theSigningNym);						
-				
-				//TODO remove this test code.
-				pServer->SaveContract(strNewFile.Get());
-			}
-			*/
-			// ----------------------------------------
+		OT_ASSERT_MSG(NULL != pServer, "NULL server pointer in OTWallet::m_mapServers, OTWallet::SaveWallet");
+		
+		pServer->SaveContractWallet(ofs);
+		/*
+		//TODO remove this test code---------------
+		// Used for putting new signatures on contracts
+	
+		{
+			OTString strNewFile, strIdentifier("1");
+			pServer->GetFilename(strNewFile);
+			strNewFile.Concatenate("NEW");
+			
+			OTPseudonym theSigningNym;
+			theSigningNym.SetIdentifier(strIdentifier);
+			
+			if (theSigningNym.Loadx509CertAndPrivateKey()) // with ID 1 in the certs folder
+				pServer->SignContract(theSigningNym);						
+			
+			//TODO remove this test code.
+			pServer->SaveContract(strNewFile.Get());
 		}
-		else {
-			fprintf(stderr, "NULL server pointer in OTWallet::m_mapServers, OTWallet::SaveWallet: %s",
-					szFilename);
-		}
+		*/
+		// ----------------------------------------
 	}
 	
 	// ---------------------------------------------------------------
@@ -554,43 +535,40 @@ int OTWallet::SaveWallet(const char * szFilename)
 	
 	for (mapOfAccounts::iterator ii = m_mapAccounts.begin(); ii != m_mapAccounts.end(); ++ii)
 	{
-		if ((pAccount = (*ii).second))
-		{
-			pAccount->SaveContractWallet(fl);
+		pAccount = (*ii).second;
+		
+		OT_ASSERT_MSG(NULL != pAccount, "NULL account pointer in OTWallet::m_mapAccounts, OTWallet::SaveWallet");
+		
+		pAccount->SaveContractWallet(ofs);
 
-			//TODO remove this test code
-			/*
-			OTString strNewFile;
-			pAccount->GetFilename(strNewFile);
-			strNewFile.Concatenate("NEW");
-			
-			// The others, I merely save them.
-			// But the accounts, I must sign them first.
-			// Only when the account is signed, is the signed portion
-			// updated to match the new account balance and date.
-			if (g_pTemporaryNym)
+		//TODO remove this test code
+		/*
+		OTString strNewFile;
+		pAccount->GetFilename(strNewFile);
+		strNewFile.Concatenate("NEW");
+		
+		// The others, I merely save them.
+		// But the accounts, I must sign them first.
+		// Only when the account is signed, is the signed portion
+		// updated to match the new account balance and date.
+		if (g_pTemporaryNym)
+		{
+			if (!pAccount->SignContract(*g_pTemporaryNym))
 			{
-				if (!pAccount->SignContract(*g_pTemporaryNym))
-				{
-					fprintf(stderr, "Error signing account in OTWallet::SaveWallet\n");
-				}
+				OTLog::Error("Error signing account in OTWallet::SaveWallet\n");
 			}
-			
-			pAccount->SaveContract(strNewFile.Get());
-			*/
-			// ----------------------------------------
 		}
-		else {
-			fprintf(stderr, "NULL account pointer in OTWallet::m_mapAccounts, OTWallet::SaveWallet: %s",
-					szFilename);
-		}
+		
+		pAccount->SaveContract(strNewFile.Get());
+		*/
+		// ----------------------------------------
 	}
 	
 	// ---------------------------------------------------------------
 	
-	fprintf(fl, "</wallet>\n");
-		
-	fclose(fl);
+	ofs << "</wallet>\n";
+
+	ofs.close();
 	
 	return 1;
 }
@@ -609,17 +587,18 @@ void OTWallet::AddAccount(OTAccount & theAcct)
 	
 	for (mapOfAccounts::iterator ii = m_mapAccounts.begin(); ii != m_mapAccounts.end(); ++ii)
 	{
-		if ((pAccount = (*ii).second)) // if pointer not null
+		pAccount = (*ii).second;
+		
+		OT_ASSERT(NULL != pAccount);
+		
+		pAccount->GetIdentifier(anAccountID);
+		
+		if (anAccountID == ACCOUNT_ID)
 		{
-			pAccount->GetIdentifier(anAccountID);
-			
-			if (anAccountID == ACCOUNT_ID)
-			{
-				m_mapAccounts.erase(ii);
-				delete pAccount;
-				pAccount = NULL;
-				break;
-			}
+			m_mapAccounts.erase(ii);
+			delete pAccount;
+			pAccount = NULL;
+			break;
 		}
 	}
 	
@@ -638,13 +617,14 @@ OTAccount * OTWallet::GetAccount(const OTIdentifier & theAccountID)
 	
 	for (mapOfAccounts::iterator ii = m_mapAccounts.begin(); ii != m_mapAccounts.end(); ++ii)
 	{
-		if ((pAccount = (*ii).second)) // if pointer not null
-		{
-			pAccount->GetIdentifier(anAccountID);
-			
-			if (anAccountID == theAccountID)
-				return pAccount;
-		}
+		pAccount = (*ii).second;
+		
+		OT_ASSERT(NULL != pAccount);
+		
+		pAccount->GetIdentifier(anAccountID);
+		
+		if (anAccountID == theAccountID)
+			return pAccount;
 	}
 	
 	return NULL;
@@ -662,7 +642,7 @@ void OTWallet::AddAssetContract(const OTAssetContract & theContract)
 	
 	if (pContract)
 	{
-		fprintf(stderr, "Error: Attempt to add Asset Contract but it is already in the wallet.\n");
+		OTLog::Error("Error: Attempt to add Asset Contract but it is already in the wallet.\n");
 	}
 	else {
 		m_mapContracts[STR_CONTRACT_ID.Get()] = &((OTAssetContract &)theContract);
@@ -677,13 +657,14 @@ OTAssetContract * OTWallet::GetAssetContract(const OTIdentifier & theContractID)
 	
 	for (mapOfContracts::iterator ii = m_mapContracts.begin(); ii != m_mapContracts.end(); ++ii)
 	{
-		if ((pContract = (*ii).second)) // if pointer not null
-		{
-			pContract->GetIdentifier(aContractID);
-			
-			if (aContractID == theContractID)
-				return pContract;
-		}
+		pContract = (*ii).second;
+		
+		OT_ASSERT(NULL != pContract);
+		
+		pContract->GetIdentifier(aContractID);
+		
+		if (aContractID == theContractID)
+			return pContract;
 	}
 	
 	return NULL;	
@@ -691,14 +672,10 @@ OTAssetContract * OTWallet::GetAssetContract(const OTIdentifier & theContractID)
 
 bool OTWallet::LoadWallet(const char * szFilename)
 {
-	if (NULL == szFilename)
-	{
-		fprintf(stderr, "NULL filename in OTWallet::LoadWallet.\n");
-		return false;
-	}	
-	
+	OT_ASSERT_MSG(NULL != szFilename, "NULL filename in OTWallet::LoadWallet.\n");
+		
 	// Save this for later...
-	m_strFilename.Format("%s%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(), szFilename); // _WIN32
+	m_strFilename.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), szFilename); // _WIN32
 
 	IrrXMLReader* xml = createIrrXMLReader(m_strFilename.Get()); // _WIN32
 		
@@ -723,10 +700,11 @@ bool OTWallet::LoadWallet(const char * szFilename)
 		
 		switch(xml->getNodeType())
 		{
-			default:
-				fprintf(stderr, "Unknown XML type in OTWallet::LoadWallet.\n");
-				break;
+			case EXN_NONE:
 			case EXN_TEXT:
+			case EXN_COMMENT:
+			case EXN_ELEMENT_END:
+			case EXN_CDATA:
 				// in this xml file, the only text which occurs is the messageText
 				//messageText = xml->getNodeData();
 				break;
@@ -735,45 +713,48 @@ bool OTWallet::LoadWallet(const char * szFilename)
 				if (!strcmp("wallet", xml->getNodeName()))
 				{
 					m_strName				= xml->getAttributeValue("name");					
-//					OTPseudonym::OTPath		= xml->getAttributeValue("path");					
+//					OTLog::OTPath		= xml->getAttributeValue("path");					
 					m_strVersion			= xml->getAttributeValue("version");					
 					
-					fprintf(stderr, "\nLoading wallet: %s, version: %s\n", m_strName.Get(), m_strVersion.Get());
+					OTLog::vOutput(0, "\nLoading wallet: %s, version: %s\n", m_strName.Get(), m_strVersion.Get());
 				}
 				else if (!strcmp("pseudonym", xml->getNodeName()))
 				{
 					NymName = xml->getAttributeValue("name");// user-assigned name for GUI usage				
 					NymID = xml->getAttributeValue("nymID"); // message digest from hash of x.509 cert
 					
-					fprintf(stderr, "\n\n** Pseudonym ** (wallet listing): %s\nID: %s\n",
+					OTLog::vOutput(0, "\n\n** Pseudonym ** (wallet listing): %s\nID: %s\n",
 							NymName.Get(), NymID.Get());
 
 					OTPseudonym * pNym = new OTPseudonym(NymName, NymID, NymID);
-										
-					if (pNym && pNym->Loadx509CertAndPrivateKey())
+
+					OT_ASSERT_MSG((NULL != pNym), "Unable to allocate memory for an OTPseudonym");
+
+					if (pNym->Loadx509CertAndPrivateKey())
 					{
 						if (pNym->VerifyPseudonym()) 
 						{
-//          Use this instead for generating new Nym:   if (false == pNym->LoadSignedNymfile(*pNym))         
-
-							if (pNym->LoadSignedNymfile(*pNym)) 
+						//	if (false == pNym->LoadSignedNymfile(*pNym)) // Uncomment this line to generate a new Nym by hand.
+ 							if (pNym->LoadSignedNymfile(*pNym))  // (Uncomment) Comment OUT this line to generate a new nym by hand.
 							{
-//   pNym->SaveSignedNymfile(*pNym); // Leave this commented out. Only for generating new Nyms. 
+	   // pNym->SaveSignedNymfile(*pNym); // Uncomment this if you want to generate a new nym by hand. NORMALLY LEAVE IT COMMENTED OUT!!!! IT'S DANGEROUS!!!
 								
-								m_mapNyms[NymID.Get()] = pNym;
-
+								m_mapNyms[NymID.Get()] = pNym; // Nym loaded. Insert to wallet's list of Nyms.
+								
 								g_pTemporaryNym = pNym; // TODO remove this temporary line used for testing only.
 							}
-							else {
-								fprintf(stderr, "Error creating or loading Nym in OTWallet::LoadWallet\n");
+							else 
+							{
+								OTLog::Output(0, "Error loading Nym in OTWallet::LoadWallet\n");
 							}
 						}
-						else {
-							fprintf(stderr, "Error verifying public key against Nym ID in OTWallet::LoadWallet\n");
+						else 
+						{
+							OTLog::Output(0, "Error verifying public key against Nym ID in OTWallet::LoadWallet\n");
 						}
 					}
 					else {
-						fprintf(stderr, "Error loading x509 file for Pseudonym in OTWallet::LoadWallet\n");
+						OTLog::Output(0, "Error loading x509 file for Pseudonym in OTWallet::LoadWallet\n");
 					}
 				}
 				else if (!strcmp("assetType", xml->getNodeName()))
@@ -782,34 +763,32 @@ bool OTWallet::LoadWallet(const char * szFilename)
 					AssetContract = xml->getAttributeValue("contract"); // digital asset contract file
 					AssetID = xml->getAttributeValue("assetTypeID"); // hash of contract itself
 					
-					fprintf(stderr, "\n\n****Asset Contract**** (wallet listing) Name: %s\nContract ID:\n%s"
+					OTLog::vOutput(0, "\n\n****Asset Contract**** (wallet listing) Name: %s\nContract ID:\n%s"
 							"\nLocation of contract file: %s\n",
 							AssetName.Get(), AssetID.Get(), AssetContract.Get());
 
 					OTAssetContract * pContract = new OTAssetContract(AssetName, AssetContract, AssetID);
 
-					if (pContract)
+					OT_ASSERT_MSG(NULL != pContract, "Error allocating memory for Asset Contract in OTWallet::LoadWallet\n");
+			
+					if (pContract->LoadContract()) 
 					{
-						if (pContract->LoadContract()) 
+						if (pContract->VerifyContract())
 						{
-							if (pContract->VerifyContract())
-							{
-								fprintf(stderr, "** Asset Contract Verified **\n-----------------------------------------------------------------------------\n\n");
-								
-								m_mapContracts[AssetID.Get()] = pContract;
-							}
-							else
-							{
-								fprintf(stderr, "Contract FAILED to verify.\n");
-							}							
+							OTLog::Output(0, "** Asset Contract Verified **\n-----------------------------------------------------------------------------\n\n");
+							
+							m_mapContracts[AssetID.Get()] = pContract;
 						}
-						else {
-							fprintf(stderr, "Error reading file for Asset Contract in OTWallet::LoadWallet\n");
-						}
+						else
+						{
+							OTLog::Output(0, "Contract FAILED to verify.\n");
+						}							
 					}
-					else {
-						fprintf(stderr, "Error allocating memory for Asset Contract in OTWallet::LoadWallet\n");
+					else 
+					{
+						OTLog::Error("Error reading file for Asset Contract in OTWallet::LoadWallet\n");
 					}
+
 				}
 				else if (!strcmp("notaryProvider", xml->getNodeName())) 
 				{
@@ -817,36 +796,32 @@ bool OTWallet::LoadWallet(const char * szFilename)
 					ServerContract = xml->getAttributeValue("contract"); // transaction server contract
 					ServerID = xml->getAttributeValue("serverID"); // hash of contract
 					
-					fprintf(stderr, "\n\n\n****Notary Server (contract)**** (wallet listing): %s\n ServerID:\n%s\n"
+					OTLog::vOutput(0, "\n\n\n****Notary Server (contract)**** (wallet listing): %s\n ServerID:\n%s\n"
 							"contract file: %s\n", ServerName.Get(), ServerID.Get(), ServerContract.Get());
 				
 					OTServerContract * pContract = new OTServerContract(ServerName, ServerContract, ServerID);
 					
-					if (pContract)
+					OT_ASSERT_MSG(NULL != pContract, "Error allocating memory for Server Contract in OTWallet::LoadWallet\n");
+					
+					if (pContract->LoadContract()) 
 					{
-						if (pContract->LoadContract()) 
-						{
-							// TODO: move these lines back into the 'if' block below.
-							// Moved them temporarily so I could regenerate some newly-signed contracts
-							// for testing only.
-							m_mapServers[ServerID.Get()] = pContract;
+						// TODO: move these lines back into the 'if' block below.
+						// Moved them temporarily so I could regenerate some newly-signed contracts
+						// for testing only.
+						m_mapServers[ServerID.Get()] = pContract;
 
-							if (pContract->VerifyContract())
-							{
-								fprintf(stderr, "** Server Contract Verified **\n-----------------------------------------------------------------------------\n\n");
-								
-							}
-							else
-							{
-								fprintf(stderr, "Server contract failed to verify.\n");
-							}
+						if (pContract->VerifyContract())
+						{
+							OTLog::Output(0, "** Server Contract Verified **\n-----------------------------------------------------------------------------\n\n");
+							
 						}
-						else {
-							fprintf(stderr, "Error reading file for Transaction Server in OTWallet::LoadWallet\n");
+						else
+						{
+							OTLog::Output(0, "Server contract failed to verify.\n");
 						}
 					}
 					else {
-						fprintf(stderr, "Error allocating memory for Server Contract in OTWallet::LoadWallet\n");
+						OTLog::Error("Error reading file for Transaction Server in OTWallet::LoadWallet\n");
 					}
 				}
 				else if (!strcmp("assetAccount", xml->getNodeName())) 
@@ -856,7 +831,7 @@ bool OTWallet::LoadWallet(const char * szFilename)
 					AcctID	 = xml->getAttributeValue("accountID");
 					ServerID = xml->getAttributeValue("serverID");
 										
-					fprintf(stderr, "\n--------------------------------------------------------------------------\n"
+					OTLog::vOutput(0, "\n--------------------------------------------------------------------------\n"
 							"****Account**** (wallet listing) "
 							"name: %s\n AccountID: %s\n ServerID: %s\n file: %s\n", 
 							AcctName.Get(), AcctID.Get(), ServerID.Get(), AcctFile.Get());
@@ -875,27 +850,31 @@ bool OTWallet::LoadWallet(const char * szFilename)
 							bool bVerified = pAccount->VerifySignature(*g_pTemporaryNym);
 							
 							if (bVerified) {
-								fprintf(stderr, "Verified that this Pseudonym HAS signed this account.\n");
+								OTLog::Output(0, "Verified that this Pseudonym HAS signed this account.\n");
 							}
 							else
 							{
-								fprintf(stderr, "Verified that this Pseudonym has *NOT* signed this account: %s\n",
+								OTLog::vOutput(0, "Verified that this Pseudonym has *NOT* signed this account: %s\n",
 										AcctID.Get());
 							}
 						}
 						// --------------------------------------------------------------
 						
 					}
-					else {
-						fprintf(stderr, "Error allocating memory or reading file for Asset Account in OTWallet::LoadWallet\n");
+					else 
+					{
+						OTLog::Error("Error loading existing Asset Account in OTWallet::LoadWallet\n");
 					}
 				}
 				else
 				{
 					// unknown element type
-					fprintf(stderr, "unknown element type: %s\n", xml->getNodeName());
+					OTLog::vError("unknown element type: %s\n", xml->getNodeName());
 				}
 			}
+				break;
+			default:
+				OTLog::vOutput(5, "Unknown XML type in OTWallet::LoadWallet: %s\n", xml->getNodeName());
 				break;
 		}
 	}
@@ -911,7 +890,7 @@ bool OTWallet::LoadWallet(const char * szFilename)
 	
 	/*
 	OTString strPlaintext("Testing testing testing testing blah blah blah");
-	fprintf(stderr, "\n\nTesting new RSA ENVELOPES (public key crypto).\n\nPlaintext: %s\n", strPlaintext.Get());
+	OTLog::vError("\n\nTesting new RSA ENVELOPES (public key crypto).\n\nPlaintext: %s\n", strPlaintext.Get());
 	
 	OTEnvelope theEVP;
 	theEVP.Seal(*g_pTemporaryNym, strPlaintext);
@@ -920,7 +899,7 @@ bool OTWallet::LoadWallet(const char * szFilename)
 	OTASCIIArmor ascCiphertext;
 	theEVP.GetAsciiArmoredData(ascCiphertext); // Now the contents of encrypted envelope are ascii-encoded
 	
-	fprintf(stderr, "\nASCII-ARMORED Ciphertext:\n%s\n", ascCiphertext.Get());
+	OTLog::vError("\nASCII-ARMORED Ciphertext:\n%s\n", ascCiphertext.Get());
 
 	
 	// Now decrypt it
@@ -930,7 +909,7 @@ bool OTWallet::LoadWallet(const char * szFilename)
 	OTString strDecrypted;
 	evpReceived.Open(*g_pTemporaryNym, strDecrypted);
 	
-	fprintf(stderr, "Decrypted text: %s\n\n\n", strDecrypted.Get());
+	OTLog::vError("Decrypted text: %s\n\n\n", strDecrypted.Get());
 	*/
 		
 

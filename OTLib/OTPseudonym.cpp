@@ -113,27 +113,13 @@ using namespace io;
 #include "OTPseudonym.h"
 #include "OTSignedFile.h"
 
+#include "OTLog.h"
+
 /*
 typedef std::deque<long>							dequeOfTransNums;
 typedef std::map<std::string, dequeOfTransNums *>	mapOfTransNums;	
 */
 
-
-// ---------------------------------------------------------------------------------
-// This is the "global" path to the subdirectories. The wallet file is probably also there.
-OTString OTPseudonym::OTPath("."); // it defaults to '.' but then it is set by the client and server.
-
-// All my paths now use the global path above, and are constructed using
-// the path separator below. So the filesystem aspect of Open Transactions
-// should be a LOT more portable to Windows, though I haven't actually tried
-// it on Windows.
-#ifdef _WIN32
-OTString OTPseudonym::OTPathSeparator("\\");
-#else
-OTString OTPseudonym::OTPathSeparator("/");
-#endif
-
-// ---------------------------------------------------------------------------------
 
 
 // On the server side: A user has submitted a specific transaction number. 
@@ -412,10 +398,10 @@ void OTPseudonym::IncrementRequestNum(OTPseudonym & SIGNER_NYM, const OTString &
 			m_mapRequestNum[ii->first] = lOldRequestNumber + 1;
 			
 			// Now we can log BOTH, before and after... // debug here
-			fprintf(stderr, "Incremented Request Number from %ld to %ld. Saving...\n", 
+			OTLog::vOutput(4, "Incremented Request Number from %ld to %ld. Saving...\n", 
 					lOldRequestNumber, m_mapRequestNum[ii->first]);
-			//			fprintf(stderr, "DEBUG REQUESTNUM: first: %s   Second: %ld\n", ii->first.c_str(), ii->second);
-			//			fprintf(stderr, "SAVING PSEUDONYM TO FILE: %s\n", m_strNymfile.Get());
+			//			OTLog::Output(2, "DEBUG REQUESTNUM: first: %s   Second: %ld\n", ii->first.c_str(), ii->second);
+			//			OTLog::Output(2, "SAVING PSEUDONYM TO FILE: %s\n", m_strNymfile.Get());
 
 			// The call has succeeded
 			bSuccess = true;
@@ -428,7 +414,7 @@ void OTPseudonym::IncrementRequestNum(OTPseudonym & SIGNER_NYM, const OTString &
 	
 	if (!bSuccess)
 	{
-		fprintf(stderr, "Creating Request Number entry as '1'. Saving...\n");
+		OTLog::Output(0, "Creating Request Number entry as '1'. Saving...\n");
 		m_mapRequestNum[strServerID.Get()] = 1;
 		bSuccess = true;
 	}
@@ -520,10 +506,10 @@ void OTPseudonym::OnUpdateRequestNum(OTPseudonym & SIGNER_NYM, const OTString & 
 			m_mapRequestNum[ii->first] = lNewRequestNumber;
 			
 			// Now we can log BOTH, before and after...
-			fprintf(stderr, "Updated Request Number from %ld to %ld. Saving...\n", 
+			OTLog::vOutput(4, "Updated Request Number from %ld to %ld. Saving...\n", 
 					lOldRequestNumber, m_mapRequestNum[ii->first]);
-			//			fprintf(stderr, "DEBUG REQUESTNUM: first: %s   Second: %ld\n", ii->first.c_str(), ii->second);
-			//			fprintf(stderr, "SAVING PSEUDONYM TO FILE: %s\n", m_strNymfile.Get());
+			//			OTLog::Output(2, "DEBUG REQUESTNUM: first: %s   Second: %ld\n", ii->first.c_str(), ii->second);
+			//			OTLog::Output(2, "SAVING PSEUDONYM TO FILE: %s\n", m_strNymfile.Get());
 			break;
 		}
 	}
@@ -533,7 +519,7 @@ void OTPseudonym::OnUpdateRequestNum(OTPseudonym & SIGNER_NYM, const OTString & 
 	
 	if (!bSuccess)
 	{
-		fprintf(stderr, "Creating Request Number entry as '%ld'. Saving...\n", lNewRequestNumber);
+		OTLog::vOutput(0, "Creating Request Number entry as '%ld'. Saving...\n", lNewRequestNumber);
 		m_mapRequestNum[strServerID.Get()] = lNewRequestNumber;
 		bSuccess = true;
 	}
@@ -561,7 +547,7 @@ bool OTPseudonym::VerifyPseudonym()
 	
 	if (!bSuccessfulDecode)
 	{
-		fprintf(stderr, "Error decoding Certificate!\n");
+		OTLog::Error("Error decoding Certificate!\n");
 		return false;
 	}
 	
@@ -572,7 +558,7 @@ bool OTPseudonym::VerifyPseudonym()
 	
 	if (!bSuccessCalculateDigest)
 	{
-		fprintf(stderr, "Error calculating Certificate digest.\n");
+		OTLog::Error("Error calculating Certificate digest.\n");
 		return false;	
 	}
 	
@@ -588,12 +574,12 @@ bool OTPseudonym::VerifyPseudonym()
 		OTString str1, str2;
 		m_nymID.GetString(str1);
 		newID.GetString(str2);
-		fprintf(stderr, "Hashes do NOT match in OTPseudonym::VerifyPseudonym!\n%s\n%s\n",
+		OTLog::Output(0, "Hashes do NOT match in OTPseudonym::VerifyPseudonym!\n%s\n%s\n",
 				str1.Get(), str2.Get());
 		return false;
 	}
 	else {
-		fprintf(stderr, "\nNymID from wallet *SUCCESSFUL* match to "
+		OTLog::Output(1, "\nNymID from wallet *SUCCESSFUL* match to "
 				"sha256 hash of the Cert.\n"
 				"---------------------------------------------------------------\n");
 		return true;
@@ -615,8 +601,15 @@ bool OTPseudonym::LoadPseudonym()
 {	
 	OTString & filename = m_strFilename;
 	
-	std::ifstream in(filename.Get());
+	std::ifstream in(filename.Get(), std::ios::binary);
 	
+	if (in.fail())
+	{
+		OTLog::vError("Error opening file in OTPseudonym::LoadPseudonym: %s\n",
+			m_strFilename.Get());
+		return false;
+	}
+ 
 	std::stringstream buffer;
 	buffer << in.rdbuf();
 	
@@ -624,7 +617,7 @@ bool OTPseudonym::LoadPseudonym()
 
 	m_strCertFileContents = contents.c_str();
 	
-	fprintf(stderr, "Loaded x.509 Certificate:\n%s\n", m_strCertFileContents.Get());
+	OTLog::Output(1, "Loaded x.509 Certificate:\n%s\n", m_strCertFileContents.Get());
 	
 	return true;
 }
@@ -668,7 +661,7 @@ bool OTPseudonym::VerifyPseudonym() const
 	
 	if (!bGotPublicKey)
 	{
-		fprintf(stderr, "Error getting public key in OTPseudonym::VerifyPseudonym.\n");
+		OTLog::Error("Error getting public key in OTPseudonym::VerifyPseudonym.\n");
 		return false;	
 	}
 	
@@ -678,7 +671,7 @@ bool OTPseudonym::VerifyPseudonym() const
 	
 	if (!bSuccessCalculateDigest)
 	{
-		fprintf(stderr, "Error calculating Certificate digest.\n");
+		OTLog::Error("Error calculating Certificate digest.\n");
 		return false;	
 	}
 	
@@ -692,19 +685,34 @@ bool OTPseudonym::VerifyPseudonym() const
 	if (!(m_nymID == newID))
 	{
 		OTString str1(m_nymID), str2(newID);
-		fprintf(stderr, "\nHashes do NOT match in OTPseudonym::VerifyPseudonym!\n%s\n%s\n",
+		OTLog::vError("\nHashes do NOT match in OTPseudonym::VerifyPseudonym!\n%s\n%s\n",
 				str1.Get(), str2.Get());
 		return false;
 	}
 	else {
 //		OTString str2(newID);
-//		fprintf(stderr, "\nNymID from wallet *SUCCESSFUL* match to hash of Nym\'s public key:\n%s\n"
+//		OTLog::Output(1, "\nNymID from wallet *SUCCESSFUL* match to hash of Nym\'s public key:\n%s\n"
 //				"---------------------------------------------------------------\n", str2.Get());
 		return true;
 	}
 }
 
 
+
+bool OTPseudonym::SavePseudonymWallet(std::ofstream & ofs) const
+{
+	OTString nymID;
+	GetIdentifier(nymID);
+	
+	ofs << "<pseudonym name=\"" << m_strName.Get() << "\"\n"
+			" nymID=\"" << nymID.Get() << "\"\n"
+			" file=\"" << m_strNymfile.Get() << "\""
+			">\n\n";
+	
+	return true;
+}
+
+/*
 bool OTPseudonym::SavePseudonymWallet(FILE * fl) const
 {
 	if (NULL != fl)
@@ -724,7 +732,7 @@ bool OTPseudonym::SavePseudonymWallet(FILE * fl) const
 	
 	return true;
 }
-
+*/
 
 // -----------------------------------------------------
 
@@ -734,6 +742,7 @@ bool OTPseudonym::SavePseudonymWallet(FILE * fl) const
 //
 bool OTPseudonym::SavePublicKey(const OTString & strPath) const
 {
+	/*
 #ifdef _WIN32
 	FILE * fl = NULL;
 	errno_t err = fopen_s(&fl, strPath.Get(), "wb");
@@ -741,20 +750,47 @@ bool OTPseudonym::SavePublicKey(const OTString & strPath) const
 	FILE * fl  = fopen(strPath.Get(), "w");
 #endif
 	bool bSave = false;
+	*/
+
+	std::ofstream ofs(strPath.Get(), std::ios::binary);
 	
-	if (NULL != fl)
+	if (ofs.fail())
 	{
-		bSave = SavePublicKey(fl);
-		fclose(fl);
-	}
-	else {
+		OTLog::vError("Failed saving public key for nym: %s\n", strPath.Get());
 		return false;
 	}
+	
+	ofs.clear();
+
+	bool bSave = SavePublicKey(ofs);
+	ofs.close();
 	
 	return bSave;
 }
 
 
+bool OTPseudonym::SavePublicKey(std::ofstream & ofs) const
+{
+	// By passing in an OTString instead of OTASCIIArmor, it knows to add the bookends
+	// ----- BEGIN PUBLIC KEY  etc.  These bookends are necessary for OTASCIIArmor to later
+	// read the thing back up into memory again.
+	OTString strKey;
+	
+	if (GetPublicKey().GetPublicKey(strKey, false)) // false means "do not ESCAPE the bookends"
+		// Ie we'll get ----------- instead of - ---------
+	{
+		strKey.WriteToFile(ofs);
+	}
+	else 
+	{
+		OTLog::Error("Error in OTPseudonym::SavePublicKey: unable to GetPublicKey from Nym\n");
+		return false;
+	}
+	
+	return true;
+}
+
+/*
 bool OTPseudonym::SavePublicKey(FILE * fl) const
 {
 	if (NULL != fl)
@@ -770,7 +806,7 @@ bool OTPseudonym::SavePublicKey(FILE * fl) const
 			strKey.WriteToFile(fl);
 		}
 		else {
-			fprintf(stderr, "Error in OTPseudonym::SavePublicKey: unable to GetPublicKey from Nym\n");
+			OTLog::Error("Error in OTPseudonym::SavePublicKey: unable to GetPublicKey from Nym\n");
 			return false;
 		}
 	}
@@ -780,8 +816,7 @@ bool OTPseudonym::SavePublicKey(FILE * fl) const
 	
 	return true;
 }
-
-
+*/
 
 
 
@@ -794,8 +829,8 @@ bool OTPseudonym::LoadPublicKey()
 	
 	GetIdentifier(strID);
 	
-	strPubKeyFile.Format("%s%spubkeys%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-						 OTPseudonym::OTPathSeparator.Get(), strID.Get());
+	strPubKeyFile.Format("%s%spubkeys%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 OTLog::PathSeparator(), strID.Get());
 	
 	// This loads up the ascii-armored Public Key.
 	// On the client side, the entire x509 is stored.
@@ -814,19 +849,19 @@ bool OTPseudonym::LoadPublicKey()
 		
 		if (!bLoadPublicKey)
 		{
-			fprintf(stderr, "Although the ascii-armored file (%s) was read, LoadPublicKey "
+			OTLog::vError("Although the ascii-armored file (%s) was read, LoadPublicKey "
 					"returned false.\n", strPubKeyFile.Get());
 			return false;
 		}
 		else
 		{
-//			fprintf(stderr, "Successfully loaded public key from file: %s\n", strPubKeyFile.Get());
+			OTLog::vOutput(4, "Successfully loaded public key from file: %s\n", strPubKeyFile.Get());
 		}		
 		return true;	
 	}
 	else
 	{
-		fprintf(stderr, "Failure in OTPseudonym::LoadPublicKey.\n");
+		OTLog::Output(2, "Failure in OTPseudonym::LoadPublicKey.\n");
 		return false;
 	}
 }
@@ -840,15 +875,42 @@ bool OTPseudonym::SavePseudonym()
 	{
 		OTString nymID;
 		GetIdentifier(nymID);
-		m_strNymfile.Format("%s%snyms%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-							OTPseudonym::OTPathSeparator.Get(), nymID.Get());
+		m_strNymfile.Format("%s%snyms%s%s", OTLog::Path(), OTLog::PathSeparator(),
+							OTLog::PathSeparator(), nymID.Get());
 	}
 	
-	fprintf(stderr, "Saving nym to: %s\n", m_strNymfile.Get());
+		OTLog::vOutput(2, "Saving nym to: %s\n", m_strNymfile.Get());
 	
 	return SavePseudonym(m_strNymfile.Get());
 }
 
+
+
+bool OTPseudonym::SavePseudonym(const char * strPath)
+{	
+	OT_ASSERT(NULL != strPath);
+	
+	std::ofstream ofs(strPath, std::ios::binary);
+	
+	if (ofs.fail())
+	{
+		OTLog::vError("Failed opening file to save Nym: %s\n", strPath);
+		return false;
+	}
+	
+	ofs.clear();
+
+	bool bSave = SavePseudonym(ofs);
+
+	ofs.close();
+	
+	return bSave;	
+}
+
+
+
+
+/*
 bool OTPseudonym::SavePseudonym(const char * strPath)
 {	
 	if (NULL == strPath)
@@ -868,31 +930,38 @@ bool OTPseudonym::SavePseudonym(const char * strPath)
 		fclose(fl);
 	}
 	else {
-		fprintf(stderr, "Error saving nym to: %s\n", strPath);
+		OTLog::vError("Error saving nym to: %s\n", strPath);
 		bSave = false;
 	}
 	
 	return bSave;	
 }
+*/
 
 
-bool OTPseudonym::SavePseudonym(FILE * fl)
+bool OTPseudonym::SavePseudonym(std::ofstream & ofs)
 {
-	if (NULL != fl)
-	{
-		OTString strNym;
-		SavePseudonym(strNym);
+	OTString strNym;
+	SavePseudonym(strNym);
 		
-		fprintf(fl, "%s", strNym.Get());	
-	}
-	else {
-		fprintf(stderr, "Null file pointer sent to OTPseudonym::SavePseudonym. (Why?)\n");
-		return false;
-	}
+	ofs << strNym.Get();
 	
 	return true;
 }
 
+/*
+bool OTPseudonym::SavePseudonym(FILE * fl)
+{
+	OT_ASSERT_MSG(NULL != fl, "Null file pointer sent to OTPseudonym::SavePseudonym. (Why?)\n");
+	
+	OTString strNym;
+	SavePseudonym(strNym);
+	
+	fprintf(fl, "%s", strNym.Get());	
+	
+	return true;
+}
+*/
 
 // Save the Pseudonym to a string...
 bool OTPseudonym::SavePseudonym(OTString & strNym)
@@ -991,6 +1060,23 @@ void OTPseudonym::HarvestTransactionNumbers(OTPseudonym & SIGNER_NYM, OTPseudony
 }
 
 
+/*
+ 
+ Enumeration for all xml nodes which are parsed by IrrXMLReader.
+ 
+ Enumeration values:
+ 
+ EXN_NONE			No xml node. This is usually the node if you did not read anything yet.
+ EXN_ELEMENT		A xml element, like <foo>.
+ EXN_ELEMENT_END	End of an xml element, like </foo>.
+ EXN_TEXT			Text within a xml element: <foo> this is the text. </foo>.
+ EXN_COMMENT		An xml comment like <!-- I am a comment --> or a DTD definition.
+ EXN_CDATA			An xml cdata section like <![CDATA[ this is some CDATA ]]>.
+ EXN_UNKNOWN		Unknown element.
+ 
+ Definition at line 180 of file irrXML.h.
+ 
+ */
 bool OTPseudonym::LoadFromString(const OTString & strNym)
 {
 	bool bSuccess = false;
@@ -1012,10 +1098,11 @@ bool OTPseudonym::LoadFromString(const OTString & strNym)
 		
 		switch(xml->getNodeType())
 		{
-			default:
-				fprintf(stderr, "Unknown XML type in OTPseudonym::LoadFromString.\n");
-				break;
+			case EXN_NONE:
 			case EXN_TEXT:
+			case EXN_COMMENT:
+			case EXN_ELEMENT_END:
+			case EXN_CDATA:
 				// in this xml file, the only text which occurs is the messageText
 				//messageText = xml->getNodeData();
 				break;
@@ -1032,7 +1119,7 @@ bool OTPseudonym::LoadFromString(const OTString & strNym)
 					//
 					
 					if (UserNymID.GetLength())
-						fprintf(stderr, "\nLoading user, version: %s NymID:\n%s\n", m_strVersion.Get(), UserNymID.Get());
+						OTLog::vOutput(0, "\nLoading user, version: %s NymID:\n%s\n", m_strVersion.Get(), UserNymID.Get());
 					bSuccess = true;
 				}
 				else if (!strcmp("requestNum", xml->getNodeName()))
@@ -1040,7 +1127,7 @@ bool OTPseudonym::LoadFromString(const OTString & strNym)
 					ReqNumServerID = xml->getAttributeValue("serverID");				
 					ReqNumCurrent = xml->getAttributeValue("currentRequestNum");
 					
-					fprintf(stderr, "\nCurrent Request Number is %s for ServerID: %s\n",
+					OTLog::vOutput(1, "\nCurrent Request Number is %s for ServerID: %s\n",
 							ReqNumCurrent.Get(), ReqNumServerID.Get());
 					
 					// Make sure now that I've loaded this request number, to add it to my
@@ -1052,7 +1139,7 @@ bool OTPseudonym::LoadFromString(const OTString & strNym)
 					TransNumServerID	= xml->getAttributeValue("serverID");				
 					TransNumAvailable	= xml->getAttributeValue("transactionNum");
 					
-					fprintf(stderr, "\nTransaction Number %s available for ServerID: %s\n",
+					OTLog::vOutput(1, "\nTransaction Number %s available for ServerID: %s\n",
 							TransNumAvailable.Get(), TransNumServerID.Get());
 					
 					AddTransactionNum(TransNumServerID, atol(TransNumAvailable.Get())); // This version doesn't save to disk. Why save to disk AS WE'RE LOADING? 
@@ -1060,11 +1147,16 @@ bool OTPseudonym::LoadFromString(const OTString & strNym)
 				else
 				{
 					// unknown element type
-					fprintf(stderr, "unknown element type in OTPseudonym::LoadNymfile: %s\n", xml->getNodeName());
+					OTLog::vError("unknown element type in OTPseudonym::LoadFromString: %s\n", xml->getNodeName());
 					bSuccess = false;
 				}
-			}
 				break;
+			}
+			default:
+			{
+				OTLog::vOutput(5, "Unknown XML type in OTPseudonym::LoadFromString: %s\n", xml->getNodeName());
+				break;	
+			}
 		} // switch
 	} // while
 	
@@ -1116,7 +1208,7 @@ bool OTPseudonym::SaveSignedNymfile(OTPseudonym & SIGNER_NYM)
 	OTSignedFile	theNymfile("nyms", nymID);
 	theNymfile.GetFilename(m_strNymfile);
 	
-	fprintf(stderr, "Saving nym to: %s\n", m_strNymfile.Get());
+	OTLog::vOutput(2, "Saving nym to: %s\n", m_strNymfile.Get());
 	
 	// First we save this nym to a string...
 	// Specifically, the file payload string on the OTSignedFile object.
@@ -1154,15 +1246,22 @@ bool OTPseudonym::LoadNymfile(const char * szFilename/*=NULL*/)
 	{
 		OTString strID;
 		GetIdentifier(strID);
-		m_strNymfile.Format((char *)"%s%snyms%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-							OTPseudonym::OTPathSeparator.Get(), strID.Get());
+		m_strNymfile.Format((char *)"%s%snyms%s%s", OTLog::Path(), OTLog::PathSeparator(),
+							OTLog::PathSeparator(), strID.Get());
 	}
 	else {
 		m_strNymfile = szFilename;
 	}
 
 	
-	std::ifstream in(m_strNymfile.Get());
+	std::ifstream in(m_strNymfile.Get(), std::ios::binary);
+	
+	if (in.fail())
+	{
+		OTLog::vError("Error opening file in OTPseudonym::LoadNymfile: %s\n",
+					  m_strNymfile.Get());
+		return false;
+	}
 	
 	std::stringstream buffer;
 	buffer << in.rdbuf();
@@ -1182,8 +1281,8 @@ bool OTPseudonym::Loadx509CertAndPrivateKey()
 {
 	OTString strID;
 	GetIdentifier(strID);
-	m_strCertfile.Format((char *)"%s%scerts%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-						 OTPseudonym::OTPathSeparator.Get(), strID.Get());
+	m_strCertfile.Format((char *)"%s%scerts%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 OTLog::PathSeparator(), strID.Get());
 	
 	// This loads up the ascii-armored Cert from the certfile, minus the ------ bookends.
 	// Later we will use this to create a hash and verify against the NymID that was in the wallet.
@@ -1202,32 +1301,32 @@ bool OTPseudonym::Loadx509CertAndPrivateKey()
 		
 		if (!bPublic)
 		{
-			fprintf(stderr, "Although the ascii-armored file (%s) was read, LoadPublicKeyFromCert "
+			OTLog::vOutput(2, "Although the ascii-armored file (%s) was read, LoadPublicKeyFromCert "
 					"returned false.\n", m_strCertfile.Get());
 			return false;
 		}
 		else
 		{
-			fprintf(stderr, "Successfully loaded public key from Certfile: %s\n", m_strCertfile.Get());
+			OTLog::vOutput(2, "Successfully loaded public key from Certfile: %s\n", m_strCertfile.Get());
 		}
 		
 		
 		if (!bPrivate)
 		{
-			fprintf(stderr, "Although the ascii-armored file (%s) was read, LoadPrivateKey returned false.\n",
+			OTLog::vOutput(2, "Although the ascii-armored file (%s) was read, LoadPrivateKey returned false.\n",
 					m_strCertfile.Get());
 			return false;
 		}
 		else
 		{
-			fprintf(stderr, "Successfully loaded private key from: %s\n", m_strCertfile.Get());
+			OTLog::vOutput(2, "Successfully loaded private key from: %s\n", m_strCertfile.Get());
 		}
 		
 		return true;	
 	}
 	else
 	{
-		fprintf(stderr, "Failure in OTPseudonym::Loadx509CertAndPrivateKey, filename:\n%s\n", m_strCertfile.Get());
+		OTLog::vOutput(2, "Failure in OTPseudonym::Loadx509CertAndPrivateKey, filename:\n%s\n", m_strCertfile.Get());
 		return false;
 	}
 }
@@ -1259,7 +1358,7 @@ bool OTPseudonym::SetPublicKey(const OTString & strKey, bool bEscaped/*=true*/)
 			return m_keyPublic.LoadPublicKeyFromPGPKey(theArmor);
 		}
 		else {
-			fprintf(stderr, "Error extracting PGP public key from ascii-armored text.\n");
+			OTLog::Output(2, "Failed extracting PGP public key from ascii-armored text.\n");
 			return false;
 		}
 	}

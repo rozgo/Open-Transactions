@@ -142,6 +142,8 @@ extern "C"
 #include "OTPseudonym.h"
 #include "OTContract.h"
 
+#include "OTLog.h"
+
 //using namespace CryptoPP;
 
 OTIdentifier::OTIdentifier() : OTData()
@@ -347,7 +349,7 @@ const EVP_MD * OTIdentifier::GetOpenSSLDigestByName(const OTString & theName)
  
  HexEncoder encoder(new StringSink(theOutput), false);
  
- fprintf(stderr, "%s: ", theFilter.AlgorithmName().c_str());
+ OTLog::vError("%s: ", theFilter.AlgorithmName().c_str());
  theFilter.TransferTo(encoder);
  }
  */
@@ -492,7 +494,7 @@ bool OTIdentifier::CalculateDigest(const OTString & strInput, const OTString & s
 	
 	if (!md)	
 	{
-		fprintf(stderr, "Unknown message digest algorithm in OTIdentifier::CalculateDigest: %s\n", 
+		OTLog::vError("Unknown message digest algorithm in OTIdentifier::CalculateDigest: %s\n", 
 				strHashAlgorithm.Get());
 		return false;
 	}
@@ -503,10 +505,10 @@ bool OTIdentifier::CalculateDigest(const OTString & strInput, const OTString & s
 	EVP_DigestFinal_ex(&mdctx, md_value, &md_len);
 	EVP_MD_CTX_cleanup(&mdctx);
 	
-	//	fprintf(stderr, "Calculated %s digest.\n", strHashAlgorithm.Get());
+	//	OTLog::vError("Calculated %s digest.\n", strHashAlgorithm.Get());
 	
-	//	for (int i = 0; i < md_len; i++) fprintf(stderr, "%02x", md_value[i]);
-	//	fprintf(stderr, "\n");
+	//	for (int i = 0; i < md_len; i++) OTLog::vError("%02x", md_value[i]);
+	//	OTLog::Error("\n");
 	
 	Assign(md_value, md_len);
 	
@@ -535,7 +537,7 @@ bool OTIdentifier::CalculateDigest(const OTData & dataInput, const OTString & st
 	
 	if (!md) 
 	{
-		fprintf(stderr, "Unknown message digest algorithm in OTIdentifier::CalculateDigest: %s\n", 
+		OTLog::vError("Unknown message digest algorithm in OTIdentifier::CalculateDigest: %s\n", 
 				strHashAlgorithm.Get());
 		return false;
 	}
@@ -546,10 +548,10 @@ bool OTIdentifier::CalculateDigest(const OTData & dataInput, const OTString & st
 	EVP_DigestFinal_ex(&mdctx, md_value, &md_len);
 	EVP_MD_CTX_cleanup(&mdctx);
 	
-	//	fprintf(stderr, "Calculated %s digest.\n", strHashAlgorithm.Get());
+	//	OTLog::vOutput(5, "Calculated %s digest.\n", strHashAlgorithm.Get());
 	
-	//	for (int i = 0; i < md_len; i++) fprintf(stderr, "%02x", md_value[i]);
-	//	fprintf(stderr, "\n");
+	//	for (int i = 0; i < md_len; i++) OTLog::vOutput(5, "%02x", md_value[i]);
+	//	OTLog::Output(5, "\n");
 	
 	Assign(md_value, md_len);
 	
@@ -585,10 +587,14 @@ union CharToShort
 // binary hash back into memory inside this object.
 void OTIdentifier::SetString(const OTString & theStr)
 {	
+	
 	Release();
 	
 	if (!theStr.GetLength())
 		return;
+	
+	OT_ASSERT_MSG(128 == theStr.GetLength(), "String wrong length to convert to ID.");
+
 	
 	OTString & refString = (OTString&)theStr;
 	
@@ -652,12 +658,14 @@ void OTIdentifier::SetString(const OTString & theStr)
 	}
 	
 	Assign((void *)tempArray, i);
+
+	OT_ASSERT_MSG(64 == i, "ID wrong length after calculation.");
 }
 
 /*
  
- for (i = 0; i < md_len; i++) fprintf(stderr, "%02x", md_value[i]);
- fprintf(stderr, "\n");
+ for (i = 0; i < md_len; i++) OTLog::vError("%02x", md_value[i]);
+ OTLog::Error("\n");
  
  */
 
@@ -672,6 +680,8 @@ void OTIdentifier::GetString(OTString & theStr) const
 		return;
 	}
 	
+	OT_ASSERT_MSG(64 == GetSize(), "ID wrong length before calculation.");
+	
 	unsigned char cByte = 0;
 	
 	for(long i = 0; i < GetSize(); i++)
@@ -682,6 +692,8 @@ void OTIdentifier::GetString(OTString & theStr) const
 		
 		theStr.Concatenate("%02x", n);
 	}
+	
+	OT_ASSERT_MSG(128 == theStr.GetLength(), "String wrong length after ID calculation.");
 }
 
 

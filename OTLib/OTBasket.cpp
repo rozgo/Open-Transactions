@@ -86,6 +86,7 @@
 
 
 #include "OTBasket.h"
+#include "OTLog.h"
 
 
 // For generating a user request to exchange in/out of a basket.
@@ -94,20 +95,16 @@ void OTBasket::AddRequestSubContract(const OTIdentifier & SUB_CONTRACT_ID, const
 {
 	BasketItem * pItem = new BasketItem;
 	
-	if (pItem)
-	{
-		pItem->SUB_CONTRACT_ID		= SUB_CONTRACT_ID;
-		pItem->SUB_ACCOUNT_ID		= SUB_ACCOUNT_ID;
-		
-		// Minimum transfer amount is not set on a request. The server already knows its value.
-		// Also there is no multiple on the item, only on the basket as a whole.
-		// ALL items are multiplied by the same multiple. Even the basket amount itself is also.
-		
-		m_dequeItems.push_back(pItem);
-	}
-	else {
-		fprintf(stderr, "Error allocating memory in OTBasket::AddRequestSubContract\n");
-	}
+	OT_ASSERT_MSG(NULL != pItem, "Error allocating memory in OTBasket::AddRequestSubContract\n");
+	
+	pItem->SUB_CONTRACT_ID		= SUB_CONTRACT_ID;
+	pItem->SUB_ACCOUNT_ID		= SUB_ACCOUNT_ID;
+	
+	// Minimum transfer amount is not set on a request. The server already knows its value.
+	// Also there is no multiple on the item, only on the basket as a whole.
+	// ALL items are multiplied by the same multiple. Even the basket amount itself is also.
+	
+	m_dequeItems.push_back(pItem);
 }
 
 
@@ -116,20 +113,14 @@ void OTBasket::AddSubContract(const OTIdentifier & SUB_CONTRACT_ID, long lMinimu
 {
 	BasketItem * pItem = new BasketItem;
 	
-	if (pItem)
-	{
-		pItem->SUB_CONTRACT_ID			= SUB_CONTRACT_ID;
-		
-		// server adds this later. Client can't know it in advance.
-//		pItem->SUB_ACCOUNT_ID			= SUB_ACCOUNT_ID; 
+	OT_ASSERT_MSG(NULL != pItem, "Error allocating memory in OTBasket::AddSubContract\n");
+	
+	pItem->SUB_CONTRACT_ID			= SUB_CONTRACT_ID;
+	// server adds this later. Client can't know it in advance.
+//	pItem->SUB_ACCOUNT_ID			= SUB_ACCOUNT_ID; 
+	pItem->lMinimumTransferAmount	= lMinimumTransferAmount;
 
-		pItem->lMinimumTransferAmount	= lMinimumTransferAmount;
-
-		m_dequeItems.push_back(pItem);
-	}
-	else {
-		fprintf(stderr, "Error allocating memory in OTBasket::AddSubContract\n");
-	}
+	m_dequeItems.push_back(pItem);
 }
 
 BasketItem * OTBasket::At(int nIndex)
@@ -172,7 +163,7 @@ int OTBasket::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		m_nSubCount			= atoi(strSubCount.Get());
 		m_lMinimumTransfer	= atol(strMinTrans.Get()); 
 		
-		fprintf(stderr, "Loading currency basket...\n");
+		OTLog::Output(0, "Loading currency basket...\n");
 		
 		return 1;
 	}
@@ -186,7 +177,7 @@ int OTBasket::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		m_nTransferMultiple	= atoi(strTransferMultiple.Get());
 		m_RequestAccountID.SetString(strRequestAccountID);
 		
-		fprintf(stderr, "Transfer multiple is %d. Target account is:\n%s\n", 
+		OTLog::vOutput(1, "Transfer multiple is %d. Target account is:\n%s\n", 
 				m_nTransferMultiple, strRequestAccountID.Get());
 		
 		return 1;
@@ -195,25 +186,19 @@ int OTBasket::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 	{
 		BasketItem * pItem = new BasketItem;
 		
-		if (pItem)
-		{
-			OTString strMinTrans = xml->getAttributeValue("minimumTransfer");
-			pItem->lMinimumTransferAmount	= atol(	strMinTrans.Get()	);
-			
-			OTString	strSubAccountID(xml->getAttributeValue("accountID")),
-						strContractID(xml->getAttributeValue("assetID"));
-			pItem->SUB_ACCOUNT_ID.SetString(strSubAccountID); 
-			pItem->SUB_CONTRACT_ID.SetString(strContractID);
-			
-			m_dequeItems.push_back(pItem);
-			
-			return 1;
-		}
-		else {
-			fprintf(stderr, "Error allocating memory in OTBasket::ProcessXMLNode\n");
-		}
+		OT_ASSERT_MSG(NULL != pItem, "Error allocating memory in OTBasket::ProcessXMLNode\n");
+		
+		OTString strMinTrans = xml->getAttributeValue("minimumTransfer");
+		pItem->lMinimumTransferAmount	= atol(	strMinTrans.Get()	);
+		
+		OTString	strSubAccountID(xml->getAttributeValue("accountID")),
+					strContractID(xml->getAttributeValue("assetID"));
+		pItem->SUB_ACCOUNT_ID.SetString(strSubAccountID); 
+		pItem->SUB_CONTRACT_ID.SetString(strContractID);
+		
+		m_dequeItems.push_back(pItem);
 
-		fprintf(stderr, "Loaded basket item.\n");
+		OTLog::Output(1, "Loaded basket item.\n");
 		
 		return 1;
 	}
@@ -241,20 +226,16 @@ void OTBasket::UpdateContents() // Before transmission or serialization, this is
 	{
 		BasketItem * pItem = m_dequeItems[i];
 		
-		if (pItem)
-		{
-			OTString strAcctID(pItem->SUB_ACCOUNT_ID), strContractID(pItem->SUB_CONTRACT_ID);
-			
-			m_xmlUnsigned.Concatenate("<basketItem minimumTransfer=\"%ld\"\n"
-									" accountID=\"%s\"\n"
-									" assetID=\"%s\" />\n\n", 
-									pItem->lMinimumTransferAmount,
-									m_bHideAccountID ? "" : strAcctID.Get(),
-									strContractID.Get());
-		}
-		else {
-			fprintf(stderr, "Error allocating memory in OTBasket::UpdateContents\n");
-		}
+		OT_ASSERT_MSG(NULL != pItem, "Error allocating memory in OTBasket::UpdateContents\n");
+		
+		OTString strAcctID(pItem->SUB_ACCOUNT_ID), strContractID(pItem->SUB_CONTRACT_ID);
+		
+		m_xmlUnsigned.Concatenate("<basketItem minimumTransfer=\"%ld\"\n"
+								" accountID=\"%s\"\n"
+								" assetID=\"%s\" />\n\n", 
+								pItem->lMinimumTransferAmount,
+								m_bHideAccountID ? "" : strAcctID.Get(),
+								strContractID.Get());
 	}
 	
 	m_xmlUnsigned.Concatenate("</currencyBasket>\n");					
@@ -324,7 +305,8 @@ void OTBasket::ReleaseBasket()
 }
 
 	
-bool OTBasket::SaveContractWallet(FILE * fl)
+
+bool OTBasket::SaveContractWallet(std::ofstream & ofs)
 {
 	return true;
 }

@@ -87,6 +87,7 @@
 
 
 #include <ctime>
+#include <fstream>
 
 #include "OTIdentifier.h"
 #include "OTContract.h"
@@ -127,7 +128,8 @@ public:
 	
 	// ------------------------------------------------------------------------
 		
-	virtual bool SaveContractWallet(FILE * fl);
+	virtual bool SaveContractWallet(std::ofstream & ofs);
+//	virtual bool SaveContractWallet(FILE * fl);
 };
 
 

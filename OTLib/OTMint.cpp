@@ -95,6 +95,7 @@ using namespace io;
 #include "OTPseudonym.h"
 #include "OTASCIIArmor.h"
 #include "OTMessage.h"
+#include "OTLog.h"
 
 
 
@@ -192,16 +193,16 @@ bool OTMint::VerifyMint(OTPseudonym & theOperator)
 	// a hash of the contract file, signatures and all.
 	if (false == VerifyContractID())
 	{
-		fprintf(stderr, "Error comparing Mint ID to Asset Contract ID in OTMint::VerifyMint\n");
+		OTLog::Error("Error comparing Mint ID to Asset Contract ID in OTMint::VerifyMint\n");
 		return false;
 	}
 	else if (false == VerifySignature(theOperator))
 	{
-		fprintf(stderr, "Error verifying signature on mint in OTMint::VerifyMint.\n");
+		OTLog::Error("Error verifying signature on mint in OTMint::VerifyMint.\n");
 		return false;
 	}
 	
-	fprintf(stderr, "\nWe now know that...\n"
+	OTLog::Output(1, "\nWe now know that...\n"
 			"1) The Asset Contract ID matches the Mint ID loaded from the Mint file.\n"
 			"2) The SIGNATURE VERIFIED.\n\n");
 	return true;
@@ -220,7 +221,7 @@ bool OTMint::VerifyContractID()
 	{
 		OTString str1(m_ID), str2(m_AssetID);
 		
-		fprintf(stderr, "\nMint ID does NOT match Asset Type ID in OTMint::VerifyContractID.\n%s\n%s\n"
+		OTLog::vError("\nMint ID does NOT match Asset Type ID in OTMint::VerifyContractID.\n%s\n%s\n"
 				//				"\nRAW FILE:\n--->%s<---"
 				"\n",
 				str1.Get(), str2.Get()
@@ -230,7 +231,7 @@ bool OTMint::VerifyContractID()
 	}
 	else {
 		OTString str1(m_ID);
-		fprintf(stderr, "\nMint ID *SUCCESSFUL* match to Asset Contract ID:\n%s\n\n", str1.Get());
+		OTLog::vOutput(1, "\nMint ID *SUCCESSFUL* match to Asset Contract ID:\n%s\n\n", str1.Get());
 		return true;
 	}
 }
@@ -244,18 +245,16 @@ bool OTMint::GetPrivate(OTASCIIArmor & theArmor, long lDenomination)
 	OTASCIIArmor * pArmor = NULL;
 	
 	for (mapOfArmor::iterator ii = m_mapPrivate.begin(); ii != m_mapPrivate.end(); ++ii)
-	{		
-		if ((pArmor = (*ii).second)) // if pArmor not null
-		{
-			if ((*ii).first == lDenomination) // if this denomination (say, 50) matches the one passed in...
-			{							   
-				theArmor.Set(*pArmor);
-				return true;
-			}
+	{
+		pArmor = (*ii).second;
+		
+		OT_ASSERT_MSG(NULL != pArmor, "NULL mint pointer in OTMint::GetPrivate.\n");
+	
+		if ((*ii).first == lDenomination) // if this denomination (say, 50) matches the one passed in...
+		{							   
+			theArmor.Set(*pArmor);
+			return true;
 		}
-		else {
-			fprintf(stderr, "NULL mint pointer in OTMint::GetPrivate.\n");
-		}		
 	}
 	
 	return false;	
@@ -268,18 +267,16 @@ bool OTMint::GetPublic(OTASCIIArmor & theArmor, long lDenomination)
 	OTASCIIArmor * pArmor = NULL;
 	
 	for (mapOfArmor::iterator ii = m_mapPublic.begin(); ii != m_mapPublic.end(); ++ii)
-	{		
-		if ((pArmor = (*ii).second)) // if pArmor not null
-		{
-			if ((*ii).first == lDenomination) // if this denomination (say, 50) matches the one passed in...
-			{							   
-				theArmor.Set(*pArmor);
-				return true;
-			}
+	{	
+		pArmor = (*ii).second;
+		
+		OT_ASSERT_MSG(NULL != pArmor, "NULL mint pointer in OTMint::GetPublic.\n");
+		
+		if ((*ii).first == lDenomination) // if this denomination (say, 50) matches the one passed in...
+		{							   
+			theArmor.Set(*pArmor);
+			return true;
 		}
-		else {
-			fprintf(stderr, "NULL mint pointer in OTMint::GetPublic.\n");
-		}		
 	}
 	
 	return false;
@@ -322,14 +319,12 @@ long OTMint::GetDenomination(int nIndex)
 	
 	for (mapOfArmor::iterator ii = m_mapPublic.begin(); ii != m_mapPublic.end(); ++ii, nIterateIndex++)
 	{		
-		if ((pArmor = (*ii).second)) // if pArmor not null
-		{
-			if (nIndex == nIterateIndex)
-				return (*ii).first;
-		}
-		else {
-			fprintf(stderr, "NULL mint pointer in OTMint::GetDenomination.\n");
-		}		
+		pArmor = (*ii).second;
+		
+		OT_ASSERT_MSG(NULL != pArmor, "NULL mint pointer in OTMint::GetDenomination.\n");
+		
+		if (nIndex == nIterateIndex)
+			return (*ii).first;
 	}
 	
 	return 0;
@@ -348,28 +343,28 @@ bool OTMint::AddDenomination(OTPseudonym & theNotary, long lDenomination, int nP
 	if (GetPublic(theArmor, lDenomination))
 	{
 		// it already exists.
-		fprintf(stderr, "Error: Denomination public already exists in OTMint::AddDenomination\n");
+		OTLog::Error("Error: Denomination public already exists in OTMint::AddDenomination\n");
 		return false;
 	}
 	if (GetPrivate(theArmor, lDenomination))
 	{
 		// it already exists.
-		fprintf(stderr, "Error: Denomination private already exists in OTMint::AddDenomination\n");
+		OTLog::Error("Error: Denomination private already exists in OTMint::AddDenomination\n");
 		return false;
 	}
 	
-	//		fprintf(stderr,"%s <size of bank prime in bits> <bank data file> <bank public data file>\n",
+	//		OTLog::Error("%s <size of bank prime in bits> <bank data file> <bank public data file>\n",
 	
     if ((nPrimeLength/8) < (MIN_COIN_LENGTH+DIGEST_LENGTH))
 	{
-		fprintf(stderr,"Prime must be at least %d bits\n",
+		OTLog::vError("Prime must be at least %d bits\n",
 				(MIN_COIN_LENGTH+DIGEST_LENGTH)*8);
 		return false;
 	}
 	
     if (nPrimeLength%8)
 	{
-		fprintf(stderr,"Prime length must be a multiple of 8\n");
+		OTLog::Error("Prime length must be a multiple of 8\n");
 		return false;
 	}
 	
@@ -424,6 +419,7 @@ bool OTMint::AddDenomination(OTPseudonym & theNotary, long lDenomination, int nP
 		
 		// Success!
 		bReturnValue = true;
+		OTLog::vOutput(1, "Successfully added denomination: %ld\n", lDenomination);
 	}
 	
 	// Release OpenSSL resources.
@@ -474,29 +470,25 @@ void OTMint::UpdateContents()
 		{
 			m_bSavePrivateKeys = false;  // reset this back to false again. Use SetSavePrivateKeys() to set it true.
 			for (mapOfArmor::iterator ii = m_mapPrivate.begin(); ii != m_mapPrivate.end(); ++ii)
-			{		
-				if ((pArmor = (*ii).second)) // if pArmor not null
-				{
-					m_xmlUnsigned.Concatenate("<mintPrivateInfo denomination=\"%ld\">\n"
-											  "%s</mintPrivateInfo>\n\n", 
-											  (*ii).first, pArmor->Get());
-				}
-				else {
-					fprintf(stderr, "NULL private mint pointer in OTMint::UpdateContents.\n");
-				}		
+			{	
+				pArmor = (*ii).second;
+				
+				OT_ASSERT_MSG(NULL != pArmor, "NULL private mint pointer in OTMint::UpdateContents.\n");
+				
+				m_xmlUnsigned.Concatenate("<mintPrivateInfo denomination=\"%ld\">\n"
+										  "%s</mintPrivateInfo>\n\n", 
+										  (*ii).first, pArmor->Get());
 			}
 		}
 		for (mapOfArmor::iterator ii = m_mapPublic.begin(); ii != m_mapPublic.end(); ++ii)
 		{		
-			if ((pArmor = (*ii).second)) // if pArmor not null
-			{
-				m_xmlUnsigned.Concatenate("<mintPublicInfo denomination=\"%ld\">\n"
+			pArmor = (*ii).second;
+			
+			OT_ASSERT_MSG(NULL != pArmor, "NULL public mint pointer in OTMint::UpdateContents.\n");
+			
+			m_xmlUnsigned.Concatenate("<mintPublicInfo denomination=\"%ld\">\n"
 										  "%s</mintPublicInfo>\n\n", 
 										  (*ii).first, pArmor->Get());
-			}
-			else {
-				fprintf(stderr, "NULL public mint pointer in OTMint::UpdateContents.\n");
-			}		
 		}
 	}
 	
@@ -549,14 +541,16 @@ int OTMint::ProcessXMLNode(IrrXMLReader*& xml)
 		if (strCashAcctID.Exists())
 			m_pReserveAcct = OTAccount::LoadExistingAccount(m_CashAccountID, m_ServerID);
 
-		fprintf(stderr, 
+		int nValidFrom = m_VALID_FROM, nValidTo = m_VALID_TO;
+		
+		OTLog::vOutput(1,  
 				//	"\n===> Loading XML for mint into memory structures..."
 				"\n\nMint version: %s\n Server ID: %s\n Asset Type ID: %s\n Cash Acct ID: %s\n"
 				"%s loading Cash Account into memory for pointer: OTMint::m_pReserveAcct\n"
 				" Series: %d\n Expiration: %d\n Valid From: %d\n Valid To: %d\n", 
 				m_strVersion.Get(), strServerID.Get(), strAssetID.Get(), strCashAcctID.Get(),
 				(m_pReserveAcct != NULL) ? "SUCCESS" : "FAILURE",
-				m_nSeries, m_EXPIRATION, m_VALID_FROM, m_VALID_TO);
+				m_nSeries, m_EXPIRATION, nValidFrom, nValidTo);
 		
 		nReturnVal = 1;
 	}
@@ -587,7 +581,7 @@ int OTMint::ProcessXMLNode(IrrXMLReader*& xml)
 			m_keyPublic.SetPublicKey(armorPublicKey); // todo check this for failure.
 		}
 		else {
-			fprintf(stderr, "Error in OTToken::ProcessXMLNode: mintPublicKey without value.\n");
+			OTLog::Error("Error in OTToken::ProcessXMLNode: mintPublicKey without value.\n");
 			return (-1); // error condition
 		}
 		
@@ -621,7 +615,7 @@ int OTMint::ProcessXMLNode(IrrXMLReader*& xml)
 			m_mapPrivate[lDenomination] = pArmor;
 		}
 		else {
-			fprintf(stderr, "Error in OTToken::ProcessXMLNode: mintPrivateInfo without value.\n");
+			OTLog::Error("Error in OTToken::ProcessXMLNode: mintPrivateInfo without value.\n");
 			return (-1); // error condition
 		}
 		
@@ -656,7 +650,7 @@ int OTMint::ProcessXMLNode(IrrXMLReader*& xml)
 			m_nDenominationCount++; // Whether client or server, both sides have public. Each public denomination should increment this count.
 		}
 		else {
-			fprintf(stderr, "Error in OTToken::ProcessXMLNode: mintPublicInfo without value.\n");
+			OTLog::Error("Error in OTToken::ProcessXMLNode: mintPublicInfo without value.\n");
 			return (-1); // error condition
 		}
 		
@@ -714,10 +708,10 @@ bool OTMint::SignToken(OTPseudonym & theNotary, OTToken & theToken, OTString & t
 {
 	bool bReturnValue = false;
 	
-	//fprintf(stderr,"%s <bank file> <coin request> <coin signature> [<signature repeats>]\n",
+	//OTLog::Error("%s <bank file> <coin request> <coin signature> [<signature repeats>]\n",
 	SetDumper(stderr);
 	
-//	fprintf(stderr, "OTMint::SignToken!!\nnTokenIndex: %d\n Denomination: %ld\n", nTokenIndex, theToken.GetDenomination());
+//	OTLog::vError("OTMint::SignToken!!\nnTokenIndex: %d\n Denomination: %ld\n", nTokenIndex, theToken.GetDenomination());
 	
     BIO *bioBank		= BIO_new(BIO_s_mem()); // input
     BIO *bioRequest		= BIO_new(BIO_s_mem()); // input
@@ -738,11 +732,11 @@ bool OTMint::SignToken(OTPseudonym & theNotary, OTToken & theToken, OTString & t
 	// copy strContents to a BIO
 	BIO_puts(bioBank, strContents.Get());
 	
-//	fprintf(stderr, "BANK CONTENTS:\n%s--------------------------------------\n", strContents.Get());
+//	OTLog::vError("BANK CONTENTS:\n%s--------------------------------------\n", strContents.Get());
 	
 	// Instantiate the Bank with its private key
     Bank bank(bioBank);
-//	fprintf(stderr, "BANK INSTANTIATED.--------------------------------------\n");
+//	OTLog::vError("BANK INSTANTIATED.--------------------------------------\n");
 
 	// I need the request. the prototoken.
 	OTASCIIArmor ascPrototoken;
@@ -753,7 +747,7 @@ bool OTMint::SignToken(OTPseudonym & theNotary, OTToken & theToken, OTString & t
 		// base64-Decode the prototoken
 		OTString strPrototoken(ascPrototoken);
 		
-//		fprintf(stderr, "\n--------------------------------------\nDEBUG:  PROTOTOKEN CONTENTS:\n"
+//		OTLog::vError("\n--------------------------------------\nDEBUG:  PROTOTOKEN CONTENTS:\n"
 //				"-----------------%s---------------------\n", strPrototoken.Get() );
 		
 		// copy strPrototoken to a BIO
@@ -761,7 +755,7 @@ bool OTMint::SignToken(OTPseudonym & theNotary, OTToken & theToken, OTString & t
 
 		// Load up the coin request from the bio (the prototoken)
 		PublicCoinRequest req(bioRequest);
-//		fprintf(stderr, "PROTOTOKEN INSTANTIATED.--------------------------------------\n");
+//		OTLog::Error("PROTOTOKEN INSTANTIATED.--------------------------------------\n");
 
 		// Sign it with the bank we previously instantiated.
 		// results will be in bnSignature (BIGNUM)
@@ -769,12 +763,12 @@ bool OTMint::SignToken(OTPseudonym & theNotary, OTToken & theToken, OTString & t
 
 		if (NULL == bnSignature)
 		{
-			fprintf(stderr, "MAJOR ERROR!: Bank.SignRequest failed in OTMint::SignToken\n");
+			OTLog::Error("MAJOR ERROR!: Bank.SignRequest failed in OTMint::SignToken\n");
 		}
 		
 		else 
 		{
-//			fprintf(stderr, "BANK.SIGNREQUEST SUCCESSFUL.--------------------------------------\n");
+//			OTLog::Error("BANK.SIGNREQUEST SUCCESSFUL.--------------------------------------\n");
 
 			// Write the request contents, followed by the signature contents,
 			// to the Signature bio. Then free the BIGNUM.
@@ -794,7 +788,7 @@ bool OTMint::SignToken(OTPseudonym & theNotary, OTToken & theToken, OTString & t
 			
 			if (sig_len)
 			{ // ***********************************************
-//				fprintf(stderr, "\n--------------------------------------\n"
+//				OTLog::vError("\n--------------------------------------\n"
 //						"*** Siglen is %d. sig_str_len is %d.\nsig buf:\n------------%s------------\nLAST "
 //						"CHARACTER IS '%c'  SECOND TO LAST CHARACTER IS '%c'\n", 
 //						sig_len, sig_str_len, sig_buf, sig_buf[sig_str_len-1], sig_buf[sig_str_len-2]);
@@ -803,14 +797,14 @@ bool OTMint::SignToken(OTPseudonym & theNotary, OTToken & theToken, OTString & t
 				// (It won't actually be spendable until the client processes it, though.)
 				theToken.SetSpendable(ascPrototoken);
 				
-//				fprintf(stderr, "*** SPENDABLE:\n-----------%s---------------------\n", ascPrototoken.Get());
+//				OTLog::vError("*** SPENDABLE:\n-----------%s---------------------\n", ascPrototoken.Get());
 						
 						
 				// Base64-encode the signature contents into theToken.m_Signature.
 				OTString	strSignature(sig_buf);
 	//			strSignature.Set(sig_buf, sig_len-1); // sig_len includes null terminator, whereas Set() adds 1 for it.
 				
-//				fprintf(stderr, "SIGNATURE:\n--------------------%s"
+//				OTLog::vError("SIGNATURE:\n--------------------%s"
 //						"------------------\n", strSignature.Get());
 
 				// Here we pass the signature back to the caller.
@@ -839,7 +833,7 @@ bool OTMint::SignToken(OTPseudonym & theNotary, OTToken & theToken, OTString & t
 bool OTMint::VerifyToken(OTPseudonym & theNotary, OTString & theCleartextToken, long lDenomination)
 {
 	bool bReturnValue = false;
-	//fprintf(stderr, "%s <bank info> <coin>\n", argv[0]);
+//	OTLog::Error("%s <bank info> <coin>\n", argv[0]);
     SetDumper(stderr);
 	
 	BIO *bioBank	= BIO_new(BIO_s_mem()); // input
@@ -953,10 +947,10 @@ void OTMint::GenerateNewMint(int nSeries, time_t VALID_FROM, time_t VALID_TO, ti
 	if (m_pReserveAcct)
 	{
 		m_pReserveAcct->GetIdentifier(m_CashAccountID);
-		fprintf(stderr, "Successfully created cash reserve account for new mint.\n");
+		OTLog::Output(0, "Successfully created cash reserve account for new mint.\n");
 	}
 	else {
-		fprintf(stderr, "Error creating cash reserve account for new mint.\n");
+		OTLog::Error("Error creating cash reserve account for new mint.\n");
 	}
 
 	
@@ -1004,7 +998,7 @@ void OTMint::GenerateNewMint(int nSeries, time_t VALID_FROM, time_t VALID_TO, ti
 
 
 
-bool OTMint::SaveContractWallet(FILE * fl)
+bool OTMint::SaveContractWallet(std::ofstream & ofs)
 {
 	return true;
 }

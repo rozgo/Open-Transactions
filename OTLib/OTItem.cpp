@@ -105,6 +105,7 @@ using namespace io;
 #include "OTTransactionType.h"
 #include "OTTransaction.h"
 #include "OTItem.h"
+#include "OTLog.h"
 
 
 
@@ -379,7 +380,7 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		
 		m_lAmount	= atol(xml->getAttributeValue("amount"));
 		
-		fprintf(stderr, "Loaded transaction Item, transaction num %ld, In Reference To: %ld, type: %s, status: %s\n",
+		OTLog::vOutput(0, "Loaded transaction Item, transaction num %ld, In Reference To: %ld, type: %s, status: %s\n",
 //				"fromAccountID:\n%s\n UserID:\n%s\n toAccountID:\n%s\n serverID:\n%s\n----------\n", 
 				GetTransactionNum(),
 				GetReferenceToNum(), strType.Get(), strStatus.Get()
@@ -399,7 +400,7 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			return 1;
 		}
 		else {
-			fprintf(stderr, "Error in OItem::ProcessXMLNode: missing text for note.\n");
+			OTLog::Error("Error in OItem::ProcessXMLNode: missing text for note.\n");
 			return (-1); // error condition
 		}
 	}	
@@ -414,7 +415,7 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			return 1;
 		}
 		else {
-			fprintf(stderr, "Error in OItem::ProcessXMLNode: missing text for inReferenceTo.\n");
+			OTLog::Error("Error in OItem::ProcessXMLNode: missing text for inReferenceTo.\n");
 			return (-1); // error condition
 		}
 	}	
@@ -429,7 +430,7 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			return 1;
 		}
 		else {
-			fprintf(stderr, "Error in OItem::ProcessXMLNode: missing text for attachment.\n");
+			OTLog::Error("Error in OItem::ProcessXMLNode: missing text for attachment.\n");
 			return (-1); // error condition
 		}
 	}	
@@ -573,7 +574,8 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 }
 
 
-bool OTItem::SaveContractWallet(FILE * fl)
+
+bool OTItem::SaveContractWallet(std::ofstream & ofs)
 {
 	return true;
 }

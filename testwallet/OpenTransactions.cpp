@@ -112,6 +112,7 @@ extern "C"
 #include "OTPurse.h"
 #include "OTLedger.h"
 #include "OTCheque.h"
+#include "OTLog.h"
 
 #include "OpenTransactions.h"
 
@@ -171,7 +172,7 @@ bool OT_API_getAccount(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME)
 // Need to call this before using OT.
 bool OT_API_Init(OTString & strClientPath)
 {
-	OTPseudonym::OTPath.Set(strClientPath.Get());
+	OTLog::SetMainPath(strClientPath.Get());
 	
 #ifdef _WIN32
 	WSADATA wsaData;
@@ -205,7 +206,7 @@ bool OT_API_connectServer(OTIdentifier & SERVER_ID, OTIdentifier	& USER_ID,
 	
 	if (!pNym)
 	{
-		fprintf(stdout, "No Nym loaded but tried to connect to server.\n");
+		OTLog::Error("No Nym loaded but tried to connect to server.\n");
 		return false;
 	}
 		
@@ -213,11 +214,11 @@ bool OT_API_connectServer(OTIdentifier & SERVER_ID, OTIdentifier	& USER_ID,
 	
 	if (bConnected)
 	{
-		fprintf(stdout, "Success. (Connected to the first notary server on your wallet's list.)\n");
+		OTLog::Output(0, "Success. (Connected to the first notary server on your wallet's list.)\n");
 		return true;
 	}
 	else {
-		fprintf(stdout, "Either the wallet is not loaded, or there was an error connecting to server.\n");
+		OTLog::Output(0, "Either the wallet is not loaded, or there was an error connecting to server.\n");
 		return false;
 	}
 }
@@ -253,7 +254,7 @@ bool OT_API_processSockets()
 			
 			//				OTString strReply;
 			//				theMsg.SaveContract(strReply);
-			//				fprintf(stderr, "\n\n**********************************************\n"
+			//				OTLog::vError("\n\n**********************************************\n"
 			//						"Successfully in-processed server response.\n\n%s\n", strReply.Get());
 			g_Client.ProcessServerReply(theMsg);
 		}
@@ -376,7 +377,7 @@ void OT_API_getTransactionNumber(OTIdentifier & SERVER_ID,
 		g_Client.ProcessMessageOut(theMessage);
 	}
 	else
-		fprintf(stderr, "Error processing getTransactionNumber command in OT_API_getTransactionNumber\n");
+		OTLog::Error("Error processing getTransactionNumber command in OT_API_getTransactionNumber\n");
 }
 
 
@@ -456,8 +457,8 @@ void OT_API_notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 		const OTPseudonym * pServerNym = pServer->GetContractPublicNym();
 		
 		OTString strMintPath;
-		strMintPath.Format("%s%smints%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(), 
-						   OTPseudonym::OTPathSeparator.Get(), strContractID.Get()); 
+		strMintPath.Format("%s%smints%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+						   OTLog::PathSeparator(), strContractID.Get()); 
 		OTMint theMint(strContractID, strMintPath, strContractID);
 		
 		if (pServerNym && theMint.LoadContract() && theMint.VerifyMint((OTPseudonym&)*pServerNym))
@@ -580,7 +581,7 @@ void OT_API_notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 		}
 	}
 	else {
-		fprintf(stderr, "No Transaction Numbers were available. Suggest requesting the server for a new one.\n");
+		OTLog::Output(0, "No Transaction Numbers were available. Suggest requesting the server for a new one.\n");
 	}
 }
 
@@ -652,7 +653,7 @@ void OT_API_notarizeDeposit(OTIdentifier	& SERVER_ID,
 	
 	if (!bGotTransNum)
 	{
-		fprintf(stderr, "No Transaction Numbers were available. Try requesting the server for a new one.\n");
+		OTLog::Output(0, "No Transaction Numbers were available. Try requesting the server for a new one.\n");
 	}
 	else if (pServerNym)
 	{
@@ -682,7 +683,7 @@ void OT_API_notarizeDeposit(OTIdentifier	& SERVER_ID,
 					// So now only the server Nym can decrypt that token and pop it out of that purse.
 					if (false == pToken->ReassignOwnership(*pNym, *pServerNym))
 					{
-						fprintf(stderr, "Error re-assigning ownership of token (to server.)\n");
+						OTLog::Error("Error re-assigning ownership of token (to server.)\n");
 						delete pToken;
 						pToken = NULL;
 						bSuccess = false;
@@ -690,7 +691,7 @@ void OT_API_notarizeDeposit(OTIdentifier	& SERVER_ID,
 					}
 					else 
 					{
-						fprintf(stderr, "Success re-assigning ownership of token (to server.)\n");
+						OTLog::vOutput(3, "Success re-assigning ownership of token (to server.)\n");
 						
 						bSuccess = true;
 						
@@ -707,7 +708,7 @@ void OT_API_notarizeDeposit(OTIdentifier	& SERVER_ID,
 					pToken = NULL;
 				}
 				else {
-					fprintf(stderr, "Error loading token from purse.\n");
+					OTLog::Error("Error loading token from purse.\n");
 					break;
 				}
 				
@@ -930,7 +931,7 @@ void OT_API_withdrawVoucher(OTIdentifier	& SERVER_ID,
 		}
 	}
 	else {
-		fprintf(stderr, "No Transaction Numbers were available. Suggest requesting the server for a new one.\n");
+		OTLog::Output(0, "No Transaction Numbers were available. Suggest requesting the server for a new one.\n");
 	}
 }
 
@@ -999,7 +1000,7 @@ void OT_API_depositCheque(OTIdentifier	& SERVER_ID,
 	
 	if (!bGotTransNum)
 	{
-		fprintf(stderr, "No Transaction Numbers were available. Try requesting the server for a new one.\n");
+		OTLog::Output(0, "No Transaction Numbers were available. Try requesting the server for a new one.\n");
 	}
 	else if (theCheque.LoadContractFromString(THE_CHEQUE))
 	{
@@ -1195,7 +1196,7 @@ void OT_API_notarizeTransfer(OTIdentifier	& SERVER_ID,
 		g_Client.ProcessMessageOut(theMessage);	
 	}
 	else {
-		fprintf(stderr, "No transaction numbers were available. Suggest requesting the server for one.\n");
+		OTLog::Output(0, "No transaction numbers were available. Suggest requesting the server for one.\n");
 	}	
 }
 
@@ -1791,7 +1792,7 @@ void OT_API_getRequest(OTIdentifier	& SERVER_ID,
 		g_Client.ProcessMessageOut(theMessage);
 	}
 	else
-		fprintf(stderr, "Error processing getRequest command in OT_API_getRequest\n");
+		OTLog::Error("Error processing getRequest command in OT_API_getRequest\n");
 	
 }
 
@@ -1878,7 +1879,7 @@ void OT_API_createUserAccount(OTIdentifier	& SERVER_ID,
 		g_Client.ProcessMessageOut(theMessage);
 	}
 	else
-		fprintf(stderr, "Error processing createUserAccount command in OT_API_createUserAccount\n");
+		OTLog::Error("Error processing createUserAccount command in OT_API_createUserAccount\n");
 	
 }
 
@@ -1920,7 +1921,7 @@ void OT_API_checkServerID(OTIdentifier	& SERVER_ID,
 		g_Client.ProcessMessageOut(theMessage);
 	}
 	else
-		fprintf(stderr, "Error processing checkServerID command in OT_API_checkServerID\n");
+		OTLog::Error("Error processing checkServerID command in OT_API_checkServerID\n");
 	
 }
 

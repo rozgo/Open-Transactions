@@ -101,6 +101,7 @@ using namespace io;
 #include "OTStringXML.h"
 #include "OTPseudonym.h"
 #include "OTBasket.h"
+#include "OTLog.h"
 
 OTAssetContract::OTAssetContract() : OTContract()
 {
@@ -205,16 +206,31 @@ bool OTAssetContract::CreateBasket(OTBasket & theBasket, OTPseudonym & theSigner
 }
 
 
+
+
+
+bool OTAssetContract::SaveContractWallet(std::ofstream & ofs)
+{
+	OTString strID(m_ID);
+	
+	ofs << "<assetType name=\"" << m_strName.Get()		<<
+	"\"\n assetTypeID=\""		<< strID.Get()			<<
+	"\"\n contract=\""			<< m_strFilename.Get()	<<
+	"\" /> \n\n";	
+	
+	return true;
+}
+/*
 bool OTAssetContract::SaveContractWallet(FILE * fl)
 {
 	OTString strID(m_ID);
-		
+	
 	fprintf(fl, "<assetType name=\"%s\"\n assetTypeID=\"%s\"\n contract=\"%s\" /> "
 			"\n\n", m_strName.Get(), strID.Get(), m_strFilename.Get());	
 	
 	return true;
 }
-
+*/
 
 // return -1 if error, 0 if nothing, and 1 if the node was processed.
 int OTAssetContract::ProcessXMLNode(IrrXMLReader*& xml)
@@ -236,7 +252,7 @@ int OTAssetContract::ProcessXMLNode(IrrXMLReader*& xml)
 	{
 		m_strVersion = xml->getAttributeValue("version");					
 		
-		fprintf(stderr, "\n"
+		OTLog::vOutput(0, "\n"
 				"===> Loading XML portion of asset contract into memory structures...\n\n"
 				"Digital Asset Contract: %s\nContract version: %s\n----------\n", m_strName.Get(), m_strVersion.Get());
 		nReturnVal = 1;
@@ -245,7 +261,7 @@ int OTAssetContract::ProcessXMLNode(IrrXMLReader*& xml)
 	{
 		m_strVersion = xml->getAttributeValue("version");					
 		
-		fprintf(stderr, "\n"
+		OTLog::vOutput(0, "\n"
 				"===> Loading XML portion of basket contract into memory structures...\n\n"
 				"Digital Basket Contract: %s\nContract version: %s\n----------\n", m_strName.Get(), m_strVersion.Get());
 		nReturnVal = 1;
@@ -276,7 +292,7 @@ int OTAssetContract::ProcessXMLNode(IrrXMLReader*& xml)
 			theBasketArmor.GetString(m_strBasketInfo);
 		}
 		else {
-			fprintf(stderr, "Error in OTAssetContract::ProcessXMLNode: basketInfo without value.\n");
+			OTLog::Error("Error in OTAssetContract::ProcessXMLNode: basketInfo without value.\n");
 			return (-1); // error condition
 		}
 		
@@ -289,7 +305,7 @@ int OTAssetContract::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strIssueContractURL = xml->getAttributeValue("contractUrl");
 		m_strIssueType = xml->getAttributeValue("type");
 		
-		fprintf(stderr, "Loaded Issue company: %s\nEmail: %s\nContractURL: %s\nType: %s\n----------\n",
+		OTLog::vOutput(1, "Loaded Issue company: %s\nEmail: %s\nContractURL: %s\nType: %s\n----------\n",
 				m_strIssueCompany.Get(), m_strIssueEmail.Get(), m_strIssueContractURL.Get(),
 				m_strIssueType.Get());
 		nReturnVal = 1;
@@ -304,7 +320,7 @@ int OTAssetContract::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strCurrencyDecimalPower = xml->getAttributeValue("decimal_power");
 		m_strCurrencyFraction = xml->getAttributeValue("fraction");
 		
-		fprintf(stderr, "Loaded Currency, Name: %s, TLA: %s, Symbol: %s\n"
+		OTLog::vOutput(1, "Loaded Currency, Name: %s, TLA: %s, Symbol: %s\n"
 				"Type: %s, Factor: %s, Decimal Power: %s, Fraction: %s\n----------\n", 
 				m_strCurrencyName.Get(), m_strCurrencyTLA.Get(), m_strCurrencySymbol.Get(),
 				m_strCurrencyType.Get(), m_strCurrencyFactor.Get(), m_strCurrencyDecimalPower.Get(),

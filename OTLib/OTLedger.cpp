@@ -107,6 +107,7 @@ using namespace io;
 #include "OTLedger.h"
 
 #include "OTPseudonym.h"
+#include "OTLog.h"
 
 
 // the below four functions (load/save in/outbox) assume that the ID is already set
@@ -120,14 +121,18 @@ bool OTLedger::LoadInbox()
 	
 	m_Type = OTLedger::inbox;
 
-	m_strFilename.Format("%s%sinbox%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-						 OTPseudonym::OTPathSeparator.Get(), strID.Get());
+	m_strFilename.Format("%s%sinbox%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 OTLog::PathSeparator(), strID.Get());
 	
 	// Try to load the ledger from disk.
 	if (false == LoadContract())
 	{
-		fprintf(stderr, "Failure loading inbox in OTLedger::LoadInbox\n");
+		OTLog::vOutput(1, "Failed loading inbox in OTLedger::LoadInbox:\n%s\n", m_strFilename.Get());
 		return false;
+	}
+	else 
+	{
+		OTLog::vOutput(2, "Successfully loaded inbox in OTLedger::LoadInbox:\n%s\n", m_strFilename.Get());
 	}
 	
 	return true;	
@@ -145,14 +150,19 @@ bool OTLedger::LoadOutbox()
 	
 	m_Type = OTLedger::outbox;
 	
-	m_strFilename.Format("%s%soutbox%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-						 OTPseudonym::OTPathSeparator.Get(), strID.Get());
+	m_strFilename.Format("%s%soutbox%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 OTLog::PathSeparator(), strID.Get());
 	
 	if (false == LoadContract())
 	{
-		fprintf(stderr, "Error loading outbox in OTLedger::LoadOutbox\n");
+		OTLog::vOutput(1, "Failed loading outbox in OTLedger::LoadOutbox:\n%s\n", m_strFilename.Get());
 		return false;
 	}
+	else 
+	{
+		OTLog::vOutput(2, "Successfully loaded outbox in OTLedger::LoadOutbox:\n%s\n", m_strFilename.Get());
+	}
+
 	
 	return true;	
 }
@@ -164,13 +174,21 @@ bool OTLedger::SaveInbox()
 	OTString strID;
 	GetIdentifier(strID);
 	
-	m_strFilename.Format("%s%sinbox%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-						 OTPseudonym::OTPathSeparator.Get(), strID.Get());
+	m_strFilename.Format("%s%sinbox%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 OTLog::PathSeparator(), strID.Get());
 	
-	if (false == SaveContract((const char*)m_strFilename.Get()))
+	OTString strTemp(m_strFilename);
+
+	if (false == SaveContract((const char*)strTemp.Get()))
 	{
-		fprintf(stderr, "Error saving inbox in OTLedger::SaveInbox\n");
+		OTLog::vError("Error saving inbox in OTLedger::SaveInbox: %s\nFilename: %s\n", 
+					  m_strFilename.Get(), strTemp.Get());
 		return false;
+	}
+	else 
+	{
+		OTLog::vOutput(2, "Successfully saved inbox: %s\nFilename: %s\n", 
+					   m_strFilename.Get(), strTemp.Get());
 	}
 	
 	return true;
@@ -183,14 +201,23 @@ bool OTLedger::SaveOutbox()
 	OTString strID;
 	GetIdentifier(strID);
 	
-	m_strFilename.Format("%s%soutbox%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-						 OTPseudonym::OTPathSeparator.Get(), strID.Get());
+	m_strFilename.Format("%s%soutbox%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 OTLog::PathSeparator(), strID.Get());
 	
-	if (false == SaveContract((const char*)m_strFilename.Get()))
+	OTString strTemp(m_strFilename);
+
+	if (false == SaveContract((const char*)strTemp.Get()))
 	{
-		fprintf(stderr, "Error saving outbox in OTLedger::SaveOutbox\n");
+		OTLog::vError("Error saving outbox in OTLedger::SaveInbox: %s\nFilename: %s\n", 
+					  m_strFilename.Get(), strTemp.Get());
 		return false;
 	}
+	else 
+	{
+		OTLog::vOutput(2, "Successfully saved outbox: %s\nFilename: %s\n", 
+					   m_strFilename.Get(), strTemp.Get());
+	}
+
 	
 	return true;
 }
@@ -202,15 +229,12 @@ OTLedger * OTLedger::GenerateLedger(const OTIdentifier & theUserID, const OTIden
 {
 	OTLedger * pLedger = new OTLedger(theUserID, theAcctID, theServerID);
 	
-	if (pLedger)
-	{
-		pLedger->GenerateLedger(theAcctID, theServerID, theType, bCreateFile);
-		pLedger->SetUserID(theUserID);
-
-		return pLedger;
-	}
+	OT_ASSERT(NULL != pLedger);
 	
-	return NULL;
+	pLedger->GenerateLedger(theAcctID, theServerID, theType, bCreateFile);
+	pLedger->SetUserID(theUserID);
+
+	return pLedger;
 }
 
 bool OTLedger::GenerateLedger(const OTIdentifier & theAcctID, 
@@ -222,15 +246,15 @@ bool OTLedger::GenerateLedger(const OTIdentifier & theAcctID,
 	
 	switch (theType) {
 		case OTLedger::inbox:
-			m_strFilename.Format("%s%sinbox%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-								 OTPseudonym::OTPathSeparator.Get(), strID.Get());
+			m_strFilename.Format("%s%sinbox%s%s", OTLog::Path(), OTLog::PathSeparator(),
+								 OTLog::PathSeparator(), strID.Get());
 			break;
 		case OTLedger::outbox:
-			m_strFilename.Format("%s%soutbox%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-								 OTPseudonym::OTPathSeparator.Get(), strID.Get());
+			m_strFilename.Format("%s%soutbox%s%s", OTLog::Path(), OTLog::PathSeparator(),
+								 OTLog::PathSeparator(), strID.Get());
 			break;
 		case OTLedger::message:
-//			fprintf(stderr, "Generating message ledger...\n");
+			OTLog::Output(4, "Generating message ledger...\n");
 			SetRealAccountID(theAcctID);
 			SetPurportedAccountID(theAcctID);	// It's safe to set these the same here, since we're creating the ledger now.
 			SetRealServerID(theServerID);
@@ -238,8 +262,8 @@ bool OTLedger::GenerateLedger(const OTIdentifier & theAcctID,
 			m_Type	= theType;
 			return true;
 		default:
-			fprintf(stderr, "ERROR: GenerateLedger is only for message, inbox and outbox ledgers.\n");
-			return false;
+			OT_ASSERT_MSG(false, "ERROR: GenerateLedger is only for message, inbox and outbox ledgers.\n");
+			return false; // this return is unecessary because of the assert. But I like having it anyway.
 	}
 	
 	SetRealAccountID(theAcctID); // set this before calling LoadContract...
@@ -252,12 +276,12 @@ bool OTLedger::GenerateLedger(const OTIdentifier & theAcctID,
 		
 		if (bLoaded)
 		{
-			fprintf(stderr, "ERROR: trying to generate inbox that already exists: %s\n", strID.Get());
+			OTLog::vError("ERROR: trying to generate inbox that already exists: %s\n", strID.Get());
 			return false;
 		}
 	
 		// Okay, it doesn't already exist. Let's generate it.
-		fprintf(stderr, "Generating %s\n", m_strFilename.Get());
+		OTLog::vOutput(0, "Generating %s\n", m_strFilename.Get());
 	}
 	
 	// Have to look up the UserID here. No way around it.
@@ -345,14 +369,15 @@ bool OTLedger::RemoveTransaction(long lTransactionNum) // if false, transaction 
 	
 	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); ii != m_mapTransactions.end(); ++ii)
 	{
-		if ((pTransaction = (*ii).second)) // if pointer not null
-		{			
-			if (pTransaction->GetTransactionNum() == lTransactionNum)
-			{
-				m_mapTransactions.erase(ii);
-				delete pTransaction;
-				return true;
-			}
+		pTransaction = (*ii).second;
+		
+		OT_ASSERT(NULL != pTransaction);
+		
+		if (pTransaction->GetTransactionNum() == lTransactionNum)
+		{
+			m_mapTransactions.erase(ii);
+			delete pTransaction;
+			return true;
 		}
 	}
 	return false;
@@ -373,11 +398,12 @@ OTTransaction * OTLedger::GetTransaction(long lTransactionNum)
 	
 	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); ii != m_mapTransactions.end(); ++ii)
 	{
-		if ((pTransaction = (*ii).second)) // if pointer not null
-		{			
-			if (pTransaction->GetTransactionNum() == lTransactionNum)
-				return pTransaction;
-		}
+		pTransaction = (*ii).second;
+		
+		OT_ASSERT(NULL != pTransaction);
+		
+		if (pTransaction->GetTransactionNum() == lTransactionNum)
+			return pTransaction;
 	}
 	
 	return NULL;
@@ -505,7 +531,7 @@ int OTLedger::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		SetPurportedServerID(SERVER_ID);
 		SetUserID(USER_ID);
 		
-		fprintf(stderr, "Loaded account ledger of type \"%s\", version: %s\n",
+		OTLog::vOutput(2, "Loaded account ledger of type \"%s\", version: %s\n",
 //				"accountID:\n%s\n userID:\n%s\n serverID:\n%s\n----------\n", 
 				strType.Get(),
 				m_strVersion.Get()
@@ -543,10 +569,10 @@ int OTLedger::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 				// I am loading it here and adding it to the ledger. (So I do.)
 			{
 				m_mapTransactions[pTransaction->GetTransactionNum()] = pTransaction;
-//				fprintf(stderr, "Loaded transaction and adding to m_mapTransactions in OTLedger\n");
+//				OTLog::Output(5, "Loaded transaction and adding to m_mapTransactions in OTLedger\n");
 			}
 			else {
-				fprintf(stderr, "ERROR: loading transaction in OTLedger::ProcessXMLNode\n");
+				OTLog::Error("ERROR: loading transaction in OTLedger::ProcessXMLNode\n");
 				if (pTransaction)
 				{
 					delete pTransaction;
@@ -557,7 +583,7 @@ int OTLedger::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 
 		}
 		else {
-			fprintf(stderr, "Error in OTLedger::ProcessXMLNode: transaction without value.\n");
+			OTLog::Error("Error in OTLedger::ProcessXMLNode: transaction without value.\n");
 			return (-1); // error condition
 		}
 		
@@ -581,7 +607,8 @@ OTLedger::~OTLedger()
 	
 }
 
-bool OTLedger::SaveContractWallet(FILE * fl)
+
+bool OTLedger::SaveContractWallet(std::ofstream & ofs)
 {
 	return true;
 }

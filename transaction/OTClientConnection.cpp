@@ -108,6 +108,7 @@ extern "C"
 
 
 #include "OTPayload.h"
+#include "OTLog.h"
 
 
 /*
@@ -138,7 +139,7 @@ void SetupHeader( union u_header * pCMD, int nTypeID, int nCmdID, OTPayload & th
 	int nChecksum	= byChecksum;
 	
 	uint32_t nTemp	= thePayload.GetSize();
-	fprintf(stderr, "(Payload size %d, TYPE %d command, checksum: %d...)\n", nTemp, nTypeID, nChecksum);
+	OTLog::vOutput(4, "(Payload size %d, TYPE %d command, checksum: %d...)\n", nTemp, nTypeID, nChecksum);
 }
 
 
@@ -162,14 +163,14 @@ void OTClientConnection::ProcessBuffer()
 			break;
 		}
 		else {
-			fprintf(stderr, "Reading input from socket...\n");
+			OTLog::Output(2, "Reading input from socket...\n");
 		}
 		
 	}
 	
 	if (nread)
 	{
-		fprintf(stderr, "\n===> Processing header from client message. First 5 bytes are: %d %d %d %d %d...\n",
+		OTLog::vOutput(4, "\n===> Processing header from client message. First 5 bytes are: %d %d %d %d %d...\n",
 				theCMD.buf[0],theCMD.buf[1],theCMD.buf[2],theCMD.buf[3],theCMD.buf[4]);
 		
 		// When the server knows for SURE it is receiving a message,
@@ -234,7 +235,7 @@ void OTClientConnection::ProcessBuffer()
 				break;
 			}
 			else {
-				fprintf(stderr, "Reading input from socket...\n");
+				OTLog::Output(2, "Reading input from socket...\n");
 			}
 		}
 		
@@ -249,12 +250,12 @@ void OTClientConnection::ProcessBuffer()
 
 			int nChecksum	= theCMD.fields.checksum;
 			
-			fprintf(stderr, "\n************************************************************\n===> Reading header from client message.\n"
+			OTLog::vOutput(2, "\n************************************************************\n===> Reading header from client message.\n"
 					"First 9 bytes are: %d %d %d %d %d %d %d %d %d.\nSize is: %d...\n",
 					theCMD.buf[0],theCMD.buf[1],theCMD.buf[2],theCMD.buf[3],theCMD.buf[4], 
 					theCMD.buf[5], theCMD.buf[6], theCMD.buf[7], theCMD.buf[8], lSize);
 			
-			fprintf(stderr, "\nCMD HEADER:   CMD TYPE: %d -- CMD NUM: %d\n"
+			OTLog::vOutput(2, "\nCMD HEADER:   CMD TYPE: %d -- CMD NUM: %d\n"
 					"PAYLOAD SIZE: %d -- CHECKSUM: %d\n", theCMD.fields.type_id, 
 					theCMD.fields.command_id, lSize, nChecksum);
 
@@ -345,11 +346,11 @@ void OTClientConnection::ProcessMessage(u_header & theCMD)
 	
 	if ( theCMD.fields.type_id == CMD_TYPE_1 )
 	{
-		fprintf(stderr, "Received a Type 1 Command...\n");
+		OTLog::Output(2, "Received a Type 1 Command...\n");
 		
 		if( IsChecksumValid( theCMD.buf, OT_CMD_HEADER_SIZE ) )
 		{								
-			fprintf(stderr, "Checksum is valid! Processing payload.\n");
+			OTLog::Output(2, "Checksum is valid! Processing payload.\n");
 			
 			pMsg = new OTMessage;
 			
@@ -362,19 +363,18 @@ void OTClientConnection::ProcessMessage(u_header & theCMD)
 				delete pMsg;
 				pMsg = NULL;
 			}
-
 		}
 		else
 		{
 			//gDebugLog.Write("Invalid checksum - Type 1 Command");
-			fprintf(stderr, "Invalid checksum - Type 1 Command, header size: %d\n", OT_CMD_HEADER_SIZE);
+			OTLog::vError("Invalid checksum - Type 1 Command, header size: %d\n", OT_CMD_HEADER_SIZE);
 		}
 	}
 	else
 	{
 		//gDebugLog.Write("Unknown command type");
-		fprintf(stderr, "Unknown command type\n");
-		
+		int nCommandType = theCMD.fields.type_id;
+		OTLog::vError("Unknown command type: %d\n", nCommandType);
 	}
 	
 	
@@ -403,7 +403,7 @@ void OTClientConnection::ProcessMessage(u_header & theCMD)
 				break;
 		}
 		
-		fprintf(stderr, "Transmission error--%d bytes flushed.\n", nread);
+		OTLog::vError("Transmission error--%d bytes flushed.\n", nread);
 		
 		// we are buffering data from the pipe now, so if we flush the pipe, we
 		// should flush the buffer too.
@@ -414,12 +414,12 @@ void OTClientConnection::ProcessMessage(u_header & theCMD)
 		// TODO still need to process the commands and send the replies somewhere...
 		//if (bSuccess = theServer.ProcessUserCommand(theMessage, theReply))
 		//{
-	//		fprintf(stderr, "Successfully processed user command: %s\n", theMessage.m_strCommand.Get());
+	//		OTLog::vOutput(4, "Successfully processed user command: %s\n", theMessage.m_strCommand.Get());
 //			ProcessReply(ssl, theReply);
 //		}
 //		else
 //		{
-//			fprintf(stderr, "Unable to process user command in XML, or missing payload, in ProcessMessage.\n");
+//			OTLog::vError("Unable to process user command in XML, or missing payload, in ProcessMessage.\n");
 //		}
 	}
 }
@@ -469,14 +469,14 @@ bool OTClientConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theMessa
 	// signed messages.
 	switch (theCMD.fields.command_id) {
 		case TYPE_1_CMD_1:
-			fprintf(stderr, "Received Type 1 CMD 1:\nThere is a signed OTMessage in the payload.\n");
+			OTLog::Output(2, "Received Type 1 CMD 1:\nThere is a signed OTMessage in the payload.\n");
 			break;
 		case TYPE_1_CMD_2:
-			fprintf(stderr, "Received Type 1 CMD 2:\n"
+			OTLog::Output(2, "Received Type 1 CMD 2:\n"
 					"There is an encrypted OTEnvelope (containing signed OTMessage) in the payload.\n");
 			break;
 		default:
-			fprintf(stderr, "Received unexpected command number %d in OTClientConnection::ProcessType1Cmd\n", 
+			OTLog::vError("Received unexpected command number %d in OTClientConnection::ProcessType1Cmd\n", 
 					theCMD.fields.command_id);
 			break;
 	}
@@ -485,7 +485,7 @@ bool OTClientConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theMessa
 	// Hm, that's weird. It was a 0 size payload message. DoS?
 	if (theCMD.fields.size == 0)
 	{
-		fprintf(stderr, "(The payload was a 0 size.)\n");
+		OTLog::Output(2, "(The payload was a 0 size.)\n");
 		return true;
 	}
 	// Uh-oh, somehow the number of bytes read was less than what we expected...
@@ -504,11 +504,11 @@ bool OTClientConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theMessa
 		//
 		// Until I can do that, I'm not yet TRULY asynchronous. TODO: lookup a good buffer class.
 
-		fprintf(stderr, "Number of bytes read did NOT match size in header.\n");
+		OTLog::Error("Number of bytes read did NOT match size in header.\n");
 		return false;
 	}
 	else
-		fprintf(stderr, "Loaded a payload, size: %d\n", theCMD.fields.size);
+		OTLog::vOutput(2, "Loaded a payload, size: %d\n", theCMD.fields.size);
 	
 	// ------------------------------------------------------------
 	
@@ -524,22 +524,22 @@ bool OTClientConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theMessa
 		if (thePayload.GetMessage(theMessage))
 #endif
 		{
-			fprintf(stderr, "Successfully retrieved payload message...\n");
+			OTLog::Output(2, "Successfully retrieved payload message...\n");
 			
 			if (theMessage.ParseRawFile())
 			{
-				fprintf(stderr, "Successfully parsed payload message.\n");
+				OTLog::Output(2, "Successfully parsed payload message.\n");
 				
 				return true;
 			}
 			else {
-				fprintf(stderr, "Error parsing message.\n");
+				OTLog::Error("Error parsing message.\n");
 				return false;
 			}
 			
 		}
 		else {
-			fprintf(stderr, "Error retrieving message from payload.\n");
+			OTLog::Error("Error retrieving message from payload.\n");
 			return false;
 		}
 		
@@ -551,7 +551,7 @@ bool OTClientConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theMessa
 		OTEnvelope theEnvelope;
 		if (thePayload.GetEnvelope(theEnvelope))
 		{
-			fprintf(stderr, "Successfully retrieved envelope from payload...\n");
+			OTLog::Output(2, "Successfully retrieved envelope from payload...\n");
 			
 			OTString strEnvelopeContents;
 			
@@ -564,22 +564,24 @@ bool OTClientConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theMessa
 				//
 				if (theMessage.LoadContractFromString(strEnvelopeContents))
 				{
-//					fprintf(stderr, "Success loading message out of the envelope contents and parsing it.\n");
+					OTLog::Output(2, "Success loading message out of the envelope contents and parsing it.\n");
 					return true;
 				}
 				else 
 				{
-					fprintf(stderr, "Error loading message from envelope contents.\n");
+					OTLog::Error("Error loading message from envelope contents.\n");
 					return false;		
 				}
 			}
-			else {
-				fprintf(stderr, "Unable to open envelope.\n");
+			else 
+			{
+				OTLog::Error("Unable to open envelope.\n");
 				return false;
 			}			
 		}
-		else {
-			fprintf(stderr, "Error retrieving message from payload.\n");
+		else 
+		{
+			OTLog::Error("Error retrieving message from payload.\n");
 			return false;
 		}
 		
@@ -662,7 +664,7 @@ void OTClientConnection::ProcessReply(OTMessage &theReply)
 	bSendPayload = true;				
 	
 	
-	fprintf(stderr, "\n****************************************************************\n"
+	OTLog::vOutput(2, "\n****************************************************************\n"
 			"===> Finished setting up header for response.\nFirst 9 bytes are: %d %d %d %d %d %d %d %d %d...\n",
 			theCMD.buf[0], theCMD.buf[1], theCMD.buf[2], theCMD.buf[3], theCMD.buf[4], 
 			theCMD.buf[5], theCMD.buf[6], theCMD.buf[7], theCMD.buf[8]);
@@ -714,7 +716,7 @@ void OTClientConnection::ProcessReply(OTMessage &theReply)
 	}
 	// At this point, we have sent the payload across the pipe.		
 	
-	fprintf(stderr, "...Done.\n");
+	OTLog::Output(2, "...Done.\n");
 }
 
 

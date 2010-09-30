@@ -192,7 +192,8 @@ public:
 	// Lucre step 5: mint verifies token when it is redeemed by merchant.
 	bool VerifyToken(OTPseudonym & theNotary, OTString & theCleartextToken, long lDenomination);
 
-	virtual bool SaveContractWallet(FILE * fl);	
+	virtual bool SaveContractWallet(std::ofstream & ofs);
+//	virtual bool SaveContractWallet(FILE * fl);	
 };
 
 

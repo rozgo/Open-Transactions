@@ -107,6 +107,7 @@ using namespace io;
 #include "OTLedger.h"
 #include "OTTransactionType.h"
 #include "OTTransaction.h"
+#include "OTLog.h"
 
 
 // all common OTTransaction stuff goes here.
@@ -239,7 +240,9 @@ void OTTransaction::ReleaseItems()
 	}
 }
 
-bool OTTransaction::SaveContractWallet(FILE * fl)
+
+
+bool OTTransaction::SaveContractWallet(std::ofstream & ofs)
 {
 	return true;
 }
@@ -316,7 +319,7 @@ int OTTransaction::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		SetTransactionNum(atol(xml->getAttributeValue("transactionNum")));
 		SetReferenceToNum(atol(xml->getAttributeValue("inReferenceTo")));
 		
-		fprintf(stderr, "Loaded transaction %ld, in reference to: %ld type: %s\n",
+		OTLog::vOutput(0, "Loaded transaction %ld, in reference to: %ld type: %s\n",
 //				"accountID:\n%s\n serverID:\n%s\n----------\n", 
 				GetTransactionNum(),
 				GetReferenceToNum(), strType.Get()
@@ -336,7 +339,7 @@ int OTTransaction::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			return 1;
 		}
 		else {
-			fprintf(stderr, "Error in OTTransaction::ProcessXMLNode: missing text for inReferenceTo.\n");
+			OTLog::Error("Error in OTTransaction::ProcessXMLNode: missing text for inReferenceTo.\n");
 			return (-1); // error condition
 		}
 	}
@@ -354,26 +357,25 @@ int OTTransaction::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			ascItem.GetString(strItem);
 			OTItem * pItem = new OTItem(GetUserID(), *this);
 			
+			OT_ASSERT(NULL != pItem);
+			
 			// If we're able to successfully base64-decode the string and load it up as
 			// a transaction, then add it to the ledger's list of transactions
-			if (pItem && pItem->LoadContractFromString(strItem) && pItem->VerifyContractID())
+			if (pItem->LoadContractFromString(strItem) && pItem->VerifyContractID())
 			{
 				m_listItems.push_back(pItem);
-//				fprintf(stderr, "Loaded transaction Item and adding to m_listItems in OTTransaction\n");
+//				OTLog::Output(5, "Loaded transaction Item and adding to m_listItems in OTTransaction\n");
 			}
-			else {
-				fprintf(stderr, "ERROR: loading transaction Item in OTTransaction::ProcessXMLNode\n");
-				if (pItem)
-				{
-					delete pItem;
-					pItem = NULL;
-				}
+			else 
+			{
+				OTLog::Error("ERROR: loading transaction Item in OTTransaction::ProcessXMLNode\n");
+				delete pItem;
+				pItem = NULL;
 				return (-1);
 			}
-			
 		}
 		else {
-			fprintf(stderr, "Error in OTTransaction::ProcessXMLNode: transaction item without value.\n");
+			OTLog::Error("Error in OTTransaction::ProcessXMLNode: transaction item without value.\n");
 			return (-1); // error condition
 		}
 		
@@ -441,7 +443,7 @@ void OTTransaction::UpdateContents()
 				strType.Get(), strAcctID.Get(), strUserID.Get(), strServerID.Get(), GetTransactionNum(),
 							  GetReferenceToNum());
 	
-//	fprintf(stderr, "IN REFERENCE TO, LENGTH: %d\n", m_ascInReferenceTo.GetLength());
+//	OTLog::vError("IN REFERENCE TO, LENGTH: %d\n", m_ascInReferenceTo.GetLength());
 	
 	// a transaction contains a list of items, but it is also in reference to some item, from someone else
 	// We include that item here.

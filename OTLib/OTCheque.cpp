@@ -93,6 +93,7 @@ using namespace io;
 
 
 #include "OTCheque.h"
+#include "OTLog.h"
 
 
 void OTCheque::UpdateContents()
@@ -204,7 +205,7 @@ int OTCheque::ProcessXMLNode(IrrXMLReader*& xml)
 
 		// ---------------------
 		
-		fprintf(stderr, 
+		OTLog::vOutput(0,
 				//	"\n===> Loading XML for token into memory structures..."
 				"\n\nCheque Amount: %ld.  Transaction Number: %ld\n Valid From: %d\n Valid To: %d\n"
 				" AssetTypeID: %s\n ServerID: %s\n"
@@ -249,7 +250,7 @@ int OTCheque::ProcessXMLNode(IrrXMLReader*& xml)
 			}
 		}
 		else {
-			fprintf(stderr, "Error in OTCheque::ProcessXMLNode: memo field without value.\n");
+			OTLog::Error("Error in OTCheque::ProcessXMLNode: memo field without value.\n");
 			return (-1); // error condition
 		}
 		
@@ -341,7 +342,7 @@ OTCheque::~OTCheque()
 }
 
 
-bool OTCheque::SaveContractWallet(FILE * fl)
+bool OTCheque::SaveContractWallet(std::ofstream & ofs)
 {
 	
 	return true;

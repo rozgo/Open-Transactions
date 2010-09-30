@@ -86,6 +86,7 @@
 #define __OTACCOUNT_H__
 
 #include <list>
+#include <fstream>
 
 #include "OTTransactionType.h"
 #include "OTString.h"
@@ -150,7 +151,8 @@ public:
 	virtual bool LoadContract(); // overriding this so I can set the filename automatically inside based on ID.
 	bool SaveAccount(); // generates filename based on accounts path and account ID. Saves to the standard location for an acct.
 		
-	virtual bool SaveContractWallet(FILE * fl);
+//	virtual bool SaveContractWallet(FILE * fl);
+	virtual bool SaveContractWallet(std::ofstream & ofs);
 };
 
 typedef std::list <OTAccount *>	listOfAccounts;

@@ -85,6 +85,8 @@
 #ifndef __OTSERVERCONTRACT_H__
 #define __OTSERVERCONTRACT_H__
 
+#include <fstream>
+
 #include "OTContract.h"
 
 class OTString;
@@ -106,7 +108,8 @@ public:
 	
 	virtual ~OTServerContract();
 
-	virtual bool SaveContractWallet(FILE * fl);
+//	virtual bool SaveContractWallet(FILE * fl);
+	virtual bool SaveContractWallet(std::ofstream & ofs);
 };
 
 #endif // __OTSERVERCONTRACT_H__

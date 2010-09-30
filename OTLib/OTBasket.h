@@ -86,6 +86,7 @@
 #define __OTBASKET_H__
 
 #include <deque>
+#include <fstream>
 
 #include "OTIdentifier.h"
 #include "OTContract.h"
@@ -135,7 +136,8 @@ public:
 	virtual ~OTBasket();
 		
 	virtual void UpdateContents();
-	virtual bool SaveContractWallet(FILE * fl);	
+//	virtual bool SaveContractWallet(FILE * fl);	
+	virtual bool SaveContractWallet(std::ofstream & ofs);
 
 	virtual void CalculateContractID(OTIdentifier & newID);
 	

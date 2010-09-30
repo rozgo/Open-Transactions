@@ -114,6 +114,7 @@ using namespace io;
 
 #include "OTPseudonym.h"
 #include "OTContract.h"
+#include "OTLog.h"
 
 
 void OTContract::Initialize()
@@ -209,7 +210,7 @@ bool OTContract::VerifyContract()
 	// a hash of the contract file, signatures and all.
 	if (false == VerifyContractID())
 	{
-		fprintf(stderr, "Error verifying contract ID in OTContract::VerifyContract\n");
+		OTLog::Output(1, "Failed verifying contract ID in OTContract::VerifyContract\n");
 		return false;
 	}
 	
@@ -218,30 +219,28 @@ bool OTContract::VerifyContract()
 
 	if (NULL == pNym)
 	{
-		fprintf(stderr, "Error retrieving contract public nym from within contract, in OTContract::VerifyContract\n");
+		OTLog::Output(1, "Failed retrieving contract public nym from within contract, in OTContract::VerifyContract\n");
 		return false;
 	}
 	
-	// Resume: Have to put the verify signature back here.
 	
 	if (false == VerifySignature(*pNym))
 	{
-		fprintf(stderr, "Error verifying public key from contract with signature on contract.\n");
+		OTLog::Output(1, "Failed verifying public key from contract with signature on contract.\n");
 		return false;
 	}
 
 	
-	fprintf(stderr, "\nWe now know that...\n"
-			"1) The Contract ID from the wallet matches the newly-calculated hash of the contract file.\n"
-			"2) A standard \"contract\" Public Key or x509 Cert WAS found inside the contract.\n"
-			"3) And the **SIGNATURE VERIFIED** with THAT key.\n\n");
+	OTLog::Output(1, "\nVerified -- The Contract ID from the wallet matches the newly-calculated hash of the contract file.\n"
+			"Verified -- A standard \"contract\" Public Key or x509 Cert WAS found inside the contract.\n"
+			"Verified -- And the **SIGNATURE VERIFIED** with THAT key.\n\n");
 	return true;
 }
 
 
 void OTContract::CalculateContractID(OTIdentifier & newID) const
 {
-//	fprintf(stderr, "DEBUG CalculateContractID:\n--->%s<---\n",
+//		OTLog::vError("DEBUG CalculateContractID:\n--->%s<---\n",
 //			m_strRawFile.Get());
 	
 	newID.CalculateDigest(m_strRawFile);
@@ -253,7 +252,7 @@ bool OTContract::VerifyContractID()
 		
 	if (!newID.CalculateDigest(m_strRawFile))
 	{
-		fprintf(stderr, "Error calculating Contract digest.\n");
+		OTLog::Output(1, "Error calculating Contract digest.\n");
 		return false;	
 	}
 	
@@ -269,7 +268,7 @@ bool OTContract::VerifyContractID()
 	{
 		OTString str1(m_ID), str2(newID);
 
-		fprintf(stderr, "\nHashes do NOT match in OTContract::VerifyContractID.\n%s\n%s\n"
+		OTLog::vOutput(0, "\nHashes do NOT match in OTContract::VerifyContractID.\n%s\n%s\n"
 //				"\nRAW FILE:\n--->%s<---"
 				"\n",
 				str1.Get(), str2.Get()
@@ -280,7 +279,7 @@ bool OTContract::VerifyContractID()
 	else {
 		OTString str1;
 		newID.GetString(str1);
-		fprintf(stderr, "\nContract ID *SUCCESSFUL* match to %s hash of contract file:\n%s\n\n",
+		OTLog::vOutput(1, "\nContract ID *SUCCESSFUL* match to %s hash of contract file:\n%s\n\n",
 				OTIdentifier::DefaultHashAlgorithm.Get(), str1.Get());
 		return true;
 	}
@@ -293,17 +292,15 @@ const OTPseudonym * OTContract::GetContractPublicNym()
 	
 	for (mapOfNyms::iterator ii = m_mapNyms.begin(); ii != m_mapNyms.end(); ++ii)
 	{		
-		if (pNym = (*ii).second)
-		{
-			if ((*ii).first == "contract") // TODO have a place for hardcoded values like this.
-			{							   // We're saying here that every contract has to have a key tag called "contract"
-										   // where the official public key can be found for it and for any contract.
-				return pNym;
-			}
+		pNym = (*ii).second;
+		
+		OT_ASSERT_MSG(NULL != pNym, "NULL pseudonym pointer in OTContract::GetContractPublicNym.\n");
+		
+		if ((*ii).first == "contract") // TODO have a place for hardcoded values like this.
+		{							   // We're saying here that every contract has to have a key tag called "contract"
+									   // where the official public key can be found for it and for any contract.
+			return pNym;
 		}
-		else {
-			fprintf(stderr, "NULL pseudonym pointer in OTContract::GetContractPublicNym.\n");
-		}		
 	}
 	
 	return pNym;	
@@ -319,18 +316,16 @@ const OTAsymmetricKey * OTContract::GetContractPublicKey()
 	
 	for (mapOfNyms::iterator ii = m_mapNyms.begin(); ii != m_mapNyms.end(); ++ii)
 	{		
-		if (pNym = (*ii).second)
-		{
-			if ((*ii).first == "contract") // TODO have a place for hardcoded values like this.
-			{							   // We're saying here that every contract has a key tag called "contract"
-										   // where the official public key can be found for it and for any contract.
-				pKey = (OTAsymmetricKey *)		&(pNym->GetPublicKey());
-				return (const OTAsymmetricKey *)pKey;
-			}
+		pNym = (*ii).second;
+		
+		OT_ASSERT_MSG(NULL != pNym, "NULL pseudonym pointer in OTContract::GetContractPublicKey.\n");
+		
+		if ((*ii).first == "contract") // TODO have a place for hardcoded values like this.
+		{							   // We're saying here that every contract has a key tag called "contract"
+									   // where the official public key can be found for it and for any contract.
+			pKey = (OTAsymmetricKey *)		&(pNym->GetPublicKey());
+			return (const OTAsymmetricKey *)pKey;
 		}
-		else {
-			fprintf(stderr, "NULL pseudonym pointer in OTContract::GetContractPublicKey.\n");
-		}		
 	}
 	
 	return pKey;
@@ -457,21 +452,16 @@ bool OTContract::SignContract(const OTPseudonym & theNym)
 	bool bSigned = false;
 	OTSignature * pSig = NULL;
 
-	if (pSig = new OTSignature())
-	{
-		bSigned = SignContract(theNym, *pSig);
+	OT_ASSERT_MSG(pSig = new OTSignature(), "Error allocating memory for Signature in OTContract::SignContract\n");
+	
+	bSigned = SignContract(theNym, *pSig);
 
-		if (bSigned)
-			m_listSignatures.push_back(pSig);
-		else 
-		{
-			delete pSig;
-			pSig = NULL;
-		}
-	}
-	else
+	if (bSigned)
+		m_listSignatures.push_back(pSig);
+	else 
 	{
-		fprintf(stderr, "Error allocating memory for Signature in OTContract::SignContract\n");
+		delete pSig;
+		pSig = NULL;
 	}
 	
 	return bSigned;
@@ -531,7 +521,7 @@ bool OTContract::SignContractDefaultHash(const EVP_PKEY * pkey, OTSignature & th
 	
 	if (!pRsaKey)
 	{
-		fprintf(stderr, "EVP_PKEY_get1_RSA failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
+		OTLog::vError("EVP_PKEY_get1_RSA failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
 		return false;
 	}
 	
@@ -543,7 +533,7 @@ bool OTContract::SignContractDefaultHash(const EVP_PKEY * pkey, OTSignature & th
 	const EVP_MD * digest1 = OTIdentifier::GetOpenSSLDigestByName(OTIdentifier::HashAlgorithm1); // SHA-512
 	if (NULL == digest1)
 	{
-		fprintf(stderr, "Failure to load message digest algorithm in OTContract::SignContractDefaultHash\n");
+		OTLog::Error("Failure to load message digest algorithm in OTContract::SignContractDefaultHash\n");
 		RSA_free(pRsaKey);
 		return false;
 	}
@@ -559,7 +549,7 @@ bool OTContract::SignContractDefaultHash(const EVP_PKEY * pkey, OTSignature & th
 	const EVP_MD * digest2 = OTIdentifier::GetOpenSSLDigestByName(OTIdentifier::HashAlgorithm2); // WHIRLPOOL
 	if (NULL == digest2)
 	{
-		fprintf(stderr, "Failure to load message digest algorithm in OTContract::SignContractDefaultHash\n");
+		OTLog::Error("Failure to load message digest algorithm in OTContract::SignContractDefaultHash\n");
 		RSA_free(pRsaKey);
 		return false;
 	}
@@ -573,7 +563,7 @@ bool OTContract::SignContractDefaultHash(const EVP_PKEY * pkey, OTSignature & th
 	
 	
 	// XOR the two together
-	for (int i = 0; i < (uDigest1Len > uDigest2Len ? uDigest2Len : uDigest1Len); i++)
+	for (unsigned int i = 0; i < (uDigest1Len > uDigest2Len ? uDigest2Len : uDigest1Len); i++)
 	{
 		pDigest[i] = ((pOutputHash1[i]) ^ (pOutputHash2[i]));
 	}
@@ -591,7 +581,7 @@ bool OTContract::SignContractDefaultHash(const EVP_PKEY * pkey, OTSignature & th
 	status = RSA_padding_add_PKCS1_PSS(pRsaKey, EM, pDigest, digest1, -2); //maximum salt length
 	if (!status)  
 	{
-		fprintf(stderr, "RSA_padding_add_PKCS1_PSS failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
+		OTLog::vError("RSA_padding_add_PKCS1_PSS failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
 		RSA_free(pRsaKey);
 		return false;
 	}
@@ -600,7 +590,7 @@ bool OTContract::SignContractDefaultHash(const EVP_PKEY * pkey, OTSignature & th
 	status = RSA_private_encrypt(128, EM, pSignature, pRsaKey, RSA_NO_PADDING);
 	if (status == -1)
 	{
-		fprintf(stderr, "RSA_private_encrypt failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
+		OTLog::vError("RSA_private_encrypt failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
 		RSA_free(pRsaKey);
 		return false;
 	}
@@ -651,7 +641,7 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	
 	if (!pRsaKey)
 	{
-		fprintf(stderr, "EVP_PKEY_get1_RSA failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
+		OTLog::vError("EVP_PKEY_get1_RSA failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
 		return false;
 	}
 	
@@ -660,7 +650,7 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	const EVP_MD * digest1 = OTIdentifier::GetOpenSSLDigestByName(OTIdentifier::HashAlgorithm1); // SHA-512
 	if (NULL == digest1)
 	{
-		fprintf(stderr, "Failure to load message digest algorithm in OTContract::VerifyContractDefaultHash\n");
+		OTLog::Error("Failure to load message digest algorithm in OTContract::VerifyContractDefaultHash\n");
 		RSA_free(pRsaKey);
 		return false;
 	}
@@ -676,7 +666,7 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	const EVP_MD * digest2 = OTIdentifier::GetOpenSSLDigestByName(OTIdentifier::HashAlgorithm2); // WHIRLPOOL
 	if (NULL == digest2)
 	{
-		fprintf(stderr, "Failure to load message digest algorithm in OTContract::VerifyContractDefaultHash\n");
+		OTLog::Error("Failure to load message digest algorithm in OTContract::VerifyContractDefaultHash\n");
 		RSA_free(pRsaKey);
 		return false;
 	}
@@ -689,7 +679,7 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	EVP_MD_CTX_cleanup(&mdHash2_ctx); // cleanup
 	
 	// XOR the two together
-	for (int i = 0; i < (uDigest1Len > uDigest2Len ? uDigest2Len : uDigest1Len); i++)
+	for (unsigned int i = 0; i < (uDigest1Len > uDigest2Len ? uDigest2Len : uDigest1Len); i++)
 	{
 		pDigest[i] = ((pOutputHash1[i]) ^ (pOutputHash2[i]));
 	}
@@ -711,7 +701,7 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	// Unless the call fails of course...
 	if (!theSignature.GetData(binSignature))
 	{
-		fprintf(stderr, "Error decoding base64 data for Signature in OTContract::VerifyContractDefaultHash.\n");
+		OTLog::Error("Error decoding base64 data for Signature in OTContract::VerifyContractDefaultHash.\n");
 		RSA_free(pRsaKey);
 		return false;
 	}
@@ -723,7 +713,7 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	status = RSA_public_decrypt(128, (const unsigned char*)binSignature.GetPointer(), pDecrypted, pRsaKey, RSA_NO_PADDING);
 	if (status == -1)
 	{
-		fprintf(stderr, "RSA_public_decrypt failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
+		OTLog::vError("RSA_public_decrypt failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
 		RSA_free(pRsaKey);
 		return false;
 	}
@@ -733,12 +723,12 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	status = RSA_verify_PKCS1_PSS(pRsaKey, pDigest, digest1, pDecrypted, -2); // salt length recovered from signature
 	if (status == 1)
 	{
-//		fprintf(stderr, "  *Signature verified*\n");
+		OTLog::Output(2, "  *Signature verified*\n");
 		bReturnValue = true;
 	}
 	else
 	{
-		fprintf(stderr, "RSA_verify_PKCS1_PSS failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
+		OTLog::vError("RSA_verify_PKCS1_PSS failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
 		RSA_free(pRsaKey);
 		return false;
 	}
@@ -769,11 +759,8 @@ bool OTContract::SignContract(const EVP_PKEY * pkey, OTSignature & theSignature,
 	
 	OTString strDoubleHash;
 	
-	if (NULL == pkey) 
-	{ 
-		fprintf (stderr, "Null private key sent to OTContract::SignContract.\n"); 
-		return false; 
-	} 
+	OT_ASSERT_MSG(NULL != pkey, "Null private key sent to OTContract::SignContract.\n");
+	
 
 	// Update the contents, (not always necessary, many contracts are read-only)
 	// This is where we provide an overridable function for the child classes that
@@ -812,7 +799,7 @@ bool OTContract::SignContract(const EVP_PKEY * pkey, OTSignature & theSignature,
 	
 	if (NULL == md)
 	{
-		fprintf (stderr, "Unable to decipher Hash algorithm in OTContract::SignContract: %s\n", strHashType.Get()); 
+		OTLog::vError("Unable to decipher Hash algorithm in OTContract::SignContract: %s\n", strHashType.Get()); 
 		return false; 
 	}
 
@@ -832,12 +819,13 @@ bool OTContract::SignContract(const EVP_PKEY * pkey, OTSignature & theSignature,
 	sig_len = sizeof(sig_buf); 
 	err = EVP_SignFinal (&md_ctx, sig_buf, (unsigned int *)&sig_len, (EVP_PKEY *)pkey); 
 		
-	if (err != 1) { 
-		fprintf (stderr, "Error signing xml contents in OTContract::SignContract.\n"); 
+	if (err != 1) 
+	{ 
+		OTLog::Error("Error signing xml contents in OTContract::SignContract.\n"); 
 		return false; 
 	}
 	else {
-		fprintf (stderr, "Successfully signed xml contents.\n");
+		OTLog::Output(3, "Successfully signed xml contents.\n");
 		
 		// We put the signature data into the signature object that
 		// was passed in for that purpose.
@@ -855,11 +843,7 @@ bool OTContract::VerifySignature(const EVP_PKEY * pkey, const OTSignature & theS
 {	
 	OTString strDoubleHash;
 	
-	if (NULL == pkey)
-	{
-		fprintf(stderr, "Null key in OTContract::VerifySignature.\n");
-		return false;		
-	}
+	OT_ASSERT_MSG(NULL != pkey, "Null key in OTContract::VerifySignature.\n");
 	
 	// Are we using the special SAMY hash? In which case, we have to actually combine two hashes.
 	const bool bUsesDefaultHashAlgorithm = strHashType.Compare(OTIdentifier::DefaultHashAlgorithm);
@@ -885,7 +869,7 @@ bool OTContract::VerifySignature(const EVP_PKEY * pkey, const OTSignature & theS
 	
 	if (!md) 
 	{
-		fprintf(stderr, "Unknown message digest algorithm in OTContract::VerifySignature: %s\n", 
+		OTLog::vOutput(1, "Unknown message digest algorithm in OTContract::VerifySignature: %s\n", 
 				strHashType.Get());
 		return false;
 	}
@@ -896,7 +880,7 @@ bool OTContract::VerifySignature(const EVP_PKEY * pkey, const OTSignature & theS
 	// Unless the call failed of course...
 	if (!theSignature.GetData(binSignature))
 	{
-		fprintf(stderr, "Error decoding base64 data for Signature in OTContract::VerifySignature.\n");
+		OTLog::Error("Error decoding base64 data for Signature in OTContract::VerifySignature.\n");
 		return false;
 	}
 	
@@ -939,9 +923,12 @@ bool OTContract::VerifySignature(const EVP_PKEY * pkey, const OTSignature & theS
 // theSignature will contain the output.
 bool OTContract::SignContract(const char * szFilename, OTSignature & theSignature)
 {	
-	FILE * fp = NULL; // _WIN32
+	OT_ASSERT(NULL != szFilename);
+	
+//	FILE * fp = NULL; // _WIN32
 	EVP_PKEY * pkey = NULL; 
 		
+/*
 	// Read private key 
 #ifdef _WIN32
 	errno_t err = fopen_s(&fp, szFilename, "rb"); 
@@ -951,17 +938,25 @@ bool OTContract::SignContract(const char * szFilename, OTSignature & theSignatur
 
 	if (NULL == fp)
 	{ 
-		fprintf (stderr, "Error opening private key in OTContract::SignContract.\n"); 
+		OTLog::Error("Error opening private key in OTContract::SignContract.\n"); 
 		return false; 
 	} 
 	
     pkey = PEM_read_PrivateKey(fp, NULL, NULL, NULL); 
 	
 	fclose (fp); 
+*/
+	BIO *bio;
+	bio = BIO_new( BIO_s_file() );
+	BIO_read_filename( bio, szFilename );
+	
+	pkey = PEM_read_bio_PrivateKey( bio, NULL, NULL, NULL );
+	
+	BIO_free_all(bio);
 	
 	if (NULL == pkey) 
 	{ 
-		fprintf (stderr, "Error reading private key in OTContract::SignContract.\n"); 
+		OTLog::Error("Error reading private key in OTContract::SignContract.\n"); 
 		return false; 
 	} 
 	
@@ -993,11 +988,12 @@ bool OTContract::VerifySignature(const OTPseudonym & theNym)
 	for (listOfSignatures::iterator ii = m_listSignatures.begin(); 
 		 ii != m_listSignatures.end(); ++ii)
 	{
-		if (pSig = *ii)
-		{
-			if (VerifySignature(theNym, *pSig))
-				return true;
-		}
+		pSig = *ii;
+		
+		OT_ASSERT(NULL != pSig);
+		
+		if (VerifySignature(theNym, *pSig))
+			return true;
 	}
 	
 	return false;
@@ -1044,17 +1040,26 @@ bool OTContract::VerifySignature(const OTAsymmetricKey & theKey, const OTSignatu
 }
 
 
+
 // Presumably the Signature passed in here was just loaded as part of this contract and is
 // somewhere in m_listSignatures. Now it is being verified.
 bool OTContract::VerifySignature(const char * szFilename, const OTSignature & theSignature) const
 {
-	FILE * fp		= NULL; 
-	X509 *	x509	= NULL; 
+	OT_ASSERT_MSG(NULL != szFilename, "Null filename pointer passed to OTContract::VerifySignature");
+	
+//	FILE	 * fp	= NULL; 
+	X509	 * x509	= NULL; 
 	EVP_PKEY * pkey	= NULL; 
 	
 	// Read public key
-	fprintf (stderr, "Reading public key from certfile in order to verify signature...\n"); 
+	OTLog::Output(2, "Reading public key from certfile in order to verify signature...\n"); 
 
+	BIO * bio = BIO_new( BIO_s_file() );
+	BIO_read_filename( bio, szFilename );
+	x509 = PEM_read_bio_X509(bio, NULL, NULL, NULL); 
+	BIO_free_all(bio);
+	
+/*
 #ifdef _WIN32
 	errno_t err = fopen_s(&fp, szFilename, "rb"); 
 #else
@@ -1063,33 +1068,35 @@ bool OTContract::VerifySignature(const char * szFilename, const OTSignature & th
 
 	if (fp == NULL) 
 	{ 
-		fprintf (stderr, "Error opening cert file in OTContract::VerifySignature.\n"); 
+		OTLog::Error("Error opening cert file in OTContract::VerifySignature.\n"); 
 		return false; 
 	} 
 	
 	x509 = PEM_read_X509(fp, NULL, NULL, NULL); 
 	
 	fclose (fp); 
+ */
 	
 	if (x509 == NULL) 
 	{ 
-		fprintf (stderr, "Error reading x509 out of cert file.\n"); 
+		OTLog::vError("Failed reading x509 out of cert file: %s\n", szFilename); 
 		return false; 
 	}
+	
 	
 	pkey = X509_get_pubkey(x509); 
 	
 	if (pkey == NULL) 
 	{ 
-		fprintf (stderr, "Error reading public key from x509\n"); 
-		//At some point have to call this
+		OTLog::vError("Failed reading public key from x509 from certfile: %s\n", szFilename); 
+		// At some point have to call this
 		X509_free(x509);   
 		return false; 
 	} 
 	
 	bool bVerifySig = VerifySignature(pkey, theSignature, m_strSigHashType);
 	
-	//At some point have to call this
+	// At some point have to call this
 	X509_free(x509);   
 	EVP_PKEY_free(pkey); 
 	
@@ -1097,13 +1104,22 @@ bool OTContract::VerifySignature(const char * szFilename, const OTSignature & th
 }
 
 
-bool OTContract::SaveContents(FILE * fl) const
+bool OTContract::SaveContents(std::ofstream & ofs) const
+{	
+	ofs << m_xmlUnsigned.Get();
+	
+	return true;
+}
+
+/*
+ bool OTContract::SaveContents(FILE * fl) const
 {
 	if (fl)
 		fprintf(fl, "%s", m_xmlUnsigned.Get());
 	
 	return true;
 }
+*/
 
 // Saves the unsigned XML contents to a string
 bool OTContract::SaveContents(OTString & strContents) const
@@ -1172,15 +1188,16 @@ bool OTContract::SaveContract(OTString & strContract)
 	for (listOfSignatures::iterator ii = m_listSignatures.begin(); 
 		 ii != m_listSignatures.end(); ++ii)
 	{
-		if (pSig = *ii)
-		{
-			strContract.Concatenate("-----BEGIN %s SIGNATURE-----\n"
-									"Version: Open Transactions 0.2\n"
-									"Comment: http://github.com/FellowTraveler/Open-Transactions/wiki\n\n", 
-									m_strContractType.Get());
-			strContract.Concatenate("%s", pSig->Get());
-			strContract.Concatenate("-----END %s SIGNATURE-----\n\n", m_strContractType.Get());
-		}
+		pSig = *ii;
+		
+		OT_ASSERT(NULL != pSig);
+		
+		strContract.Concatenate("-----BEGIN %s SIGNATURE-----\n"
+								"Version: Open Transactions %s\n"
+								"Comment: http://github.com/FellowTraveler/Open-Transactions/wiki\n\n", 
+								m_strContractType.Get(), OTLog::Version());
+		strContract.Concatenate("%s", pSig->Get());
+		strContract.Concatenate("-----END %s SIGNATURE-----\n\n", m_strContractType.Get());
 	}
 	
 	// ---------------------------------------------------------------
@@ -1191,12 +1208,11 @@ bool OTContract::SaveContract(OTString & strContract)
 
 bool OTContract::SaveContract(const char * szFilename)
 {
-	if (NULL == szFilename)
-	{
-		fprintf(stderr, "Null filename sent to OTContract::SaveContract\n");
-		return false;
-	}
+	OT_ASSERT_MSG(NULL != szFilename, "Null filename sent to OTContract::SaveContract\n");
 	
+	m_strFilename.Set(szFilename);
+
+/*
 	FILE* fl = NULL; // _WIN32
 
 #ifdef _WIN32
@@ -1207,18 +1223,36 @@ bool OTContract::SaveContract(const char * szFilename)
 
 	if (NULL == fl)
 	{
-		fprintf(stderr, "Error opening file in OTContract::SaveContract: %s\n", szFilename);
+		OTLog::vError("Error opening file in OTContract::SaveContract: %s\n", szFilename);
 		return false;
 	}
-
-	m_strFilename.Set(szFilename);
+*/
+ 
+	// --------
+	// Here's where the serialization code would be changed to CouchDB or whatever.
+	// In a key/value database, szFilename is the "key" and strFinal.Get() is the "value".
+	std::ofstream ofs(szFilename, std::ios::binary);
+	
+	if (ofs.fail())
+	{
+		OTLog::vError("Error opening file in OTContract::SaveContract: %s\n", szFilename);
+		return false;
+	}
+	
+	ofs.clear();
 	
 	OTString strFinal;
 	SaveContract(strFinal);
-
-	fprintf(fl, "%s", strFinal.Get());
 	
+	ofs << strFinal.Get();
+	ofs.close();
+	// --------
+
+	/*
+	fprintf(fl, "%s", strFinal.Get());
 	fclose(fl);
+	*/
+	
 	return true;	
 }
 
@@ -1258,7 +1292,14 @@ bool OTContract::LoadContractFromString(const OTString & theStr)
 // but instead is chosen at random when the account is created.
 bool OTContract::LoadContractRawFile()
 {	
-	std::ifstream in(m_strFilename.Get());
+	std::ifstream in(m_strFilename.Get(), std::ios::binary);
+	
+	if (in.fail())
+	{
+		OTLog::vError("Error opening file in OTContract::LoadContractRawFile: %s\n",
+					  m_strFilename.Get());
+		return false;
+	}
 	
 	std::stringstream buffer;
 	buffer << in.rdbuf();
@@ -1283,8 +1324,9 @@ bool OTContract::LoadContract(const char * szFilename)
 	// opens m_strFilename and reads into m_strRawFile
 	if (LoadContractRawFile())
 		return ParseRawFile(); // Parses m_strRawFile into the various member variables.
-	else {
-		fprintf(stderr, "Error loading raw contract file: %s\n", m_strFilename.Get());
+	else 
+	{
+		OTLog::vError("Failed loading raw contract file: %s\n", m_strFilename.Get());
 	}
 
 	return false;
@@ -1316,7 +1358,7 @@ bool OTContract::ParseRawFile()
 	
 	if (!m_strRawFile.GetLength())
 	{
-		fprintf(stderr, "Empty m_strRawFile in OTContract::ParseRawFile. Filename: %s.\n", m_strFilename.Get());
+		OTLog::vError("Empty m_strRawFile in OTContract::ParseRawFile. Filename: %s.\n", m_strFilename.Get());
 		return false;
 	}
 	
@@ -1346,7 +1388,7 @@ bool OTContract::ParseRawFile()
 			if (bSignatureMode)
 			{
 				// we just reached the end of a signature
-			//	fprintf(stderr, "%s\n", pSig->Get());
+			//	OTLog::vError("%s\n", pSig->Get());
 				pSig = NULL;
 				bSignatureMode = false;
 				continue;
@@ -1360,7 +1402,7 @@ bool OTContract::ParseRawFile()
 			{
 				if (line.find("BEGIN")!=std::string::npos && line.at(1) == '-' && line.at(2) == '-' && line.at(3) == '-')
 				{
-//					fprintf(stderr, "\nProcessing contract... \n", m_strFilename.Get());
+//					OTLog::Error("\nProcessing contract... \n");
 					bHaveEnteredContentMode = true;
 					bContentMode = true;
 					continue;
@@ -1376,28 +1418,25 @@ bool OTContract::ParseRawFile()
 			else if (line.find("SIGNATURE")!=std::string::npos && line.at(1) == '-' && line.at(2) == '-' && line.at(3) == '-')
 			{
 				//if (bContentMode)
-				//	fprintf(stderr, "Finished reading contract.\n\nReading a signature at the bottom of the contract...\n");
+				//	OTLog::Output(3, "Finished reading contract.\n\nReading a signature at the bottom of the contract...\n");
 				//else
-				//	fprintf(stderr, "Reading another signature...\n");
+				//	OTLog::Output(3, "Reading another signature...\n");
 				
 				bSignatureMode = true;
 				bContentMode   = false;
 				
-				if (pSig = new OTSignature())
-				{
-					m_listSignatures.push_back(pSig);
-				}
-				else {
-					fprintf(stderr, "Error allocating memory for Signature in OTContract::ParseRawFile\n");
-					return false;
-				}
+				pSig = new OTSignature();
+				
+				OT_ASSERT_MSG(NULL != pSig, "Error allocating memory for Signature in OTContract::ParseRawFile\n");
+				
+				m_listSignatures.push_back(pSig);
 				
 				continue;
 			}
 			// c. There is an error in the file!
 			else if (line.length() < 3 || line.at(1) != ' ' || line.at(2) != '-')
 			{
-				fprintf(stderr, "Error in contract %s: a dash at the beginning of the "
+				OTLog::vOutput(0, "Error in contract %s: a dash at the beginning of the "
 						"line should be followed by a space and another dash.\n", m_strFilename.Get());
 				return false;
 			}
@@ -1419,11 +1458,11 @@ bool OTContract::ParseRawFile()
 						line.compare(0,8,"Comment:") == 0 || 
 						line.length()<2)
 					{
-						fprintf(stderr, "Skipping version section...\n");
+						OTLog::Output(2, "Skipping version section...\n");
 						
 						if (!m_strRawFile.sgets(buffer1, 2048))
 						{
-							fprintf(stderr, "Error in signature for contract %s: Unexpected EOF after \"Version:\"", m_strFilename.Get());
+							OTLog::vOutput(0, "Error in signature for contract %s: Unexpected EOF after \"Version:\"", m_strFilename.Get());
 							return false;
 						}
 						
@@ -1434,8 +1473,7 @@ bool OTContract::ParseRawFile()
 				{
 					if (line.compare(0,6,"Hash: ") == 0)
 					{
-						
-				//		fprintf(stderr, "Collecting message digest algorithm from contract header...\n");
+						OTLog::Output(2, "Collecting message digest algorithm from contract header...\n");
 						
 						std::string strTemp = line.substr(6);
 						m_strSigHashType = strTemp.c_str();
@@ -1443,7 +1481,7 @@ bool OTContract::ParseRawFile()
 						
 						if (!m_strRawFile.sgets(buffer1, 2048))
 						{
-							fprintf(stderr, "Error in contract %s: Unexpected EOF after \"Hash:\"", m_strFilename.Get());
+							OTLog::vOutput(0, "Error in contract %s: Unexpected EOF after \"Hash:\"", m_strFilename.Get());
 							return false;
 						}
 						continue;
@@ -1451,17 +1489,12 @@ bool OTContract::ParseRawFile()
 				}
 			}
 		}
-		
-		
+
 		if (bSignatureMode)
 		{
-			if (pSig)
-				pSig->Concatenate("%s\n", pBuf);
-			else {
-				fprintf(stderr, "Error: Null Signature pointer WHILE processing signature, in OTContract::ParseRawFile");
-				return false;
-			}
+			OT_ASSERT_MSG(NULL != pSig, "Error: Null Signature pointer WHILE processing signature, in OTContract::ParseRawFile");
 			
+			pSig->Concatenate("%s\n", pBuf);
 		}
 		else if (bContentMode)
 			m_xmlUnsigned.Concatenate("%s\n", pBuf);
@@ -1483,28 +1516,28 @@ bool OTContract::ParseRawFile()
 	
 	if (!bHaveEnteredContentMode)
 	{
-		fprintf(stderr, "Error in OTContract::ParseRawFile: Found no BEGIN for signed content.\n");
+		OTLog::Error("Error in OTContract::ParseRawFile: Found no BEGIN for signed content.\n");
 		return false;
 	}
 	else if (bContentMode)
 	{
-		fprintf(stderr, "Error in OTContract::ParseRawFile: EOF while reading xml content.\n");
+		OTLog::Error("Error in OTContract::ParseRawFile: EOF while reading xml content.\n");
 		return false;
 	}
 	else if (bSignatureMode)
 	{
-		fprintf(stderr, "Error in OTContract::ParseRawFile: EOF while reading signature.\n");
+		OTLog::Error("Error in OTContract::ParseRawFile: EOF while reading signature.\n");
 		return false;
 	}
 	else if (!LoadContractXML())
 	{
-		fprintf(stderr, "Error in OTContract::ParseRawFile: unable to load XML portion of contract into memory.\n");
+		OTLog::Error("Error in OTContract::ParseRawFile: unable to load XML portion of contract into memory.\n");
 		return false;
 	}
 	// Verification code and loading code are now called separately.
 //	else if (!VerifyContractID())
 //	{
-//		fprintf(stderr, "Error in OTContract::ParseRawFile: Contract ID does not match hashed contract file.\n");
+//		OTLog::Error("Error in OTContract::ParseRawFile: Contract ID does not match hashed contract file.\n");
 //		return false;
 //	}
 	else {
@@ -1526,34 +1559,44 @@ bool OTContract::LoadContractXML()
 	{
 		switch(xml->getNodeType())
 		{
-			case EXN_TEXT:
-//				else
-				{
-					// unknown element type
-					fprintf(stderr, "unknown text element type in OTContract::LoadContractXML: %s, value: %s\n", 
-							xml->getNodeName(), xml->getNodeData());
-				}
+			case EXN_NONE:
+			case EXN_COMMENT:
+			case EXN_ELEMENT_END:
+			case EXN_CDATA:
 				break;
-			case EXN_ELEMENT:
-			{
-				retProcess = ProcessXMLNode(xml);
 				
-				// an error was returned. file format or whatever.
-				if ((-1) == retProcess)
-				{
-					delete xml;
-					return false;
-				}
-				// No error, but also the node wasn't found...
-				else if (0 == retProcess)
-				{
-					// unknown element type
-					fprintf(stderr, "UNKNOWN element type in OTContract::LoadContractXML: %s, value: %s\n", 
-							xml->getNodeName(), xml->getNodeData());
-				}
-				// else if 1 was returned, that means the node was processed.
+			case EXN_TEXT:
+			{
+				// unknown element type
+				OTLog::vError( "unknown text element type in OTContract::LoadContractXML: %s, value: %s\n", 
+							  xml->getNodeName(), xml->getNodeData());
 			}
 				break;
+			case EXN_ELEMENT:
+				{
+					retProcess = ProcessXMLNode(xml);
+					
+					// an error was returned. file format or whatever.
+					if ((-1) == retProcess)
+					{
+						delete xml;
+						return false;
+					}
+					// No error, but also the node wasn't found...
+					else if (0 == retProcess)
+					{
+						// unknown element type
+						OTLog::vError("UNKNOWN element type in OTContract::LoadContractXML: %s, value: %s\n", 
+								xml->getNodeName(), xml->getNodeData());
+					}
+					// else if 1 was returned, that means the node was processed.
+				}
+				break;
+			default:
+			{
+			}
+				continue;
+				
 		}
 	}
 	
@@ -1584,7 +1627,7 @@ int OTContract::ProcessXMLNode(IrrXMLReader*& xml)
 		strEntityLongName = xml->getAttributeValue("longname"); 
 		strEntityEmail = xml->getAttributeValue("email");
 		
-		fprintf(stderr, "Loaded Entity, shortname: %s\nLongname: %s, email: %s\n----------\n", 
+		OTLog::vOutput(1, "Loaded Entity, shortname: %s\nLongname: %s, email: %s\n----------\n", 
 				strEntityShortName.Get(), strEntityLongName.Get(), strEntityEmail.Get());
 		
 		return 1;
@@ -1600,15 +1643,15 @@ int OTContract::ProcessXMLNode(IrrXMLReader*& xml)
 			strConditionValue = xml->getNodeData();
 		}
 		else {
-			fprintf(stderr, "Error in OTContract::ProcessXMLNode: Condition without value: %s\n",
+			OTLog::vError("Error in OTContract::ProcessXMLNode: Condition without value: %s\n",
 					strConditionName.Get());
 			return (-1); // error condition
 		}
 		
 		//Todo: add the conditions to a list in memory (on this object)
 		
-		fprintf(stderr, "---- Loaded condition \"%s\"\n", strConditionName.Get());
-//		fprintf(stderr, "Loading condition \"%s\": %s----------(END DATA)----------\n", strConditionName.Get(), 
+		OTLog::vOutput(1, "---- Loaded condition \"%s\"\n", strConditionName.Get());
+//		OTLog::vOutput(1, "Loading condition \"%s\": %s----------(END DATA)----------\n", strConditionName.Get(), 
 //				strConditionValue.Get());
 		
 		return 1;
@@ -1624,7 +1667,7 @@ int OTContract::ProcessXMLNode(IrrXMLReader*& xml)
 			strKeyValue = xml->getNodeData();
 		}
 		else {
-			fprintf(stderr, "Error in OTContract::ProcessXMLNode: Key without value: %s\n",
+			OTLog::vError("Error in OTContract::ProcessXMLNode: Key without value: %s\n",
 					strKeyName.Get());
 			return (-1); // error condition
 		}
@@ -1657,31 +1700,27 @@ bool OTContract::InsertNym(const OTString & strKeyName, const OTString & strKeyV
 	bool bResult		= false;
 	OTPseudonym * pNym	= new OTPseudonym;
 	
-	if (pNym)
-	{	
-		// This is the version of SetCertificate that handles escaped bookends. ( - -----BEGIN CERTIFICATE-----)
-		if (strKeyValue.Contains("CERTIFICATE") && pNym->SetCertificate(strKeyValue, true)) // it also defaults to true, FYI.
-		{											
-			m_mapNyms[strKeyName.Get()] = pNym;	
-			fprintf(stderr, "---- Loaded certificate \"%s\"\n", strKeyName.Get());
-			bResult = true;
-		}			
-		else if (strKeyValue.Contains("PUBLIC KEY") && pNym->SetPublicKey(strKeyValue, true)) // it also defaults to true, FYI.
-		{											
-			m_mapNyms[strKeyName.Get()] = pNym;	
-			fprintf(stderr, "---- Loaded public key \"%s\"\n", strKeyName.Get());
-			bResult = true;
-		}	
-		else
-		{
-			delete pNym;
-			pNym = NULL;
-			fprintf(stderr, "\nLoaded key \"%s\" but FAILED adding the Nym to the Contract:\n--->%s<---\n",
-					strKeyName.Get(), strKeyValue.Get());
-		}
-	}
-	else {
-		fprintf(stderr, "Error allocating memory for new Nym in OTContract::InsertNym\n");
+	OT_ASSERT_MSG(NULL != pNym, "Error allocating memory for new Nym in OTContract::InsertNym\n");
+	
+	// This is the version of SetCertificate that handles escaped bookends. ( - -----BEGIN CERTIFICATE-----)
+	if (strKeyValue.Contains("CERTIFICATE") && pNym->SetCertificate(strKeyValue, true)) // it also defaults to true, FYI.
+	{											
+		m_mapNyms[strKeyName.Get()] = pNym;	
+		OTLog::vOutput(1, "---- Loaded certificate \"%s\"\n", strKeyName.Get());
+		bResult = true;
+	}			
+	else if (strKeyValue.Contains("PUBLIC KEY") && pNym->SetPublicKey(strKeyValue, true)) // it also defaults to true, FYI.
+	{											
+		m_mapNyms[strKeyName.Get()] = pNym;	
+		OTLog::vOutput(1, "---- Loaded public key \"%s\"\n", strKeyName.Get());
+		bResult = true;
+	}	
+	else
+	{
+		delete pNym;
+		pNym = NULL;
+		OTLog::vOutput(0, "\nLoaded key \"%s\" but FAILED adding the Nym to the Contract:\n--->%s<---\n",
+				strKeyName.Get(), strKeyValue.Get());
 	}
 
 	return bResult;

@@ -111,6 +111,8 @@ extern "C"
 #include "OTClient.h"
 #include "OTEnvelope.h"
 
+#include "OTLog.h"
+
 
 
 int allow_debug = 1;
@@ -143,11 +145,11 @@ void SetupHeader( u_header & theCMD, int nTypeID, int nCmdID, OTPayload & thePay
 	BYTE byChecksum	= (BYTE)theCMD.fields.checksum;
 	int nChecksum	= byChecksum;
 	
-	fprintf(stderr, "OT_CMD_HEADER_SIZE: %d -- CMD TYPE: %d -- CMD NUM: %d -- (followed by 2 bytes of filler)\n"
+	OTLog::vOutput(4, "OT_CMD_HEADER_SIZE: %d -- CMD TYPE: %d -- CMD NUM: %d -- (followed by 2 bytes of filler)\n"
 			"PAYLOAD SIZE: %d -- CHECKSUM: %d\n", OT_CMD_HEADER_SIZE,
 			nTypeID, nCmdID, lSize, nChecksum);
 	
-	fprintf(stderr, "First 9 bytes are: %d %d %d %d %d %d %d %d %d\n",
+	OTLog::vOutput(5, "First 9 bytes are: %d %d %d %d %d %d %d %d %d\n",
 //			"sizeof(int) is %d, sizeof(long) is %d, sizeof(short) is %d, sizeof(uint32_t) is %d.\n", 
 			theCMD.buf[0],theCMD.buf[1],theCMD.buf[2],theCMD.buf[3],theCMD.buf[4], theCMD.buf[5], theCMD.buf[6], theCMD.buf[7], theCMD.buf[8]
 //			sizeof(int), sizeof(long), sizeof(short), sizeof(uint32_t)
@@ -192,21 +194,20 @@ bool OTServerConnection::Connect(OTPseudonym & theNym, OTServerContract & theSer
 	
 	if (false == theServerContract.GetConnectInfo(strHostname, nPort))
 	{
-		fprintf(stderr, "Error retrieving connection info from server contract.\n");
+		OTLog::Output(0,  "Failed retrieving connection info from server contract.\n");
 		return false;
 	}
 	
     SFSocket * socket;
 
     // Alloc Socket
-    if ((socket = SFSocketAlloc()) == NULL) {
-        fprintf(stderr, "Alloc Failed\n");
-        return false;
-    }
-		
+	socket = SFSocketAlloc();
+	
+	OT_ASSERT_MSG(NULL != socket, "SFSocketAlloc Failed\n");
+			
     // Initialize SSL client Socket
     if (SFSocketInit(socket, strCA_FILE.Get(), NULL, strKEY_FILE.Get(), strKEY_PASSWORD.Get(), NULL) < 0) {
-	    fprintf(stderr, "Init Failed\n");
+	    OTLog::Error("Init Failed\n");
         return false;
     }
 	
@@ -216,7 +217,7 @@ bool OTServerConnection::Connect(OTPseudonym & theNym, OTServerContract & theSer
 	
     // Connect to Host
     if (SFSocketConnectToHost(socket, strHostname.Get(), nPort) < 0) {
-        fprintf(stderr, "Connect to Host Failed\n");
+        OTLog::Output(0, "Connect to Host Failed\n");
         return false;
     }	
 	
@@ -239,15 +240,15 @@ void OTServerConnection::OnServerResponseToGetRequestNumber(long lNewRequestNumb
 {
 	if (m_pNym && m_pServerContract)
 	{
-//		fprintf(stderr, "Received new request number from the server: %ld. Updating Nym records...\n", 
-//				lNewRequestNumber);
+		OTLog::vOutput(1,  "Received new request number from the server: %ld. Updating Nym records...\n", 
+				lNewRequestNumber);
 		
 		OTString strServerID;
 		m_pServerContract->GetIdentifier(strServerID);
 		m_pNym->OnUpdateRequestNum(*m_pNym, strServerID, lNewRequestNumber);
 	}
 	else {
-		fprintf(stderr, "Expected m_pNym or m_pServerContract to be not null in "
+		OTLog::Error("Expected m_pNym or m_pServerContract to be not null in "
 				"OTServerConnection::OnServerResponseToGetRequestNumber.\n");
 	}
 }
@@ -326,9 +327,9 @@ bool OTServerConnection::ProcessInBuffer(OTMessage & theServerReply)
 	
 	if (OT_CMD_HEADER_SIZE == nread)
 	{
-//		fprintf(stderr, "\n**************************************************************\n"
-//				"===> Processing header from server reply. First 5 bytes are: %d %d %d %d %d...\n",
-//				theCMD.buf[0],theCMD.buf[1],theCMD.buf[2],theCMD.buf[3],theCMD.buf[4]);	
+		OTLog::vOutput(4, "\n**************************************************************\n"
+				"===> Processing header from server reply. First 5 bytes are: %d %d %d %d %d...\n",
+				theCMD.buf[0],theCMD.buf[1],theCMD.buf[2],theCMD.buf[3],theCMD.buf[4]);	
 		
 		
 		return ProcessReply(theCMD, theServerReply);
@@ -346,29 +347,31 @@ bool OTServerConnection::ProcessReply(u_header & theCMD, OTMessage & theServerRe
 	bool bSuccess = false;
 
 	
-	fprintf(stderr, "\n****************************************************************\n"
+	OTLog::vOutput(4, "\n****************************************************************\n"
 			"===> Processing header from server response.\nFirst 9 bytes are: %d %d %d %d %d %d %d %d %d...\n",
 			theCMD.buf[0],theCMD.buf[1],theCMD.buf[2],theCMD.buf[3],theCMD.buf[4],theCMD.buf[5], theCMD.buf[6], theCMD.buf[7], theCMD.buf[8]);
 
 	
 	if( theCMD.fields.type_id == CMD_TYPE_1 )
 	{
-	//	fprintf(stderr, "Received a Type 1 Command...\n");
+		OTLog::Output(3, "Received a Type 1 Command...\n");
 		
-		if( IsChecksumValid( theCMD.buf, OT_CMD_HEADER_SIZE ) ){								
-//			fprintf(stderr, "Checksum is valid! Processing payload.\n");
+		if( IsChecksumValid( theCMD.buf, OT_CMD_HEADER_SIZE ) )
+		{								
+			OTLog::Output(3, "Checksum is valid! Processing payload.\n");
+			
 			if (true == ProcessType1Cmd(theCMD, theServerReply ))
 				bSuccess = true;
 		}
 		else {
-			fprintf(stderr, "Invalid checksum - Type 1 Command\n");
+			OTLog::Error("Invalid checksum - Type 1 Command\n");
 		}
 	}
 	else
 	{
 		//gDebugLog.Write("Unknown command type");
 		int nCMDType = theCMD.fields.type_id;
-		fprintf(stderr, "Unknown command type: %d\n", nCMDType);
+		OTLog::vError("Unknown command type: %d\n", nCMDType);
 	}
 	
 	
@@ -397,7 +400,7 @@ bool OTServerConnection::ProcessReply(u_header & theCMD, OTMessage & theServerRe
 				break;
 		}
 		
-		fprintf(stderr, "Transmission error--therefore have flushed the pipe, discarding %d bytes.\n", 
+		OTLog::vError("Transmission error--therefore have flushed the pipe, discarding %d bytes.\n", 
 				nread, sizeJunkData);
 	}
 	
@@ -437,10 +440,10 @@ bool OTServerConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theServe
 	
 	switch (theCMD.fields.command_id) {
 		case TYPE_1_CMD_1:
-//			fprintf(stderr, "Received TYPE 1 CMD 1, an OTMessage.\n");
+			OTLog::Output(3,  "Received TYPE 1 CMD 1, an OTMessage.\n");
 			break;
 		case TYPE_1_CMD_2:
-//			fprintf(stderr, "Received TYPE 1 CMD 2, an OTEnvelope containing an OTMessage.\n");
+			OTLog::vOutput(3, "Received TYPE 1 CMD 2, an OTEnvelope containing an OTMessage.\n");
 			break;
 		default:
 			break;
@@ -450,18 +453,18 @@ bool OTServerConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theServe
 	
 	if (theCMD.fields.size == 0)
 	{
-		fprintf(stderr, "(The payload was a 0 size.)\n");
+		OTLog::Error("(The payload was a 0 size.)\n");
 		return true;
 	}
 	else if (nread < theCMD.fields.size)
 	{
-		fprintf(stderr, "Number of bytes read (%d) did NOT match size in header (%d).\n",
+		OTLog::vError("Number of bytes read (%d) did NOT match size in header (%d).\n",
 				nread, theCMD.fields.size);
 		return false;
 	}
 	else
 	{
-//		fprintf(stderr, "Loaded a payload, size: %d\n", theCMD.fields.size);
+		OTLog::vOutput(4,  "Loaded a payload, size: %d\n", theCMD.fields.size);
 	}
 	// ------------------------------------------------------------
 	
@@ -475,11 +478,11 @@ bool OTServerConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theServe
 		if (thePayload.GetMessage(theServerReply))
 #endif
 		{
-			fprintf(stderr, "Successfully retrieved payload message...\n");
+			OTLog::Output(4, "Successfully retrieved payload message...\n");
 			
 			if (theServerReply.ParseRawFile())
 			{
-				fprintf(stderr, "Successfully parsed payload message.\n");
+				OTLog::Output(4, "Successfully parsed payload message.\n");
 				
 				OTPseudonym * pServerNym = NULL;
 				
@@ -487,28 +490,28 @@ bool OTServerConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theServe
 				{
 					if (theServerReply.VerifySignature((const OTPseudonym &)*pServerNym))
 					{
-						fprintf(stderr, "VERIFIED -- this message was signed by the Server.\n");
+						OTLog::Output(0, "VERIFIED -- this message was signed by the Server.\n");
 					}
 					else {
-						fprintf(stderr, "Signature verification failed on this message, proportedly from the Server.\n");
+						OTLog::Output(0, "Signature verification failed on this message, proportedly from the Server.\n");
 						return false;
 					}
 				}
 				else {
-					fprintf(stderr, "No server contract loaded, or could not load public key from server contract.\n");
+					OTLog::Output(0, "No server contract loaded, or could not load public key from server contract.\n");
 					return false;
 				}
 				
 				return true;
 			}
 			else {
-				fprintf(stderr, "Error parsing message.\n");
+				OTLog::Error("Error parsing message.\n");
 				return false;
 			}
 			
 		}
 		else {
-			fprintf(stderr, "Error retrieving message from payload.\n");
+			OTLog::Error("Error retrieving message from payload.\n");
 			return false;
 		}
 		
@@ -520,7 +523,7 @@ bool OTServerConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theServe
 		OTEnvelope theEnvelope;
 		if (thePayload.GetEnvelope(theEnvelope))
 		{
-			fprintf(stderr, "===> Received encrypted envelope. (Server reply.) Decrypting...\n");
+			OTLog::Output(3, "===> Received encrypted envelope. (Server reply.) Decrypting...\n");
 			
 			OTString strEnvelopeContents;
 						
@@ -533,7 +536,7 @@ bool OTServerConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theServe
 				//
 				if (theServerReply.LoadContractFromString(strEnvelopeContents))
 				{
-		//			fprintf(stderr, "Success decrypting the message out of the envelope and parsing it.\n");
+					OTLog::Output(4, "Success decrypting the message out of the envelope and parsing it.\n");
 					
 					OTPseudonym * pServerNym = NULL;
 					
@@ -541,16 +544,17 @@ bool OTServerConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theServe
 					{
 						if (theServerReply.VerifySignature((const OTPseudonym &)*pServerNym))
 						{
-							fprintf(stderr, "VERIFIED -- this message was signed by the Server.\n");
-//							fprintf(stderr, "VERIFIED -- this message was signed by the Server:\n%s\n", strEnvelopeContents.Get());
+							OTLog::Output(0, "VERIFIED -- this message was signed by the Server.\n");
+//							OTLog::vOutput(0,  "VERIFIED -- this message was signed by the Server:\n%s\n", strEnvelopeContents.Get());
 						}
-						else {
-							fprintf(stderr, "Signature verification failed on this message, proportedly from the Server.\n");
+						else 
+						{
+							OTLog::Output(0,  "Signature verification failed on this message, purportedly from the Server.\n");
 							return false;
 						}
 					}
 					else {
-						fprintf(stderr, "No server contract loaded, or could not load public key from server contract.\n");
+						OTLog::Error("No server contract loaded, or could not load public key from server contract.\n");
 						return false;
 					}
 					
@@ -558,24 +562,24 @@ bool OTServerConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theServe
 				}
 				else 
 				{
-					fprintf(stderr, "Error loading message from envelope contents.\n");
+					OTLog::Error("Error loading message from envelope contents.\n");
 					return false;		
 				}
 			}
 			else {
-				fprintf(stderr, "Unable to open envelope.\n");
+				OTLog::Error("Unable to open envelope.\n");
 				return false;
 			}			
 		}
 		else {
-			fprintf(stderr, "Error retrieving message from payload.\n");
+			OTLog::Error("Error retrieving message from payload.\n");
 			return false;
 		}
 		
 	}
 		
 	else {
-		fprintf(stderr, "Error retrieving message from payload. Unknown type.\n");
+		OTLog::Error("Error retrieving message from payload. Unknown type.\n");
 		return false;
 	}
 	
@@ -670,7 +674,7 @@ void OTServerConnection::ProcessMessageOut(OTMessage & theMessage)
 #endif
 			break;
 	}		
-	fprintf(stderr, "Message sent...\n\n");
+	OTLog::Output(0, "Message sent...\n\n");
 	// At this point, we have sent the payload across the pipe.		
 }
 
@@ -715,7 +719,7 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 		
 		int nChecksum = theCMD.fields.checksum;
 		
-		fprintf(stderr, "(User has instructed to send a size %d, TYPE 1 COMMAND to the server...)\n CHECKSUM: %d\n", 
+		OTLog::vOutput(0, "(User has instructed to send a size %d, TYPE 1 COMMAND to the server...)\n CHECKSUM: %d\n", 
 				OT_CMD_HEADER_SIZE, nChecksum);
 		bSendCommand = true;
 	}
@@ -728,13 +732,13 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 		theCMD.fields.size = 98;
 		theCMD.fields.checksum = CalcChecksum(theCMD.buf, OT_CMD_HEADER_SIZE-1);
 		
-		fprintf(stderr, "(User has instructed to send a size %d, **malformed command** to the server...)\n", OT_CMD_HEADER_SIZE+3);
+		OTLog::vOutput(0, "(User has instructed to send a size %d, **malformed command** to the server...)\n", OT_CMD_HEADER_SIZE+3);
 		bSendCommand = true;
 	}
 	// Empty OTMessage including signed XML, but no other commands
 	else if (buf[0] == '3')
 	{
-		fprintf(stderr, "(User has instructed to create a signed XML message and send it to the server...)\n");
+		OTLog::vOutput(0, "(User has instructed to create a signed XML message and send it to the server...)\n");
 		bHandledIt = true;
 		
 		// Normally you'd update the member variables here, before signing it.
@@ -770,7 +774,7 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 		// check server ID command
 		if (buf[0] == 'c')
 		{
-			fprintf(stderr, "(User has instructed to send a checkServerID command to the server...)\n");
+			OTLog::vOutput(0, "(User has instructed to send a checkServerID command to the server...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -783,14 +787,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing checkServerID command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing checkServerID command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
 		// register new user account 
 		else if (buf[0] == 'r')
 		{
-			fprintf(stderr, "(User has instructed to send a createUserAccount command to the server...)\n");
+			OTLog::Output(0, "(User has instructed to send a createUserAccount command to the server...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -803,7 +807,7 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing createUserAccount command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing createUserAccount command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
@@ -813,7 +817,7 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 		// checkUser
 		else if (buf[0] == 'u')
 		{
-			fprintf(stderr, "(User has instructed to send a checkUser command to the server...)\n");
+			OTLog::Output(0, "(User has instructed to send a checkUser command to the server...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -826,14 +830,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing checkUser command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing checkUser command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
 		// register new asset account 
 		else if (buf[0] == 'a')
 		{
-			fprintf(stderr, "(User has instructed to send a createAccount command to the server...)\n");
+			OTLog::Output(0, "(User has instructed to send a createAccount command to the server...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -846,14 +850,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing createAccount command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing createAccount command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
 		// issue a new asset type 
 		else if (!strcmp(buf, "issue\n"))
 		{
-			fprintf(stderr, "(User has instructed to send an issueAssetType command to the server...)\n");
+			OTLog::Output(0, "(User has instructed to send an issueAssetType command to the server...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -866,14 +870,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing issueAssetType command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing issueAssetType command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
 		// issue a new basket asset type 
 		else if (!strcmp(buf, "basket\n"))
 		{
-			fprintf(stderr, "(User has instructed to send an issueBasket command to the server...)\n");
+			OTLog::Output(0, "(User has instructed to send an issueBasket command to the server...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -886,14 +890,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing issueBasket command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing issueBasket command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
 		// exchange in/out of a basket currency 
 		else if (!strcmp(buf, "exchange\n"))
 		{
-			fprintf(stderr, "(User has instructed to send an exchangeBasket command to the server...)\n");
+			OTLog::Output(0, "(User has instructed to send an exchangeBasket command to the server...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -906,14 +910,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing exchangeBasket command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing exchangeBasket command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
 		// get inbox 
 		else if (buf[0] == 'i')
 		{
-			fprintf(stderr, "(User has instructed to send a getInbox command to the server...)\n");
+			OTLog::Output(0, "(User has instructed to send a getInbox command to the server...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -926,14 +930,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing getInbox command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing getInbox command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
 		// deposit cheque
 		else if (buf[0] == 'q')
 		{
-			fprintf(stderr, "User has instructed to deposit a cheque...\n");
+			OTLog::Output(0, "User has instructed to deposit a cheque...\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -946,14 +950,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing deposit cheque command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing deposit cheque command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
 		// withdraw voucher
 		else if (buf[0] == 'v')
 		{
-			fprintf(stderr, "User has instructed to withdraw a voucher (like a cashier's cheque)...\n");
+			OTLog::Output(0, "User has instructed to withdraw a voucher (like a cashier's cheque)...\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -966,14 +970,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing withdraw voucher command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing withdraw voucher command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
 		// withdraw cash
 		else if (buf[0] == 'w')
 		{
-			fprintf(stderr, "(User has instructed to withdraw cash...)\n");
+			OTLog::Output(0, "(User has instructed to withdraw cash...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -986,14 +990,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing withdraw command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing withdraw command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
 		// deposit tokens
 		else if (buf[0] == 'd')
 		{
-			fprintf(stderr, "(User has instructed to deposit cash tokens...)\n");
+			OTLog::Output(0, "(User has instructed to deposit cash tokens...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -1006,14 +1010,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing deposit command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing deposit command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
 		// deposit purse
 		else if (buf[0] == 'p')
 		{
-			fprintf(stderr, "(User has instructed to deposit a purse containing cash...)\n");
+			OTLog::Output(0, "(User has instructed to deposit a purse containing cash...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -1026,14 +1030,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing deposit command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing deposit command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
 		// get account 
 		else if (!strcmp(buf, "test\n"))
 		{
-			fprintf(stderr, "(User has instructed to perform a test...)\n");
+			OTLog::vOutput(0, "(User has instructed to perform a test...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -1043,11 +1047,11 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				OTString strMessage("Well well well, this is just a little bit of plaintext.\nNotice there are NO NEWLINES at the start.\n"
 									"I'm just trying to make it as long as i can, so that\nI can test the envelope and armor functionality.\n");
 				
-				fprintf(stdout, "MESSAGE:\n------>%s<--------\n", strMessage.Get());
+				OTLog::vOutput(0, "MESSAGE:\n------>%s<--------\n", strMessage.Get());
 				
 				OTASCIIArmor ascMessage(strMessage);
 				
-				fprintf(stdout, "ASCII ARMOR:\n------>%s<--------\n", ascMessage.Get());
+				OTLog::vOutput(0, "ASCII ARMOR:\n------>%s<--------\n", ascMessage.Get());
 
 				OTEnvelope theEnvelope;
 				theEnvelope.Seal(*m_pNym, strMessage);
@@ -1056,14 +1060,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				
 				theEnvelope.GetAsciiArmoredData(ascMessage);
 				
-				fprintf(stdout, "ENCRYPTED PLAIN TEXT AND THEN ASCII ARMOR:\n------>%s<--------\n", ascMessage.Get());
+				OTLog::vOutput(0, "ENCRYPTED PLAIN TEXT AND THEN ASCII ARMOR:\n------>%s<--------\n", ascMessage.Get());
 				
 				strMessage.Release();
 				
 				OTEnvelope the2Envelope(ascMessage);
 				the2Envelope.Open(*m_pNym, strMessage);
 				
-				fprintf(stdout, "DECRYPTED PLAIN TEXT:\n------>%s<--------\n", strMessage.Get());
+				OTLog::vOutput(0, "DECRYPTED PLAIN TEXT:\n------>%s<--------\n", strMessage.Get());
 				
 				OTEnvelope the3Envelope;
 				the3Envelope.Seal(*m_pNym, strMessage.Get());
@@ -1072,14 +1076,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				
 				the3Envelope.GetAsciiArmoredData(ascMessage);
 				
-				fprintf(stdout, "RE-ENCRYPTED PLAIN TEXT AND THEN ASCII ARMOR:\n------>%s<--------\n", ascMessage.Get());
+				OTLog::vOutput(0, "RE-ENCRYPTED PLAIN TEXT AND THEN ASCII ARMOR:\n------>%s<--------\n", ascMessage.Get());
 
 				strMessage.Release();
 				
 				OTEnvelope the4Envelope(ascMessage);
 				the4Envelope.Open(*m_pNym, strMessage);
 				
-				fprintf(stdout, "RE-DECRYPTED PLAIN TEXT:\n------>%s<--------\n", strMessage.Get());
+				OTLog::vOutput(0, "RE-DECRYPTED PLAIN TEXT:\n------>%s<--------\n", strMessage.Get());
 				
 				OTEnvelope the5Envelope;
 				the5Envelope.Seal(*m_pNym, strMessage.Get());
@@ -1088,14 +1092,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				
 				the3Envelope.GetAsciiArmoredData(ascMessage);
 				
-				fprintf(stdout, "RE-RE-ENCRYPTED PLAIN TEXT AND THEN ASCII ARMOR:\n------>%s<--------\n", ascMessage.Get());
+				OTLog::vOutput(0, "RE-RE-ENCRYPTED PLAIN TEXT AND THEN ASCII ARMOR:\n------>%s<--------\n", ascMessage.Get());
 				
 				strMessage.Release();
 				
 				OTEnvelope the6Envelope(ascMessage);
 				the6Envelope.Open(*m_pNym, strMessage);
 				
-				fprintf(stdout, "RE-RE-DECRYPTED PLAIN TEXT:\n------>%s<--------\n", strMessage.Get());
+				OTLog::vOutput(0, "RE-RE-DECRYPTED PLAIN TEXT:\n------>%s<--------\n", strMessage.Get());
 				
 			}
 			
@@ -1105,7 +1109,7 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 		// get account 
 		else if (!strcmp(buf, "get\n"))
 		{
-			fprintf(stderr, "(User has instructed to send a getAccount command to the server...)\n");
+			OTLog::Output(0, "(User has instructed to send a getAccount command to the server...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -1118,14 +1122,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing getAccount command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing getAccount command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
 		// get contract 
 		else if (!strcmp(buf, "getcontract\n"))
 		{
-			fprintf(stderr, "(User has instructed to send a getContract command to the server...)\n");
+			OTLog::Output(0, "(User has instructed to send a getContract command to the server...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -1138,7 +1142,7 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing getContract command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing getContract command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
@@ -1146,12 +1150,13 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 		// sign contract 
 		else if (!strcmp(buf, "signcontract\n"))
 		{
-			fprintf(stdout, "Is the contract properly escaped already? [y/n]: ");
+			OTLog::Output(0, "Is the contract properly escaped already? [y/n]: ");
 			// User input.
 			// I need a from account, Yes even in a deposit, it's still the "From" account.
 			// The "To" account is only used for a transfer. (And perhaps for a 2-way trade.)
 			OTString strEscape;
-			strEscape.OTfgets(stdin);
+			strEscape.OTfgets(std::cin);
+//			strEscape.OTfgets(std::cin);
 			                    
 			char cEscape='n';
 			bool bEscaped = strEscape.At(0, cEscape);
@@ -1162,7 +1167,7 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 					bEscaped = false;
 			}
 				
-			fprintf(stdout, "Please enter an unsigned asset contract; terminate with ~ on a new line:\n> ");
+			OTLog::Output(0, "Please enter an unsigned asset contract; terminate with ~ on a new line:\n> ");
 			OTString strContract;
 			char decode_buffer[200];
 			
@@ -1176,7 +1181,7 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 						strContract.Concatenate("- ");
 					}
 					strContract.Concatenate("%s", decode_buffer);
-					fprintf(stdout, "> ");
+					OTLog::Output(0, "> ");
 				}
 			} while (decode_buffer[0] != '~');
 			
@@ -1187,7 +1192,7 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 			strContract.Release();
 			theContract.SaveContract(strContract);
 			
-			fprintf(stdout, ".\n..\n...\n....\n.....\n......\n.......\n........\n.........\n\n"
+			OTLog::vOutput(0, ".\n..\n...\n....\n.....\n......\n.......\n........\n.........\n\n"
 					"NEW CONTRACT:\n\n%s\n", strContract.Get());
 			// ------------------------------------------------------------------------
 		}
@@ -1195,7 +1200,7 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 		// get mint 
 		else if (!strcmp(buf, "getmint\n"))
 		{
-			fprintf(stderr, "(User has instructed to send a getMint command to the server...)\n");
+			OTLog::Output(0, "(User has instructed to send a getMint command to the server...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -1208,14 +1213,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing getMint command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing getMint command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
 		// notarize transfer 
 		else if (buf[0] == 't')
 		{
-			fprintf(stderr, "(User has instructed to send a Transfer command (Notarize Transactions) to the server...)\n");
+			OTLog::Output(0, "(User has instructed to send a Transfer command (Notarize Transactions) to the server...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -1228,14 +1233,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing notarizeTransactions command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing notarizeTransactions command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
 		// getRequest
 		else if (buf[0] == 'g')
 		{
-			fprintf(stderr, "(User has instructed to send a getRequest command to the server...)\n");
+			OTLog::Output(0, "(User has instructed to send a getRequest command to the server...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -1248,14 +1253,14 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing getRequest command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing getRequest command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
 		// getTransactionNum
 		else if (buf[0] == 'n')
 		{
-			fprintf(stderr, "(User has instructed to send a getTransactionNum command to the server...)\n");
+			OTLog::Output(0, "(User has instructed to send a getTransactionNum command to the server...)\n");
 			
 			// ------------------------------------------------------------------------------			
 			// if successful setting up the command payload...
@@ -1268,7 +1273,7 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				bSendPayload = true;				
 			}
 			else
-				fprintf(stderr, "Error processing getTransactionNum command in ProcessMessage: %c\n", buf[0]);
+				OTLog::vError("Error processing getTransactionNum command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
@@ -1277,8 +1282,8 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 			if( allow_debug )
 			{
 				//gDebugLog.Write("unknown user command in ProcessMessage in main.cpp");
-				fprintf(stderr, "\n");
-				//				fprintf(stderr, "unknown user command in ProcessMessage in main.cpp: %d\n", buf[0]);
+				OTLog::Output(0, "\n");
+				//				OTLog::vError( "unknown user command in ProcessMessage in main.cpp: %d\n", buf[0]);
 			}		
 			return;
 		}
@@ -1286,8 +1291,8 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 	
 	else if (false == bHandledIt)
 	{
-		//		fprintf(stderr, "Your command was unrecognized or required resources that were not loaded.\n");
-		fprintf(stderr, "\n");
+		//		OTLog::Error( "Your command was unrecognized or required resources that were not loaded.\n");
+		OTLog::Output(0, "\n");
 	}
 	
 	if (bSendCommand && bSendPayload)
@@ -1318,7 +1323,7 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 		
 		int n0 = theCMD.buf[0], n1 = theCMD.buf[1], n2 = theCMD.buf[2], n3 = theCMD.buf[3], n4 = theCMD.buf[4], n5 = theCMD.buf[5], n6 = theCMD.buf[6];
 		
-		fprintf(stderr, "Sent: %d %d %d %d %d %d %d\n", n0, n1, n2, n3, n4, n5, n6);
+		OTLog::vOutput(4, "Sent: %d %d %d %d %d %d %d\n", n0, n1, n2, n3, n4, n5, n6);
 	}
 	// At this point, we have sent the header across the pipe.
 }

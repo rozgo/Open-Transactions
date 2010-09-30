@@ -85,6 +85,7 @@
 #ifndef __OTITEM_H__
 #define __OTITEM_H__
 
+#include <fstream>
 
 #include "OTTransactionType.h"
 #include "OTString.h"
@@ -204,8 +205,8 @@ public:
 	void InitItem();
 	
 	
-	virtual bool SaveContractWallet(FILE * fl);
-	
+//	virtual bool SaveContractWallet(FILE * fl);
+	virtual bool SaveContractWallet(std::ofstream & ofs);
 };
 
 

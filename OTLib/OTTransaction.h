@@ -86,6 +86,7 @@
 #define __OTTRANSACTION_H__
 
 #include <list>
+#include <fstream>
 
 /*
 WHEN THE server receives a transaction request, it receives a MESSAGE containing an ascii-armored LEDGER.
@@ -220,7 +221,8 @@ public:
 	inline int	GetItemCount() { return m_listItems.size(); }
 	void AddItem(OTItem & theItem); // You have to allocate the item on the heap and then pass it in as a reference. 
 									// OTTransaction will take care of it from there and will delete it in destructor.
-	virtual bool SaveContractWallet(FILE * fl);	
+//	virtual bool SaveContractWallet(FILE * fl);	
+	virtual bool SaveContractWallet(std::ofstream & ofs);
 };
 
 

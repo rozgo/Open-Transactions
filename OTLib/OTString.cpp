@@ -90,6 +90,7 @@
 #include <cctype>
 
 #include <string> // The C++ one 
+#include <fstream> // The C++ one 
 
 #include "OTString.h"
 #include "OTIdentifier.h"
@@ -213,6 +214,21 @@ bool OTString::operator >=(const OTString &s2)  const
 }
 
 
+void fwrite_string(std::ofstream & ofs, const char *str)
+{
+	char * pchar;
+	
+	pchar  = (char *)str;
+	
+	if(str)
+		while(*pchar) {
+			if(*pchar != '\r')
+				ofs << *pchar;
+			pchar++;
+		}	
+}
+
+/*
 void fwrite_string(FILE *fl, const char *str)
 {
 	char * pchar;
@@ -226,6 +242,7 @@ void fwrite_string(FILE *fl, const char *str)
 			pchar++;
 		}
 }
+*/
 
 
 // ***** Construction -- Destruction ***** ------------------------------
@@ -446,14 +463,36 @@ bool OTString::Contains(const OTString& strCompare) const
 
 
 
-void OTString::OTfgets(FILE * fl)
+void OTString::OTfgets(std::istream & ifs)
 {
 	// _WIN32
 	static char * buffer = NULL;
 	
 	if (NULL == buffer)
 	{
-		buffer = new char[MAX_STRING_LENGTH];
+		buffer = new char[MAX_STRING_LENGTH]; // This only happens once. Static var.
+	}
+	
+	buffer[0] = '\0';
+	// _end _WIN32
+	
+	if (ifs.getline(buffer, MAX_STRING_LENGTH-1)) // delimiter defaults to '\n'
+	{
+		buffer[strlen(buffer)] = '\0';
+		
+		Set(buffer);
+	}	
+}
+
+/*
+void OTString::OTfgets(FILE * fl)
+{
+	// _WIN32
+	static char * buffer = NULL;
+
+	if (NULL == buffer)
+	{
+		buffer = new char[MAX_STRING_LENGTH]; // This only happens once. Static var.
 	}
 
 	buffer[0] = '\0';
@@ -463,11 +502,12 @@ void OTString::OTfgets(FILE * fl)
 	if (fgets(buffer, MAX_STRING_LENGTH-1, fl))
 	{
 		buffer[strlen(buffer)-1] = '\0';
-		
+
 		Set(buffer);
 	}
-		
 }
+*/
+
 
 const char * OTString::Get(void) const
 {
@@ -560,7 +600,7 @@ void OTString::Format(const char *arg, ...)
 	
 	if (NULL == new_string)
 	{
-		new_string = new char[MAX_STRING_LENGTH];
+		new_string = new char[MAX_STRING_LENGTH]; // This only happens once -- static var.
 	}
 
 	new_string[0] = '\0';
@@ -588,7 +628,7 @@ void OTString::Concatenate(const OTString & strBuf)
 	
 	if (NULL == new_string)
 	{
-		new_string = new char[MAX_STRING_LENGTH];
+		new_string = new char[MAX_STRING_LENGTH]; // This only happens once. Static var.
 	}
 
 	new_string[0] = '\0';
@@ -626,7 +666,7 @@ void OTString::Concatenate(const char *arg, ...)
 	
 	if (NULL == new_string)
 	{
-		new_string = new char[MAX_STRING_LENGTH];
+		new_string = new char[MAX_STRING_LENGTH]; // only happens once. static var.
 	}
 
 	new_string[0] = '\0';
@@ -637,7 +677,7 @@ void OTString::Concatenate(const char *arg, ...)
 	
 	if (NULL == arg_string)
 	{
-		arg_string = new char[MAX_STRING_LENGTH];
+		arg_string = new char[MAX_STRING_LENGTH]; // only happens once. static var.
 	}
 
 	arg_string[0] = '\0';
@@ -689,12 +729,18 @@ void OTString::Concatenate(const char *arg_string)
 
 
 
-void OTString::WriteToFile(FILE * fl) const
+void OTString::WriteToFile(std::ofstream & ofs) const
 {
-   if (fl != NULL)
-      fwrite_string(fl, m_strBuffer);
+	fwrite_string(ofs, m_strBuffer);
 }
 
+/*
+void OTString::WriteToFile(FILE * fl) const
+{
+	if (fl != NULL)
+		fwrite_string(fl, m_strBuffer);
+}
+*/
 
 // ***** Implementation ***** ------------------------------
 

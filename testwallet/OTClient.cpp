@@ -114,6 +114,7 @@ extern "C"
 
 #include "OTWallet.h"
 #include "OTClient.h"
+#include "OTLog.h"
 
 
 
@@ -153,7 +154,7 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 	
 	if (!bGotTransNum)
 	{
-		fprintf(stderr, "Error: No transaction numbers are available. Suggest requesting the server for a new one.\n");
+		OTLog::Output(0, "Error: No transaction numbers are available. Suggest requesting the server for a new one.\n");
 		return;
 	}
 	
@@ -189,11 +190,11 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 		if ((pTransaction = (*ii).second) && (pTransaction->GetReferenceToNum()>0)) // if pointer not null AND it refers to some other transaction
 		{
 //			OTString strTransaction(*pTransaction);
-//			fprintf(stderr, "TRANSACTION CONTENTS:\n%s\n", strTransaction.Get());
+//			OTLog::vError("TRANSACTION CONTENTS:\n%s\n", strTransaction.Get());
 			
 			OTString strRespTo;
 			pTransaction->GetReferenceString(strRespTo);
-//			fprintf(stderr, "TRANSACTION \"IN REFERENCE TO\" CONTENTS:\n%s\n", strRespTo.Get());	
+//			OTLog::vError("TRANSACTION \"IN REFERENCE TO\" CONTENTS:\n%s\n", strRespTo.Get());	
 			
 			OTItem * pOriginalItem = OTItem::CreateItemFromString(strRespTo, theServerID, pTransaction->GetReferenceToNum());
 			
@@ -234,7 +235,7 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 					pAcceptItem->SaveContract();
 				}
 				else {
-					fprintf(stderr, "Unrecognized item type while processing inbox.\n"
+					OTLog::Error( "Unrecognized item type while processing inbox.\n"
 							"(Only transfers, cheques, and accepts are operational inbox items at this time.)\n");
 				}
 				delete pOriginalItem; // make sure we clean this up...
@@ -242,7 +243,7 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 			}
 			else 
 			{
-				fprintf(stderr, "Error loading transaction item from string in OTClient::AcceptEntireInbox\n");
+				OTLog::vError("Error loading transaction item from string in OTClient::AcceptEntireInbox\n");
 			}
 		} // if pTransaction
 		if (pTransaction)
@@ -288,7 +289,7 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 			// but I used the above function instead.
 		}
 		else
-			fprintf(stderr, "Error processing processInbox command in OTClient::AcceptEntireInbox\n");
+			OTLog::Error("Error processing processInbox command in OTClient::AcceptEntireInbox\n");
 	}
 }
 
@@ -322,11 +323,11 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 	
 	if (!bSuccess)
 	{
-		fprintf(stderr, "ERROR loading ledger from message payload in OTClient::ProcessIncomingTransactions.\n");
+		OTLog::Error("ERROR loading ledger from message payload in OTClient::ProcessIncomingTransactions.\n");
 		return;
 	}
 	
-//	fprintf(stderr, "Loaded ledger out of message payload.\n");
+	OTLog::Output(3, "Loaded ledger out of message payload.\n");
 	
 	// TODO: Loop through ledger transactions, 		
 	OTTransaction * pTransaction	= NULL;
@@ -334,10 +335,15 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 	for (mapOfTransactions::iterator ii = theLedger.GetTransactionMap().begin(); 
 		 ii != theLedger.GetTransactionMap().end(); ++ii)
 	{	
+		pTransaction = (*ii).second;
+		
+		OT_ASSERT_MSG(NULL != pTransaction, "NULL transaction pointer in OTServer::UserCmdNotarizeTransactions\n");
+		
 		// for each transaction in the ledger, we create a transaction response and add
 		// that to the response ledger.
-		if ((pTransaction = (*ii).second) && pTransaction->VerifyAccount(*pServerNym)) // if not null && valid transaction reply from server
+		if (pTransaction->VerifyAccount(*pServerNym)) // if not null && valid transaction reply from server
 		{
+			 
 			// It's a withdrawal...
 			if (OTTransaction::atWithdrawal == pTransaction->GetType())
 			{
@@ -353,8 +359,9 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 			// let's see if the server gave us some new transaction numbers with it...
 			HarvestTransactionNumbers(*pTransaction, *pNym);
 		}
-		else {
-			fprintf(stderr, "NULL transaction pointer in OTServer::UserCmdNotarizeTransactions\n");
+		else 
+		{
+			OTLog::Output(0, "Failed verifying server ownership of this transaction.\n");
 		}		
 	}
 }
@@ -374,7 +381,7 @@ void OTClient::HarvestTransactionNumbers(OTTransaction & theTransaction, OTPseud
 		{ 
 			if (OTItem::acknowledgement == pItem->GetStatus())
 			{
-				fprintf(stderr, "SUCCESS -- Received new transaction number(s) from Server for storage.\n");
+				OTLog::Output(0, "SUCCESS -- Received new transaction number(s) from Server for storage.\n");
 				
 				OTString strAttachment;
 				pItem->GetAttachment(strAttachment);
@@ -388,8 +395,9 @@ void OTClient::HarvestTransactionNumbers(OTTransaction & theTransaction, OTPseud
 					}
 				}
 			}
-			else {
-				fprintf(stderr, "FAILURE -- Server refuses to send transaction num.\n"); // in practice will never occur.
+			else 
+			{
+				OTLog::Output(0, "FAILURE -- Server refuses to send transaction num.\n"); // in practice will never occur.
 			}
 		}
 	}	
@@ -416,10 +424,10 @@ void OTClient::ProcessDepositResponse(OTTransaction & theTransaction, OTServerCo
 		{ 
 			if (OTItem::acknowledgement == pItem->GetStatus())
 			{
-				fprintf(stderr, "SUCCESS -- Server acknowledges deposit.\n");
+				OTLog::Output(0, "SUCCESS -- Server acknowledges deposit.\n");
 			}
 			else {
-				fprintf(stderr, "FAILURE -- Server rejects deposit.\n");
+				OTLog::Output(0, "FAILURE -- Server rejects deposit.\n");
 			}
 
 		}
@@ -460,7 +468,7 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 			OTCheque	theVoucher;
 			if (theVoucher.LoadContractFromString(strVoucher))
 			{
-				fprintf(stdout, "\nReceived voucher from server:\n\n%s\n\n", strVoucher.Get());				
+				OTLog::vOutput(0, "\nReceived voucher from server:\n\n%s\n\n", strVoucher.Get());				
 			}
 		}
 		
@@ -488,13 +496,13 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 				
 				OTString strMintPath, ASSET_ID(thePurse.GetAssetID());
 				
-				strMintPath.Format("%s%smints%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-								   OTPseudonym::OTPathSeparator.Get(), ASSET_ID.Get());
+				strMintPath.Format("%s%smints%s%s", OTLog::Path(), OTLog::PathSeparator(),
+								   OTLog::PathSeparator(), ASSET_ID.Get());
 				OTMint theMint(ASSET_ID, strMintPath, ASSET_ID);
 
 				OTString strPursePath;
-				strPursePath.Format("%s%spurse%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(), 
-									OTPseudonym::OTPathSeparator.Get(), ASSET_ID.Get());
+				strPursePath.Format("%s%spurse%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+									OTLog::PathSeparator(), ASSET_ID.Get());
 				
 				// Unlike the purse which we read out of a message,
 				// now we try to open a purse as a file on the client side,
@@ -524,11 +532,11 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 					
 					if (NULL == pOriginalToken)
 					{
-						fprintf(stderr, "ERROR, processing withdrawal response, but couldn't find original token:%s\n", strPurse.Get());
+						OTLog::vError("ERROR, processing withdrawal response, but couldn't find original token:%s\n", strPurse.Get());
 					}
 					else if (OTToken::signedToken == pToken->GetState())
 					{
-						fprintf(stderr, "Retrieved signed token from purse, and have corresponding withdrawal request in wallet. Unblinding...\n\n");
+						OTLog::Output(1, "Retrieved signed token from purse, and have corresponding withdrawal request in wallet. Unblinding...\n\n");
 						
 						if (pToken->ProcessToken(*pNym, theMint, *pOriginalToken))
 						{
@@ -584,7 +592,7 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 					theWalletPurse.SignContract(*pNym);
 					theWalletPurse.SaveContract(strPursePath.Get());
 					
-					fprintf(stderr, "SUCCESSFULLY UNBLINDED token, and added the cash to the local purse, and saved.\n");					
+					OTLog::Output(1, "SUCCESSFULLY UNBLINDED token, and added the cash to the local purse, and saved.\n");					
 				}
 			} // if (thePurse.LoadContractFromString(strPurse))
 		}
@@ -614,7 +622,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 	// and verify the various contract IDs and signatures.
 	if (!theReply.VerifySignature(*pServerNym)) 
 	{
-		fprintf(stderr, "Error: Server reply signature failed to verify in OTClient::ProcessServerReply\n");
+		OTLog::Error("Error: Server reply signature failed to verify in OTClient::ProcessServerReply\n");
 		return false;
 	}
 	
@@ -676,12 +684,12 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		OTString strReply(theReply), strAck;
 		strAck.Format("Received server acknowledgment of Get Inbox command:\n%s\n", strReply.Get());
 		
-		fprintf(stderr, "%s", strAck.Get());
+		OTLog::vOutput(0, "%s", strAck.Get());
 		
 		// base64-Decode the server reply's payload into strInbox
 		OTString strInbox(theReply.m_ascPayload);
 		
-//		fprintf(stderr, "INBOX CONTENTS:\n%s\n", strInbox.Get());
+//		OTLog::vError("INBOX CONTENTS:\n%s\n", strInbox.Get());
 		
 		// Load the ledger object from that string.				
 		OTLedger theInbox(USER_ID, ACCOUNT_ID, SERVER_ID);	
@@ -704,8 +712,8 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		OTString strContract(theReply.m_ascPayload);
 		
 		OTString strFilename;
-		strFilename.Format("%s%scontracts%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(), 
-						   OTPseudonym::OTPathSeparator.Get(), theReply.m_strAssetID.Get());
+		strFilename.Format("%s%scontracts%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+						   OTLog::PathSeparator(), theReply.m_strAssetID.Get());
 		
 		// Load the contract object from that string.	
 		OTAssetContract * pContract = new OTAssetContract(theReply.m_strAssetID, strFilename, theReply.m_strAssetID);
@@ -714,7 +722,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		// After all, the message IS signed by the server and contains the Account.
 		if (pContract && pContract->LoadContractFromString(strContract) && pContract->VerifyContract())
 		{
-			fprintf(stdout, "Saving asset contract to disk...\n");
+			OTLog::Output(0, "Saving asset contract to disk...\n");
 			pContract->SaveContract(strFilename.Get());
 			
 			// Next let's make sure the wallet's copy of this account is replaced with the new one...
@@ -742,8 +750,8 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		OTString strMint(theReply.m_ascPayload);
 		
 		OTString strFilename;
-		strFilename.Format("%s%smints%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(), 
-						   OTPseudonym::OTPathSeparator.Get(), theReply.m_strAssetID.Get());
+		strFilename.Format("%s%smints%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+						   OTLog::PathSeparator(), theReply.m_strAssetID.Get());
 		
 		// Load the account object from that string.				
 		OTMint theMint(theReply.m_strAssetID, strFilename, theReply.m_strAssetID);
@@ -752,7 +760,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		// After all, the message IS signed by the server and contains the Account.
 		if (theMint.LoadContractFromString(strMint))
 		{
-			fprintf(stdout, "Saving mint file to disk...\n");
+			OTLog::Output(0, "Saving mint file to disk...\n");
 			theMint.SaveContract(strFilename.Get());
 		}
 		return true;
@@ -779,8 +787,8 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 				// (3) Save the Account to file
 				OTString strPath, strID;
 				pAccount->GetIdentifier(strID);
-				strPath.Format((char*)"%s%saccounts%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(), 
-							   OTPseudonym::OTPathSeparator.Get(), strID.Get());
+				strPath.Format((char*)"%s%saccounts%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+							   OTLog::PathSeparator(), strID.Get());
 				pAccount->SaveContract(strPath.Get()); // Saving to strPath would save the account into the 
 				// strPath variable. (Which we don't want to do...)
 				// Instead of passing an OTString, I pass a char*.
@@ -814,7 +822,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		// base64-Decode the server reply's payload into strAccount
 		OTString strAccount(theReply.m_ascPayload);
 		
-		//		fprintf(stderr, "ACCOUNT CONTENTS:\n%s\n", strAccount.Get());
+		//		OTLog::vError( "ACCOUNT CONTENTS:\n%s\n", strAccount.Get());
 		
 		// Load the account object from that string.				
 		OTAccount * pAccount = new OTAccount(USER_ID, ACCOUNT_ID, SERVER_ID);
@@ -823,7 +831,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		// After all, the message IS signed by the server and contains the Account.
 		if (pAccount && pAccount->LoadContractFromString(strAccount) && pAccount->VerifyAccount(*pServerNym))
 		{
-			fprintf(stderr, "Saving updated account file to disk...\n");
+			OTLog::Output(0, "Saving updated account file to disk...\n");
 			pAccount->ReleaseSignatures();	// So I don't get the annoying failure to verify message from the server's signature.
 											// Will eventually end up keeping the signature, however, just for reasons of proof. todo.
 			pAccount->SignContract(*pNym);
@@ -869,8 +877,8 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 				// (3) Save the Account to file
 				OTString strPath, strID;
 				pAccount->GetIdentifier(strID);
-				strPath.Format((char*)"%s%saccounts%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(), 
-							   OTPseudonym::OTPathSeparator.Get(), strID.Get());
+				strPath.Format((char*)"%s%saccounts%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+							   OTLog::PathSeparator(), strID.Get());
 				pAccount->SaveContract(strPath.Get()); // Saving to strPath would save the account into the 
 				// strPath variable. (Which we don't want to do...)
 				// Instead of passing an OTString, I pass a char*.
@@ -936,7 +944,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	
 	if (OTClient::checkServerID == requestedCommand)
 	{
-//		fprintf(stderr, "(User has instructed to send a checkServerID command to the server...)\n");
+//		OTLog::vOutput(0, "(User has instructed to send a checkServerID command to the server...)\n");
 		
 		// (1) set up member variables 
 		theMessage.m_strCommand			= "checkServerID";
@@ -962,7 +970,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	
 	else if (OTClient::createUserAccount == requestedCommand)
 	{
-//		fprintf(stderr, "(User has instructed to send a createUserAccount command to the server...)\n");
+//		OTLog::vOutput(0, "(User has instructed to send a createUserAccount command to the server...)\n");
 		
 		// (1) set up member variables 
 		theMessage.m_strCommand			= "createUserAccount";
@@ -983,7 +991,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	
 	else if (OTClient::getRequest == requestedCommand)
 	{
-		//		fprintf(stderr, "(User has instructed to send a getRequest command to the server...)\n");
+		//		OTLog::vOutput(0, "(User has instructed to send a getRequest command to the server...)\n");
 		
 		// (1) set up member variables 
 		theMessage.m_strCommand			= "getRequest";
@@ -1021,19 +1029,19 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	
 	else if (OTClient::checkUser == requestedCommand) // CHECK USER
 	{
-		fprintf(stdout, "Please enter a NymID: ");
+		OTLog::Output(0, "Please enter a NymID: ");
 		
 		// User input.
 		// I need a second NymID, so I allow the user to enter it here.
 		OTString strNymID2;
-		strNymID2.OTfgets(stdin);
+		strNymID2.OTfgets(std::cin);
 		
 		// (0) Set up the REQUEST NUMBER and then INCREMENT IT
 		theNym.GetCurrentRequestNum(strServerID, lRequestNumber);
 		theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
 		theNym.IncrementRequestNum(theNym, strServerID); // since I used it for a server request, I have to increment it
 
-//		fprintf(stderr, "DEBUG: Sending request number: %ld\n", lRequestNumber);
+//		OTLog::vError("DEBUG: Sending request number: %ld\n", lRequestNumber);
 		
 		// (1) set up member variables 
 		theMessage.m_strCommand			= "checkUser";
@@ -1056,7 +1064,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	// used by the Nym who is signing the requests to issue the currency.
 	else if (OTClient::issueAssetType == requestedCommand) // ISSUE ASSET TYPE
 	{				
-		fprintf(stdout, "Please enter currency contract, terminate with ~ on a new line:\n> ");
+		OTLog::Output(0, "Please enter currency contract, terminate with ~ on a new line:\n> ");
 		OTString strSourceContract;
 		char decode_buffer[200];
 		
@@ -1066,7 +1074,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			if (decode_buffer[0] != '~')
 			{
 				strSourceContract.Concatenate("%s", decode_buffer);
-				fprintf(stdout, "> ");
+				OTLog::Output(0, "> ");
 			}
 		} while (decode_buffer[0] != '~');
 		
@@ -1108,18 +1116,18 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		OTString str_BASKET_CONTRACT_ID, str_MAIN_ACCOUNT_ID, strTemp;
 		
 		// FIRST get the Asset Type ID for the basket
-		fprintf(stdout, "Enter the basket's Asset Type ID (aka Contract ID): ");
-		str_BASKET_CONTRACT_ID.OTfgets(stdin);
+		OTLog::Output(0, "Enter the basket's Asset Type ID (aka Contract ID): ");
+		str_BASKET_CONTRACT_ID.OTfgets(std::cin);
 		
 		// FIRST get the Asset Type ID for the basket
-		fprintf(stdout, "Enter an ACCOUNT ID of yours for an account that has the same asset type: ");
-		str_MAIN_ACCOUNT_ID.OTfgets(stdin);
+		OTLog::Output(0, "Enter an ACCOUNT ID of yours for an account that has the same asset type: ");
+		str_MAIN_ACCOUNT_ID.OTfgets(std::cin);
 		OTIdentifier MAIN_ACCOUNT_ID(str_MAIN_ACCOUNT_ID);
 		
 		// which direction is the exchange?
 		OTString strDirection;
-		fprintf(stdout, "Are you exchanging in or out? [in]: ");
-		strDirection.OTfgets(stdin);
+		OTLog::Output(0, "Are you exchanging in or out? [in]: ");
+		strDirection.OTfgets(std::cin);
 		
 		if (strDirection.Compare("out") || strDirection.Compare("Out"))
 			theMessage.m_bBool	= false;
@@ -1128,8 +1136,8 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		
 		// load up the asset contract
 		OTString strContractPath;
-		strContractPath.Format("%s%scontracts%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(), 
-							   OTPseudonym::OTPathSeparator.Get(), str_BASKET_CONTRACT_ID.Get());
+		strContractPath.Format("%s%scontracts%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+							   OTLog::PathSeparator(), str_BASKET_CONTRACT_ID.Get());
 		OTAssetContract * pContract = new OTAssetContract(str_BASKET_CONTRACT_ID, strContractPath, str_BASKET_CONTRACT_ID);
 		
 		if (pContract && pContract->LoadContract() && pContract->VerifyContract()) 
@@ -1146,9 +1154,9 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 				OTBasket theRequestBasket(theBasket.Count(), theBasket.GetMinimumTransfer());
 
 				// Show the minimum transfer amount to the customer and ask him to choose a multiple for the transfer
-				fprintf(stdout, "The minimum transfer amount for this basket is %ld. You may only exchange in multiples of it.\n"
+				OTLog::vOutput(0, "The minimum transfer amount for this basket is %ld. You may only exchange in multiples of it.\n"
 						"Choose any multiple [1]: ", theBasket.GetMinimumTransfer());
-				strTemp.OTfgets(stdin);
+				strTemp.OTfgets(std::cin);
 				nTransferMultiple = atoi(strTemp.Get()); 
 				strTemp.Release();
 				if (nTransferMultiple <= 0)
@@ -1166,11 +1174,11 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 					// ...and for each one, ask the user to enter his corresponding account ID.
 					// IT MUST BE THE SAME ASSET TYPE AS THE BASKET ITEM, SO SHOW USER THE ASSET ID!
 					OTString str_SUB_CONTRACT_ID(pItem->SUB_CONTRACT_ID);
-					fprintf(stdout, "\nBasket currency type (Asset Type) #%d is:\n%s\n\nPlease enter your own "
+					OTLog::vOutput(0, "\nBasket currency type (Asset Type) #%d is:\n%s\n\nPlease enter your own "
 							"existing Account ID of the same asset type: ", 
 							i+1, str_SUB_CONTRACT_ID.Get());
 					OTString str_TEMP_ACCOUNT_ID;
-					str_TEMP_ACCOUNT_ID.OTfgets(stdin);
+					str_TEMP_ACCOUNT_ID.OTfgets(std::cin);
 					OTIdentifier TEMP_ACCOUNT_ID(str_TEMP_ACCOUNT_ID);
 					
 					
@@ -1197,11 +1205,11 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 				theRequestBasket.SaveContract(strBasketInfo);
 			}
 			else {
-				fprintf(stdout, "Error loading basket info from asset contract. Are you SURE this is a basket currency?\n");
+				OTLog::Output(0, "Error loading basket info from asset contract. Are you SURE this is a basket currency?\n");
 			}
 		}
 		else {
-			fprintf(stdout, "Failure loading or verifying %s\n", strContractPath.Get());
+			OTLog::vOutput(0, "Failure loading or verifying %s\n", strContractPath.Get());
 		}
 		
 		// The result is the same as any other currency contract, but with the server's signature
@@ -1242,21 +1250,21 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		OTString strTemp, strBasketInfo;
 		
 		// Collect NUMBER OF CONTRACTS for the basket.
-		fprintf(stdout, "How many different asset types will compose this new basket? [2]: ");
-		strTemp.OTfgets(stdin);
+		OTLog::Output(0, "How many different asset types will compose this new basket? [2]: ");
+		strTemp.OTfgets(std::cin);
 		int nBasketCount = atoi(strTemp.Get());
 		if (0 == nBasketCount)
 			nBasketCount = 2;
 		
 		// Collect the MINIMUM TRANSFER AMOUNT for the basket. Default 100.
-		fprintf(stdout, "If your basket has a minimum transfer amount of 100, you might have 2 or 3 sub-currencies,\n"
+		OTLog::Output(0, "If your basket has a minimum transfer amount of 100, you might have 2 or 3 sub-currencies,\n"
 				"with the first being a minimum of 2 gold, the second being a minimum of 50 dollars, and the\n"
 				"third being a minimum of 30 silver. In this example, 100 units of the basket currency is\n"
 				"transferrable in or out of the basket currency, in return for 2 gold, 50 dollars, and 30 silver.\n"
 				"As those are only the *minimum* amounts, you could also transfer (in or out) in *any* multiple of\n"
 				"those numbers.\n\n");
-		fprintf(stdout, "What is the minimum transfer amount for the basket currency itself? [100]: ");
-		strTemp.Release(); strTemp.OTfgets(stdin);
+		OTLog::Output(0, "What is the minimum transfer amount for the basket currency itself? [100]: ");
+		strTemp.Release(); strTemp.OTfgets(std::cin);
 		long lMinimumTransferAmount = atoi(strTemp.Get());
 		if (0 == lMinimumTransferAmount)
 			lMinimumTransferAmount = 100;
@@ -1267,14 +1275,14 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		// Collect all the contract IDs for the above contracts
 		for (int i = 0; i < nBasketCount; i++)
 		{
-			fprintf(stdout, "Enter contract ID # %d: ", i+1);
-			strTemp.Release(); strTemp.OTfgets(stdin);
+			OTLog::vOutput(0, "Enter contract ID # %d: ", i+1);
+			strTemp.Release(); strTemp.OTfgets(std::cin);
 			
 			OTIdentifier SUB_CONTRACT_ID(strTemp.Get());
 			
 			// After each ID, collect the minimum transfer amount for EACH contract.
-			fprintf(stdout, "Enter minimum transfer amount for that asset type: ");
-			strTemp.Release(); strTemp.OTfgets(stdin);
+			OTLog::Output(0, "Enter minimum transfer amount for that asset type: ");
+			strTemp.Release(); strTemp.OTfgets(std::cin);
 			
 			lMinimumTransferAmount = atol(strTemp.Get());
 			
@@ -1334,11 +1342,11 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	
 	else if (OTClient::createAccount == requestedCommand) // CREATE ACCOUNT
 	{	
-		fprintf(stdout, "Please enter an asset type (contract ID): ");
+		OTLog::Output(0, "Please enter an asset type (contract ID): ");
 		// User input.
 		// I need a from account
 		OTString strAssetID;
-		strAssetID.OTfgets(stdin);
+		strAssetID.OTfgets(std::cin);
 		
 		// (0) Set up the REQUEST NUMBER and then INCREMENT IT
 		theNym.GetCurrentRequestNum(strServerID, lRequestNumber);
@@ -1368,25 +1376,25 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		// I'll just use a callback here.
 		// That way, whatever user interface people want to implement for obtaining
 		// the account numbers for the message, is up to the programmer.
-		fprintf(stdout, "Please enter a From account: ");
+		OTLog::Output(0, "Please enter a From account: ");
 		// User input.
 		// I need a from account
 		OTString strFromAcct;
-		strFromAcct.OTfgets(stdin);
+		strFromAcct.OTfgets(std::cin);
 		
 		
-		fprintf(stdout, "Please enter a To account: ");
+		OTLog::Output(0, "Please enter a To account: ");
 		// User input.
 		// I need a to account
 		OTString strToAcct;
-		strToAcct.OTfgets(stdin);
+		strToAcct.OTfgets(std::cin);
 		
 		
-		fprintf(stdout, "Please enter an amount: ");
+		OTLog::Output(0, "Please enter an amount: ");
 		// User input.
 		// I need a to account
 		OTString strAmount;
-		strAmount.OTfgets(stdin);
+		strAmount.OTfgets(std::cin);
 		
 		
 		OTIdentifier	ACCT_FROM_ID(strFromAcct),	ACCT_TO_ID(strToAcct), 
@@ -1456,12 +1464,12 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 //			OTString DEBUGSTR;
 //			theMessage.SaveContract(DEBUGSTR);
 //			
-//			fprintf(stderr, "DEBUG  Transaction message:\n%s\n", DEBUGSTR.Get());
+//			OTLog::vError("DEBUG  Transaction message:\n%s\n", DEBUGSTR.Get());
 			
 			bSendCommand = true;
 		}
 		else {
-			fprintf(stderr, "No transaction numbers were available. Suggest requesting the server for one.\n");
+			OTLog::Output(0, "No transaction numbers were available. Suggest requesting the server for one.\n");
 		}
 	}
 	
@@ -1469,11 +1477,11 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	
 	else if (OTClient::getInbox == requestedCommand) // GET INBOX
 	{	
-		fprintf(stdout, "Please enter an account number: ");
+		OTLog::Output(0, "Please enter an account number: ");
 		// User input.
 		// I need an account
 		OTString strAcctID;
-		strAcctID.OTfgets(stdin);
+		strAcctID.OTfgets(std::cin);
 		
 		
 		// (0) Set up the REQUEST NUMBER and then INCREMENT IT
@@ -1521,10 +1529,10 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			theAccountID.GetString(strAcctID);
 		}
 		else {
-			fprintf(stdout, "Please enter an account number: ");
+			OTLog::Output(0, "Please enter an account number: ");
 			// User input.
 			// I need an account
-			strAcctID.OTfgets(stdin);
+			strAcctID.OTfgets(std::cin);
 		}
 		
 		// (0) Set up the REQUEST NUMBER and then INCREMENT IT
@@ -1552,11 +1560,11 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	
 	else if (OTClient::getAccount == requestedCommand) // GET ACCOUNT
 	{	
-		fprintf(stdout, "Please enter an account number: ");
+		OTLog::Output(0, "Please enter an account number: ");
 		// User input.
 		// I need an account
 		OTString strAcctID;
-		strAcctID.OTfgets(stdin);
+		strAcctID.OTfgets(std::cin);
 		
 		
 		// (0) Set up the REQUEST NUMBER and then INCREMENT IT
@@ -1584,11 +1592,11 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	
 	else if (OTClient::getContract == requestedCommand) // GET CONTRACT
 	{	
-		fprintf(stdout, "Please enter an asset type ID: ");
+		OTLog::Output(0, "Please enter an asset type ID: ");
 		// User input.
 		// I need an account
 		OTString strAssetID;
-		strAssetID.OTfgets(stdin);
+		strAssetID.OTfgets(std::cin);
 		
 		
 		// (0) Set up the REQUEST NUMBER and then INCREMENT IT
@@ -1616,11 +1624,11 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	
 	else if (OTClient::getMint == requestedCommand) // GET MINT
 	{	
-		fprintf(stdout, "Please enter an asset type ID: ");
+		OTLog::Output(0, "Please enter an asset type ID: ");
 		// User input.
 		// I need an account
 		OTString strAssetID;
-		strAssetID.OTfgets(stdin);
+		strAssetID.OTfgets(std::cin);
 		
 		
 		// (0) Set up the REQUEST NUMBER and then INCREMENT IT
@@ -1656,14 +1664,14 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			// I'll just use a callback here.
 			// That way, whatever user interface people want to implement for obtaining
 			// the account numbers for the message, is up to the programmer.
-			fprintf(stdout, "Please enter an account to deposit to: ");
+			OTLog::Output(0, "Please enter an account to deposit to: ");
 			// User input.
 			// I need a from account, Yes even in a deposit, it's still the "From" account.
 			// The "To" account is only used for a transfer. (And perhaps for a 2-way trade.)
 			
 			// User input.
 			// I need a from account
-			strFromAcct.OTfgets(stdin);
+			strFromAcct.OTfgets(std::cin);
 			
 			const OTIdentifier ACCOUNT_ID(strFromAcct);
 			
@@ -1678,7 +1686,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		
 		OTCheque theCheque(SERVER_ID, CONTRACT_ID);
 		
-		fprintf(stdout, "Please enter plaintext cheque, terminate with ~ on a new line:\n> ");
+		OTLog::Output(0, "Please enter plaintext cheque, terminate with ~ on a new line:\n> ");
 		OTString strCheque;
 		char decode_buffer[200];
 		
@@ -1688,7 +1696,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			if (decode_buffer[0] != '~')
 			{
 				strCheque.Concatenate("%s", decode_buffer);
-				fprintf(stdout, "> ");
+				OTLog::Output(0, "> ");
 			}
 		} while (decode_buffer[0] != '~');
 		
@@ -1698,7 +1706,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		
 		if (!bGotTransNum)
 		{
-			fprintf(stderr, "No Transaction Numbers were available. Try requesting the server for a new one.\n");
+			OTLog::Output(0, "No Transaction Numbers were available. Try requesting the server for a new one.\n");
 		}
 		else if (theCheque.LoadContractFromString(strCheque))
 		{
@@ -1774,10 +1782,10 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		
 		if (!pAccount)
 		{
-			fprintf(stdout, "Please enter a From account: ");
+			OTLog::Output(0, "Please enter a From account: ");
 			// User input.
 			// I need a from account
-			strFromAcct.OTfgets(stdin);
+			strFromAcct.OTfgets(std::cin);
 			
 			ACCOUNT_ID.SetString(strFromAcct);
 			
@@ -1802,25 +1810,25 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		if ((NULL != pAccount) && bGotTransNum)
 		{
 			// Recipient
-			fprintf(stdout, "Enter a User ID for the recipient of this cheque (defaults to blank): ");
+			OTLog::Output(0, "Enter a User ID for the recipient of this cheque (defaults to blank): ");
 			OTString strRecipientUserID;
-			strRecipientUserID.OTfgets(stdin);
+			strRecipientUserID.OTfgets(std::cin);
 			const OTIdentifier RECIPIENT_USER_ID(strRecipientUserID.Get());
 			
 			// -----------------------------------------------------------------------
 
 			// Amount
-			fprintf(stdout, "Enter an amount: ");
+			OTLog::Output(0, "Enter an amount: ");
 			OTString strAmount;
-			strAmount.OTfgets(stdin);
+			strAmount.OTfgets(std::cin);
 			const long lAmount = atol(strAmount.Get());
 			
 			// -----------------------------------------------------------------------
 			
 			// Memo
-			fprintf(stdout, "Enter a memo for your check: ");
+			OTLog::Output(0, "Enter a memo for your check: ");
 			OTString strChequeMemo;
-			strChequeMemo.OTfgets(stdin);
+			strChequeMemo.OTfgets(std::cin);
 			
 			// -----------------------------------------------------------------------
 
@@ -1905,7 +1913,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			}
 		}
 		else {
-			fprintf(stderr, "No Transaction Numbers were available. Suggest requesting the server for a new one.\n");
+			OTLog::Output(0, "No Transaction Numbers were available. Suggest requesting the server for a new one.\n");
 		}
 		
 	}
@@ -1925,10 +1933,10 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		
 		if (!pAccount)
 		{
-			fprintf(stdout, "Please enter a From account: ");
+			OTLog::Output(0, "Please enter a From account: ");
 			// User input.
 			// I need a from account
-			strFromAcct.OTfgets(stdin);
+			strFromAcct.OTfgets(std::cin);
 			
 			const OTIdentifier ACCOUNT_ID(strFromAcct);
 			
@@ -1939,11 +1947,11 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			}
 		}
 		
-		fprintf(stdout, "Please enter an amount: ");
+		OTLog::Output(0, "Please enter an amount: ");
 		// User input.
 		// I need an amount
 		OTString strAmount;
-		strAmount.OTfgets(stdin);
+		strAmount.OTfgets(std::cin);
 		
 		long lAmount = atol(strAmount.Get());
 		
@@ -1969,8 +1977,8 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			const OTPseudonym * pServerNym = theServer.GetContractPublicNym();
 			
 			OTString strMintPath;
-			strMintPath.Format("%s%smints%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(), 
-							   OTPseudonym::OTPathSeparator.Get(), strContractID.Get()); 
+			strMintPath.Format("%s%smints%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+							   OTLog::PathSeparator(), strContractID.Get()); 
 			OTMint theMint(strContractID, strMintPath, strContractID);
 			
 			if (pServerNym && theMint.LoadContract() && theMint.VerifyMint((OTPseudonym&)*pServerNym))
@@ -2092,7 +2100,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			}
 		}
 		else {
-			fprintf(stderr, "No Transaction Numbers were available. Suggest requesting the server for a new one.\n");
+			OTLog::Output(0, "No Transaction Numbers were available. Suggest requesting the server for a new one.\n");
 		}
 		
 	}
@@ -2111,14 +2119,14 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			// I'll just use a callback here.
 			// That way, whatever user interface people want to implement for obtaining
 			// the account numbers for the message, is up to the programmer.
-			fprintf(stdout, "Please enter an account to deposit to: ");
+			OTLog::Output(0, "Please enter an account to deposit to: ");
 			// User input.
 			// I need a from account, Yes even in a deposit, it's still the "From" account.
 			// The "To" account is only used for a transfer. (And perhaps for a 2-way trade.)
 
 			// User input.
 			// I need a from account
-			strFromAcct.OTfgets(stdin);
+			strFromAcct.OTfgets(std::cin);
 			
 			const OTIdentifier ACCOUNT_ID(strFromAcct);
 			
@@ -2140,7 +2148,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		
 		if (!bGotTransNum)
 		{
-			fprintf(stderr, "No Transaction Numbers were available. Try requesting the server for a new one.\n");
+			OTLog::Output(0, "No Transaction Numbers were available. Try requesting the server for a new one.\n");
 		}
 
 		else if (pServerNym)
@@ -2157,14 +2165,14 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			OTString strNote("Deposit this cash, please!");
 			pItem->SetNote(strNote);
 			
-			fprintf(stdout, "How many tokens would you like to deposit? ");
+			OTLog::Output(0, "How many tokens would you like to deposit? ");
 			OTString strTokenCount;
-			strTokenCount.OTfgets(stdin);
+			strTokenCount.OTfgets(std::cin);
 			const int nTokenCount = atoi(strTokenCount.Get());
 			
 			for (int nTokenIndex = 1; nTokenIndex <= nTokenCount; nTokenIndex++)
 			{
-				fprintf(stdout, "Please enter plaintext token # %d; terminate with ~ on a new line:\n> ", nTokenIndex);
+				OTLog::vOutput(0, "Please enter plaintext token # %d; terminate with ~ on a new line:\n> ", nTokenIndex);
 				OTString strToken;
 				char decode_buffer[200];
 				
@@ -2174,7 +2182,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 					if (decode_buffer[0] != '~')
 					{
 						strToken.Concatenate("%s", decode_buffer);
-						fprintf(stdout, "> ");
+						OTLog::Output(0, "> ");
 					}
 				} while (decode_buffer[0] != '~');
 				
@@ -2193,13 +2201,13 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 					// So now only the server Nym can decrypt that token and pop it out of that purse.
 					if (false == theToken.ReassignOwnership(theNym, *pServerNym))
 					{
-						fprintf(stderr, "Error re-assigning ownership of token (to server.)\n");
+						OTLog::Error("Error re-assigning ownership of token (to server.)\n");
 						bSuccess = false;
 						break;
 					}
 					else 
 					{
-						fprintf(stderr, "Success re-assigning ownership of token (to server.)\n");
+						OTLog::Output(3, "Success re-assigning ownership of token (to server.)\n");
 						
 						bSuccess = true;
 						
@@ -2212,8 +2220,9 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 						pItem->m_lAmount += theToken.GetDenomination();
 					}
 				}
-				else {
-					fprintf(stderr, "Error loading token from string.\n");
+				else 
+				{
+					OTLog::Error("Error loading token from string.\n");
 				}
 			} // for
 			
@@ -2296,14 +2305,14 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			// I'll just use a callback here.
 			// That way, whatever user interface people want to implement for obtaining
 			// the account numbers for the message, is up to the programmer.
-			fprintf(stdout, "Please enter an account to deposit to: ");
+			OTLog::Output(0, "Please enter an account to deposit to: ");
 			// User input.
 			// I need a from account, Yes even in a deposit, it's still the "From" account.
 			// The "To" account is only used for a transfer. (And perhaps for a 2-way trade.)
 			
 			// User input.
 			// I need a from account
-			strFromAcct.OTfgets(stdin);
+			strFromAcct.OTfgets(std::cin);
 			
 			const OTIdentifier ACCOUNT_ID(strFromAcct);
 			
@@ -2325,7 +2334,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		
 		if (!bGotTransNum)
 		{
-			fprintf(stderr, "No Transaction Numbers were available. Try requesting the server for a new one.\n");
+			OTLog::Output(0, "No Transaction Numbers were available. Try requesting the server for a new one.\n");
 		}
 		else if (pServerNym)
 		{
@@ -2341,7 +2350,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			OTString strNote("Deposit this cash, please!");
 			pItem->SetNote(strNote);
 			
-			fprintf(stdout, "Please enter plaintext purse, terminate with ~ on a new line:\n> ");
+			OTLog::Output(0, "Please enter plaintext purse, terminate with ~ on a new line:\n> ");
 			OTString strSourcePurse;
 			char decode_buffer[200];
 			
@@ -2351,7 +2360,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 				if (decode_buffer[0] != '~')
 				{
 					strSourcePurse.Concatenate("%s", decode_buffer);
-					fprintf(stdout, "> ");
+					OTLog::Output(0, "> ");
 				}
 			} while (decode_buffer[0] != '~');
 
@@ -2372,7 +2381,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 					// So now only the server Nym can decrypt that token and pop it out of that purse.
 					if (false == pToken->ReassignOwnership(theNym, *pServerNym))
 					{
-						fprintf(stderr, "Error re-assigning ownership of token (to server.)\n");
+						OTLog::Error("Error re-assigning ownership of token (to server.)\n");
 						delete pToken;
 						pToken = NULL;
 						bSuccess = false;
@@ -2380,7 +2389,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 					}
 					else 
 					{
-						fprintf(stderr, "Success re-assigning ownership of token (to server.)\n");
+						OTLog::Output(3, "Success re-assigning ownership of token (to server.)\n");
 						
 						bSuccess = true;
 						
@@ -2396,8 +2405,9 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 					delete pToken;
 					pToken = NULL;
 				}
-				else {
-					fprintf(stderr, "Error loading token from purse.\n");
+				else 
+				{
+					OTLog::Error("Error loading token from purse.\n");
 					break;
 				}
 			}
@@ -2524,8 +2534,8 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	else 
 	{
 		//gDebugLog.Write("unknown user command in ProcessMessage in main.cpp");
-		//		fprintf(stderr, "Unknown user command in OTClient::ProcessUserCommand.\n");
-				fprintf(stderr, "\n");
+		//		OTLog::Output(0, "Unknown user command in OTClient::ProcessUserCommand.\n");
+				OTLog::Output(0, "\n");
 	}
 	
 	return bSendCommand;

@@ -2,6 +2,8 @@
 Welcome to Open Transactions.
 
 
+-------------------------------------------------------------------------
+
 
 GETTING STARTED:
 
@@ -14,27 +16,55 @@ GETTING STARTED:
    (For those of you with Mac/Linux/FreeBSD, you can probably just type 'make'
    in this folder and build the library, server, and test client.) 
 
-3) You can *ignore* the ssl folder and the docs/SSL-NOTES.txt file unless 
+3) Check the INSTALL instructions (in this folder) first for your platform.
+
+4) You can *ignore* the ssl folder and the docs/SSL-NOTES.txt file unless 
    you want to wipe and re-create the test certs and keys for the client
    and server. (Not recommended.)
 
    (I have already created test certs for you for client and server. 
-   But if you would like to re-create them, then open docs/SOCKETNOTES.txt 
+   But if you would like to re-create them, then open docs/SSL_NOTES.txt 
    I explained it all in there.  Otherwise, for testing, you can entirely
    ignore it and use the test keys that I already generated.) 
 
    THE PASSWORD for ALL the test certs is "test".
 
-4) To run the server, from this folder, type:
-       cd transaction; ./transaction
+5) To run the server, from this folder, type:
+       cd transaction; ./transaction.exe
 
-5) To run the test client, from this folder, type:
-       cd testwallet; ./testwallet
+6) To run the test client, from this folder, type:
+       cd testwallet; ./testwallet.exe
 
 ** password is test (always) 
 
 ** More detailed instructions are in the INSTALL.
 
- 
+
+-------------------------------------------------------------------------
+
+
+FOLDERS:
+
+--- OTLib. This folder contains the actual library.
+    It builds to create libOTLib.a
+
+--- docs. Just extra documentation and notes.
+
+--- ssl. The public/private keys and certs are generated here.
+    The various test contracts and user accounts that come with
+    this distribution are based on the certs in this folder. Also,
+    if you ever need to re-generate them, This's where you'll do it.
+
+--- testwallet. This contains the code for the test client. The same
+    code can also be compiled into a high-level API: OTAPI.a
+    There are also makefiles here for building the JNI wrapper for
+    the OTAPI. This allows you to call the OTAPI from Java (see the
+    supplied Java class.) It also allows you to use Open Transactions
+    with JRuby, Groove, Jython, etc.
+
+--- transaction. This folder contains the server.
+
+--- until. This folder contains various utilities, for generating mints
+    and signing contracts.
 
 

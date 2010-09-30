@@ -83,6 +83,7 @@
 
 
 #include "OTTransactionType.h"
+#include "OTLog.h"
 
 
 
@@ -152,7 +153,7 @@ void OTTransactionType::SetReferenceString(const OTString & theStr)
 
 
 
-bool OTTransactionType::SaveContractWallet(FILE * fl)
+bool OTTransactionType::SaveContractWallet(std::ofstream & ofs)
 {
 	return true;
 }
@@ -170,16 +171,16 @@ bool OTTransactionType::VerifyAccount(OTPseudonym & theNym)
 	// a hash of the contract file, signatures and all.
 	if (false == VerifyContractID())
 	{
-		fprintf(stderr, "Error verifying account ID in OTTransactionType::VerifyAccount\n");
+		OTLog::Error("Error verifying account ID in OTTransactionType::VerifyAccount\n");
 		return false;
 	}
 	else if (false == VerifySignature(theNym))
 	{
-		fprintf(stderr, "Error verifying signature in OTTransactionType::VerifyAccount.\n");
+		OTLog::Error("Error verifying signature in OTTransactionType::VerifyAccount.\n");
 		return false;
 	}
 	
-	fprintf(stderr, "\nWe now know that...\n"
+	OTLog::Output(1, "\nWe now know that...\n"
 			"1) The expected Account ID matches the ID that was found on the object.\n"
 			"2) The SIGNATURE VERIFIED on the object.\n\n");
 	return true;
@@ -203,14 +204,14 @@ bool OTTransactionType::VerifyContractID()
 	if (!(m_ID == m_AcctID) || !(m_ServerID == m_AcctServerID))
 	{
 		OTString str1(m_ID), str2(m_AcctID), str3(m_ServerID), str4(m_AcctServerID);
-		fprintf(stderr, "Identifiers do NOT match in OTTransactionType::VerifyContractID.\n"
+		OTLog::vError("Identifiers do NOT match in OTTransactionType::VerifyContractID.\n"
 				"m_ID: %s\n m_AcctID: %s\n m_ServerID: %s\n m_AcctServerID: %s\n",
 				str1.Get(), str2.Get(), str3.Get(), str4.Get());
 		return false;
 	}
 	else {
 //		OTString str1(m_AcctID), str2(m_AcctServerID);
-//		fprintf(stderr, "Expected Account ID and Server ID both *SUCCESSFUL* match to "
+//		OTLog::vError("Expected Account ID and Server ID both *SUCCESSFUL* match to "
 //				"IDs in the xml:\n Account ID:\n%s\n ServerID:\n%s\n"
 //				"-----------------------------------------------------------------------------\n",
 //				str1.Get(), str2.Get());

@@ -231,7 +231,7 @@ bool OTSignature::CalculateDigest(OTData & dataInput)
 	
 	if(!md) 
 	{
-		fprintf(stderr, "Unknown message digest algorithm in OTSignature::CalculateDigest: %s\n", 
+		OTLog::vError("Unknown message digest algorithm in OTSignature::CalculateDigest: %s\n", 
 				hashAlgorithm);
 		return false;
 	}
@@ -242,10 +242,12 @@ bool OTSignature::CalculateDigest(OTData & dataInput)
 	EVP_DigestFinal_ex(&mdctx, md_value, &md_len);
 	EVP_MD_CTX_cleanup(&mdctx);
 	
-	fprintf(stderr, "Calculated digest: ");
+	OTLog::Output(5, "Calculated digest: ");
 	
-	for (i = 0; i < md_len; i++) fprintf(stderr, "%02x", md_value[i]);
-	fprintf(stderr, "\n");
+	for (i = 0; i < md_len; i++)
+		OTLog::vOutput(5, "%02x", md_value[i]);
+		
+	OTLog::Output(5, "\n");
 	
 	Assign(md_value, md_len);
 	

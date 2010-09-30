@@ -88,6 +88,7 @@
 
 #include <map>
 #include <string>
+#include <fstream>
 
 
 #include "OTContract.h"
@@ -127,7 +128,8 @@ public:
 	
 	virtual bool CreateContract(OTString & strContract, OTPseudonym & theSigner);
 	
-	virtual bool SaveContractWallet(FILE * fl);
+//	virtual bool SaveContractWallet(FILE * fl);
+	virtual bool SaveContractWallet(std::ofstream & ofs);
 };
 
 

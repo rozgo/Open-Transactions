@@ -81,6 +81,7 @@ CXXSOURCES = $(LUCRESOURCES) $(IRRXMLSOURCES) \
 			 OTInstrument.cpp \
 			 OTCheque.cpp \
 			 OTPurse.cpp \
+			 OTLog.cpp \
 			 OTToken.cpp \
 			 OTTransactionType.cpp \
 			 OTItem.cpp \
@@ -150,6 +151,8 @@ OTASCIIArmor.o: OTASCIIArmor.cpp OTASCIIArmor.h
 	$(CXX) $(CXXFLAGS) -c -o OTASCIIArmor.o OTASCIIArmor.cpp
 OTSignature.o: OTSignature.cpp OTSignature.h
 	$(CXX) $(CXXFLAGS) -c -o OTSignature.o OTSignature.cpp
+OTLog.o: OTLog.cpp OTLog.h
+	$(CXX) $(CXXFLAGS) -c -o OTLog.o OTLog.cpp
 OTPseudonym.o: OTPseudonym.cpp OTPseudonym.h
 	$(CXX) $(CXXFLAGS) -c -o OTPseudonym.o OTPseudonym.cpp
 OTContract.o: OTContract.cpp OTContract.h
