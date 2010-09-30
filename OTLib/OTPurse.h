@@ -86,7 +86,7 @@
 #define __OTPURSE_H__
 
 #include <deque>
-
+#include <fstream>
 
 #include "OTContract.h"
 #include "OTToken.h"
@@ -144,7 +144,8 @@ public:
 	virtual void Release();
 	void ReleaseTokens();
 	
-	virtual bool SaveContractWallet(FILE * fl);	
+	virtual bool SaveContractWallet(std::ofstream & ofs);
+//	virtual bool SaveContractWallet(FILE * fl);	
 };
 
 

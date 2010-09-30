@@ -95,6 +95,7 @@
 
 #include "OTServerContract.h"
 #include "OTStringXML.h"
+#include "OTLog.h"
 
 using namespace irr;
 using namespace io;
@@ -129,7 +130,19 @@ bool OTServerContract::GetConnectInfo(OTString & strHostname, int & nPort)
 }
 
 
+bool OTServerContract::SaveContractWallet(std::ofstream & ofs)
+{
+	OTString strID(m_ID);
+
+	ofs <<	"<notaryProvider name=\"" << m_strName.Get() << "\"\n serverID=\"" << strID.Get() << 
+			"\"\n contract=\"" << m_strFilename.Get() << "\" /> \n\n";
+	
+	return true;
+}
+
+
 // Serialization code for saving to the wallet.
+/*
 bool OTServerContract::SaveContractWallet(FILE * fl)
 {
 	OTString strID(m_ID);
@@ -139,6 +152,7 @@ bool OTServerContract::SaveContractWallet(FILE * fl)
 		
 	return true;
 }
+*/
 
 
 // This is the serialization code for READING FROM THE CONTRACT
@@ -162,7 +176,7 @@ int OTServerContract::ProcessXMLNode(IrrXMLReader*& xml)
 	{
 		m_strVersion = xml->getAttributeValue("version");					
 		
-		fprintf(stderr, "\n"
+		OTLog::vOutput(0, "\n"
 				"===> Loading XML portion of server contract into memory structures...\n\n"
 				"Notary Server Name: %s\nContract version: %s\n----------\n", m_strName.Get(), m_strVersion.Get());
 		nReturnVal = 1;
@@ -174,7 +188,7 @@ int OTServerContract::ProcessXMLNode(IrrXMLReader*& xml)
 		m_nPort			= atoi(xml->getAttributeValue("port"));					
 		m_strURL		= xml->getAttributeValue("URL");					
 		
-		fprintf(stderr, "\n"
+		OTLog::vOutput(0, "\n"
 				"Notary Server connection info:\n --- Hostname: %s\n --- Port: %d\n --- URL:%s\n\n", 
 				m_strHostname.Get(), m_nPort, m_strURL.Get());
 		nReturnVal = 1;

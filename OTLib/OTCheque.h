@@ -87,6 +87,8 @@
 
 #include <ctime>
 
+#include <fstream>
+
 
 #include "OTInstrument.h"
 #include "OTIdentifier.h"
@@ -143,7 +145,8 @@ public:
 	virtual void Release();
 	virtual void UpdateContents(); // Before transmission or serialization, this is where the token saves its contents 	
 
-	virtual bool SaveContractWallet(FILE * fl);
+//	virtual bool SaveContractWallet(FILE * fl);
+	virtual bool SaveContractWallet(std::ofstream & ofs);
 };
 
 

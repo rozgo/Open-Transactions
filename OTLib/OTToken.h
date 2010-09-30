@@ -88,6 +88,7 @@
 #include <map>
 #include <stack>
 #include <string>
+#include <fstream>
 
 #include "OTContract.h"
 #include "OTInstrument.h"
@@ -275,7 +276,8 @@ public:
 	bool GetPrototoken(OTASCIIArmor & ascPrototoken, int nTokenIndex);
 	bool GetPrivatePrototoken(OTASCIIArmor & ascPrototoken, int nTokenIndex);
 	
-	virtual bool SaveContractWallet(FILE * fl);
+	virtual bool SaveContractWallet(std::ofstream & ofs);
+//	virtual bool SaveContractWallet(FILE * fl);
 };
 
 

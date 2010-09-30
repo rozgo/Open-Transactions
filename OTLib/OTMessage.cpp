@@ -98,6 +98,8 @@ using namespace io;
 #include "OTMessage.h"
 #include "OTStringXML.h"
 
+#include "OTLog.h"
+
 // PROTOCOL DOCUMENT -------------------------------------------
 
 // --- This is the file that implements the entire message protocol.
@@ -446,6 +448,8 @@ void OTMessage::UpdateContents()
 								  m_strRequestNum.Get(),
 								  m_strAssetID.Get()
 								  );
+		
+//		OTLog::vError("DEBUG: Asset Type length: %d, Value:\n%s\n", m_strAssetID.GetLength(),  m_strAssetID.Get());
 		
 		m_xmlUnsigned.Concatenate("</%s>\n\n", m_strCommand.Get());
 	} // ------------------------------------------------------------------------
@@ -881,7 +885,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 	{
 		m_strVersion = xml->getAttributeValue("version");
 		
-//		fprintf(stderr, "\n===> Loading XML for Message into memory structures...\n", m_strVersion.Get());
+		OTLog::vOutput(2, "\n===> Loading XML for Message into memory structures...\n", m_strVersion.Get());
 		
 		nReturnVal = 1;
 	}
@@ -910,14 +914,14 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				}
 				else
 				{
-					fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 							"Expected nymPublicKey text field in checkServerID command\n");
 					return (-1); // error condition
 				}				
 			}
 			else 
 			{
-				fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 						"checkServerID without nymPublicKey element.\n");
 				return (-1); // error condition
 			}
@@ -925,12 +929,12 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		}
 		else
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected nymPublicKey element with text field in checkServerID command\n");
 			return (-1); // error condition
 		}
 		
-		fprintf(stderr, "\nCommand: %s\nNymID:    %s\nServerID: %s\n\nPublic Key:\n%s\n", 
+		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nServerID: %s\n\nPublic Key:\n%s\n", 
 				m_strCommand.Get(), m_strNymID.Get(), m_strServerID.Get(), m_strNymPublicKey.Get());
 		
 		nReturnVal = 1;
@@ -952,7 +956,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strServerID	= xml->getAttributeValue("serverID");
 		
 		
-		fprintf(stderr, "\nCommand: %s\nSuccess: %s\nNymID:    %s\n"
+		OTLog::vOutput(1, "\nCommand: %s\nSuccess: %s\nNymID:    %s\n"
 				"ServerID: %s\n\n", 
 				m_strCommand.Get(), strSuccess.Get(), m_strNymID.Get(), 
 				m_strServerID.Get());
@@ -983,14 +987,14 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				}
 				else
 				{
-					fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 							"Expected nymPublicKey text field in createUserAccount command\n");
 					return (-1); // error condition
 				}				
 			}
 			else 
 			{
-				fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 						"createUserAccount without nymPublicKey element.\n");
 				return (-1); // error condition
 			}
@@ -998,12 +1002,12 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		}
 		else
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected nymPublicKey element with text field in createUserAccount command\n");
 			return (-1); // error condition
 		}
 		
-		fprintf(stderr, "\nCommand: %s\nNymID:    %s\nServerID: %s\n\nPublic Key:\n%s\n", 
+		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nServerID: %s\n\nPublic Key:\n%s\n", 
 				m_strCommand.Get(), m_strNymID.Get(), m_strServerID.Get(), m_strNymPublicKey.Get());
 		
 		nReturnVal = 1;
@@ -1040,14 +1044,14 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				}
 				else
 				{
-					fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 							"Expected inReferenceTo text field in createUserAccount command\n");
 					return (-1); // error condition
 				}				
 			}
 			else 
 			{
-				fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 						"createUserAccount without inReferenceTo element.\n");
 				return (-1); // error condition
 			}
@@ -1055,13 +1059,13 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		}
 		else
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected inReferenceTo element with text field in createUserAccount command\n");
 			return (-1); // error condition
 		}
 		
 		OTString oldMessage(m_ascInReferenceTo);
-		fprintf(stderr, "\nCommand: %s  %s\nNymID:    %s\nServerID: %s\n\n\n", 
+		OTLog::vOutput(1, "\nCommand: %s  %s\nNymID:    %s\nServerID: %s\n\n\n", 
 				m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"), m_strNymID.Get(), 
 				m_strServerID.Get());
 		
@@ -1078,7 +1082,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strNymID		= xml->getAttributeValue("nymID");
 		m_strServerID	= xml->getAttributeValue("serverID");
 		
-		fprintf(stderr, "\nCommand: %s\nNymID:    %s\nServerID: %s\n\n", 
+		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nServerID: %s\n\n", 
 				m_strCommand.Get(), m_strNymID.Get(), m_strServerID.Get());
 		
 		nReturnVal = 1;
@@ -1100,7 +1104,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strServerID	= xml->getAttributeValue("serverID");
 		m_strRequestNum = xml->getAttributeValue("requestNum");
 		
-		fprintf(stderr, "\nCommand: %s   %s\nNymID:    %s\n"
+		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\n"
 				"ServerID: %s\nRequest Number:    %s\n\n", 
 				m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"), m_strNymID.Get(), 
 				m_strServerID.Get(), m_strRequestNum.Get());
@@ -1118,7 +1122,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strServerID	= xml->getAttributeValue("serverID");
 		m_strRequestNum = xml->getAttributeValue("requestNum");
 
-		fprintf(stderr, "\nCommand: %s\nNymID:    %s\nNymID2:    %s\nServerID: %s\nRequest #: %s\n", 
+		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nNymID2:    %s\nServerID: %s\nRequest #: %s\n", 
 				m_strCommand.Get(), m_strNymID.Get(), m_strNymID2.Get(), m_strServerID.Get(), m_strRequestNum.Get());
 		
 		nReturnVal = 1;
@@ -1164,7 +1168,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				}
 				else
 				{
-					fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 							"Expected %s text field in @checkUser response\n", 
 							pElementExpected);
 					return (-1); // error condition
@@ -1172,27 +1176,27 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 			}
 			else 
 			{
-				fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 						"@checkUser without %s element.\n", pElementExpected);
 				return (-1); // error condition
 			}
 		}
 		else
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected %s element with text field in @checkUser response\n", 
 					pElementExpected);
 			return (-1); // error condition
 		}
 
 		if (m_bSuccess)
-			fprintf(stderr, "\nCommand: %s   %s\nNymID:    %s\nNymID2:    %s\n"
+			OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nNymID2:    %s\n"
 				"ServerID: %s\nNym2 Public Key:\n%s\n\n", 
 				m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"),
 				m_strNymID.Get(), m_strNymID2.Get(), m_strServerID.Get(),
 				m_strNymPublicKey.Get());
 		else
-			fprintf(stderr, "\nCommand: %s   %s\nNymID:    %s\nNymID2:    %s\n"
+			OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nNymID2:    %s\n"
 				"ServerID: %s\n\n", 
 				m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"),
 				m_strNymID.Get(), m_strNymID2.Get(), m_strServerID.Get() // m_ascInReferenceTo.Get()
@@ -1228,26 +1232,26 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				}
 				else
 				{
-					fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 							"Expected assetContract text field in issueAssetType message\n");
 					return (-1); // error condition
 				}				
 			}
 			else {
-				fprintf(stderr, "Unexpected node name: %s\n", xml->getNodeName());
+				OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
 				return (-1);
 			}
 			
 		}
 		else
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Unexpected text field in issueAssetType message\n");
 			return (-1); // error condition
 		}
 
 		
-		fprintf(stderr, "\nCommand: %s \nNymID:    %s\n"
+		OTLog::vOutput(1, "\nCommand: %s \nNymID:    %s\n"
 				"ServerID: %s\nRequest#: %s\nAsset Type:\n%s\n\n", 
 				m_strCommand.Get(), m_strNymID.Get(), 
 				m_strServerID.Get(), m_strRequestNum.Get(), m_strAssetID.Get());
@@ -1293,7 +1297,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 					}
 					else
 					{
-						fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 								"Expected issuerAccount text field in @issueAssetType reply\n");
 						return (-1); // error condition
 					}				
@@ -1309,20 +1313,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 					}
 					else
 					{
-						fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 								"Expected inReferenceTo text field in @issueAssetType reply\n");
 						return (-1); // error condition
 					}				
 				}
 				else {
-					fprintf(stderr, "Unexpected node name: %s\n", xml->getNodeName());
+					OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
 					return (-1);
 				}
 				
 			}
 			else
 			{
-				fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 						"Unexpected text field in @issueAssetType reply\n");
 				return (-1); // error condition
 			}
@@ -1333,14 +1337,14 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		// OR if it was successful but the Payload isn't there, then failure.
 		if (!m_ascInReferenceTo.GetLength() || (m_bSuccess && !m_ascPayload.GetLength()))
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected issuerAccount and/or inReferenceTo elements with text fields in "
 					"@issueAssetType reply\n");
 			return (-1); // error condition			
 		}
 		
 		OTString acctContents(m_ascPayload);
-		fprintf(stderr, "\nCommand: %s   %s\nNymID:    %s\nAccountID: %s\nAsset Type ID: %s\n"
+		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nAccountID: %s\nAsset Type ID: %s\n"
 				"ServerID: %s\n\n",
 				//	"****New Account****:\n%s\n", 
 				m_strCommand.Get(), (m_bSuccess?"SUCCESS":"FAILED"), m_strNymID.Get(), m_strAcctID.Get(),
@@ -1366,7 +1370,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strAssetID	= xml->getAttributeValue("assetType");
 		m_strRequestNum	= xml->getAttributeValue("requestNum");
 		
-		fprintf(stderr, "\nCommand: %s \nNymID:    %s\n"
+		OTLog::vOutput(1, "\nCommand: %s \nNymID:    %s\n"
 				"ServerID: %s\nRequest#: %s\nAsset Type:\n%s\n\n", 
 				m_strCommand.Get(), m_strNymID.Get(), 
 				m_strServerID.Get(), m_strRequestNum.Get(), m_strAssetID.Get());
@@ -1411,7 +1415,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 					}
 					else
 					{
-						fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 								"Expected newAccount text field in @createAccount reply\n");
 						return (-1); // error condition
 					}				
@@ -1427,20 +1431,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 					}
 					else
 					{
-						fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 								"Expected inReferenceTo text field in @createAccount reply\n");
 						return (-1); // error condition
 					}				
 				}
 				else {
-					fprintf(stderr, "Unexpected node name: %s\n", xml->getNodeName());
+					OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
 					return (-1);
 				}
 				
 			}
 			else
 			{
-				fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 						"Unexpected text field in @createAccount reply\n");
 				return (-1); // error condition
 			}
@@ -1451,13 +1455,13 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		// OR if it was successful but the Payload isn't there, then failure.
 		if (!m_ascInReferenceTo.GetLength() || (m_bSuccess && !m_ascPayload.GetLength()))
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected newAccount and/or inReferenceTo elements with text fields in "
 					"@createAccount reply\n");
 			return (-1); // error condition			
 		}
 		
-		fprintf(stderr, "\nCommand: %s   %s\nNymID:    %s\nAccountID: %s\n"
+		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nAccountID: %s\n"
 				"ServerID: %s\n\n",
 				//	"****New Account****:\n%s\n", 
 				m_strCommand.Get(), (m_bSuccess?"SUCCESS":"FAILED"), m_strNymID.Get(), m_strAcctID.Get(),
@@ -1506,19 +1510,19 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				}
 				else
 				{
-					fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 							"Expected exchangeRequest text field in exchangeBasket message\n");
 					return (-1); // error condition
 				}				
 			}
 			else {
-				fprintf(stderr, "Unexpected node name: %s\n", xml->getNodeName());
+				OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
 				return (-1);
 			}
 		}
 		else
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Unexpected text field in exchangeBasket message\n");
 			return (-1); // error condition
 		}
@@ -1527,13 +1531,13 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		// If the Payload isn't there, then failure.
 		if (!m_ascPayload.GetLength())
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected exchangeRequest element with text field in "
 					"exchangeBasket message\n");
 			return (-1); // error condition			
 		}
 		
-		fprintf(stderr, "\nCommand: %s \nNymID:    %s\n"
+		OTLog::vOutput(1, "\nCommand: %s \nNymID:    %s\n"
 				"ServerID: %s\nAsset Type: %s\nRequest#: %s\n\n", 
 				m_strCommand.Get(), m_strNymID.Get(), 
 				m_strServerID.Get(), m_strAssetID.Get(), m_strRequestNum.Get());
@@ -1582,19 +1586,19 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				}
 				else
 				{
-					fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 							"Expected inReferenceTo text field in @exchangeBasket reply\n");
 					return (-1); // error condition
 				}				
 			}
 			else {
-				fprintf(stderr, "Unexpected node name: %s\n", xml->getNodeName());
+				OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
 				return (-1);
 			}
 		}
 		else
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Unexpected text field in @exchangeBasket reply\n");
 			return (-1); // error condition
 		}
@@ -1604,13 +1608,13 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		// OR if it was successful but the Payload isn't there, then failure.
 		if (!m_ascInReferenceTo.GetLength())
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected inReferenceTo element with text fields in "
 					"@exchangeBasket reply\n");
 			return (-1); // error condition			
 		}
 		
-		fprintf(stderr, "\nCommand: %s   %s\nNymID:    %s\nAsset Type ID: %s\nExchange: %s\n"
+		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nAsset Type ID: %s\nExchange: %s\n"
 				"ServerID: %s\n\n",
 				m_strCommand.Get(), (m_bSuccess?"SUCCESS":"FAILED"), 
 				m_strNymID.Get(), 
@@ -1651,19 +1655,19 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				}
 				else
 				{
-					fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 							"Expected currencyBasket text field in issueBasket message\n");
 					return (-1); // error condition
 				}				
 			}
 			else {
-				fprintf(stderr, "Unexpected node name: %s\n", xml->getNodeName());
+				OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
 				return (-1);
 			}
 		}
 		else
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Unexpected text field in issueBasket message\n");
 			return (-1); // error condition
 		}
@@ -1672,13 +1676,13 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		// If the Payload isn't there, then failure.
 		if (!m_ascPayload.GetLength())
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected currencyBasket element with text fields in "
 					"issueBasket message\n");
 			return (-1); // error condition			
 		}
 		
-		fprintf(stderr, "\nCommand: %s \nNymID:    %s\n"
+		OTLog::vOutput(1, "\nCommand: %s \nNymID:    %s\n"
 				"ServerID: %s\nRequest#: %s\n\n", 
 				m_strCommand.Get(), m_strNymID.Get(), 
 				m_strServerID.Get(), m_strRequestNum.Get());
@@ -1719,19 +1723,19 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				}
 				else
 				{
-					fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 							"Expected inReferenceTo text field in @issueBasket reply\n");
 					return (-1); // error condition
 				}				
 			}
 			else {
-				fprintf(stderr, "Unexpected node name: %s\n", xml->getNodeName());
+				OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
 				return (-1);
 			}
 		}
 		else
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Unexpected text field in @issueBasket reply\n");
 			return (-1); // error condition
 		}
@@ -1741,13 +1745,13 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		// OR if it was successful but the Payload isn't there, then failure.
 		if (!m_ascInReferenceTo.GetLength())
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected inReferenceTo element with text fields in "
 					"@issueBasket reply\n");
 			return (-1); // error condition			
 		}
 		
-		fprintf(stderr, "\nCommand: %s   %s\nNymID:    %s\nAccountID: %s\nAssetTypeID: %s\n"
+		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nAccountID: %s\nAssetTypeID: %s\n"
 				"ServerID: %s\n\n",
 				m_strCommand.Get(), (m_bSuccess?"SUCCESS":"FAILED"), 
 				m_strNymID.Get(), 
@@ -1772,7 +1776,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strServerID	= xml->getAttributeValue("serverID");
 		m_strRequestNum	= xml->getAttributeValue("requestNum");
 		
-		fprintf(stderr, "\n Command: %s \n NymID:    %s\n"
+		OTLog::vOutput(1, "\n Command: %s \n NymID:    %s\n"
 				" ServerID: %s\n Request#: %s\n\n", 
 				m_strCommand.Get(), m_strNymID.Get(),
 				m_strServerID.Get(), m_strRequestNum.Get());
@@ -1825,20 +1829,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				}
 				else
 				{
-					fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 							"Expected responseNym text field in @getTransactionNum reply\n");
 					return (-1); // error condition
 				}				
 			}
 			else {
-				fprintf(stderr, "Unexpected node name: %s\n", xml->getNodeName());
+				OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
 				return (-1);
 			}
 			
 		}
 		else
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 					"Unexpected text field in @getTransactionNum reply: %s   %s\n",
 					xml->getNodeName(), xml->getNodeData());
 			return (-1); // error condition
@@ -1848,14 +1852,14 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		// If the "command responding to" isn't there, or the Payload isn't there, then failure.
 		if (m_bSuccess && !m_ascPayload.GetLength())
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected responseNym element with text field in "
 					"@getTransactionNum reply\n");
 			return (-1); // error condition			
 		}
 		
 		//		OTString acctContents(m_ascPayload);
-		fprintf(stderr, "\n Command: %s   %s\n NymID:    %s\n"
+		OTLog::vOutput(1, "\n Command: %s   %s\n NymID:    %s\n"
 				" ServerID: %s\n\n",
 				//	"****New Account****:\n%s\n", 
 				m_strCommand.Get(), (m_bSuccess?"SUCCESS":"FAILED"), 
@@ -1894,14 +1898,14 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				}
 				else
 				{
-					fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 							"Expected accountLedger text field in notarizeTransactions command\n");
 					return (-1); // error condition
 				}				
 			}
 			else 
 			{
-				fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 						"notarizeTransactions without accountLedger element.\n");
 				return (-1); // error condition
 			}
@@ -1909,13 +1913,13 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		}
 		else
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected accountLedger element with text field in notarizeTransactions command\n");
 			return (-1); // error condition
 		}
 		
 		
-		fprintf(stderr, "\n Command: %s \n NymID:    %s\n AccountID:    %s\n"
+		OTLog::vOutput(1, "\n Command: %s \n NymID:    %s\n AccountID:    %s\n"
 				" ServerID: %s\n Request#: %s\n\n", 
 				m_strCommand.Get(), m_strNymID.Get(), m_strAcctID.Get(),
 				m_strServerID.Get(), m_strRequestNum.Get());
@@ -1960,7 +1964,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 					}
 					else
 					{
-						fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 								"Expected responseLedger text field in @notarizeTransactions reply\n");
 						return (-1); // error condition
 					}				
@@ -1976,20 +1980,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 					}
 					else
 					{
-						fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 								"Expected inReferenceTo text field in @notarizeTransactions reply\n");
 						return (-1); // error condition
 					}				
 				}
 				else {
-					fprintf(stderr, "Unexpected node name: %s\n", xml->getNodeName());
+					OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
 					return (-1);
 				}
 				
 			}
 			else
 			{
-				fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 						"Unexpected text field in @notarizeTransactions reply: %s   %s\n",
 						xml->getNodeName(), xml->getNodeData());
 				return (-1); // error condition
@@ -2000,14 +2004,14 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		// If the "command responding to" isn't there, or the Payload isn't there, then failure.
 		if (!m_ascInReferenceTo.GetLength() || (!m_ascPayload.GetLength()))
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected responseLedger and/or inReferenceTo elements with text fields in "
 					"@notarizeTransactions reply\n");
 			return (-1); // error condition			
 		}
 		
 		//		OTString acctContents(m_ascPayload);
-		fprintf(stderr, "\n Command: %s   %s\n NymID:    %s\n AccountID: %s\n"
+		OTLog::vOutput(1, "\n Command: %s   %s\n NymID:    %s\n AccountID: %s\n"
 				" ServerID: %s\n\n",
 				//	"****New Account****:\n%s\n", 
 				m_strCommand.Get(), (m_bSuccess?"SUCCESS":"FAILED"), 
@@ -2030,7 +2034,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strAcctID		= xml->getAttributeValue("accountID");
 		m_strRequestNum = xml->getAttributeValue("requestNum");
 		
-		fprintf(stderr, "\nCommand: %s\nNymID:    %s\nServerID: %s\nAccountID:    %s\nRequest #: %s\n", 
+		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nServerID: %s\nAccountID:    %s\nRequest #: %s\n", 
 				m_strCommand.Get(), m_strNymID.Get(), m_strServerID.Get(), m_strAcctID.Get(), m_strRequestNum.Get());
 		
 		nReturnVal = 1;
@@ -2078,7 +2082,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				}
 				else
 				{
-					fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 							"Expected %s text field in @getInbox response\n", 
 							pElementExpected);
 					return (-1); // error condition
@@ -2086,20 +2090,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 			}
 			else 
 			{
-				fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 						"@getInbox without %s element.\n", pElementExpected);
 				return (-1); // error condition
 			}
 		}
 		else
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected %s element with text field in @getInbox response\n", 
 					pElementExpected);
 			return (-1); // error condition
 		}
 		
-		fprintf(stderr, "\nCommand: %s   %s\nNymID:    %s\nAccountID:    %s\n"
+		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nAccountID:    %s\n"
 				"ServerID: %s\n\n", 
 				m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"),
 				m_strNymID.Get(), m_strAcctID.Get(), m_strServerID.Get());
@@ -2226,7 +2230,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strAcctID		= xml->getAttributeValue("accountID");
 		m_strRequestNum = xml->getAttributeValue("requestNum");
 		
-		fprintf(stderr, "\nCommand: %s\nNymID:    %s\nServerID: %s\nAccountID:    %s\nRequest #: %s\n", 
+		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nServerID: %s\nAccountID:    %s\nRequest #: %s\n", 
 				m_strCommand.Get(), m_strNymID.Get(), m_strServerID.Get(), m_strAcctID.Get(), m_strRequestNum.Get());
 		
 		nReturnVal = 1;
@@ -2273,7 +2277,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				}
 				else
 				{
-					fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 							"Expected %s text field in @getAccount response\n", 
 							pElementExpected);
 					return (-1); // error condition
@@ -2281,20 +2285,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 			}
 			else 
 			{
-				fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 						"@getAccount without %s element.\n", pElementExpected);
 				return (-1); // error condition
 			}
 		}
 		else
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected %s element with text field in @getAccount response\n", 
 					pElementExpected);
 			return (-1); // error condition
 		}
 		
-		fprintf(stderr, "\nCommand: %s   %s\nNymID:    %s\nAccountID:    %s\n"
+		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nAccountID:    %s\n"
 				"ServerID: %s\n\n", 
 				m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"),
 				m_strNymID.Get(), m_strAcctID.Get(), m_strServerID.Get());
@@ -2315,7 +2319,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strAssetID	= xml->getAttributeValue("assetType");
 		m_strRequestNum = xml->getAttributeValue("requestNum");
 		
-		fprintf(stderr, "\nCommand: %s\nNymID:    %s\nServerID: %s\nAsset Type:    %s\nRequest #: %s\n", 
+		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nServerID: %s\nAsset Type:    %s\nRequest #: %s\n", 
 				m_strCommand.Get(), m_strNymID.Get(), m_strServerID.Get(), m_strAssetID.Get(), m_strRequestNum.Get());
 		
 		nReturnVal = 1;
@@ -2362,7 +2366,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				}
 				else
 				{
-					fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 							"Expected %s text field in @getContract response\n", 
 							pElementExpected);
 					return (-1); // error condition
@@ -2370,20 +2374,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 			}
 			else 
 			{
-				fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 						"@getContract without %s element.\n", pElementExpected);
 				return (-1); // error condition
 			}
 		}
 		else
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected %s element with text field in @getContract response\n", 
 					pElementExpected);
 			return (-1); // error condition
 		}
 		
-		fprintf(stderr, "\nCommand: %s   %s\nNymID:    %s\nAsset Type ID:    %s\n"
+		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nAsset Type ID:    %s\n"
 				"ServerID: %s\n\n", 
 				m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"),
 				m_strNymID.Get(), m_strAssetID.Get(), m_strServerID.Get());
@@ -2404,7 +2408,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strAssetID	= xml->getAttributeValue("assetType");
 		m_strRequestNum = xml->getAttributeValue("requestNum");
 		
-		fprintf(stderr, "\nCommand: %s\nNymID:    %s\nServerID: %s\nAsset Type:    %s\nRequest #: %s\n", 
+		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nServerID: %s\nAsset Type:    %s\nRequest #: %s\n", 
 				m_strCommand.Get(), m_strNymID.Get(), m_strServerID.Get(), m_strAssetID.Get(), m_strRequestNum.Get());
 		
 		nReturnVal = 1;
@@ -2451,7 +2455,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				}
 				else
 				{
-					fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 							"Expected %s text field in @getMint response\n", 
 							pElementExpected);
 					return (-1); // error condition
@@ -2459,20 +2463,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 			}
 			else 
 			{
-				fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 						"@getMint without %s element.\n", pElementExpected);
 				return (-1); // error condition
 			}
 		}
 		else
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected %s element with text field in @getMint response\n", 
 					pElementExpected);
 			return (-1); // error condition
 		}
 		
-		fprintf(stderr, "\nCommand: %s   %s\nNymID:    %s\nAsset Type ID:    %s\n"
+		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nAsset Type ID:    %s\n"
 				"ServerID: %s\n\n", 
 				m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"),
 				m_strNymID.Get(), m_strAssetID.Get(), m_strServerID.Get());
@@ -2511,14 +2515,14 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				}
 				else
 				{
-					fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 							"Expected processLedger text field in processInbox command\n");
 					return (-1); // error condition
 				}				
 			}
 			else 
 			{
-				fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 						"processInbox without processLedger element.\n");
 				return (-1); // error condition
 			}
@@ -2526,13 +2530,13 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		}
 		else
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected processLedger element with text field in processInbox command\n");
 			return (-1); // error condition
 		}
 		
 		
-		fprintf(stderr, "\n Command: %s \n NymID:    %s\n AccountID:    %s\n"
+		OTLog::vOutput(1, "\n Command: %s \n NymID:    %s\n AccountID:    %s\n"
 				" ServerID: %s\n Request#: %s\n\n", 
 				m_strCommand.Get(), m_strNymID.Get(), m_strAcctID.Get(),
 				m_strServerID.Get(), m_strRequestNum.Get());
@@ -2577,7 +2581,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 					}
 					else
 					{
-						fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 								"Expected responseLedger text field in @processInbox reply\n");
 						return (-1); // error condition
 					}				
@@ -2593,20 +2597,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 					}
 					else
 					{
-						fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 								"Expected inReferenceTo text field in @processInbox reply\n");
 						return (-1); // error condition
 					}				
 				}
 				else {
-					fprintf(stderr, "Unexpected node name: %s\n", xml->getNodeName());
+					OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
 					return (-1);
 				}
 				
 			}
 			else
 			{
-				fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
 						"Unexpected text field in @processInbox reply: %s   %s\n",
 						xml->getNodeName(), xml->getNodeData());
 				return (-1); // error condition
@@ -2617,13 +2621,13 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		// If the "command responding to" isn't there, or the Payload isn't there, then failure.
 		if (!m_ascInReferenceTo.GetLength() || (!m_ascPayload.GetLength()))
 		{
-			fprintf(stderr, "Error in OTMessage::ProcessXMLNode:\n"
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
 					"Expected responseLedger and/or inReferenceTo elements with text fields in "
 					"@processInbox reply\n");
 			return (-1); // error condition			
 		}
 		
-		fprintf(stderr, "\n Command: %s   %s\n NymID:    %s\n AccountID: %s\n"
+		OTLog::vOutput(1, "\n Command: %s   %s\n NymID:    %s\n AccountID: %s\n"
 				" ServerID: %s\n\n",
 				//	"****New Account****:\n%s\n", 
 				m_strCommand.Get(), (m_bSuccess?"SUCCESS":"FAILED"), 
@@ -2670,11 +2674,11 @@ bool OTMessage::SignContract(const EVP_PKEY * pkey, OTSignature & theSignature,
 	
 	if (m_bIsSigned)
 	{
-//		fprintf(stderr, "\n******************************************************\n"
+//		OTLog::vError("\n******************************************************\n"
 //				"Contents of signed message:\n\n%s******************************************************\n\n", m_xmlUnsigned.Get());
 	}
 	else
-		fprintf(stderr, "Failure signing message:\n%s", m_xmlUnsigned.Get());
+		OTLog::vOutput(1, "Failure signing message:\n%s", m_xmlUnsigned.Get());
 
 	return m_bIsSigned;
 }
@@ -2712,7 +2716,28 @@ OTMessage::~OTMessage()
 	
 }
 
+
+
+
 // This actually saves to any file you want to pass it to.
+
+bool OTMessage::SaveContractWallet(std::ofstream & ofs)
+{
+	OTString strContract;
+	
+	if (SaveContract(strContract))
+	{
+		ofs << strContract.Get();
+		
+		return true;
+	}
+	else 
+	{
+		return false;
+	}
+}
+
+/*
 bool OTMessage::SaveContractWallet(FILE * fl)
 {
 	OTString strContract;
@@ -2726,7 +2751,7 @@ bool OTMessage::SaveContractWallet(FILE * fl)
 		return false;
 	}
 }
-
+*/
 
 /*
  else if (!strcmp("condition", xml->getNodeName()))
@@ -2740,14 +2765,14 @@ bool OTMessage::SaveContractWallet(FILE * fl)
  strConditionValue = xml->getNodeData();
  }
  else {
- fprintf(stderr, "Error in OTContract::ProcessXMLNode: Condition without value: %s\n",
+OTLog::vError("Error in OTContract::ProcessXMLNode: Condition without value: %s\n",
  strConditionName.Get());
  return (-1); // error condition
  }
  
  //Todo: add the conditions to a list in memory (on this object)
  
- fprintf(stderr, "Loading condition \"%s\": %s----------(END DATA)----------\n", strConditionName.Get(), 
+OTLog::vError("Loading condition \"%s\": %s----------(END DATA)----------\n", strConditionName.Get(), 
  strConditionValue.Get());
  
  return 1;

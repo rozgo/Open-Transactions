@@ -103,6 +103,15 @@ typedef std::multimap<std::string, OTMint *>	mapOfMints;
 typedef std::map<std::string, std::string>		mapOfBaskets;
 typedef std::map<std::string, OTAccount *>		mapOfAccounts; // server side these are keyed by asset type ID
 
+// Why does the map of mints use multimap instead of map?
+// Because there might be multiple valid mints for the same asset type.
+// Perhaps I am redeeming tokens from the previous series, which have not yet expired.
+// Only tokens from the new series are being issued today, but tokens from the previous
+// series are still good until their own expiration date, which is coming up soon.
+// Therefore the server manages different mints for the same asset type, and since the asset
+// type is the key in the multimap, we don't want to accidentally remove one from the list
+// every time another is added. Thus multimap is employed.
+
 class OTServer
 {
 	OTString	m_strVersion;		// Unused currently.

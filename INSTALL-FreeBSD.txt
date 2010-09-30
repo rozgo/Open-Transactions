@@ -8,13 +8,11 @@ Open-Transactions/testwallet/Makefile.testwallet
 
 
 
-===> STEP ONE:
+STEP ONE:
 
 
 In all three Makefiles, find the below section:
 
-
---- BEGIN SECTION --- 
 #
 # Make sure the first directory below has YOUR computer's path to the
 # OpenSSL include files. This is the one I use for Mac and Linux:
@@ -28,29 +26,39 @@ In all three Makefiles, find the below section:
 
 INCLUDEDIRS = \
 	-I/usr/local/ssl/include \
---- END SECTION ---
+
+------------------- END SECTION --------------------------
 
 
 
 Notice the instructions inside the above code, to substitute one directory
 path for another, in the event that you are running FreeBSD.
 
-Make the substitution as described, in ALL THREE Makefiles.
+==> Make the substitution as described, in ALL THREE Makefiles! Again:
+
+Open-Transactions/OTLib/Makefile
+Open-Transactions/transaction/Makefile
+Open-Transactions/testwallet/Makefile.testwallet
 
 
 
+--------------------------------------
 
-===> STEP TWO:
+STEP TWO:
 
 In the transaction and testwallet Makefiles, add one line to the library dirs:
 
 
 HERE'S HOW IT LOOKS FOR MAC AND LINUX: 
+
 # For FreeBSD, add this library:  /usr/ports/security/openssl/work/openssl-1.0.0a
 LIBDIRS = \
 	-L../OTLib
 
+
+
 HERE'S HOW IT *SHOULD* LOOK FOR FREEBSD:
+
 LIBDIRS = \
 	-L/usr/ports/security/openssl/work/openssl-1.0.0a
 	-L../OTLib

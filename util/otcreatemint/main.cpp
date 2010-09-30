@@ -98,6 +98,8 @@ extern "C"
 #include "OTAssetContract.h"
 #include "OTMint.h"
 
+#include "OTLog.h"
+
 
 // run this program from inside the transaction directory (it's a tool for creating mints for the server.)
 
@@ -133,8 +135,8 @@ int main (int argc, char * const argv[])
 		struct stat st;
 
 		strMintPath.Format("%s%smints%s%s.%d", 
-									 OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-									 OTPseudonym::OTPathSeparator.Get(),
+									 OTLog::Path(), OTLog::PathSeparator(),
+									 OTLog::PathSeparator(),
 									 strAssetTypeID.Get(), nSeries);
 		
 		bFileIsPresent = (stat(strMintPath.Get(), &st) == 0);
@@ -214,8 +216,8 @@ int main (int argc, char * const argv[])
 				// Now I sign it again, to get the private keys out of there.
 				pMint->ReleaseSignatures();
 				pMint->SignContract(theNym);
-				strMintPath.Format("%s%smints%s%s.PUBLIC", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-								   OTPseudonym::OTPathSeparator.Get(), strAssetTypeID.Get());
+				strMintPath.Format("%s%smints%s%s.PUBLIC", OTLog::Path(), OTLog::PathSeparator(),
+								   OTLog::PathSeparator(), strAssetTypeID.Get());
 				pMint->SaveContract(strMintPath.Get());
 				printf("Done.\n");
 			}

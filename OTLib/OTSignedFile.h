@@ -85,6 +85,9 @@
 #ifndef __OT_SIGNED_FILE_H__
 #define __OT_SIGNED_FILE_H__
 
+#include <fstream>
+
+
 #include "OTString.h"
 #include "OTContract.h"
 
@@ -136,7 +139,8 @@ public:
 	inline OTString & GetFilePayload() { return m_strSignedFilePayload; } 
 	inline void SetFilePayload(const OTString &strArg) { m_strSignedFilePayload = strArg; }
 
-	virtual bool SaveContractWallet(FILE * fl);
+	virtual bool SaveContractWallet(std::ofstream & ofs);
+//	virtual bool SaveContractWallet(FILE * fl);
 };
 
 #endif // __OT_SIGNED_FILE_H__

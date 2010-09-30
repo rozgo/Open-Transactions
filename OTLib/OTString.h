@@ -95,6 +95,8 @@ extern "C" {
 #include <stdint.h>
 }
 
+#include <fstream>
+
 //#ifdef _WIN32
 //#define MAX_STRING_LENGTH   631072
 //#else
@@ -173,7 +175,8 @@ public:
 	void ConvertToLowerCase();
 	void ConvertToUpperCase();
 	
-	void OTfgets(FILE * fl);
+	void OTfgets(std::istream & ofs);
+//	void OTfgets(FILE * fl);
 
 	// true  == there are more lines to read.
 	// false == this is the last line. Like EOF.
@@ -183,7 +186,8 @@ public:
    void sungetc(void);
    void reset(void);
 
-   void WriteToFile(FILE * fl = NULL) const;
+	void WriteToFile(std::ofstream & ofs) const;
+//	void WriteToFile(FILE * fl = NULL) const;
 
    virtual void Release(void);
 

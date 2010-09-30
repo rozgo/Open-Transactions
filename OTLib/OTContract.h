@@ -95,6 +95,7 @@ extern "C"
 #include <list>
 #include <map>
 #include <string>
+#include <fstream>
 
 #include "irrxml/irrXML.h"
 
@@ -245,14 +246,16 @@ public:
 	bool SaveContract(const char * szFilename); // Saves the contract to its internal member, then saves 
 												// that to a specific filename
 	
-	// Saves the entire contract to a file that's already open (like a wallet).
-	virtual bool SaveContractWallet(FILE * fl) = 0;
-	
 	// Update the internal unsigned contents based on the member variables
 	virtual void UpdateContents(); // default behavior does nothing.
 	
 	// Save the internal contents (m_xmlUnsigned) to an already-open file
-	virtual bool SaveContents(FILE * fl) const;
+//	virtual bool SaveContents(FILE * fl) const;
+	virtual bool SaveContents(std::ofstream & ofs) const;
+	
+	// Saves the entire contract to a file that's already open (like a wallet).
+//	virtual bool SaveContractWallet(FILE * fl) = 0;
+	virtual bool SaveContractWallet(std::ofstream & ofs) = 0;
 	
 	// Save m_xmlUnsigned to a string that's passed in
 	virtual bool SaveContents(OTString & strContents) const;

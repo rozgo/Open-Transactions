@@ -134,6 +134,7 @@ using namespace io;
 #include "OTMessage.h"
 #include "OTStringXML.h"
 #include "OTPseudonym.h"
+#include "OTLog.h"
 
 // TODO:  add an override so that OTAccount, when it loads up, it performs the check to
 // see the ServerID, look at the Server Contract and make sure the server hashes match.
@@ -146,8 +147,8 @@ bool OTAccount::LoadContract()
 {
 	OTString strID;
 	GetIdentifier(strID);
-	m_strFilename.Format("%s%saccounts%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-						 OTPseudonym::OTPathSeparator.Get(), strID.Get());
+	m_strFilename.Format("%s%saccounts%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 OTLog::PathSeparator(), strID.Get());
 
 	return OTContract::LoadContract();
 }
@@ -156,13 +157,30 @@ bool OTAccount::SaveAccount()
 {
 	OTString strID;
 	GetIdentifier(strID);
-	m_strFilename.Format("%s%saccounts%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-						 OTPseudonym::OTPathSeparator.Get(), strID.Get());
+	m_strFilename.Format("%s%saccounts%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 OTLog::PathSeparator(), strID.Get());
+	
+	OTLog::vOutput(2, "");
 	
 	// the const char * version (used here) expects a filename.
 	// If I passed in the OTString it would try to save to that string instead of opening the file.
 	OTString strTemp(m_strFilename);
-	return SaveContract(strTemp.Get());
+	
+	bool bSaved = SaveContract(strTemp.Get());
+	
+	if (bSaved)
+	{
+		OTLog::vOutput(2, "Successfully saved account: %s\nFilename: %s\n", 
+					   m_strFilename.Get(), strTemp.Get());
+	}
+	else 
+	{
+		OTLog::vError("Error saving account: %s\nFilename: %s\n",
+					  m_strFilename.Get(), strTemp.Get());
+	}
+
+	
+	return bSaved;
 }
 
 // Debit a certain amount from the account (presumably the same amount is being credited somewhere else)
@@ -348,8 +366,8 @@ OTAccount * OTAccount::LoadExistingAccount(const OTIdentifier & theAccountID, co
 		
 		OTString strAcctID(theAccountID);
 		
-		pAccount->m_strFilename.Format("%s%saccounts%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-									   OTPseudonym::OTPathSeparator.Get(), strAcctID.Get());
+		pAccount->m_strFilename.Format("%s%saccounts%s%s", OTLog::Path(), OTLog::PathSeparator(),
+									   OTLog::PathSeparator(), strAcctID.Get());
 		
 		if (pAccount->LoadContract() && pAccount->VerifyContractID())
 			return pAccount;
@@ -401,7 +419,7 @@ bool OTAccount::GenerateNewAccount(const OTPseudonym & theServer, const OTMessag
 	thePayload.SetPayloadSize(100);
 	if (!RAND_bytes((unsigned char*)thePayload.GetPayloadPointer(), 100)) 
 	{
-		fprintf(stderr, "The PRNG is not seeded!\n");
+		OTLog::Error("The PRNG is not seeded!\n");
 //		abort(  );
 		return false;	
 	}
@@ -410,7 +428,7 @@ bool OTAccount::GenerateNewAccount(const OTPseudonym & theServer, const OTMessag
 	OTIdentifier newID;
 	if (!newID.CalculateDigest(thePayload))
 	{
-		fprintf(stderr, "Error generating new account ID.\n");
+		OTLog::Error("Error generating new account ID.\n");
 		return false;	
 	}		
 	
@@ -425,13 +443,13 @@ bool OTAccount::GenerateNewAccount(const OTPseudonym & theServer, const OTMessag
 	m_strName.Set(strID); // So it's not blank. The user can always change it.
 	
 	// Next we create the full path filename for the account using the ID.
-	m_strFilename.Format("%s%saccounts%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-						 OTPseudonym::OTPathSeparator.Get(), strID.Get());
+	m_strFilename.Format("%s%saccounts%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 OTLog::PathSeparator(), strID.Get());
 	
 	// Then we try to load it, in order to make sure that it doesn't already exist.
 	if (LoadContractRawFile())
 	{
-		fprintf(stderr, "Error generating new account ID, account already exists.\n");
+		OTLog::Error("Error generating new account ID, account already exists.\n");
 		return false;	
 	}
 
@@ -443,18 +461,24 @@ bool OTAccount::GenerateNewAccount(const OTPseudonym & theServer, const OTMessag
 	{
 		theServer.GetIdentifier(m_AcctUserID);
 	}
-	else {
+	else 
+	{
 		m_AcctUserID.SetString(theMessage.m_strNymID);
 	}
 
 	m_AcctAssetTypeID.SetString(theMessage.m_strAssetID);
+	
+	OTString TEMPstr(m_AcctAssetTypeID);
 
+	OTLog::vOutput(3, "Creating new account, type:\n%s\nChanged to ID then back to string:\n%s\n", 
+				   theMessage.m_strAssetID.Get(), TEMPstr.Get());
+	
 	OTIdentifier SERVER_ID(theMessage.m_strServerID);	
 	SetRealServerID(SERVER_ID);			// todo this assumes the serverID on the message is correct. It's vetted, but still...
 	SetPurportedServerID(SERVER_ID);
 	
-	char datebuffer[200];
-	m_BalanceDate.Set(myGetTimeOfDay(datebuffer, 198));
+//	char datebuffer[200];
+//	m_BalanceDate.Set(myGetTimeOfDay(datebuffer, 198));
 	m_BalanceAmount.Set("0");
 	
 		
@@ -517,14 +541,33 @@ void OTAccount::UpdateContents()
 							  " serverID=\"%s\"\n assetTypeID=\"%s\" >\n\n", m_strVersion.Get(), strAcctType.Get(),
 							  ACCOUNT_ID.Get(), USER_ID.Get(), SERVER_ID.Get(), strAssetTYPEID.Get());		
 	
-	m_xmlUnsigned.Concatenate("<balance date=\"%s\" amount=\"%s\"/>\n\n", m_BalanceDate.Get(),
-							  m_BalanceAmount.Get());
+	m_xmlUnsigned.Concatenate("<balance amount=\"%s\"/>\n\n", m_BalanceAmount.Get());
+//	m_xmlUnsigned.Concatenate("<balance date=\"%s\" amount=\"%s\"/>\n\n", m_BalanceDate.Get(),
+//							  m_BalanceAmount.Get());
 	
 	m_xmlUnsigned.Concatenate("</assetAccount>\n");			
 }
 
 
 
+
+
+bool OTAccount::SaveContractWallet(std::ofstream & ofs)
+{
+	OTString strAccountID(GetPurportedAccountID()), strServerID(GetPurportedServerID()), strUserID(GetUserID());
+	
+	ofs << "<assetAccount name=\""	<< m_strName.Get()		<< 
+	"\"\n file=\""					<< m_strFilename.Get()	<<
+	"\"\n userID=\""				<< strUserID.Get()		<<
+	"\"\n serverID=\""				<< strServerID.Get()	<<
+	"\"\n accountID=\""				<< strAccountID.Get()	<<
+	"\"  /> \n\n";
+
+	return true;
+	
+}
+
+/*
 bool OTAccount::SaveContractWallet(FILE * fl)
 {
 	OTString strAccountID(GetPurportedAccountID()), strServerID(GetPurportedServerID()), strUserID(GetUserID());
@@ -534,7 +577,7 @@ bool OTAccount::SaveContractWallet(FILE * fl)
 	
 	return true;
 }
-
+*/
 
 
 
@@ -586,7 +629,7 @@ int OTAccount::ProcessXMLNode(IrrXMLReader*& xml)
 		SetUserID(USER_ID);
 
 		OTString strAssetTypeID(m_AcctAssetTypeID);
-		fprintf(stderr, 
+		OTLog::vOutput(1,
 			//	"\n===> Loading XML for Account into memory structures..."
 				"\n\nAccount Type: %s\nAccountID: %s\nUserID: %s\n"
 				"AssetTypeID: %s\nServerID: %s\n", 
@@ -598,11 +641,13 @@ int OTAccount::ProcessXMLNode(IrrXMLReader*& xml)
 	
 	else if (!strcmp("balance", xml->getNodeName())) 
 	{
-		m_BalanceDate		= xml->getAttributeValue("date");
+//		m_BalanceDate		= xml->getAttributeValue("date");
 		m_BalanceAmount	= xml->getAttributeValue("amount");
 		
-		fprintf(stderr, "\nBALANCE  --  %s\nDATE     --  %s\n",
-				m_BalanceAmount.Get(), m_BalanceDate.Get());
+		OTLog::vOutput(1, "\nBALANCE  --  %s\n",
+					   m_BalanceAmount.Get());
+//		OTLog::vOutput(1, "\nBALANCE  --  %s\nDATE     --  %s\n",
+//					   m_BalanceAmount.Get(), m_BalanceDate.Get());
 		
 		nReturnVal = 1;
 	}

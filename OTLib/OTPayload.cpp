@@ -96,6 +96,7 @@
 #include "OTPayload.h"
 #include "OTEnvelope.h"
 #include "OTMessage.h"
+#include "OTLog.h"
 
 
 OTPayload::OTPayload() : OTData()
@@ -212,7 +213,7 @@ bool OTPayload::GetEnvelope(OTEnvelope & theEnvelope) const
 		return true;
 	}
 	else {
-		fprintf(stderr, "Invalid Checksum in OTPayload::GetEnvelope\n");
+		OTLog::Error("Invalid Checksum in OTPayload::GetEnvelope\n");
 		return false;
 	}	
 }
@@ -253,7 +254,7 @@ bool OTPayload::GetMessage(OTMessage & theMessage) const
 		return true;
 	}
 	else {
-		fprintf(stderr, "Invalid Checksum in OTPayload::GetMessage\n");
+		OTLog::Error("Invalid Checksum in OTPayload::GetMessage\n");
 		return false;
 	}
 }

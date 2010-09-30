@@ -16,6 +16,7 @@ extern "C"
 #include "OTPseudonym.h"
 #include "OTAssetContract.h"
 #include "OTSignedFile.h"
+#include "OTLog.h"
 
 
 // Run this program from inside the testwallet directory.
@@ -36,8 +37,8 @@ int main (int argc, char * const argv[])
 	OTString strNymID(argv[1]), strContractFile(argv[2]);
 	OTString NymName(strNymID), NymFile;
 	
-	NymFile.Format("%s%snyms%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-				   OTPseudonym::OTPathSeparator.Get(), strNymID.Get());
+	NymFile.Format("%s%snyms%s%s", OTLog::Path(), OTLog::PathSeparator(),
+				   OTLog::PathSeparator(), strNymID.Get());
 	
 	OTPseudonym theNym(NymName, NymFile, strNymID);
 	

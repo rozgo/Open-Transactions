@@ -106,6 +106,7 @@ using namespace io;
 #include "OTMint.h"
 #include "OTPseudonym.h"
 #include "OTPurse.h"
+#include "OTLog.h"
 
 
 
@@ -198,8 +199,9 @@ OTToken::~OTToken()
 }
 
 
+
 // TODO: save the private request tokens to the wallet here...
-bool OTToken::SaveContractWallet(FILE * fl)
+bool OTToken::SaveContractWallet(std::ofstream & ofs)
 {
 	// mapOfPrototokens	m_mapPrivate;	// The elements are accessed [0..N]. mapPublic[2] corresponds to map_Private[2], etc.
 
@@ -229,8 +231,8 @@ bool OTToken::IsTokenAlreadySpent(OTString & theCleartextToken)
 	OTString strTokenDirectoryPath;
 	OTString strAssetID(GetAssetID());
 	strTokenDirectoryPath.Format("%s%sspent%s%s.%d", 
-								 OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-								 OTPseudonym::OTPathSeparator.Get(),
+								 OTLog::Path(), OTLog::PathSeparator(),
+								 OTLog::PathSeparator(),
 								 strAssetID.Get(), GetSeries());
 	
 	bool bDirIsPresent = (stat(strTokenDirectoryPath.Get(), &st) == 0);
@@ -246,7 +248,7 @@ bool OTToken::IsTokenAlreadySpent(OTString & theCleartextToken)
 		if (mkdir(strTokenDirectoryPath.Get(), 0700) == -1) 
 #endif
 		{
-			fprintf(stderr, "OTToken::IsTokenAlreadySpent: Unable to create %s.\n",
+			OTLog::vError("OTToken::IsTokenAlreadySpent: Unable to create %s.\n",
 					strTokenDirectoryPath.Get());
 			return true;	// all errors must return true in this function.
 //			return false;	// DANGEROUS! 
@@ -263,7 +265,7 @@ bool OTToken::IsTokenAlreadySpent(OTString & theCleartextToken)
 	// to find it (if this is still false.)
 	if (!bDirIsPresent)
 	{
-		fprintf(stderr, "IsTokenAlreadySpent: Unable to find newly-created token directory: %s\n", 
+		OTLog::vError("IsTokenAlreadySpent: Unable to find newly-created token directory: %s\n", 
 				strTokenDirectoryPath.Get());
 		return true;	// all errors must return true in this function.
 //		return false;	// DANGEROUS
@@ -287,7 +289,7 @@ bool OTToken::IsTokenAlreadySpent(OTString & theCleartextToken)
 	// If so, we're trying to record a token that was already recorded...
 	if (bTokenIsPresent)
 	{
-		fprintf(stderr, "\nOTToken::IsTokenAlreadySpent: Token was already spent: %s\n", 
+		OTLog::vOutput(0, "\nOTToken::IsTokenAlreadySpent: Token was already spent: %s\n", 
 				strTokenPath.Get());
 		return true;	// all errors must return true in this function.
 						// But this is not an error. Token really WAS already
@@ -309,8 +311,8 @@ bool OTToken::RecordTokenAsSpent(OTString & theCleartextToken)
 	OTString strTokenDirectoryPath, strAssetID(GetAssetID());
 	
 	strTokenDirectoryPath.Format("%s%sspent%s%s.%d", 
-								 OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-								 OTPseudonym::OTPathSeparator.Get(),
+								 OTLog::Path(), OTLog::PathSeparator(),
+								 OTLog::PathSeparator(),
 								 strAssetID.Get(), GetSeries());
 	
 	bool bDirIsPresent = (stat(strTokenDirectoryPath.Get(), &st) == 0);
@@ -326,7 +328,7 @@ bool OTToken::RecordTokenAsSpent(OTString & theCleartextToken)
 		if (mkdir(strTokenDirectoryPath.Get(), 0700) == -1) 
 #endif
 		{
-			fprintf(stderr, "OTToken::RecordTokenAsSpent: Unable to create %s.\n",
+			OTLog::vError("OTToken::RecordTokenAsSpent: Unable to create %s.\n",
 					strTokenDirectoryPath.Get());
 			return false;
 		}
@@ -342,7 +344,7 @@ bool OTToken::RecordTokenAsSpent(OTString & theCleartextToken)
 	// to find it (if this is still false.)
 	if (!bDirIsPresent)
 	{
-		fprintf(stderr, "Unable to find newly-created token directory: %s\n", strTokenDirectoryPath.Get());
+		OTLog::vError("Unable to find newly-created token directory: %s\n", strTokenDirectoryPath.Get());
 		return false;
 	}
 	
@@ -363,7 +365,7 @@ bool OTToken::RecordTokenAsSpent(OTString & theCleartextToken)
 	// If so, we're trying to record a token that was already recorded...
 	if (bTokenIsPresent)
 	{
-		fprintf(stderr, "OTToken::RecordTokenAsSpent: Trying to record token as spent,"
+		OTLog::vError("OTToken::RecordTokenAsSpent: Trying to record token as spent,"
 				" but it was already recorded: %s\n", strTokenPath.Get());
 		return false;
 	}
@@ -499,10 +501,11 @@ void OTToken::UpdateContents()
 		OTASCIIArmor * pPrototoken = NULL;
 		for (mapOfPrototokens::iterator ii = m_mapPublic.begin(); ii != m_mapPublic.end(); ++ii)
 		{
-			if ((pPrototoken = (*ii).second)) // if pointer not null
-			{
-				m_xmlUnsigned.Concatenate("<prototoken>\n%s</prototoken>\n\n", pPrototoken->Get());
-			}
+			pPrototoken = (*ii).second;
+			
+			OT_ASSERT(NULL != pPrototoken);
+			
+			m_xmlUnsigned.Concatenate("<prototoken>\n%s</prototoken>\n\n", pPrototoken->Get());
 		}		
 		m_xmlUnsigned.Concatenate("</protopurse>\n\n");
 	}
@@ -516,10 +519,11 @@ void OTToken::UpdateContents()
 		OTASCIIArmor * pPrototoken = NULL;
 		for (mapOfPrototokens::iterator ii = m_mapPrivate.begin(); ii != m_mapPrivate.end(); ++ii)
 		{
-			if ((pPrototoken = (*ii).second)) // if pointer not null
-			{
-				m_xmlUnsigned.Concatenate("<privatePrototoken>\n%s</privatePrototoken>\n\n", pPrototoken->Get());
-			}
+			pPrototoken = (*ii).second;
+			
+			OT_ASSERT(NULL != pPrototoken);
+			
+			m_xmlUnsigned.Concatenate("<privatePrototoken>\n%s</privatePrototoken>\n\n", pPrototoken->Get());
 		}		
 		m_xmlUnsigned.Concatenate("</privateProtopurse>\n\n");
 	}
@@ -580,7 +584,7 @@ int OTToken::ProcessXMLNode(IrrXMLReader*& xml)
 		m_AssetTypeID.SetString(strAssetTypeID);
 		m_ServerID.SetString(strServerID);
 
-		fprintf(stderr, 
+		OTLog::vOutput(0,
 				//	"\n===> Loading XML for token into memory structures..."
 				"\n\nToken State: %s\n Denomination: %ld\n"
 				" AssetTypeID: %s\nServerID: %s\n", 
@@ -599,7 +603,7 @@ int OTToken::ProcessXMLNode(IrrXMLReader*& xml)
 		{
 			OTString strNodeData = xml->getNodeData();
 			
-//			fprintf(stderr, "DEBUGGING Spendable, CONTENTS:  -----------%s------------\n\n", strNodeData.Get());
+//			OTLog::vError("DEBUGGING Spendable, CONTENTS:  -----------%s------------\n\n", strNodeData.Get());
 			
 			// Sometimes the XML reads up the data with a prepended newline.
 			// This screws up my own objects which expect a consistent in/out
@@ -614,7 +618,7 @@ int OTToken::ProcessXMLNode(IrrXMLReader*& xml)
 			}
 		}
 		else {
-			fprintf(stderr, "Error in OTToken::ProcessXMLNode: token ID without value.\n");
+			OTLog::Error("Error in OTToken::ProcessXMLNode: token ID without value.\n");
 			return (-1); // error condition
 		}
 		
@@ -630,7 +634,7 @@ int OTToken::ProcessXMLNode(IrrXMLReader*& xml)
 		{
 			OTString strNodeData = xml->getNodeData();
 			
-//			fprintf(stderr, "DEBUGGING Signature, CONTENTS:  -----------%s------------\n\n", strNodeData.Get());
+//			OTLog::vError("DEBUGGING Signature, CONTENTS:  -----------%s------------\n\n", strNodeData.Get());
 			
 			// Sometimes the XML reads up the data with a prepended newline.
 			// This screws up my own objects which expect a consistent in/out
@@ -645,7 +649,7 @@ int OTToken::ProcessXMLNode(IrrXMLReader*& xml)
 			}
 		}
 		else {
-			fprintf(stderr, "Error in OTToken::ProcessXMLNode: token Signature without value.\n");
+			OTLog::Error("Error in OTToken::ProcessXMLNode: token Signature without value.\n");
 			return (-1); // error condition
 		}
 		
@@ -688,14 +692,14 @@ int OTToken::ProcessXMLNode(IrrXMLReader*& xml)
 						pArmoredPrototoken->Set(strNodeData);  // else the data was fine so grab it as-is
 				}
 
-//				fprintf(stderr, "DEBUGGING Prototoken, CONTENTS:  -----------%s------------\n\n", pArmoredPrototoken->Get());
+//				OTLog::vError("DEBUGGING Prototoken, CONTENTS:  -----------%s------------\n\n", pArmoredPrototoken->Get());
 
 				m_mapPublic[nPublicTokenCount] = pArmoredPrototoken;
 				nPublicTokenCount++;
-//				fprintf(stderr, "Loaded prototoken and adding to m_mapPublic at index: %d\n", nPublicTokenCount-1);
+//				OTLog::vError("Loaded prototoken and adding to m_mapPublic at index: %d\n", nPublicTokenCount-1);
 			}
 			else {
-				fprintf(stderr, "ERROR: loading prototoken in OTToken::ProcessXMLNode\n");
+				OTLog::Error("ERROR: loading prototoken in OTToken::ProcessXMLNode\n");
 				if (pArmoredPrototoken)
 				{
 					delete pArmoredPrototoken;
@@ -705,7 +709,7 @@ int OTToken::ProcessXMLNode(IrrXMLReader*& xml)
 			}
 		}
 		else {
-			fprintf(stderr, "Error in OTToken::ProcessXMLNode: prototoken without value.\n");
+			OTLog::Error("Error in OTToken::ProcessXMLNode: prototoken without value.\n");
 			return (-1); // error condition
 		}
 		
@@ -733,7 +737,7 @@ int OTToken::ProcessXMLNode(IrrXMLReader*& xml)
 			{
 				OTString strNodeData = xml->getNodeData();
 				
-//				fprintf(stderr, "DEBUGGING Private-prototoken, CONTENTS:  ----------->%s<------------\n\n", strNodeData.Get());
+//				OTLog::vError("DEBUGGING Private-prototoken, CONTENTS:  ----------->%s<------------\n\n", strNodeData.Get());
 				
 				// Sometimes the XML reads up the data with a prepended newline.
 				// This screws up my own objects which expect a consistent in/out
@@ -750,10 +754,10 @@ int OTToken::ProcessXMLNode(IrrXMLReader*& xml)
 				
 				m_mapPrivate[nPrivateTokenCount] = pArmoredPrototoken;
 				nPrivateTokenCount++;
-//				fprintf(stderr, "Loaded prototoken and adding to m_mapPrivate at index: %d\n", nPrivateTokenCount-1);
+				OTLog::vOutput(4, "Loaded prototoken and adding to m_mapPrivate at index: %d\n", nPrivateTokenCount-1);
 			}
 			else {
-				fprintf(stderr, "ERROR: loading prototoken in OTToken::ProcessXMLNode\n");
+				OTLog::Error("ERROR: loading prototoken in OTToken::ProcessXMLNode\n");
 				if (pArmoredPrototoken)
 				{
 					delete pArmoredPrototoken;
@@ -763,7 +767,7 @@ int OTToken::ProcessXMLNode(IrrXMLReader*& xml)
 			}
 		}
 		else {
-			fprintf(stderr, "Error in OTToken::ProcessXMLNode: privatePrototoken without value.\n");
+			OTLog::Error("Error in OTToken::ProcessXMLNode: privatePrototoken without value.\n");
 			return (-1); // error condition
 		}
 		
@@ -791,7 +795,6 @@ int OTToken::ProcessXMLNode(IrrXMLReader*& xml)
 
 bool OTToken::GetPrototoken(OTASCIIArmor & ascPrototoken, int nTokenIndex)
 {
-//	fprintf(stderr, "DEBUG OTToken::GetPrototoken 1\n");
 
 	// out of bounds. For a count 10 element array, index 10 is out of bounds.
 	// thus if attempted index is equal or larger to the count, out of bounds.
@@ -799,7 +802,7 @@ bool OTToken::GetPrototoken(OTASCIIArmor & ascPrototoken, int nTokenIndex)
 	{
 		return false;
 	}
-//	fprintf(stderr, "DEBUG OTToken::GetPrototoken. nTokenIndex is %d. m_nTokenCount is %d\n------------------------\n",
+//	OTLog::vError("DEBUG OTToken::GetPrototoken. nTokenIndex is %d. m_nTokenCount is %d\n------------------------\n",
 //			nTokenIndex, m_nTokenCount);
 	
 	// loop through the items that make up this transaction and print them out here, base64-encoded, of course.
@@ -807,17 +810,20 @@ bool OTToken::GetPrototoken(OTASCIIArmor & ascPrototoken, int nTokenIndex)
 	
 	for (mapOfPrototokens::iterator ii = m_mapPublic.begin(); ii != m_mapPublic.end(); ++ii)
 	{
-		if ((pPrototoken = (*ii).second)) // if pointer not null
-		{			
-			const bool bSuccess = (nTokenIndex == (*ii).first);
-//			fprintf(stderr, "DEBUG OTToken::GetPrototoken ABOUT TO ENTER, index: %d\n", nTokenIndex);
-			if (bSuccess)
-			{
-				ascPrototoken.Set(*pPrototoken);
-//				fprintf(stderr, "DEBUG OTToken::GetPrototoken INNER SANCTUM\n PROTOKEN:"
+		pPrototoken = (*ii).second;
+		
+		OT_ASSERT(NULL != pPrototoken);
+		
+		const bool bSuccess = (nTokenIndex == (*ii).first);
+		
+//		OTLog::vError("DEBUG OTToken::GetPrototoken ABOUT TO ENTER, index: %d\n", nTokenIndex);
+		
+		if (bSuccess)
+		{
+			ascPrototoken.Set(*pPrototoken);
+//			OTLog::vError("DEBUG OTToken::GetPrototoken INNER SANCTUM\n PROTOKEN:"
 //						"\n-----------%s-----------\n", ascPrototoken.Get());
-				return true;
-			}
+			return true;
 		}
 	}
 	return false;	
@@ -837,15 +843,16 @@ bool OTToken::GetPrivatePrototoken(OTASCIIArmor & ascPrototoken, int nTokenIndex
 	
 	for (mapOfPrototokens::iterator ii = m_mapPrivate.begin(); ii != m_mapPrivate.end(); ++ii)
 	{
-		if ((pPrototoken = (*ii).second)) // if pointer not null
-		{			
-			const bool bSuccess = (nTokenIndex == (*ii).first);
-			
-			if (bSuccess)
-			{
-				ascPrototoken.Set(*pPrototoken);
-				return true;
-			}
+		pPrototoken = (*ii).second;
+		
+		OT_ASSERT(NULL != pPrototoken);
+		
+		const bool bSuccess = (nTokenIndex == (*ii).first);
+		
+		if (bSuccess)
+		{
+			ascPrototoken.Set(*pPrototoken);
+			return true;
 		}
 	}
 	return false;	
@@ -860,11 +867,11 @@ bool OTToken::GetPrivatePrototoken(OTASCIIArmor & ascPrototoken, int nTokenIndex
 bool OTToken::GenerateTokenRequest(const OTPseudonym & theNym, OTMint & theMint, 
 								   long lDenomination, int nTokenCount/*=OTToken::nMinimumPrototokenCount*/)
 {		
-	//	fprintf(stderr,"%s <bank public info> <coin request private output file> <coin request public output file>\n", argv[0]);
+	//	OTLog::vError("%s <bank public info> <coin request private output file> <coin request public output file>\n", argv[0]);
 
 	if (OTToken::blankToken != m_State)
 	{
-		fprintf(stderr, "Blank token expected in OTToken::GenerateTokenRequest\n");
+		OTLog::Error("Blank token expected in OTToken::GenerateTokenRequest\n");
 		return false;
 	}
 	
@@ -926,27 +933,22 @@ bool OTToken::GenerateTokenRequest(const OTPseudonym & theNym, OTMint & theMint,
 			OTASCIIArmor * pArmoredPublic	= new OTASCIIArmor(strPublicCoin);
 			OTASCIIArmor * pArmoredPrivate	= new OTASCIIArmor();
 			
-			if (pArmoredPublic && pArmoredPrivate)
-			{
-				// Change the state. It's no longer a blank token, but a prototoken.
-				m_State = OTToken::protoToken;
+			OT_ASSERT_MSG(((NULL != pArmoredPublic) && (NULL != pArmoredPrivate)), "ERROR: Unable to allocate memory in OTToken::GenerateTokenRequest\n");
+			
+			// Change the state. It's no longer a blank token, but a prototoken.
+			m_State = OTToken::protoToken;
 
-				// Seal the private coin info up into an encrypted Envelope 
-				// and set it onto pArmoredPrivate (which was just added to our internal map, above.)
-				OTEnvelope theEnvelope;
-				theEnvelope.Seal(theNym, strPrivateCoin);	// Todo check the return values on these two functions
-				theEnvelope.GetAsciiArmoredData(*pArmoredPrivate);
-				
-				m_mapPublic[i]	= pArmoredPublic;
-				m_mapPrivate[i]	= pArmoredPrivate;
+			// Seal the private coin info up into an encrypted Envelope 
+			// and set it onto pArmoredPrivate (which was just added to our internal map, above.)
+			OTEnvelope theEnvelope;
+			theEnvelope.Seal(theNym, strPrivateCoin);	// Todo check the return values on these two functions
+			theEnvelope.GetAsciiArmoredData(*pArmoredPrivate);
+			
+			m_mapPublic[i]	= pArmoredPublic;
+			m_mapPrivate[i]	= pArmoredPrivate;
 
-				m_nTokenCount = nFinalTokenCount;
-				SetDenomination(lDenomination);
-			}
-			else {
-				fprintf(stderr, "ERROR: Unable to allocate memory in OTToken::GenerateTokenRequest\n");
-			}
-
+			m_nTokenCount = nFinalTokenCount;
+			SetDenomination(lDenomination);
 		}
 		else {
 			// Error condition
@@ -976,28 +978,24 @@ void OTToken::ReleasePrototokens()
 	
 	for (mapOfPrototokens::iterator ii = m_mapPublic.begin(); ii != m_mapPublic.end(); ++ii)
 	{		
-		if ((pPrototoken = (*ii).second))
-		{
-			delete pPrototoken;
-			pPrototoken		= NULL;
-		}
-		else {
-			fprintf(stderr, "NULL OTASCIIArmor pointer in OTToken::ReleasePrototokens.");
-		}		
+		pPrototoken = (*ii).second;
+		
+		OT_ASSERT_MSG(NULL != pPrototoken, "NULL OTASCIIArmor pointer in OTToken::ReleasePrototokens.");
+		
+		delete pPrototoken;
+		pPrototoken		= NULL;
 	}
 	
 	pPrototoken = NULL;
 	
 	for (mapOfPrototokens::iterator ii = m_mapPrivate.begin(); ii != m_mapPrivate.end(); ++ii)
 	{		
-		if ((pPrototoken = (*ii).second))
-		{
-			delete pPrototoken;
-			pPrototoken		= NULL;
-		}
-		else {
-			fprintf(stderr, "NULL OTASCIIArmor pointer in OTToken::ReleasePrototokens.");
-		}		
+		pPrototoken = (*ii).second;
+		
+		OT_ASSERT_MSG(NULL != pPrototoken, "NULL OTASCIIArmor pointer in OTToken::ReleasePrototokens.");
+		
+		delete pPrototoken;
+		pPrototoken		= NULL;
 	}
 	
 	m_mapPublic.clear();
@@ -1038,7 +1036,7 @@ void OTToken::SetSignature(const OTASCIIArmor & theSignature, int nTokenIndex)
 	// We now officially have the bank's signature on this token.
 	m_Signature.Set(theSignature);
 	
-//	fprintf(stderr, "DEBUG OTToken::SetSignature. nTokenIndex is %d.\nm_Signature is:\n%s\n"
+//	OTLog::vError("DEBUG OTToken::SetSignature. nTokenIndex is %d.\nm_Signature is:\n%s\n"
 //			"-------------------------------------\n",
 //			nTokenIndex, m_Signature.Get());
 	
@@ -1062,7 +1060,7 @@ bool OTToken::GetSignature(OTASCIIArmor & theSignature) const
 // Lucre step 4: client unblinds token -- now it's ready for use.
 bool OTToken::ProcessToken(const OTPseudonym & theNym, OTMint & theMint, OTToken & theRequest)
 {
-//		fprintf(stderr,"%s <bank public info> <private coin request> <signed coin request> <coin>\n",
+//		OTLog::vError("%s <bank public info> <private coin request> <signed coin request> <coin>\n",
 	bool bReturnValue = false;
 	
 	// When the Mint has signed a token and sent it back to the client,
@@ -1070,7 +1068,7 @@ bool OTToken::ProcessToken(const OTPseudonym & theNym, OTMint & theMint, OTToken
 	// this function is only performed on tokens in the signedToken state.
 	if (OTToken::signedToken != m_State)
 	{
-		fprintf(stderr, "Signed token expected in OTToken::ProcessToken\n");
+		OTLog::Error("Signed token expected in OTToken::ProcessToken\n");
 		return false;
 	}
 	
@@ -1089,7 +1087,7 @@ bool OTToken::ProcessToken(const OTPseudonym & theNym, OTMint & theMint, OTToken
 	BIO_puts(bioBank, strPublicMint.Get());
 
 	// Get the existing signature into a bio.
-//	fprintf(stderr, "DEBUGGING, m_Signature: -------------%s--------------\n", m_Signature.Get());
+//	OTLog::vError("DEBUGGING, m_Signature: -------------%s--------------\n", m_Signature.Get());
 	OTString strSignature(m_Signature);
 	BIO_puts(bioSignature, strSignature.Get());
 	
@@ -1099,7 +1097,7 @@ bool OTToken::ProcessToken(const OTPseudonym & theNym, OTMint & theMint, OTToken
 	
 	if (bFoundToken)
 	{
-//		fprintf(stderr, "THE PRIVATE REQUEST ARMORED CONTENTS:\n------------------>%s<-----------------------\n",
+//		OTLog::vError("THE PRIVATE REQUEST ARMORED CONTENTS:\n------------------>%s<-----------------------\n",
 //				thePrototoken.Get());
 		
 		// Decrypt the prototoken
@@ -1107,7 +1105,7 @@ bool OTToken::ProcessToken(const OTPseudonym & theNym, OTMint & theMint, OTToken
 		OTEnvelope theEnvelope(thePrototoken);
 		theEnvelope.Open(theNym, strPrototoken); // todo check return value.
 		
-//		fprintf(stderr, "THE PRIVATE REQUEST CONTENTS:\n------------------>%s<-----------------------\n",
+//		OTLog::vError("THE PRIVATE REQUEST CONTENTS:\n------------------>%s<-----------------------\n",
 //				strPrototoken.Get());
 		
 		// copy strPrototoken to a BIO
@@ -1143,14 +1141,14 @@ bool OTToken::ProcessToken(const OTPseudonym & theNym, OTMint & theMint, OTToken
 			OTString strCoin;	
 			strCoin.Set(CoinBuffer, coinLen);
 			
-//			fprintf(stderr, "Processing token...\n%s\n", strCoin.Get());
+//			OTLog::vError("Processing token...\n%s\n", strCoin.Get());
 			
 			// ...to Envelope stored in m_ascSpendable (encrypted and base64-encoded)
 			OTEnvelope theEnvelope;
 			theEnvelope.Seal(theNym, strCoin);	// Todo check the return values on these two functions
 			theEnvelope.GetAsciiArmoredData(m_ascSpendable); // Here's the final product.
 			
-//			fprintf(stderr, "NEW SPENDABLE token...\n--------->%s<----------------\n", m_ascSpendable.Get());
+//			OTLog::vError("NEW SPENDABLE token...\n--------->%s<----------------\n", m_ascSpendable.Get());
 
 			// Now the coin is encrypted from here on out, and otherwise ready-to-spend.
 			m_State			= OTToken::spendableToken;
@@ -1186,12 +1184,12 @@ bool OTToken::ProcessToken(const OTPseudonym & theNym, OTMint & theMint, OTToken
 // with the Server's Nym.
 bool OTToken::VerifyToken(OTPseudonym & theNotary, OTMint & theMint)
 {
-	//fprintf(stderr,"%s <bank info> <coin>\n",argv[0]);
+	//OTLog::vError("%s <bank info> <coin>\n",argv[0]);
     SetDumper(stderr);
 	
 	if (OTToken::spendableToken != m_State)
 	{
-		fprintf(stderr, "Expected spendable token in OTToken::VerifyToken\n");
+		OTLog::Error("Expected spendable token in OTToken::VerifyToken\n");
 		return false;
 	}
 	
@@ -1219,7 +1217,7 @@ bool OTToken::VerifyToken(OTPseudonym & theNotary, OTMint & theMint)
 		m_VALID_FROM	!= theMint.GetValidFrom() ||
 		m_VALID_TO		!= theMint.GetValidTo())
 	{
-		fprintf(stderr, "Token series information doesn't match Mint series information!\n");
+		OTLog::vOutput(0, "Token series information doesn't match Mint series information!\n");
 		return false;
 	}
 	
@@ -1230,18 +1228,18 @@ bool OTToken::VerifyToken(OTPseudonym & theNotary, OTMint & theMint)
 	// and time is within the range described on the token.
 	if (!VerifyCurrentDate())
 	{
-		fprintf(stderr, "Token is expired!\n");
+		OTLog::Output(0, "Token is expired!\n");
 		return false;
 	}
 	
 	// pass the cleartext Lucre spendable coin data to the Mint to be verified.
     if (theMint.VerifyToken(theNotary, strContents, GetDenomination()))  // Here's the boolean output: coin is verified!
 	{
-		fprintf(stderr, "Token verified!\n");
+		OTLog::Output(0, "Token verified!\n");
 		return true;
 	}
 	else {
-		fprintf(stderr,"Bad coin!\n");
+		OTLog::Output(0, "Bad coin!\n");
 		return false;
 	}
 }

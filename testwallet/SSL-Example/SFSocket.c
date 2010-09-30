@@ -437,7 +437,7 @@ int SFSocketRead (SFSocket *socket, void *buf, int len)
 #ifdef _WIN32
 	if (SOCKET_ERROR == stat)
 	{
-		fprintf(stderr, "Error during select()\n");
+		OTLog::Error("Error during select()\n");
 	}
 	else if (0 == stat)
 	{

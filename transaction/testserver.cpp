@@ -103,6 +103,8 @@ extern "C"
 #include "SSL-Example/SFSocket.h"
 }
 
+#include "OTLog.h"
+
 
 // TODO move this crap to a config file...
 // ALso, FYI, the below paths may not work unless you put a fully-qualified path for 
@@ -147,6 +149,8 @@ extern "C"
 #include "OTServer.h"
 #include "OTClientConnection.h"
 
+#include "OTLog.h"
+
 OTServer theServer;
 
 
@@ -155,12 +159,12 @@ OTServer theServer;
 /*
  if (bSuccess = theServer.ProcessUserCommand(theMessage, theReply))
  {
-	 fprintf(stderr, "Successfully processed user command: %s\n", theMessage.m_strCommand.Get());
+	 OTLog::vOutput(1, "Successfully processed user command: %s\n", theMessage.m_strCommand.Get());
 	 ProcessReply(ssl, theReply);
  }
  else
  {
-	 fprintf(stderr, "Unable to process user command in XML, or missing payload, in ProcessMessage.\n");
+	 OTLog::Output(1, "Unable to process user command in XML, or missing payload, in ProcessMessage.\n");
  } 
  
  */
@@ -172,14 +176,11 @@ int main (int argc, char **argv)
 #ifdef _WIN32
 	WSADATA wsaData;
 	WORD wVersionRequested = MAKEWORD( 2, 2 );
-	if (0 != WSAStartup( wVersionRequested, &wsaData ))
-	{
-		fprintf(stderr, "Error calling WSAStartup.\n");
-		exit(1);
-	}
+	int nWSA = WSAStartup( wVersionRequested, &wsaData );
+	OT_ASSERT_MSG(0 != nWSA, "Error calling WSAStartup.\n");	
 #endif
 
-	fprintf(stdout, "\n\nWelcome to Open Transactions, version %s.\n\n", "0.24");
+	OTLog::vOutput(0, "\n\nWelcome to Open Transactions, version %s.\n\n", OTLog::Version());
 	
 	// -----------------------------------------------------------------------
 
@@ -187,32 +188,32 @@ int main (int argc, char **argv)
 
 	if (argc < 2)
 	{
-		fprintf(stdout, "Usage:  transaction <SSL-password> <full path to transaction folder>\n\n"
+		OTLog::vOutput(0, "Usage:  transaction <SSL-password> <full path to transaction folder>\n\n"
 				"(Password defaults to '%s' if left blank on the command line.)\n"
 				"(Folder defaults to '%s' if left blank.)\n", KEY_PASSWORD, SERVER_PATH_DEFAULT);
 		
 		strSSLPassword.Set(KEY_PASSWORD);
-		OTPseudonym::OTPath.Set(SERVER_PATH_DEFAULT);
+		OTLog::SetMainPath(SERVER_PATH_DEFAULT);
 	}
 	else if (argc < 3)
 	{
-		fprintf(stdout, "Usage:  transaction <SSL-password> <full path to transaction folder>\n\n"
+		OTLog::vOutput(0, "Usage:  transaction <SSL-password> <full path to transaction folder>\n\n"
 				"(Folder defaults to '%s' if left blank.)\n", SERVER_PATH_DEFAULT);
 		
 		strSSLPassword.Set(argv[1]);
-		OTPseudonym::OTPath.Set(SERVER_PATH_DEFAULT);
+		OTLog::SetMainPath(SERVER_PATH_DEFAULT);
 	}
 	else 
 	{
 		strSSLPassword.Set(argv[1]);
-		OTPseudonym::OTPath.Set(argv[2]);
+		OTLog::SetMainPath(argv[2]);
 	}	
 
-	strCAFile. Format("%s%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(), CA_FILE);
-	strDHFile. Format("%s%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(), DH_FILE);
-	strKeyFile.Format("%s%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(), KEY_FILE);
+	strCAFile. Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), CA_FILE);
+	strDHFile. Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), DH_FILE);
+	strKeyFile.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), KEY_FILE);
 
-	fprintf(stdout, 
+	OTLog::Output(0, 
 			"\n\nNow loading the server nym, which will also ask you for a password, to unlock\n"
 			"its private key. (This password will also be 'test' if you are using the test files.)\n");
 	
@@ -226,30 +227,24 @@ int main (int argc, char **argv)
     SFSocketGlobalInit();
 
     // Alloc Socket
-    if ((socket = SFSocketAlloc()) == NULL) {
-        printf("Alloc Failed\n");
-        return(1);
-    }
-	
+	socket = SFSocketAlloc();
+	OT_ASSERT_MSG(NULL != socket, "SFSocketAlloc Failed\n");
 	
     // Initialize SSL Socket
-    if (SFSocketInit(socket,
+	int nSFSocketInit = SFSocketInit(socket,
 					 strCAFile.Get(), 
 					 strDHFile.Get(), 
 					 strKeyFile.Get(), 
 					 strSSLPassword.Get(), 
-					 NULL) 
-		< 0)
-    {
-        printf("Init Context Failed\n");
-        return(2);
-    }
-
+									 NULL);
+	
+	OT_ASSERT_MSG(nSFSocketInit >= 0, "SFSocketInit Context Failed\n");
+	
     // Listen on Address/Port
-    if (SFSocketListen(socket, INADDR_ANY, PORT) < 0) {
-        printf("Listen Failed\n");
-        return(3);
-    }
+	int nSFSocketListen = SFSocketListen(socket, INADDR_ANY, PORT);
+	
+	OT_ASSERT_MSG(nSFSocketListen >= 0, "nSFSocketListen Failed\n");
+	
 	
 	// Right now all this does is make sure the Server's Nym is loaded up
 	// so it can decrypt messages sent to it in envelopes.
@@ -275,7 +270,7 @@ int main (int argc, char **argv)
 		{
 			OTClientConnection * pClient = new OTClientConnection(*clientSocket, theServer);
 			theConnections.push_back(pClient);
-			fprintf(stderr, "Accepting new connection.\n");
+			OTLog::Output(0, "Accepting new connection.\n");
 		}
 		
 		// READ THROUGH ALL CLIENTS HERE, LOOP A LIST
@@ -315,14 +310,14 @@ int main (int argc, char **argv)
 					
 					if (theServer.ProcessUserCommand(*pConnection, *pMsg, *pReply))
 					{
-						fprintf(stderr, "Successfully processed user command: %s.\n", 
+						OTLog::vOutput(0, "Successfully processed user command: %s.\n", 
 								pMsg->m_strCommand.Get());
 						
 						pConnection->AddToOutputList(*pReply);
 					}
 					else
 					{
-						fprintf(stderr, "Unable to process user command in XML, or missing payload, in main.\n");
+						OTLog::Output(0, "Unable to process user command in XML, or missing payload, in main.\n");
 						delete pReply;
 						pReply = NULL;
 					}
@@ -396,7 +391,7 @@ int main (int argc, char **argv)
  if (bClosed)
  break;
  
- fprintf(stderr, "\n===> Processing header from client message. First 5 bytes are: %d %d %d %d %d...\n",
+ OTLog::vOutput(0, "\n===> Processing header from client message. First 5 bytes are: %d %d %d %d %d...\n",
  theCMD.buf[0],theCMD.buf[1],theCMD.buf[2],theCMD.buf[3],theCMD.buf[4]);
  
  ProcessMessage(ssl, &theCMD);

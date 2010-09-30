@@ -91,6 +91,7 @@
 #include <map>
 #include <deque>
 #include <string>
+#include <fstream>
 
 #include "OTString.h"
 #include "OTData.h"
@@ -138,14 +139,6 @@ private:
 	
 public:
 	
-	// OTPath is where all the subdirectories can be found.
-	// On the client side, this is loaded in the wallet file.
-	// But I don't have it in the wallet class because I need
-	// it accessible all over the library, server, and client.
-	// So I put it here instead.
-	static OTString	OTPath;
-	static OTString	OTPathSeparator;
-	
 	// ------------------------------------------------
 	
 	inline OTString & GetNymName() { return m_strName; }
@@ -186,15 +179,18 @@ public:
 	bool LoadPublicKey();
 	bool Loadx509CertAndPrivateKey();
 	
-	bool SavePseudonymWallet(FILE * fl) const;
+//	bool SavePseudonymWallet(FILE * fl) const;
+	bool SavePseudonymWallet(std::ofstream & ofs) const;
 
 	bool SavePublicKey(const OTString & strPath) const;
-	bool SavePublicKey(FILE * fl) const;
+//	bool SavePublicKey(FILE * fl) const;
+	bool SavePublicKey(std::ofstream & ofs) const;
 
 	bool SavePseudonym(); // saves to filename m_strNymfile
 	bool SavePseudonym(const char * strPath);
 	bool SavePseudonym(OTString & strNym);
-	bool SavePseudonym(FILE * fl);
+//	bool SavePseudonym(FILE * fl);
+	bool SavePseudonym(std::ofstream & ofs);
 
 	void GetIdentifier(OTIdentifier & theIdentifier) const;
 	void SetIdentifier(const OTIdentifier & theIdentifier);

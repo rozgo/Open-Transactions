@@ -85,6 +85,8 @@
 #ifndef __OTTRANSACTION_TYPE_H__
 #define __OTTRANSACTION_TYPE_H__
 
+#include <fstream>
+
 #include "OTASCIIArmor.h"
 #include "OTContract.h"
 
@@ -197,7 +199,8 @@ public:
 	void GetReferenceString(OTString & theStr) const;
 	void SetReferenceString(const OTString & theStr);
 	
-	virtual bool SaveContractWallet(FILE * fl);
+//	virtual bool SaveContractWallet(FILE * fl);
+	virtual bool SaveContractWallet(std::ofstream & ofs);
 };
 
 

@@ -85,6 +85,8 @@
 #ifndef __OTMESSAGE_H__
 #define __OTMESSAGE_H__
 
+#include <fstream>
+
 #include "irrxml/irrXML.h"
 using namespace irr; // irrXML is located in the namespace irr::io
 using namespace io;
@@ -99,7 +101,8 @@ class OTMessage : public OTContract
 {
 protected:
 	
-	virtual bool SaveContractWallet(FILE * fl);
+	virtual bool SaveContractWallet(std::ofstream & ofs);
+//	virtual bool SaveContractWallet(FILE * fl);
 	virtual int ProcessXMLNode(IrrXMLReader*& xml);
 
 	bool SignContract(const EVP_PKEY * pkey, OTSignature & theSignature,

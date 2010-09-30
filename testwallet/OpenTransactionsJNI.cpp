@@ -12,6 +12,108 @@
 // in Java. That way, the high-level interface is available in both languages.
 
 
+// Required by Android or the library supposedly won't even load.
+/*
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) 
+{
+	return JNI_VERSION_1_6;
+}
+*/
+
+static const JNINativeMethod gMethods[] = {
+
+	{ "loadWallet",		"(Ljava/lang/String;)V",							(void*) Java_OpenTransactionsJNI_loadWallet },
+	{ "generatePseudonym",	"(Ljava/lang/String;)V",							(void*) Java_OpenTransactionsJNI_generatePseudonym },
+	{ "addPseudonym",	"(Ljava/lang/String;)V",							(void*) Java_OpenTransactionsJNI_addPseudonym },
+	{ "addServerContract",	"(Ljava/lang/String;)V",							(void*) Java_OpenTransactionsJNI_addServerContract },
+
+	{ "connectServer",	"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (jboolean*) Java_OpenTransactionsJNI_connectServer },
+	{ "processSockets",	"()V",										(void*) Java_OpenTransactionsJNI_processSockets },
+	{ "checkServerID",	"(Ljava/lang/String;Ljava/lang/String;)V",					(void*) Java_OpenTransactionsJNI_checkServerID },
+	{ "createUserAccount",	"(Ljava/lang/String;Ljava/lang/String;)V",					(void*) Java_OpenTransactionsJNI_createUserAccount },
+	{ "checkUser",		"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",			(void*) Java_OpenTransactionsJNI_checkUser },
+
+	{ "getRequest",		"(Ljava/lang/String;Ljava/lang/String;)V",					(void*) Java_OpenTransactionsJNI_getRequest },
+	{ "issueAssetType",	"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",			(void*) Java_OpenTransactionsJNI_issueAssetType },
+	{ "getContract",	"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",			(void*) Java_OpenTransactionsJNI_getContract },
+	{ "getMint",		"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",			(void*) Java_OpenTransactionsJNI_getMint },
+	{ "createAssetAccount",	"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",			(void*) Java_OpenTransactionsJNI_createAssetAccount },
+	{ "getAccount",		"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",			(void*) Java_OpenTransactionsJNI_getAccount },
+	{ "issueBasket",	"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",			(void*) Java_OpenTransactionsJNI_issueBasket },
+	{ "exchangeBasket",	"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",	(void*) Java_OpenTransactionsJNI_exchangeBasket },
+
+
+	{ "getTransactionNumber","(Ljava/lang/String;Ljava/lang/String;)V",					(void*) Java_OpenTransactionsJNI_getTransactionNumber },
+	{ "notarizeWithdrawal",	"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",	(void*) Java_OpenTransactionsJNI_notarizeWithdrawal },
+	{ "notarizeDeposit",	"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",	(void*) Java_OpenTransactionsJNI_notarizeDeposit },
+	{ "notarizeTransfer",	"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",	(void*) Java_OpenTransactionsJNI_notarizeTransfer },
+	{ "getInbox",		"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",			(void*) Java_OpenTransactionsJNI_getInbox },
+	{ "processInbox",	"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",	(void*) Java_OpenTransactionsJNI_processInbox },
+
+	{ "withdrawVoucher",	"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", (void*) Java_OpenTransactionsJNI_withdrawVoucher },
+	{ "depositCheque",	"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",	(void*) Java_OpenTransactionsJNI_depositCheque },
+	{ "getNymCount",	"()I",										(jint*) Java_OpenTransactionsJNI_getNymCount },
+	{ "getNym",		"(ILjava/lang/StringBuffer;Ljava/lang/StringBuffer;)Z", 			(jboolean*) Java_OpenTransactionsJNI_getNym },
+
+	{ "getServerCount",	"()I",										(jint*) Java_OpenTransactionsJNI_getServerCount },
+	{ "getServer",		"(ILjava/lang/StringBuffer;Ljava/lang/StringBuffer;)Z", 			(jboolean*) Java_OpenTransactionsJNI_getServer },
+	{ "getAssetTypeCount",	"()I",										(jint*) Java_OpenTransactionsJNI_getAssetTypeCount },
+	{ "getAssetType",	"(ILjava/lang/StringBuffer;Ljava/lang/StringBuffer;)Z",				(jboolean*) Java_OpenTransactionsJNI_getAssetType },
+
+	{ "getAccountCount",	"()I",										(jint*) Java_OpenTransactionsJNI_getAccountCount },
+	{ "getAccountByIndex",	"(ILjava/lang/StringBuffer;Ljava/lang/StringBuffer;)Z",				(jboolean*) Java_OpenTransactionsJNI_getAccountByIndex },
+
+	{ "InitOTAPI",		"(Ljava/lang/String;)V",							(void*) Java_OpenTransactionsJNI_InitOTAPI }
+
+};
+
+
+// the next step is registering the native method when the OnLoad event occurs
+ 
+jint JNI_OnLoad(JavaVM* vm, void* reserved)
+{
+	JNIEnv* env = NULL;
+	jint result = -1;
+	jclass clazz;
+
+	static const char* const strClassName = "com/pstorli/fiatcash/OpenTransactionsJNI";
+ 
+	if (vm->GetEnv((void**) &env, JNI_VERSION_1_6) != JNI_OK) 
+	{
+		//("ERROR: GetEnv failed\n");
+		return result;
+	}
+ 
+	if (env == NULL) 
+	{
+		//LOGE("ERROR: env is NULL\n");
+		return result;
+	}
+	
+	/* find the class handle */
+	clazz = env->FindClass(strClassName);
+	if (clazz == NULL) 
+	{
+		//LOGE("Can't find class %s\n", strClassName);
+		return result;
+	}
+
+	/* register all the methods */
+	if (env->RegisterNatives(clazz, gMethods, sizeof(gMethods) / sizeof(gMethods[0])) != JNI_OK)
+	{
+		//LOGE("Failed registering methods for %s\n", strClassName);
+		return result;
+	}
+
+	/* success -- return valid version number */
+	result = JNI_VERSION_1_6;
+	return result;
+}
+
+
+
+
+
 
 
 /*

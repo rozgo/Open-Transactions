@@ -150,7 +150,7 @@ void OTInstrument::Release()
 }
 
 
-bool OTInstrument::SaveContractWallet(FILE * fl)
+bool OTInstrument::SaveContractWallet(std::ofstream & ofs)
 {
 	return true;
 }

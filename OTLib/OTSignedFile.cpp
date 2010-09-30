@@ -92,6 +92,7 @@ using namespace io;
 
 #include "OTSignedFile.h"
 #include "OTPseudonym.h"
+#include "OTLog.h"
 
 
 
@@ -177,7 +178,7 @@ int OTSignedFile::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			}
 		}
 		else {
-			fprintf(stderr, "Error in OTSignedFile::ProcessXMLNode: filePayload field without value.\n");
+			OTLog::Error("Error in OTSignedFile::ProcessXMLNode: filePayload field without value.\n");
 			return (-1); // error condition
 		}
 		
@@ -268,8 +269,8 @@ void OTSignedFile::SetFilename(const OTString & LOCAL_SUBDIR, const OTString & F
 	m_strFilename.Format("%s%s" // transaction/
 						 "%s%s" // nyms/
 						 "%s",  // 5bf9a88c.nym
-						 OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(),
-						 m_strLocalDir.Get(), OTPseudonym::OTPathSeparator.Get(),
+						 OTLog::Path(), OTLog::PathSeparator(),
+						 m_strLocalDir.Get(), OTLog::PathSeparator(),
 						 m_strSignedFilename.Get());
 	
 	// Software Path + Local Sub-directory + Filename
@@ -309,7 +310,8 @@ void OTSignedFile::Release()
 }
 	
 	
-bool OTSignedFile::SaveContractWallet(FILE * fl)
+
+bool OTSignedFile::SaveContractWallet(std::ofstream & ofs)
 {
 	return true;
 }

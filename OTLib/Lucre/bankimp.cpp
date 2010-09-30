@@ -49,8 +49,10 @@ BIGNUM *ReadNumber(BIO *in,const char *szTitle)
     BIO_gets(in,szLine,sizeof szLine-1);
     if(strncmp(szLine,szTitle,nTLen))
 	{
+#ifndef ANDROID
 	fprintf(stderr,"Got %s, expected %s\n",szLine,szTitle);
-	assert(!"Unexpected input");
+#endif
+	assert(!"Unexpected input");  // TODO Find out what this exclamation point is for...
 	return NULL;
 	}
     BIGNUM *bn=BN_new();

@@ -102,10 +102,13 @@ extern "C"
 // I'm avoiding that since it won't be as easy. Ha.
 #include "easyzlib.h"
 
+#include "OTLog.h"
+
 
 #include "OTString.h"
 #include "OTASCIIArmor.h"
 #include "OTEnvelope.h"
+
 
 
 // copies, assumes already encoded.
@@ -197,7 +200,7 @@ char *base64_encode(const uint8_t* input, int in_len, int bLineBreaks)
             (void)BIO_flush(b64);
             BIO_get_mem_ptr(b64, &bptr);
 			
-//			fprintf(stderr, "DEBUG: base64_encode size: %ld,  in_len: %ld\n", bptr->length+1, in_len);
+//			OTLog::vOutput(5, "DEBUG base64_encode size: %ld,  in_len: %ld\n", bptr->length+1, in_len);
 			
             buf = new char[bptr->length+1];
             if (buf) 
@@ -327,33 +330,36 @@ bool OTASCIIArmor::GetString(OTString & theData, bool bLineBreaks) const //bLine
 		 {
 			 delete [] pDest;
 			 pDest = NULL;
-			 fprintf(stderr, "Buffer error in OTASCIIArmor::GetString\n");
-			 abort();
-			 return false;
+			 
+			 OT_ASSERT_MSG(false, "Buffer error in OTASCIIArmor::GetString\n");
+			 return false; // not really necessary but just making sure.
 		 }
 		 else if ( nErr == EZ_STREAM_ERROR )
 		 {
 			 delete [] pDest;
 			 pDest = NULL;
-			 fprintf(stderr, "pDest is NULL in OTASCIIArmor::GetString\n");
-			 abort();
-			 return false;
+			 
+			 OT_ASSERT_MSG(false, "pDest is NULL in OTASCIIArmor::GetString\n");
+			 return false; // not really necessary but just making sure.
 		 }
 		 else if ( nErr == EZ_DATA_ERROR )
 		 {
 			 delete [] pDest;
 			 pDest = NULL;
-			 fprintf(stderr, "corrupted pSrc passed to ezuncompress OTASCIIArmor::GetString, size: %d\n", outSize);
-			 abort();
-			 return false;
+			 
+			 OTLog::vError("corrupted pSrc passed to ezuncompress OTASCIIArmor::GetString, size: %d\n", outSize);
+			 
+			 OT_ASSERT(false);
+			 
+			 return false; // not really necessary but just making sure.
 		 }
 		 else if ( nErr == EZ_MEM_ERROR )
 		 {
 			 delete [] pDest;
 			 pDest = NULL;
-			 fprintf(stderr, "Out of memory in OTASCIIArmor::GetString\n");
-			 abort();
-			 return false;
+			 
+			 OT_ASSERT_MSG(false, "Out of memory in OTASCIIArmor::GetString\n");
+			 return false; // not really necessary but just making sure.
 		 }
 		 
 		// This enforces the null termination. (using the extra parameter nDestLen as nEnforcedMaxLength)
@@ -427,7 +433,7 @@ bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) // =tru
 
  bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) //=true
 {
-//	fprintf(stderr, "DEBUGGING OTASCIIARMOR::SETSTRING, INPUT:  --------->%s<---------", theData.Get());
+//	OTLog::vError("DEBUGGING OTASCIIARMOR::SETSTRING, INPUT:  --------->%s<---------", theData.Get());
 	
 	Release();
 	
@@ -462,40 +468,42 @@ bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) // =tru
 	{
 		delete [] pDest;	delete [] pSource;
 		pDest = NULL;		pSource = NULL;
-		fprintf(stderr, "Error allocating memory in OTASCIIArmor::SetString\n");
-		abort();
-		return false;
+		
+		OT_ASSERT_MSG(false, "Error allocating memory in OTASCIIArmor::SetString\n");
+		return false; // not really necessary but just making sure.
 	}
 	else if ( nErr == EZ_STREAM_ERROR )
 	{
 		delete [] pDest;	delete [] pSource;
 		pDest = NULL;		pSource = NULL;
-		fprintf(stderr, "pDest is NULL in OTASCIIArmor::SetString\n");
-		abort();
-		return false;
+
+		OT_ASSERT_MSG(false, "pDest is NULL in OTASCIIArmor::SetString\n");
+		return false; // not really necessary but just making sure.
 	}
 	else if ( nErr == EZ_DATA_ERROR )
 	{
 		delete [] pDest;	delete [] pSource;
 		pDest = NULL;		pSource = NULL;
-		fprintf(stderr, "corrupted pSrc passed to ezuncompress OTASCIIArmor::SetString\n");
-		abort();
-		return false;
+
+		OT_ASSERT_MSG(false, "corrupted pSrc passed to ezuncompress OTASCIIArmor::SetString\n");
+		return false; // not really necessary but just making sure.
 	}
 	else if ( nErr == EZ_MEM_ERROR )
 	{
 		delete [] pDest;	delete [] pSource;
 		pDest = NULL;		pSource = NULL;
-		fprintf(stderr, "Out of memory in OTASCIIArmor::SetString\n");
-		abort();
-		return false;
+
+		OT_ASSERT_MSG(false, "Out of memory in OTASCIIArmor::SetString\n");
+		return false; // not really necessary but just making sure.
 	}
 	
 	delete [] pSource;
 	pSource = NULL;
 	
+	OT_ASSERT_MSG(pDest != NULL, "pDest NULL in OTASCIIArmor::SetString\n");
+	
 	// Success
-	if (pDest != NULL && nDestLen)
+	if (0 < nDestLen)
 	{
 		// Now let's base-64 encode it...
 		pString = base64_encode((const uint8_t*)pDest, nDestLen, (bLineBreaks ? 1 : 0));
@@ -512,7 +520,7 @@ bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) // =tru
 		}
 	}
 	else {
-		fprintf(stderr, "pDest NULL or nDestLen 0 in OTASCIIArmor::SetString\n");
+		OTLog::Error("nDestLen 0 in OTASCIIArmor::SetString\n");
 	}
 	
 	return false;
@@ -579,7 +587,7 @@ bool OTASCIIArmor::LoadFromFile(const OTString & filename)
 		
 	if (!fin.is_open())
 	{
-		fprintf(stderr, "Error opening file: %s in OTASCIIArmor::LoadFromFile\n", filename.Get());
+		OTLog::vError("Error opening file: %s in OTASCIIArmor::LoadFromFile\n", filename.Get());
 		return false;
 	}
 
@@ -647,7 +655,7 @@ bool OTASCIIArmor::LoadFromString(OTString & theStr, bool bEscaped/*=false*/)
 				if (line.find("BEGIN")!=std::string::npos && line.at(0) == '-' && line.at(2) == '-' && 
 					line.at(3) == '-' && (bEscaped ? (line.at(1) == ' ') : (line.at(1) == '-')))
 				{
-//					fprintf(stderr, "Reading ascii-armored contents...");
+//					OTLog::Error("Reading ascii-armored contents...");
 					bHaveEnteredContentMode = true;
 					bContentMode = true;
 					continue;
@@ -662,8 +670,8 @@ bool OTASCIIArmor::LoadFromString(OTString & theStr, bool bEscaped/*=false*/)
 			// b. I am now LEAVING content mode!
 			else if (bContentMode && line.find("END")!=std::string::npos)
 			{
-//				fprintf(stderr, "Finished reading ascii-armored contents.\n");
-//				fprintf(stderr, "Finished reading ascii-armored contents:\n%s(END DATA)\n", Get());
+//				OTLog::Error("Finished reading ascii-armored contents.\n");
+//				OTLog::vError("Finished reading ascii-armored contents:\n%s(END DATA)\n", Get());
 				bContentMode   = false;
 				continue;
 			}
@@ -677,7 +685,7 @@ bool OTASCIIArmor::LoadFromString(OTString & theStr, bool bEscaped/*=false*/)
 			{
 				if (line.compare(0,8,"Version:") == 0)
 				{
-//					fprintf(stderr, "Skipping version line...\n");
+//					OTLog::Error("Skipping version line...\n");
 					continue;
 				}
 			}
@@ -698,12 +706,12 @@ bool OTASCIIArmor::LoadFromString(OTString & theStr, bool bEscaped/*=false*/)
 	
 	if (!bHaveEnteredContentMode)
 	{
-		fprintf(stderr, "Error in OTASCIIArmor::LoadFromString: EOF before ascii-armored content found.\n");
+		OTLog::Error("Error in OTASCIIArmor::LoadFromString: EOF before ascii-armored content found.\n");
 		return false;
 	}
 	else if (bContentMode)
 	{
-		fprintf(stderr, "Error in OTASCIIArmor::LoadFromString: EOF while still reading content.\n");
+		OTLog::Error("Error in OTASCIIArmor::LoadFromString: EOF while still reading content.\n");
 		return false;
 	}
 	else

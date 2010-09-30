@@ -93,15 +93,15 @@ void AppendChecksum( OT_BYTE* buffer, uint32_t & size )
 	uint32_t i;
 	OT_BYTE total = 0;
 	
-//	fprintf(stderr, "Appending checksum. Size: %d ", size);
+//	OTLog::vError("Appending checksum. Size: %d ", size);
 
 	for( i = 0; i < size; i++ )
 	{
 		total += buffer[i];
-//		fprintf(stderr, "%d ", buffer[i]);
+//		OTLog::vError("%d ", buffer[i]);
 	}
 	
-//	fprintf(stderr, "  VALUE: %d\n", (255 - total));
+//	OTLog::vError("  VALUE: %d\n", (255 - total));
 
 	buffer[size++] = 255 - total;
 }
@@ -112,14 +112,14 @@ OT_BYTE CalcChecksum( OT_BYTE* buffer, uint32_t size )
 	uint32_t i;
 	OT_BYTE total = 0;
 	
-//	fprintf(stderr, "Calculating checksum. Size: %d ", size);
+//	OTLog::vError("Calculating checksum. Size: %d ", size);
 	
 	for( i = 0; i < size; i++ )
 	{
 		total += buffer[i];
-//		fprintf(stderr, "%d ", buffer[i]);
+//		OTLog::vError("%d ", buffer[i]);
 	}
-//	fprintf(stderr, "  VALUE: %d\n", (255 - total));
+//	OTLog::vError( "  VALUE: %d\n", (255 - total));
 	
 	return (255 - total);
 }
@@ -129,14 +129,14 @@ OT_BYTE CalcChecksum( const OT_BYTE * const buffer, const uint32_t size )
 	uint32_t i;
 	OT_BYTE total = 0;
 	
-//	fprintf(stderr, "Calculating checksum. Size: %d\n", size);
+//	OTLog::vError("Calculating checksum. Size: %d\n", size);
 	
 	for( i = 0; i < size; i++ )
 	{
 		total += buffer[i];
-//		fprintf(stderr, "%d ", buffer[i]);
+//		OTLog::vError("%d ", buffer[i]);
 	}
-//	fprintf(stderr, "  TOTAL: %d\n", (255 - total));
+//	OTLog::vError("  TOTAL: %d\n", (255 - total));
 	
 	return (255 - total);
 }
@@ -146,22 +146,22 @@ OT_BOOL IsChecksumValid( OT_BYTE* buffer, uint32_t size )
 	uint32_t i;
 	OT_BYTE total = 0;
 
-//	fprintf(stderr, "Validating checksum. Size: %d\n", size);
+//	OTLog::vError(Validating checksum. Size: %d\n", size);
 
 	for( i = 0; i < size; i++ )
 	{
 		total += buffer[i];
 		
-//		fprintf(stderr, "%d ", buffer[i]);
+//		OTLog::vError("%d ", buffer[i]);
 	}
 	if( total == 255 )
 	{
-//		fprintf(stderr, "VALID\n");
+//		OTLog::Error("VALID\n");
 		return true;
 	}
 	else
 	{
-//		fprintf(stderr, "INVALID:  %d\n", total);
+//		OTLog::vError("INVALID:  %d\n", total);
 		return false;
 	}
 }

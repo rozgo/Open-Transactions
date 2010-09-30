@@ -102,6 +102,7 @@ extern "C"
 #include "OTASCIIArmor.h"
 #include "OTPseudonym.h"
 #include "OTEnvelope.h"
+#include "OTLog.h"
 
 
 // Presumably this Envelope contains encrypted data (in binary form.)
@@ -190,7 +191,7 @@ bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
 	
 	if (NULL == pkey)
 	{
-		fprintf(stderr, "Null private key in OTEnvelope::Open\n");
+		OTLog::Error("Null private key in OTEnvelope::Open\n");
 		return false;
 	}
 		
@@ -221,7 +222,7 @@ bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
 	// First we read the encrypted key size.
 	if (0 == (nReadLength = m_dataContents.OTfread((char*)&eklen_n, sizeof(eklen_n))))
 	{
-		fprintf(stderr, "Error reading encrypted key size in OTEnvelope::Open\n");
+		OTLog::Error("Error reading encrypted key size in OTEnvelope::Open\n");
 		free(ek);
 		return false;
 	}
@@ -232,7 +233,7 @@ bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
 	// Next we read the encrypted key itself.
 	if (0 == (nReadKey = m_dataContents.OTfread((char*)ek, eklen)))
 	{
-		fprintf(stderr, "Error reading encrypted key size in OTEnvelope::Open\n");
+		OTLog::Error("Error reading encrypted key size in OTEnvelope::Open\n");
 		free(ek);
 		return false;
 	}
@@ -240,7 +241,7 @@ bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
 	// Next we read the initialization vector.
 	if (0 == (nReadIV = m_dataContents.OTfread((char*)iv, EVP_CIPHER_iv_length(EVP_aes_128_cbc()))))
 	{
-		fprintf(stderr, "Error reading initialization vector in OTEnvelope::Open\n");
+		OTLog::Error("Error reading initialization vector in OTEnvelope::Open\n");
 		free(ek);
 		return false;
 	}
@@ -255,7 +256,7 @@ bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
 
 	if (!EVP_OpenInit(&ctx, EVP_aes_128_cbc(), ek, eklen, iv, pkey))
     {
-        fprintf(stderr, "EVP_OpenInit: failed.\n");
+        OTLog::Error("EVP_OpenInit: failed.\n");
 		free(ek);
 		return false;
     }
@@ -264,7 +265,7 @@ bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
     {
         if (!EVP_OpenUpdate(&ctx, buffer_out, &len_out, buffer, len))
         {
-            fprintf(stderr, "EVP_OpenUpdate: failed.\n");
+            OTLog::Error("EVP_OpenUpdate: failed.\n");
 			free(ek);
 			return false;
         }
@@ -275,7 +276,7 @@ bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
 	
     if (!EVP_OpenFinal(&ctx, buffer_out, &len_out))
     {
-        fprintf(stderr, "EVP_OpenFinal: failed.\n");
+		OTLog::Error("EVP_OpenFinal: failed.\n");
  		free(ek);
 		return false;
     }
@@ -327,7 +328,7 @@ bool OTEnvelope::Seal(const OTAsymmetricKey & RecipPubKey, const OTString & theC
 	
 	if (NULL == pkey)
 	{
-		fprintf(stderr, "Null public key in OTEnvelope::Seal\n");
+		OTLog::Error("Null public key in OTEnvelope::Seal\n");
 		return false;
 	}
 	
@@ -340,7 +341,7 @@ bool OTEnvelope::Seal(const OTAsymmetricKey & RecipPubKey, const OTString & theC
 	
     if (!EVP_SealInit(&ctx, EVP_aes_128_cbc(), &ek, &eklen, iv, &pkey, 1))
     {
-        fprintf(stderr, "EVP_SealInit: failed.\n");
+        OTLog::Error("EVP_SealInit: failed.\n");
 		free(ek);
 		return false;
     }
@@ -369,7 +370,7 @@ bool OTEnvelope::Seal(const OTAsymmetricKey & RecipPubKey, const OTString & theC
     {
         if (!EVP_SealUpdate(&ctx, buffer_out, &len_out, buffer, len))
         {
-            fprintf(stderr, "EVP_SealUpdate: failed.\n");
+            OTLog::Error("EVP_SealUpdate: failed.\n");
 			free(ek);
 			return false;
         }
@@ -380,7 +381,7 @@ bool OTEnvelope::Seal(const OTAsymmetricKey & RecipPubKey, const OTString & theC
 	
     if (!EVP_SealFinal(&ctx, buffer_out, &len_out))
     {
-        fprintf(stderr, "EVP_SealFinal: failed.\n");
+        OTLog::Error("EVP_SealFinal: failed.\n");
 		free(ek);
 		return false;
     }
@@ -414,7 +415,7 @@ int do_evp_seal(FILE *rsa_pkey_file, FILE *in_file, FILE *out_file)
 	
     if (!PEM_read_RSA_PUBKEY(rsa_pkey_file, &rsa_pkey, NULL, NULL))
     {
-        fprintf(stderr, "Error loading RSA Public Key File.\n");
+        OTLog::Error("Error loading RSA Public Key File.\n");
         ERR_print_errors_fp(stderr);
         retval = 2;
         goto out;
@@ -422,7 +423,7 @@ int do_evp_seal(FILE *rsa_pkey_file, FILE *in_file, FILE *out_file)
 	
     if (!EVP_PKEY_assign_RSA(pkey, rsa_pkey))
     {
-        fprintf(stderr, "EVP_PKEY_assign_RSA: failed.\n");
+        OTLog::Error("EVP_PKEY_assign_RSA: failed.\n");
         retval = 3;
         goto out;
     }
@@ -432,7 +433,7 @@ int do_evp_seal(FILE *rsa_pkey_file, FILE *in_file, FILE *out_file)
 	
     if (!EVP_SealInit(&ctx, EVP_aes_128_cbc(), &ek, &eklen, iv, &pkey, 1))
     {
-        fprintf(stderr, "EVP_SealInit: failed.\n");
+        OTLog::Error("EVP_SealInit: failed.\n");
         retval = 3;
         goto out_free;
     }
@@ -468,7 +469,7 @@ int do_evp_seal(FILE *rsa_pkey_file, FILE *in_file, FILE *out_file)
     {
         if (!EVP_SealUpdate(&ctx, buffer_out, &len_out, buffer, len))
         {
-            fprintf(stderr, "EVP_SealUpdate: failed.\n");
+            OTLog::Error("EVP_SealUpdate: failed.\n");
             retval = 3;
             goto out_free;
         }
@@ -490,7 +491,7 @@ int do_evp_seal(FILE *rsa_pkey_file, FILE *in_file, FILE *out_file)
 	
     if (!EVP_SealFinal(&ctx, buffer_out, &len_out))
     {
-        fprintf(stderr, "EVP_SealFinal: failed.\n");
+        OTLog::Error("EVP_SealFinal: failed.\n");
         retval = 3;
         goto out_free;
     }
@@ -517,7 +518,7 @@ int main(int argc, char *argv[])
 	
     if (argc < 2)
     {
-        fprintf(stderr, "Usage: %s <PEM RSA Public Key File>\n", argv[0]);
+        OTLog::vOutput(0, "Usage: %s <PEM RSA Public Key File>\n", argv[0]);
         exit(1);
     }
 	
@@ -525,7 +526,7 @@ int main(int argc, char *argv[])
     if (!rsa_pkey_file)
     {
         perror(argv[1]);
-        fprintf(stderr, "Error loading PEM RSA Public Key File.\n");
+        OTLog::Error("Error loading PEM RSA Public Key File.\n");
         exit(2);
     }
 	

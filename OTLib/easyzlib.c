@@ -1597,7 +1597,9 @@ int z_verbose = verbose;
 void z_error (m)
     char *m;
 {
+#ifndef ANDROID
     fprintf(stderr, "%s\n", m);
+#endif
     exit(1);
 }
 #endif
@@ -2836,8 +2838,10 @@ local void build_tree(s, desc)
         tree[n].Dad = tree[m].Dad = (ush)node;
 #ifdef DUMP_BL_TREE
         if (tree == s->bl_tree) {
+#ifndef ANDROID
             fprintf(stderr,"\nnode %d(%d), sons %d(%d) %d(%d)",
                     node, tree[node].Freq, n, tree[n].Freq, m, tree[m].Freq);
+#endif
         }
 #endif
         /* and insert the new node in the heap */
@@ -4429,15 +4433,23 @@ local void check_match(s, start, match, length)
     /* check that the match is indeed a match */
     if (zmemcmp(s->window + match,
                 s->window + start, length) != EQUAL) {
+#ifndef ANDROID
         fprintf(stderr, " start %u, match %u, length %d\n",
                 start, match, length);
+#endif
         do {
+#ifndef ANDROID
             fprintf(stderr, "%c%c", s->window[match++], s->window[start++]);
+#else
+			match++; start++;
+#endif
         } while (--length != 0);
         z_error("invalid match");
     }
     if (z_verbose > 1) {
+#ifndef ANDROID
         fprintf(stderr,"\\[%d,%d]", start-match, length);
+#endif
         do { putc(s->window[start++], stderr); } while (--length != 0);
     }
 }

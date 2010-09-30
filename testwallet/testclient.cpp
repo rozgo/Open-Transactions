@@ -112,6 +112,7 @@ void OT_Sleep(int nMS);
 #include "OTEnvelope.h"
 #include "OTCheque.h"
 #include "OpenTransactions.h"
+#include "OTLog.h"
 
 extern OTClient		g_Client;
 extern OTWallet		g_Wallet;
@@ -160,7 +161,7 @@ int main (int argc, char **argv)
 	
 	if (argc < 2)
 	{
-		fprintf(stdout, "\n\nUsage:  testwallet <SSL-password> <full path to testwallet folder>\n\n"
+		OTLog::vOutput(0, "\n\nUsage:  testwallet <SSL-password> <full path to testwallet folder>\n\n"
 				"(Password defaults to '%s' if left blank.)\n"
 				"(Folder defaults to '%s' if left blank.)\n", KEY_PASSWORD, SERVER_PATH_DEFAULT);
 		
@@ -171,7 +172,7 @@ int main (int argc, char **argv)
 	}
 	else if (argc < 3)
 	{
-		fprintf(stdout, "\n\nUsage:  transaction <SSL-password> <full path to transaction folder>\n\n"
+		OTLog::vOutput(0, "\n\nUsage:  transaction <SSL-password> <full path to transaction folder>\n\n"
 				"(Folder defaults to '%s' if left blank.)\n", SERVER_PATH_DEFAULT);
 		
 		strSSLPassword.Set(argv[1]);
@@ -187,8 +188,8 @@ int main (int argc, char **argv)
         OT_API_Init(strClientPath);
 	}	
 	
-	strCAFile. Format("%s%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(), CA_FILE);
-	strKeyFile.Format("%s%s%s", OTPseudonym::OTPath.Get(), OTPseudonym::OTPathSeparator.Get(), KEY_FILE);
+	strCAFile. Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), CA_FILE);
+	strKeyFile.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), KEY_FILE);
 	
 	
 	// -----------------------------------------------------------------------
@@ -216,21 +217,21 @@ int main (int argc, char **argv)
 	
 	int nExpectResponse = 0;
 	
-	fprintf(stderr,"\n\nWelcome to Open Transactions, version %s.\n"
-			"You may wish to 'load' then 'connect' then 'stat'.\n", "0.24");
-//	fprintf(stderr,"Starting client loop. u_header size in C code is %d.\n", OT_CMD_HEADER_SIZE);
+	OTLog::vOutput(0, "\n\nWelcome to Open Transactions, version %s.\n"
+			"You may wish to 'load' then 'connect' then 'stat'.\n", OTLog::Version());
+	OTLog::vOutput(4, "Starting client loop. u_header size in C code is %d.\n", OT_CMD_HEADER_SIZE);
 	
 	for(;;)
 	{
 		nExpectResponse = 0;
 		
 		// 1) Present a prompt, and get a user string of input. Wait for that.
-		fprintf(stdout, "\nWallet> ");
+		OTLog::Output(0, "\nWallet> ");
 		
 		if (!fgets(buf, sizeof(buf), stdin))
             break;
 				
-		fprintf(stderr,".\n..\n...\n....\n.....\n......\n.......\n........\n.........\n..........\n"
+		OTLog::Output(0, ".\n..\n...\n....\n.....\n......\n.......\n........\n.........\n..........\n"
 				"...........\n............\n.............\n");
 		
 		// so we can process the user input
@@ -242,11 +243,11 @@ int main (int argc, char **argv)
 		// Load wallet.xml
 		if (strLine.compare(0,4,"load") == 0)
 		{
-			fprintf(stderr, "User has instructed to load wallet.xml...\n");
+			OTLog::Output(0, "User has instructed to load wallet.xml...\n");
 #ifdef _WIN32			
 			g_Wallet.LoadWallet("wallet-Windows.xml");
 #else
-                        g_Wallet.LoadWallet("wallet.xml");
+			g_Wallet.LoadWallet("wallet.xml");
 #endif
  
 //			g_Wallet.SaveWallet("NEWwallet.xml"); // todo remove this test code.
@@ -258,20 +259,20 @@ int main (int argc, char **argv)
 		{
 			if (NULL == g_pTemporaryNym)
 			{
-				fprintf(stdout, "No Nym yet available to sign the cheque with. Try 'load'.\n");
+				OTLog::Output(0, "No Nym yet available to sign the cheque with. Try 'load'.\n");
 				continue;
 			}
 
-			fprintf(stdout, "Enter the ID for your Asset Account that the cheque will be drawn on: ");
+			OTLog::Output(0, "Enter the ID for your Asset Account that the cheque will be drawn on: ");
 			OTString strTemp;
-			strTemp.OTfgets(stdin);
+			strTemp.OTfgets(std::cin);
 
 			const OTIdentifier ACCOUNT_ID(strTemp), USER_ID(*g_pTemporaryNym);
 			OTAccount * pAccount = g_Wallet.GetAccount(ACCOUNT_ID);
 			
 			if (NULL == pAccount)
 			{
-				fprintf(stderr, "That account isn't loaded right now. Try 'load'.\n");
+				OTLog::Output(0, "That account isn't loaded right now. Try 'load'.\n");
 				continue;
 			}
 			
@@ -285,7 +286,7 @@ int main (int argc, char **argv)
 			
 			if (false == g_pTemporaryNym->GetNextTransactionNum(*g_pTemporaryNym, strServerID, lTransactionNumber))
 			{
-				fprintf(stdout, "Cheques are written offline, but you still need a transaction number\n"
+				OTLog::Output(0, "Cheques are written offline, but you still need a transaction number\n"
 						"(and you have none, currently.) Try using 'n' to request another transaction number.\n");
 				continue;
 			}
@@ -294,28 +295,28 @@ int main (int argc, char **argv)
 			OTCheque theCheque(pAccount->GetRealServerID(), pAccount->GetAssetTypeID());
 			
 			// Recipient
-			fprintf(stdout, "Enter a User ID for the recipient of this cheque (defaults to blank): ");
+			OTLog::Output(0, "Enter a User ID for the recipient of this cheque (defaults to blank): ");
 			OTString strRecipientUserID;
-			strRecipientUserID.OTfgets(stdin);
+			strRecipientUserID.OTfgets(std::cin);
 			const OTIdentifier RECIPIENT_USER_ID(strRecipientUserID.Get());
 			
 			// Amount
-			fprintf(stdout, "Enter an amount: ");
+			OTLog::Output(0, "Enter an amount: ");
 			strTemp.Release();
-			strTemp.OTfgets(stdin);
+			strTemp.OTfgets(std::cin);
 			const long lAmount = atol(strTemp.Get());
 			
 			// -----------------------------------------------------------------------
 			
 			// Memo
-			fprintf(stdout, "Enter a memo for your check: ");
+			OTLog::Output(0, "Enter a memo for your check: ");
 			OTString strChequeMemo;
-			strChequeMemo.OTfgets(stdin);
+			strChequeMemo.OTfgets(std::cin);
 
 			// -----------------------------------------------------------------------
 			
 			// Valid date range (in seconds)
-			fprintf(stdout, 
+			OTLog::Output(0, 
 					" 6 minutes	==      360 Seconds\n"
 					"10 minutes	==      600 Seconds\n"
 					"1 hour		==     3600 Seconds\n"
@@ -326,9 +327,9 @@ int main (int argc, char **argv)
 					);
 
 			long lExpirationInSeconds = 3600;
-			fprintf(stdout, "How many seconds before cheque expires? (defaults to 1 hour: %ld): ", lExpirationInSeconds);
+			OTLog::vOutput(0, "How many seconds before cheque expires? (defaults to 1 hour: %ld): ", lExpirationInSeconds);
 			strTemp.Release();
-			strTemp.OTfgets(stdin);
+			strTemp.OTfgets(std::cin);
 			
 			if (strTemp.GetLength() > 1)
 				lExpirationInSeconds = atol(strTemp.Get());
@@ -338,9 +339,9 @@ int main (int argc, char **argv)
 			
 			time_t	VALID_FROM	= time(NULL); // This time is set to TODAY NOW
 
-			fprintf(stdout, "Cheque may be cashed STARTING date (defaults to now, in seconds) [%ld]: ", VALID_FROM);
+			OTLog::vOutput(0, "Cheque may be cashed STARTING date (defaults to now, in seconds) [%ld]: ", VALID_FROM);
 			strTemp.Release();
-			strTemp.OTfgets(stdin);
+			strTemp.OTfgets(std::cin);
 			
 			if (strTemp.GetLength() > 2)
 				VALID_FROM = atol(strTemp.Get());
@@ -362,10 +363,10 @@ int main (int argc, char **argv)
 				OTString strCheque;
 				theCheque.SaveContract(strCheque);
 				
-				fprintf(stdout, "\n\nOUTPUT:\n\n\n%s\n", strCheque.Get());
+				OTLog::vOutput(0, "\n\nOUTPUT:\n\n\n%s\n", strCheque.Get());
 			}
 			else {
-				fprintf(stdout, "Failed trying to issue the cheque!\n");
+				OTLog::Output(0, "Failed trying to issue the cheque!\n");
 			}
 
 			continue;
@@ -375,11 +376,11 @@ int main (int argc, char **argv)
 		{
 			if (NULL == g_pTemporaryNym)
 			{
-				fprintf(stdout, "No Nym yet available to decrypt with.\n");
+				OTLog::Output(0, "No Nym yet available to decrypt with.\n");
 				continue;
 			}
 		
-			fprintf(stdout, "Enter text to be decrypted:\n> ");
+			OTLog::Output(0, "Enter text to be decrypted:\n> ");
 			
 			OTASCIIArmor theArmoredText;
 			char decode_buffer[200];
@@ -387,7 +388,7 @@ int main (int argc, char **argv)
 			do {
 				fgets(decode_buffer, sizeof(decode_buffer), stdin);				
 				theArmoredText.Concatenate("%s\n", decode_buffer);
-				fprintf(stdout, "> ");
+				OTLog::Output(0, "> ");
 			} while (strlen(decode_buffer)>1);
 			
 			
@@ -396,14 +397,14 @@ int main (int argc, char **argv)
 			
 			theEnvelope.Open(*g_pTemporaryNym, strDecodedText);
 				
-			fprintf(stdout, "\n\nDECRYPTED TEXT:\n\n%s\n\n", strDecodedText.Get());
+			OTLog::vOutput(0, "\n\nDECRYPTED TEXT:\n\n%s\n\n", strDecodedText.Get());
 			
 			continue;
 		}
 		
 		else if (strLine.compare(0,6,"decode") == 0)
 		{
-			fprintf(stdout, "Enter text to be decoded:\n> ");
+			OTLog::Output(0, "Enter text to be decoded:\n> ");
 			
 			OTASCIIArmor theArmoredText;
 			char decode_buffer[200];
@@ -411,19 +412,19 @@ int main (int argc, char **argv)
 			do {
 				fgets(decode_buffer, sizeof(decode_buffer), stdin);				
 				theArmoredText.Concatenate("%s\n", decode_buffer);
-				fprintf(stdout, "> ");
+				OTLog::Output(0, "> ");
 			} while (strlen(decode_buffer)>1);
 			
 			OTString strDecodedText(theArmoredText);
 			
-			fprintf(stdout, "\n\nDECODED TEXT:\n\n%s\n\n", strDecodedText.Get());
+			OTLog::vOutput(0, "\n\nDECODED TEXT:\n\n%s\n\n", strDecodedText.Get());
 			
 			continue;
 		}
 		
 		else if (strLine.compare(0,6,"encode") == 0)
 		{
-			fprintf(stdout, "Enter text to be ascii-encoded (terminate with ~ on a new line):\n> ");
+			OTLog::Output(0, "Enter text to be ascii-encoded (terminate with ~ on a new line):\n> ");
 			
 			OTString strDecodedText;
 			char decode_buffer[200];
@@ -434,20 +435,20 @@ int main (int argc, char **argv)
 				if (decode_buffer[0] != '~')
 				{
 					strDecodedText.Concatenate("%s", decode_buffer);
-					fprintf(stdout, "> ");
+					OTLog::Output(0, "> ");
 				}
 			} while (decode_buffer[0] != '~');
 			
 			OTASCIIArmor theArmoredText(strDecodedText);
 			
-			fprintf(stdout, "\n\nENCODED TEXT:\n\n%s\n\n", theArmoredText.Get());
+			OTLog::vOutput(0, "\n\nENCODED TEXT:\n\n%s\n\n", theArmoredText.Get());
 			
 			continue;
 		}
 		
 		else if (strLine.compare(0,4,"hash") == 0)
 		{
-			fprintf(stdout, "Enter text to be hashed (terminate with ~ on a new line):\n> ");
+			OTLog::Output(0, "Enter text to be hashed (terminate with ~ on a new line):\n> ");
 			
 			OTString strDecodedText;
 			char decode_buffer[200];
@@ -458,7 +459,7 @@ int main (int argc, char **argv)
 				if (decode_buffer[0] != '~')
 				{
 					strDecodedText.Concatenate("%s\n", decode_buffer);
-					fprintf(stdout, "> ");
+					OTLog::Output(0, "> ");
 				}
 			} while (decode_buffer[0] != '~');
 			
@@ -467,25 +468,25 @@ int main (int argc, char **argv)
 
 			OTString strHash(theIdentifier);
 			
-			fprintf(stdout, "\n\nMESSAGE DIGEST:\n\n%s\n\n", strHash.Get());
+			OTLog::vOutput(0, "\n\nMESSAGE DIGEST:\n\n%s\n\n", strHash.Get());
 			
 			continue;
 		}
 		
 		else if (strLine.compare(0,4,"stat") == 0)
 		{
-			fprintf(stderr, "User has instructed to display wallet contents...\n");
+			OTLog::Output(0, "User has instructed to display wallet contents...\n");
 			
 			OTString strStat;
 			g_Wallet.DisplayStatistics(strStat);
-			fprintf(stderr, "%s\n", strStat.Get());
+			OTLog::vOutput(0, "%s\n", strStat.Get());
 			
 			continue;
 		}
 		
 		else if (strLine.compare(0,4,"quit") == 0)
 		{
-			fprintf(stderr, "User has instructed to exit the wallet...\n");
+			OTLog::Output(0, "User has instructed to exit the wallet...\n");
 						
 			break;
 		}
@@ -493,11 +494,11 @@ int main (int argc, char **argv)
 		// 1.6 Connect to the first server in the wallet. (assuming it loaded a server contract.)
 		else if (strLine.compare(0,7,"connect") == 0)
 		{
-			fprintf(stderr, "User has instructed to connect to the first server available in the wallet.\n");
+			OTLog::Output(0, "User has instructed to connect to the first server available in the wallet.\n");
 						
 			if (NULL == g_pTemporaryNym)
 			{
-				fprintf(stdout, "No Nym yet available to connect with. Try 'load'.\n");
+				OTLog::Output(0, "No Nym yet available to connect with. Try 'load'.\n");
 				continue;
 			}
 			
@@ -507,9 +508,9 @@ int main (int argc, char **argv)
 			bool bConnected = g_Client.ConnectToTheFirstServerOnList(*g_pTemporaryNym, strCAFile, strKeyFile, strSSLPassword); 
 			
 			if (bConnected)
-				fprintf(stderr, "Success. (Connected to the first notary server on your wallet's list.)\n");
+				OTLog::Output(0, "Success. (Connected to the first notary server on your wallet's list.)\n");
 			else {
-				fprintf(stderr, "Either the wallet is not loaded, or there was an error connecting to server.\n");
+				OTLog::Output(0, "Either the wallet is not loaded, or there was an error connecting to server.\n");
 			}
 
 			continue;
@@ -517,7 +518,7 @@ int main (int argc, char **argv)
 		
 		if (!g_Client.IsConnected())
 		{
-			fprintf(stdout, "(You are not connected to a notary server--you cannot send commands.)\n");
+			OTLog::Output(0, "(You are not connected to a notary server--you cannot send commands.)\n");
 			continue;
 		}
 			
@@ -547,7 +548,7 @@ int main (int argc, char **argv)
 			{
 //				OTString strReply;
 //				theMsg.SaveContract(strReply);
-//				fprintf(stderr, "\n\n**********************************************\n"
+//				OTLog::vOutput(0, "\n\n**********************************************\n"
 //						"Successfully in-processed server response.\n\n%s\n", strReply.Get());
 				g_Client.ProcessServerReply(theMsg);
 			}
@@ -555,7 +556,7 @@ int main (int argc, char **argv)
 		} while (true == bFoundMessage);
 	} // for
 	
-	fprintf(stderr,"Finished running client.\n");
+	OTLog::Output(0, "Finished running client.\n");
 
 #ifdef _WIN32
 	WSACleanup();

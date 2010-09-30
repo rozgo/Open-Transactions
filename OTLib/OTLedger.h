@@ -85,6 +85,8 @@
 #ifndef __OTLEDGER_H__
 #define __OTLEDGER_H__
 
+#include <fstream>
+
 #include "OTTransactionType.h"
 #include "OTString.h"
 
@@ -158,8 +160,8 @@ public:
 	bool GenerateLedger(const OTIdentifier & theAcctID, const OTIdentifier & theServerID, 
 						const ledgerType theType, bool bCreateFile=false); 
 
-	virtual bool SaveContractWallet(FILE * fl);
-	
+	virtual bool SaveContractWallet(std::ofstream & ofs);
+//	virtual bool SaveContractWallet(FILE * fl);	
 };
 
 #endif //  __OTLEDGER_H__

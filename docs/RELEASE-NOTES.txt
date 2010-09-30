@@ -3,9 +3,21 @@ NOTES on the Version:
 
 // ---------------------------------------------------------------------
 
-   0.24 --- FreeBSD working! (In support of Ben Laurie.)
+   0.25 --- All FILE * were removed and replaced with C++ fstreams.
+            
+            An all new logging class, with errors, asserts, and multi-
+            verbosity output. See the OTLog.h and .cpp files for more.
+            (Centralizing the output and logging also helps porting efforts.)
+
+            All the test certs were regenerated, and the contracts were
+            re-signed, etc. This time they will last for 10 years, instead
+            of 30 days. Slight fix to the Open-Transactions/ssl Makefile.
+
+   0.24 --- FreeBSD working!
 
    0.23 --- Android version! (In support of our upcoming Android client.)
+            UPDATE: this port is still ongoing, NOT perfect! Android has
+            many custom things and limitations.
 
    0.22 --- EASY Makefiles and project files are now available for the
             JNI Java interface, as well as the high-level C++ API.

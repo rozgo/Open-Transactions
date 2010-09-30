@@ -103,6 +103,7 @@ extern "C"
 #include "OTAsymmetricKey.h"
 #include "OTPayload.h"
 #include "OTASCIIArmor.h"
+#include "OTLog.h"
 
 
 
@@ -243,7 +244,6 @@ bool OTAsymmetricKey::SetPublicKey(const OTString & strKey, bool bEscaped/*=fals
 	
 	if (theArmor.LoadFromString((OTString &)strKey, bEscaped))
 	{
-		//		fprintf(stderr, "DEBUG, loaded armor: %s\n", theArmor.Get());
 		return SetPublicKey(theArmor);
 	}
 	else
@@ -445,11 +445,11 @@ bool OTAsymmetricKey::LoadPublicKeyFromPGPKey(const OTASCIIArmor & strKey)
 	if (NULL != pReturnKey)
 	{
 		m_pKey = pReturnKey;
-		//		fprintf(stderr, "Success reading public key from ASCII-armored data:\n%s",strKey.Get());
+		//		OTLog::vOutput(4, "Success reading public key from ASCII-armored data:\n%s",strKey.Get());
 		return true;
 	}
 	else {
-		//		fprintf(stderr, "Failed reading public key from ASCII-armored data:\n%s",strKey.Get());
+		//		OTLog::vOutput(4, "Failed reading public key from ASCII-armored data:\n%s",strKey.Get());
 		return false;
 	}
 	
@@ -488,16 +488,16 @@ bool OTAsymmetricKey::LoadPublicKeyFromPGPKey(const OTASCIIArmor & strKey)
 	
 	if(!pgpKeys.pRsa)
 	{  
-//		fprintf(stderr, "\nNo RSA public key found.\n\n"); 
+		OTLog::Output(5,  "\nNo RSA public key found.\n\n"); 
 	}
 	else
 	{
 		char* szModulusHex = BN_bn2hex(pgpKeys.pRsa->n);
 		char* szExponentHex = BN_bn2hex(pgpKeys.pRsa->e);
-//		fprintf(stderr, "RSA public key found : \n  Modulus (%d bits)\n", BN_num_bits(pgpKeys.pRsa->n));
-//		fprintf(stderr, "  Exponent : 0x%s\n\n", szExponentHex);
-//		fprintf(stderr, "RSA public key found : \nModulus (%d bits) : 0x%s\n", BN_num_bits(pgpKeys.pRsa->n), szModulusHex);
-//		fprintf(stderr, "Exponent : 0x%s\n\n", szExponentHex);
+		OTLog::vOutput(5, "RSA public key found : \n  Modulus (%d bits)\n", BN_num_bits(pgpKeys.pRsa->n));
+		OTLog::vOutput(5, "  Exponent : 0x%s\n\n", szExponentHex);
+		OTLog::vOutput(5, "RSA public key found : \nModulus (%d bits) : 0x%s\n", BN_num_bits(pgpKeys.pRsa->n), szModulusHex);
+		OTLog::vOutput(5, "Exponent : 0x%s\n\n", szExponentHex);
 		
 		CRYPTO_free(szModulusHex);
 		CRYPTO_free(szExponentHex);
@@ -505,7 +505,7 @@ bool OTAsymmetricKey::LoadPublicKeyFromPGPKey(const OTASCIIArmor & strKey)
 	
 	if(!pgpKeys.pDsa)
 	{  
-//		fprintf(stderr, "No DSA public key found.\n\n"); 
+		OTLog::Output(5, "No DSA public key found.\n\n"); 
 	}
 	else
 	{
@@ -513,14 +513,14 @@ bool OTAsymmetricKey::LoadPublicKeyFromPGPKey(const OTASCIIArmor & strKey)
 		char* szQHex = BN_bn2hex(pgpKeys.pDsa->q);
 		char* szGHex = BN_bn2hex(pgpKeys.pDsa->g);
 		char* szYHex = BN_bn2hex(pgpKeys.pDsa->pub_key);
-//		fprintf(stderr, "DSA public key found : \n  p (%d bits)\n", BN_num_bits(pgpKeys.pDsa->p));
-//		fprintf(stderr, "  q (%d bits)\n", BN_num_bits(pgpKeys.pDsa->q));
-//		fprintf(stderr, "  g (%d bits)\n", BN_num_bits(pgpKeys.pDsa->g));
-//		fprintf(stderr, "public key (%d bits)\n\n", BN_num_bits(pgpKeys.pDsa->pub_key));
-//		fprintf(stderr, "DSA public key found : \np (%d bits) : 0x%s\n", BN_num_bits(pgpKeys.pDsa->p), szPHex);
-//		fprintf(stderr, "q (%d bits) : 0x%s\n", BN_num_bits(pgpKeys.pDsa->q),szQHex);
-//		fprintf(stderr, "g (%d bits) : 0x%s\n", BN_num_bits(pgpKeys.pDsa->g),szGHex);
-//		fprintf(stderr, "public key (%d bits) : 0x%s\n\n", BN_num_bits(pgpKeys.pDsa->pub_key),szYHex);
+		OTLog::vOutput(5, "DSA public key found : \n  p (%d bits)\n", BN_num_bits(pgpKeys.pDsa->p));
+		OTLog::vOutput(5, "  q (%d bits)\n", BN_num_bits(pgpKeys.pDsa->q));
+		OTLog::vOutput(5, "  g (%d bits)\n", BN_num_bits(pgpKeys.pDsa->g));
+		OTLog::vOutput(5, "public key (%d bits)\n\n", BN_num_bits(pgpKeys.pDsa->pub_key));
+		OTLog::vOutput(5, "DSA public key found : \np (%d bits) : 0x%s\n", BN_num_bits(pgpKeys.pDsa->p), szPHex);
+		OTLog::vOutput(5, "q (%d bits) : 0x%s\n", BN_num_bits(pgpKeys.pDsa->q),szQHex);
+		OTLog::vOutput(5, "g (%d bits) : 0x%s\n", BN_num_bits(pgpKeys.pDsa->g),szGHex);
+		OTLog::vOutput(5, "public key (%d bits) : 0x%s\n\n", BN_num_bits(pgpKeys.pDsa->pub_key),szYHex);
 		
 		CRYPTO_free(szPHex);
 		CRYPTO_free(szQHex);
@@ -530,16 +530,16 @@ bool OTAsymmetricKey::LoadPublicKeyFromPGPKey(const OTASCIIArmor & strKey)
 	
 	if(!pgpKeys.pElgamal)
 	{  
-//		printf("No Elgamal public key found.\n\n"); 
+		OTLog::Output(5, "No Elgamal public key found.\n\n"); 
 	}
 	else
 	{
 		char* szPHex = BN_bn2hex(pgpKeys.pElgamal->p);
 		char* szGHex = BN_bn2hex(pgpKeys.pElgamal->g);
 		char* szYHex = BN_bn2hex(pgpKeys.pElgamal->pub_key);
-//		fprintf(stderr, "Elgamal public key found : \n  p (%d bits) : 0x%s\n", BN_num_bits(pgpKeys.pElgamal->p), szPHex);
-//		fprintf(stderr, "  g (%d bits) : 0x%s\n", BN_num_bits(pgpKeys.pElgamal->g),szGHex);
-//		fprintf(stderr, "  public key (%d bits) : 0x%s\n\n", BN_num_bits(pgpKeys.pElgamal->pub_key),szYHex);
+		OTLog::vOutput(5, "Elgamal public key found : \n  p (%d bits) : 0x%s\n", BN_num_bits(pgpKeys.pElgamal->p), szPHex);
+		OTLog::vOutput(5, "  g (%d bits) : 0x%s\n", BN_num_bits(pgpKeys.pElgamal->g),szGHex);
+		OTLog::vOutput(5, "  public key (%d bits) : 0x%s\n\n", BN_num_bits(pgpKeys.pElgamal->pub_key),szYHex);
 		
 		CRYPTO_free(szPHex);
 		CRYPTO_free(szGHex);
@@ -571,11 +571,11 @@ bool OTAsymmetricKey::LoadPublicKeyFromPGPKey(const OTASCIIArmor & strKey)
 		{
 			m_pKey			= pkey;
 			bReturnValue	= true;
-			fprintf(stderr, "Successfully extracted RSA public key from PGP public key block.\n");
+			OTLog::Output(4, "Successfully extracted RSA public key from PGP public key block.\n");
 		}
 		else
 		{
-			fprintf(stderr, "Extracted RSA public key from PGP public key block, but unable to convert to EVP_PKEY.\n");
+			OTLog::Output(0, "Extracted RSA public key from PGP public key block, but unable to convert to EVP_PKEY.\n");
 		}
 
 		RSA_free(pgpKeys.pRsa);
@@ -586,18 +586,18 @@ bool OTAsymmetricKey::LoadPublicKeyFromPGPKey(const OTASCIIArmor & strKey)
 		{
 			m_pKey			= pkey;
 			bReturnValue	= true;
-			fprintf(stderr, "Successfully extracted DSA public key from PGP public key block.\n");
+			OTLog::Output(4, "Successfully extracted DSA public key from PGP public key block.\n");
 		}
 		else
 		{
-			fprintf(stderr, "Extracted DSA public key from PGP public key block, but unable to convert to EVP_PKEY.\n");
+			OTLog::Output(0, "Extracted DSA public key from PGP public key block, but unable to convert to EVP_PKEY.\n");
 		}
 		
 		DSA_free(pgpKeys.pDsa);
 	}
 	else if (pgpKeys.pElgamal)
 	{
-		fprintf(stderr, "Extracted ElGamal Key from PGP public key block, but currently do not support it (sorry))\n");
+		OTLog::Output(0, "Extracted ElGamal Key from PGP public key block, but currently do not support it (sorry))\n");
 		//int EVP_PKEY_assign_EC_KEY(EVP_PKEY *pkey,EC_KEY *key); // Here is the assign function for El Gamal 
 		// (assuming that "EC" stands for eliptical curve... kind of hard to tell with the OpenSSL docs...)
 		free(pgpKeys.pElgamal);
@@ -633,11 +633,11 @@ bool OTAsymmetricKey::SetPublicKey(const OTASCIIArmor & strKey)
 	if (NULL != pReturnKey)
 	{
 		m_pKey = pReturnKey;
-		//		fprintf(stderr, "Success reading public key from ASCII-armored data:\n%s",strKey.Get());
+		OTLog::vOutput(4, "Success reading public key from ASCII-armored data:\n%s", strKey.Get());
 		return true;
 	}
 	else {
-		//		fprintf(stderr, "Failed reading public key from ASCII-armored data:\n%s",strKey.Get());
+		OTLog::vError("Failed reading public key from ASCII-armored data:\n%s", strKey.Get());
 		return false;
 	}
 }
@@ -669,11 +669,11 @@ bool OTAsymmetricKey::SetPublicKey(OTASCIIArmor & strKey)
 	if (NULL != pReturnKey)
 	{
 		m_pKey = pReturnKey;
-		fprintf(stderr, "Success reading public key from ASCII-armored data:\n%s",strKey.Get());
+		OTLog::vOutput(4, "Success reading public key from ASCII-armored data:\n%s", strKey.Get());
 		return true;
 	}
 	else {
-		fprintf(stderr, "Failed reading public key from ASCII-armored data:\n%s",strKey.Get());
+		OTLog::vError("Failed reading public key from ASCII-armored data:\n%s", strKey.Get());
 		return false;
 	}
 }
@@ -708,11 +708,11 @@ bool OTAsymmetricKey::SetPublicKey(OTASCIIArmor & strKey)
  if (NULL != pReturnKey)
  {
  m_pKey = pReturnKey;
- fprintf(stderr, "Success reading public key from ASCII-armored data.\n");
+		OTLog::vOutput(4,  "Success reading public key from ASCII-armored data.\n");
  return true;
  }
  else {
- fprintf(stderr, "Failed reading public key from ASCII-armored data.\n");
+		OTLog::Error("Failed reading public key from ASCII-armored data.\n");
  return false;
  }
  }
@@ -737,11 +737,11 @@ bool OTAsymmetricKey::GetPublicKey(OTASCIIArmor & strKey) const
 	
 	if (0 == nWriteBio)
 	{
-//		fprintf(stderr, "Failed writing EVP_PKEY* to memory buffer in OTAsymmetricKey::GetPublicKey\n");
+		OTLog::Error("Failed writing EVP_PKEY* to memory buffer in OTAsymmetricKey::GetPublicKey\n");
 	}
 	else 
 	{
-//		fprintf(stderr, "Success writing EVP_PKEY* to memory buffer in OTAsymmetricKey::GetPublicKey\n");
+		OTLog::Output(5, "Success writing EVP_PKEY* to memory buffer in OTAsymmetricKey::GetPublicKey\n");
 		
 		OTPayload theData;
 		char * pChar = NULL;
@@ -762,12 +762,12 @@ bool OTAsymmetricKey::GetPublicKey(OTASCIIArmor & strKey) const
 			// This base64 encodes the public key data
 			strKey.SetData(theData);
 			
-//			fprintf(stderr, "Success copying public key into memory in OTAsymmetricKey::GetPublicKey\n");
+		OTLog::Output(5, "Success copying public key into memory in OTAsymmetricKey::GetPublicKey\n");
 			bReturnVal = true;
 		}
 		else 
 		{
-//			fprintf(stderr, "Failed copying public key into memory in OTAsymmetricKey::GetPublicKey\n");
+			OTLog::Error("Failed copying public key into memory in OTAsymmetricKey::GetPublicKey\n");
 		}
 	}
 
@@ -849,7 +849,7 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertFile(const OTString & strFilename)
 	
 	if (x509 == NULL) 
 	{ 
-		fprintf (stderr, "Error reading x509 out of cert file: %s\n", strFilename.Get()); 
+		OTLog::vError("Error reading x509 out of cert file: %s\n", strFilename.Get()); 
 		return false; 
 	}
 	
@@ -858,7 +858,7 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertFile(const OTString & strFilename)
 	
 	if (m_pKey == NULL) 
 	{ 
-		fprintf (stderr, "Error reading public key from x509 from certfile: %s\n", strFilename.Get()); 
+		OTLog::vError("Error reading public key from x509 from certfile: %s\n", strFilename.Get()); 
 		return false; 
 	}
 	else
@@ -878,7 +878,7 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertString(const OTString & strCert, bool
 	Release();
 	
 	// Read public key
-//	fprintf (stderr, "\nReading public key from x509 stored in bookended string...\n"); 
+	OTLog::Output(3,  "\nReading public key from x509 stored in bookended string...\n"); 
 
 	OTString		strWithBookends;
 	
@@ -895,7 +895,7 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertString(const OTString & strCert, bool
 								   theArmor.Get());
 		else 
 		{
-			fprintf(stderr, "Error extracting ASCII-Armored text from Cert String in "
+			OTLog::Error("Error extracting ASCII-Armored text from Cert String in "
 					"OTAsymmetricKey::LoadPublicKeyFromCertString\n");
 			return false;
 		}
@@ -925,17 +925,17 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertString(const OTString & strCert, bool
 
 			if (m_pKey == NULL) 
 			{ 
-				fprintf (stderr, "Error reading public key from x509 in LoadPublicKeyFromCertArmor.\n"); 
+				OTLog::Error("Error reading public key from x509 in LoadPublicKeyFromCertArmor.\n"); 
 			}
 			else
 			{
-				fprintf (stderr, "\nSuccessfully extracted a public key from an x509 certificate.\n"); 
+				OTLog::Output(3, "\nSuccessfully extracted a public key from an x509 certificate.\n"); 
 				bReturnValue = true; 
 			}
 		}
 		else
 		{ 
-			fprintf (stderr, "Error reading x509 out of certificate in LoadPublicKeyFromCertArmor.\n"); 
+			OTLog::Error("Error reading x509 out of certificate in LoadPublicKeyFromCertArmor.\n"); 
 		}
 		
 		
@@ -989,19 +989,19 @@ bool OTAsymmetricKey::LoadPublicKey(const OTString & strFilename)
 	{
 		if (SetPublicKey(theArmor))
 		{
-//			fprintf (stderr, "Success setting public key from OTASCIIArmor in OTAsymmetricKey::LoadPublicKey.\n"); 
+			OTLog::Output(4, "Success setting public key from OTASCIIArmor in OTAsymmetricKey::LoadPublicKey.\n"); 
 			return true; 			
 		}
 		else
 		{
-			fprintf (stderr, "Error converting from OTASCIIArmor to public key in "
+			OTLog::vOutput(2, "Unable to convert from OTASCIIArmor to public key in "
 					 "OTAsymmetricKey::LoadPublicKey: %s\n",
 					 strFilename.Get()); 
 			return false; 			
 		}
 	}
 	else {
-		fprintf (stderr, "Error reading pubkey file in OTAsymmetricKey::LoadPublicKey: %s\n", strFilename.Get()); 
+		OTLog::vOutput(2, "Unable to read pubkey file in OTAsymmetricKey::LoadPublicKey: %s\n", strFilename.Get()); 
 		return false; 
 	}
 
@@ -1078,7 +1078,7 @@ bool OTAsymmetricKey::LoadPrivateKey(const OTString & strFilename)
 	
 	if (NULL == m_pKey) 
 	{ 
-		fprintf (stderr, "Error reading private key from file in OTAsymmetricKey::LoadPrivateKey: %s\n", strFilename.Get()); 
+		OTLog::vError("Error reading private key from file in OTAsymmetricKey::LoadPrivateKey: %s\n", strFilename.Get()); 
 		return false; 
 	}
 	
