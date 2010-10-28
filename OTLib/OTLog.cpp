@@ -94,6 +94,37 @@
 
 #include <string> // The C++ one 
 
+
+
+// Use Win or Posix
+// IF I need this while porting, then uncomment it.
+//#ifdef _WIN32
+//#include <windows.h>
+//#else
+//#ifndef POSIX
+//#warning POSIX will be used (but you did not define it)
+//#endif
+//#include <unistd.h>
+//#endif
+
+
+extern "C" 
+{
+	
+#ifdef _WIN32
+#include <direct.h>
+#include <sys/stat.h>	
+#else
+#include <sys/stat.h>	
+#endif
+}
+
+
+#ifdef ANDROID
+#include <android/log.h>
+#endif
+
+
 #include "OTString.h"
 #include "OTLog.h"
 
@@ -108,7 +139,7 @@
 // (Or right here.)
 int OTLog::__CurrentLogLevel = 1;
 
-OTString OTLog::__Version = "0.25";
+OTString OTLog::__Version = "0.30";
 
 
 
@@ -125,6 +156,67 @@ OTString OTLog::__OTPathSeparator = "\\";
 #else
 OTString OTLog::__OTPathSeparator = "/";
 #endif
+
+// ---------------------------------------------------------------------------------
+
+
+// Just a default value, since this is configurable programmatically.
+
+
+OTString OTLog::__OTCronFolder		= "cron";		
+OTString OTLog::__OTNymFolder		= "nyms";		
+OTString OTLog::__OTAccountFolder	= "accounts";	
+OTString OTLog::__OTUserAcctFolder	= "useraccounts";	
+OTString OTLog::__OTInboxFolder		= "inbox";		
+OTString OTLog::__OTOutboxFolder	= "outbox";		
+OTString OTLog::__OTCertFolder		= "certs";		
+OTString OTLog::__OTPubkeyFolder	= "pubkeys";
+OTString OTLog::__OTContractFolder	= "contracts";
+OTString OTLog::__OTMintFolder		= "mints";
+OTString OTLog::__OTSpentFolder		= "spent";
+OTString OTLog::__OTPurseFolder		= "purse";
+OTString OTLog::__OTMarketFolder	= "markets";
+
+
+
+
+
+
+/*
+ void sleep( unsigned int in_mseconds )
+ {
+ 
+ }
+ 
+ 
+ void ssleep( unsigned int in_seconds )
+ {
+ }
+ */
+
+
+
+// ---------------------------------------------------------------------------------
+
+void OTLog::SleepSeconds(long lSeconds)
+{
+#ifdef _WIN32
+	Sleep(1000 * lSeconds);
+#else
+	sleep(lSeconds);
+#endif	
+}
+
+
+void OTLog::SleepMilliseconds(long lMilliseconds)
+{
+#ifdef _WIN32
+	Sleep( lMilliseconds );
+#else
+	usleep( lMilliseconds * 1000 );
+#endif	
+}
+
 
 // ---------------------------------------------------------------------------------
 
@@ -153,7 +245,7 @@ int OTLog::Assert(const char * szFilename, int nLinenumber, const char * szMessa
 #ifndef ANDROID // if NOT android
 		std::cerr << szMessage << "\n";
 #else // if Android
-		// Don't bother logging in Android...
+		__android_log_write(ANDROID_LOG_FATAL,"OT Assert", szMessage);
 #endif		
 	}
 	
@@ -164,13 +256,13 @@ int OTLog::Assert(const char * szFilename, int nLinenumber)
 {
 	if ((NULL != szFilename))
 	{
-	
 #ifndef ANDROID // if NOT android
 		std::cerr << "OT_ASSERT in " << szFilename << " at line " << nLinenumber << "\n";
 #else // if Android
-	// Don't bother logging in Android...
+		OTString strAndroidAssertMsg;
+		strAndroidAssertMsg.Format("\nOT_ASSERT in %s at line %d\n", szFilename, nLinenumber);
+		__android_log_write(ANDROID_LOG_FATAL,"OT Assert", (const char *)strAndroidAssertMsg.Get());
 #endif
-		
 	}
 	
 	abort();
@@ -191,9 +283,38 @@ void OTLog::Output(int nVerbosity, const char *szOutput)
 	
 #ifndef ANDROID // if NOT android
 	std::cout << szOutput;
-//	printf(szOutput); // Right now this goes to stdout, but could be changed to a file.
+	//	printf(szOutput); // Right now this goes to stdout, but could be changed to a file.
 #else // if Android
-	// Don't bother logging in Android...
+	/*
+	 typedef enum android_LogPriority {
+	 ANDROID_LOG_UNKNOWN = 0,
+	 ANDROID_LOG_DEFAULT,    // only for SetMinPriority()
+	 ANDROID_LOG_VERBOSE,
+	 ANDROID_LOG_DEBUG,
+	 ANDROID_LOG_INFO,
+	 ANDROID_LOG_WARN,
+	 ANDROID_LOG_ERROR,
+	 ANDROID_LOG_FATAL,
+	 ANDROID_LOG_SILENT,     // only for SetMinPriority(); must be last
+	 } android_LogPriority;
+	 */
+	switch (nVerbosity) {
+		case 0:
+		case 1:
+			__android_log_write(ANDROID_LOG_INFO,"OT Output", szOutput);
+			break;
+		case 2:
+		case 3:
+			__android_log_write(ANDROID_LOG_DEBUG,"OT Debug", szOutput);
+			break;
+		case 4:
+		case 5:
+			__android_log_write(ANDROID_LOG_VERBOSE,"OT Verbose", szOutput);
+			break;
+		default:
+			__android_log_write(ANDROID_LOG_UNKNOWN,"OT Unknown", szOutput);
+			break;
+	}
 #endif
 }
 
@@ -218,6 +339,10 @@ void OTLog::vOutput(int nVerbosity, const char *szOutput, ...)
 	if (NULL == new_string)
 	{
 		new_string = new char[MAX_STRING_LENGTH]; // This only happens once -- static var.
+		
+		OT_ASSERT(NULL != new_string);
+		
+		memset(new_string, 0, MAX_STRING_LENGTH);
 	}
 	
 	new_string[0] = '\0';
@@ -250,9 +375,9 @@ void OTLog::Error(const char *szError)
 	
 #ifndef ANDROID // if NOT android
 	std::cerr << szError;
-//	fprintf(stderr, szError); // Right now this goes to stderr, but could be changed to a file.
+	//	fprintf(stderr, szError); // Right now this goes to stderr, but could be changed to a file.
 #else // if Android
-	// Don't bother logging in Android...
+	__android_log_write(ANDROID_LOG_ERROR,"OT Error", szError);
 #endif
 }
 
@@ -276,6 +401,10 @@ void OTLog::vError(const char *szError, ...)
 	if (NULL == new_string)
 	{
 		new_string = new char[MAX_STRING_LENGTH]; // This only happens once -- static var.
+		
+		OT_ASSERT(NULL != new_string);
+		
+		memset(new_string, 0, MAX_STRING_LENGTH);
 	}
 	
 	new_string[0] = '\0';
@@ -293,6 +422,152 @@ void OTLog::vError(const char *szError, ...)
 	
 	OTLog::Error(new_string);
 }
+
+
+
+
+
+
+
+// Used for making sure that certain necessary folders actually exist. (Creates them otherwise.)
+//
+// If you pass in "spent", then this function will make sure that "<path>/spent" actually exists, 
+// or create it. WARNING: If what you want to pass is "spent/sub-folder-to-spent" then make SURE
+// you call it with "spent" FIRST, so you are sure THAT folder has been created, otherwise the
+// folder creation will definitely fail on the sub-folder call (if the primary folder wasn't
+// already there, that is.)
+//
+bool OTLog::ConfirmOrCreateFolder(const char * szFolderName)
+{
+	OT_ASSERT(NULL != szFolderName);
+	
+	
+	// DIRECTORY IS PRESENT?
+	struct stat st;
+	
+	OTString strPath;
+	strPath.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), szFolderName);
+	
+	bool bDirIsPresent = (0 == stat(strPath.Get(), &st));
+	
+	// ----------------------------------------------------------------------------
+	
+	// IF NO, CREATE IT
+	if (!bDirIsPresent)
+	{
+#ifdef _WIN32
+		if (_mkdir(strPath.Get()) == -1) 
+#else
+			if (mkdir(strPath.Get(), 0700) == -1) 
+#endif
+			{
+				OTLog::vError("OTLog::ConfirmOrCreateFolder: Unable to create %s.\n",
+							  strPath.Get());
+				return false;
+			}
+		
+		// Now we have created it, so let's check again...
+		bDirIsPresent = (0 == stat(strPath.Get(), &st));
+		
+		if (bDirIsPresent)
+			OTLog::vOutput(0, "Created folder: %s\n", strPath.Get());
+	}
+	
+	// ----------------------------------------------------------------------------
+	
+	// At this point if the folder still doesn't exist, nothing we can do. We
+	// already tried to create the folder, and SUCCEEDED, and then STILL failed 
+	// to find it (if this is still false.)
+	if (!bDirIsPresent)
+	{
+		OTLog::vError("OTLog::ConfirmOrCreateFolder: Unable to find newly-created folder: %s\n", 
+					  strPath.Get());
+		return false;
+	}
+	
+	return true;
+}	
+
+// Returns true or false whether a specific file exists.
+// Adds the main path prior to checking.
+bool OTLog::ConfirmFile(const char * szFileName)
+{
+	OT_ASSERT(NULL != szFileName);
+	
+	
+	// FILE IS PRESENT?
+	struct stat st;
+	
+	OTString strPath;
+	strPath.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), szFileName);
+	
+	return (0 == stat(strPath.Get(), &st));
+}
+
+
+// Returns true or false whether a specific file exists.
+bool OTLog::ConfirmExactPath(const char * szFileName)
+{
+	OT_ASSERT(NULL != szFileName);
+	
+	// FILE IS PRESENT?
+	struct stat st;
+	
+	OTString strPath;
+	strPath.Format("%s", szFileName);
+	
+	return (0 == stat(strPath.Get(), &st));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

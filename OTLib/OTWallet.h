@@ -117,7 +117,7 @@ public:
 	OTString m_strFilename;
 	
 	OTWallet();
-	~OTWallet();
+	virtual ~OTWallet();
 	
 	//------------------------------------------------------------
 

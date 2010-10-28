@@ -177,18 +177,17 @@ OTTransaction * OTTransaction::GenerateTransaction(const OTIdentifier & theUserI
 {
 	OTTransaction * pTransaction = new OTTransaction(theUserID, theAccountID, theServerID, lTransactionNum);
 
-	if (pTransaction)
-	{
-		pTransaction->m_Type = theType;
-		
-		// Since we're actually generating this transaction, then we can go ahead
-		// and set the purported account and server IDs (we have already set the
-		// real ones in the constructor). Now both sets are fill with matching data.
-		// No need to security check the IDs since we are creating this transaction
-		// versus loading and inspecting it.
-		pTransaction->SetPurportedAccountID(theAccountID);
-		pTransaction->SetPurportedServerID(theServerID);
-	}
+	OT_ASSERT(NULL != pTransaction);
+	
+	pTransaction->m_Type = theType;
+	
+	// Since we're actually generating this transaction, then we can go ahead
+	// and set the purported account and server IDs (we have already set the
+	// real ones in the constructor). Now both sets are fill with matching data.
+	// No need to security check the IDs since we are creating this transaction
+	// versus loading and inspecting it.
+	pTransaction->SetPurportedAccountID(theAccountID);
+	pTransaction->SetPurportedServerID(theServerID);
 	
 	return pTransaction;
 }
@@ -304,6 +303,14 @@ int OTTransaction::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			m_Type = OTTransaction::withdrawal;
 		else if (strType.Compare("atWithdrawal"))
 			m_Type = OTTransaction::atWithdrawal;
+		else if (strType.Compare("marketOffer"))
+			m_Type = OTTransaction::marketOffer;
+		else if (strType.Compare("atMarketOffer"))
+			m_Type = OTTransaction::atMarketOffer;
+		else if (strType.Compare("paymentPlan"))
+			m_Type = OTTransaction::paymentPlan;
+		else if (strType.Compare("atPaymentPlan"))
+			m_Type = OTTransaction::atPaymentPlan;
 		else
 			m_Type = OTTransaction::error_state;
 		
@@ -425,6 +432,18 @@ void OTTransaction::UpdateContents()
 			break;
 		case OTTransaction::atWithdrawal:
 			strType.Set("atWithdrawal");
+			break;
+		case OTTransaction::marketOffer:
+			strType.Set("marketOffer");
+			break;
+		case OTTransaction::atMarketOffer:
+			strType.Set("atMarketOffer");
+			break;
+		case OTTransaction::paymentPlan:
+			strType.Set("paymentPlan");
+			break;
+		case OTTransaction::atPaymentPlan:
+			strType.Set("atPaymentPlan");
 			break;
 		default:
 			strType.Set("error-unknown");

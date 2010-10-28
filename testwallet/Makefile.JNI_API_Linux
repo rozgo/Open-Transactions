@@ -6,6 +6,8 @@
 
 PROGRAM = libOT_JNI_API.so  
 
+DEBUG_PROGRAM = libOT_JNI_APId.so  
+
 #
 # Command line parameters: Edit these parameters so that you can 
 # easily run the sample by typing "make -f Makefile.Linux run".
@@ -35,6 +37,7 @@ LIBDIRS = \
 
 
 LIBS = $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lOTAPI
+DEBUG_LIBS = $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lOTAPId
 
 #
 # The CXXSOURCES macro contains a list of source files.
@@ -56,9 +59,11 @@ CXXSOURCES = \
 			 OpenTransactionsJNI.cpp
 
 CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
-CXXFLAGS   = $(INCLUDEDIRS)
+CXXFLAGS   = $(INCLUDEDIRS) -Wno-write-strings
+DEBUG_FLAGS = -g
 CXX = g++
 LDFLAGS = $(LIBDIRS) $(LIBS)
+DEBUG_LDFLAGS = $(LIBDIRS) $(DEBUG_LIBS)
 
 #
 # Default target: the first target is the default target.
@@ -66,6 +71,22 @@ LDFLAGS = $(LIBDIRS) $(LIBS)
 #
 
 all: $(PROGRAM)
+
+rpc: LIBDIRS += -L/usr/local/lib/XmlRpc
+rpc: LIBS += $(LIBDIRS) -lXmlRpc
+rpc: DEBUG_LIBS += $(LIBDIRS) -lXmlRpc
+rpc: $(PROGRAM)
+
+debugrpc: LIBDIRS += -L/usr/local/lib/XmlRpc
+debugrpc: LIBS += $(LIBDIRS) -lXmlRpc
+debugrpc: DEBUG_LIBS += $(LIBDIRS) -lXmlRpc
+debugrpc: debug
+
+debug: CXXFLAGS += $(DEBUG_FLAGS)
+debug: LIBS = $(DEBUG_LIBS)
+debug: LDFLAGS = $(DEBUG_LDFLAGS)
+debug: $(CXXOBJECTS) $(COBJECTS) 
+	g++ $(DEBUG_LDFLAGS) -fPIC -shared -o $(DEBUG_PROGRAM) $(CXXOBJECTS)
 
 #
 # Link target: automatically builds its object dependencies before
@@ -86,9 +107,10 @@ OpenTransactionsJNI.o: OpenTransactionsJNI.cpp
 #
 # Clean target: "make -f Makefile.Linux clean" to remove unwanted objects and executables.
 #
+RM=rm
 
 clean:
-	$(RM) -f $(CXXOBJECTS) $(COBJECTS) $(PROGRAM)
+	$(RM) -f $(CXXOBJECTS) $(COBJECTS) $(PROGRAM) $(DEBUG_PROGRAM)
 
 #
 # Run target: "make -f Makefile.Linux run" to execute the application
@@ -98,3 +120,4 @@ clean:
 
 run:
 	./$(PROGRAM) 
+

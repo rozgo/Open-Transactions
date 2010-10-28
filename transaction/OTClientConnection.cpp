@@ -214,7 +214,7 @@ void OTClientConnection::ProcessBuffer()
 {	
 	if (!m_bHaveHeader)
 	{
-		int  err, nread;
+		int  err = 0, nread = 0;
 		union u_header theCMD;
 
 		// clear the header object.	
@@ -296,11 +296,13 @@ void OTClientConnection::ReadBytesIntoBuffer()
 {
 	// At this point, the checksum has already validated. 
 	// Might as well get the PAYLOAD next.
-	int			err;
-	uint32_t	nread;
+	int			err = 0;
+	uint32_t	nread = 0;
 	
 	const int		nBufferSize = 8192; // todo no hardcoding.
-	unsigned char	szBuffer[8192];
+	unsigned char	szBuffer[8300]; // I made this a little bigger just for safety reasons.
+	
+	memset(szBuffer, 0, 8299);  // just in case.
 	
 	//ultimately we want to read until m_Buffer.GetSize equals m_CMD.fields.size
 	// In this function we'll read up to that or 8192, whichever is smaller.
@@ -562,7 +564,7 @@ bool OTClientConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theMessa
 				// No need to call theMessage.ParseRawFile() after, since
 				// LoadContractFromString handles it.
 				//
-				if (theMessage.LoadContractFromString(strEnvelopeContents))
+				if (strEnvelopeContents.Exists() && theMessage.LoadContractFromString(strEnvelopeContents))
 				{
 					OTLog::Output(2, "Success loading message out of the envelope contents and parsing it.\n");
 					return true;
@@ -584,12 +586,9 @@ bool OTClientConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theMessa
 			OTLog::Error("Error retrieving message from payload.\n");
 			return false;
 		}
-		
 	}
 	
-	
 	return true;
-	
 }
 
 
@@ -613,16 +612,39 @@ void OTClientConnection::SetPublicKey(const OTAsymmetricKey & thePublicKey)
 	m_PublicKey.SetPublicKey(strNymsPublicKey, true/*bEscaped*/);
 }
 
+
+// This function, you pass in a message and it returns true or false to let
+// you know whether the message was successfully sealed into theEnvelope.
+// (Based on the public key into cached in the OTClientConnection...)
+// This is for XmlRpc / HTTP mode.
+bool OTClientConnection::SealMessageForRecipient(OTMessage & theMsg, OTEnvelope & theEnvelope)
+{
+	if (m_PublicKey.GetKey())
+	{
+		// Save the ready-to-go message into a string.
+		OTString strEnvelopeContents(theMsg);
+		
+		// Seal the string up into an encrypted Envelope		
+		if (strEnvelopeContents.Exists())
+			return theEnvelope.Seal(m_PublicKey, strEnvelopeContents);
+	}
+
+	return false;
+}
+
 // Process my reply back out to the client.  @something.
+// For TCP / SSL mode.
 void OTClientConnection::ProcessReply(OTMessage &theReply)
 {
-    int  err;
-	uint32_t nwritten;
+    int  err = 0;
+	uint32_t nwritten = 0;
 	bool bSendCommand = false;
 	bool bSendPayload = false;
 	
 	u_header  theCMD;
 	OTPayload thePayload;
+
+	memset((void *)theCMD.buf, 0, OT_CMD_HEADER_SIZE);
 
 	// For now let's send ALL replies in Envelopes (encrypted to public key of client)
 	// IF we have a public key, that is. Otherwise we send as a normal message.
@@ -638,9 +660,8 @@ void OTClientConnection::ProcessReply(OTMessage &theReply)
 	// not just a null pointer. This means we can use it!  So let's encrypt to it.
 	if (m_PublicKey.GetKey())
 	{
-		OTString strEnvelopeContents;
+		OTString strEnvelopeContents(theReply);
 		// Save the ready-to-go message into a string.
-		theReply.SaveContract(strEnvelopeContents);
 		
 		OTEnvelope theEnvelope;
 		// Seal the string up into an encrypted Envelope
@@ -744,18 +765,50 @@ OTMessage * OTClientConnection::GetNextOutputMessage()
 	return m_listOut.GetNextMessage();
 }
 
-
+// For TCP / SSL mode.
 OTClientConnection::OTClientConnection(SFSocket & theSocket, OTServer & theServer)
 {
 	m_pSocket		= &theSocket;
 	m_pServer		= &theServer;
 	
 	m_bHaveHeader	= false;
+	m_bFocused		= false; // tcp over ssl mode
+}
+
+// For XmlRpc / HTTP mode.
+OTClientConnection::OTClientConnection(OTServer & theServer)
+{
+	m_pSocket		= NULL;
+	m_pServer		= &theServer;
+	
+	m_bHaveHeader	= false;
+	m_bFocused		= true; // rpc over http mode
 }
 
 OTClientConnection::~OTClientConnection()
 {
 	// Disconnect Client
-	SFSocketRelease(m_pSocket);     
+	if (NULL != m_pSocket)
+	{
+		SFSocketRelease(m_pSocket);
+		m_pSocket = NULL;
+	}
 }
 
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

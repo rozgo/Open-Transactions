@@ -94,7 +94,7 @@ class OTString;
 class OTIdentifier;
 
 
-// the "inbox" and "outbox" functionality is implemented in this class
+// use as a base class for OTLedger, OTTransaction, and OTItem
 //
 class OTTransactionType : public OTContract 
 {	
@@ -188,7 +188,8 @@ public:
 
 	void InitTransactionType();
 	virtual ~OTTransactionType();
-	
+	virtual void Release();
+
 	// need to know the transaction number of this transaction? Call this.
 	long GetTransactionNum() const;
 	void SetTransactionNum(const long lTransactionNum);

@@ -129,7 +129,7 @@ public:
 	
 	ledgerType	m_Type;
 		
-	void AddTransaction(OTTransaction & theTransaction);
+	bool AddTransaction(OTTransaction & theTransaction);
 	bool RemoveTransaction(long lTransactionNum); // if false, transaction wasn't found.
 	OTTransaction * GetTransaction(long lTransactionNum);	
 	OTTransaction * GetPendingTransaction(long lTransactionNum);
@@ -144,6 +144,8 @@ public:
 	OTLedger(const OTIdentifier & theUserID, const OTIdentifier & theAccountID, const OTIdentifier & theServerID);	
 	virtual ~OTLedger();
 	
+	virtual void Release();
+
 	// ONLY call this if you need to load a ledger where you don't already know the person's UserID
 	// For example, if you need to load someone ELSE's inbox in order to send them a transfer, then
 	// you only know their account number, not their user ID. So you call this function to get it

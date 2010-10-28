@@ -5,6 +5,7 @@
 #
 
 PROGRAM = libOTLib.a 
+DEBUG_PROGRAM = libOTLibd.a 
 
 #
 # Command line parameters: Edit these parameters so that you can 
@@ -45,6 +46,7 @@ LIBDIRS = \
 
 
 LIBS = -lssl -lcrypto
+DEBUG_LIBS = -lssl -lcrypto
 
 #
 # The CXXSOURCES macro contains a list of source files.
@@ -92,6 +94,14 @@ CXXSOURCES = $(LUCRESOURCES) $(IRRXMLSOURCES) \
 			 OTEnvelope.cpp \
 			 OTAssetContract.cpp \
 			 OTServerContract.cpp \
+			 OTOffer.cpp \
+			 OTAgreement.cpp \
+			 OTTrackable.cpp \
+			 OTCron.cpp \
+			 OTCronItem.cpp \
+			 OTTrade.cpp \
+			 OTPaymentPlan.cpp \
+			 OTMarket.cpp \
 			 OTPayload.cpp \
 			 OTMessage.cpp \
 			 OTMessageBuffer.cpp \
@@ -106,9 +116,12 @@ COBJECTS   = $(CSOURCES:.c=.o)
 #CFLAGS     = $(INCLUDEDIRS) -Wall -Werror
 CXXFLAGS   = $(INCLUDEDIRS) -Wall 
 CFLAGS     = $(INCLUDEDIRS) -Wall 
+DEBUG_FLAGS = -g
 CXX = g++
 CC = gcc
 LDFLAGS = $(LIBDIRS) $(LIBS)
+
+DEBUG_LDFLAGS = $(LIBDIRS) $(DEBUG_LIBS)
 
 #
 # Default target: the first target is the default target.
@@ -116,6 +129,12 @@ LDFLAGS = $(LIBDIRS) $(LIBS)
 #
 
 all: $(PROGRAM)
+
+debug: CXXFLAGS += $(DEBUG_FLAGS)
+debug: LIBS = $(DEBUG_LIBS)
+debug: LDFLAGS = $(DEBUG_LDFLAGS)
+debug: $(CXXOBJECTS) $(COBJECTS) 
+	ar rc $(DEBUG_PROGRAM) $(CXXOBJECTS) $(COBJECTS)
 
 #
 # Link target: automatically builds its object dependencies before
@@ -199,7 +218,22 @@ OTAsymmetricKey.o: OTAsymmetricKey.cpp OTAsymmetricKey.h
 	$(CXX) $(CXXFLAGS) -c -o OTAsymmetricKey.o OTAsymmetricKey.cpp
 OTDataCheck.o: OTDataCheck.cpp OTDataCheck.h
 	$(CXX) $(CXXFLAGS) -c -o OTDataCheck.o OTDataCheck.cpp
-
+OTAgreement.o: OTAgreement.cpp OTAgreement.h
+	$(CXX) $(CXXFLAGS) -c -o OTAgreement.o OTAgreement.cpp
+OTTrackable.o: OTTrackable.cpp OTTrackable.h
+	$(CXX) $(CXXFLAGS) -c -o OTTrackable.o OTTrackable.cpp
+OTCron.o: OTCron.cpp OTCron.h
+	$(CXX) $(CXXFLAGS) -c -o OTCron.o OTCron.cpp
+OTCronItem.o: OTCronItem.cpp OTCronItem.h
+	$(CXX) $(CXXFLAGS) -c -o OTCronItem.o OTCronItem.cpp
+OTMarket.o: OTMarket.cpp OTMarket.h
+	$(CXX) $(CXXFLAGS) -c -o OTMarket.o OTMarket.cpp
+OTOffer.o: OTOffer.cpp OTOffer.h
+	$(CXX) $(CXXFLAGS) -c -o OTOffer.o OTOffer.cpp
+OTTrade.o: OTTrade.cpp OTTrade.h
+	$(CXX) $(CXXFLAGS) -c -o OTTrade.o OTTrade.cpp
+OTPaymentPlan.o: OTPaymentPlan.cpp OTPaymentPlan.h
+	$(CXX) $(CXXFLAGS) -c -o OTPaymentPlan.o OTPaymentPlan.cpp
 
 #
 # Clean target: "make -f Makefile.Linux clean" to remove unwanted objects and executables.
@@ -207,7 +241,7 @@ OTDataCheck.o: OTDataCheck.cpp OTDataCheck.h
 RM=rm
 
 clean:
-	$(RM) -f $(CXXOBJECTS) $(COBJECTS) $(PROGRAM)
+	$(RM) -f $(CXXOBJECTS) $(COBJECTS) $(PROGRAM) $(DEBUG_PROGRAM)
 
 #
 # Run target: "make -f Makefile.Linux run" to execute the application
@@ -217,3 +251,5 @@ clean:
 
 run:
 	./$(PROGRAM) 
+
+

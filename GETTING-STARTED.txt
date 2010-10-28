@@ -10,13 +10,26 @@ GETTING STARTED:
 1) See LICENSE-AND-CREDITS file, which should be in the same
    folder as this README file. You agree to the terms.  
 
-2) See INSTALL for instructions on building the 3 projects.
+2) See INSTALL files (this folder) for instructions on building everything.
    There are versions for Android, Windows, and Mac/Linux/FreeBSD.
 
-   (For those of you with Mac/Linux/FreeBSD, you can probably just type 'make'
-   in this folder and build the library, server, and test client.) 
+   For those of you with MAC, you can just type 'make' (without the quotes)
+   right here in this folder and it will build the entire project. You still
+   might want to read the instructions though.
 
-3) Check the INSTALL instructions (in this folder) first for your platform.
+   For those of you with LINUX, you can just type: make -f Makefile.linux
+   and it will build the entire project. You still might want to read the
+   instructions though.
+
+3) While the Open Transactions library itself is transport neutral, the
+   applications such as the server and client come with different options
+   for transport protocol.
+   The preferred mode of transport is (OTMessage -> XmlRpc -> HTTP). But
+   this is not what is built by default. IF you have the XmlRpc++ library
+   installed, you can use 'make rpc' instead of 'make', (or 'make debugrpc'
+   instead of 'make debug'), and you can run in the preferred HTTP mode.
+   But if you do NOT have that library installed, just use 'make' or 'make debug'
+   and use the default transport, which is (OTMessage -> TCP -> SSL).
 
 4) You can *ignore* the ssl folder and the docs/SSL-NOTES.txt file unless 
    you want to wipe and re-create the test certs and keys for the client

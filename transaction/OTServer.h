@@ -92,11 +92,15 @@
 //#include "OTMint.h"
 #include "OTAssetContract.h"
 
+#include "OTCron.h"
+
 class OTMessage;
 class OTClientConnection;
 class OTAccount;
 class OTTransaction;
 class OTMint;
+class OTTrade;
+class OTServerContract;
 
 // these correspond--same IDs.
 typedef std::multimap<std::string, OTMint *>	mapOfMints;
@@ -114,10 +118,14 @@ typedef std::map<std::string, OTAccount *>		mapOfAccounts; // server side these 
 
 class OTServer
 {
+	bool		m_bShutdownFlag;	// If the server wants to be shut down, it can set this flag so the caller knows to do so.
+	
 	OTString	m_strVersion;		// Unused currently.
 	
 	OTString	m_strServerID;		// A hash of the server contract
 	OTString	m_strServerUserID;	// A hash of the public key that signed the server contract.
+	
+	OTServerContract	* m_pServerContract; // This is the server's own contract, containing its public key and connect info.
 	
 	long		m_lTransactionNumber;	// This stores the last VALID AND ISSUED transaction number.
 
@@ -135,9 +143,30 @@ class OTServer
 									// ID, which is the *same* on every server.)
 	mapOfBaskets	m_mapBasketContracts; // Need a way to look up a Basket Account ID using its Contract ID 
 	
+	// -------------------------------------------------------------------------------------------------------------
+	
+	OTCron			m_Cron;		// This is where re-occurring and expiring tasks go. 
+	
 public:
 	OTServer();
 	~OTServer();
+	
+	void ActivateCron();
+	
+	inline bool IsFlaggedForShutdown() const { return m_bShutdownFlag; }
+	
+	// ---------------------------------------------------------------------------------
+
+	// Obviously this will only work once the server contract has been loaded from storage.
+	bool GetConnectInfo(OTString & strHostname, int & nPort);
+	
+	// Trade is passed in as reference to make sure it exists.
+	// But the trade MUST be heap-allocated, as the market and cron
+	// objects will own it and handle cleaning it up.
+	// not needed -- erase this function.
+//	bool AddTradeToMarket(OTTrade & theTrade);
+	
+	// ---------------------------------------------------------------------------------
 	
 	OTMint * GetMint(const OTIdentifier & ASSET_TYPE_ID, int nSeries); // Each asset contract has its own series of Mints
 	
@@ -169,10 +198,12 @@ public:
 	
 	void Init(); // Loads the main file...
 	
+	void ProcessCron(); // Call this periodically so Cron has a chance to process Trades, Payment Plans, etc.
+	
 	bool LoadMainFile(); // Called in Init. Loads transaction number.
 	bool SaveMainFile(); // Called in IssueNextTransactionNumber.
 	
-	bool ProcessUserCommand(OTClientConnection & theConnection, OTMessage & theMessage, OTMessage & MsgOut);
+	bool ProcessUserCommand(OTMessage & theMessage, OTMessage & msgOut, OTClientConnection * pConnection=NULL);
 	bool ValidateServerIDfromUser(OTString & strServerID);
 	
 	void UserCmdCheckServerID(OTPseudonym & theNym, OTMessage & MsgIn, OTMessage & msgOut);
@@ -198,11 +229,15 @@ public:
 	// containing a ledger to be notarized.  UserCmdNotarizeTransactions will loop through that ledger,
 	// and for each transaction within, it calls THIS method.
 	void NotarizeTransaction(OTPseudonym & theNym, OTTransaction & tranIn, OTTransaction & tranOut);
-	
+	// ---------------------------------------------------------------------------------	
 	void NotarizeTransfer(OTPseudonym & theNym, OTAccount & theFromAccount, OTTransaction & tranIn, OTTransaction & tranOut);
 	void NotarizeDeposit(OTPseudonym & theNym, OTAccount & theAccount, OTTransaction & tranIn, OTTransaction & tranOut);
 	void NotarizeWithdrawal(OTPseudonym & theNym, OTAccount & theAccount, OTTransaction & tranIn, OTTransaction & tranOut);
 	void NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount, OTTransaction & tranIn, OTTransaction & tranOut);	
+	// ---------------------------------------------------------------------------------
+	void NotarizeMarketOffer(OTPseudonym & theNym, OTAccount & theAssetAccount, OTTransaction & tranIn, OTTransaction & tranOut);
+	void NotarizePaymentPlan(OTPseudonym & theNym, OTAccount & theSourceAccount, OTTransaction & tranIn, OTTransaction & tranOut);
+	// ---------------------------------------------------------------------------------
 };
 
 

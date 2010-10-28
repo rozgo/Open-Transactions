@@ -164,6 +164,8 @@ protected:
 	bool VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignature & theSignature) const;
 
 public:
+	inline const char * GetHashType() const { return m_strSigHashType.Get(); }
+	
 	OTContract();
 	OTContract(const OTString & name, const OTString & filename, const OTString & strID);
 	OTContract(const OTString & strID);
@@ -223,8 +225,9 @@ public:
 	// supported, but soon contracts will also support x509 certs.
 	virtual bool VerifyContract();
 	
-	void GetIdentifier(OTString & theIdentifier);    // The Contract ID is a hash of the contract raw file.
-	void GetIdentifier(OTIdentifier & theIdentifier);// You can get it in string or binary form.
+	// Only overriden in OTOffer so far.
+	virtual void GetIdentifier(OTIdentifier & theIdentifier);// You can get it in string or binary form.
+	virtual void GetIdentifier(OTString & theIdentifier);    // The Contract ID is a hash of the contract raw file.
 	
 	void GetFilename(OTString & strFilename);
 	
@@ -283,7 +286,8 @@ public:
 	virtual bool VerifyContractID();  
 	virtual void CalculateContractID(OTIdentifier & newID) const;
 	
-	bool VerifySignature(const OTPseudonym & theNym);
+	// So far not overridden anywhere (used to be OTTrade.)
+	virtual bool VerifySignature(const OTPseudonym & theNym);
 	bool VerifySignature(const OTPseudonym & theNym, const OTSignature & theSignature) const;
 	bool VerifySignature(const OTAsymmetricKey & theKey, const OTSignature & theSignature,
 						 const OTString & strHashType) const;

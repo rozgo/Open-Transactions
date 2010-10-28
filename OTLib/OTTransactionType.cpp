@@ -87,12 +87,6 @@
 
 
 
-void OTTransactionType::InitTransactionType()
-{
-	m_lTransactionNum			= 0;
-	m_lInReferenceToTransaction	= 0;
-}
-
 // keeping constructor private in order to force people to use the other constructors and 
 // therefore provide the requisite IDs.
 OTTransactionType::OTTransactionType() : OTContract()
@@ -135,9 +129,26 @@ OTTransactionType::OTTransactionType(const OTIdentifier & theUserID, const OTIde
 
 
 
+void OTTransactionType::InitTransactionType()
+{
+	m_lTransactionNum			= 0;
+	m_lInReferenceToTransaction	= 0;
+}
+
 OTTransactionType::~OTTransactionType()
 {
+	// No need to call Release() here, it's called already by the framework.
 	
+}
+
+void OTTransactionType::Release()
+{
+	// If there were any dynamically allocated objects, clean them up here.
+		
+	OTContract::Release(); // since I've overridden the base class, I call it now...
+	
+	// Then I call this to re-initialize everything for myself.
+	InitTransactionType(); 		
 }
 
 

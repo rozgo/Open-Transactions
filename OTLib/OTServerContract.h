@@ -91,7 +91,8 @@
 
 class OTString;
 
-class OTServerContract : public OTContract {
+class OTServerContract : public OTContract 
+{
 protected:
 	
 	OTString	m_strHostname;

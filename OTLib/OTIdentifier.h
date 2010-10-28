@@ -98,6 +98,8 @@ extern "C"
 // 
 
 class OTPseudonym;
+class OTOffer;
+class OTMarket;
 
 class OTIdentifier : public OTData
 {
@@ -118,6 +120,8 @@ public:
 	OTIdentifier(const OTString &theStr);
 	OTIdentifier(const OTPseudonym &theNym);
 	OTIdentifier(const OTContract &theContract); // Get the contract's ID into this identifier.
+	OTIdentifier(const OTOffer &theOffer);
+	OTIdentifier(const OTMarket &theMarket);
 	virtual ~OTIdentifier();
 			
 	bool CalculateDigest(const OTData & dataInput);

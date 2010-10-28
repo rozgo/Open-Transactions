@@ -116,7 +116,7 @@ class OTPseudonym
 {
 private:
 	OTString		m_strName;      // Used by the wallet so the nym is easily identified by the user
-									// The internals, and server, prefer nymID to name.
+									// The internals, and server, prefer nymID to name.	
 	OTString		m_strNymfile;   // This contains the request numbers and other user acct info. XML.
 									// Client-side only, since the server uses nymID for filenames
 	OTString		m_strCertfile;  // Filename for pem file that contains the x509 Certificate. ----BEGIN etc...
@@ -128,9 +128,13 @@ private:
 	
 	OTIdentifier	m_nymID;		// hashed public key
 	
-	OTAsymmetricKey m_keyPublic;	// This nym's public key
-	OTAsymmetricKey m_keyPrivate;	// This nym's private key
 
+	OTAsymmetricKey *m_pkeyPublic;	// This nym's public key
+	
+
+	OTAsymmetricKey *m_pkeyPrivate;	// This nym's private key
+
+		
 	mapOfRequestNums m_mapRequestNum;	// Whenever this user makes a request to a transaction server
 										// he must use the latest request number. Each user has a request
 										// number for EACH transaction server he accesses.
@@ -144,9 +148,9 @@ public:
 	inline OTString & GetNymName() { return m_strName; }
 	
 	OTPseudonym();
-	OTPseudonym(OTIdentifier & nymID);
-	OTPseudonym(OTString & strNymID);
-	OTPseudonym(OTString & name, OTString & filename, OTString & nymID);
+	OTPseudonym(const OTIdentifier & nymID);
+	OTPseudonym(const OTString & strNymID);
+	OTPseudonym(const OTString & name, const OTString & filename, const OTString & nymID);
 	virtual ~OTPseudonym();
 	
 	void Initialize();

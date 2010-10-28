@@ -93,6 +93,9 @@ extern "C"
 
 #include "OTData.h"
 
+#include "OTLog.h"
+
+
 // You pass in the buffer where the results go.
 // You pass in the length of that buffer.
 // It returns how much was actually read.
@@ -129,7 +132,7 @@ bool OTData::operator==(const OTData &s2) const
 		return true;
 	}
 	
-	if (memcmp(m_pData, s2.m_pData, m_lSize) == 0) 
+	if (0 == memcmp(m_pData, s2.m_pData, m_lSize)) // TODO security: replace memcmp with a more secure version. Still, though, I am managing it internal to the class.
 	{
 		return true;
 	}
@@ -256,6 +259,9 @@ void OTData::SetSize(uint32_t lNewSize)
 	if (lNewSize > 0)
 	{
 		m_pData = (void*)new char[lNewSize];
+		
+		OT_ASSERT(NULL != m_pData);
+		
 		memset(m_pData, 0, lNewSize);
 		m_lSize = lNewSize;
 	}
@@ -268,7 +274,10 @@ void OTData::Assign(const void * pNewData, uint32_t lNewSize)
 	if (pNewData != NULL && lNewSize > 0)
 	{
 		m_pData = (void*)new char[lNewSize];
-		memcpy(m_pData, pNewData, lNewSize);
+		
+		OT_ASSERT(NULL != m_pData);
+				
+		memcpy(m_pData, pNewData, lNewSize); // todo security: replace memcpy with more secure version. Still though, I'm allocating it, and size is passed in.
 		m_lSize = lNewSize;
 	}
 }
@@ -280,7 +289,11 @@ OTData & OTData::operator+=(const OTData & rhs)
 	
 	if (lTotalSize)
 	{
-		pNewData = (void*)new char[lTotalSize];		
+		pNewData = (void*)new char[lTotalSize];
+		
+		OT_ASSERT(NULL != pNewData);
+		
+		memset(pNewData, 0, lTotalSize);
 	}
 	
 	if (NULL != pNewData)
@@ -292,7 +305,7 @@ OTData & OTData::operator+=(const OTData & rhs)
 		
 		if (rhs.GetSize())
 		{
-			memcpy(((char*)pNewData)+GetSize(), rhs.m_pData, rhs.GetSize());		
+			memcpy(((char*)pNewData)+GetSize(), rhs.m_pData, rhs.GetSize());	
 		}
 	}
 

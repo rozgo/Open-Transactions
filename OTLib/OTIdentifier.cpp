@@ -141,6 +141,9 @@ extern "C"
 #include "OTIdentifier.h"
 #include "OTPseudonym.h"
 #include "OTContract.h"
+#include "OTOffer.h"
+#include "OTTrade.h"
+#include "OTMarket.h"
 
 #include "OTLog.h"
 
@@ -165,6 +168,18 @@ OTIdentifier::OTIdentifier(const OTPseudonym &theNym)  : OTData() // Get the Nym
 {
 	((OTPseudonym &)theNym).GetIdentifier(*this);
 }
+
+OTIdentifier::OTIdentifier(const OTOffer &theOffer)  : OTData() // Get the Offer's Market ID into this identifier.
+{
+	((OTOffer &)theOffer).GetIdentifier(*this);
+}
+
+OTIdentifier::OTIdentifier(const OTMarket &theMarket)  : OTData() // Get the Market ID into this identifier.
+{
+	((OTMarket &)theMarket).GetIdentifier(*this);
+}
+
+
 
 OTIdentifier::~OTIdentifier()
 {
@@ -477,10 +492,10 @@ bool OTIdentifier::CalculateDigest(const OTString & strInput, const OTString & s
 	Release();
 	
 	EVP_MD_CTX mdctx;
-	const EVP_MD *md;
+	const EVP_MD *md = NULL;
 	
-	unsigned int md_len;
-	unsigned char md_value[EVP_MAX_MD_SIZE];	
+	unsigned int md_len = 0;
+	unsigned char md_value[EVP_MAX_MD_SIZE];	// I believe this is safe, having just analyzed this function.
 	
 	// Some hash algorithms are handled by other methods.
 	// If those don't handle it, then we'll come back here and use OpenSSL.
@@ -520,10 +535,10 @@ bool OTIdentifier::CalculateDigest(const OTData & dataInput, const OTString & st
 	Release();
 	
 	EVP_MD_CTX mdctx;
-	const EVP_MD *md;
+	const EVP_MD *md = NULL;
 	
-	unsigned int md_len;
-	unsigned char md_value[EVP_MAX_MD_SIZE];	
+	unsigned int md_len = 0;
+	unsigned char md_value[EVP_MAX_MD_SIZE];	// I believe this is safe, shouldn't ever be larger than MAX SIZE.
 	
 	// Some hash algorithms are handled by other methods.
 	// If those don't handle it, then we'll come back here and use OpenSSL.
@@ -593,8 +608,11 @@ void OTIdentifier::SetString(const OTString & theStr)
 	if (!theStr.GetLength())
 		return;
 	
-	OT_ASSERT_MSG(128 == theStr.GetLength(), "String wrong length to convert to ID.");
-
+	if (128 != theStr.GetLength())
+	{
+		OTLog::Error("String wrong length to convert to ID.\n");
+		return;
+	}
 	
 	OTString & refString = (OTString&)theStr;
 	
@@ -603,16 +621,16 @@ void OTIdentifier::SetString(const OTString & theStr)
 	
 	char ca[3] = "";
 	
-	// _WIN32
 	static unsigned char * tempArray = NULL;
 	
 	if (NULL == tempArray)
 	{
 		tempArray = new unsigned char[MAX_STRING_LENGTH];
+		
+		OT_ASSERT(NULL != tempArray);
 	}
 	
 	tempArray[0] = '\0';
-	// _end _WIN32
 	
 	unsigned int shTemp = 0;
 	int i = 0;
@@ -636,7 +654,7 @@ void OTIdentifier::SetString(const OTString & theStr)
 #ifdef _WIN32
 		sscanf_s(ca, "%2x", &shTemp);
 #else
-		sscanf(ca, "%2x", &shTemp);
+		sscanf(ca, "%2x", &shTemp); // todo security replace this with something more secure. NOTE: pretty safe though since I'm setting up up myself.
 #endif
 		
 		// at this point, the string has been converted into the unsigned int.

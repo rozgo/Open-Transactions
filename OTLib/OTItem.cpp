@@ -303,6 +303,7 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			m_Type = OTItem::transaction;
 		else if (strType.Compare("atTransaction"))
 			m_Type = OTItem::atTransaction;
+		// --------------------------------------------------------------
 		else if (strType.Compare("transfer"))
 			m_Type = OTItem::transfer;
 		else if (strType.Compare("atTransfer"))
@@ -315,6 +316,7 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			m_Type = OTItem::reject;
 		else if (strType.Compare("atReject"))
 			m_Type = OTItem::atReject;
+		// --------------------------------------------------------------
 		else if (strType.Compare("serverfee"))
 			m_Type = OTItem::serverfee;
 		else if (strType.Compare("atServerfee"))
@@ -323,6 +325,7 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			m_Type = OTItem::issuerfee;
 		else if (strType.Compare("atIssuerfee"))
 			m_Type = OTItem::atIssuerfee;
+		// --------------------------------------------------------------
 		else if (strType.Compare("balance"))
 			m_Type = OTItem::balance;
 		else if (strType.Compare("atBalance"))
@@ -331,6 +334,7 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			m_Type = OTItem::outboxhash;
 		else if (strType.Compare("atOutboxhash"))
 			m_Type = OTItem::atOutboxhash;
+		// --------------------------------------------------------------
 		else if (strType.Compare("withdrawal"))
 			m_Type = OTItem::withdrawal;
 		else if (strType.Compare("atWithdrawal"))
@@ -339,6 +343,7 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			m_Type = OTItem::deposit;
 		else if (strType.Compare("atDeposit"))
 			m_Type = OTItem::atDeposit;
+		// --------------------------------------------------------------
 		else if (strType.Compare("withdrawVoucher"))
 			m_Type = OTItem::withdrawVoucher;
 		else if (strType.Compare("atWithdrawVoucher"))
@@ -347,10 +352,22 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			m_Type = OTItem::depositCheque;
 		else if (strType.Compare("atDepositCheque"))
 			m_Type = OTItem::atDepositCheque;
-		
+// --------------------------------------------------------------
+		else if (strType.Compare("marketOffer"))
+			m_Type = OTItem::marketOffer;
+		else if (strType.Compare("atMarketOffer"))
+			m_Type = OTItem::atMarketOffer;
+		// --------------------------------------------------------------
+		else if (strType.Compare("paymentPlan"))
+			m_Type = OTItem::paymentPlan;
+		else if (strType.Compare("atPaymentPlan"))
+			m_Type = OTItem::atPaymentPlan;
+		// --------------------------------------------------------------
 		else
 			m_Type = OTItem::error_state;
+// --------------------------------------------------------------
 		 
+		
 		// Status
 		if (strStatus.Compare("request"))
 			m_Status = OTItem::request;
@@ -482,6 +499,12 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 		case OTItem::depositCheque:
 			strType.Set("depositCheque");
 			break;
+		case OTItem::marketOffer:
+			strType.Set("marketOffer");
+			break;
+		case OTItem::paymentPlan:
+			strType.Set("paymentPlan");
+			break;
 			
 		case OTItem::atTransaction:
 			strType.Set("atTransaction");
@@ -519,7 +542,13 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 		case OTItem::atDepositCheque:
 			strType.Set("atDepositCheque");
 			break;
-
+		case OTItem::atMarketOffer:
+			strType.Set("atMarketOffer");
+			break;
+		case OTItem::atPaymentPlan:
+			strType.Set("atPaymentPlan");
+			break;
+			
 		default:
 			strType.Set("error-unknown");
 			break;

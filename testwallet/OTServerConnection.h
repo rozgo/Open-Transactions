@@ -122,11 +122,23 @@ union u_header
 
 
 class OTMessage;
+class OTEnvelope;
 
 #include "OTMessageBuffer.h"
 #include "OTPseudonym.h"
 #include "OTServerContract.h"
 
+
+
+//-----------------------------------------------------------------
+// CALLBACK
+//
+// Here's the callback, for processing out messages via different 
+// transport schemes (like RPC). Ultimate I suppose any transport could work....
+// All it needs is the server contract and the envelope containing the message.
+typedef void (*OT_CALLBACK_MSG)(OTServerContract & theServerContract, OTEnvelope & theEnvelope);
+
+//-----------------------------------------------------------------
 
 // Update: The actual connection information is now read out of the server contract!!
 //#define HOSTNAME        "localhost"
@@ -146,7 +158,10 @@ class OTServerConnection
 	OTMessageBuffer m_listIn;
 	OTMessageBuffer m_listOut;
 
-	SFSocket * m_pSocket;
+	SFSocket *				m_pSocket;	 // For TCP / SSL mode.
+	
+	bool					m_bFocused;	 // For RPC / HTTP mode.
+	OT_CALLBACK_MSG			m_pCallback; // --------------------
 	
 	OTPseudonym			*	m_pNym;
 	OTServerContract	*	m_pServerContract;
@@ -164,8 +179,13 @@ public:
 	inline OTServerContract	*	GetServerContract()	{ return m_pServerContract; }
 	inline OTWallet			*	GetWallet()			{ return m_pWallet; }
 	
-	inline bool IsConnected() { return ((NULL == m_pSocket)?false:true); }
+	inline bool IsConnected()	{ return ((NULL == m_pSocket)?false:true); }	// for socket mode				-- TCP / SSL
+	inline bool IsFocused()		{ return m_bFocused; }							// for request/response mode	-- RPC / HTTP
 	
+	// SetFocus() is for RPC / HTTP mode.
+	bool SetFocus(OTPseudonym & theNym, OTServerContract & theServerContract, OT_CALLBACK_MSG pCallback);
+
+	// Connect() is for TCP / SSL mode.
 	bool Connect(OTPseudonym & theNym, OTServerContract & theServerContract,
 				 OTString & strCA_FILE, OTString & strKEY_FILE, OTString & strKEY_PASSWORD);
 	

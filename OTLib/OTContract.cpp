@@ -117,14 +117,6 @@ using namespace io;
 #include "OTLog.h"
 
 
-void OTContract::Initialize()
-{
-	m_strContractType	= "CONTRACT"; // CONTRACT, MESSAGE, TRANSACTION, LEDGER, TRANSACTION ITEM 
-										// make sure subclasses set this in their own initialization routine.
-
-	m_strSigHashType	= OTIdentifier::DefaultHashAlgorithm;
-	m_strVersion		= "1.0";
-}
 
 OTContract::OTContract()
 {
@@ -157,6 +149,15 @@ OTContract::OTContract(const OTIdentifier & theID)
 	m_ID = theID;
 }
 
+void OTContract::Initialize()
+{
+	m_strContractType	= "CONTRACT";	// CONTRACT, MESSAGE, TRANSACTION, LEDGER, TRANSACTION ITEM 
+	// make sure subclasses set this in their own initialization routine.
+	
+	m_strSigHashType	= OTIdentifier::DefaultHashAlgorithm;
+	m_strVersion		= "1.0";
+}
+
 
 // The name, filename, version, and ID loaded by the wallet
 // are NOT released here, since they are used immediately after
@@ -176,13 +177,24 @@ void OTContract::Release()
 	m_strRawFile.Release();
 	
 	ReleaseSignatures();
+	
+	// Go through the existing list of nyms at this point, and delete them all.
+	while (!m_mapNyms.empty())
+	{		
+		OTPseudonym * pNym = m_mapNyms.begin()->second;
+		
+		OT_ASSERT(NULL != pNym);
+		
+		delete pNym;
+		pNym = NULL;
+
+		m_mapNyms.erase(m_mapNyms.begin());
+	}	
 }
 
 
 OTContract::~OTContract()
-{
-	// TODO: Go through the existing list of signatures at this point, and delete them all.
-	// TODO: Go through the existing list of nyms at this point, and delete them all.
+{	
 	
 	Release();
 }
@@ -515,6 +527,12 @@ bool OTContract::SignContractDefaultHash(const EVP_PKEY * pkey, OTSignature & th
 	
 	int status = 0;
 	
+	memset(pDigest, 0, 256);
+	memset(pOutputHash1, 0, 256);
+	memset(pOutputHash2, 0, 256);
+	memset(EM, 0, 256);
+	memset(pSignature, 0, 256);
+	
 	
 	// Here, we convert the EVP_PKEY that was passed in, to an RSA key for signing.
 	pRsaKey = EVP_PKEY_get1_RSA((EVP_PKEY*)pkey);
@@ -534,7 +552,7 @@ bool OTContract::SignContractDefaultHash(const EVP_PKEY * pkey, OTSignature & th
 	if (NULL == digest1)
 	{
 		OTLog::Error("Failure to load message digest algorithm in OTContract::SignContractDefaultHash\n");
-		RSA_free(pRsaKey);
+		RSA_free(pRsaKey);	pRsaKey = NULL;
 		return false;
 	}
 
@@ -550,7 +568,7 @@ bool OTContract::SignContractDefaultHash(const EVP_PKEY * pkey, OTSignature & th
 	if (NULL == digest2)
 	{
 		OTLog::Error("Failure to load message digest algorithm in OTContract::SignContractDefaultHash\n");
-		RSA_free(pRsaKey);
+		RSA_free(pRsaKey);	pRsaKey = NULL;
 		return false;
 	}
 	
@@ -582,7 +600,7 @@ bool OTContract::SignContractDefaultHash(const EVP_PKEY * pkey, OTSignature & th
 	if (!status)  
 	{
 		OTLog::vError("RSA_padding_add_PKCS1_PSS failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
-		RSA_free(pRsaKey);
+		RSA_free(pRsaKey);	pRsaKey = NULL;
 		return false;
 	}
 	
@@ -591,7 +609,7 @@ bool OTContract::SignContractDefaultHash(const EVP_PKEY * pkey, OTSignature & th
 	if (status == -1)
 	{
 		OTLog::vError("RSA_private_encrypt failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
-		RSA_free(pRsaKey);
+		RSA_free(pRsaKey);	pRsaKey = NULL;
 		return false;
 	}
 
@@ -609,6 +627,8 @@ bool OTContract::SignContractDefaultHash(const EVP_PKEY * pkey, OTSignature & th
 	if (pRsaKey)
 		RSA_free(pRsaKey);
 		
+	pRsaKey = NULL;
+
 	return bReturnValue;
 }
 
@@ -636,6 +656,12 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	
 	int status = 0;
 	
+	memset(pDigest, 0, 256);
+	memset(pOutputHash1, 0, 256);
+	memset(pOutputHash2, 0, 256);
+	memset(pDecrypted, 0, 256);
+
+	
 	// Here, we convert the EVP_PKEY that was passed in, to an RSA key for signing.
 	pRsaKey = EVP_PKEY_get1_RSA((EVP_PKEY*)pkey);
 	
@@ -651,7 +677,7 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	if (NULL == digest1)
 	{
 		OTLog::Error("Failure to load message digest algorithm in OTContract::VerifyContractDefaultHash\n");
-		RSA_free(pRsaKey);
+		RSA_free(pRsaKey); pRsaKey = NULL;
 		return false;
 	}
 
@@ -667,7 +693,7 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	if (NULL == digest2)
 	{
 		OTLog::Error("Failure to load message digest algorithm in OTContract::VerifyContractDefaultHash\n");
-		RSA_free(pRsaKey);
+		RSA_free(pRsaKey); pRsaKey = NULL;
 		return false;
 	}
 
@@ -699,10 +725,10 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	
 	// now binSignature will contain the base64 decoded binary of the signature that we're verifying.
 	// Unless the call fails of course...
-	if (!theSignature.GetData(binSignature))
+	if ((theSignature.GetLength() < 10) || !theSignature.GetData(binSignature))
 	{
 		OTLog::Error("Error decoding base64 data for Signature in OTContract::VerifyContractDefaultHash.\n");
-		RSA_free(pRsaKey);
+		RSA_free(pRsaKey); pRsaKey = NULL;
 		return false;
 	}
 
@@ -714,7 +740,7 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	if (status == -1)
 	{
 		OTLog::vError("RSA_public_decrypt failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
-		RSA_free(pRsaKey);
+		RSA_free(pRsaKey); pRsaKey = NULL;
 		return false;
 	}
 	
@@ -723,13 +749,13 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	status = RSA_verify_PKCS1_PSS(pRsaKey, pDigest, digest1, pDecrypted, -2); // salt length recovered from signature
 	if (status == 1)
 	{
-		OTLog::Output(2, "  *Signature verified*\n");
+		OTLog::Output(5, "  *Signature verified*\n");
 		bReturnValue = true;
 	}
 	else
 	{
 		OTLog::vError("RSA_verify_PKCS1_PSS failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
-		RSA_free(pRsaKey);
+		RSA_free(pRsaKey); pRsaKey = NULL;
 		return false;
 	}
 	
@@ -737,6 +763,7 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	
 	if (pRsaKey)
 		RSA_free(pRsaKey);
+	 pRsaKey = NULL;
 		
 	return bReturnValue;
 }
@@ -754,7 +781,7 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 bool OTContract::SignContract(const EVP_PKEY * pkey, OTSignature & theSignature, const OTString & strHashType)
 {
 	int err, sig_len; 
-	unsigned char sig_buf [4096]; 
+	unsigned char sig_buf [4096]; // Safe since we pass the size when we use it.
 	EVP_MD_CTX md_ctx; 
 	
 	OTString strDoubleHash;
@@ -799,7 +826,8 @@ bool OTContract::SignContract(const EVP_PKEY * pkey, OTSignature & theSignature,
 	
 	if (NULL == md)
 	{
-		OTLog::vError("Unable to decipher Hash algorithm in OTContract::SignContract: %s\n", strHashType.Get()); 
+		OTLog::vError("Unable to decipher Hash algorithm in OTContract::SignContract: %s\n", 
+					  strHashType.Get()); 
 		return false; 
 	}
 
@@ -946,8 +974,10 @@ bool OTContract::SignContract(const char * szFilename, OTSignature & theSignatur
 	
 	fclose (fp); 
 */
-	BIO *bio;
-	bio = BIO_new( BIO_s_file() );
+	BIO *bio = BIO_new( BIO_s_file() );
+	
+	OT_ASSERT(NULL != bio);
+	
 	BIO_read_filename( bio, szFilename );
 	
 	pkey = PEM_read_bio_PrivateKey( bio, NULL, NULL, NULL );
@@ -963,6 +993,7 @@ bool OTContract::SignContract(const char * szFilename, OTSignature & theSignatur
 	bool bSigned = SignContract(pkey, theSignature, m_strSigHashType);
 	
 	EVP_PKEY_free (pkey); 
+	pkey = NULL;
 	
 	return bSigned;
 }
@@ -1055,11 +1086,14 @@ bool OTContract::VerifySignature(const char * szFilename, const OTSignature & th
 	OTLog::Output(2, "Reading public key from certfile in order to verify signature...\n"); 
 
 	BIO * bio = BIO_new( BIO_s_file() );
+	OT_ASSERT(NULL != bio);
 	BIO_read_filename( bio, szFilename );
 	x509 = PEM_read_bio_X509(bio, NULL, NULL, NULL); 
 	BIO_free_all(bio);
 	
 /*
+ // Older version. Works but uses fopen.
+ 
 #ifdef _WIN32
 	errno_t err = fopen_s(&fp, szFilename, "rb"); 
 #else
@@ -1083,22 +1117,22 @@ bool OTContract::VerifySignature(const char * szFilename, const OTSignature & th
 		return false; 
 	}
 	
+	bool bVerifySig = false;
 	
 	pkey = X509_get_pubkey(x509); 
 	
 	if (pkey == NULL) 
 	{ 
 		OTLog::vError("Failed reading public key from x509 from certfile: %s\n", szFilename); 
-		// At some point have to call this
-		X509_free(x509);   
-		return false; 
 	} 
-	
-	bool bVerifySig = VerifySignature(pkey, theSignature, m_strSigHashType);
-	
+	else 
+	{
+		bVerifySig = VerifySignature(pkey, theSignature, m_strSigHashType);
+		EVP_PKEY_free(pkey); pkey = NULL;
+	}
+
 	// At some point have to call this
-	X509_free(x509);   
-	EVP_PKEY_free(pkey); 
+	X509_free(x509);   x509 = NULL;
 	
 	return bVerifySig; 
 }
@@ -1347,7 +1381,7 @@ bool OTContract::LoadContract()
 
 bool OTContract::ParseRawFile()
 {
-	char buffer1[2048];
+	char buffer1[2100]; // a bit bigger than 2048, just for safety reasons.
 	OTSignature * pSig = NULL;
 	
 	std::string line;
@@ -1367,6 +1401,9 @@ bool OTContract::ParseRawFile()
 	
 	do
 	{
+		// Just a fresh start at the top of the loop block... probably unnecessary.
+		memset(buffer1, 0, 2100);
+		
 		// the call returns true if there's more to read, and false if there isn't.
 		bIsEOF = !(m_strRawFile.sgets(buffer1, 2048));
 //		bIsEOF = fin.getline(buffer1, 2048).eof();
@@ -1400,7 +1437,11 @@ bool OTContract::ParseRawFile()
 			// a. I have not yet even entered content mode, and just now entering it for the first time.
 			if (!bHaveEnteredContentMode)
 			{
-				if (line.find("BEGIN")!=std::string::npos && line.at(1) == '-' && line.at(2) == '-' && line.at(3) == '-')
+				if ((line.length() > 3) && 
+					(line.find("BEGIN")!=std::string::npos) && 
+					line.at(1) == '-' && 
+					line.at(2) == '-' && 
+					line.at(3) == '-')
 				{
 //					OTLog::Error("\nProcessing contract... \n");
 					bHaveEnteredContentMode = true;
@@ -1415,7 +1456,7 @@ bool OTContract::ParseRawFile()
 			}
 			
 			// b. I am now entering signature mode!
-			else if (line.find("SIGNATURE")!=std::string::npos && line.at(1) == '-' && line.at(2) == '-' && line.at(3) == '-')
+			else if (line.length() > 3 && line.find("SIGNATURE")!=std::string::npos && line.at(1) == '-' && line.at(2) == '-' && line.at(3) == '-')
 			{
 				//if (bContentMode)
 				//	OTLog::Output(3, "Finished reading contract.\n\nReading a signature at the bottom of the contract...\n");
@@ -1454,9 +1495,10 @@ bool OTContract::ParseRawFile()
 			{
 				if (bSignatureMode)
 				{
-					if (line.compare(0,8,"Version:") == 0 || 
-						line.compare(0,8,"Comment:") == 0 || 
-						line.length()<2)
+					if (line.length()<2 ||
+						line.compare(0,8,"Version:") == 0 || 
+						line.compare(0,8,"Comment:") == 0
+						)
 					{
 						OTLog::Output(2, "Skipping version section...\n");
 						
@@ -1509,7 +1551,7 @@ bool OTContract::ParseRawFile()
 	 
 	 FILE * tf = fopen("output.txt", "w");
 	 
-	 fprintf(tf, "--------BEGIN CONTRACT SIGNATURE--------\n%s--------END CONTRACT SIGNATURE--------\n",
+	 fprintf(tf, "-----BEGIN CONTRACT SIGNATURE-----\n%s-----END CONTRACT SIGNATURE-----\n",
 	 theSignature.Get());
 	 fclose(tf);
 	 */
@@ -1552,8 +1594,16 @@ bool OTContract::ParseRawFile()
 bool OTContract::LoadContractXML()
 {
 	int retProcess = 0;
+	
+	if (!m_xmlUnsigned.Exists())
+	{
+		return false;
+	}
+	
 	IrrXMLReader* xml = createIrrXMLReader(&m_xmlUnsigned);
 	
+	OT_ASSERT_MSG(NULL != xml, "Memory allocation issue with xml reader in OTContract::LoadContractXML()\n");
+
 	// parse the file until end reached
 	while(xml && xml->read())
 	{
@@ -1579,7 +1629,6 @@ bool OTContract::LoadContractXML()
 					// an error was returned. file format or whatever.
 					if ((-1) == retProcess)
 					{
-						delete xml;
 						return false;
 					}
 					// No error, but also the node wasn't found...
@@ -1600,10 +1649,12 @@ bool OTContract::LoadContractXML()
 		}
 	}
 	
-	// delete the xml parser after usage
-	if (xml)
+	if (NULL != xml)
+	{
 		delete xml;
-
+		xml = NULL;
+	}
+	
 	return true;	
 }
 
@@ -1681,7 +1732,8 @@ int OTContract::ProcessXMLNode(IrrXMLReader*& xml)
 		// the public contract key based on a standard name such as the "contract" key.
 		// (Versus the "server" key or the "certification" key, etc.
 		
-		InsertNym(strKeyName, strKeyValue);
+		if (!InsertNym(strKeyName, strKeyValue))
+			OTLog::Error("Error performing OTContract::InsertNym.\n");
 
 		return 1;
 	}

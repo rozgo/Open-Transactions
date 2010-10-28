@@ -6,6 +6,8 @@
 
 PROGRAM = libOTAPI.a  
 
+DEBUG_PROGRAM = libOTAPId.a
+
 #
 # Command line parameters: Edit these parameters so that you can 
 # easily run the sample by typing "make -f Makefile.Linux run".
@@ -30,11 +32,19 @@ INCLUDEDIRS = \
 	-I./
 
 
+# For FreeBSD, add this library path:  
+# /usr/ports/security/openssl/work/openssl-1.0.0a
+#
+# Or this one, depending on your system:
+#  /usr/local/lib
+#
 LIBDIRS = \
 	-L../OTLib
 
 
 LIBS = $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib 
+
+DEBUG_LIBS = $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd
 
 #
 # The CXXSOURCES macro contains a list of source files.
@@ -63,16 +73,38 @@ CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
 COBJECTS   = $(CSOURCES:.c=.o)
 CXXFLAGS   = $(INCLUDEDIRS)
 CFLAGS     = $(INCLUDEDIRS)
+DEBUG_FLAGS = -g
 CXX = g++
 CC = gcc
 LDFLAGS = $(LIBDIRS) $(LIBS)
+DEBUG_LDFLAGS = $(LIBDIRS) $(DEBUG_LIBS)
 
 #
 # Default target: the first target is the default target.
-# Just type "make -f Makefile.Linux" to build it.
+# Just type "make -f Makefile.CPP_API" to build it.
 #
 
 all: $(PROGRAM)
+
+rpc: CXXFLAGS += -DOT_XMLRPC_MODE
+rpc: INCLUDEDIRS += -I/usr/local/include/XmlRpc
+rpc: LIBDIRS += -L/usr/local/lib/XmlRpc
+rpc: LIBS += $(LIBDIRS) -lXmlRpc
+rpc: DEBUG_LIBS += $(LIBDIRS) -lXmlRpc
+rpc: $(PROGRAM)
+
+debugrpc: CXXFLAGS += -DOT_XMLRPC_MODE
+debugrpc: INCLUDEDIRS += -I/usr/local/include/XmlRpc
+debugrpc: LIBDIRS += -L/usr/local/lib/XmlRpc
+debugrpc: LIBS += $(LIBDIRS) -lXmlRpc
+debugrpc: DEBUG_LIBS += $(LIBDIRS) -lXmlRpc
+debugrpc: debug
+
+debug: CXXFLAGS += $(DEBUG_FLAGS)
+debug: LIBS = $(DEBUG_LIBS)
+debug: LDFLAGS = $(DEBUG_LDFLAGS)
+debug: $(CXXOBJECTS) $(COBJECTS) 
+	ar rc $(DEBUG_PROGRAM) $(CXXOBJECTS) $(COBJECTS)
 
 #
 # Link target: automatically builds its object dependencies before
@@ -98,17 +130,20 @@ OpenTransactions.o: OpenTransactions.cpp
 	$(CXX) $(CXXFLAGS) -c -o OpenTransactions.o OpenTransactions.cpp
 
 #
-# Clean target: "make -f Makefile.Linux clean" to remove unwanted objects and executables.
+# Clean target: "make -f Makefile.CPP_API clean" to remove unwanted objects and executables.
 #
+RM=rm
 
 clean:
-	$(RM) -f $(CXXOBJECTS) $(COBJECTS) $(PROGRAM)
+	$(RM) -f $(CXXOBJECTS) $(COBJECTS) $(PROGRAM) $(DEBUG_PROGRAM)
 
 #
-# Run target: "make -f Makefile.Linux run" to execute the application
+# Run target: "make -f Makefile.CPP_API run" to execute the application
 #             You will need to add $(VARIABLE_NAME) for any command line parameters 
 #             that you defined earlier in this file.
 # 
 
 run:
 	./$(PROGRAM) 
+
+

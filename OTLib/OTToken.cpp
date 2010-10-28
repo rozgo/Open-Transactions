@@ -225,51 +225,35 @@ bool OTToken::SaveContractWallet(std::ofstream & ofs)
 //
 bool OTToken::IsTokenAlreadySpent(OTString & theCleartextToken)
 {
-	// DIRECTORY IS PRESENT?
-	struct stat st;
+	bool bConfirmSpentMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::SpentFolder());
+	
+	if (!bConfirmSpentMAINFolder)
+	{
+		OTLog::vError("IsTokenAlreadySpent: Unable to find or create main spent token directory: %s%s%s\n", 
+					  OTLog::Path(), OTLog::PathSeparator(), OTLog::SpentFolder());
+		return true;	// all errors must return true in this function.
+//		return false;	// DANGEROUS		
+	}
+	
+	// -----------------------------------------------------------------
 	
 	OTString strTokenDirectoryPath;
 	OTString strAssetID(GetAssetID());
-	strTokenDirectoryPath.Format("%s%sspent%s%s.%d", 
-								 OTLog::Path(), OTLog::PathSeparator(),
-								 OTLog::PathSeparator(),
+	strTokenDirectoryPath.Format("%s%s%s.%d", 
+								 OTLog::SpentFolder(), OTLog::PathSeparator(),
 								 strAssetID.Get(), GetSeries());
 	
-	bool bDirIsPresent = (stat(strTokenDirectoryPath.Get(), &st) == 0);
+	bool bConfirmSpentFolder = OTLog::ConfirmOrCreateFolder(strTokenDirectoryPath.Get());
 	
-	// ----------------------------------------------------------------------------
-	
-	// IF NO, CREATE IT
-	if (!bDirIsPresent)
+	if (!bConfirmSpentFolder)
 	{
-#ifdef _WIN32
-		if (_mkdir(strTokenDirectoryPath.Get()) == -1) 
-#else
-		if (mkdir(strTokenDirectoryPath.Get(), 0700) == -1) 
-#endif
-		{
-			OTLog::vError("OTToken::IsTokenAlreadySpent: Unable to create %s.\n",
-					strTokenDirectoryPath.Get());
-			return true;	// all errors must return true in this function.
-//			return false;	// DANGEROUS! 
-		}
-		
-		// Now we have created it, so let's check again...
-		bDirIsPresent = (stat(strTokenDirectoryPath.Get(), &st) == 0);
-	}
-	
-	// ----------------------------------------------------------------------------
-	
-	// At this point if the folder still doesn't exist, nothing we can do. We
-	// already tried to create the folder, and SUCCEEDED, and then STILL failed 
-	// to find it (if this is still false.)
-	if (!bDirIsPresent)
-	{
-		OTLog::vError("IsTokenAlreadySpent: Unable to find newly-created token directory: %s\n", 
-				strTokenDirectoryPath.Get());
+		OTLog::vError("IsTokenAlreadySpent: Unable to find or create spent-token subdir for asset/series: %s\n", 
+					  strTokenDirectoryPath.Get());
 		return true;	// all errors must return true in this function.
-//		return false;	// DANGEROUS
+//		return false;	// DANGEROUS		
 	}
+	
+	// ----------------------------------------------------------------------------
 	
 	
 	// Calculate the filename (a hash of the Lucre cleartext token ID)
@@ -279,14 +263,13 @@ bool OTToken::IsTokenAlreadySpent(OTString & theCleartextToken)
 	// Grab the new hash into a string (for use as a filename)
 	OTString strTokenHash(theTokenHash);
 	
-	// Construct the full path of the spent token using the directory path (created above.)
+	// Construct the local path of the spent token using the directory path (created above.)
 	OTString strTokenPath;
 	strTokenPath.Format("%s/%s", strTokenDirectoryPath.Get(), strTokenHash.Get());
 	
 	// See if the spent token file ALREADY EXISTS...
-	bool bTokenIsPresent = (stat(strTokenPath.Get(), &st) == 0);
+	bool bTokenIsPresent = OTLog::ConfirmFile(strTokenPath.Get());
 	
-	// If so, we're trying to record a token that was already recorded...
 	if (bTokenIsPresent)
 	{
 		OTLog::vOutput(0, "\nOTToken::IsTokenAlreadySpent: Token was already spent: %s\n", 
@@ -298,55 +281,45 @@ bool OTToken::IsTokenAlreadySpent(OTString & theCleartextToken)
 	
 	// This is the ideal case: the token was NOT already spent, it was good,
 	// so we can return false and the depositor can be credited appropriately.
-	// IsTokenAlreadySpent?  NO. They can only POSSIBLY get a false out of this
-	// method if they actually reached the bottom (here)
+	// IsTokenAlreadySpent?  NO-it was NOT already spent. You can only POSSIBLY
+	// get a false out of this method if you actually reached the bottom (here.)
 	return false;
 }
 
+
+
 bool OTToken::RecordTokenAsSpent(OTString & theCleartextToken)
 {
-	// DIRECTORY IS PRESENT?
-	struct stat st;
+	// ----------------------------------------------------------------------
 	
-	OTString strTokenDirectoryPath, strAssetID(GetAssetID());
+	bool bConfirmSpentMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::SpentFolder());
 	
-	strTokenDirectoryPath.Format("%s%sspent%s%s.%d", 
-								 OTLog::Path(), OTLog::PathSeparator(),
-								 OTLog::PathSeparator(),
-								 strAssetID.Get(), GetSeries());
-	
-	bool bDirIsPresent = (stat(strTokenDirectoryPath.Get(), &st) == 0);
-	
-	// ----------------------------------------------------------------------------
-	
-	// IF NO, CREATE IT
-	if (!bDirIsPresent)
+	if (!bConfirmSpentMAINFolder)
 	{
-#ifdef _WIN32
-		if (_mkdir(strTokenDirectoryPath.Get()) == -1) 
-#else
-		if (mkdir(strTokenDirectoryPath.Get(), 0700) == -1) 
-#endif
-		{
-			OTLog::vError("OTToken::RecordTokenAsSpent: Unable to create %s.\n",
-					strTokenDirectoryPath.Get());
-			return false;
-		}
-		
-		// Now we have created it, so let's check again...
-		bDirIsPresent = (stat(strTokenDirectoryPath.Get(), &st) == 0);
-	}
-	
-	// ----------------------------------------------------------------------------
-	
-	// At this point if the folder still doesn't exist, nothing we can do. We
-	// already tried to create the folder, and SUCCEEDED, and then STILL failed 
-	// to find it (if this is still false.)
-	if (!bDirIsPresent)
-	{
-		OTLog::vError("Unable to find newly-created token directory: %s\n", strTokenDirectoryPath.Get());
+		OTLog::vError("RecordTokenAsSpent: Unable to find or create main spent token directory: %s%s%s\n", 
+					  OTLog::Path(), OTLog::PathSeparator(), OTLog::SpentFolder());
 		return false;
 	}
+	
+	// -----------------------------------------------------------------
+	
+	OTString strTokenDirectoryPath;
+	OTString strAssetID(GetAssetID());
+	strTokenDirectoryPath.Format("%s%s%s.%d", 
+								 OTLog::SpentFolder(), OTLog::PathSeparator(),
+								 strAssetID.Get(), GetSeries());
+	
+	bool bConfirmSpentFolder = OTLog::ConfirmOrCreateFolder(strTokenDirectoryPath.Get());
+	
+	if (!bConfirmSpentFolder)
+	{
+		OTLog::vError("RecordTokenAsSpent: Unable to find or create spent-token subdir for asset/series: %s\n", 
+					  strTokenDirectoryPath.Get());
+		return false;
+	}
+	
+	// ----------------------------------------------------------------------------
+	
 	
 	// Calculate the filename (a hash of the Lucre cleartext token ID)
 	OTIdentifier theTokenHash;
@@ -360,7 +333,7 @@ bool OTToken::RecordTokenAsSpent(OTString & theCleartextToken)
 	strTokenPath.Format("%s/%s", strTokenDirectoryPath.Get(), strTokenHash.Get());
 	
 	// See if the spent token file ALREADY EXISTS...
-	bool bTokenIsPresent = (stat(strTokenPath.Get(), &st) == 0);
+	bool bTokenIsPresent = OTLog::ConfirmFile(strTokenPath.Get());
 
 	// If so, we're trying to record a token that was already recorded...
 	if (bTokenIsPresent)
@@ -370,12 +343,18 @@ bool OTToken::RecordTokenAsSpent(OTString & theCleartextToken)
 		return false;
 	}
 	
+	// ----------------------------------------------------------------------
+	
 	// FINISHED:
 	
 	// We actually save the token itself into the file, which is named based
 	// on a hash of the Lucre data.
 	// The success of that operation is also now the success of this one.
-	return SaveContract(strTokenPath.Get());
+	
+	OTString strFullTokenPath;
+	strFullTokenPath.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), strTokenPath.Get());
+	
+	return SaveContract(strFullTokenPath.Get());
 	
 	// Note: we COULD save just the Lucre data.  But for now I'm saving the entire token.
 }

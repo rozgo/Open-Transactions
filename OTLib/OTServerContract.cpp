@@ -134,8 +134,9 @@ bool OTServerContract::SaveContractWallet(std::ofstream & ofs)
 {
 	OTString strID(m_ID);
 
-	ofs <<	"<notaryProvider name=\"" << m_strName.Get() << "\"\n serverID=\"" << strID.Get() << 
-			"\"\n contract=\"" << m_strFilename.Get() << "\" /> \n\n";
+	ofs <<	"<notaryProvider name=\""	<< m_strName.Get()	<< 
+			"\"\n serverID=\""			<< strID.Get()		<< 
+			"\" /> \n\n";
 	
 	return true;
 }

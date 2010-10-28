@@ -37,18 +37,18 @@ cd ..
 (now we are in the main project folder again: Open-Transactions)
 
 ===> TO COPY THE SERVER FILES:
-cp ./ssl/rootcert.pem ./transaction/SSL-Example/ca.crt; 
-cp ./ssl/dh1024.pem ./transaction/SSL-Example/dh_param_1024.pem; 
-cat ./ssl/servercert.pem ./ssl/serverkey.pem ./ssl/serverCAcert.pem ./ssl/rootcert.pem >./transaction/SSL-Example/server.pem; 
+cp ./ssl/rootcert.pem ./transaction/data_folder/certs/special/ca.crt; 
+cp ./ssl/dh1024.pem ./transaction/data_folder/certs/special/dh_param_1024.pem; 
+cat ./ssl/servercert.pem ./ssl/serverkey.pem ./ssl/serverCAcert.pem ./ssl/rootcert.pem >./transaction/data_folder/certs/special/server.pem; 
 
 ------------------------------------
 
-A copy of that server.pem also needs to go into the transaction/certs folder,
-under the filename of the server's ID. I have already put it there but since you're
-recreating, you need to put the new one there:
+A copy of that server.pem also needs to go into the transaction/data_folder/certs folder,
+under the filename of the server's User ID. I have already put it there, but since
+you're recreating, you need to put the new one there:
 (From within Open-Transactions folder still, as current directory...)
 
-cp ./transaction/SSL-Example/server.pem ./transaction/certs/SERVER_USER_ID_GOES_HERE
+cp ./transaction/data_folder/certs/special/server.pem ./transaction/data_folder/certs/SERVER_USER_ID_GOES_HERE
 
 
 NOTE:
@@ -64,13 +64,13 @@ step.
 
 ===> Next: TO COPY THE CLIENT FILES:
 
-cp ./ssl/rootcert.pem ./testwallet/SSL-Example/ca.crt; 
-cp ./ssl/client.pem ./testwallet/SSL-Example/client.pem; 
+cp ./ssl/rootcert.pem ./testwallet/data_folder/certs/special/ca.crt; 
+cp ./ssl/client.pem ./testwallet/data_folder/certs/special/client.pem; 
 
 ------------------------------------
 
 Next:
-A copy of the client.pem also needs to go into the testwallet/certs folder.
+A copy of the client.pem also needs to go into the testwallet/data_folder/certs folder.
 
 (This is for the actual User account on the server, versus in the SSL-Example 
 folder where we also happen to be using the same cert for the lower-level SSL
@@ -78,34 +78,35 @@ socket code. As we transition away from test client to a real client, we won't
 have that anymore.)
 
 To copy it:
-cp ./ssl/client.pem ./testwallet/certs/USER_ID_AKA_NYM_ID_GOES_HERE
+cp ./ssl/client.pem ./testwallet/data_folder/certs/USER_ID_AKA_NYM_ID_GOES_HERE
 
 
 
 ------------------------------------
 
 
-4) Make sure the HARDCODED values are correct in the source code.
+4) Make sure the HARDCODED DEFAULT values are correct in the source code.
 
 ACTUALLY: The code is ALREADY set up correctly, so you shouldn't have to do 
 anything here. But I still record this here for my own notes. You can skip it.
 
-===> Unfortunately, this file is HARDCODED on the server (not for much longer):
+These are only defaults, and they are now configurable also on the command line:
 
 testserver.cpp, near the top:
-#define CA_FILE             "SSL-Example/ca.crt"
-#define DH_FILE             "SSL-Example/dh_param_1024.pem"
-#define KEY_FILE            "SSL-Example/server.pem"
+#define CA_FILE             "certs/special/ca.crt"
+#define DH_FILE             "certs/special/dh_param_1024.pem"
+#define KEY_FILE            "certs/special/server.pem"
 
 ------------------------------------
 
-===> This file is HARDCODED on the client (the test client...)
+===> Some defaults are also HARDCODED on the CLIENT...
 
-NOTE: Again, this is ALREADY set up correctly. But again, this is just for my notes:
+NOTE: Again, this is ALREADY set up correctly. But this is just for my notes, and again,
+these are also all configurable on the command line:
 
-OTServerConnection.h, near the top:
-#define CA_FILE             "SSL-Example/ca.crt"
-#define KEY_FILE            "SSL-Example/client.pem"
+testclient.cpp, near the top:
+#define CA_FILE             "certs/special/ca.crt"
+#define KEY_FILE            "certs/special/client.pem"
 #define KEY_PASSWORD        "test"  // RIGHT NOW THE PASSWORD FOR CONNECTING TO THE
                                     // SERVER IS HARDCODED HERE.  TODO: config file, password prompt.
 
@@ -135,7 +136,7 @@ Next:
 Now you have the new Server cert, and the new Server User ID, but the cert is still saved
 under a filename based on the OLD ID!!  So next we need to rename that file:
 
-mv ./transaction/certs/OLD_SERVER_USER_ID   ./transaction/certs/NEW_SERVER_USER_ID
+mv ./transaction/data_folder/certs/OLD_SERVER_USER_ID   ./transaction/data_folder/certs/NEW_SERVER_USER_ID
 
 ------------------------------------
 
@@ -144,12 +145,12 @@ Next:
 At this time, if you load the wallet, it will be unable, because NOW, the Nym ID
 no longer matches the FILENAMES in certs/ and nyms/. So rename:
 
-mv ./testwallet/certs/OLD_NYM_ID ./testwallet/certs/NEW_NYM_ID
+mv ./testwallet/data_folder/certs/OLD_NYM_ID ./testwallet/data_folder/certs/NEW_NYM_ID
 
-mv ./testwallet/nyms/OLD_NYM_ID ./testwallet/certs/NEW_NYM_ID
+mv ./testwallet/data_folder/nyms/OLD_NYM_ID ./testwallet/data_folder/certs/NEW_NYM_ID
 
 
-ALSO: edit testwallet/nyms/NEW_NYM_ID and transaction/nyms/NEW_SERVER_USER_ID
+ALSO: edit testwallet/data_folder/nyms/NEW_NYM_ID and transaction/data_folder/nyms/NEW_SERVER_USER_ID
 In BOTH of those files, make sure the "filename" variable matches the name of
 the file. You will have to update this variable from the old ID just as you had
 to rename the file.

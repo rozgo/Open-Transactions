@@ -171,7 +171,7 @@ OTASCIIArmor::OTASCIIArmor() : OTString()
 
 
 extern "C" {
-char *base64_encode(const uint8_t* input, int in_len, int bLineBreaks)
+char *OT_base64_encode(const uint8_t* input, int in_len, int bLineBreaks)
 {
     char *buf = NULL;
 	
@@ -203,42 +203,55 @@ char *base64_encode(const uint8_t* input, int in_len, int bLineBreaks)
 //			OTLog::vOutput(5, "DEBUG base64_encode size: %ld,  in_len: %ld\n", bptr->length+1, in_len);
 			
             buf = new char[bptr->length+1];
-            if (buf) 
-			{
-				
-                memcpy(buf, bptr->data, bptr->length);
-                buf[bptr->length] = '\0';
-            }
+			
+			OT_ASSERT(NULL != buf);
+			
+			memcpy(buf, bptr->data, bptr->length);  // Safe.
+			buf[bptr->length] = '\0';
         }
     }
+	else 
+	{
+		OT_ASSERT_MSG(false, "Failed creating new Bio in base64_encode.\n");
+	}
 	
     BIO_free_all(b64);
 	
     return buf;
 }
 
-uint8_t* base64_decode(const char *input, size_t* out_len, int bLineBreaks)
+uint8_t* OT_base64_decode(const char *input, size_t* out_len, int bLineBreaks)
 {
-    BIO *bmem, *b64;
+    BIO *bmem = NULL, *b64 = NULL;
 	
-    int in_len=strlen(input);
+	OT_ASSERT(NULL != input);
+	
+    int in_len = strlen(input);
     int out_max_len=(in_len*6+7)/8;
     unsigned char *buf = new unsigned char [out_max_len];
-    if (buf) {
-        memset(buf, 0, out_max_len);
-		
-        b64 = BIO_new(BIO_f_base64());
-        if (b64) {
-            if (!bLineBreaks) {
-                BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
-            }
-            bmem = BIO_new_mem_buf((char*)input, in_len);
-            b64 = BIO_push(b64, bmem);
-            *out_len=BIO_read(b64, buf, out_max_len);
-            BIO_free_all(b64);
-        }
-    }
 	
+	OT_ASSERT(NULL != buf);
+	
+	memset(buf, 0, out_max_len);
+
+	b64 = BIO_new(BIO_f_base64());
+	
+	if (b64) 
+	{
+		if (!bLineBreaks) 
+		{
+			BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+		}
+		bmem = BIO_new_mem_buf((char*)input, in_len);
+		b64 = BIO_push(b64, bmem);
+		*out_len = BIO_read(b64, buf, out_max_len);
+		BIO_free_all(b64);
+	}
+	else 
+	{
+		OT_ASSERT_MSG(false, "Failed creating new Bio in base64_decode.\n");
+	}
+
     return buf;
 }
 } // extern "C"
@@ -310,66 +323,76 @@ bool OTASCIIArmor::GetString(OTString & theData, bool bLineBreaks) const //bLine
 		return true;
 	}
 	
-	pData = base64_decode(Get(), &outSize, (bLineBreaks ? 1 : 0));
+	pData = OT_base64_decode(Get(), &outSize, (bLineBreaks ? 1 : 0));
 	
 	if (pData)
 	{
 		 long nDestLen = DEFAULT_BUFFER_SIZE_EASYZLIB; // todo stop hardcoding numbers (but this one is OK I think.)
-		 unsigned char* pDest = new unsigned char [nDestLen];
+		 unsigned char* pDest = new unsigned char [nDestLen+10]; // For safety.
 		 
+		OT_ASSERT(NULL != pDest);
+		
 		 int nErr = ezuncompress( pDest, &nDestLen, pData, outSize );
 		 if ( nErr == EZ_BUF_ERROR )
 		 {
 			 delete [] pDest;
 			 pDest = new unsigned char [nDestLen]; // enough room now
+			 
+			 OT_ASSERT(NULL != pDest);
+			 
 			 nErr = ezuncompress( pDest, &nDestLen, pData, outSize );
 		 }
 		 
-		 
-		 if ( nErr == EZ_BUF_ERROR )
-		 {
-			 delete [] pDest;
-			 pDest = NULL;
-			 
-			 OT_ASSERT_MSG(false, "Buffer error in OTASCIIArmor::GetString\n");
-			 return false; // not really necessary but just making sure.
-		 }
-		 else if ( nErr == EZ_STREAM_ERROR )
-		 {
-			 delete [] pDest;
-			 pDest = NULL;
-			 
-			 OT_ASSERT_MSG(false, "pDest is NULL in OTASCIIArmor::GetString\n");
-			 return false; // not really necessary but just making sure.
-		 }
-		 else if ( nErr == EZ_DATA_ERROR )
-		 {
-			 delete [] pDest;
-			 pDest = NULL;
-			 
-			 OTLog::vError("corrupted pSrc passed to ezuncompress OTASCIIArmor::GetString, size: %d\n", outSize);
-			 
-			 OT_ASSERT(false);
-			 
-			 return false; // not really necessary but just making sure.
-		 }
-		 else if ( nErr == EZ_MEM_ERROR )
-		 {
-			 delete [] pDest;
-			 pDest = NULL;
-			 
-			 OT_ASSERT_MSG(false, "Out of memory in OTASCIIArmor::GetString\n");
-			 return false; // not really necessary but just making sure.
-		 }
-		 
+		// Now we're done with this memory, let's free it.
+		delete [] pData; pData=NULL;
+		
+		// ----------------------------------------
+		
+		if ( nErr == EZ_BUF_ERROR )
+		{
+			delete [] pDest;
+			pDest = NULL;
+			
+			OT_ASSERT_MSG(false, "Buffer error in OTASCIIArmor::GetString\n");
+			return false; // not really necessary but just making sure.
+		}
+		else if ( nErr == EZ_STREAM_ERROR )
+		{
+			delete [] pDest;
+			pDest = NULL;
+			
+			OT_ASSERT_MSG(false, "pDest is NULL in OTASCIIArmor::GetString\n");
+			return false; // not really necessary but just making sure.
+		}
+		else if ( nErr == EZ_DATA_ERROR )
+		{
+			delete [] pDest;
+			pDest = NULL;
+			
+			OTLog::vError("corrupted pSrc passed to ezuncompress OTASCIIArmor::GetString, size: %d\n", outSize);
+			
+			OT_ASSERT(false);
+			
+			return false; // not really necessary but just making sure.
+		}
+		else if ( nErr == EZ_MEM_ERROR )
+		{
+			delete [] pDest;
+			pDest = NULL;
+			
+			OT_ASSERT_MSG(false, "Out of memory in OTASCIIArmor::GetString\n");
+			return false; // not really necessary but just making sure.
+		}
+		
 		// This enforces the null termination. (using the extra parameter nDestLen as nEnforcedMaxLength)
 		 theData.Set((const char*)pDest, nDestLen);
 	
 		delete [] pDest; pDest=NULL; 
-		delete [] pData; pData=NULL;
 		return true;
 	}
-	else {
+	else 
+	{
+		OTLog::Error("NULL pData while base64_decodeing pData.\n");
 		return false;
 	}
 }
@@ -446,8 +469,11 @@ bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) // =tru
 	long nDestLen	= DEFAULT_BUFFER_SIZE_EASYZLIB; // todo stop hardcoding numbers (but this one is OK I think.)
 	const	long lSourcelen	= sizeof(unsigned char)*theData.GetLength()+1;// for null terminator
 	
-	unsigned char* pSource	= new unsigned char[lSourcelen];
-	unsigned char* pDest	= new unsigned char[nDestLen];
+	unsigned char* pSource	= new unsigned char[lSourcelen+10]; // for safety
+	unsigned char* pDest	= new unsigned char[nDestLen+10]; // for safety
+	
+	OT_ASSERT(NULL != pSource);
+	OT_ASSERT(NULL != pDest);
 	
 	memcpy(pSource, (const unsigned char*)theData.Get(), lSourcelen );
 	
@@ -460,45 +486,50 @@ bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) // =tru
 	{
 		delete [] pDest;
 		pDest = new unsigned char [nDestLen]; // enough room now
+		
+		OT_ASSERT(NULL != pDest);
+		
 		nErr = ezcompress( pDest, &nDestLen, pSource, lSourcelen );
 	}
 	
+	// Clean this up...
+	delete [] pSource;
+	pSource = NULL;
+
 	// Still errors?
 	if ( nErr == EZ_BUF_ERROR )
 	{
-		delete [] pDest;	delete [] pSource;
-		pDest = NULL;		pSource = NULL;
+		delete [] pDest;
+		pDest = NULL;	
 		
 		OT_ASSERT_MSG(false, "Error allocating memory in OTASCIIArmor::SetString\n");
 		return false; // not really necessary but just making sure.
 	}
 	else if ( nErr == EZ_STREAM_ERROR )
 	{
-		delete [] pDest;	delete [] pSource;
-		pDest = NULL;		pSource = NULL;
+		delete [] pDest;
+		pDest = NULL;	
 
 		OT_ASSERT_MSG(false, "pDest is NULL in OTASCIIArmor::SetString\n");
 		return false; // not really necessary but just making sure.
 	}
 	else if ( nErr == EZ_DATA_ERROR )
 	{
-		delete [] pDest;	delete [] pSource;
-		pDest = NULL;		pSource = NULL;
+		delete [] pDest;
+		pDest = NULL;	
 
 		OT_ASSERT_MSG(false, "corrupted pSrc passed to ezuncompress OTASCIIArmor::SetString\n");
 		return false; // not really necessary but just making sure.
 	}
 	else if ( nErr == EZ_MEM_ERROR )
 	{
-		delete [] pDest;	delete [] pSource;
-		pDest = NULL;		pSource = NULL;
+		delete [] pDest;	
+		pDest = NULL;
 
 		OT_ASSERT_MSG(false, "Out of memory in OTASCIIArmor::SetString\n");
 		return false; // not really necessary but just making sure.
 	}
 	
-	delete [] pSource;
-	pSource = NULL;
 	
 	OT_ASSERT_MSG(pDest != NULL, "pDest NULL in OTASCIIArmor::SetString\n");
 	
@@ -506,8 +537,8 @@ bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) // =tru
 	if (0 < nDestLen)
 	{
 		// Now let's base-64 encode it...
-		pString = base64_encode((const uint8_t*)pDest, nDestLen, (bLineBreaks ? 1 : 0));
-		//	pString = base64_encode((const uint8_t*)theData.Get(), theData.GetLength()+1, (bLineBreaks ? 1 : 0)); // this was before we used compression.
+		pString = OT_base64_encode((const uint8_t*)pDest, nDestLen, (bLineBreaks ? 1 : 0));
+	//	pString = OT_base64_encode((const uint8_t*)theData.Get(), theData.GetLength()+1, (bLineBreaks ? 1 : 0)); // this was before we used compression.
 		
 		delete [] pDest;
 		pDest = NULL;
@@ -518,10 +549,20 @@ bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) // =tru
 			delete [] pString; pString=NULL; 
 			return true;
 		}
+		else 
+		{
+			OTLog::Error("pString NULL in OTASCIIArmor::SetString\n");
+		}
 	}
-	else {
+	else 
+	{
 		OTLog::Error("nDestLen 0 in OTASCIIArmor::SetString\n");
 	}
+	
+	if (pDest)
+		delete [] pDest;
+
+	pDest = NULL;
 	
 	return false;
 }
@@ -540,7 +581,7 @@ bool OTASCIIArmor::GetData(OTData & theData, bool bLineBreaks) const //linebreak
 	if (GetLength() < 1)
 		return true;
 	
-	pData = base64_decode(Get(), &outSize, (bLineBreaks ? 1 : 0));
+	pData = OT_base64_decode(Get(), &outSize, (bLineBreaks ? 1 : 0));
 	
 	if (pData)
 	{
@@ -548,10 +589,11 @@ bool OTASCIIArmor::GetData(OTData & theData, bool bLineBreaks) const //linebreak
 		delete [] pData; pData=NULL;
 		return true;
 	}
-	else {
+	else 
+	{
+		OTLog::Error("Error while base64_decoding in OTASCIIArmor::GetData.\n");
 		return false;
 	}
-	
 }
 
 // This function will base64 ENCODE theData,
@@ -565,7 +607,7 @@ bool OTASCIIArmor::SetData(const OTData & theData, bool bLineBreaks/*=true*/)
 	if (theData.GetSize() < 1)
 		return true;
 	
-	pString = base64_encode((const uint8_t*)theData.GetPointer(), theData.GetSize(), (bLineBreaks ? 1 : 0));
+	pString = OT_base64_encode((const uint8_t*)theData.GetPointer(), theData.GetSize(), (bLineBreaks ? 1 : 0));
 	
 	if (pString)
 	{
@@ -573,21 +615,22 @@ bool OTASCIIArmor::SetData(const OTData & theData, bool bLineBreaks/*=true*/)
 		delete [] pString; pString=NULL;
 		return true;
 	}
-	else {
+	else 
+	{
+		OTLog::Error("Error while base64_encoding in OTASCIIArmor::GetData.\n");
 		return false;
 	}
-	
 }
 
 
 // This code reads up the file, discards the bookends, and saves only the gibberish itself.
 bool OTASCIIArmor::LoadFromFile(const OTString & filename)
 {	
-	std::ifstream fin(filename.Get());
+	std::ifstream fin(filename.Get(), std::ios::binary);
 		
 	if (!fin.is_open())
 	{
-		OTLog::vError("Error opening file: %s in OTASCIIArmor::LoadFromFile\n", filename.Get());
+		OTLog::vError("Error opening file in OTASCIIArmor::LoadFromFile: %s\n", filename.Get());
 		return false;
 	}
 
@@ -615,7 +658,9 @@ bool OTASCIIArmor::LoadFromifstream(const std::ifstream & fin)
 // are escaped with a "- " before the rest of the ------- starts.)
 bool OTASCIIArmor::LoadFromString(OTString & theStr, bool bEscaped/*=false*/)
 {
-	char buffer1[2048];
+	char buffer1[2100];
+	
+	memset(buffer1, 0, 2100);
 	
 	bool bContentMode = false;				// "currently in content mode"
 	bool bHaveEnteredContentMode = false;	// "have yet to enter content mode"

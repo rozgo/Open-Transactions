@@ -673,12 +673,53 @@ OTAssetContract * OTWallet::GetAssetContract(const OTIdentifier & theContractID)
 bool OTWallet::LoadWallet(const char * szFilename)
 {
 	OT_ASSERT_MSG(NULL != szFilename, "NULL filename in OTWallet::LoadWallet.\n");
+			
+	// Save this for later... (the full path to this file.)
+	m_strFilename.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), szFilename);
+	
+	// --------------------------------------------------------------------
+	
+	if (!OTLog::ConfirmExactPath(OTLog::Path()))
+	{
+		OTLog::vError("Unable to find data folder: %s\n", OTLog::Path());
+		return false;
+	}
+	
+	if (!OTLog::ConfirmFile(szFilename))
+	{
+		OTLog::vError("Unable to find wallet file: %s\n", szFilename);
+		return false;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	OTStringXML xmlFileContents;
 		
-	// Save this for later...
-	m_strFilename.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), szFilename); // _WIN32
+	std::ifstream in(m_strFilename.Get(), std::ios::binary);
+	
+	if (in.fail())
+	{
+		OTLog::vError("Error opening wallet file: %s\n", m_strFilename.Get());
+		return false;		
+	}
+	
+	std::stringstream buffer;
+	buffer << in.rdbuf();
+	
+	std::string contents(buffer.str());
+	
+	xmlFileContents.Set(contents.c_str());
+	
+	if (xmlFileContents.GetLength() < 2)
+	{
+		OTLog::vError("Error reading wallet file: %s\n", m_strFilename.Get());
+		return false;
+	}
+	
+	// --------------------------------------------------------------------
 
-	IrrXMLReader* xml = createIrrXMLReader(m_strFilename.Get()); // _WIN32
-		
+	IrrXMLReader* xml = createIrrXMLReader(&xmlFileContents);
+
 	// parse the file until end reached
 	while(xml && xml->read())
 	{
@@ -712,9 +753,9 @@ bool OTWallet::LoadWallet(const char * szFilename)
 			{
 				if (!strcmp("wallet", xml->getNodeName()))
 				{
-					m_strName				= xml->getAttributeValue("name");					
+					m_strName			= xml->getAttributeValue("name");					
 //					OTLog::OTPath		= xml->getAttributeValue("path");					
-					m_strVersion			= xml->getAttributeValue("version");					
+					m_strVersion		= xml->getAttributeValue("version");					
 					
 					OTLog::vOutput(0, "\nLoading wallet: %s, version: %s\n", m_strName.Get(), m_strVersion.Get());
 				}
@@ -759,15 +800,18 @@ bool OTWallet::LoadWallet(const char * szFilename)
 				}
 				else if (!strcmp("assetType", xml->getNodeName()))
 				{
-					AssetName = xml->getAttributeValue("name");			
-					AssetContract = xml->getAttributeValue("contract"); // digital asset contract file
-					AssetID = xml->getAttributeValue("assetTypeID"); // hash of contract itself
+					// From Server:
+					AssetName		= xml->getAttributeValue("name");			
+					AssetID			= xml->getAttributeValue("assetTypeID");	// hash of contract itself
 					
-					OTLog::vOutput(0, "\n\n****Asset Contract**** (wallet listing) Name: %s\nContract ID:\n%s"
-							"\nLocation of contract file: %s\n",
-							AssetName.Get(), AssetID.Get(), AssetContract.Get());
-
-					OTAssetContract * pContract = new OTAssetContract(AssetName, AssetContract, AssetID);
+					OTLog::vOutput(0, "\n\n****Asset Contract**** (server listing) Name: %s\nContract ID:\n%s\n",
+								   AssetName.Get(), AssetID.Get());
+					
+					OTString strContractPath;
+					strContractPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+										   OTLog::ContractFolder(),
+										   OTLog::PathSeparator(), AssetID.Get());
+					OTAssetContract * pContract = new OTAssetContract(AssetName, strContractPath, AssetID);
 
 					OT_ASSERT_MSG(NULL != pContract, "Error allocating memory for Asset Contract in OTWallet::LoadWallet\n");
 			
@@ -781,11 +825,13 @@ bool OTWallet::LoadWallet(const char * szFilename)
 						}
 						else
 						{
+							delete pContract; pContract = NULL;
 							OTLog::Output(0, "Contract FAILED to verify.\n");
 						}							
 					}
 					else 
 					{
+						delete pContract; pContract = NULL;
 						OTLog::Error("Error reading file for Asset Contract in OTWallet::LoadWallet\n");
 					}
 
@@ -793,48 +839,52 @@ bool OTWallet::LoadWallet(const char * szFilename)
 				else if (!strcmp("notaryProvider", xml->getNodeName())) 
 				{
 					ServerName = xml->getAttributeValue("name");					
-					ServerContract = xml->getAttributeValue("contract"); // transaction server contract
 					ServerID = xml->getAttributeValue("serverID"); // hash of contract
 					
-					OTLog::vOutput(0, "\n\n\n****Notary Server (contract)**** (wallet listing): %s\n ServerID:\n%s\n"
-							"contract file: %s\n", ServerName.Get(), ServerID.Get(), ServerContract.Get());
+					OTLog::vOutput(0, "\n\n\n****Notary Server (contract)**** (wallet listing): %s\n ServerID:\n%s\n",
+							ServerName.Get(), ServerID.Get());
 				
-					OTServerContract * pContract = new OTServerContract(ServerName, ServerContract, ServerID);
+					OTString strContractPath;
+					strContractPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+										   OTLog::ContractFolder(),
+										   OTLog::PathSeparator(), ServerID.Get());
+
+					
+					OTServerContract * pContract = new OTServerContract(ServerName, strContractPath, ServerID);
 					
 					OT_ASSERT_MSG(NULL != pContract, "Error allocating memory for Server Contract in OTWallet::LoadWallet\n");
 					
 					if (pContract->LoadContract()) 
 					{
-						// TODO: move these lines back into the 'if' block below.
-						// Moved them temporarily so I could regenerate some newly-signed contracts
-						// for testing only.
-						m_mapServers[ServerID.Get()] = pContract;
-
 						if (pContract->VerifyContract())
 						{
 							OTLog::Output(0, "** Server Contract Verified **\n-----------------------------------------------------------------------------\n\n");
-							
+							// Uncomment : Move these lines back above the 'if' block to regenerate some newly-signed contracts.
+							// (for testing only.) Otherwise leave here where it belongs.
+							m_mapServers[ServerID.Get()] = pContract;							
 						}
 						else
 						{
+							delete pContract; pContract = NULL;
 							OTLog::Output(0, "Server contract failed to verify.\n");
 						}
 					}
-					else {
+					else 
+					{
+						delete pContract; pContract = NULL;
 						OTLog::Error("Error reading file for Transaction Server in OTWallet::LoadWallet\n");
 					}
 				}
 				else if (!strcmp("assetAccount", xml->getNodeName())) 
 				{
 					AcctName = xml->getAttributeValue("name");					
-					AcctFile = xml->getAttributeValue("file");
 					AcctID	 = xml->getAttributeValue("accountID");
 					ServerID = xml->getAttributeValue("serverID");
 										
 					OTLog::vOutput(0, "\n--------------------------------------------------------------------------\n"
 							"****Account**** (wallet listing) "
-							"name: %s\n AccountID: %s\n ServerID: %s\n file: %s\n", 
-							AcctName.Get(), AcctID.Get(), ServerID.Get(), AcctFile.Get());
+							"name: %s\n AccountID: %s\n ServerID: %s\n", 
+							AcctName.Get(), AcctID.Get(), ServerID.Get());
 					
 					OTIdentifier ACCOUNT_ID(AcctID), SERVER_ID(ServerID);
 					

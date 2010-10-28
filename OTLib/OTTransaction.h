@@ -166,17 +166,28 @@ public:
 	enum transactionType {
 		blank,			// freshly issued, not used yet  // comes from server, sits in inbox
 		pending,		// in the inbox/outbox           // comes from server, sits in inbox
+// --------------------------------------------------------------------------------------
 		processInbox,	// process inbox transaction	 // comes from client
-		atProcessInbox,	// process inbox reply	 // comes from server
+		atProcessInbox,	// process inbox reply			 // comes from server
+// --------------------------------------------------------------------------------------
 		transfer,		// or "spend". This transaction is a transfer from one account to another
 		atTransfer,		// reply from the server regarding a transfer request
-		deposit,		// this item is a deposit of bearer tokens
+// --------------------------------------------------------------------------------------
+		deposit,		// this transaction is a deposit of bearer tokens (from client)
 		atDeposit,		// reply from the server regarding a deposit request
-		withdrawal,		// this item is a withdrawal of bearer tokens
+// --------------------------------------------------------------------------------------
+		withdrawal,		// this transaction is a withdrawal of bearer tokens
 		atWithdrawal,	// reply from the server regarding a withdrawal request
+// --------------------------------------------------------------------------------------
+		marketOffer,	// this transaction is a market offer
+		atMarketOffer,	// reply from the server regarding a market offer
+// --------------------------------------------------------------------------------------
+		paymentPlan,	// this transaction is a payment plan
+		atPaymentPlan,	// reply from the server regarding a payment plan
+// --------------------------------------------------------------------------------------
 		error_state
 	};
-	
+
 	
 protected:	
 	

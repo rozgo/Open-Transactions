@@ -106,24 +106,27 @@ extern "C"
 #include "OTLog.h"
 
 
-// TODO move this crap to a config file...
-// ALso, FYI, the below paths may not work unless you put a fully-qualified path for 
-// the global path in OTPseudonym::OTPath (which I haven't.)
+// NOTE:  The PATH and the PASSWORD are configurable on the command line!!!
+//
+//        They are only here for convenience, so I don't have to type them
+//        over and over again.  You can blank them out if you want, or set
+//        them to whatever is convenient for you on your system.
+//
 
 #define KEY_PASSWORD        "test"
 
 #ifdef _WIN32
-#define SERVER_PATH_DEFAULT	"C:\\~\\Open-Transactions\\transaction"
-#define CA_FILE             "SSL-Example\\ca.crt"
-#define DH_FILE             "SSL-Example\\dh_param_1024.pem"
-#define KEY_FILE            "SSL-Example\\server.pem"
+#define SERVER_PATH_DEFAULT	"C:\\~\\Open-Transactions\\transaction\\data_folder"
+#define CA_FILE             "certs\\special\\ca.crt"
+#define DH_FILE             "certs\\special\\dh_param_1024.pem"
+#define KEY_FILE            "certs\\special\\server.pem"
 
 #else
 
-#define SERVER_PATH_DEFAULT	"/Users/REDACTED/Projects/Open-Transactions/transaction"
-#define CA_FILE             "SSL-Example/ca.crt"
-#define DH_FILE             "SSL-Example/dh_param_1024.pem"
-#define KEY_FILE            "SSL-Example/server.pem"
+#define SERVER_PATH_DEFAULT	"/Users/REDACTED/Projects/Open-Transactions/transaction/data_folder"
+#define CA_FILE             "certs/special/ca.crt"
+#define DH_FILE             "certs/special/dh_param_1024.pem"
+#define KEY_FILE            "certs/special/server.pem"
 
 #endif
 
@@ -133,12 +136,6 @@ extern "C"
 // intelligence takes over.  Just like when you use SSH to connect somewhere on a terminal. There is some immediate
 // key negotiation going on. Once connected, you might run software that asks you for a public key, which could be
 // AN ENTIRELY DIFFERENT PUBLIC KEY. THAT is where, metaphorically, your Public Key / User ID comes into play.
-
-
-
-// TODO Read server port from server contract!
-// (THE WALLET IS NOW DOING THIS!! So we should be reading port from same contract.)
-#define PORT                7085
 
 
 #include <list>
@@ -151,7 +148,6 @@ extern "C"
 
 #include "OTLog.h"
 
-OTServer theServer;
 
 
 
@@ -173,6 +169,20 @@ OTServer theServer;
 
 int main (int argc, char **argv) 
 {
+	OTLog::vOutput(0, "\n\nWelcome to Open Transactions... Test Server -- version %s\n"
+				   "(transport build: OTMessage -> TCP -> SSL)\n"
+				   "NOTE: IF YOU PREFER TO USE XmlRpc with Http transport, then rebuild using:\n"
+				   "\"make -f Makefile.rpc\" (but make sure the client is built the same way.)\n\n", 
+				   OTLog::Version());
+	
+	// -----------------------------------------------------------------------
+	
+	// This object handles all the actual transaction notarization details.
+	// (This file you are reading is a wrapper for OTServer, which adds the transport layer.)
+	OTServer theServer;
+
+	// -----------------------------------------------------------------------
+	
 #ifdef _WIN32
 	WSADATA wsaData;
 	WORD wVersionRequested = MAKEWORD( 2, 2 );
@@ -188,7 +198,7 @@ int main (int argc, char **argv)
 
 	if (argc < 2)
 	{
-		OTLog::vOutput(0, "Usage:  transaction <SSL-password> <full path to transaction folder>\n\n"
+		OTLog::vOutput(0, "Usage:  transaction <SSL-password> <data_folder path>\n\n"
 				"(Password defaults to '%s' if left blank on the command line.)\n"
 				"(Folder defaults to '%s' if left blank.)\n", KEY_PASSWORD, SERVER_PATH_DEFAULT);
 		
@@ -197,7 +207,7 @@ int main (int argc, char **argv)
 	}
 	else if (argc < 3)
 	{
-		OTLog::vOutput(0, "Usage:  transaction <SSL-password> <full path to transaction folder>\n\n"
+		OTLog::vOutput(0, "Usage:  transaction <SSL-password> <data_folder path>\n\n"
 				"(Folder defaults to '%s' if left blank.)\n", SERVER_PATH_DEFAULT);
 		
 		strSSLPassword.Set(argv[1]);
@@ -213,19 +223,45 @@ int main (int argc, char **argv)
 	strDHFile. Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), DH_FILE);
 	strKeyFile.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), KEY_FILE);
 
+	
+	// -----------------------------------------------------------------------
+
+	// Init loads up server's nym so it can decrypt messages sent in envelopes.
+	// It also does various other initialization work.
+	//
+	// (Envelopes prove that ONLY someone who actually had the server contract,
+	// and had loaded it into his wallet, could ever connect to the server or 
+	// communicate with it. And if that person is following the contract, there
+	// is only one server he can connect to, and one key he can use to talk to it.)
+	
 	OTLog::Output(0, 
-			"\n\nNow loading the server nym, which will also ask you for a password, to unlock\n"
-			"its private key. (This password will also be 'test' if you are using the test files.)\n");
+				  "\n\nNow loading the server nym, which will also ask you for a password, to unlock\n"
+				  "its private key. (Default password is \"test\".)\n");
+
+	// Initialize SSL -- This MUST occur before any Private Keys are loaded!
+    SFSocketGlobalInit(); // Any app that uses OT has to initialize SSL first.
+
+	theServer.Init(); // Keys, etc are loaded here.
+
+	// -----------------------------------------------------------------------
+
+	// We're going to listen on the same port that is listed in our server contract.
+	//
+	//
+	OTString	strHostname;	// The hostname of this server, according to its own contract.
+	int			nPort=0;		// The port of this server, according to its own contract.
+
+	OT_ASSERT_MSG(theServer.GetConnectInfo(strHostname, nPort),
+				  "Unable to find my own connect info (which is in my server contract BTW.)\n");
+	
+	const int	nServerPort = nPort;
 	
 	// -----------------------------------------------------------------------
 	
 	
-	SFSocket *socket;
+	SFSocket *socket = NULL;
 	listOfConnections theConnections;
 	
-    // Initialize SSL
-    SFSocketGlobalInit();
-
     // Alloc Socket
 	socket = SFSocketAlloc();
 	OT_ASSERT_MSG(NULL != socket, "SFSocketAlloc Failed\n");
@@ -234,39 +270,26 @@ int main (int argc, char **argv)
 	int nSFSocketInit = SFSocketInit(socket,
 					 strCAFile.Get(), 
 					 strDHFile.Get(), 
-					 strKeyFile.Get(), 
+					 strKeyFile.Get(),
 					 strSSLPassword.Get(), 
 									 NULL);
 	
 	OT_ASSERT_MSG(nSFSocketInit >= 0, "SFSocketInit Context Failed\n");
 	
     // Listen on Address/Port
-	int nSFSocketListen = SFSocketListen(socket, INADDR_ANY, PORT);
+	int nSFSocketListen = SFSocketListen(socket, INADDR_ANY, nServerPort);
 	
 	OT_ASSERT_MSG(nSFSocketListen >= 0, "nSFSocketListen Failed\n");
 	
 	
-	// Right now all this does is make sure the Server's Nym is loaded up
-	// so it can decrypt messages sent to it in envelopes.
-	// 
-	// In the future, if clients are all connecting because they got the URL
-	// out of the contract, and they are all encrypted because they got the 
-	// server public key out of the contract, then the server can now choose
-	// to ONLY accept encrypted traffic, and to reject plaintext messages.
-	//
-	// This proves that only someone who actually had the contract, and had 
-	// loaded it into his wallet, could ever connect to the server or communicate
-	// with it. And if that person is following the contract, there is only
-	// one server he can connect to, and one key he can use to get through to it.
-	theServer.Init();
-	
+	theServer.ActivateCron();
 	
     do 
 	{
         SFSocket * clientSocket = NULL;
 
         // Accept Client Connection
-        if ((clientSocket = SFSocketAccept(socket)) != NULL)
+        if (NULL != (clientSocket = SFSocketAccept(socket)))
 		{
 			OTClientConnection * pClient = new OTClientConnection(*clientSocket, theServer);
 			theConnections.push_back(pClient);
@@ -305,10 +328,11 @@ int main (int argc, char **argv)
 				
 				while (pMsg = pConnection->GetNextInputMessage())
 				{
-					// TODO: check this new for success.
 					OTMessage * pReply = new OTMessage;
 					
-					if (theServer.ProcessUserCommand(*pConnection, *pMsg, *pReply))
+					OT_ASSERT(NULL != pReply);
+					
+					if (theServer.ProcessUserCommand(*pMsg, *pReply, pConnection))
 					{
 						OTLog::vOutput(0, "Successfully processed user command: %s.\n", 
 								pMsg->m_strCommand.Get());
@@ -351,6 +375,25 @@ int main (int argc, char **argv)
 				}
 			}
 		}
+		
+		
+		
+		
+		
+		// The Server now processes certain things on a regular basis.
+		// This method call is what gives it the opportunity to do that.
+	
+		theServer.ProcessCron();
+		
+		
+		
+		
+		// Now go to sleep for a tenth of a second.
+		// (Main loop processes ten times per second, currently.)
+		
+		OTLog::SleepMilliseconds(100); // 100 ms == (1 second / 10)
+		
+		
 		
 		
     } while (1);

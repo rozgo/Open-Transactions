@@ -1,4 +1,14 @@
 
+
+FIRST:   mv ./Makefile.freebsd ./Makefile
+
+Unfortunately, copying the main Makefile isn't enough -- you still need
+to make some fixes in the sub-Makefiles. (Sorry.)
+
+But there's only like 2 or 3 steps. Here's the details:
+
+---------------------------------
+
 FreeBSD is basically the same as Mac and Linux, but you need to make a
 couple minor changes in the Makefiles. Specifically:
 
@@ -7,11 +17,14 @@ Open-Transactions/transaction/Makefile
 Open-Transactions/testwallet/Makefile.testwallet
 
 
+==> If you want to build in Xml-Rpc / HTTP mode, then these Makefiles also:
 
-STEP ONE:
+Open-Transactions/transaction/Makefile.rpc
+Open-Transactions/testwallet/Makefile.rpc
 
+--
 
-In all three Makefiles, find the below section:
+STEP ONE:  In all three Makefiles, find the below section:
 
 #
 # Make sure the first directory below has YOUR computer's path to the
@@ -40,6 +53,11 @@ Open-Transactions/OTLib/Makefile
 Open-Transactions/transaction/Makefile
 Open-Transactions/testwallet/Makefile.testwallet
 
+==> If you want to build in Xml-Rpc / HTTP mode, then these Makefiles also:
+
+Open-Transactions/transaction/Makefile.rpc
+Open-Transactions/testwallet/Makefile.rpc
+
 
 
 --------------------------------------
@@ -51,7 +69,12 @@ In the transaction and testwallet Makefiles, add one line to the library dirs:
 
 HERE'S HOW IT LOOKS FOR MAC AND LINUX: 
 
-# For FreeBSD, add this library:  /usr/ports/security/openssl/work/openssl-1.0.0a
+# For FreeBSD, add this library path:  
+# /usr/ports/security/openssl/work/openssl-1.0.0a
+#
+# Or this one, depending on your system:
+#  /usr/local/lib
+#
 LIBDIRS = \
 	-L../OTLib
 
@@ -60,16 +83,18 @@ LIBDIRS = \
 HERE'S HOW IT *SHOULD* LOOK FOR FREEBSD:
 
 LIBDIRS = \
-	-L/usr/ports/security/openssl/work/openssl-1.0.0a
+	-L/usr/ports/security/openssl/work/openssl-1.0.0a \
 	-L../OTLib
 
 
 (Notice an extra library path was added for FreeBSD.)
 
 
+---------------------------------------
 
 
 ===> That's it!  Now follow the Mac / Linux instructions to finish the build!
 
 See the file:   Open-Transactions/INSTALL-Mac-Linux.txt
+
 

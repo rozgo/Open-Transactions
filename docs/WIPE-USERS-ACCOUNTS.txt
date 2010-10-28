@@ -3,7 +3,7 @@
 TO CLEAR THE SERVER INSTALLATION OF ALL: User Accounts, Asset Types, Asset Accounts, Spent Tokens, etc and therefore START FRESH yet with the SAME test keys, (but all new user data) follow these steps:
 
 
-In the Open-Transactions/transaction folder:
+In Open-Transactions/transaction/data_folder:
 
 rm accounts/*
 rm contracts/*
@@ -40,7 +40,7 @@ In the Open-Transactions/testwallet directory:
 
 rm accounts/*
 
-In the testwallet/contracts folder, do NOT remove transactionscom.xml, since that is your server contract. (It's the test server contract that tries to connect to a server on localhost.) There is a backup of this file in the sample-contracts directory.
+In the testwallet/data_folder/contracts folder, do NOT remove transactionscom.xml, since that is your server contract. (It's the test server contract that tries to connect to a server on localhost.) There is a backup of this file in the sample-contracts directory.
 Remove all the other files in the contracts folder, except transactionscom.xml as just described.
 
 Do NOT touch the certs folder.
@@ -63,12 +63,10 @@ It will look like this when you are done:
 <wallet name="Fellow Traveler's test wallet" version="1.0">
 
 <pseudonym name="Test User"
- nymID="aa4c73aa4b2658a195fb7ecb1bd242fd1759eaeab0bbd6d0b51f835373b7e5088eb57e804c98e9529a79792d022c3689f1f8d40b5daaf4edb20c64e5b838d0ca"
- file="/Users/Chris/Projects/Open-Transactions/testwallet/nyms/aa4c73aa4b2658a195fb7ecb1bd242fd1759eaeab0bbd6d0b51f835373b7e5088eb57e804c98e9529a79792d022c3689f1f8d40b5daaf4edb20c64e5b838d0ca">
+ nymID="aa4c73aa4b2658a195fb7ecb1bd242fd1759eaeab0bbd6d0b51f835373b7e5088eb57e804c98e9529a79792d022c3689f1f8d40b5daaf4edb20c64e5b838d0ca" />
 
 <notaryProvider name="Transactions.com"
- serverID="6147e7dead777e4671020f5ae7d8abb1b84d8c2dae630f7557778129beb5b2bb082c813af3412e77cb865cd91eb213df5cc979367528b7634453113d77fd5953"
- contract="contracts/transactionscom.xml" /> 
+ serverID="6147e7dead777e4671020f5ae7d8abb1b84d8c2dae630f7557778129beb5b2bb082c813af3412e77cb865cd91eb213df5cc979367528b7634453113d77fd5953" /> 
 
 </wallet>
 
