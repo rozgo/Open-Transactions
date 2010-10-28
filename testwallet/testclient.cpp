@@ -1,6 +1,6 @@
 /************************************************************************************
  *    
- *  client.cpp  (the actual command line test client that encapsulates OTClient)
+ *  testclient.cpp  (the actual command line test client that encapsulates OTClient)
  *  
  *              Open Transactions:  Library, Protocol, Server, and Test Client
  *    
@@ -112,10 +112,11 @@ void OT_Sleep(int nMS);
 #include "OTEnvelope.h"
 #include "OTCheque.h"
 #include "OpenTransactions.h"
+#include "OTPaymentPlan.h"
 #include "OTLog.h"
 
-extern OTClient		g_Client;
-extern OTWallet		g_Wallet;
+extern OTClient	*	g_pClient;
+extern OTWallet	*	g_pWallet;
 
 extern OTPseudonym *g_pTemporaryNym;
 
@@ -126,16 +127,16 @@ extern OTPseudonym *g_pTemporaryNym;
 
 #ifdef _WIN32
 
-#define SERVER_PATH_DEFAULT	"C:\\~\\Open-Transactions\\testwallet"
-#define CA_FILE             "SSL-Example\\ca.crt"
-#define KEY_FILE            "SSL-Example\\client.pem"
+#define SERVER_PATH_DEFAULT	"C:\\~\\Open-Transactions\\testwallet\\data_folder"
+#define CA_FILE             "certs\\special\\ca.crt"
+#define KEY_FILE            "certs\\special\\client.pem"
 
 #else
 
-#define SERVER_PATH_DEFAULT	"/Users/REDACTED/Projects/Open-Transactions/testwallet"
-//#define SERVER_PATH_DEFAULT	"/home/ben/git-work/Open-Transactions/testwallet"
-#define CA_FILE             "SSL-Example/ca.crt"
-#define KEY_FILE            "SSL-Example/client.pem"
+#define SERVER_PATH_DEFAULT	"/Users/REDACTED/Projects/Open-Transactions/testwallet/data_folder"
+//#define SERVER_PATH_DEFAULT	"/home/ben/git-work/Open-Transactions/testwallet/data_folder"
+#define CA_FILE             "certs/special/ca.crt"
+#define KEY_FILE            "certs/special/client.pem"
 
 #endif
 
@@ -153,39 +154,43 @@ extern OTPseudonym *g_pTemporaryNym;
 
 int main (int argc, char **argv) 
 {
-	// various Initialization...
-
+	OTLog::vOutput(0, "\n\nWelcome to Open Transactions... Test Client -- version %s\n"
+				   "(transport build: OTMessage -> TCP -> SSL)\n"
+				   "NOTE: IF YOU PREFER TO USE XmlRpc with Http transport, then rebuild using:\n"
+				   "\"make -f Makefile.rpc\" (but make sure the server is built the same way.)\n\n", 
+				   OTLog::Version());
+	
 	// -----------------------------------------------------------------------
 	
 	OTString strCAFile, strKeyFile, strSSLPassword;
 	
 	if (argc < 2)
 	{
-		OTLog::vOutput(0, "\n\nUsage:  testwallet <SSL-password> <full path to testwallet folder>\n\n"
+		OTLog::vOutput(0, "\nUsage:  testwallet <SSL-password> <data_folder>\n\n"
 				"(Password defaults to '%s' if left blank.)\n"
 				"(Folder defaults to '%s' if left blank.)\n", KEY_PASSWORD, SERVER_PATH_DEFAULT);
 		
 		strSSLPassword.Set(KEY_PASSWORD);
 		
 		OTString strClientPath(SERVER_PATH_DEFAULT);
-        OT_API_Init(strClientPath);
+        OT_API_Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
 	}
 	else if (argc < 3)
 	{
-		OTLog::vOutput(0, "\n\nUsage:  transaction <SSL-password> <full path to transaction folder>\n\n"
+		OTLog::vOutput(0, "\nUsage:  testwallet <SSL-password> <data_folder>\n\n"
 				"(Folder defaults to '%s' if left blank.)\n", SERVER_PATH_DEFAULT);
 		
 		strSSLPassword.Set(argv[1]);
 		
 		OTString strClientPath(SERVER_PATH_DEFAULT);
-        OT_API_Init(strClientPath);
+        OT_API_Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
 	}
 	else 
 	{
 		strSSLPassword.Set(argv[1]);
 		
 		OTString strClientPath(argv[2]);
-        OT_API_Init(strClientPath);
+        OT_API_Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
 	}	
 	
 	strCAFile. Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), CA_FILE);
@@ -212,23 +217,25 @@ int main (int argc, char **argv)
 	//	   them all.
 	//	   Then continue back up to the prompt at step (1).
 	
-    char buf[80];
+    char buf[200] = "";
  	int retVal = 0;
 	
 	int nExpectResponse = 0;
 	
-	OTLog::vOutput(0, "\n\nWelcome to Open Transactions, version %s.\n"
-			"You may wish to 'load' then 'connect' then 'stat'.\n", OTLog::Version());
+	OTLog::Output(0, "You may wish to 'load' then 'connect' then 'stat'.\n");
 	OTLog::vOutput(4, "Starting client loop. u_header size in C code is %d.\n", OT_CMD_HEADER_SIZE);
+	
 	
 	for(;;)
 	{
+		buf[0] = 0; // Making it fresh again.
+		
 		nExpectResponse = 0;
 		
 		// 1) Present a prompt, and get a user string of input. Wait for that.
 		OTLog::Output(0, "\nWallet> ");
 		
-		if (!fgets(buf, sizeof(buf), stdin))
+		if (NULL == fgets(buf, sizeof(buf)-10, stdin)) // Leaving myself 10 extra bytes at the end for safety's sake.
             break;
 				
 		OTLog::Output(0, ".\n..\n...\n....\n.....\n......\n.......\n........\n.........\n..........\n"
@@ -245,15 +252,223 @@ int main (int argc, char **argv)
 		{
 			OTLog::Output(0, "User has instructed to load wallet.xml...\n");
 #ifdef _WIN32			
-			g_Wallet.LoadWallet("wallet-Windows.xml");
+			g_pWallet->LoadWallet("wallet-Windows.xml");
 #else
-			g_Wallet.LoadWallet("wallet.xml");
+			g_pWallet->LoadWallet("wallet.xml");
 #endif
  
-//			g_Wallet.SaveWallet("NEWwallet.xml"); // todo remove this test code.
+//			g_pWallet->SaveWallet("NEWwallet.xml"); // todo remove this test code.
 			
 			continue;
 		}
+		
+		else if (strLine.compare(0,7,"payment") == 0)
+		{
+			if (NULL == g_pTemporaryNym)
+			{
+				OTLog::Output(0, "No Nym yet available to sign the payment plan with. Try 'load'.\n");
+				continue;
+			}
+
+			OTLog::Output(0, "Enter your Asset Account ID that the payments will come from: ");
+			OTString strTemp;
+			strTemp.OTfgets(std::cin);
+			
+			const OTIdentifier ACCOUNT_ID(strTemp), USER_ID(*g_pTemporaryNym);
+			OTAccount * pAccount = g_pWallet->GetAccount(ACCOUNT_ID);
+			
+			if (NULL == pAccount)
+			{
+				OTLog::Output(0, "That account isn't loaded right now. Try 'load'.\n");
+				continue;
+			}
+			
+			// To write a payment plan, like a cheque, we need to burn one of our transaction numbers. (Presumably
+			// the wallet is also storing a couple of these, since they are needed to perform any transaction.)
+			//
+			// I don't have to contact the server to write a payment plan -- as long as I already have a transaction
+			// number I can use to write it. Otherwise I'd have to ask the server to send me one first.
+			OTString strServerID(pAccount->GetRealServerID());
+			long lTransactionNumber=0;
+			
+			if (false == g_pTemporaryNym->GetNextTransactionNum(*g_pTemporaryNym, strServerID, lTransactionNumber))
+			{
+				OTLog::Output(0, "Payment Plans are written offline, but you still need a transaction number\n"
+							  "(and you have none, currently.) Try using 'n' to request another transaction number.\n");
+				continue;
+			}
+			
+			// -----------------------------------------------------------------------
+			
+			OTString str_RECIPIENT_USER_ID, str_RECIPIENT_ACCT_ID, strConsideration;
+
+			// Get the Recipient Nym ID
+			OTLog::Output(0, "Enter the Recipient's User ID (NymID): ");
+			str_RECIPIENT_USER_ID.OTfgets(std::cin);		
+			
+
+			// THEN GET AN ACCOUNT ID in that same asset type
+			OTLog::Output(0, "Enter the Recipient's ACCOUNT ID (of the same asset type as your account): ");
+			str_RECIPIENT_ACCT_ID.OTfgets(std::cin);		
+			
+			OTLog::Output(0, "Enter a memo describing consideration for the payment plan: ");
+			strConsideration.OTfgets(std::cin);		
+			
+			const OTIdentifier	RECIPIENT_USER_ID(str_RECIPIENT_USER_ID), 
+								RECIPIENT_ACCT_ID(str_RECIPIENT_ACCT_ID);
+			
+			
+			OTPaymentPlan thePlan(pAccount->GetRealServerID(), pAccount->GetAssetTypeID(),
+								  pAccount->GetRealAccountID(),	pAccount->GetUserID(),
+								  RECIPIENT_ACCT_ID, RECIPIENT_USER_ID);
+			
+			// -----------------------------------------------------------------------
+			
+			// Valid date range (in seconds)
+			OTLog::Output(0, 
+						  " 6 minutes	==      360 Seconds\n"
+						  "10 minutes	==      600 Seconds\n"
+						  "1 hour		==     3600 Seconds\n"
+						  "1 day		==    86400 Seconds\n"
+						  "30 days		==  2592000 Seconds\n"
+						  "3 months		==  7776000 Seconds\n"
+						  "6 months		== 15552000 Seconds\n\n"
+						  );
+			
+			long lExpirationInSeconds = 86400;
+			OTLog::vOutput(0, "How many seconds before payment plan expires? (defaults to 1 day: %ld): ", lExpirationInSeconds);
+			strTemp.Release();
+			strTemp.OTfgets(std::cin);
+			
+			if (strTemp.GetLength() > 1)
+				lExpirationInSeconds = atol(strTemp.Get());
+			
+			
+			// -----------------------------------------------------------------------
+			
+			time_t	VALID_FROM	= time(NULL); // This time is set to TODAY NOW
+			
+			OTLog::vOutput(0, "Payment plan becomes valid for processing STARTING date\n"
+						   "(defaults to now, in seconds) [%ld]: ", VALID_FROM);
+			strTemp.Release();
+			strTemp.OTfgets(std::cin);
+			
+			if (strTemp.GetLength() > 2)
+				VALID_FROM = atol(strTemp.Get());
+			
+			const time_t VALID_TO = VALID_FROM + lExpirationInSeconds; // now + 86400
+			
+			// -----------------------------------------------------------------------
+			
+			bool bSuccessSetAgreement = thePlan.SetAgreement(lTransactionNumber, strConsideration, VALID_FROM,	VALID_TO);
+			
+			if (!bSuccessSetAgreement)
+			{
+				OTLog::Output(0, "Failed trying to set the agreement!\n");
+				continue;
+			}
+		
+			bool bSuccessSetInitialPayment	= true; // the default, in case user chooses not to even have this payment.
+			bool bSuccessSetPaymentPlan		= true; // the default, in case user chooses not to have a payment plan
+			// -----------------------------------------------------------------------
+			
+			OTLog::Output(0, "What is the Initial Payment Amount, if any? [0]: ");
+			strTemp.Release(); strTemp.OTfgets(std::cin);
+			long lInitialPayment = atol(strTemp.Get());
+			
+			if (lInitialPayment > 0)
+			{
+				time_t	PAYMENT_DELAY = 60; // 60 seconds.
+				
+				OTLog::vOutput(0, "From the Start Date forward, how long until the Initial Payment should charge?\n"
+							   "(defaults to one minute, in seconds) [%d]: ", PAYMENT_DELAY);
+				strTemp.Release();
+				strTemp.OTfgets(std::cin);
+				
+				if ((strTemp.GetLength() > 1) && atol(strTemp.Get())>0)
+					PAYMENT_DELAY = atol(strTemp.Get());
+				
+				// -----------------------------------------------------------------------
+				
+				 bSuccessSetInitialPayment = thePlan.SetInitialPayment(lInitialPayment, PAYMENT_DELAY);
+			}
+			
+			if (!bSuccessSetInitialPayment)
+			{
+				OTLog::Output(0, "Failed trying to set the initial payment!\n");
+				continue;
+			}
+			
+			// -----------------------------------------------------------------------
+				
+			OTLog::Output(0, "What is the regular payment amount, if any? [0]: ");
+			strTemp.Release(); strTemp.OTfgets(std::cin);
+			long lRegularPayment = atol(strTemp.Get());
+			
+			if (lRegularPayment > 0) // If there are regular payments.
+			{
+				// -----------------------------------------------------------------------
+
+				time_t	PAYMENT_DELAY = 120; // 120 seconds.
+				
+				OTLog::vOutput(0, "From the Start Date forward, how long until the Regular Payments start?\n"
+							   "(defaults to two minutes, in seconds) [%d]: ", PAYMENT_DELAY);
+				strTemp.Release();
+				strTemp.OTfgets(std::cin);
+				
+				if ((strTemp.GetLength() > 1) && atol(strTemp.Get())>0)
+					PAYMENT_DELAY = atol(strTemp.Get());
+				
+				// -----------------------------------------------------------------------
+				
+				time_t	PAYMENT_PERIOD = 30; // 30 seconds.
+				
+				OTLog::vOutput(0, "Once payments begin, how much time should elapse between each payment?\n"
+							   "(defaults to thirty seconds) [%d]: ", PAYMENT_PERIOD);
+				strTemp.Release();
+				strTemp.OTfgets(std::cin);
+				
+				if ((strTemp.GetLength() > 1) && atol(strTemp.Get())>0)
+					PAYMENT_PERIOD = atol(strTemp.Get());
+				
+				// -----------------------------------------------------------------------
+				
+				time_t	PLAN_LENGTH = 0; // 0 seconds (for no max length).
+				
+				OTLog::vOutput(0, "From start date, do you want the plan to expire after a certain maximum time?\n"
+							   "(defaults to 0 for no) [%d]: ", PLAN_LENGTH);
+				strTemp.Release();
+				strTemp.OTfgets(std::cin);
+				
+				if (strTemp.GetLength() > 1)
+					PLAN_LENGTH = atol(strTemp.Get());
+				
+				// -----------------------------------------------------------------------
+				
+				OTLog::Output(0, "Should there be some maximum number of payments? (Zero for no maximum.) [0]: ");
+				strTemp.Release(); strTemp.OTfgets(std::cin);
+				int nMaxPayments = atoi(strTemp.Get());
+				
+				bSuccessSetPaymentPlan = thePlan.SetPaymentPlan(lRegularPayment, PAYMENT_DELAY, PAYMENT_PERIOD, PLAN_LENGTH, nMaxPayments);
+			}
+			
+			if (!bSuccessSetPaymentPlan)
+			{
+				OTLog::Output(0, "Failed trying to set the payment plan!\n");
+				continue;
+			}
+		
+			thePlan.SignContract(*g_pTemporaryNym);
+			thePlan.SaveContract();
+			
+			OTString strPlan(thePlan);
+			
+			OTLog::vOutput(0, "\n\n(Make sure Both Parties sign the payment plan before submitting to server):\n\n\n%s\n", 
+						   strPlan.Get());
+			
+			continue;			
+		}
+		
 		
 		else if (strLine.compare(0,6,"cheque") == 0)
 		{
@@ -262,13 +477,14 @@ int main (int argc, char **argv)
 				OTLog::Output(0, "No Nym yet available to sign the cheque with. Try 'load'.\n");
 				continue;
 			}
-
+			
+			
 			OTLog::Output(0, "Enter the ID for your Asset Account that the cheque will be drawn on: ");
 			OTString strTemp;
 			strTemp.OTfgets(std::cin);
 
 			const OTIdentifier ACCOUNT_ID(strTemp), USER_ID(*g_pTemporaryNym);
-			OTAccount * pAccount = g_Wallet.GetAccount(ACCOUNT_ID);
+			OTAccount * pAccount = g_pWallet->GetAccount(ACCOUNT_ID);
 			
 			if (NULL == pAccount)
 			{
@@ -321,7 +537,7 @@ int main (int argc, char **argv)
 					"10 minutes	==      600 Seconds\n"
 					"1 hour		==     3600 Seconds\n"
 					"1 day		==    86400 Seconds\n"
-					"30 days		==  2592000 Seconds\n"
+					"30 days	==  2592000 Seconds\n"
 					"3 months	==  7776000 Seconds\n"
 					"6 months	== 15552000 Seconds\n\n"
 					);
@@ -360,8 +576,7 @@ int main (int argc, char **argv)
 				theCheque.SignContract(*g_pTemporaryNym);
 				theCheque.SaveContract();
 				
-				OTString strCheque;
-				theCheque.SaveContract(strCheque);
+				OTString strCheque(theCheque);
 				
 				OTLog::vOutput(0, "\n\nOUTPUT:\n\n\n%s\n", strCheque.Get());
 			}
@@ -383,12 +598,19 @@ int main (int argc, char **argv)
 			OTLog::Output(0, "Enter text to be decrypted:\n> ");
 			
 			OTASCIIArmor theArmoredText;
-			char decode_buffer[200];
+			char decode_buffer[200]; // Safe since we only read sizeof - 1
 			
 			do {
-				fgets(decode_buffer, sizeof(decode_buffer), stdin);				
-				theArmoredText.Concatenate("%s\n", decode_buffer);
-				OTLog::Output(0, "> ");
+				decode_buffer[0] = 0;
+				if (NULL != fgets(decode_buffer, sizeof(decode_buffer)-1, stdin))
+				{
+					theArmoredText.Concatenate("%s\n", decode_buffer);
+					OTLog::Output(0, "> ");
+				}
+				else 
+				{
+					break;
+				}
 			} while (strlen(decode_buffer)>1);
 			
 			
@@ -407,12 +629,20 @@ int main (int argc, char **argv)
 			OTLog::Output(0, "Enter text to be decoded:\n> ");
 			
 			OTASCIIArmor theArmoredText;
-			char decode_buffer[200];
+			char decode_buffer[200]; // Safe since we only read sizeof - 1.
 			
 			do {
-				fgets(decode_buffer, sizeof(decode_buffer), stdin);				
-				theArmoredText.Concatenate("%s\n", decode_buffer);
-				OTLog::Output(0, "> ");
+				decode_buffer[0] = 0;
+				if (NULL != fgets(decode_buffer, sizeof(decode_buffer)-1, stdin))
+				{
+					theArmoredText.Concatenate("%s\n", decode_buffer);
+					OTLog::Output(0, "> ");
+				}
+				else 
+				{
+					break;
+				}
+
 			} while (strlen(decode_buffer)>1);
 			
 			OTString strDecodedText(theArmoredText);
@@ -427,16 +657,22 @@ int main (int argc, char **argv)
 			OTLog::Output(0, "Enter text to be ascii-encoded (terminate with ~ on a new line):\n> ");
 			
 			OTString strDecodedText;
-			char decode_buffer[200];
+			char decode_buffer[200]; // Safe since we only read sizeof - 1.
 			
 			do {
-				fgets(decode_buffer, sizeof(decode_buffer), stdin);
-				
-				if (decode_buffer[0] != '~')
+				decode_buffer[0] = 0;
+								
+				if ((NULL != fgets(decode_buffer, sizeof(decode_buffer)-1, stdin)) &&
+					(decode_buffer[0] != '~'))
 				{
 					strDecodedText.Concatenate("%s", decode_buffer);
 					OTLog::Output(0, "> ");
 				}
+				else 
+				{
+					break;
+				}
+
 			} while (decode_buffer[0] != '~');
 			
 			OTASCIIArmor theArmoredText(strDecodedText);
@@ -451,16 +687,22 @@ int main (int argc, char **argv)
 			OTLog::Output(0, "Enter text to be hashed (terminate with ~ on a new line):\n> ");
 			
 			OTString strDecodedText;
-			char decode_buffer[200];
+			char decode_buffer[200]; // Safe since we only read sizeof - 1.
 			
 			do {
-				fgets(decode_buffer, sizeof(decode_buffer), stdin);
+				decode_buffer[0] = 0;
 				
-				if (decode_buffer[0] != '~')
+				if ((NULL != fgets(decode_buffer, sizeof(decode_buffer)-1, stdin)) &&
+					(decode_buffer[0] != '~'))
 				{
 					strDecodedText.Concatenate("%s\n", decode_buffer);
 					OTLog::Output(0, "> ");
 				}
+				else 
+				{
+					break;
+				}
+
 			} while (decode_buffer[0] != '~');
 			
 			OTIdentifier theIdentifier;
@@ -478,7 +720,7 @@ int main (int argc, char **argv)
 			OTLog::Output(0, "User has instructed to display wallet contents...\n");
 			
 			OTString strStat;
-			g_Wallet.DisplayStatistics(strStat);
+			g_pWallet->DisplayStatistics(strStat);
 			OTLog::vOutput(0, "%s\n", strStat.Get());
 			
 			continue;
@@ -505,7 +747,7 @@ int main (int argc, char **argv)
 			// Wallet, after loading, should contain a list of server
 			// contracts. Let's pull the hostname and port out of
 			// the first contract, and connect to that server.
-			bool bConnected = g_Client.ConnectToTheFirstServerOnList(*g_pTemporaryNym, strCAFile, strKeyFile, strSSLPassword); 
+			bool bConnected = g_pClient->ConnectToTheFirstServerOnList(*g_pTemporaryNym, strCAFile, strKeyFile, strSSLPassword); 
 			
 			if (bConnected)
 				OTLog::Output(0, "Success. (Connected to the first notary server on your wallet's list.)\n");
@@ -516,14 +758,14 @@ int main (int argc, char **argv)
 			continue;
 		}
 		
-		if (!g_Client.IsConnected())
+		if (!g_pClient->IsConnected())
 		{
 			OTLog::Output(0, "(You are not connected to a notary server--you cannot send commands.)\n");
 			continue;
 		}
 			
 		// 2) Process it out as an OTMessage to the server. It goes down the pipe.
-		g_Client.ProcessMessageOut(buf, &nExpectResponse);
+		g_pClient->ProcessMessageOut(buf, &nExpectResponse);
 		
 		// 3) Sleep for 1 second.
 #ifdef _WIN32
@@ -542,7 +784,7 @@ int main (int argc, char **argv)
 			
 			// If this returns true, that means a Message was
 			// received and processed into an OTMessage object (theMsg)
-			bFoundMessage = g_Client.ProcessInBuffer(theMsg);
+			bFoundMessage = g_pClient->ProcessInBuffer(theMsg);
 			
 			if (true == bFoundMessage)
 			{
@@ -550,7 +792,7 @@ int main (int argc, char **argv)
 //				theMsg.SaveContract(strReply);
 //				OTLog::vOutput(0, "\n\n**********************************************\n"
 //						"Successfully in-processed server response.\n\n%s\n", strReply.Get());
-				g_Client.ProcessServerReply(theMsg);
+				g_pClient->ProcessServerReply(theMsg);
 			}
 		
 		} while (true == bFoundMessage);

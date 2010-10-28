@@ -85,63 +85,69 @@
 #ifndef __OT_CHEQUE_H__
 #define __OT_CHEQUE_H__
 
-#include <ctime>
 
 #include <fstream>
 
 
-#include "OTInstrument.h"
+#include "OTTrackable.h"
 #include "OTIdentifier.h"
 #include "OTString.h"
 
 
 
-class OTCheque : public OTInstrument
+class OTCheque : public OTTrackable
 {
 protected:
 	virtual int ProcessXMLNode(irr::io::IrrXMLReader*& xml);
 
-	long		m_lAmount;
-	long		m_lTransactionNum;	// A cheque can be written offline, provided you have a transaction
-									// number handy to write it with. Necessary to prevent double-spending. 
-	bool		m_bHasRecipient;
-	
-	OTString	m_strMemo;
-	
-	OTIdentifier	m_SENDER_ACCT_ID;	// The asset account the cheque is drawn on.
-	OTIdentifier	m_SENDER_USER_ID;	// This ID must match the user ID on the asset account, 
-										// AND must verify the cheque signature with that user's key.
+	long			m_lAmount;
+	OTString		m_strMemo;
 	OTIdentifier	m_RECIPIENT_USER_ID;// Optional. If present, must match depositor's user ID.
+	bool			m_bHasRecipient;
 	
 public:
-	inline void SetAsVoucher() { m_strContractType = "VOUCHER"; }
-	
-	inline OTString & GetMemo() { return m_strMemo; }
-	
-	inline long GetAmount() const { return m_lAmount; }
-	inline long GetTransactionNum() const { return m_lTransactionNum; }
-	
-	inline OTIdentifier & GetSenderAcctID()		{ return m_SENDER_ACCT_ID; }
-	inline OTIdentifier & GetSenderUserID()		{ return m_SENDER_USER_ID; }
-	inline OTIdentifier & GetRecipientUserID()	{ return m_RECIPIENT_USER_ID; }
-	
-	inline bool HasRecipient() const { return m_bHasRecipient; }
-	
-	void InitCheque();
+	inline void				SetAsVoucher() { m_strContractType = "VOUCHER"; }
+	inline OTString &		GetMemo() { return m_strMemo; }
+	inline const long &		GetAmount() const { return m_lAmount; }
+	inline OTIdentifier &	GetRecipientUserID()	{ return m_RECIPIENT_USER_ID; }
+	inline bool				HasRecipient() const { return m_bHasRecipient; }
 
-	OTCheque();
-	OTCheque(const OTIdentifier & SERVER_ID, const OTIdentifier & ASSET_ID);
-	virtual ~OTCheque();
 	
 	// Calling this function is like writing a check...
 	bool IssueCheque(const long	& lAmount,	const long & lTransactionNum,
 					 const time_t & VALID_FROM, const time_t & VALID_TO,// The expiration date (valid from/to dates) of the cheque
 					 const OTIdentifier & SENDER_ACCT_ID,			// The asset account the cheque is drawn on.
 					 const OTIdentifier & SENDER_USER_ID,			// This ID must match the user ID on the asset account, 
-															// AND must verify the cheque signature with that user's key.
+																	// AND must verify the cheque signature with that user's key.
 					 const OTString & strMemo,	// Optional memo field.
 					 const OTIdentifier * pRECIPIENT_USER_ID=NULL);	// Recipient optional. (Might be a blank cheque.)
 
+	// From OTTrackable (parent class of this)
+	/*
+	 // A cheque can be written offline, provided you have a transaction
+	 // number handy to write it with. (Necessary to prevent double-spending.)
+	 inline long			GetTransactionNum() const { return m_lTransactionNum; }
+	 inline const OTIdentifier &	GetSenderAcctID()		{ return m_SENDER_ACCT_ID; }
+	 inline const OTIdentifier &	GetSenderUserID()		{ return m_SENDER_USER_ID; }
+	 */
+	
+	// From OTInstrument (parent class of OTTrackable, parent class of this)
+	/*
+	 OTInstrument(const OTIdentifier & SERVER_ID, const OTIdentifier & ASSET_ID) : OTContract()
+	 
+	 inline const OTIdentifier & GetAssetID() const { return m_AssetTypeID; }
+	 inline const OTIdentifier & GetServerID() const { return m_ServerID; }
+	 
+	 inline time_t GetValidFrom()	const { return m_VALID_FROM; }
+	 inline time_t GetValidTo()		const { return m_VALID_TO; }
+	 
+	 bool VerifyCurrentDate(); // Verify the current date against the VALID FROM / TO dates.
+	 */
+	OTCheque();
+	OTCheque(const OTIdentifier & SERVER_ID, const OTIdentifier & ASSET_ID);
+	virtual ~OTCheque();
+	
+			void InitCheque();
 	virtual void Release();
 	virtual void UpdateContents(); // Before transmission or serialization, this is where the token saves its contents 	
 
@@ -151,3 +157,25 @@ public:
 
 
 #endif // __OT_CHEQUE_H__
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

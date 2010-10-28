@@ -96,6 +96,7 @@
 #include "OTIdentifier.h"
 #include "OTContract.h"
 #include "OTPseudonym.h"
+#include "OTLog.h"
 
 
 
@@ -383,7 +384,7 @@ bool OTString::operator ==(const OTString &s2) const
 
 	// At this point we have 2 identical-length strings.
 	// Now we call strcmp and convert it to true or false.
-	if (strcmp(m_strBuffer, s2.m_strBuffer) == 0) {
+	if (strcmp(m_strBuffer, s2.m_strBuffer) == 0) { // TODO security: use a replacement for strcmp.
 	  return(true);
 	}
 	return(false);
@@ -471,6 +472,7 @@ void OTString::OTfgets(std::istream & ifs)
 	if (NULL == buffer)
 	{
 		buffer = new char[MAX_STRING_LENGTH]; // This only happens once. Static var.
+		OT_ASSERT(NULL != buffer);
 	}
 	
 	buffer[0] = '\0';
@@ -543,18 +545,22 @@ void OTString::Truncate(uint32_t lAt)
 	this->Set(strTruncated);
 }
 
+// new_string MUST be at least nEnforcedMaxLength in size if nEnforcedMaxLength is passed in at all.
+// That's because this function forces the null terminator at that length of the string minus 1.
 void OTString::Set(const char * new_string, uint32_t nEnforcedMaxLength/*=0*/)
 {
 	Release();
 	
-	if (0 == new_string)
+	if (NULL == new_string)
 		return; 
 	
-	if (nEnforcedMaxLength)
-		((char *)new_string)[nEnforcedMaxLength] = '\0'; // enforce the max length before calling strlen.
+	if (nEnforcedMaxLength > 0)	// Enforce the max length before calling strlen. If Max length is 10, then buf[9] is zero'd out.
+		((char *)new_string)[nEnforcedMaxLength-1] = '\0'; 
 	
 	// Now this can never be larger than nEnforcedMaxLength
-	uint32_t nLength = strlen(new_string);
+	// If there was already a NULL terminator, the strlen will stop there first.
+	// Otherwise, worst case, it will be stopped by the one that I set above.
+	uint32_t nLength = strlen(new_string); // TODO Security: use something more secure than strlen
 
 	// don't bother allocating memory for a 0 length string.
 	if (!nLength)
@@ -601,6 +607,8 @@ void OTString::Format(const char *arg, ...)
 	if (NULL == new_string)
 	{
 		new_string = new char[MAX_STRING_LENGTH]; // This only happens once -- static var.
+		
+		OT_ASSERT(NULL != new_string);
 	}
 
 	new_string[0] = '\0';
@@ -629,6 +637,8 @@ void OTString::Concatenate(const OTString & strBuf)
 	if (NULL == new_string)
 	{
 		new_string = new char[MAX_STRING_LENGTH]; // This only happens once. Static var.
+		
+		OT_ASSERT(NULL != new_string);
 	}
 
 	new_string[0] = '\0';
@@ -667,6 +677,8 @@ void OTString::Concatenate(const char *arg, ...)
 	if (NULL == new_string)
 	{
 		new_string = new char[MAX_STRING_LENGTH]; // only happens once. static var.
+		
+		OT_ASSERT(NULL != new_string);
 	}
 
 	new_string[0] = '\0';
@@ -678,6 +690,8 @@ void OTString::Concatenate(const char *arg, ...)
 	if (NULL == arg_string)
 	{
 		arg_string = new char[MAX_STRING_LENGTH]; // only happens once. static var.
+		
+		OT_ASSERT(NULL != arg_string);
 	}
 
 	arg_string[0] = '\0';
@@ -689,7 +703,7 @@ void OTString::Concatenate(const char *arg, ...)
 #ifdef _WIN32
 	vsprintf_s(arg_string, MAX_STRING_LENGTH, arg, args);
 #else
-	vsprintf(arg_string, arg, args);
+	vsprintf(arg_string, arg, args); // TODO: replace this with a secure version.
 #endif
 
    va_end(args);
@@ -765,10 +779,10 @@ bool len_cmp(const char *s1, const char *s2)
 
 char *str_dup1(const char *str)
 {
-  char *str_new;
+  char * str_new = new char [strlen(str) + 1];
 
-  str_new = new char [strlen(str) + 1];
-
+	OT_ASSERT(NULL != str_new);
+	
 #ifdef _WIN32
   strcpy_s(str_new, strlen(str), str);
 #else
@@ -780,9 +794,9 @@ char *str_dup1(const char *str)
 
 char *str_dup2(const char *str, uint32_t length)
 {
-	char *str_new;
+	char * str_new = new char [length + 1];
 
-	str_new = new char [length + 1];
+	OT_ASSERT(NULL != str_new);
 
 #ifdef _WIN32
 	strncpy_s(str_new, length+1, str, length);

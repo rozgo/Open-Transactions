@@ -137,6 +137,7 @@ class OTServer;
 #include "OTData.h"
 
 class OTString;
+class OTEnvelope;
 
 class OTClientConnection
 {
@@ -151,8 +152,10 @@ class OTClientConnection
 	
 	OTAsymmetricKey m_PublicKey;
 	
+	bool			m_bFocused;		// Defaults to false. If true, it means we're in XmlRpc mode, or some such, instead of TCP over SSL streaming.
+	
 public:
-	SFSocket * m_pSocket;
+	SFSocket * m_pSocket;	// For TCP / SSL mode. 
 	
 	void ProcessBuffer();
 	void ReadBytesIntoBuffer();
@@ -162,7 +165,8 @@ public:
 
 	void ProcessReply(OTMessage &theReply);
 
-	OTClientConnection(SFSocket & theSocket, OTServer & theServer);
+	OTClientConnection(SFSocket & theSocket, OTServer & theServer); // TCP		/ over SSL mode.
+	OTClientConnection(OTServer & theServer);						// XmlRpc	/ over HTTP mode.
 	~OTClientConnection();
 	
 	void AddToInputList(OTMessage & theMessage);
@@ -173,6 +177,9 @@ public:
 
 	void SetPublicKey(const OTString & strPublicKey);
 	void SetPublicKey(const OTAsymmetricKey & thePublicKey);
+	
+	// This is for XmlRpc mode (i.e. there is not actually an open connection being maintained.)
+	bool SealMessageForRecipient(OTMessage & theMsg, OTEnvelope & theEnvelope);
 };
 
 

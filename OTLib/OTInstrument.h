@@ -105,10 +105,20 @@ protected:
 	
 	// overridden in child classes, not here.
 //	virtual int ProcessXMLNode(irr::io::IrrXMLReader*& xml);
+	inline void SetValidFrom(time_t TIME_FROM)	{ m_VALID_FROM	= TIME_FROM; }
+	inline void SetValidTo(time_t TIME_TO)		{ m_VALID_TO	= TIME_TO; }
 	
+	inline void SetAssetID(const OTIdentifier & ASSET_ID)  { m_AssetTypeID	= ASSET_ID; }
+	inline void SetServerID(const OTIdentifier & SERVER_ID) { m_ServerID	= SERVER_ID; }
+
 public:
 	inline time_t GetValidFrom()	const { return m_VALID_FROM; }
 	inline time_t GetValidTo()		const { return m_VALID_TO; }
+	
+	inline const OTIdentifier & GetAssetID() const { return m_AssetTypeID; }
+	inline const OTIdentifier & GetServerID() const { return m_ServerID; }
+
+	// ---------------------------------------------------
 	
 	void InitInstrument();
 	
@@ -118,18 +128,17 @@ public:
 
 	virtual void Release();
 	
-	bool VerifyCurrentDate(); // Verify the current date against the VALID FROM / TO dates.
+	time_t GetCurrentTime() const;
+
+	bool VerifyCurrentDate();	// Verify whether the CURRENT date is WITHIN the VALID FROM / TO dates.
+	bool IsExpired();			// Verify whether the CURRENT date is AFTER the the "VALID TO" date.
 
 	// overridden in child classes, not here.
 	//virtual void UpdateContents(); // I may remove this, since the subclasses will handle it. 	
-
-	inline const OTIdentifier & GetAssetID() const { return m_AssetTypeID; }
-	inline const OTIdentifier & GetServerID() const { return m_ServerID; }
 	
 	// ------------------------------------------------------------------------
 		
 	virtual bool SaveContractWallet(std::ofstream & ofs);
-//	virtual bool SaveContractWallet(FILE * fl);
 };
 
 

@@ -6,6 +6,8 @@
 
 PROGRAM = testwallet.exe  
 
+DEBUG_PROGRAM = testwallet.debug
+
 #
 # Command line parameters: Edit these parameters so that you can 
 # easily run the sample by typing "make -f Makefile.Linux run".
@@ -41,12 +43,19 @@ INCLUDEDIRS = \
 	-I./
 
 
-# For FreeBSD, add this library:  /usr/ports/security/openssl/work/openssl-1.0.0a
+# For FreeBSD, add this library path:  
+# /usr/ports/security/openssl/work/openssl-1.0.0a
+#
+# Or this one, depending on your system:
+#  /usr/local/lib
+#
 LIBDIRS = \
 	-L../OTLib
 
 
 LIBS = $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib 
+
+DEBUG_LIBS = $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd
 
 #LIBS = $(LIBDIRS) -lOTLib /home/ben/work/openssl-1.0.0/libssl.a \
 #     /home/ben/work/openssl-1.0.0/libcrypto.a
@@ -79,21 +88,31 @@ CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
 COBJECTS   = $(CSOURCES:.c=.o)
 CXXFLAGS   = $(INCLUDEDIRS)
 CFLAGS     = $(INCLUDEDIRS)
+DEBUG_FLAGS = -g
 CXX = g++
 CC = gcc
 LDFLAGS = $(LIBDIRS) $(LIBS)
+DEBUG_LDFLAGS = $(LIBDIRS) $(DEBUG_LIBS)
 
 #
 # Default target: the first target is the default target.
-# Just type "make -f Makefile.Linux" to build it.
+# Just type "make -f Makefile.testwallet" to build it.
 #
 
 all: $(PROGRAM)
+
+debug: CXXFLAGS += $(DEBUG_FLAGS)
+debug: LIBS = $(DEBUG_LIBS)
+debug: LDFLAGS = $(DEBUG_LDFLAGS)
+debug: $(DEBUG_PROGRAM)
 
 #
 # Link target: automatically builds its object dependencies before
 # executing its link command.
 #
+
+$(DEBUG_PROGRAM): $(CXXOBJECTS) $(COBJECTS) 
+	$(CXX) $(CXXOBJECTS) $(COBJECTS) $(DEBUG_LIBS) -o $@
 
 $(PROGRAM): $(CXXOBJECTS) $(COBJECTS) 
 	$(CXX) $(CXXOBJECTS) $(COBJECTS) $(LIBS) -o $@
@@ -117,19 +136,21 @@ testclient.o: testclient.cpp
 
 
 #
-# Clean target: "make -f Makefile.Linux clean" to remove unwanted objects and executables.
+# Clean target: "make -f Makefile.testwallet clean" to remove unwanted objects and executables.
 #
 
 RM=rm
 
 clean:
-	$(RM) -f $(CXXOBJECTS) $(COBJECTS) $(PROGRAM)
+	$(RM) -f $(CXXOBJECTS) $(COBJECTS) $(PROGRAM) $(DEBUG_PROGRAM)
 
 #
-# Run target: "make -f Makefile.Linux run" to execute the application
+# Run target: "make -f Makefile.testwallet run" to execute the application
 #             You will need to add $(VARIABLE_NAME) for any command line parameters 
 #             that you defined earlier in this file.
 # 
 
 run:
 	./$(PROGRAM) 
+
+

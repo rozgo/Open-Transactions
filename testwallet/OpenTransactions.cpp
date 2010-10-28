@@ -45,6 +45,8 @@
  *    
  *       OpenSSL        --- (Version 1.0.0a at time of writing.) 
  *                          http://openssl.org/about/
+ *       XmlRpc++       --- LGPL, Copyright (c) 2002-2003 by C. Morley
+ *                          http://xmlrpcpp.sourceforge.net/
  *       zlib           --- Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
  *    
  *     ----------------------------------------------------------------
@@ -102,6 +104,7 @@ extern "C"
 
 #include "OTClient.h"
 #include "OTServerConnection.h"
+#include "OTServerContract.h"
 #include "OTMessage.h"
 #include "OTWallet.h"
 #include "OTEnvelope.h"
@@ -120,53 +123,14 @@ extern "C"
 // (So you can instantiate it multiple times, though I don't see that being
 // needed... most real world apps will only use this interface once...)
 
-OTWallet		g_Wallet;
-OTClient		g_Client;
+OTWallet *		g_pWallet = NULL;
+OTClient *		g_pClient = NULL;
 
 OTPseudonym *g_pTemporaryNym = NULL;
 
 
 
 
-int OT_API_getNymCount()
-{
-	return g_Wallet.GetNymCount();
-}
-
-int OT_API_getServerCount()
-{
-	return g_Wallet.GetServerCount();
-}
-
-int OT_API_getAssetTypeCount()
-{
-	return g_Wallet.GetAssetTypeCount();
-}
-
-int OT_API_getAccountCount()
-{
-	return g_Wallet.GetAccountCount();
-}
-
-bool OT_API_getNym(int iIndex, OTIdentifier & NYM_ID, OTString & NYM_NAME)
-{
-	return g_Wallet.GetNym(iIndex, NYM_ID, NYM_NAME);
-}
-
-bool OT_API_getServer(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME)
-{
-	return g_Wallet.GetServer(iIndex, THE_ID, THE_NAME);
-}
-
-bool OT_API_getAssetType(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME)
-{
-	return g_Wallet.GetAssetType(iIndex, THE_ID, THE_NAME);
-}
-
-bool OT_API_getAccount(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME)
-{
-	return g_Wallet.GetAccount(iIndex, THE_ID, THE_NAME);
-}
 
 
 // Need to call this before using OT.
@@ -180,29 +144,176 @@ bool OT_API_Init(OTString & strClientPath)
 	int err = WSAStartup( wVersionRequested, &wsaData );
 #endif
 	
-	return g_Client.InitClient(g_Wallet);
+	g_pWallet = new OTWallet;
+	g_pClient = new OTClient;
+	
+	OT_ASSERT(NULL != g_pWallet);
+	OT_ASSERT(NULL != g_pClient);
+	
+	
+	return g_pClient->InitClient(*g_pWallet);
 }
+
+
 
 
 
 // "wallet.xml" (path set above.)
 bool OT_API_loadWallet(OTString & strPath)
 {
-	return g_Wallet.LoadWallet(strPath.Get());
+	return g_pWallet->LoadWallet(strPath.Get());
 }
+
+
+
+
+
+
+int OT_API_getNymCount()
+{
+	return g_pWallet->GetNymCount();
+}
+
+int OT_API_getServerCount()
+{
+	return g_pWallet->GetServerCount();
+}
+
+int OT_API_getAssetTypeCount()
+{
+	return g_pWallet->GetAssetTypeCount();
+}
+
+int OT_API_getAccountCount()
+{
+	return g_pWallet->GetAccountCount();
+}
+
+bool OT_API_getNym(int iIndex, OTIdentifier & NYM_ID, OTString & NYM_NAME)
+{
+	return g_pWallet->GetNym(iIndex, NYM_ID, NYM_NAME);
+}
+
+bool OT_API_getServer(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME)
+{
+	return g_pWallet->GetServer(iIndex, THE_ID, THE_NAME);
+}
+
+bool OT_API_getAssetType(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME)
+{
+	return g_pWallet->GetAssetType(iIndex, THE_ID, THE_NAME);
+}
+
+bool OT_API_getAccount(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME)
+{
+	return g_pWallet->GetAccount(iIndex, THE_ID, THE_NAME);
+}
+
+
+// -------------------------------------------------------------------------
+
+// When the server and client (this API being a client) are built in XmlRpc/HTTP
+// mode, then a callback must be provided for passing the messages back and forth
+// with the server. (Provided below.)
+//
+// IMPORTANT: If you ever wanted to use a different transport mechanism, it would
+// be as easy as adding your own version of this callback function, but having it
+// use your own transport mechanism instead of the xmlrpc in this example.
+
+#if defined(OT_XMLRPC_MODE)
+
+// If you build in tcp/ssl mode, this file will build even if you don't have this library.
+// But if you build in xml/rpc/http mode, 
+#include "XmlRpc.h"  
+
+using namespace XmlRpc;
+
+
+// The Callback so OT can give us messages to send using our xmlrpc transport.
+// Whenever OT needs to pop a message on over to the server, it calls this so we
+// can do the work here.
+//
+//typedef bool (*OT_CALLBACK_MSG)(OTPayload & thePayload);
+//
+void OT_XmlRpcCallback(OTServerContract & theServerContract, OTEnvelope & theEnvelope)
+{	
+	int			nServerPort = 0;
+	OTString	strServerHostname;
+	
+	if (false == theServerContract.GetConnectInfo(strServerHostname, nServerPort))
+	{
+		OTLog::Error("Failed retrieving connection info from server contract.\n");
+		return;
+	}
+	
+	OTASCIIArmor ascEnvelope(theEnvelope);
+	
+	if (ascEnvelope.Exists())
+	{
+		// Here's our connection...
+		XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort); // serverhost, port.
+		
+		// -----------------------------------------------------------
+		//
+		// Call the OT_XML_RPC method (thus passing the message to the server.)
+		//
+		XmlRpcValue oneArg, result;		// oneArg contains the outgoing message; result will contain the server reply.
+		oneArg[0] = ascEnvelope.Get();	// Here's where I set the envelope string, as the only argument for the rpc call.
+		
+		if (theXmlRpcClient.execute("OT_XML_RPC", oneArg, result)) // The actual call to the server. (Hope my envelope string isn't too long for this...)
+		{					
+			std::string str_Result = result;
+			OTASCIIArmor ascServerReply = str_Result.c_str();
+			
+			OTEnvelope theServerEnvelope(ascServerReply);
+			OTString	strServerReply;				// NOTE: Could maybe use g_pClient->GetNym or whatever instead of g_pTempNym...
+			bool bOpened = theServerEnvelope.Open(*g_pTemporaryNym, strServerReply);
+			
+			OTMessage theServerReply;
+			
+			if (bOpened && strServerReply.Exists() && theServerReply.LoadContractFromString(strServerReply))
+			{
+				// Now the fully-loaded message object (from the server, this time) can be processed by the OT library...
+				g_pClient->ProcessServerReply(theServerReply); 
+			}
+			else
+			{
+				OTLog::Error("Error loading server reply from string after call to 'OT_XML_RPC'\n");
+			}
+		}
+		else
+		{
+			OTLog::Error("Error calling 'OT_XML_RPC' over the XmlRpc transport layer.\n");
+		}
+	}
+}
+
+#endif  // (OT_XMLRPC_MODE)
+
+// -------------------------------------------------------------------------
+
+
+
+
 
 
 // Eventually this connects to the server denoted by SERVER_ID
 // But for right now, it just connects to the first server in the list.
 // TODO: make it connect to the server ID instead of the first one in the list.
+//
+// NOTE: This is only for Message / TCP / SSL mode, not for Message / XmlRpc / HTTP mode...
 bool OT_API_connectServer(OTIdentifier & SERVER_ID, OTIdentifier	& USER_ID,
 									 OTString & strCA_FILE, OTString & strKEY_FILE, OTString & strKEY_PASSWORD)
 {
+#if defined(OT_XMLRPC_MODE)
+	return false;
+#endif
+	
 	// Wallet, after loading, should contain a list of server
 	// contracts. Let's pull the hostname and port out of
 	// the first contract, and connect to that server.
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -210,7 +321,7 @@ bool OT_API_connectServer(OTIdentifier & SERVER_ID, OTIdentifier	& USER_ID,
 		return false;
 	}
 		
-	bool bConnected = g_Client.ConnectToTheFirstServerOnList(*pNym, strCA_FILE, strKEY_FILE, strKEY_PASSWORD); 
+	bool bConnected = g_pClient->ConnectToTheFirstServerOnList(*pNym, strCA_FILE, strKEY_FILE, strKEY_PASSWORD); 
 	
 	if (bConnected)
 	{
@@ -234,19 +345,23 @@ bool OT_API_connectServer(OTIdentifier & SERVER_ID, OTIdentifier	& USER_ID,
 //
 // Perhaps once per second, and more often immediately following
 // a request.  (Usually only one response comes for each request.)
+//
+// NOTE: this function probably not needed in XmlRpc / HTTP (web services) mode.
 bool OT_API_processSockets()
 {
+#if defined(OT_XMLRPC_MODE)
+	return false;
+#endif
+	
 	bool bFoundMessage = false, bSuccess = false;
 	
-	// 4) While there are messages to be read in response from the server,
-	//	  then process and handle them all.
 	do 
 	{
 		OTMessage theMsg;
 		
 		// If this returns true, that means a Message was
 		// received and processed into an OTMessage object (theMsg)
-		bFoundMessage = g_Client.ProcessInBuffer(theMsg);
+		bFoundMessage = g_pClient->ProcessInBuffer(theMsg);
 		
 		if (true == bFoundMessage)
 		{
@@ -256,7 +371,7 @@ bool OT_API_processSockets()
 			//				theMsg.SaveContract(strReply);
 			//				OTLog::vError("\n\n**********************************************\n"
 			//						"Successfully in-processed server response.\n\n%s\n", strReply.Get());
-			g_Client.ProcessServerReply(theMsg);
+			g_pClient->ProcessServerReply(theMsg);
 		}
 		
 	} while (true == bFoundMessage);
@@ -264,6 +379,8 @@ bool OT_API_processSockets()
 	return bSuccess;
 }
 
+// NOTE: The above function only applies in Message / TCP / SSL mode, since server replies are instantly
+// received in XmlRpc / HTTP mode. (Both are request / response, it's the same protocol no matter what transport.)
 
 
 
@@ -274,7 +391,7 @@ void OT_API_exchangeBasket(OTIdentifier	& SERVER_ID,
 {
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -286,7 +403,7 @@ void OT_API_exchangeBasket(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -297,7 +414,7 @@ void OT_API_exchangeBasket(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTAssetContract * pAssetContract = g_Wallet.GetAssetContract(BASKET_ASSET_ID);
+	OTAssetContract * pAssetContract = g_pWallet->GetAssetContract(BASKET_ASSET_ID);
 	
 	if (!pAssetContract)
 	{
@@ -333,7 +450,10 @@ void OT_API_exchangeBasket(OTIdentifier	& SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-	g_Client.ProcessMessageOut(theMessage);		
+#if defined(OT_XMLRPC_MODE)
+	g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+	g_pClient->ProcessMessageOut(theMessage);		
 }
 
 
@@ -345,7 +465,7 @@ void OT_API_getTransactionNumber(OTIdentifier & SERVER_ID,
 {
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -357,7 +477,7 @@ void OT_API_getTransactionNumber(OTIdentifier & SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -370,11 +490,14 @@ void OT_API_getTransactionNumber(OTIdentifier & SERVER_ID,
 	
 	OTMessage theMessage;
 	
-	if (g_Client.ProcessUserCommand(OTClient::getTransactionNum, theMessage, 
+	if (g_pClient->ProcessUserCommand(OTClient::getTransactionNum, theMessage, 
 									*pNym, *pServer,
 									NULL)) // NULL pAccount on this command.
 	{				
-		g_Client.ProcessMessageOut(theMessage);
+#if defined(OT_XMLRPC_MODE)
+		g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+		g_pClient->ProcessMessageOut(theMessage);
 	}
 	else
 		OTLog::Error("Error processing getTransactionNumber command in OT_API_getTransactionNumber\n");
@@ -391,7 +514,7 @@ void OT_API_notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 {
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -403,7 +526,7 @@ void OT_API_notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -417,7 +540,7 @@ void OT_API_notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 	OTIdentifier	CONTRACT_ID;
 	OTString		strContractID;
 	
-	OTAccount * pAccount = g_Wallet.GetAccount(ACCT_ID);
+	OTAccount * pAccount = g_pWallet->GetAccount(ACCT_ID);
 	
 	if (!pAccount)
 	{
@@ -457,7 +580,7 @@ void OT_API_notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 		const OTPseudonym * pServerNym = pServer->GetContractPublicNym();
 		
 		OTString strMintPath;
-		strMintPath.Format("%s%smints%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+		strMintPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), OTLog::MintFolder(),
 						   OTLog::PathSeparator(), strContractID.Get()); 
 		OTMint theMint(strContractID, strMintPath, strContractID);
 		
@@ -523,7 +646,7 @@ void OT_API_notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 			// Add the purse to the wallet
 			// (We will need it to look up the private coin info for unblinding the token,
 			//  when the response comes from the server.)
-			g_Wallet.AddPendingWithdrawal(*pPurseMyCopy);
+			g_pWallet->AddPendingWithdrawal(*pPurseMyCopy);
 			
 			delete pPurse;
 			pPurse			= NULL; // We're done with this one.
@@ -577,7 +700,10 @@ void OT_API_notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 			theMessage.SaveContract();
 			
 			// (Send it)
-			g_Client.ProcessMessageOut(theMessage);	
+#if defined(OT_XMLRPC_MODE)
+			g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+			g_pClient->ProcessMessageOut(theMessage);	
 		}
 	}
 	else {
@@ -596,7 +722,7 @@ void OT_API_notarizeDeposit(OTIdentifier	& SERVER_ID,
 {
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -608,7 +734,7 @@ void OT_API_notarizeDeposit(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -622,7 +748,7 @@ void OT_API_notarizeDeposit(OTIdentifier	& SERVER_ID,
 	OTIdentifier	CONTRACT_ID;
 	OTString		strContractID;
 	
-	OTAccount * pAccount = g_Wallet.GetAccount(ACCT_ID);
+	OTAccount * pAccount = g_pWallet->GetAccount(ACCT_ID);
 	
 	if (!pAccount)
 	{
@@ -770,7 +896,10 @@ void OT_API_notarizeDeposit(OTIdentifier	& SERVER_ID,
 			theMessage.SaveContract();
 			
 			// (Send it)
-			g_Client.ProcessMessageOut(theMessage);	
+#if defined(OT_XMLRPC_MODE)
+			g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+			g_pClient->ProcessMessageOut(theMessage);	
 			
 		} // bSuccess
 		else {
@@ -791,7 +920,7 @@ void OT_API_withdrawVoucher(OTIdentifier	& SERVER_ID,
 {
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -803,7 +932,7 @@ void OT_API_withdrawVoucher(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -817,7 +946,7 @@ void OT_API_withdrawVoucher(OTIdentifier	& SERVER_ID,
 	OTIdentifier	CONTRACT_ID;
 	OTString		strContractID;
 	
-	OTAccount * pAccount = g_Wallet.GetAccount(ACCT_ID);
+	OTAccount * pAccount = g_pWallet->GetAccount(ACCT_ID);
 	
 	if (!pAccount)
 	{
@@ -876,10 +1005,9 @@ void OT_API_withdrawVoucher(OTIdentifier	& SERVER_ID,
 			pItem->SetNote(strNote);
 			
 			// Add the voucher request string as the attachment on the transaction item.
-			OTString strVoucher;
 			theRequestVoucher.SignContract(*pNym);
 			theRequestVoucher.SaveContract();
-			theRequestVoucher.SaveContract(strVoucher);			
+			OTString strVoucher(theRequestVoucher);
 			pItem->SetAttachment(strVoucher); // The voucher request is contained in the reference string.
 			
 			// sign the item
@@ -927,7 +1055,10 @@ void OT_API_withdrawVoucher(OTIdentifier	& SERVER_ID,
 			theMessage.SaveContract();
 			
 			// (Send it)
-			g_Client.ProcessMessageOut(theMessage);	
+#if defined(OT_XMLRPC_MODE)
+			g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+			g_pClient->ProcessMessageOut(theMessage);	
 		}
 	}
 	else {
@@ -946,7 +1077,7 @@ void OT_API_depositCheque(OTIdentifier	& SERVER_ID,
 {
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -958,7 +1089,7 @@ void OT_API_depositCheque(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -972,7 +1103,7 @@ void OT_API_depositCheque(OTIdentifier	& SERVER_ID,
 	OTIdentifier	CONTRACT_ID;
 	OTString		strContractID;
 	
-	OTAccount * pAccount = g_Wallet.GetAccount(ACCT_ID);
+	OTAccount * pAccount = g_pWallet->GetAccount(ACCT_ID);
 	
 	if (!pAccount)
 	{
@@ -1014,8 +1145,7 @@ void OT_API_depositCheque(OTIdentifier	& SERVER_ID,
 		OTString strNote("Deposit this cheque, please!");
 		pItem->SetNote(strNote);
 		
-		OTString strCheque;
-		theCheque.SaveContract(strCheque);
+		OTString strCheque(theCheque);
 		
 		// Add the cheque string as the attachment on the transaction item.
 		pItem->SetAttachment(strCheque); // The cheque is contained in the reference string.
@@ -1063,7 +1193,10 @@ void OT_API_depositCheque(OTIdentifier	& SERVER_ID,
 		theMessage.SaveContract();
 			
 		// (Send it)
-		g_Client.ProcessMessageOut(theMessage);	
+#if defined(OT_XMLRPC_MODE)
+		g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+		g_pClient->ProcessMessageOut(theMessage);	
 		
 	} // bSuccess
 }
@@ -1083,7 +1216,7 @@ void OT_API_notarizeTransfer(OTIdentifier	& SERVER_ID,
 {
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -1095,7 +1228,7 @@ void OT_API_notarizeTransfer(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -1106,7 +1239,7 @@ void OT_API_notarizeTransfer(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTAccount * pAccount = g_Wallet.GetAccount(ACCT_FROM);
+	OTAccount * pAccount = g_pWallet->GetAccount(ACCT_FROM);
 	
 	if (!pAccount)
 	{
@@ -1193,7 +1326,10 @@ void OT_API_notarizeTransfer(OTIdentifier	& SERVER_ID,
 		theMessage.SaveContract();
 
 		// (Send it)
-		g_Client.ProcessMessageOut(theMessage);	
+#if defined(OT_XMLRPC_MODE)
+		g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+		g_pClient->ProcessMessageOut(theMessage);	
 	}
 	else {
 		OTLog::Output(0, "No transaction numbers were available. Suggest requesting the server for one.\n");
@@ -1210,7 +1346,7 @@ void OT_API_getInbox(OTIdentifier & SERVER_ID,
 {
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -1222,7 +1358,7 @@ void OT_API_getInbox(OTIdentifier & SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -1233,7 +1369,7 @@ void OT_API_getInbox(OTIdentifier & SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTAccount * pAccount = g_Wallet.GetAccount(ACCT_ID);
+	OTAccount * pAccount = g_pWallet->GetAccount(ACCT_ID);
 	
 	if (!pAccount)
 	{
@@ -1267,7 +1403,10 @@ void OT_API_getInbox(OTIdentifier & SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-	g_Client.ProcessMessageOut(theMessage);	
+#if defined(OT_XMLRPC_MODE)
+	g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+	g_pClient->ProcessMessageOut(theMessage);	
 }
 
 
@@ -1281,7 +1420,7 @@ void OT_API_processInbox(OTIdentifier	& SERVER_ID,
 {
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -1293,7 +1432,7 @@ void OT_API_processInbox(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -1304,7 +1443,7 @@ void OT_API_processInbox(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTAccount * pAccount = g_Wallet.GetAccount(ACCT_ID);
+	OTAccount * pAccount = g_pWallet->GetAccount(ACCT_ID);
 	
 	if (!pAccount)
 	{
@@ -1342,7 +1481,10 @@ void OT_API_processInbox(OTIdentifier	& SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-	g_Client.ProcessMessageOut(theMessage);	
+#if defined(OT_XMLRPC_MODE)
+	g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+	g_pClient->ProcessMessageOut(theMessage);	
 }
 
 
@@ -1354,7 +1496,7 @@ void OT_API_issueBasket(OTIdentifier	& SERVER_ID,
 {
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -1366,7 +1508,7 @@ void OT_API_issueBasket(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -1403,7 +1545,10 @@ void OT_API_issueBasket(OTIdentifier	& SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-	g_Client.ProcessMessageOut(theMessage);
+#if defined(OT_XMLRPC_MODE)
+	g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+	g_pClient->ProcessMessageOut(theMessage);
 }
 
 
@@ -1414,7 +1559,7 @@ void OT_API_issueAssetType(OTIdentifier	&	SERVER_ID,
 {
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -1426,7 +1571,7 @@ void OT_API_issueAssetType(OTIdentifier	&	SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -1471,7 +1616,10 @@ void OT_API_issueAssetType(OTIdentifier	&	SERVER_ID,
 		theMessage.SaveContract();
 		
 		// (Send it)
-		g_Client.ProcessMessageOut(theMessage);
+#if defined(OT_XMLRPC_MODE)
+		g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+		g_pClient->ProcessMessageOut(theMessage);
 	}
 }
 
@@ -1483,7 +1631,7 @@ void OT_API_getContract(OTIdentifier & SERVER_ID,
 {
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -1495,7 +1643,7 @@ void OT_API_getContract(OTIdentifier & SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -1506,7 +1654,7 @@ void OT_API_getContract(OTIdentifier & SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTAssetContract * pAssetContract = g_Wallet.GetAssetContract(ASSET_ID);
+	OTAssetContract * pAssetContract = g_pWallet->GetAssetContract(ASSET_ID);
 	
 	if (!pAssetContract)
 	{
@@ -1540,7 +1688,10 @@ void OT_API_getContract(OTIdentifier & SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-	g_Client.ProcessMessageOut(theMessage);	
+#if defined(OT_XMLRPC_MODE)
+	g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+	g_pClient->ProcessMessageOut(theMessage);	
 }
 
 
@@ -1554,7 +1705,7 @@ void OT_API_getMint(OTIdentifier & SERVER_ID,
 {
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -1566,7 +1717,7 @@ void OT_API_getMint(OTIdentifier & SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -1577,7 +1728,7 @@ void OT_API_getMint(OTIdentifier & SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTAssetContract * pAssetContract = g_Wallet.GetAssetContract(ASSET_ID);
+	OTAssetContract * pAssetContract = g_pWallet->GetAssetContract(ASSET_ID);
 	
 	if (!pAssetContract)
 	{
@@ -1611,7 +1762,10 @@ void OT_API_getMint(OTIdentifier & SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-	g_Client.ProcessMessageOut(theMessage);	
+#if defined(OT_XMLRPC_MODE)
+	g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+	g_pClient->ProcessMessageOut(theMessage);	
 }
 
 
@@ -1624,7 +1778,7 @@ void OT_API_createAssetAccount(OTIdentifier & SERVER_ID,
 {	
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -1636,7 +1790,7 @@ void OT_API_createAssetAccount(OTIdentifier & SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -1647,7 +1801,7 @@ void OT_API_createAssetAccount(OTIdentifier & SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTAssetContract * pAssetContract = g_Wallet.GetAssetContract(ASSET_ID);
+	OTAssetContract * pAssetContract = g_pWallet->GetAssetContract(ASSET_ID);
 	
 	if (!pAssetContract)
 	{
@@ -1681,7 +1835,10 @@ void OT_API_createAssetAccount(OTIdentifier & SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-	g_Client.ProcessMessageOut(theMessage);
+#if defined(OT_XMLRPC_MODE)
+	g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+	g_pClient->ProcessMessageOut(theMessage);
 }
 
 
@@ -1694,7 +1851,7 @@ void OT_API_getAccount(OTIdentifier	& SERVER_ID,
 {	
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -1706,7 +1863,7 @@ void OT_API_getAccount(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -1717,7 +1874,7 @@ void OT_API_getAccount(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTAccount * pAccount = g_Wallet.GetAccount(ACCT_ID);
+	OTAccount * pAccount = g_pWallet->GetAccount(ACCT_ID);
 	
 	if (!pAccount)
 	{
@@ -1751,7 +1908,10 @@ void OT_API_getAccount(OTIdentifier	& SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-	g_Client.ProcessMessageOut(theMessage);
+#if defined(OT_XMLRPC_MODE)
+	g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+	g_pClient->ProcessMessageOut(theMessage);
 }
 
 
@@ -1760,7 +1920,7 @@ void OT_API_getRequest(OTIdentifier	& SERVER_ID,
 {	
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -1772,7 +1932,7 @@ void OT_API_getRequest(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -1785,15 +1945,17 @@ void OT_API_getRequest(OTIdentifier	& SERVER_ID,
 	
 	OTMessage theMessage;
 	
-	if (g_Client.ProcessUserCommand(OTClient::getRequest, theMessage, 
+	if (g_pClient->ProcessUserCommand(OTClient::getRequest, theMessage, 
 									*pNym, *pServer,
 									NULL)) // NULL pAccount on this command.
 	{				
-		g_Client.ProcessMessageOut(theMessage);
+#if defined(OT_XMLRPC_MODE)
+		g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+		g_pClient->ProcessMessageOut(theMessage);
 	}
 	else
 		OTLog::Error("Error processing getRequest command in OT_API_getRequest\n");
-	
 }
 
 
@@ -1804,7 +1966,7 @@ void OT_API_checkUser(OTIdentifier & SERVER_ID,
 {	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -1838,7 +2000,21 @@ void OT_API_checkUser(OTIdentifier & SERVER_ID,
 	theMessage.SaveContract();
 		
 	// (Send it)
-	g_Client.ProcessMessageOut(theMessage);
+#if defined(OT_XMLRPC_MODE)
+	// -----------------------------------------------------------------
+	
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
+	
+	if (!pServer)
+	{
+		// todo error message
+		
+		return;
+	}
+	
+	g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+	g_pClient->ProcessMessageOut(theMessage);
 }
 
 
@@ -1847,7 +2023,7 @@ void OT_API_createUserAccount(OTIdentifier	& SERVER_ID,
 {	
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -1859,7 +2035,7 @@ void OT_API_createUserAccount(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -1872,11 +2048,14 @@ void OT_API_createUserAccount(OTIdentifier	& SERVER_ID,
 	
 	OTMessage theMessage;
 	
-	if (g_Client.ProcessUserCommand(OTClient::createUserAccount, theMessage, 
+	if (g_pClient->ProcessUserCommand(OTClient::createUserAccount, theMessage, 
 									*pNym, *pServer,
 									NULL)) // NULL pAccount on this command.
 	{				
-		g_Client.ProcessMessageOut(theMessage);
+#if defined(OT_XMLRPC_MODE)
+		g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+		g_pClient->ProcessMessageOut(theMessage);
 	}
 	else
 		OTLog::Error("Error processing createUserAccount command in OT_API_createUserAccount\n");
@@ -1889,7 +2068,7 @@ void OT_API_checkServerID(OTIdentifier	& SERVER_ID,
 {	
 	// -----------------------------------------------------------------
 	
-	OTServerContract * pServer = g_Wallet.GetServerContract(SERVER_ID);
+	OTServerContract * pServer = g_pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
@@ -1901,7 +2080,7 @@ void OT_API_checkServerID(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = g_Wallet.GetNymByID(USER_ID);
+	OTPseudonym * pNym = g_pWallet->GetNymByID(USER_ID);
 	
 	if (!pNym)
 	{
@@ -1914,14 +2093,51 @@ void OT_API_checkServerID(OTIdentifier	& SERVER_ID,
 	
 	OTMessage theMessage;
 	
-	if (g_Client.ProcessUserCommand(OTClient::checkServerID, theMessage, 
+	if (g_pClient->ProcessUserCommand(OTClient::checkServerID, theMessage, 
 									*pNym, *pServer,
 									NULL)) // NULL pAccount on this command.
 	{				
-		g_Client.ProcessMessageOut(theMessage);
+#if defined(OT_XMLRPC_MODE)
+		g_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+		g_pClient->ProcessMessageOut(theMessage);
 	}
 	else
 		OTLog::Error("Error processing checkServerID command in OT_API_checkServerID\n");
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -116,6 +116,7 @@ class OTContract;
 class OTASCIIArmor;
 class OTSignature;
 class OTPseudonym;
+class OTPayload;
 
 class OTString
 {
@@ -168,7 +169,7 @@ public:
 	void   Concatenate(const char *arg, ...);
 	void   Concatenate(const OTString & strBuf);
 	
-	void	Truncate(uint32_t lAt);
+	void   Truncate(uint32_t lAt);
 	
 	void   Format(const char *arg, ...);
    

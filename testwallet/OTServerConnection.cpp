@@ -170,13 +170,46 @@ void OTServerConnection::Initialize()
 	// This is the first time this function has run.
 	s_bInitialized = true; // set this to true so the function can't run again. It only runs the first time.
 	
-	// Initialize SSL
+	// Initialize SSL -- MUST happen before any Private keys are loaded, if you want it to work.
     SFSocketGlobalInit();
 }
 
 
-// the hostname is not a reference, because I want people to be able
-// to pass in a C-style string and have it still work.
+// Connect is used for SSL mode, but SetFocus is used for XmlRpc mode.
+// Everytime you send a message, it is a new connection -- and could be to 
+// a different server! So it's important to switch focus each time so we
+// have the right server contract, etc.
+//
+bool OTServerConnection::SetFocus(OTPseudonym & theNym, OTServerContract & theServerContract, OT_CALLBACK_MSG pCallback)
+{
+	OT_ASSERT(NULL != pCallback); // We need the callback for processing out messages to the server (in RPC Mode)...
+	
+	// We're already connected! You can't use SetFocus if you're in connection mode (TCP instead of HTTP.)
+	if (IsConnected())
+		return false;
+	
+	// This call initializes OpenSSL (only the first time it's called.)
+	Initialize();
+
+	// The Client keeps an internal ServerConnection at all times.
+	// In SSL/TCP mode, you connect, and stay connected. But in RPC
+	// mode, you must call SetFocus before each time you prepare or
+	// process any server-related messages. Why? Since the Client normally
+	// expects the connection to already be made, and therefore expects
+	// to have access to the Nym and Server Contract (and server ID, etc)
+	// available since those pointers are normally set during Connect().
+	// Since we no longer connect in RPC mode, we must still make sure those
+	// pointers are ready by calling SetFocus before they might end up being used.
+	// Each time you send a new message, it might be to a different server or
+	// from a different nym. That's fine -- just call SetFocus() before you do it.
+	m_pNym				= &theNym;
+	m_pServerContract	= &theServerContract;
+	m_pCallback			= pCallback; // This is what we get instead of a socket, when we're in RPC mode.
+	m_bFocused			= true;
+	
+	return true;
+}
+
 bool OTServerConnection::Connect(OTPseudonym & theNym, OTServerContract & theServerContract,
 								 OTString & strCA_FILE, OTString & strKEY_FILE, OTString & strKEY_PASSWORD)
 {
@@ -190,7 +223,7 @@ bool OTServerConnection::Connect(OTPseudonym & theNym, OTServerContract & theSer
 	// You can't just pass in a hostname and port.
 	// Instead, you pass in the Nym and Contract, and *I'll* look up all that stuff.
 	OTString strHostname;
-	int nPort;
+	int nPort = 0;
 	
 	if (false == theServerContract.GetConnectInfo(strHostname, nPort))
 	{
@@ -199,12 +232,12 @@ bool OTServerConnection::Connect(OTPseudonym & theNym, OTServerContract & theSer
 	}
 	
     SFSocket * socket;
-
+	
     // Alloc Socket
 	socket = SFSocketAlloc();
 	
 	OT_ASSERT_MSG(NULL != socket, "SFSocketAlloc Failed\n");
-			
+	
     // Initialize SSL client Socket
     if (SFSocketInit(socket, strCA_FILE.Get(), NULL, strKEY_FILE.Get(), strKEY_PASSWORD.Get(), NULL) < 0) {
 	    OTLog::Error("Init Failed\n");
@@ -275,6 +308,8 @@ bool OTServerConnection::GetServerID(OTIdentifier & theID)
 OTServerConnection::OTServerConnection(OTWallet & theWallet, OTClient & theClient, SFSocket * pSock)
 {
 	m_pSocket			= pSock;
+	m_pCallback			= NULL;
+	m_bFocused			= false;
 	m_pNym				= NULL;
 	m_pServerContract	= NULL;
 	m_pWallet			= &theWallet;
@@ -284,6 +319,8 @@ OTServerConnection::OTServerConnection(OTWallet & theWallet, OTClient & theClien
 OTServerConnection::OTServerConnection(OTWallet & theWallet, OTClient & theClient)
 {
 	m_pSocket			= NULL;
+	m_pCallback			= NULL;
+	m_bFocused			= false;
 	m_pNym				= NULL;
 	m_pServerContract	= NULL;
 	m_pWallet			= &theWallet;
@@ -302,11 +339,14 @@ OTServerConnection::~OTServerConnection()
 
 // This function returns true if we received a full and proper reply from the server.
 // theServerReply will contain that message after a successful call to this function.
+// TCP / SSL mode.
 bool OTServerConnection::ProcessInBuffer(OTMessage & theServerReply)
 {
 	int  err;
 	uint32_t nread;
 	u_header theCMD;
+	
+	OT_ASSERT(NULL != m_pSocket);
 	
 	// clear the header
 	memset((void *)theCMD.buf, 0, OT_CMD_HEADER_SIZE);
@@ -341,12 +381,13 @@ bool OTServerConnection::ProcessInBuffer(OTMessage & theServerReply)
 // ProcessInBuffer calls this function, once it has verified the header,
 // this function gets the payload.  If successful, returns true and theServerReply
 // will contain the OTMessage that was received.
-// It also flushes the pipe in the event of any errors.
+// It also flushes the pipe in the event of any errors. (TCP / SSL mode)
 bool OTServerConnection::ProcessReply(u_header & theCMD, OTMessage & theServerReply)
 {
 	bool bSuccess = false;
 
-	
+	OT_ASSERT(NULL != m_pSocket);
+
 	OTLog::vOutput(4, "\n****************************************************************\n"
 			"===> Processing header from server response.\nFirst 9 bytes are: %d %d %d %d %d %d %d %d %d...\n",
 			theCMD.buf[0],theCMD.buf[1],theCMD.buf[2],theCMD.buf[3],theCMD.buf[4],theCMD.buf[5], theCMD.buf[6], theCMD.buf[7], theCMD.buf[8]);
@@ -383,7 +424,7 @@ bool OTServerConnection::ProcessReply(u_header & theCMD, OTMessage & theServerRe
 		int  err = 0, nread = 0;
 		
 		char buffer[1024];
-		int sizeJunkData = 1024;
+		int sizeJunkData = 1020; // We'll make this a bit smaller than the buffer, for safety reasons.
 		
 		while (1)
 		{
@@ -400,8 +441,7 @@ bool OTServerConnection::ProcessReply(u_header & theCMD, OTMessage & theServerRe
 				break;
 		}
 		
-		OTLog::vError("Transmission error--therefore have flushed the pipe, discarding %d bytes.\n", 
-				nread, sizeJunkData);
+		OTLog::vError("Transmission error--therefore have flushed the pipe, discarding %d bytes.\n", nread);
 	}
 	
 	return bSuccess;
@@ -418,6 +458,8 @@ bool OTServerConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theServe
 	int  err;
 	uint32_t nread;
 	
+	OT_ASSERT(NULL != m_pSocket);
+
 	// Make sure our byte-order is correct here.
 	theCMD.fields.size = ntohl(theCMD.fields.size); // think this is causing problems... maybe not...
 
@@ -592,7 +634,11 @@ bool OTServerConnection::ProcessType1Cmd(u_header & theCMD, OTMessage & theServe
 
 bool OTServerConnection::SignAndSend(OTMessage & theMessage)
 {
-	if (m_pNym && m_pSocket && m_pWallet && theMessage.SignContract(*m_pNym) && theMessage.SaveContract())
+	if (m_pNym && 
+		m_pWallet && 
+		(IsConnected() || IsFocused()) && 
+		theMessage.SignContract(*m_pNym) && 
+		theMessage.SaveContract())
 	{
 		ProcessMessageOut(theMessage);
 		return true;
@@ -612,24 +658,28 @@ void OTServerConnection::ProcessMessageOut(OTMessage & theMessage)
 	u_header theCMD; 
 	OTPayload thePayload;
 	
+	
+	OT_ASSERT(IsConnected() || IsFocused());
+	
 	// clear the header
 	memset((void *)theCMD.buf, 0, OT_CMD_HEADER_SIZE);
 
 	// Here is where we set up the Payload (so we have the size ready before the header goes out)
 	// This is also where we have turned on the encrypted envelopes  }:-)
+	OTEnvelope theEnvelope; // All comms should be encrypted in one of these envelopes.
 
 	// Testing encrypted envelopes...
-	const OTPseudonym * pRecipient = NULL;
-	
-	if (m_pServerContract && (pRecipient = m_pServerContract->GetContractPublicNym()))
+	const OTPseudonym * pServerNym = NULL;
+
+	if (m_pServerContract && 
+		(NULL != (pServerNym = m_pServerContract->GetContractPublicNym())))
 	{
 		OTString strEnvelopeContents;
 		// Save the ready-to-go message into a string.
 		theMessage.SaveContract(strEnvelopeContents);
 		
-		OTEnvelope theEnvelope;
 		// Seal the string up into an encrypted Envelope
-		theEnvelope.Seal(*pRecipient, strEnvelopeContents);
+		theEnvelope.Seal(*pServerNym, strEnvelopeContents);
 		
 		// From here on out, theMessage is disposable. OTPayload takes over. 
 		// OTMessage doesn't care about checksums and headers.
@@ -638,7 +688,7 @@ void OTServerConnection::ProcessMessageOut(OTMessage & theMessage)
 		// Now that the payload is ready, we'll set up the header.
 		SetupHeader(theCMD, CMD_TYPE_1, TYPE_1_CMD_2, thePayload);
 	}
-	// else, for whatever reason, we just send an UNencrypted message...
+	// else, for whatever reason, we just send an UNencrypted message... (This shouldn't happen anymore...) TODO remove.
 	else {
 		thePayload.SetMessage(theMessage);
 		
@@ -646,36 +696,53 @@ void OTServerConnection::ProcessMessageOut(OTMessage & theMessage)
 		SetupHeader(theCMD, CMD_TYPE_1, TYPE_1_CMD_1, thePayload);
 	}
 	
-	int nHeaderSize = OT_CMD_HEADER_SIZE;
-	
-	for (nwritten = 0;  nwritten < nHeaderSize;  nwritten += err)
-	{
-		err = SFSocketWrite(m_pSocket, theCMD.buf + nwritten, nHeaderSize - nwritten);
+	// ---------------------------------------------------------
 
-#ifdef _WIN32
-		if (0 == err || SOCKET_ERROR == err) //  0 is disonnect. error is error. >0 is bytes written.
-#else
-		if (err <= 0)
-#endif
-			break;
+	if (IsFocused()) // RPC / HTTP mode... ----------
+	{
+		OT_ASSERT(NULL != m_pCallback);
+		OT_ASSERT(NULL != m_pServerContract);
+		
+		// Call the callback here.
+		(*m_pCallback)(*m_pServerContract, theEnvelope); // We don't use the payload in RPC mode, just the envelope. RPC does the rest.
+		OTLog::Output(0, "Message sent via RPC / HTTP...\n\n");
 	}
-
-	// At this point, we have sent the header across the pipe.
-	uint32_t nPayloadSize = thePayload.GetSize();
-	
-	for (nwritten = 0;  nwritten < nPayloadSize;  nwritten += err)
+	else			// TCP / SSL mode... -----------
 	{
-		err = SFSocketWrite(m_pSocket, (unsigned char *)thePayload.GetPayloadPointer() + nwritten, nPayloadSize - nwritten);
+		int nHeaderSize = OT_CMD_HEADER_SIZE;
+		
+		for (nwritten = 0;  nwritten < nHeaderSize;  nwritten += err)
+		{
+			err = SFSocketWrite(m_pSocket, theCMD.buf + nwritten, nHeaderSize - nwritten);
 
 #ifdef _WIN32
-		if (0 == err || SOCKET_ERROR == err) //  0 is disonnect. error is error. >0 is bytes written.
+			if (0 == err || SOCKET_ERROR == err) //  0 is disonnect. error is error. >0 is bytes written.
 #else
-		if (err <= 0)
+			if (err <= 0)
 #endif
-			break;
-	}		
-	OTLog::Output(0, "Message sent...\n\n");
-	// At this point, we have sent the payload across the pipe.		
+				break;
+		}
+
+		// At this point, we have sent the header across the pipe.
+		// Next we write the payload...
+		
+		uint32_t nPayloadSize = thePayload.GetSize();
+		
+		for (nwritten = 0;  nwritten < nPayloadSize;  nwritten += err)
+		{
+			err = SFSocketWrite(m_pSocket, (unsigned char *)thePayload.GetPayloadPointer() + nwritten, nPayloadSize - nwritten);
+
+#ifdef _WIN32
+			if (0 == err || SOCKET_ERROR == err) //  0 is disonnect. error is error. >0 is bytes written.
+#else
+			if (err <= 0)
+#endif
+				break;
+		}
+		OTLog::Output(0, "Message sent via TCP / SSL...\n\n");
+	}
+	
+	// At this point, we have sent the envelope to the server.		
 }
 
 
@@ -695,6 +762,10 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
     int  err;
 	uint32_t nwritten;
 	u_header theCMD; 
+	
+	
+	OT_ASSERT(IsConnected() || IsFocused());
+
 	
 	// clear the header
 	memset((void *)theCMD.buf, 0, OT_CMD_HEADER_SIZE);
@@ -903,14 +974,34 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 			// if successful setting up the command payload...
 			
 			if (m_pClient->ProcessUserCommand(OTClient::exchangeBasket, theMessage, 
-											*m_pNym, *m_pServerContract,
-											NULL)) // NULL pAccount on this command.
+											  *m_pNym, *m_pServerContract,
+											  NULL)) // NULL pAccount on this command.
 			{
 				bSendCommand = true;
 				bSendPayload = true;				
 			}
 			else
 				OTLog::vError("Error processing exchangeBasket command in ProcessMessage: %c\n", buf[0]);
+			// ------------------------------------------------------------------------
+		}
+		
+		// make an offer and put it onto a market. 
+		else if (!strcmp(buf, "offer\n"))
+		{
+			OTLog::Output(0, "(User has instructed to send a marketOffer command to the server...)\n");
+			
+			// ------------------------------------------------------------------------------			
+			// if successful setting up the command payload...
+			
+			if (m_pClient->ProcessUserCommand(OTClient::marketOffer, theMessage, 
+											  *m_pNym, *m_pServerContract,
+											  NULL)) // NULL pAccount on this command.
+			{
+				bSendCommand = true;
+				bSendPayload = true;				
+			}
+			else
+				OTLog::vError("Error processing marketOffer command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		
@@ -943,8 +1034,8 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 			// if successful setting up the command payload...
 			
 			if (m_pClient->ProcessUserCommand(OTClient::notarizeCheque, theMessage, 
-											*m_pNym, *m_pServerContract,
-											NULL)) // NULL pAccount on this command.
+											  *m_pNym, *m_pServerContract,
+											  NULL)) // NULL pAccount on this command.
 			{
 				bSendCommand = true;
 				bSendPayload = true;				
@@ -1014,6 +1105,26 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 			// ------------------------------------------------------------------------
 		}
 		
+		// activate payment plan
+		else if (!strcmp(buf, "plan\n"))
+		{
+			OTLog::Output(0, "User has instructed to activate a payment plan...\n");
+			
+			// ------------------------------------------------------------------------------			
+			// if successful setting up the command payload...
+			
+			if (m_pClient->ProcessUserCommand(OTClient::paymentPlan, theMessage, 
+											  *m_pNym, *m_pServerContract,
+											  NULL)) // NULL pAccount on this command.
+			{
+				bSendCommand = true;
+				bSendPayload = true;				
+			}
+			else
+				OTLog::vError("Error processing payment plan command in ProcessMessage: %c\n", buf[0]);
+			// ------------------------------------------------------------------------
+		}
+				
 		// deposit purse
 		else if (buf[0] == 'p')
 		{
@@ -1033,7 +1144,7 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				OTLog::vError("Error processing deposit command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
-		
+				
 		// get account 
 		else if (!strcmp(buf, "test\n"))
 		{
@@ -1169,12 +1280,13 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				
 			OTLog::Output(0, "Please enter an unsigned asset contract; terminate with ~ on a new line:\n> ");
 			OTString strContract;
-			char decode_buffer[200];
+			char decode_buffer[200]; // Safe since we only read sizeof(decode_buffer)-1
 			
 			do {
-				fgets(decode_buffer, sizeof(decode_buffer), stdin);
+				decode_buffer[0] = 0; // Make it fresh.
 				
-				if (decode_buffer[0] != '~')
+				if ((NULL != fgets(decode_buffer, sizeof(decode_buffer)-1, stdin)) &&
+					(decode_buffer[0] != '~'))
 				{
 					if (!bEscaped && decode_buffer[0] == '-')
 					{
@@ -1183,6 +1295,11 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 					strContract.Concatenate("%s", decode_buffer);
 					OTLog::Output(0, "> ");
 				}
+				else 
+				{
+					break;
+				}
+
 			} while (decode_buffer[0] != '~');
 			
 			OTAssetContract theContract;
@@ -1299,12 +1416,12 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 	{
 		// Voila -- it's sent. (If there was a payload involved.)
 		ProcessMessageOut(theMessage);
-	} // Otherwise...
-	else if (bSendCommand)
+	} // Otherwise... if it's a "header only" ...
+	else if (bSendCommand && IsConnected()) // I only write to a socket if I'm in socket mode...
 	{
 		int nHeaderSize = OT_CMD_HEADER_SIZE;
 		
-		// TODO: REMOVE THIS. FOR TESTING ONLY
+		// TODO: REMOVE THIS. FOR TESTING ONLY (testing malformed headers, and headers without payloads...)
 		if (buf[0] == '2') {
 			nHeaderSize += 3;
 		}

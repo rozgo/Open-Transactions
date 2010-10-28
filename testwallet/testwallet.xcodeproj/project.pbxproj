@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		83083A2B126BEA3300A7EE9E /* OTWallet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83083A29126BEA3300A7EE9E /* OTWallet.cpp */; };
 		830EC8DB11F8B8FE00198F04 /* OTServerConnection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 830EC8D911F8B8FE00198F04 /* OTServerConnection.cpp */; };
 		8392376011BB395400AF54AF /* OTClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8392375F11BB395400AF54AF /* OTClient.cpp */; };
 		83923E6E11BE027E00AF54AF /* SFSocket.c in Sources */ = {isa = PBXBuildFile; fileRef = 83923BCC11BDA44200AF54AF /* SFSocket.c */; };
-		83C095CB11B3276900FDCACD /* irrXML.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83C095C811B3276900FDCACD /* irrXML.cpp */; };
 		83C5F2FD122DE66100964E36 /* OpenTransactions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83C5F2FB122DE66100964E36 /* OpenTransactions.cpp */; };
 		83C5F386122DED4800964E36 /* testclient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 830EC8E311F8BF0A00198F04 /* testclient.cpp */; };
 		83C5F50B122E10D600964E36 /* libOTLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83C5F50A122E10D600964E36 /* libOTLib.a */; };
@@ -31,6 +31,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		83083A29126BEA3300A7EE9E /* OTWallet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OTWallet.cpp; path = ../OTLib/OTWallet.cpp; sourceTree = SOURCE_ROOT; };
+		83083A2A126BEA3300A7EE9E /* OTWallet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OTWallet.h; path = ../OTLib/OTWallet.h; sourceTree = SOURCE_ROOT; };
 		830EC8D911F8B8FE00198F04 /* OTServerConnection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OTServerConnection.cpp; sourceTree = "<group>"; };
 		830EC8DA11F8B8FE00198F04 /* OTServerConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTServerConnection.h; sourceTree = "<group>"; };
 		830EC8E311F8BF0A00198F04 /* testclient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = testclient.cpp; sourceTree = "<group>"; };
@@ -40,14 +42,6 @@
 		83923BCD11BDA44200AF54AF /* SFSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFSocket.h; sourceTree = "<group>"; };
 		83BCB1FB11B0AE1400E6A0B2 /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
 		83C095BB11B2860700FDCACD /* wallet.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = wallet.xml; sourceTree = "<group>"; };
-		83C095C211B3276900FDCACD /* CXMLReaderImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXMLReaderImpl.h; sourceTree = "<group>"; };
-		83C095C311B3276900FDCACD /* fast_atof.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fast_atof.h; sourceTree = "<group>"; };
-		83C095C411B3276900FDCACD /* heapsort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = heapsort.h; sourceTree = "<group>"; };
-		83C095C511B3276900FDCACD /* irrArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = irrArray.h; sourceTree = "<group>"; };
-		83C095C611B3276900FDCACD /* irrString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = irrString.h; sourceTree = "<group>"; };
-		83C095C711B3276900FDCACD /* irrTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = irrTypes.h; sourceTree = "<group>"; };
-		83C095C811B3276900FDCACD /* irrXML.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = irrXML.cpp; sourceTree = "<group>"; };
-		83C095C911B3276900FDCACD /* irrXML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = irrXML.h; sourceTree = "<group>"; };
 		83C5F2FB122DE66100964E36 /* OpenTransactions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OpenTransactions.cpp; sourceTree = "<group>"; };
 		83C5F2FC122DE66100964E36 /* OpenTransactions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenTransactions.h; sourceTree = "<group>"; };
 		83C5F50A122E10D600964E36 /* libOTLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOTLib.a; path = ../OTLib/libOTLib.a; sourceTree = SOURCE_ROOT; };
@@ -75,7 +69,6 @@
 				83E651D7122E32E700320598 /* Makefile.OT_API */,
 				83E651D8122E32E700320598 /* Makefile.testwallet */,
 				83C5F50A122E10D600964E36 /* libOTLib.a */,
-				83C095C111B3276900FDCACD /* irrxml */,
 				83C095BB11B2860700FDCACD /* wallet.xml */,
 				83923BC311BDA44200AF54AF /* SSL-Example */,
 				08FB7795FE84155DC02AAC07 /* Source */,
@@ -88,6 +81,8 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				83083A29126BEA3300A7EE9E /* OTWallet.cpp */,
+				83083A2A126BEA3300A7EE9E /* OTWallet.h */,
 				830EC8E311F8BF0A00198F04 /* testclient.cpp */,
 				83C5F2FC122DE66100964E36 /* OpenTransactions.h */,
 				83C5F2FB122DE66100964E36 /* OpenTransactions.cpp */,
@@ -115,21 +110,6 @@
 				83923BCD11BDA44200AF54AF /* SFSocket.h */,
 			);
 			path = "SSL-Example";
-			sourceTree = "<group>";
-		};
-		83C095C111B3276900FDCACD /* irrxml */ = {
-			isa = PBXGroup;
-			children = (
-				83C095C211B3276900FDCACD /* CXMLReaderImpl.h */,
-				83C095C311B3276900FDCACD /* fast_atof.h */,
-				83C095C411B3276900FDCACD /* heapsort.h */,
-				83C095C511B3276900FDCACD /* irrArray.h */,
-				83C095C611B3276900FDCACD /* irrString.h */,
-				83C095C711B3276900FDCACD /* irrTypes.h */,
-				83C095C811B3276900FDCACD /* irrXML.cpp */,
-				83C095C911B3276900FDCACD /* irrXML.h */,
-			);
-			path = irrxml;
 			sourceTree = "<group>";
 		};
 		C6859E8C029090F304C91782 /* Documentation */ = {
@@ -183,12 +163,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				83C095CB11B3276900FDCACD /* irrXML.cpp in Sources */,
 				8392376011BB395400AF54AF /* OTClient.cpp in Sources */,
 				83923E6E11BE027E00AF54AF /* SFSocket.c in Sources */,
 				830EC8DB11F8B8FE00198F04 /* OTServerConnection.cpp in Sources */,
 				83C5F2FD122DE66100964E36 /* OpenTransactions.cpp in Sources */,
 				83C5F386122DED4800964E36 /* testclient.cpp in Sources */,
+				83083A2B126BEA3300A7EE9E /* OTWallet.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -383,8 +383,8 @@ bool OTMint::AddDenomination(OTPseudonym & theNotary, long lDenomination, int nP
 	
 	// Copy from BIO back to a normal OTString or Ascii-Armor  
 	char privateBankBuffer[4096], publicBankBuffer[4096];   // todo stop hardcoding these string lengths
-	int privatebankLen	= BIO_read(bio, privateBankBuffer, 4000); // cutting it a little short on purpose, with the buffer. Just makes me feel more comfortable for some reason.
-	int publicbankLen	= BIO_read(bioPublic, publicBankBuffer, 4000); 
+	int privatebankLen	= BIO_read(bio, privateBankBuffer, 4000); // cutting it a little short on purpose, with the buffer. 
+	int publicbankLen	= BIO_read(bioPublic, publicBankBuffer, 4000); // Just makes me feel more comfortable for some reason.
 	
 	if (privatebankLen && publicbankLen)
 	{
@@ -394,6 +394,9 @@ bool OTMint::AddDenomination(OTPseudonym & theNotary, long lDenomination, int nP
 		
 		OTASCIIArmor * pPublic	= new OTASCIIArmor();
 		OTASCIIArmor * pPrivate	= new OTASCIIArmor();
+		
+		OT_ASSERT(NULL != pPublic);
+		OT_ASSERT(NULL != pPrivate);
 		
 		// Set the public bank info onto pPublic
 		pPublic->SetString(strPublicBank, true); // linebreaks = true

@@ -4,7 +4,9 @@
 # location
 #
 
-PROGRAM = createmint 
+PROGRAM = createmint.exe
+
+DEBUG_PROGRAM = createmint.debug
 
 #
 # Command line parameters: Edit these parameters so that you can 
@@ -22,6 +24,17 @@ PROGRAM = createmint
 # executable must be linked against.
 #
 
+#
+# Make sure the first directory below has YOUR computer's path to the
+# OpenSSL include files. This is the one I use for Mac and Linux:
+#
+#        -I/usr/local/ssl/include \
+#
+# Or, if you prefer, the FreeBSD path to the OpenSSL include files:
+#
+#        -I/usr/local/include \
+#
+
 INCLUDEDIRS = \
 	-I/usr/local/ssl/include \
 	-I../../OTLib/irrxml \
@@ -29,11 +42,18 @@ INCLUDEDIRS = \
 	-I./
 
 
+# For FreeBSD, add this library path:  
+# /usr/ports/security/openssl/work/openssl-1.0.0a
+#
+# Or this one, depending on your system:
+#  /usr/local/lib
+#
 LIBDIRS = \
 	-L../../OTLib
 
 
 LIBS = $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib 
+DEBUG_LIBS = $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd 
 
 #
 # The CXXSOURCES macro contains a list of source files.
@@ -56,8 +76,10 @@ CXXSOURCES = \
 			 
 CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
 CXXFLAGS   = $(INCLUDEDIRS)
+DEBUG_FLAGS = -g
 CXX = g++
 LDFLAGS = $(LIBDIRS) $(LIBS)
+DEBUG_LDFLAGS = $(LIBDIRS) $(DEBUG_LIBS)
 
 #
 # Default target: the first target is the default target.
@@ -66,13 +88,21 @@ LDFLAGS = $(LIBDIRS) $(LIBS)
 
 all: $(PROGRAM)
 
+debug: CXXFLAGS += $(DEBUG_FLAGS)
+debug: LIBS = $(DEBUG_LIBS)
+debug: LDFLAGS = $(DEBUG_LDFLAGS)
+debug: $(DEBUG_PROGRAM)
+
 #
 # Link target: automatically builds its object dependencies before
 # executing its link command.
 #
 
+$(DEBUG_PROGRAM): $(CXXOBJECTS)
+	$(CXX) $(CXXOBJECTS) $(DEBUG_LIBS) -o $@
+
 $(PROGRAM): $(CXXOBJECTS)
-	$(CXX) -ldl $(CXXOBJECTS) $(LIBS) -o $@
+	$(CXX) $(CXXOBJECTS) $(LIBS) -o $@
 
 #
 # Object targets: rules that define objects, their dependencies, and
@@ -86,9 +116,10 @@ main.o: main.cpp
 #
 # Clean target: "make -f Makefile.Linux clean" to remove unwanted objects and executables.
 #
+RM=rm
 
 clean:
-	$(RM) -f $(CXXOBJECTS) $(PROGRAM)
+	$(RM) -f $(CXXOBJECTS) $(PROGRAM) $(DEBUG_PROGRAM)
 
 #
 # Run target: "make -f Makefile.Linux run" to execute the application

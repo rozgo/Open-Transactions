@@ -29,7 +29,15 @@ lost on me.)
 
 ------------
 
-2) I had to install OpenSSL for Windows, (version 1.0.0 at least is necessary 
+2) If you prefer to run in XmlRpc/HTTP mode (transport protocol), which is
+   the preferred mode, then you must install the XmlRpc++ library, which you
+   can get right here:  http://xmlrpcpp.sourceforge.net/
+   It's available for Windows.  If you don't want to install the library, that's
+   okay, since the default build uses the OTMessage -> TCP -> SSL transport mode.
+
+------------
+
+3) I had to install OpenSSL for Windows, (version 1.0.0 at least is necessary 
 for Open Transactions to function properly.) The download page is here:
 http://www.slproweb.com/products/Win32OpenSSL.html
 
@@ -53,7 +61,7 @@ various files in the project for it to work.
 
 ------------
 
-3) Then I had to download these header files:
+4) Then I had to download these header files:
 http://code.google.com/p/msinttypes/downloads/detail?name=msinttypes-r26.zip&can=2&q=
 
 Once you download the header files, unzip them so that they appear in your
@@ -65,7 +73,7 @@ have to download them separately and put them into an include folder.
 
 ------------
 
-4) Then I created a Win32 command-line application and chose 'library' as the type.
+5) Then I created a Win32 command-line application and chose 'library' as the type.
 (You won't have to do this since it's already done: I have included the project files 
 with this distribution.)
 
@@ -78,7 +86,7 @@ each to their respective folders and added to each project as appropriate.
 
 ------------
 
-5) Transaction server and client both still have a hardcoded path in the source code. 
+6) Transaction server and client both still have a hardcoded path in the source code. 
 (It's just a default path and IS configurable on the command line.)
 
 Search the code for "C:\\", which appears once in the client and 
@@ -115,7 +123,7 @@ Open-Transactions\OTLib\OTLib\OTLib.vcxproj
 
 ------
 
-6) The VC++ projects should be set up with precompiled headers turned OFF. 
+7) The VC++ projects should be set up with precompiled headers turned OFF. 
 
 (Under C/C++, click on Precompiled Headers and made sure I set "Precompiled
 Header" to "Not Using Precompiled Headers".)
@@ -128,7 +136,7 @@ used, since it was free.
 
 ------
 
-7) OTLIB INCLUDE DIRECTORIES
+8) OTLIB INCLUDE DIRECTORIES
 
 Under VC++ Directories -> Include Directories, the value is set to: 
 (SEPARATED ONTO MULTIPLE LINES FOR READABILITY...)
@@ -142,7 +150,7 @@ project includes the OpenSSL path and the Lucre path as appropriate for your sys
 
 -----
 
-8) DIRECTORIES for TESTWALLET (the client software)
+9) DIRECTORIES for TESTWALLET (the client software)
 
 The VC++ project for testwallet, under VC++ Directories -> Include Directories, 
 it is set to:
@@ -169,7 +177,7 @@ Notice also that OpenSSL has to be on the "Include Library" path for each projec
 
 -----
 
-9) TESTWALLET LINKER SETTINGS
+10) TESTWALLET LINKER SETTINGS
 
 Here are the libraries I had to link against in order to get testwallet running:
 Linker -> Input -> Additional Dependencies:
@@ -225,7 +233,7 @@ a very easy, high-level interface. A trained monkey could do it!
 
 -------
 
-10) TRANSACTION 
+11) TRANSACTION 
 
 - transaction (the server) has the same "VC++ Directories -> Linker Input" 
 as testwallet does:

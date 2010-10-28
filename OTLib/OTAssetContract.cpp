@@ -205,7 +205,7 @@ bool OTAssetContract::CreateBasket(OTBasket & theBasket, OTPseudonym & theSigner
 	
 }
 
-
+	
 
 
 
@@ -215,7 +215,6 @@ bool OTAssetContract::SaveContractWallet(std::ofstream & ofs)
 	
 	ofs << "<assetType name=\"" << m_strName.Get()		<<
 	"\"\n assetTypeID=\""		<< strID.Get()			<<
-	"\"\n contract=\""			<< m_strFilename.Get()	<<
 	"\" /> \n\n";	
 	
 	return true;

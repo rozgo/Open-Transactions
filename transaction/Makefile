@@ -6,6 +6,8 @@
 
 PROGRAM = transaction.exe  
 
+DEBUG_PROGRAM = transaction.debug
+
 #
 # Command line parameters: Edit these parameters so that you can 
 # easily run the sample by typing "make -f Makefile.Linux run".
@@ -40,12 +42,19 @@ INCLUDEDIRS = \
 	-I./SSL-Example \
 	-I./
 
-# For FreeBSD, add this library:  /usr/local/lib
+# For FreeBSD, add this library path:  
+# /usr/ports/security/openssl/work/openssl-1.0.0a
+#
+# Or this one, depending on your system:
+#  /usr/local/lib
+#
 LIBDIRS = \
 	-L../OTLib 
 
 
 LIBS = $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib
+
+DEBUG_LIBS = $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd
 
 #LIBS = $(LIBDIRS) -lOTLib ../OTLib/libssl.a \
 #	../OTLib/libcrypto.a
@@ -79,9 +88,12 @@ CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
 COBJECTS   = $(CSOURCES:.c=.o)
 CXXFLAGS   = $(INCLUDEDIRS)
 CFLAGS     = $(INCLUDEDIRS)
+DEBUG_FLAGS = -g
 CXX = g++
 CC = gcc
 LDFLAGS = $(LIBDIRS) $(LIBS)
+
+DEBUG_LDFLAGS = $(LIBDIRS) $(DEBUG_LIBS)
 
 #
 # Default target: the first target is the default target.
@@ -90,10 +102,19 @@ LDFLAGS = $(LIBDIRS) $(LIBS)
 
 all: $(PROGRAM)
 
+debug: CXXFLAGS += $(DEBUG_FLAGS)
+debug: LIBS = $(DEBUG_LIBS)
+debug: LDFLAGS = $(DEBUG_LDFLAGS)
+debug: $(DEBUG_PROGRAM)
+
+
 #
 # Link target: automatically builds its object dependencies before
 # executing its link command.
 #
+
+$(DEBUG_PROGRAM): $(CXXOBJECTS) $(COBJECTS) 
+	$(CXX) $(CXXOBJECTS) $(COBJECTS) $(DEBUG_LIBS) -o $@
 
 $(PROGRAM): $(CXXOBJECTS) $(COBJECTS) 
 	$(CXX) $(CXXOBJECTS) $(COBJECTS) $(LIBS) -o $@
@@ -121,7 +142,7 @@ testserver.o: testserver.cpp
 RM=rm
 
 clean:
-	$(RM) -f $(CXXOBJECTS) $(COBJECTS) $(PROGRAM)
+	$(RM) -f $(CXXOBJECTS) $(COBJECTS) $(PROGRAM) $(DEBUG_PROGRAM)
 
 #
 # Run target: "make -f Makefile.Linux run" to execute the application
@@ -131,3 +152,5 @@ clean:
 
 run:
 	./$(PROGRAM) 
+
+

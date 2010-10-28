@@ -1,0 +1,40 @@
+
+# COMMENT: This Makefile alone isn't enough for FreeBSD. Before you
+# run this, you still need to read INSTALL-FreeBSD.txt and follow
+# the instructions.  Sorry!  
+
+
+
+all:
+	cd OTLib && make
+	cd transaction && make
+	cd testwallet && make -f Makefile.CPP_API
+	cd testwallet && make -f Makefile.testwallet
+
+debug:
+	cd OTLib && make debug
+	cd transaction && make debug
+	cd testwallet && make -f Makefile.CPP_API debug
+	cd testwallet && make -f Makefile.testwallet debug
+
+rpc:
+	cd OTLib && make
+	cd transaction && make -f Makefile.rpc
+	cd testwallet && make -f Makefile.CPP_API rpc
+	cd testwallet && make -f Makefile.rpc
+
+debugrpc:
+	cd OTLib && make debug
+	cd transaction && make -f Makefile.rpc debug
+	cd testwallet && make -f Makefile.CPP_API debugrpc
+	cd testwallet && make -f Makefile.rpc debug
+
+clean:
+	cd OTLib && make clean
+	cd transaction && make clean
+	cd transaction && make -f Makefile.rpc clean
+	cd testwallet && make -f Makefile.CPP_API clean
+	cd testwallet && make -f Makefile.testwallet clean
+	cd testwallet && make -f Makefile.rpc clean
+
+ 

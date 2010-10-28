@@ -109,30 +109,50 @@ private:
 
 public:
 	enum itemType {
+		// TRANSACTION NUMBERS ARE REQUIRED FOR EVERY TRANSACTION
 		transaction,	// this item is request for a transaction number
 		atTransaction,	// this item contains a transaction number (you should store it for later use)
+// ------------------------------------------------------------------------------
+		// TRANSFER
 		transfer,	// this item is an outgoing transfer, probably part of an outoing transaction.
 		atTransfer,
 		accept,		// this item is a client-side acceptance of a pending transaction
 		atAccept,	
 		reject,		// this item is a client-side rejection of a pending transaction	
 		atReject,
+// ------------------------------------------------------------------------------
+		// FEEs
 		serverfee,	// this item is a fee from the transaction server (per contract)
 		atServerfee,
 		issuerfee,	// this item is a fee from the issuer (per contract)
 		atIssuerfee,
+// ------------------------------------------------------------------------------
+		// INFO (BALANCE, HASH, etc)
 		balance,	// this item is a statement of balance
 		atBalance,
 		outboxhash,	// this item is a hash of an outbox (unused for now)
 		atOutboxhash,
+// ------------------------------------------------------------------------------
+		// CASH WITHDRAWAL / DEPOSIT
 		withdrawal,	// this item is a cash withdrawal (of chaumian blinded tokens)
 		atWithdrawal,
 		deposit,	// this item is a cash deposit (of a purse containing blinded tokens.)
 		atDeposit,
+// ------------------------------------------------------------------------------
+		// CHEQUES AND VOUCHERS
 		withdrawVoucher,// this item is a request to purchase a voucher (a cashier's cheque)
 		atWithdrawVoucher,
-		depositCheque,	// this item is a cheque deposit
+		depositCheque,	// this item is a request to deposit a cheque
 		atDepositCheque,
+// ------------------------------------------------------------------------------
+		// TRADING ON MARKETS
+		marketOffer,	// this item is an offer to be put on a market.
+		atMarketOffer,	// server reply or updated notification regarding a market offer.
+// ------------------------------------------------------------------------------
+		// PAYMENT PLANS
+		paymentPlan,	// this item is a new payment plan
+		atPaymentPlan,	// server reply or updated notification regarding a payment plan.
+// ------------------------------------------------------------------------------
 		error_state // error state versus error status
 	};
 
@@ -173,9 +193,10 @@ public:
 	// the "From" accountID and the ServerID are now in the parent class. (2 of each.)
 	
 	OTIdentifier	m_OutboxHash;		// unused for now
-	OTASCIIArmor	m_ascNote;			// a text field for the user.
-	OTASCIIArmor	m_ascAttachment;	// the digital cash token is sent here, signed, and returned here.
-
+	OTASCIIArmor	m_ascNote;			// a text field for the user. Cron may also store receipt data here.
+	OTASCIIArmor	m_ascAttachment;	// the digital cash token is sent here, signed, and returned here. (or purse of tokens.)
+										// As well as a cheque, or a voucher, or a server update on a market offer.
+	
 	inline OTItem::itemStatus GetStatus() const { return m_Status; }
 	inline void SetStatus(const OTItem::itemStatus & theVal) { m_Status = theVal; }
 	inline OTItem::itemType GetType() const { return m_Type; }

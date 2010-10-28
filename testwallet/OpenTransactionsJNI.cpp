@@ -1,5 +1,5 @@
 /* Implementation for class OpenTransactionsJNI */
-
+// See other files in distribution for license.
 
 #include "OpenTransactionsJNI.h"
 

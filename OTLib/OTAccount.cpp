@@ -147,7 +147,8 @@ bool OTAccount::LoadContract()
 {
 	OTString strID;
 	GetIdentifier(strID);
-	m_strFilename.Format("%s%saccounts%s%s", OTLog::Path(), OTLog::PathSeparator(),
+	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 OTLog::AccountFolder(),
 						 OTLog::PathSeparator(), strID.Get());
 
 	return OTContract::LoadContract();
@@ -157,7 +158,8 @@ bool OTAccount::SaveAccount()
 {
 	OTString strID;
 	GetIdentifier(strID);
-	m_strFilename.Format("%s%saccounts%s%s", OTLog::Path(), OTLog::PathSeparator(),
+	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 OTLog::AccountFolder(),
 						 OTLog::PathSeparator(), strID.Get());
 	
 	OTLog::vOutput(2, "");
@@ -184,7 +186,7 @@ bool OTAccount::SaveAccount()
 }
 
 // Debit a certain amount from the account (presumably the same amount is being credited somewhere else)
-bool OTAccount::Debit(long lAmount)
+bool OTAccount::Debit(const long & lAmount)
 {
 	/* // TODO: Decide whether or not to allow negative Debits and negative Credits. (Currrently allowed.)
 	if (lAmount < 0)
@@ -209,7 +211,7 @@ bool OTAccount::Debit(long lAmount)
 
 
 // Credit a certain amount to the account (presumably the same amount is being debited somewhere else)
-bool OTAccount::Credit(long lAmount)
+bool OTAccount::Credit(const long & lAmount)
 {
 	/* // TODO: Decide whether or not to allow negative Debits and negative Credits. (Currrently allowed.)
 	 if (lAmount < 0)
@@ -346,7 +348,7 @@ char* myGetTimeOfDay(char* buffer, int bufferLength)
 		strcat(buffer, sp);
 #endif		
 		
-		delete [] sp;
+//		delete [] sp; // wtf is this? Am I supposed to delete this? commenting it out for now. weird to see this here.
 	}
 	return buffer;
 }
@@ -357,26 +359,33 @@ char* myGetTimeOfDay(char* buffer, int bufferLength)
 
 OTAccount * OTAccount::LoadExistingAccount(const OTIdentifier & theAccountID, const OTIdentifier & theServerID)
 {
+	if (!OTLog::ConfirmOrCreateFolder(OTLog::AccountFolder()))
+	{
+		OTLog::vError("Unable to find or create accounts folder: %s\n", OTLog::AccountFolder());
+		return NULL;
+	}
+	
 	OTAccount * pAccount = new OTAccount();
 	
-	if (pAccount)
+	OT_ASSERT(NULL != pAccount);
+	
+	pAccount->SetRealAccountID(theAccountID);
+	pAccount->SetRealServerID(theServerID);
+	
+	OTString strAcctID(theAccountID);
+	
+	pAccount->m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+								   OTLog::AccountFolder(),
+								   OTLog::PathSeparator(), strAcctID.Get());
+	
+	if (pAccount->LoadContract() && pAccount->VerifyContractID())
+		return pAccount;
+	else 
 	{
-		pAccount->SetRealAccountID(theAccountID);
-		pAccount->SetRealServerID(theServerID);
-		
-		OTString strAcctID(theAccountID);
-		
-		pAccount->m_strFilename.Format("%s%saccounts%s%s", OTLog::Path(), OTLog::PathSeparator(),
-									   OTLog::PathSeparator(), strAcctID.Get());
-		
-		if (pAccount->LoadContract() && pAccount->VerifyContractID())
-			return pAccount;
-		else {
-			delete pAccount;
-			pAccount = NULL;
-		}
-
+		delete pAccount;
+		pAccount = NULL;
 	}
+
 	return NULL;
 }
 
@@ -443,7 +452,8 @@ bool OTAccount::GenerateNewAccount(const OTPseudonym & theServer, const OTMessag
 	m_strName.Set(strID); // So it's not blank. The user can always change it.
 	
 	// Next we create the full path filename for the account using the ID.
-	m_strFilename.Format("%s%saccounts%s%s", OTLog::Path(), OTLog::PathSeparator(),
+	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 OTLog::AccountFolder(),
 						 OTLog::PathSeparator(), strID.Get());
 	
 	// Then we try to load it, in order to make sure that it doesn't already exist.
@@ -488,13 +498,26 @@ bool OTAccount::GenerateNewAccount(const OTPseudonym & theServer, const OTMessag
 	SignContract(theServer);		
 	SaveContract();		
 	
-	OTString strFilename(m_strFilename);
-	SaveContract(strFilename.Get()); // Saves the account to a specific filename
+	// Save the Account to storage (based on its ID.)
+	SaveAccount();
+
+	// Don't know why I had this here. Putting SaveAccount() instead.
+//	OTString strFilename(m_strFilename);
+//	SaveContract(strFilename.Get()); // Saves the account to a specific filename
 	
 	// No need to create the inbox and outbox ledgers...they will be created automatically
 	// if they do not exist when they are needed.
 	
 	return true;
+}
+
+
+long OTAccount::GetBalance()
+{
+	if (m_BalanceAmount.Exists())
+		return atol(m_BalanceAmount.Get());
+	
+	return 0;
 }
 
 
@@ -557,7 +580,7 @@ bool OTAccount::SaveContractWallet(std::ofstream & ofs)
 	OTString strAccountID(GetPurportedAccountID()), strServerID(GetPurportedServerID()), strUserID(GetUserID());
 	
 	ofs << "<assetAccount name=\""	<< m_strName.Get()		<< 
-	"\"\n file=\""					<< m_strFilename.Get()	<<
+//	"\"\n file=\""					<< m_strFilename.Get()	<<
 	"\"\n userID=\""				<< strUserID.Get()		<<
 	"\"\n serverID=\""				<< strServerID.Get()	<<
 	"\"\n accountID=\""				<< strAccountID.Get()	<<

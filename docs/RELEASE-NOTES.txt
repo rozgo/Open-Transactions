@@ -3,11 +3,39 @@ NOTES on the Version:
 
 // ---------------------------------------------------------------------
 
-   0.25 --- All FILE * were removed and replaced with C++ fstreams.
+   0.30 --- MAJOR RELEASE! Markets, Payment Plans, and OT as a Web Service!
+
+          *** Open Transactions is now officially a WEB SERVICE! The
+              server, client, and API now support *XML-RPC/HTTP*, in
+              addition to the TCP/SSL mode from before. Open Transactions
+              also now comes with an easy mechanism for substituting your
+              own transport mechanism, using a callback function. (ALL
+              transport protocols are welcome in Open Transactions...)
+
+          *** Open Transactions now supports real MARKETS with full-
+              featured 2-way trades! These markets can do LIMIT orders,
+              STOP orders, DAY orders, FILL-OR-KILL orders, STOP LIMITS,
+              etc. Markets also have SCALE, which means bulk pricing, and
+              arbitrage.
+
+          *** Open Transactions now supports PAYMENT PLANS. As long as both
+              parties have signed the contract, the server will continue
+              processing it according to its terms, placing receipts in the
+              inboxes of the two parties until the payments are done.
+
+          *** All data files were removed to a data folder, and all file
+              paths were removed from data files (filenames are generated
+              now, when needed.)  This all means datafiles are much easier
+              now to work with.
+
+// ---------------------------------------------------------------------
+
+   0.25 --- All file pointers were removed and replaced with C++ fstreams.
             
             An all new logging class, with errors, asserts, and multi-
             verbosity output. See the OTLog.h and .cpp files for more.
-            (Centralizing the output and logging also helps porting efforts.)
+            (Centralizing the output and logging also helps porting
+            efforts.)
 
             All the test certs were regenerated, and the contracts were
             re-signed, etc. This time they will last for 10 years, instead

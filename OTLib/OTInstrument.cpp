@@ -95,7 +95,25 @@ using namespace io;
 using namespace std;
 
 
-// Verify the current date against the VALID FROM / TO dates.
+
+// Verify whether the CURRENT date is AFTER the the VALID TO date.
+// Notice, this will return false, even if the instrument is NOT YET VALID.
+// You have to use VerifyCurrentDate() to make sure you're within the
+// valid date range to use this instrument. But sometimes you only want
+// to know if it's expired, regardless of whether it's valid yet. So this
+// function answers that for you.
+bool OTInstrument::IsExpired()
+{
+	const time_t CURRENT_TIME =	time(NULL);
+	
+	if (CURRENT_TIME >= m_VALID_TO)
+		return true;
+	else
+		return false;
+}
+
+
+// Verify whether the CURRENT date is WITHIN the VALID FROM / TO dates.
 bool OTInstrument::VerifyCurrentDate()
 {
 	const time_t CURRENT_TIME =	time(NULL);
@@ -106,6 +124,10 @@ bool OTInstrument::VerifyCurrentDate()
 		return false;
 }
 
+time_t OTInstrument::GetCurrentTime() const
+{
+	return time(NULL);
+}
 
 void OTInstrument::InitInstrument()
 {	

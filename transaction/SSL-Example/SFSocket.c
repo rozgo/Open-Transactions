@@ -75,34 +75,34 @@ static int __SFSocketSetPasswordCallback (char *buf, int size,
 }
 
 static int __SFSocketLoadDHParams (SFSocket *socket, const char *dhFile) {
-    BIO *bio;
-    DH *dh;
+    BIO *bio = NULL;
+    DH *dh = NULL;
 
 #ifdef _WIN32
 //    if ((bio = BIO_new_file(dhFile, "r")) == NULL) // Maybe I can keep it after all..
-    if ((bio = BIO_new_file(dhFile, "rb")) == NULL) // _WIN32
+    if (NULL == (bio = BIO_new_file(dhFile, "rb"))) // _WIN32
 #else
-	if ((bio = BIO_new_file(dhFile, "r")) == NULL)
+	if (NULL == (bio = BIO_new_file(dhFile, "r")))
 #endif
         return(-1);
 
-    if ((dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL)) == NULL) {
-        BIO_free(bio);
+    if (NULL == (dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL))) {
+        BIO_free(bio); bio = NULL;
         return(-2);
     }
 
-    BIO_free(bio);
+    BIO_free(bio); bio = NULL;
     if (SSL_CTX_set_tmp_dh(SFSocketContext(socket), dh) < 0)
         return(-3);
 
-    DH_free(dh);
+    DH_free(dh); dh = NULL;
 
     return(0);
 }
 
 static int __SFSocketCheckCert (SFSocket *socket, const char *host) {
-    char peerCN[256];
-    X509 *peer;
+    char peerCN[256] = "";
+    X509 *peer = NULL;
 
     if (SSL_get_verify_result(SFSocketSSL(socket)) != X509_V_OK)
         return(-1);
@@ -112,12 +112,13 @@ static int __SFSocketCheckCert (SFSocket *socket, const char *host) {
 
     X509_NAME_get_text_by_NID(X509_get_subject_name(peer), 
                               NID_commonName, peerCN, 256);
-    X509_free(peer);
+    X509_free(peer); peer = NULL;
 
     return(strcasecmp(peerCN, host) ? - 3 : 0);
 }
 
 static char __globalInit = 0;
+
 void SFSocketGlobalInit (void) {
     if (!__globalInit) {
         __globalInit = 1;
@@ -128,9 +129,9 @@ void SFSocketGlobalInit (void) {
 }
 
 SFSocket *SFSocketAlloc (void) {
-    SFSocket *socket;
+    SFSocket *socket = NULL;
 
-    if ((socket = (SFSocket *) malloc (sizeof(SFSocket))) == NULL)
+    if (NULL == (socket = (SFSocket *) malloc (sizeof(SFSocket))))
         return(NULL);
 
     socket->ctx = NULL;
@@ -158,7 +159,7 @@ void SFSocketRelease (SFSocket *socket) {
         socket->sock = -1;
     }
 
-    free(socket);
+    free(socket); socket = NULL;
 }
 
 int SFSocketInit (SFSocket *socket,
@@ -168,7 +169,7 @@ int SFSocketInit (SFSocket *socket,
                   const char *password,
                   const char *chipers)
 {
-    SSL_CTX *ctx;
+    SSL_CTX *ctx = NULL;
 
     /* Create Context */
     if ((ctx = SSL_CTX_new(SSLv3_method())) == NULL) {
@@ -186,13 +187,13 @@ int SFSocketInit (SFSocket *socket,
     SSL_CTX_set_default_passwd_cb_userdata(ctx, (void *)password);
     if (!SSL_CTX_use_PrivateKey_file(ctx, keyFile, SSL_FILETYPE_PEM)) {
         ERR_print_errors_fp(stderr);
-        SSL_CTX_free(ctx);
+        SSL_CTX_free(ctx); ctx = NULL;
         return(-3);
     }
 
     /* Load the CAs we Trust */
     if (!SSL_CTX_load_verify_locations(ctx, caFile, NULL)) {
-        SSL_CTX_free(ctx);
+        SSL_CTX_free(ctx); ctx = NULL;
         return(-4);
     }
 
@@ -217,11 +218,11 @@ int SFSocketInit (SFSocket *socket,
 
 int SFSocketRead (SFSocket *socket, void *buf, int len) 
 {
-    SSL *ssl;
+    SSL *ssl = NULL;
 	
 	fd_set read_flags, write_flags; // the flag sets to be used
 	struct timeval waitd;          // the max wait time for an event
-	int stat;                      // holds return value for select();
+	int stat = 0;                  // holds return value for select();
 	
 	waitd.tv_sec = 0;  // Make select wait up to 1 second for data
 	waitd.tv_usec = 100; // and 0 milliseconds.
@@ -237,7 +238,7 @@ int SFSocketRead (SFSocket *socket, void *buf, int len)
 	FD_SET(SFSocketDescriptor(socket), &read_flags);
 	
 	// Now call select
-	stat=select(SFSocketDescriptor(socket)+1, &read_flags,&write_flags,(fd_set*)0,&waitd);
+	stat = select(SFSocketDescriptor(socket)+1, &read_flags,&write_flags,(fd_set*)0,&waitd);
 	
 	
 #ifdef _WIN32
@@ -261,7 +262,7 @@ int SFSocketRead (SFSocket *socket, void *buf, int len)
 		// must be dead so you must close it.
 		
 		// (FellowTraveler) trying to make asynchronous sockets work...
-		if ((ssl = SFSocketSSL(socket)) != NULL)
+		if (NULL != (ssl = SFSocketSSL(socket)))
 		{
 			//		if (SSL_pending(ssl))	
 			return(SSL_read(ssl, buf, len));
@@ -277,7 +278,6 @@ int SFSocketRead (SFSocket *socket, void *buf, int len)
 		return(read(SFSocketDescriptor(socket), buf, len));
 #endif
 	}
-	
 
 	return 0;
 }
@@ -285,9 +285,9 @@ int SFSocketRead (SFSocket *socket, void *buf, int len)
 
 
 int SFSocketListen (SFSocket *serverSocket, unsigned int address, int port) {
-    struct sockaddr_in *saddr;
-    SSL_CTX *ctx;
-    int sock;
+    struct sockaddr_in *saddr = NULL;
+    SSL_CTX *ctx = NULL;
+    int sock = 0;
 
     /* Require Authentication */
     if ((ctx = SFSocketContext(serverSocket)) != NULL) {
@@ -300,7 +300,7 @@ int SFSocketListen (SFSocket *serverSocket, unsigned int address, int port) {
 #ifdef _WIN32
     if (INVALID_SOCKET == (sock = socket(AF_INET, SOCK_STREAM, 0)) )
 #else
-	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	if (0 > (sock = socket(AF_INET, SOCK_STREAM, 0)))
 #endif
 		return(-1);
 
@@ -315,7 +315,7 @@ int SFSocketListen (SFSocket *serverSocket, unsigned int address, int port) {
 #ifdef _WIN32
     if ( SOCKET_ERROR == bind(sock, (struct sockaddr *)saddr, sizeof(struct sockaddr_in)) )
 #else
-	if (bind(sock, (struct sockaddr *)saddr, sizeof(struct sockaddr_in)) < 0)
+	if (0 > bind(sock, (struct sockaddr *)saddr, sizeof(struct sockaddr_in)))
 #endif
 	{
 #ifdef _WIN32
@@ -356,15 +356,15 @@ int SFSocketListen (SFSocket *serverSocket, unsigned int address, int port) {
 
 
 SFSocket *SFSocketAccept (SFSocket *socket) {
-    struct sockaddr_in *addr;
-    SFSocket *clientSocket;
+    struct sockaddr_in *addr = NULL;
+    SFSocket *clientSocket = NULL;
     socklen_t addrlen = sizeof(struct sockaddr); // _WIN32
-    SSL_CTX *ctx;
-    int sock;
+    SSL_CTX *ctx = NULL;
+    int sock = 0;
 
 	fd_set read_flags, write_flags; // the flag sets to be used
 	struct timeval waitd;          // the max wait time for an event
-	int stat;                      // holds return value for select();
+	int stat = 0;                  // holds return value for select();
 	
 	waitd.tv_sec = 0;  // Make select wait up to 1 second for data
 	waitd.tv_usec = 100; // and 0 milliseconds.
@@ -372,7 +372,7 @@ SFSocket *SFSocketAccept (SFSocket *socket) {
 	
 	
     /* Alloc new Client Socket */
-    if ((clientSocket = SFSocketAlloc()) == NULL)
+    if (NULL == (clientSocket = SFSocketAlloc()))
         return(clientSocket);
 
 	
@@ -404,7 +404,7 @@ SFSocket *SFSocketAccept (SFSocket *socket) {
 	{
 		// This means the timeout occurred and there were no new connections
 		// (Which is normal, don't want to log every single time that happens.)
-		SFSocketRelease(clientSocket);
+		SFSocketRelease(clientSocket); clientSocket = NULL;
 		return(NULL);
 	}
 	else
@@ -427,12 +427,12 @@ SFSocket *SFSocketAccept (SFSocket *socket) {
 #endif
 		{
 //			fprintf(stderr, "Error accepting new connection.\n");
-			SFSocketRelease(clientSocket);
+			SFSocketRelease(clientSocket); clientSocket = NULL;
 			return(NULL);
 		}
     }
 	else {
-		SFSocketRelease(clientSocket);
+		SFSocketRelease(clientSocket); clientSocket = NULL;
 		return NULL;
 	}
 
@@ -443,29 +443,29 @@ SFSocket *SFSocketAccept (SFSocket *socket) {
     SFSocketSetDescriptor(clientSocket, sock);
 
     /* Setup Client SSL */
-    if ((ctx = SFSocketContext(socket)) != NULL) {
-        BIO *bio;
-        SSL *ssl;
+    if (NULL != (ctx = SFSocketContext(socket))) {
+        BIO *bio = NULL;
+        SSL *ssl = NULL;
 
-        if ((bio = BIO_new_socket(sock, BIO_NOCLOSE)) == NULL) {
+        if (NULL == (bio = BIO_new_socket(sock, BIO_NOCLOSE))) {
             ERR_print_errors_fp(stderr);
-            SFSocketRelease(clientSocket);
+            SFSocketRelease(clientSocket); clientSocket = NULL;
             return(NULL);
         }
 
-        if ((ssl = SSL_new(ctx)) == NULL) {
+        if (NULL == (ssl = SSL_new(ctx))) {
             ERR_print_errors_fp(stderr);
-            BIO_free(bio);
-            SFSocketRelease(clientSocket);
+            BIO_free(bio); bio = NULL;
+            SFSocketRelease(clientSocket); clientSocket = NULL;
             return(NULL);
         }
 
         /* SSL Accept */
         SSL_set_bio(ssl, bio, bio);
-        if (SSL_accept(ssl) <= 0) {
+        if (0 >= SSL_accept(ssl)) {
             ERR_print_errors_fp(stderr);
-            SSL_free(ssl);
-            SFSocketRelease(clientSocket);
+            SSL_free(ssl); ssl = NULL;
+            SFSocketRelease(clientSocket); clientSocket = NULL;
             return(NULL);
         }
 
@@ -478,12 +478,12 @@ SFSocket *SFSocketAccept (SFSocket *socket) {
 }
 
 int SFSocketConnectToHost (SFSocket *clientSocket, const char *host, int port) {
-    struct sockaddr_in *addr;
-    struct hostent *hp;
-    SSL_CTX *ctx;
-    int sock;
+    struct sockaddr_in *addr = NULL;
+    struct hostent *hp = NULL;
+    SSL_CTX *ctx = NULL;
+    int sock = 0;
 
-    if ((hp = gethostbyname(host)) == NULL)
+    if (NULL == (hp = gethostbyname(host)) )
         return(-1);
 
     /* Setup Address */
@@ -499,7 +499,7 @@ int SFSocketConnectToHost (SFSocket *clientSocket, const char *host, int port) {
     /* Connect to Host */
     if (connect(sock, (struct sockaddr *)addr, sizeof(struct sockaddr_in)) < 0)
     {
-        close(sock);        
+        close(sock); sock = 0; 
         return(-3);
     }
 
@@ -507,22 +507,22 @@ int SFSocketConnectToHost (SFSocket *clientSocket, const char *host, int port) {
     SFSocketSetDescriptor(clientSocket, sock);
     
     if ((ctx = SFSocketContext(clientSocket)) != NULL) {
-        BIO *bio;
-        SSL *ssl;
+        BIO *bio = NULL;
+        SSL *ssl = NULL;
 
         /* Setup SSL */
-        if ((ssl = SSL_new(ctx)) == NULL) {
+        if (NULL == (ssl = SSL_new(ctx))) {
             ERR_print_errors_fp(stderr);
-            SFSocketClearDescriptor(clientSocket);
-            close(sock);
+            SFSocketClearDescriptor(clientSocket); clientSocket = NULL;
+            close(sock); sock = 0;
             return(-4);
         }
 
         /* Setup BIO */
-        if ((bio = BIO_new_socket(sock, BIO_NOCLOSE)) == NULL) {
+        if (NULL == (bio = BIO_new_socket(sock, BIO_NOCLOSE))) {
             SFSocketClearDescriptor(clientSocket);
-            SSL_free(ssl);
-            close(sock);
+            SSL_free(ssl); ssl = NULL;
+            close(sock); sock = 0;
             return(-5);
         }
 
@@ -547,8 +547,8 @@ int SFSocketConnectToHost (SFSocket *clientSocket, const char *host, int port) {
 
 
 int SFSocketWrite (SFSocket *socket, const void *buf, int len) {
-    SSL *ssl;
-    if ((ssl = SFSocketSSL(socket)) != NULL)
+    SSL *ssl = NULL;
+    if (NULL != (ssl = SFSocketSSL(socket)))
         return(SSL_write(ssl, buf, len));
 
 #ifdef _WIN32

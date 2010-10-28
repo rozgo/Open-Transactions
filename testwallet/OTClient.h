@@ -173,6 +173,8 @@ public:
 		
 		getMint,			// Grab the server's copy of any mint based on Asset ID. (For blinded tokens.)
 		
+		// ------------------------------------------------------------------------------
+
 		notarizeTransfer,	// Request the server to transfer from one account to another.
 		
 		notarizeWithdrawal,	// Request the server to withdraw from an asset account and return digital cash tokens to the wallet.
@@ -184,6 +186,19 @@ public:
 		notarizePurse,		// Same as the above, but sends an entire purse of tokens at once instead of sending individual tokens.
 		
 		notarizeCheque,		// Deposit like the above, but deposits a cheque instead of cash tokens.
+		
+		// ------------------------------------------------------------------------------
+		
+		marketOffer,		// Create an Offer object and add it to one of the server's Market objects.
+							// This will also create a Trade object and add it to the server's Cron object.
+							// (The Trade provides the payment authorization for the Offer, as well as the rules
+							// for processing and expiring it.)
+	
+		paymentPlan,		// Send a payment plan to the server (request to activate one onto yourself, basically.)
+							// The test client will ask you to input the plan, which you must already have (like a cheque).
+							// The  Payee must create it and sign it, then he sends it to the Payer, who uses this command
+							// to sign it and submit it to the server.
+		// ------------------------------------------------------------------------------
 		
 		badID
 	};
@@ -206,6 +221,10 @@ public:
 	
 	inline bool IsConnected() { return m_pConnection->IsConnected(); }
 
+	// For RPC mode
+	bool SetFocusToServerAndNym(OTServerContract & theServerContract, OTPseudonym & theNym, OT_CALLBACK_MSG pCallback);
+
+	// For the test client in SSL / TCP mode.
 	bool ConnectToTheFirstServerOnList(OTPseudonym & theNym,
 									   OTString & strCA_FILE, OTString & strKEY_FILE, OTString & strKEY_PASSWORD);
 

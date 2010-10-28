@@ -24,31 +24,30 @@ PRE-BUILD:
 --- Make sure OpenSSL 1.0.0a is installed, earlier versions don't have
     WHIRLPOOL.
 
+--- If you want to run in XmlRpc/HTTP mode (the preferred transport) then you
+    need to install the XmlRpc++ library, which you can get here: 
+    http://xmlrpcpp.sourceforge.net/
+    
+    (For Mac, I had to install it using Mac Ports. If you don't install this library,
+    that's okay, you'll just be stuck running over TCP/SSL instead of using XmlRpc/HTTP.)
+
 --- Find libssl.a and libcrypto.a and copy them to the OTLib folder.
 
 --- cd (change directory) to the Open-Transactions folder.
 
 --- Transaction server and client both still have a hardcoded path in the source code. 
-    (It's just a default path and IS configurable on the command line.)
+
+    (It's just a DEFAULT path and IS configurable on the command line, so you don't HAVE
+    to do anything about it, if you don't want to.)
 
     Search the code for the word REDACTED, which appears once in the client and 
     once in the server for each platform.
 
     The relevant source files: transaction/server.cpp and testwallet/client.cpp
+    As well as the new XmlRpc code: transaction/xmlrpcxx_server.cpp and 
+    testwallet/xmlrpcxx_client.cpp
 
     Replace the REDACTED (entire path) with whatever path is appropriate for your system.
-
-    NOTE: You can also replace the path with "." if you want it to run from the current folder
-    by default, but this may not work on all systems, since some libraries may require fully-
-    qualified paths.
-
---- Config files:
-
-The same "REDACTED" corrections should be made in the server config file: 
-transaction/notaryServer.xml
-
-As well as the client config file:          
-testwallet/wallet.xml
 
 On Mac, if you use the XCode project files that I distributed, you have to fix
 those as well. (You COULD just use the Makefile, if you prefer. XCode not necessary.)
@@ -66,6 +65,23 @@ each for the word 'REDACTED'.
 
 
 NOW YOU ARE READY TO COMPILE THE CODE:
+
+For Mac:  just type 'make' to build everything.
+For Linux, use this instead: make -f Makefile.linux
+
+If you prefer to build in XmlRpc mode (preferred) then use these instead:
+Mac OS X:   make rpc
+Linux:      make -f Makefile.linux rpc
+
+As mentioned above, you must install the XmlRpc++ library first if you want
+to run in that mode.
+
+---------------------------------------------------------------
+
+
+If you prefer to build all of the projects individually, they are below for
+my notes. But the above step should be enough to take care of everything for
+most people.
 
 --- Build the Library:
 cd OTLib;

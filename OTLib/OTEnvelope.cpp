@@ -83,6 +83,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 extern "C"
 {	
@@ -167,8 +168,7 @@ EVP_OpenFinal() returns 0 if the decrypt failed or 1 for success.
 
 // RSA / AES
 
-// TODO this is still a copy of Seal. Change it to decrypt the ciphertext instead of
-// encrypting the plaintext.
+
 bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
 {
 	bool retval = false;
@@ -179,13 +179,17 @@ bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
     unsigned char	buffer_out[4096 + EVP_MAX_IV_LENGTH];
     unsigned char	iv[EVP_MAX_IV_LENGTH];
 
-    size_t			len;
-    int				len_out;
+    size_t			len = 0;
+    int				len_out = 0;
     
-	unsigned char *	ek;
-    int				eklen;
-    uint32_t		eklen_n;
+	unsigned char *	ek = NULL;
+    int				eklen = 0;
+    uint32_t		eklen_n = 0;
 	
+	memset(buffer, 0, 4096);
+	memset(buffer_out, 0, 4096 + EVP_MAX_IV_LENGTH);
+	memset(iv, 0, EVP_MAX_IV_LENGTH);
+
 	OTAsymmetricKey &	privateKey	= (OTAsymmetricKey &)theRecipient.GetPrivateKey();
 	EVP_PKEY *			pkey		= (EVP_PKEY *)privateKey.GetKey();
 	
@@ -197,6 +201,11 @@ bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
 		
 	EVP_CIPHER_CTX_init(&ctx);
     ek = (unsigned char*)malloc(EVP_PKEY_size(pkey));  // I assume this is for the AES key
+	
+	OT_ASSERT(NULL != ek);
+	
+	memset(ek, 0, EVP_PKEY_size(pkey));
+
 	eklen = EVP_PKEY_size(pkey);
 	
 	
@@ -215,15 +224,15 @@ bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
 	theContents.Release();	// This is where we'll put the decrypted data.
 	m_dataContents.reset(); // reset the fread position on this object.
 	
-	int nReadLength;
-	int nReadKey;
-	int nReadIV;
+	int nReadLength = 0;
+	int nReadKey = 0;
+	int nReadIV = 0;
 	
 	// First we read the encrypted key size.
 	if (0 == (nReadLength = m_dataContents.OTfread((char*)&eklen_n, sizeof(eklen_n))))
 	{
 		OTLog::Error("Error reading encrypted key size in OTEnvelope::Open\n");
-		free(ek);
+		free(ek); ek = NULL;
 		return false;
 	}
 	
@@ -234,7 +243,7 @@ bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
 	if (0 == (nReadKey = m_dataContents.OTfread((char*)ek, eklen)))
 	{
 		OTLog::Error("Error reading encrypted key size in OTEnvelope::Open\n");
-		free(ek);
+		free(ek); ek = NULL;
 		return false;
 	}
 	
@@ -242,7 +251,7 @@ bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
 	if (0 == (nReadIV = m_dataContents.OTfread((char*)iv, EVP_CIPHER_iv_length(EVP_aes_128_cbc()))))
 	{
 		OTLog::Error("Error reading initialization vector in OTEnvelope::Open\n");
-		free(ek);
+		free(ek); ek = NULL;
 		return false;
 	}
 	
@@ -257,7 +266,7 @@ bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
 	if (!EVP_OpenInit(&ctx, EVP_aes_128_cbc(), ek, eklen, iv, pkey))
     {
         OTLog::Error("EVP_OpenInit: failed.\n");
-		free(ek);
+		free(ek); ek = NULL;
 		return false;
     }
 		
@@ -266,7 +275,7 @@ bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
         if (!EVP_OpenUpdate(&ctx, buffer_out, &len_out, buffer, len))
         {
             OTLog::Error("EVP_OpenUpdate: failed.\n");
-			free(ek);
+			free(ek); ek = NULL;
 			return false;
         }
 		
@@ -277,7 +286,7 @@ bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
     if (!EVP_OpenFinal(&ctx, buffer_out, &len_out))
     {
 		OTLog::Error("EVP_OpenFinal: failed.\n");
- 		free(ek);
+ 		free(ek); ek = NULL;
 		return false;
     }
 	
@@ -293,7 +302,7 @@ bool OTEnvelope::Open(const OTPseudonym & theRecipient, OTString & theContents)
 	
 	retval = true;
 	
-    free(ek);
+    free(ek); ek = NULL;
 	
     return retval;
 	
@@ -315,13 +324,18 @@ bool OTEnvelope::Seal(const OTAsymmetricKey & RecipPubKey, const OTString & theC
     unsigned char	buffer_out[4096 + EVP_MAX_IV_LENGTH];
     unsigned char	iv[EVP_MAX_IV_LENGTH];
     
-	size_t			len;
-    int				len_out;
+	size_t			len = 0;
+    int				len_out = 0;
 
-    unsigned char *	ek;
-    int				eklen;
-    uint32_t		eklen_n;
+    unsigned char *	ek = NULL;
+    int				eklen = 0;
+    uint32_t		eklen_n = 0;
 	
+	
+	memset(buffer, 0, 4096);
+	memset(buffer_out, 0, 4096 + EVP_MAX_IV_LENGTH);
+	memset(iv, 0, EVP_MAX_IV_LENGTH);
+
 	
 	OTAsymmetricKey &	publicKey	= (OTAsymmetricKey &)RecipPubKey;
 	EVP_PKEY *			pkey		= (EVP_PKEY *)publicKey.GetKey();
@@ -339,10 +353,14 @@ bool OTEnvelope::Seal(const OTAsymmetricKey & RecipPubKey, const OTString & theC
 	EVP_CIPHER_CTX_init(&ctx);
     ek = (unsigned char*)malloc(EVP_PKEY_size(pkey));
 	
+	OT_ASSERT(NULL != ek);
+	
+	memset(ek, 0, EVP_PKEY_size(pkey));
+	
     if (!EVP_SealInit(&ctx, EVP_aes_128_cbc(), &ek, &eklen, iv, &pkey, 1))
     {
         OTLog::Error("EVP_SealInit: failed.\n");
-		free(ek);
+		free(ek); ek = NULL;
 		return false;
     }
 	
@@ -366,12 +384,12 @@ bool OTEnvelope::Seal(const OTAsymmetricKey & RecipPubKey, const OTString & theC
     // Now we process the input and write the encrypted data to the
 	// output.
 	
-    while ((len = plaintext.OTfread((char*)buffer, sizeof(buffer))) > 0)
+    while (0 < (len = plaintext.OTfread((char*)buffer, sizeof(buffer))))
     {
         if (!EVP_SealUpdate(&ctx, buffer_out, &len_out, buffer, len))
         {
             OTLog::Error("EVP_SealUpdate: failed.\n");
-			free(ek);
+			free(ek); ek = NULL;
 			return false;
         }
 		
@@ -382,7 +400,7 @@ bool OTEnvelope::Seal(const OTAsymmetricKey & RecipPubKey, const OTString & theC
     if (!EVP_SealFinal(&ctx, buffer_out, &len_out))
     {
         OTLog::Error("EVP_SealFinal: failed.\n");
-		free(ek);
+		free(ek); ek = NULL;
 		return false;
     }
 	
@@ -391,10 +409,9 @@ bool OTEnvelope::Seal(const OTAsymmetricKey & RecipPubKey, const OTString & theC
 	
 	retval = true;
 	
-    free(ek);
+    free(ek); ek = NULL;
 	
     return retval;
-	
 }
 
 /*

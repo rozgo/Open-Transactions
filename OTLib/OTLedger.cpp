@@ -96,6 +96,7 @@ using namespace irr;
 using namespace io;
 
 
+#include "OTData.h"
 #include "OTIdentifier.h"
 #include "OTAccount.h"
 #include "OTPayload.h"
@@ -121,7 +122,8 @@ bool OTLedger::LoadInbox()
 	
 	m_Type = OTLedger::inbox;
 
-	m_strFilename.Format("%s%sinbox%s%s", OTLog::Path(), OTLog::PathSeparator(),
+	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 OTLog::InboxFolder(),
 						 OTLog::PathSeparator(), strID.Get());
 	
 	// Try to load the ledger from disk.
@@ -150,7 +152,8 @@ bool OTLedger::LoadOutbox()
 	
 	m_Type = OTLedger::outbox;
 	
-	m_strFilename.Format("%s%soutbox%s%s", OTLog::Path(), OTLog::PathSeparator(),
+	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 OTLog::OutboxFolder(),
 						 OTLog::PathSeparator(), strID.Get());
 	
 	if (false == LoadContract())
@@ -174,7 +177,8 @@ bool OTLedger::SaveInbox()
 	OTString strID;
 	GetIdentifier(strID);
 	
-	m_strFilename.Format("%s%sinbox%s%s", OTLog::Path(), OTLog::PathSeparator(),
+	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 OTLog::InboxFolder(),
 						 OTLog::PathSeparator(), strID.Get());
 	
 	OTString strTemp(m_strFilename);
@@ -201,7 +205,8 @@ bool OTLedger::SaveOutbox()
 	OTString strID;
 	GetIdentifier(strID);
 	
-	m_strFilename.Format("%s%soutbox%s%s", OTLog::Path(), OTLog::PathSeparator(),
+	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 OTLog::OutboxFolder(),
 						 OTLog::PathSeparator(), strID.Get());
 	
 	OTString strTemp(m_strFilename);
@@ -246,11 +251,13 @@ bool OTLedger::GenerateLedger(const OTIdentifier & theAcctID,
 	
 	switch (theType) {
 		case OTLedger::inbox:
-			m_strFilename.Format("%s%sinbox%s%s", OTLog::Path(), OTLog::PathSeparator(),
+			m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+								 OTLog::InboxFolder(),
 								 OTLog::PathSeparator(), strID.Get());
 			break;
 		case OTLedger::outbox:
-			m_strFilename.Format("%s%soutbox%s%s", OTLog::Path(), OTLog::PathSeparator(),
+			m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+								 OTLog::OutboxFolder(),
 								 OTLog::PathSeparator(), strID.Get());
 			break;
 		case OTLedger::message:
@@ -287,6 +294,7 @@ bool OTLedger::GenerateLedger(const OTIdentifier & theAcctID,
 	// Have to look up the UserID here. No way around it.
 	// Plus it helps verify things.
 	OTAccount * pAccount = OTAccount::LoadExistingAccount(theAcctID, theServerID);
+	OTCleanup<OTAccount> theAccountGuardian(pAccount); // No worries about having to clean it up.
 	
 	// Notice I still don't actually create the file here.  The programmer still has to call 
 	// "SaveInbox" or "SaveOutbox" to actually save the file. But he cannot do that unless he
@@ -298,12 +306,7 @@ bool OTLedger::GenerateLedger(const OTIdentifier & theAcctID,
 	m_Type	= theType; // Todo make this Get/Set methods
 	
 	if (pAccount)
-	{
 		SetUserID(pAccount->GetUserID());
-		
-		delete pAccount;
-		pAccount = NULL;
-	}
 	
 	return true;	
 }
@@ -352,11 +355,6 @@ OTLedger::OTLedger() : OTTransactionType()
 }
 
 
-
-
-
-
-
 mapOfTransactions & OTLedger::GetTransactionMap()
 {
 	return m_mapTransactions;
@@ -364,28 +362,50 @@ mapOfTransactions & OTLedger::GetTransactionMap()
 
 bool OTLedger::RemoveTransaction(long lTransactionNum) // if false, transaction wasn't found.
 {
-	// loop through the transactions that make up this ledger and remove one of them.
-	OTTransaction * pTransaction = NULL;
-	
-	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); ii != m_mapTransactions.end(); ++ii)
+	// See if there's something there with that transaction number.
+	mapOfTransactions::iterator it = m_mapTransactions.find(lTransactionNum);
+
+	// If it's not already on the list, then there's nothing to remove.
+	if ( it == m_mapTransactions.end() )
 	{
-		pTransaction = (*ii).second;
+		OTLog::vError("Attempt to remove Transaction from ledger, when not already there: %ld\n",
+					  lTransactionNum);
+		return false;
+	}
+	// Otherwise, if it WAS already there, remove it properly.
+	else 
+	{
+		OTTransaction * pTransaction = (*it).second;
 		
 		OT_ASSERT(NULL != pTransaction);
 		
-		if (pTransaction->GetTransactionNum() == lTransactionNum)
-		{
-			m_mapTransactions.erase(ii);
-			delete pTransaction;
-			return true;
-		}
+		m_mapTransactions.erase(it);
+		delete pTransaction;
+		return true;		
 	}
+	
 	return false;
 }
 
-void OTLedger::AddTransaction(OTTransaction & theTransaction)
+bool OTLedger::AddTransaction(OTTransaction & theTransaction)
 {
-	m_mapTransactions[theTransaction.GetTransactionNum()] = &theTransaction;
+	// See if there's something else already there with the same transaction number.
+	mapOfTransactions::iterator it = m_mapTransactions.find(theTransaction.GetTransactionNum());
+	
+	// If it's not already on the list, then add it...
+	if ( it == m_mapTransactions.end() )
+	{
+		m_mapTransactions[theTransaction.GetTransactionNum()] = &theTransaction;
+		return true;
+	}
+	// Otherwise, if it was already there, log an error.
+	else 
+	{
+		OTLog::vError("Attempt to add Transaction to ledger when already there for that number: %ld\n",
+					  theTransaction.GetTransactionNum());
+	}
+	
+	return false;
 }
 
 
@@ -393,19 +413,28 @@ void OTLedger::AddTransaction(OTTransaction & theTransaction)
 // If it is, return a pointer to it, otherwise return NULL.
 OTTransaction * OTLedger::GetTransaction(long lTransactionNum)
 {
-	// loop through the items that make up this transaction and print them out here, base64-encoded, of course.
-	OTTransaction * pTransaction = NULL;
+	// See if there's something there with that transaction number.
+	mapOfTransactions::iterator it = m_mapTransactions.find(lTransactionNum);
 	
-	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); ii != m_mapTransactions.end(); ++ii)
+	if ( it == m_mapTransactions.end() )
 	{
-		pTransaction = (*ii).second;
+		// not found.
+		return NULL;
+	}
+	// Found it!
+	else 
+	{
+		OTTransaction * pTransaction = (*it).second;
 		
-		OT_ASSERT(NULL != pTransaction);
+		OT_ASSERT((NULL != pTransaction));
 		
 		if (pTransaction->GetTransactionNum() == lTransactionNum)
 			return pTransaction;
+		else 
+			OTLog::vError("Expected transaction number %ld, but found %ld on the list instead. Bad data?\n",
+						  lTransactionNum, pTransaction->GetTransactionNum());
 	}
-	
+
 	return NULL;
 }
 
@@ -428,11 +457,12 @@ OTTransaction * OTLedger::GetPendingTransaction(long lTransactionNum)
 	
 	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); ii != m_mapTransactions.end(); ++ii)
 	{
-		if ((pTransaction = (*ii).second)) // if pointer not null
-		{	
-			if (pTransaction->GetReferenceToNum() == lTransactionNum)
-				return pTransaction;
-		}
+		pTransaction = (*ii).second;
+		
+		OT_ASSERT(NULL != pTransaction);
+		
+		if (pTransaction->GetReferenceToNum() == lTransactionNum)
+			return pTransaction;
 	}
 	
 	return NULL;
@@ -596,7 +626,14 @@ int OTLedger::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 
 OTLedger::~OTLedger()
 {
+// No need to call Release() here, it's called already by the framework.
+}
 
+
+void OTLedger::Release()
+{
+	// If there were any dynamically allocated objects, clean them up here.
+	
 	while (!m_mapTransactions.empty())
 	{		
 		OTTransaction * pTransaction = m_mapTransactions.begin()->second;
@@ -605,6 +642,11 @@ OTLedger::~OTLedger()
 		pTransaction = NULL;
 	}
 	
+	
+	OTTransactionType::Release(); // since I've overridden the base class, I call it now...
+	
+	// Then I call this to re-initialize everything for myself.
+	InitLedger(); 		
 }
 
 

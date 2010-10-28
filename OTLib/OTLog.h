@@ -101,19 +101,41 @@ private:
 	OTLog();
 
 	static int		__CurrentLogLevel;
-	static OTString	__Version;
+	static OTString	__Version;			// current version of Open Transactions is stored here.
 
-	static OTString	__OTPath;
-	static OTString	__OTPathSeparator;
+	static OTString	__OTPath;			// Path to either server or client directory. (Whichever is running.)
+	static OTString	__OTPathSeparator;	// double-backslash in Windows, forward-slash in others.
+	
+	static OTString __OTCronFolder;		// Just the folder name for the cron records (trades, payment plans...)
+	static OTString __OTNymFolder;		// Just the folder name
+	static OTString __OTAccountFolder;	// Just the folder name
+	static OTString __OTUserAcctFolder;	// Just the folder name
+	static OTString __OTInboxFolder;	// Just the folder name
+	static OTString __OTOutboxFolder;	// Just the folder name
+	static OTString __OTCertFolder;		// Just the folder name
+	static OTString __OTPubkeyFolder;	// Just the folder name
+	static OTString __OTContractFolder;	// Just the folder name
+	static OTString __OTMintFolder;		// Just the folder name
+	static OTString __OTSpentFolder;	// Just the folder name
+	static OTString __OTPurseFolder;	// Just the folder name
+	static OTString __OTMarketFolder;	// Just the folder name
 	
 public:	
 	~OTLog();
 	
+	static void SleepSeconds(long lSeconds);
+	static void SleepMilliseconds(long lMilliseconds);
+	
+	// Used for making sure that certain necessary folders actually exist. (Creates them otherwise.)
+	// Creates inside Path(). IE:  <path>/szFolderName
+	static bool ConfirmOrCreateFolder(const char * szFolderName);
+	static bool ConfirmFile(const char * szFileName);
+	static bool ConfirmExactPath(const char * szFileName);
+
+	
 	// OTPath is where all the subdirectories can be found.
-	// On the client side, this is loaded in the wallet file.
-	// But I don't have it in the wallet class because I need
-	// it accessible all over the library, server, and client.
-	// So I put it here instead.
+	// If the server is what's running, then it's the server folder.
+	// Otherwise it's the client folder.
 	
 	// ------------------------------------------------------------
 	
@@ -122,6 +144,48 @@ public:
 	
 	static void SetMainPath(const char * szPath) { __OTPath.Set(szPath); }
 	static void SetPathSeparator(const char * szPathSeparator) { __OTPathSeparator.Set(szPathSeparator); }
+	
+	// ------------------------------------------------------------
+	
+	static const char *	CronFolder()				{ return __OTCronFolder.Get(); }
+	static void SetCronFolder(const char * szPath)	{ __OTCronFolder.Set(szPath); }
+	
+	static const char *	NymFolder()				{ return __OTNymFolder.Get(); }
+	static void SetNymFolder(const char * szPath)	{ __OTNymFolder.Set(szPath); }
+	
+	static const char *	AccountFolder()				{ return __OTAccountFolder.Get(); }
+	static void SetAccountFolder(const char * szPath){ __OTAccountFolder.Set(szPath); }
+	
+	static const char *	UserAcctFolder()				{ return __OTUserAcctFolder.Get(); }
+	static void SetUserAcctFolder(const char * szPath){ __OTUserAcctFolder.Set(szPath); }
+	
+	static const char *	InboxFolder()				{ return __OTInboxFolder.Get(); }
+	static void SetInboxFolder(const char * szPath)	{ __OTInboxFolder.Set(szPath); }
+	
+	static const char *	OutboxFolder()				{ return __OTOutboxFolder.Get(); }
+	static void SetOutboxFolder(const char * szPath)	{ __OTOutboxFolder.Set(szPath); }
+	
+	static const char *	CertFolder()				{ return __OTCertFolder.Get(); }
+	static void SetCertFolder(const char * szPath)	{ __OTCertFolder.Set(szPath); }
+	
+	static const char *	PubkeyFolder()				{ return __OTPubkeyFolder.Get(); }
+	static void SetPubkeyFolder(const char * szPath){ __OTPubkeyFolder.Set(szPath); }
+	
+	static const char *	ContractFolder()			{ return __OTContractFolder.Get(); }
+	static void SetContractFolder(const char * szPath)	{ __OTContractFolder.Set(szPath); }
+	
+	static const char *	MintFolder()			{ return __OTMintFolder.Get(); }
+	static void SetMintFolder(const char * szPath)	{ __OTMintFolder.Set(szPath); }
+	
+	static const char *	SpentFolder()				{ return __OTSpentFolder.Get(); }
+	static void SetSpentFolder(const char * szPath)	{ __OTSpentFolder.Set(szPath); }
+	
+	static const char *	PurseFolder()				{ return __OTPurseFolder.Get(); }
+	static void SetPurseFolder(const char * szPath)	{ __OTPurseFolder.Set(szPath); }
+	
+	static const char *	MarketFolder()				{ return __OTMarketFolder.Get(); }
+	static void SetMarketFolder(const char * szPath){ __OTMarketFolder.Set(szPath); }
+	
 	// ------------------------------------------------------------
 	
 	static const char * Version() { return __Version.Get(); }

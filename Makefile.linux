@@ -1,0 +1,64 @@
+
+# COMMENT: This is set up for LINUX.   If you want, just rename to "Makefile" if you are on
+# Linux, and then type "make". Or if you want to preserve both files, then execute this one
+# with the command: make -f Makefile.linux
+#
+# This makefile will build the entire project.
+#
+# rpc is the preferred mode, since it uses xmlrpc over http.
+# but you need to have the XmlRpc++ library installed on your system.
+# And you need to make sure the Makefile references the same folder it's
+# installed in, which may not be the same location that it is on MY system
+# (and the Makefiles are set up for my system.)
+
+
+
+all:
+	cd OTLib && make
+	cd transaction && make -f Makefile.linux
+	cd testwallet && make -f Makefile.CPP_API
+	cd testwallet && make -f Makefile.linux
+	cd util/otcreatemint && make -f Makefile.linux && cp ./createmint.exe ../../transaction/data_folder/createmint.exe
+	cd util/signcontract && make -f Makefile.linux && cp ./signcontract.exe ../../testwallet/data_folder/signcontract.exe
+#	cd testwallet && make -f Makefile.JNI_API_Linux
+
+debug:
+	cd OTLib && make debug
+	cd transaction && make -f Makefile.linux debug
+	cd testwallet && make -f Makefile.CPP_API debug
+	cd testwallet && make -f Makefile.linux debug
+	cd util/otcreatemint && make -f Makefile.linux debug && cp ./createmint.debug ../../transaction/data_folder/createmint.debug
+	cd util/signcontract && make -f Makefile.linux debug && cp ./signcontract.debug ../../testwallet/data_folder/signcontract.debug
+#	cd testwallet && make -f Makefile.JNI_API_Linux debug
+
+rpc:
+	cd OTLib && make
+	cd transaction && make -f Makefile.rpc_linux
+	cd testwallet && make -f Makefile.CPP_API rpc
+	cd testwallet && make -f Makefile.rpc_linux
+	cd util/otcreatemint && make -f Makefile.linux && cp ./createmint.exe ../../transaction/data_folder/createmint.exe
+	cd util/signcontract && make -f Makefile.linux && cp ./signcontract.exe ../../testwallet/data_folder/signcontract.exe
+#	cd testwallet && make -f Makefile.JNI_API_Linux rpc
+
+debugrpc:
+	cd OTLib && make debug
+	cd transaction && make -f Makefile.rpc_linux debug
+	cd testwallet && make -f Makefile.CPP_API debugrpc
+	cd testwallet && make -f Makefile.rpc_linux debug
+	cd util/otcreatemint && make -f Makefile.linux debug && cp ./createmint.debug ../../transaction/data_folder/createmint.debug
+	cd util/signcontract && make -f Makefile.linux debug && cp ./signcontract.debug ../../testwallet/data_folder/signcontract.debug
+#	cd testwallet && make -f Makefile.JNI_API_Linux debugrpc
+
+clean:
+	cd OTLib && make clean
+	cd transaction && make -f Makefile.linux clean
+	cd transaction && make -f Makefile.rpc_linux clean
+	cd testwallet && make -f Makefile.CPP_API clean
+	cd testwallet && make -f Makefile.linux clean
+	cd testwallet && make -f Makefile.rpc_linux clean
+	cd util/otcreatemint && make -f Makefile.linux clean && touch ../../transaction/data_folder/createmint.tmp && rm ../../transaction/data_folder/createmint.*
+	cd util/signcontract && make -f Makefile.linux clean && touch ../../testwallet/data_folder/signcontract.tmp && rm ../../testwallet/data_folder/signcontract.*
+#	cd testwallet && make -f Makefile.JNI_API_Linux clean
+
+
+ 

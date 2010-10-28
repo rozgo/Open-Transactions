@@ -128,26 +128,6 @@ typedef struct
 
 
 
-OTAsymmetricKey::OTAsymmetricKey()
-{
-	m_pKey = NULL;
-}
-
-OTAsymmetricKey::~OTAsymmetricKey()
-{
-	Release();
-}
-
-void OTAsymmetricKey::Release()
-{
-	if (NULL != m_pKey)
-	{
-		EVP_PKEY_free (m_pKey); 
-		m_pKey = NULL;
-	}	
-}
-
-
 
 // Get the public key in ASCII-armored format with bookends  - ------- BEGIN PUBLIC KEY --------
 // This version, so far, is escaped-only. Notice the "- " before the rest of the bookend starts.
@@ -469,7 +449,7 @@ bool OTAsymmetricKey::LoadPublicKeyFromPGPKey(const OTASCIIArmor & strKey)
 	 */
 	int iRet =-1, len;
 	BIO *bio, *b64, *bio_out;
-	unsigned char buffer[512];
+	unsigned char buffer[520]; // Making it a bit bigger than 512 for safety reasons.
 	BUF_MEM *bptr;
 	PgpKeys pgpKeys;
 	
@@ -481,6 +461,7 @@ bool OTAsymmetricKey::LoadPublicKeyFromPGPKey(const OTASCIIArmor & strKey)
 	while((len = BIO_read(bio, buffer, 512)) > 0)
 		BIO_write(bio_out, buffer, len);
 	BIO_free_all(bio);
+	bio = NULL;
 	
 	BIO_get_mem_ptr(bio_out, &bptr);
 	
@@ -549,6 +530,7 @@ bool OTAsymmetricKey::LoadPublicKeyFromPGPKey(const OTASCIIArmor & strKey)
 	iRet = 0;
 	
 	BIO_free(bio_out);
+	bio_out = NULL;
 	
 	/*
 	if (pgpKeys.pRsa)
@@ -565,6 +547,8 @@ bool OTAsymmetricKey::LoadPublicKeyFromPGPKey(const OTASCIIArmor & strKey)
 	bool		bReturnValue	= false;
 	EVP_PKEY *	pkey			= EVP_PKEY_new();
 	
+	OT_ASSERT(NULL != pkey);
+	
 	if (pgpKeys.pRsa)
 	{
 		if (EVP_PKEY_assign_RSA(pkey, pgpKeys.pRsa))
@@ -575,10 +559,11 @@ bool OTAsymmetricKey::LoadPublicKeyFromPGPKey(const OTASCIIArmor & strKey)
 		}
 		else
 		{
+			RSA_free(pgpKeys.pRsa);
 			OTLog::Output(0, "Extracted RSA public key from PGP public key block, but unable to convert to EVP_PKEY.\n");
 		}
 
-		RSA_free(pgpKeys.pRsa);
+		pgpKeys.pRsa = NULL;
 	}
 	else if (pgpKeys.pDsa)
 	{
@@ -590,18 +575,25 @@ bool OTAsymmetricKey::LoadPublicKeyFromPGPKey(const OTASCIIArmor & strKey)
 		}
 		else
 		{
+			DSA_free(pgpKeys.pDsa);
 			OTLog::Output(0, "Extracted DSA public key from PGP public key block, but unable to convert to EVP_PKEY.\n");
 		}
 		
-		DSA_free(pgpKeys.pDsa);
+		pgpKeys.pDsa = NULL;
 	}
 	else if (pgpKeys.pElgamal)
 	{
 		OTLog::Output(0, "Extracted ElGamal Key from PGP public key block, but currently do not support it (sorry))\n");
 		//int EVP_PKEY_assign_EC_KEY(EVP_PKEY *pkey,EC_KEY *key); // Here is the assign function for El Gamal 
 		// (assuming that "EC" stands for eliptical curve... kind of hard to tell with the OpenSSL docs...)
-		free(pgpKeys.pElgamal);
+		free(pgpKeys.pElgamal); 
+		pgpKeys.pElgamal = NULL;
+		
+		EVP_PKEY_free(pkey);
+		pkey = NULL;
 	}
+	
+	pkey = NULL; // This is either stored on m_pKey, or deleted. I'm setting pointer to NULL here just for completeness.
 		
 	return bReturnValue;
 	//	EVP_cleanup(); // removes digests from the table
@@ -621,12 +613,15 @@ bool OTAsymmetricKey::SetPublicKey(const OTASCIIArmor & strKey)
 	
 	BIO* keyBio	= BIO_new_mem_buf((void*)theData.GetPayloadPointer(), theData.GetSize());
 	
+	OT_ASSERT(NULL != keyBio);
+	
 	//TODO Figure out which one of these is right, if any
 	//	pReturnKey	= d2i_PUBKEY_bio(keyBio, NULL); 
 	pReturnKey = PEM_read_bio_PUBKEY(keyBio, NULL, NULL, NULL); // we'll try this one next
 	
 	// Free the BIO and related buffers, filters, etc.
 	BIO_free_all(keyBio);
+	keyBio = NULL;
 	
 	Release();
 	
@@ -732,6 +727,8 @@ bool OTAsymmetricKey::GetPublicKey(OTASCIIArmor & strKey) const
 	BIO *bmem = BIO_new(BIO_s_mem());
 	//BIO_puts(bmem, Get());
 
+	OT_ASSERT(NULL != bmem);
+	
 	// write a public key to that buffer from our member variable m_pKey
 	int nWriteBio = PEM_write_bio_PUBKEY(bmem, m_pKey);
 	
@@ -773,7 +770,8 @@ bool OTAsymmetricKey::GetPublicKey(OTASCIIArmor & strKey) const
 
 	// Free the BIO and related buffers, filters, etc.
 	BIO_free_all(bmem);
-
+	bmem = NULL;
+	
 	return bReturnVal;	
 }
 
@@ -811,11 +809,13 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertFile(const OTString & strFilename)
 	X509 *	x509	= NULL; 
 
 	
-	/*
+/*
+	// -------------------------------------------------
+	// Version 1   (works but uses fopen)
 	FILE * fp		= NULL; 
 	
 	// Read public key
-	fprintf (stderr, "\nReading public key from certfile: %s\n", strFilename.Get()); 
+	OTLog::vOutput(3, "\nReading public key from certfile: %s\n", strFilename.Get()); 
 
 #ifdef _WIN32
 	errno_t err = fopen_s(&fp, strFilename.Get(), "rb"); 
@@ -833,20 +833,23 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertFile(const OTString & strFilename)
 	x509 = PEM_read_X509(fp, NULL, NULL, NULL); 
 	
 	fclose (fp); 
-	*/
+	// -------------------------------------------------
+*/
 	
 	
-	BIO *bio;
-	bio = BIO_new( BIO_s_file() );
+ // -------------------------------------------------
+	// Version 2
+	BIO *bio = BIO_new( BIO_s_file() );
+	OT_ASSERT(NULL != bio);
 	BIO_read_filename( bio, strFilename.Get() );
 	
 	x509 = PEM_read_bio_X509(bio, NULL, NULL, NULL); 
 
 	BIO_free_all(bio);
-	
-	
-	
-	
+	bio = NULL;
+	// -------------------------------------------------
+
+
 	if (x509 == NULL) 
 	{ 
 		OTLog::vError("Error reading x509 out of cert file: %s\n", strFilename.Get()); 
@@ -855,14 +858,42 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertFile(const OTString & strFilename)
 	
 	m_pKey = X509_get_pubkey(x509); 
 	X509_free(x509);  
+	x509 = NULL;
 	
 	if (m_pKey == NULL) 
 	{ 
-		OTLog::vError("Error reading public key from x509 from certfile: %s\n", strFilename.Get()); 
+		OTLog::vError("Error reading public key from x509 from certfile: %s\n", 
+					  strFilename.Get()); 
 		return false; 
 	}
 	else
+	{
+		OTLog::vOutput(3, "Successfully loaded public key from x509 from certfile: %s\n", 
+					  strFilename.Get());
 		return true; 
+	}
+}
+
+
+
+
+OTAsymmetricKey::OTAsymmetricKey()
+{
+	m_pKey = NULL;
+}
+
+OTAsymmetricKey::~OTAsymmetricKey()
+{
+	Release();
+}
+
+void OTAsymmetricKey::Release()
+{
+	if (NULL != m_pKey)
+	{
+		EVP_PKEY_free (m_pKey); 
+		m_pKey = NULL;
+	}	
 }
 
 
@@ -910,39 +941,42 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertString(const OTString & strCert, bool
 	BIO  * keyBio = BIO_new_mem_buf((void*)strWithBookends.Get(), strWithBookends.GetLength() /*+1*/); 
 //	BIO  * keyBio = BIO_new_mem_buf((void*)strCert.Get(), strCert.GetLength() /*+1*/); 
 	
-	if (keyBio)
-	{
-		X509 * x509 = NULL;
-		
-		// TODO: At some point need to switch to using X509_AUX functions.
-		// The current x509 functions will read a trust certificate but discard the trust structure.
-		// The X509_AUX functions will process the trust structure.
-		if (PEM_read_bio_X509(keyBio, &x509, NULL, NULL)) 
-		{		
-			m_pKey = X509_get_pubkey(x509); 
-			
-			X509_free(x509);
+	OT_ASSERT(NULL != keyBio);
+	
+	X509 * x509 = PEM_read_bio_X509(keyBio, NULL, NULL, NULL);
+	
+	
+	// Free the BIO and related buffers, filters, etc.
+	BIO_free_all(keyBio);
+	keyBio = NULL;
 
-			if (m_pKey == NULL) 
-			{ 
-				OTLog::Error("Error reading public key from x509 in LoadPublicKeyFromCertArmor.\n"); 
-			}
-			else
-			{
-				OTLog::Output(3, "\nSuccessfully extracted a public key from an x509 certificate.\n"); 
-				bReturnValue = true; 
-			}
+	
+	// TODO: At some point need to switch to using X509_AUX functions.
+	// The current x509 functions will read a trust certificate but discard the trust structure.
+	// The X509_AUX functions will process the trust structure.
+	if (NULL != x509) 
+	{		
+		m_pKey = X509_get_pubkey(x509); 
+		
+		X509_free(x509);
+		x509 = NULL;
+
+		if (m_pKey == NULL) 
+		{ 
+			OTLog::Error("Error reading public key from x509 in LoadPublicKeyFromCertArmor.\n"); 
 		}
 		else
-		{ 
-			OTLog::Error("Error reading x509 out of certificate in LoadPublicKeyFromCertArmor.\n"); 
+		{
+			OTLog::Output(3, "\nSuccessfully extracted a public key from an x509 certificate.\n"); 
+			bReturnValue = true; 
 		}
-		
-		
-		// Free the BIO and related buffers, filters, etc.
-		BIO_free_all(keyBio);
+	}
+	else
+	{ 
+		OTLog::Error("Error reading x509 out of certificate in LoadPublicKeyFromCertArmor.\n"); 
 	}
 	
+		
 	return bReturnValue;
 }
 
@@ -994,14 +1028,14 @@ bool OTAsymmetricKey::LoadPublicKey(const OTString & strFilename)
 		}
 		else
 		{
-			OTLog::vOutput(2, "Unable to convert from OTASCIIArmor to public key in "
+			OTLog::vError("Unable to convert from OTASCIIArmor to public key in "
 					 "OTAsymmetricKey::LoadPublicKey: %s\n",
 					 strFilename.Get()); 
 			return false; 			
 		}
 	}
 	else {
-		OTLog::vOutput(2, "Unable to read pubkey file in OTAsymmetricKey::LoadPublicKey: %s\n", strFilename.Get()); 
+		OTLog::vError("Unable to read pubkey file in OTAsymmetricKey::LoadPublicKey: %s\n", strFilename.Get()); 
 		return false; 
 	}
 
@@ -1039,12 +1073,41 @@ bool OTAsymmetricKey::LoadPublicKey(OTString & strFilename)
 }
 */
 
+// TODO this is just for testing.
+int pass_cb(char *buf, int size, int rwflag, void *u)
+{
+	int len;
+	char *tmp;
+	
+	// We'd probably do something else if 'rwflag' is 1
+	
+	OTLog::vOutput(0, "Using 'test' pass phrase for \"%s\"\n", (char *)u);
+	
+	// get pass phrase, length 'len' into 'tmp'
+	
+	tmp = "test";
+	len = strlen(tmp);
+	
+	if (len <= 0) 
+		return 0;
+	
+	// if too long, truncate
+	if (len > size) 
+		len = size;
+	
+	memcpy(buf, tmp, len);
+		return len;
+}
+
+
 // Load the private key from a .pem file
 bool OTAsymmetricKey::LoadPrivateKey(const OTString & strFilename)
 {
 	Release();
-	
-	/*
+
+/*
+	// ------------------------------------------------------
+	// Version 1  (works but uses fopen)
 	FILE * fp = NULL; // _WIN32 
 	
 	// Read private key 
@@ -1056,35 +1119,48 @@ bool OTAsymmetricKey::LoadPrivateKey(const OTString & strFilename)
 	
 	if (NULL == fp)
 	{ 
-		fprintf (stderr, "Error opening private key file in OTAsymmetricKey::LoadPrivateKey: %s\n", strFilename.Get()); 
+		fprintf (stderr, "Error opening private keyfile in OTAsymmetricKey::LoadPrivateKey:\n%s\n", 
+				 strFilename.Get()); 
 		return false; 
 	} 
 	
-    m_pKey = PEM_read_PrivateKey(fp, NULL, NULL, NULL); 
+    m_pKey = PEM_read_PrivateKey(fp, NULL, pass_cb, NULL); 
 	
 	fclose (fp); 
-	*/
-	
+	// ------------------------------------------------------
+	 */
 
-	BIO *bio;
+	// ------------------------------------------------------
+	// Version 2
+	BIO *bio = NULL;
 	bio = BIO_new( BIO_s_file() );
+	
+	OT_ASSERT(NULL != bio);
+	
 	BIO_read_filename( bio, strFilename.Get() );
 	
-	m_pKey = PEM_read_bio_PrivateKey( bio, NULL, NULL, NULL );
+	m_pKey = PEM_read_bio_PrivateKey( bio, NULL, pass_cb, NULL );
 	
 	BIO_free_all(bio);
-	
-	
-	
+	bio = NULL;
+	// ------------------------------------------------------
+
+
+
 	if (NULL == m_pKey) 
 	{ 
 		OTLog::vError("Error reading private key from file in OTAsymmetricKey::LoadPrivateKey: %s\n", strFilename.Get()); 
 		return false; 
 	}
-	
-	return true;
-}
+	else 
+	{
+		OTLog::vOutput(3, "Successfully loaded private key:\n%s\n", strFilename.Get());
+		return true;
+	}
 
+	OTLog::vError("STRANGE error while loading private key:\n%s\n", strFilename.Get());
+	return false;
+}
 
 
 const EVP_PKEY * OTAsymmetricKey::GetKey() const

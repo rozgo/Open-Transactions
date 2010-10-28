@@ -31,9 +31,9 @@ LOCAL_MODULE    := libOTLib
 
 LOCAL_C_INCLUDES += $(OPENSSL_DIR) $(OPENSSL_INCLUDE_DIR) $(LOCAL_PATH) $(LOCAL_PATH)/irrxml $(LOCAL_PATH)/Lucre
 
-LOCAL_SRC_FILES := easyzlib.c Lucre/bankimp.cpp irrxml/irrXML.cpp OTData.cpp OTString.cpp OTStringXML.cpp OTASCIIArmor.cpp OTContract.cpp OTWallet.cpp OTSignedFile.cpp OTPseudonym.cpp OTMint.cpp OTInstrument.cpp OTCheque.cpp OTPurse.cpp OTToken.cpp OTTransactionType.cpp OTItem.cpp OTBasket.cpp OTTransaction.cpp OTLedger.cpp OTAccount.cpp OTEnvelope.cpp OTAssetContract.cpp OTServerContract.cpp OTPayload.cpp OTMessage.cpp OTMessageBuffer.cpp OTIdentifier.cpp OTAsymmetricKey.cpp OTSignature.cpp OTDataCheck.cpp
+LOCAL_SRC_FILES := easyzlib.c Lucre/bankimp.cpp irrxml/irrXML.cpp OTData.cpp OTString.cpp OTStringXML.cpp OTASCIIArmor.cpp OTContract.cpp OTWallet.cpp OTSignedFile.cpp OTPseudonym.cpp OTMint.cpp OTInstrument.cpp OTCheque.cpp OTPurse.cpp OTToken.cpp OTTransactionType.cpp OTItem.cpp OTBasket.cpp OTTransaction.cpp OTLedger.cpp OTAccount.cpp OTEnvelope.cpp OTAssetContract.cpp OTServerContract.cpp OTPayload.cpp OTMessage.cpp OTMessageBuffer.cpp OTIdentifier.cpp OTAsymmetricKey.cpp OTSignature.cpp OTDataCheck.cpp OTLog.cpp OTOffer.cpp OTAgreement.cpp OTTrackable.cpp OTCron.cpp OTCronItem.cpp OTTrade.cpp OTPaymentPlan.cpp OTMarket.cpp
 
-LOCAL_LDLIBS += -ldl -lz
+LOCAL_LDLIBS += -ldl -lz -llog
 
 LOCAL_STATIC_LIBRARIES := libssl libcrypto
 

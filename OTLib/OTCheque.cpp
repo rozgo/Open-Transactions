@@ -98,11 +98,12 @@ using namespace io;
 
 void OTCheque::UpdateContents()
 {
-	OTString ASSET_TYPE_ID(m_AssetTypeID), SERVER_ID(m_ServerID), 
-			SENDER_ACCT_ID(m_SENDER_ACCT_ID), SENDER_USER_ID(m_SENDER_USER_ID), 
+	OTString ASSET_TYPE_ID(GetAssetID()), SERVER_ID(GetServerID()), 
+			SENDER_ACCT_ID(GetSenderAcctID()), SENDER_USER_ID(GetSenderUserID()), 
 			RECIPIENT_USER_ID(m_RECIPIENT_USER_ID);
 		
-	long lFrom = m_VALID_FROM, lTo = m_VALID_TO;
+	long	lFrom	= GetValidFrom(), 
+			lTo		= GetValidTo();
 	
 	// I release this because I'm about to repopulate it.
 	m_xmlUnsigned.Release();
@@ -124,7 +125,7 @@ void OTCheque::UpdateContents()
 							  m_strVersion.Get(),
 							  m_lAmount,
 							  ASSET_TYPE_ID.Get(), 
-							  m_lTransactionNum,
+							  GetTransactionNum(),
 							  SERVER_ID.Get(),
 							  SENDER_ACCT_ID.Get(),
 							  SENDER_USER_ID.Get(),
@@ -142,14 +143,6 @@ void OTCheque::UpdateContents()
 }
 
 
-
-
-
-/*
- 
- m_strMemo;
- 
- */
 
 // return -1 if error, 0 if nothing, and 1 if the node was processed.
 int OTCheque::ProcessXMLNode(IrrXMLReader*& xml)
@@ -178,22 +171,24 @@ int OTCheque::ProcessXMLNode(IrrXMLReader*& xml)
 
 		m_strVersion		= xml->getAttributeValue("version");					
 		m_lAmount			= atol(xml->getAttributeValue("amount"));
-		m_lTransactionNum	= atol(xml->getAttributeValue("transactionNum"));
+		
+		SetTransactionNum( atol(xml->getAttributeValue("transactionNum")) );
 
-		m_VALID_FROM	= atol(xml->getAttributeValue("validFrom"));
-		m_VALID_TO		= atol(xml->getAttributeValue("validTo"));
+		SetValidFrom(atol(xml->getAttributeValue("validFrom")));
+		SetValidTo(atol(xml->getAttributeValue("validTo")));
 		
 		OTString	strAssetTypeID(xml->getAttributeValue("assetTypeID")),
 					strServerID(xml->getAttributeValue("serverID")),
 					strSenderAcctID(xml->getAttributeValue("senderAcctID")),
 					strSenderUserID(xml->getAttributeValue("senderUserID")),
 					strRecipientUserID(xml->getAttributeValue("recipientUserID"));
-							
-		m_AssetTypeID.SetString(strAssetTypeID);
-		m_ServerID.SetString(strServerID);
-		m_SENDER_ACCT_ID.SetString(strSenderAcctID);	
-		m_SENDER_USER_ID.SetString(strSenderUserID);	
-
+		OTIdentifier	ASSET_ID(strAssetTypeID),		SERVER_ID(strServerID),
+						SENDER_ACCT_ID(strSenderAcctID),SENDER_USER_ID(strSenderUserID);
+		SetAssetID(ASSET_ID);
+		SetServerID(SERVER_ID);
+		SetSenderAcctID(SENDER_ACCT_ID);
+		SetSenderUserID(SENDER_USER_ID);
+		
 		// Recipient ID --------
 		if (m_bHasRecipient)
 		{
@@ -206,7 +201,6 @@ int OTCheque::ProcessXMLNode(IrrXMLReader*& xml)
 		// ---------------------
 		
 		OTLog::vOutput(0,
-				//	"\n===> Loading XML for token into memory structures..."
 				"\n\nCheque Amount: %ld.  Transaction Number: %ld\n Valid From: %d\n Valid To: %d\n"
 				" AssetTypeID: %s\n ServerID: %s\n"
 				" senderAcctID: %s\n senderUserID: %s\n "
@@ -273,15 +267,16 @@ bool OTCheque::IssueCheque(const long & lAmount, const long & lTransactionNum,
 				const OTString & strMemo,				// Optional memo field.
 				const OTIdentifier * pRECIPIENT_USER_ID/*=NULL*/)	// Recipient optional. (Might be a blank cheque.)
 {
-	m_VALID_FROM			= VALID_FROM;
-	m_VALID_TO				= VALID_TO;
+	m_lAmount	= lAmount;
+	m_strMemo	= strMemo;
+
+	SetValidFrom(VALID_FROM);
+	SetValidTo(VALID_TO);
 	
-	m_lAmount				= lAmount;
-	m_lTransactionNum		= lTransactionNum;
-	m_strMemo				= strMemo;
+	SetTransactionNum(lTransactionNum);
 	
-	m_SENDER_ACCT_ID		= SENDER_ACCT_ID;	
-	m_SENDER_USER_ID		= SENDER_USER_ID;
+	SetSenderAcctID(SENDER_ACCT_ID);
+	SetSenderUserID(SENDER_USER_ID);
 	
 	if (pRECIPIENT_USER_ID)
 	{
@@ -301,26 +296,21 @@ void OTCheque::InitCheque()
 	m_strContractType.Set("CHEQUE");
 		
 	m_lAmount			= 0;
-	m_lTransactionNum	= 0; 
 
 	m_bHasRecipient		= false;
-	
-	m_strMemo.Release();
-	m_SENDER_ACCT_ID.Release();	
-	m_SENDER_USER_ID.Release();
-	m_RECIPIENT_USER_ID.Release();
 }
 
-OTCheque::OTCheque() : OTInstrument()
+OTCheque::OTCheque() : OTTrackable()
 {
 	InitCheque();
 }
 
-OTCheque::OTCheque(const OTIdentifier & SERVER_ID, const OTIdentifier & ASSET_ID) : OTInstrument(SERVER_ID, ASSET_ID)
+OTCheque::OTCheque(const OTIdentifier & SERVER_ID, const OTIdentifier & ASSET_ID) : 
+			OTTrackable(SERVER_ID, ASSET_ID)
 {
 	InitCheque();
 	
-	// m_ServerID and m_AssetTypeID are now in the parent class (OTInstrument)
+	// m_ServerID and m_AssetTypeID are now in a grandparent class (OTInstrument)
 	// So they are initialized there now.
 }
 
@@ -328,8 +318,12 @@ OTCheque::OTCheque(const OTIdentifier & SERVER_ID, const OTIdentifier & ASSET_ID
 void OTCheque::Release()
 {
 	// If there were any dynamically allocated objects, clean them up here.
-
-	OTInstrument::Release(); // since I've overridden the base class, I call it now...
+	m_strMemo.Release();
+//	m_SENDER_ACCT_ID.Release();	 // in parent class now.
+//	m_SENDER_USER_ID.Release();	 // in parent class now.
+	m_RECIPIENT_USER_ID.Release();
+	
+	OTTrackable::Release(); // since I've overridden the base class, I call it now...
 	
 	// Then I call this to re-initialize everything
 	InitCheque(); 
@@ -337,7 +331,7 @@ void OTCheque::Release()
 
 OTCheque::~OTCheque()
 {
-	// OTContract::~OTContract is called here automatically, and it calls Release() already.
+	// OTTrackable::~OTTrackable is called here automatically, and it calls Release() already.
 	// So I don't need to call Release() here again, since it's already called by the parent.
 }
 
