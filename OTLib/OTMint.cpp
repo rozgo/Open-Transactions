@@ -781,7 +781,7 @@ bool OTMint::SignToken(OTPseudonym & theNotary, OTToken & theToken, OTString & t
 
 			// Read the signature bio into a C-style buffer...
 			char sig_buf[1024];   // todo stop hardcoding these string lengths
-//			memset(sig_buf, 0, 2048); // zero it out.
+//			memset(sig_buf, 0, 1024); // zero it out. (I had this commented out, but the size was 2048, so maybe it's safe now at 1024.)
 			
 			int sig_len	= BIO_read(bioSignature, sig_buf, 1000); // cutting it a little short on purpose, with the buffer. Just makes me feel more comfortable for some reason.
 			

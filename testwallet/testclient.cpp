@@ -102,6 +102,7 @@ extern "C"
 void OT_Sleep(int nMS);
 #endif
 
+#include "OTIdentifier.h"
 #include "OTString.h"
 #include "OTClient.h"
 #include "OTServerConnection.h"
@@ -111,12 +112,19 @@ void OT_Sleep(int nMS);
 #include "OTPseudonym.h"
 #include "OTEnvelope.h"
 #include "OTCheque.h"
+#include "OTAgreement.h"
 #include "OpenTransactions.h"
 #include "OTPaymentPlan.h"
 #include "OTLog.h"
 
-extern OTClient	*	g_pClient;
-extern OTWallet	*	g_pWallet;
+
+
+// This global variable contains an OTWallet, an OTClient, etc. 
+// It's the C++ high-level interace to OT. 
+// Any client software will have an instance of this.
+OT_API g_OT_API; 
+// Note: Must call OT_API::Init() followed by g_OT_API.Init() in the main function, before using OT.
+
 
 extern OTPseudonym *g_pTemporaryNym;
 
@@ -160,6 +168,8 @@ int main (int argc, char **argv)
 				   "\"make -f Makefile.rpc\" (but make sure the server is built the same way.)\n\n", 
 				   OTLog::Version());
 	
+	OT_API::InitOTAPI();
+	
 	// -----------------------------------------------------------------------
 	
 	OTString strCAFile, strKeyFile, strSSLPassword;
@@ -173,7 +183,7 @@ int main (int argc, char **argv)
 		strSSLPassword.Set(KEY_PASSWORD);
 		
 		OTString strClientPath(SERVER_PATH_DEFAULT);
-        OT_API_Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
+        g_OT_API.Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
 	}
 	else if (argc < 3)
 	{
@@ -183,14 +193,14 @@ int main (int argc, char **argv)
 		strSSLPassword.Set(argv[1]);
 		
 		OTString strClientPath(SERVER_PATH_DEFAULT);
-        OT_API_Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
+        g_OT_API.Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
 	}
 	else 
 	{
 		strSSLPassword.Set(argv[1]);
 		
 		OTString strClientPath(argv[2]);
-        OT_API_Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
+        g_OT_API.Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
 	}	
 	
 	strCAFile. Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), CA_FILE);
@@ -251,13 +261,9 @@ int main (int argc, char **argv)
 		if (strLine.compare(0,4,"load") == 0)
 		{
 			OTLog::Output(0, "User has instructed to load wallet.xml...\n");
-#ifdef _WIN32			
-			g_pWallet->LoadWallet("wallet-Windows.xml");
-#else
-			g_pWallet->LoadWallet("wallet.xml");
-#endif
+			g_OT_API.GetWallet()->LoadWallet("wallet.xml");
  
-//			g_pWallet->SaveWallet("NEWwallet.xml"); // todo remove this test code.
+//			g_OT_API.GetWallet()->SaveWallet("NEWwallet.xml"); // todo remove this test code.
 			
 			continue;
 		}
@@ -275,7 +281,7 @@ int main (int argc, char **argv)
 			strTemp.OTfgets(std::cin);
 			
 			const OTIdentifier ACCOUNT_ID(strTemp), USER_ID(*g_pTemporaryNym);
-			OTAccount * pAccount = g_pWallet->GetAccount(ACCOUNT_ID);
+			OTAccount * pAccount = g_OT_API.GetWallet()->GetAccount(ACCOUNT_ID);
 			
 			if (NULL == pAccount)
 			{
@@ -330,7 +336,7 @@ int main (int argc, char **argv)
 						  "10 minutes	==      600 Seconds\n"
 						  "1 hour		==     3600 Seconds\n"
 						  "1 day		==    86400 Seconds\n"
-						  "30 days		==  2592000 Seconds\n"
+						  "30 days			==  2592000 Seconds\n"
 						  "3 months		==  7776000 Seconds\n"
 						  "6 months		== 15552000 Seconds\n\n"
 						  );
@@ -484,7 +490,7 @@ int main (int argc, char **argv)
 			strTemp.OTfgets(std::cin);
 
 			const OTIdentifier ACCOUNT_ID(strTemp), USER_ID(*g_pTemporaryNym);
-			OTAccount * pAccount = g_pWallet->GetAccount(ACCOUNT_ID);
+			OTAccount * pAccount = g_OT_API.GetWallet()->GetAccount(ACCOUNT_ID);
 			
 			if (NULL == pAccount)
 			{
@@ -720,7 +726,7 @@ int main (int argc, char **argv)
 			OTLog::Output(0, "User has instructed to display wallet contents...\n");
 			
 			OTString strStat;
-			g_pWallet->DisplayStatistics(strStat);
+			g_OT_API.GetWallet()->DisplayStatistics(strStat);
 			OTLog::vOutput(0, "%s\n", strStat.Get());
 			
 			continue;
@@ -747,7 +753,7 @@ int main (int argc, char **argv)
 			// Wallet, after loading, should contain a list of server
 			// contracts. Let's pull the hostname and port out of
 			// the first contract, and connect to that server.
-			bool bConnected = g_pClient->ConnectToTheFirstServerOnList(*g_pTemporaryNym, strCAFile, strKeyFile, strSSLPassword); 
+			bool bConnected = g_OT_API.GetClient()->ConnectToTheFirstServerOnList(*g_pTemporaryNym, strCAFile, strKeyFile, strSSLPassword); 
 			
 			if (bConnected)
 				OTLog::Output(0, "Success. (Connected to the first notary server on your wallet's list.)\n");
@@ -758,14 +764,14 @@ int main (int argc, char **argv)
 			continue;
 		}
 		
-		if (!g_pClient->IsConnected())
+		if (!g_OT_API.GetClient()->IsConnected())
 		{
 			OTLog::Output(0, "(You are not connected to a notary server--you cannot send commands.)\n");
 			continue;
 		}
 			
 		// 2) Process it out as an OTMessage to the server. It goes down the pipe.
-		g_pClient->ProcessMessageOut(buf, &nExpectResponse);
+		g_OT_API.GetClient()->ProcessMessageOut(buf, &nExpectResponse);
 		
 		// 3) Sleep for 1 second.
 #ifdef _WIN32
@@ -784,7 +790,7 @@ int main (int argc, char **argv)
 			
 			// If this returns true, that means a Message was
 			// received and processed into an OTMessage object (theMsg)
-			bFoundMessage = g_pClient->ProcessInBuffer(theMsg);
+			bFoundMessage = g_OT_API.GetClient()->ProcessInBuffer(theMsg);
 			
 			if (true == bFoundMessage)
 			{
@@ -792,7 +798,7 @@ int main (int argc, char **argv)
 //				theMsg.SaveContract(strReply);
 //				OTLog::vOutput(0, "\n\n**********************************************\n"
 //						"Successfully in-processed server response.\n\n%s\n", strReply.Get());
-				g_pClient->ProcessServerReply(theMsg);
+				g_OT_API.GetClient()->ProcessServerReply(theMsg);
 			}
 		
 		} while (true == bFoundMessage);

@@ -149,9 +149,18 @@ extern "C"
 
 //using namespace CryptoPP;
 
+
+
+
 OTIdentifier::OTIdentifier() : OTData()
 {
 	
+}
+
+
+OTIdentifier::OTIdentifier(const char * szStr) : OTData()
+{
+	SetString(szStr);
 }
 
 OTIdentifier::OTIdentifier(const OTString & theStr) : OTData()
@@ -594,6 +603,15 @@ union CharToShort
 	unsigned char c[2];
 	unsigned int sh;
 };
+
+
+void OTIdentifier::SetString(const char * szString)
+{
+	OT_ASSERT(NULL != szString);
+	
+	const OTString theStr(szString);
+	SetString(theStr);
+}
 
 //TODO speed this up.
 // could be named "set from string" or "set by string"

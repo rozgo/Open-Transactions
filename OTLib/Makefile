@@ -34,11 +34,19 @@ DEBUG_PROGRAM = libOTLibd.a
 #        -I/usr/local/include \  
 #
 
+ifeq ($(PLATFORM), freebsd)
+INCLUDEDIRS = \
+	-I/usr/local/include \
+	-I./irrxml \
+	-I./Lucre \
+	-I./
+else
 INCLUDEDIRS = \
 	-I/usr/local/ssl/include \
 	-I./irrxml \
 	-I./Lucre \
 	-I./
+endif
 
 
 LIBDIRS = \
@@ -114,14 +122,19 @@ CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
 COBJECTS   = $(CSOURCES:.c=.o)
 #CXXFLAGS   = $(INCLUDEDIRS) -Wall -Werror
 #CFLAGS     = $(INCLUDEDIRS) -Wall -Werror
-CXXFLAGS   = $(INCLUDEDIRS) -Wall 
-CFLAGS     = $(INCLUDEDIRS) -Wall 
 DEBUG_FLAGS = -g
 CXX = g++
 CC = gcc
 LDFLAGS = $(LIBDIRS) $(LIBS)
-
 DEBUG_LDFLAGS = $(LIBDIRS) $(DEBUG_LIBS)
+
+ifeq ($(DYNAMIC_OTLIB), 1)
+CXXFLAGS   = $(INCLUDEDIRS) -Wall -fPIC
+CFLAGS     = $(INCLUDEDIRS) -Wall -fPIC 
+else
+CXXFLAGS   = $(INCLUDEDIRS) -Wall
+CFLAGS     = $(INCLUDEDIRS) -Wall
+endif
 
 #
 # Default target: the first target is the default target.

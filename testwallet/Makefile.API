@@ -1,0 +1,613 @@
+#
+# IMPORTANT:  WHEN USING THIS MAKEFILE, YOU *MUST* USE THE OPTIONS. EXAMPLE:
+#
+# So you have to do: make -f Makefile.API PLATFORM=linux LANGUAGE=php5 TRANSPORT=XmlRpc
+#                OR: make -f Makefile.API PLATFORM=darwin LANGUAGE=c  TRANSPORT=XmlRpc debug
+#                OR: make -f Makefile.API PLATFORM=freebsd LANGUAGE=ruby
+# 		Etc...
+#
+# (Example only. Transport is optional, but you MUST choose a platform and language.)
+#
+# Platform options are darwin, linux and freebsd (untested)
+#
+# Language options are c, csharp, java, ruby, python, perl5, php5, tcl, and lisp. 
+#
+
+PROGRAM = libOTAPI.a
+DEBUG_PROGRAM = libOTAPId.a
+
+
+OT_INCLUDEDIRS = \
+	-I../OTLib/irrxml \
+	-I../OTLib \
+	-I./SSL-Example \
+	-I.
+
+
+# The LIBDIRS macro contains a list of library directories
+# to pass to the linker so it can find necessary libraries.
+#
+OT_LIBDIRS = \
+	-L../OTLib
+
+PLATFORM_LIBDIRS = # empty
+PLATFORM_INCLUDEDIRS = #empty
+
+API_CSOURCES = ./SSL-Example/SFSocket.c
+API_CFLAGS = #empty
+API_LDFLAGS = #empty
+
+
+C_COMPILER = cc
+
+# The LIBS macro contains a list of libraries that the the
+# executable must be linked against.
+API_LIBS =  -lssl -lcrypto  -lOTLib -lssl -lcrypto  -lOTLib  -lssl -lcrypto -lOTLib  -lssl -lcrypto -lOTLib
+API_DEBUG_LIBS = -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd  -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd
+#
+# FT: I tested this. The above version worked on Linux, and the below version did not.
+#
+#API_LIBS = -lssl  -lcrypto -lOTLib
+#API_DEBUG_LIBS =  -lssl -lcrypto  -lOTLibd
+
+
+
+# ---------------------------------------------------------------------
+
+# --- DARWIN
+#
+ifeq ($(PLATFORM), darwin)
+
+PLATFORM_INCLUDEDIRS = -I/usr/local/ssl/include
+
+DYNAMIC_OTLIB_CONTENTS = # empty
+
+# --- Common Lisp
+LISP_PROGRAM = OTAPI.so
+LISP_DEBUG_PROGRAM = OTAPId.so 
+LISP_LDFLAGS = -dynamiclib
+
+# --- C# (C-Sharp)
+CSHARP_PROGRAM = libOTAPI.so  
+CSHARP_DEBUG_PROGRAM = libOTAPId.so
+CSHARP_LDFLAGS = -dynamiclib
+
+
+# --- JAVA
+# -I/Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Headers
+JAVA_PROGRAM = libOTAPI.jnilib  
+JAVA_DEBUG_PROGRAM = libOTAPId.jnilib  
+JAVA_INCLUDEDIRS = -I$(shell javaconfig Headers)
+JAVA_LDFLAGS = -framework JavaVM -bundle
+
+# --- PERL5
+# NOTE: the perl commands here (commented out), used at the command line, generated
+# the actual CFLAGS and LDFLAGS that are used below in the uncommented section.
+# (You may find them similarly useful on your machine.)
+#CFLAGS += -bundle $(shell perl -MExtUtils::Embed -e ccopts)
+#LDFLAGS += -bundle $(shell perl -MExtUtils::Embed -e ldopts)
+#DEBUG_LDFLAGS += -bundle $(shell perl -MExtUtils::Embed -e ldopts)
+#
+PERL5_PROGRAM = OTAPI.bundle 
+PERL5_DEBUG_PROGRAM = OTAPId.bundle
+PERL5_INCLUDEDIRS = # empty
+PERL5_CFLAGS = -bundle -arch x86_64 -g -pipe -fno-common -DPERL_DARWIN -fno-strict-aliasing -I/usr/local/include  -I/System/Library/Perl/5.10.0/darwin-thread-multi-2level/CORE
+PERL5_LDFLAGS = -bundle -arch x86_64 -L/usr/local/lib  -L/System/Library/Perl/5.10.0/darwin-thread-multi-2level/CORE -lperl -ldl -lm -lutil -lc
+
+# --- PHP5
+#/usr/libexec/apache2/libphp5.so
+#
+PHP5_PROGRAM = OTAPI.so
+PHP5_DEBUG_PROGRAM = OTAPId.so
+PHP5_INCLUDEDIRS = $(shell php-config --includes) 
+PHP5_LDFLAGS = -bundle_loader /usr/libexec/apache2/libphp5.so -flat_namespace -bundle
+
+# --- PYTHON
+#CFLAGS += -fPIC $(shell python-config --cflags) 
+#LDFLAGS += -dynamiclib $(shell python-config --ldflags) 
+#DEBUG_LDFLAGS += -dynamiclib $(shell python-config --ldflags) 
+#
+#INCLUDEDIRS += -I/usr/include/python2.6
+#LIBDIRS += -L/usr/lib/python2.6
+#
+#CFLAGS += -fPIC
+#LDFLAGS += -dynamiclib -lpython
+#DEBUG_LDFLAGS += -dynamiclib -lpython
+#
+PYTHON_PROGRAM = _OTAPI.so
+PYTHON_DEBUG_PROGRAM = _OTAPId.so
+PYTHON_INCLUDEDIRS = -I/usr/include/python2.6
+PYTHON_LIBDIRS = -L/usr/lib/python2.6
+PYTHON_LDFLAGS = -dynamiclib -lpython
+
+# --- RUBY!
+RUBY_PROGRAM = OTAPI.bundle
+RUBY_DEBUG_PROGRAM = OTAPId.bundle
+RUBY_INCLUDEDIRS = -I$(shell ruby -e 'require "rbconfig"; puts RbConfig::CONFIG["topdir"]') 
+RUBY_LDFLAGS = -dynamiclib $(shell ruby -e 'require "rbconfig"; puts RbConfig::CONFIG["LIBRUBYARG"]')
+
+# --- TCL
+TCL_PROGRAM = OTAPI.so
+TCL_DEBUG_PROGRAM = OTAPId.so
+TCL_INCLUDEDIRS = # empty
+TCL_LDFLAGS = -dynamiclib -framework Tcl
+
+endif
+# End DARWIN -------------------------------------------------------------
+
+
+
+
+ifeq ($(PLATFORM), linux)
+
+PLATFORM_INCLUDEDIRS = -I/usr/local/ssl/include
+#PLATFORM_LIBDIRS += -L/usr/local/lib
+
+C_COMPILER = gcc
+
+DYNAMIC_OTLIB_CONTENTS = DYNAMIC_OTLIB=1
+
+# --- Common Lisp
+LISP_PROGRAM = OTAPI.so
+LISP_DEBUG_PROGRAM = OTAPId.so 
+LISP_LDFLAGS = -shared
+
+# --- C# (C-Sharp)
+CSHARP_PROGRAM = libOTAPI.so  
+CSHARP_DEBUG_PROGRAM = libOTAPId.so
+CSHARP_LDFLAGS = -shared
+
+# --- JAVA
+JAVA_PROGRAM = libOTAPI.so
+JAVA_DEBUG_PROGRAM = libOTAPId.so 
+JAVA_INCLUDEDIRS = # empty
+JAVA_LDFLAGS = -shared
+
+
+# --- PERL5
+#PERL5_CFLAGS -- Run this at the command line: perl -e 'use Config; print $Config{ccflags}'
+#PERL5_LDFLAGS -- Run this at the command line: perl -e 'use Config; print $Config{ldflags}'
+#
+# When you run the command commands, they will produce output allowing you to set these
+# as appropriate for your system:
+#
+#PERL5_CFLAGS = -shared $(shell perl -e 'use Config; print $Config{ccflags}')
+#PERL5_LDFLAGS = -shared $(shell perl -e 'use Config; print $Config{ldflags}')
+#PERL5_CFLAGS = -shared -D_REENTRANT -D_GNU_SOURCE -DDEBIAN -fno-strict-aliasing -pipe -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+#PERL5_LDFLAGS = -shared -L/usr/local/lib
+#
+PERL5_PROGRAM = OTAPI.bundle 
+PERL5_DEBUG_PROGRAM = OTAPId.bundle
+PERL5_INCLUDEDIRS = -I/usr/lib/perl/5.10.0/CORE
+PERL5_CFLAGS = -shared -D_REENTRANT -D_GNU_SOURCE -DDEBIAN -fno-strict-aliasing -pipe -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+PERL5_LDFLAGS = -shared -L/usr/local/lib
+
+
+# --- PHP5
+#/usr/libexec/apache2/libphp5.so
+#PHP5_INCLUDEDIRS = `php-config --includes`
+#
+PHP5_PROGRAM = OTAPI.so
+PHP5_DEBUG_PROGRAM = OTAPId.so
+PHP5_INCLUDEDIRS = `php-config --includes`
+PHP5_LDFLAGS = -shared
+
+
+# --- PYTHON
+#
+#PYTHON_INCLUDEDIRS = -I/usr/include/python2.5
+#PYTHON_LIBDIRS = -L/usr/lib/python2.5
+#
+PYTHON_PROGRAM = _OTAPI.so
+PYTHON_DEBUG_PROGRAM = _OTAPId.so
+PYTHON_CLFAGS = $(shell python-config --cflags) 
+PYTHON_INCLUDEDIRS = -I/usr/include/python2.5
+PYTHON_LIBDIRS = -L/usr/lib/python2.5
+PYTHON_LDFLAGS = -shared $(shell python-config --ldflags) 
+
+
+# --- RUBY!
+RUBY_PROGRAM = OTAPI.bundle
+RUBY_DEBUG_PROGRAM = OTAPId.bundle
+RUBY_INCLUDEDIRS = -I$(shell ruby -e 'require "rbconfig"; puts RbConfig::CONFIG["topdir"]') 
+RUBY_LDFLAGS = -shared $(shell ruby -e 'require "rbconfig"; puts RbConfig::CONFIG["LIBRUBYARG"]')
+
+
+# --- TCL
+# Maybe the include directory is wrong for your system?
+# use this to find tcl.h:
+# find / tcl.h | grep tcl.h
+# Then make sure the directory below is correct for your system….
+TCL_PROGRAM = OTAPI.so
+TCL_DEBUG_PROGRAM = OTAPId.so
+TCL_INCLUDEDIRS = -I/usr/include/tcl8.4
+TCL_LDFLAGS = -shared
+
+endif
+# End LINUX -------------------------------------------------------------
+
+
+
+
+
+# --- FreeBSD ----
+
+ifeq ($(PLATFORM), freebsd)
+
+
+PLATFORM_INCLUDEDIRS = -I/usr/local/include
+PLATFORM_LIBDIRS += -L/usr/local/lib
+#PLATFORM_LIBDIRS += /usr/ports/security/openssl/work/openssl-1.0.0a
+# for Ben (above.)
+
+DYNAMIC_OTLIB_CONTENTS = # empty
+
+# --- Common Lisp
+LISP_PROGRAM = OTAPI.so
+LISP_DEBUG_PROGRAM = OTAPId.so 
+LISP_LDFLAGS = -shared
+
+# --- C# (C-Sharp)
+CSHARP_PROGRAM = libOTAPI.so  
+CSHARP_DEBUG_PROGRAM = libOTAPId.so
+CSHARP_LDFLAGS = -shared
+
+# --- JAVA
+JAVA_PROGRAM = libOTAPI.so
+JAVA_DEBUG_PROGRAM = libOTAPId.so 
+JAVA_INCLUDEDIRS = # empty
+JAVA_LDFLAGS = -shared
+
+
+# --- PERL5
+#PERL5_CFLAGS -- Run this at the command line: perl -e 'use Config; print $Config{ccflags}'
+#PERL5_LDFLAGS -- Run this at the command line: perl -e 'use Config; print $Config{ldflags}'
+#
+# When you run the command commands, they will produce output allowing you to set these
+# as appropriate for your system:
+#
+#PERL5_CFLAGS = -shared $(shell perl -e 'use Config; print $Config{ccflags}')
+#PERL5_LDFLAGS = -shared $(shell perl -e 'use Config; print $Config{ldflags}')
+#PERL5_CFLAGS = -shared -D_REENTRANT -D_GNU_SOURCE -DDEBIAN -fno-strict-aliasing -pipe -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+#PERL5_LDFLAGS = -shared -L/usr/local/lib
+#
+PERL5_PROGRAM = OTAPI.bundle 
+PERL5_DEBUG_PROGRAM = OTAPId.bundle
+PERL5_INCLUDEDIRS = -I/usr/lib/perl/5.10.0/CORE
+PERL5_CFLAGS = -shared -D_REENTRANT -D_GNU_SOURCE -DDEBIAN -fno-strict-aliasing -pipe -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+PERL5_LDFLAGS = -shared -L/usr/local/lib
+
+
+# --- PHP5
+#/usr/libexec/apache2/libphp5.so
+#PHP5_INCLUDEDIRS = `php-config --includes`
+#
+PHP5_PROGRAM = OTAPI.so
+PHP5_DEBUG_PROGRAM = OTAPId.so
+PHP5_INCLUDEDIRS = `php-config --includes`
+PHP5_LDFLAGS = -shared
+
+
+# --- PYTHON
+#
+#PYTHON_INCLUDEDIRS = -I/usr/include/python2.5
+#PYTHON_LIBDIRS = -L/usr/lib/python2.5
+#
+PYTHON_PROGRAM = _OTAPI.so
+PYTHON_DEBUG_PROGRAM = _OTAPId.so
+PYTHON_CLFAGS = $(shell python-config --cflags) 
+PYTHON_INCLUDEDIRS = -I/usr/include/python2.5
+PYTHON_LIBDIRS = -L/usr/lib/python2.5
+PYTHON_LDFLAGS = -shared $(shell python-config --ldflags) 
+
+
+# --- RUBY!
+RUBY_PROGRAM = OTAPI.bundle
+RUBY_DEBUG_PROGRAM = OTAPId.bundle
+RUBY_INCLUDEDIRS = -I$(shell ruby -e 'require "rbconfig"; puts RbConfig::CONFIG["topdir"]') 
+RUBY_LDFLAGS = -shared $(shell ruby -e 'require "rbconfig"; puts RbConfig::CONFIG["LIBRUBYARG"]')
+
+
+# --- TCL
+# Maybe the include directory is wrong for your system?
+# use this to find tcl.h:
+# find / tcl.h | grep tcl.h
+# Then make sure the directory below is correct for your system….
+TCL_PROGRAM = OTAPI.so
+TCL_DEBUG_PROGRAM = OTAPId.so
+TCL_INCLUDEDIRS = -I/usr/include/tcl8.4
+TCL_LDFLAGS = -shared
+
+endif
+# End FreeBSD -------------------------------------------------------------
+
+
+
+LINK_COMMAND  = # empty
+DEBUG_LINK_COMMAND = # empty
+
+BOOL_DYNAMIC_OTLIB = 0
+
+# By default, the languages supported in the CPP_API are C and C++. (Two diff interfaces.)
+# This Makefile exists to WRAP that for MORE languages...  PHP, Perl, Java, Python, etc.
+#
+
+# --- C and C++
+#
+ifeq ($(LANGUAGE), c)
+else
+API_CFLAGS += -fpic
+endif
+
+# --- Common Lisp
+ifeq ($(LANGUAGE), lisp)
+PROGRAM = $(LISP_PROGRAM)  
+DEBUG_PROGRAM = $(LISP_DEBUG_PROGRAM) 
+API_CSOURCES += OTAPI_cffi.c
+API_LDFLAGS += $(LISP_LDFLAGS)
+BOOL_DYNAMIC_OTLIB = 1
+endif
+
+# --- C# (C-Sharp)
+ifeq ($(LANGUAGE), csharp)
+PROGRAM = $(CSHARP_PROGRAM)  
+DEBUG_PROGRAM = $(CSHARP_DEBUG_PROGRAM) 
+API_CSOURCES += OTAPI_csharp.c
+API_LDFLAGS += $(CSHARP_LDFLAGS)
+BOOL_DYNAMIC_OTLIB = 1
+endif
+
+
+# --- JAVA
+ifeq ($(LANGUAGE), java)
+PROGRAM = $(JAVA_PROGRAM)  
+DEBUG_PROGRAM = $(JAVA_DEBUG_PROGRAM) 
+API_CSOURCES += OTAPI_java.c
+PLATFORM_INCLUDEDIRS += $(JAVA_INCLUDEDIRS)
+API_LDFLAGS += $(JAVA_LDFLAGS)
+BOOL_DYNAMIC_OTLIB = 1
+endif
+
+
+# --- PERL
+#
+ifeq ($(LANGUAGE), perl5)
+PROGRAM = $(PERL5_PROGRAM) 
+DEBUG_PROGRAM = $(PERL5_DEBUG_PROGRAM) 
+PLATFORM_INCLUDEDIRS += $(PERL5_INCLUDEDIRS)
+API_CSOURCES += OTAPI_perl5.c
+API_CFLAGS += $(PERL5_CFLAGS)
+API_LDFLAGS += $(PERL5_LDFLAGS)
+BOOL_DYNAMIC_OTLIB = 1
+endif
+
+
+# --- PHP5
+ifeq ($(LANGUAGE), php5)
+API_CSOURCES += OTAPI_php.c
+PLATFORM_INCLUDEDIRS += $(PHP5_INCLUDEDIRS) 
+PROGRAM = $(PHP5_PROGRAM)
+DEBUG_PROGRAM = $(PHP5_DEBUG_PROGRAM)
+API_LDFLAGS += $(PHP5_LDFLAGS)
+BOOL_DYNAMIC_OTLIB = 1
+endif
+
+
+# --- PYTHON
+ifeq ($(LANGUAGE), python)
+PROGRAM = $(PYTHON_PROGRAM)
+DEBUG_PROGRAM = $(PYTHON_DEBUG_PROGRAM)
+PLATFORM_INCLUDEDIRS += $(PYTHON_INCLUDEDIRS)
+PLATFORM_LIBDIRS += $(PYTHON_LIBDIRS)
+API_CSOURCES += OTAPI_python.c
+API_LDFLAGS += $(PYTHON_LDFLAGS)
+BOOL_DYNAMIC_OTLIB = 1
+endif
+
+
+# --- RUBY!
+ifeq ($(LANGUAGE), ruby)
+API_CSOURCES += OTAPI_ruby.c
+PLATFORM_INCLUDEDIRS += $(RUBY_INCLUDEDIRS)
+PROGRAM = $(RUBY_PROGRAM)
+DEBUG_PROGRAM = $(RUBY_DEBUG_PROGRAM)
+API_LDFLAGS += $(RUBY_LDFLAGS)
+BOOL_DYNAMIC_OTLIB = 1
+endif
+
+
+# --- TCL
+ifeq ($(LANGUAGE), tcl)
+API_CSOURCES += OTAPI_tcl.c
+PROGRAM = $(TCL_PROGRAM)
+DEBUG_PROGRAM = $(TCL_DEBUG_PROGRAM)
+PLATFORM_INCLUDEDIRS += $(TCL_INCLUDEDIRS)
+API_LDFLAGS += $(TCL_LDFLAGS)
+BOOL_DYNAMIC_OTLIB = 1
+endif
+
+
+
+
+# ---------------------------------------------------------------------
+
+# --- TRANSPORT
+
+# This is not a target, but a command-line option.
+#
+# So you have to do: make -f Makefile.API PLATFORM=linux LANGUAGE=php5 TRANSPORT=XmlRpc
+#                OR: make -f Makefile.API PLATFORM=darwin LANGUAGE=c  TRANSPORT=XmlRpc debug
+#                OR: make -f Makefile.API PLATFORM=freebsd LANGUAGE=ruby TRANSPORT=XmlRpc
+# 		Etc...
+#
+ifeq ($(PLATFORM), darwin)
+XMLRPCPP_INCLUDEDIR = -I/usr/local/include/XmlRpc
+XMLRPCPP_LIBDIR = -L/usr/local/lib/XmlRpc
+endif
+ifeq ($(PLATFORM), linux)
+XMLRPCPP_INCLUDEDIR = -I/usr/include/XmlRpc
+XMLRPCPP_LIBDIR = -L/usr/lib/XmlRpc
+endif
+ifeq ($(PLATFORM), freebsd)
+XMLRPCPP_INCLUDEDIR = -I/usr/include/XmlRpc
+XMLRPCPP_LIBDIR = -L/usr/lib/XmlRpc
+endif
+
+ifeq ($(TRANSPORT), XmlRpc)
+API_CFLAGS += -DOT_XMLRPC_MODE
+API_LDFLAGS += -lXmlRpc
+PLATFORM_INCLUDEDIRS += $(XMLRPCPP_INCLUDEDIR)
+PLATFORM_LIBDIRS += $(XMLRPCPP_LIBDIR)
+endif
+
+
+
+
+
+
+
+# ---------------------------------------------------------------------
+#
+# The CSOURCES macro contains a list of source files.
+#
+# The COBJECTS macro converts the CSOURCES macro into a list
+# of object files.
+#
+# The CFLAGS macro contains a list of options to be passed to
+# the compiler.  Adding "-g" to this line will cause the compiler
+# to add debugging information to the executable.
+#
+# The CC macro defines the C compiler.
+#
+# The LDFLAGS macro contains all of the library and library
+# directory information to be passed to the linker.
+#
+
+INCLUDEDIRS = $(PLATFORM_INCLUDEDIRS) $(OT_INCLUDEDIRS)
+
+
+LIBDIRS = $(PLATFORM_LIBDIRS) $(OT_LIBDIRS)
+
+CSOURCES = $(API_CSOURCES)
+
+CXXSOURCES = \
+			 OpenTransactions.cpp \
+			 OTServerConnection.cpp \
+			 OTClient.cpp \
+			 OTAPI.cpp
+
+CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
+COBJECTS   = $(CSOURCES:.c=.o)
+CFLAGS     = $(INCLUDEDIRS) $(API_CFLAGS) -c
+DEBUG_FLAGS = -g
+CXX = g++
+CC = $(C_COMPILER)
+
+LIBS = $(API_LIBS)
+DEBUG_LIBS = $(API_DEBUG_LIBS)
+
+
+# --- LDFLAGS
+#
+LDFLAGS = $(API_LDFLAGS) $(LIBDIRS) $(LIBS)
+DEBUG_LDFLAGS = $(API_LDFLAGS) $(LIBDIRS) $(DEBUG_LIBS)
+
+#
+ifeq ($(LANGUAGE), c)
+LINK_COMMAND  = ar rc
+DEBUG_LINK_COMMAND = ar rc
+else
+LINK_COMMAND = $(CXX) $(LDFLAGS) -o
+DEBUG_LINK_COMMAND = $(CXX) $(DEBUG_LDFLAGS) -o
+endif
+
+
+# ---------------------------------------------------------------------
+
+# --- TARGETS
+
+#
+# Default target: the first target is the default target.
+# Just type "make -f Makefile.API_MAC_OSX" to build it.
+#
+
+all: $(PROGRAM)
+
+# This was my attempt to automatically re-build the OTLib with linux's dynamic options turned on.
+# Since this doesn't work, the user will have to rebuild OTLib by hand, with those options on, if
+# he wishes to use the OTAPI.
+#
+ifeq ($(BOOL_DYNAMIC_OTLIB), 1)
+#THROWAWAY = $(shell `cd ../OTLib && make clean && make PLATFORM=$(PLATFORM) $(DYNAMIC_OTLIB_CONTENTS)`)
+else
+THROWAWAY = # empty
+endif
+
+$(PROGRAM): $(CXXOBJECTS) $(COBJECTS)
+	$(LINK_COMMAND) $(PROGRAM) $(CXXOBJECTS) $(COBJECTS)
+
+debug: CFLAGS += $(DEBUG_FLAGS)
+debug: LIBS = $(DEBUG_LIBS)
+debug: LDFLAGS = $(DEBUG_LDFLAGS)
+debug: $(CXXOBJECTS) $(COBJECTS) 
+	$(DEBUG_LINK_COMMAND) $(DEBUG_PROGRAM) $(CXXOBJECTS) $(COBJECTS)
+
+
+# ---------------------------------------------------------------------
+
+
+#
+# Object targets: rules that define objects, their dependencies, and
+# a list of commands for compilation.
+#
+
+SFSocket.o: ./SSL-Example/SFSocket.c ./SSL-Example/SFSocket.h
+	$(CC) $(CFLAGS) -o ./SSL-Example/SFSocket.o ./SSL-Example/SFSocket.c
+
+OTServerConnection.o: OTServerConnection.cpp OTServerConnection.h
+	$(CXX) $(CFLAGS) -o OTServerConnection.o OTServerConnection.cpp
+OTClient.o: OTClient.cpp OTClient.h
+	$(CXX) $(CFLAGS) -o OTClient.o OTClient.cpp
+OpenTransactions.o: OpenTransactions.cpp OpenTransactions.h
+	$(CXX) $(CFLAGS) -o OpenTransactions.o OpenTransactions.cpp
+
+OTAPI.o: OTAPI.cpp OTAPI.h
+	$(CXX) $(CFLAGS) -o OTAPI.o OTAPI.cpp
+
+
+# Common Lisp
+OTAPI_cffi.o: OTAPI_cffi.c 
+	$(CC) $(CFLAGS) -o OTAPI_cffi.o OTAPI_cffi.c
+
+# C-Sharp
+OTAPI_csharp.o: OTAPI_csharp.c 
+	$(CC) $(CFLAGS) -o OTAPI_csharp.o OTAPI_csharp.c
+
+
+OTAPI_java.o: OTAPI_java.c 
+	$(CC) $(CFLAGS) -o OTAPI_java.o OTAPI_java.c
+
+OTAPI_perl5.o: OTAPI_perl5.c
+	$(CC) $(CFLAGS) -o OTAPI_perl5.o OTAPI_perl5.c
+
+OTAPI_php.o: OTAPI_php.c 
+	$(CC) $(CFLAGS) -o OTAPI_php.o OTAPI_php.c
+
+OTAPI_python.o: OTAPI_python.c 
+	$(CC) $(CFLAGS) -o OTAPI_python.o OTAPI_python.c
+
+OTAPI_ruby.o: OTAPI_ruby.c 
+	$(CC) $(CFLAGS) -o OTAPI_ruby.o OTAPI_ruby.c
+
+OTAPI_tcl.o: OTAPI_tcl.c 
+	$(CC) $(CFLAGS) -o OTAPI_tcl.o OTAPI_tcl.c
+
+#
+# Clean target: "make -f Makefile.API clean" to remove unwanted objects and executables.
+#
+RM=rm
+
+clean:
+	$(RM) -f $(COBJECTS) $(CXXOBJECTS) $(PROGRAM) $(DEBUG_PROGRAM)
+
+

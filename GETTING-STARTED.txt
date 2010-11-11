@@ -13,13 +13,10 @@ GETTING STARTED:
 2) See INSTALL files (this folder) for instructions on building everything.
    There are versions for Android, Windows, and Mac/Linux/FreeBSD.
 
-   For those of you with MAC, you can just type 'make' (without the quotes)
-   right here in this folder and it will build the entire project. You still
-   might want to read the instructions though.
-
-   For those of you with LINUX, you can just type: make -f Makefile.linux
-   and it will build the entire project. You still might want to read the
-   instructions though.
+   For most users, you can choose your makefile:
+   make -f Makefile.darwin
+   make -f Makefile.freebsd
+   make -f Makefile.linux
 
 3) While the Open Transactions library itself is transport neutral, the
    applications such as the server and client come with different options
@@ -77,7 +74,7 @@ FOLDERS:
 
 --- transaction. This folder contains the server.
 
---- until. This folder contains various utilities, for generating mints
+--- util. This folder contains various utilities, for generating mints
     and signing contracts.
 
 

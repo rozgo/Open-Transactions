@@ -2,7 +2,7 @@
 
 /*************************************************************************
  *    
- *    Open Transactions 0.30 --	Library, API, Protocol, Server, and Test Client
+ *    Open Transactions 0.31 --	Library, API, Protocol, Server, and Test Client
  *    
  *    			-- Anonymous Numbered Accounts...
  *    			-- Untraceable Digital Cash...

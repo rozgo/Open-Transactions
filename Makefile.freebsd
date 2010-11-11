@@ -6,35 +6,35 @@
 
 
 all:
-	cd OTLib && make
-	cd transaction && make
-	cd testwallet && make -f Makefile.CPP_API
-	cd testwallet && make -f Makefile.testwallet
+	cd OTLib && gmake PLATFORM=freebsd
+	cd transaction && gmake PLATFORM=freebsd
+	cd testwallet && gmake -f Makefile.API PLATFORM=freebsd LANGUAGE=c
+	cd testwallet && gmake PLATFORM=freebsd
 
 debug:
-	cd OTLib && make debug
-	cd transaction && make debug
-	cd testwallet && make -f Makefile.CPP_API debug
-	cd testwallet && make -f Makefile.testwallet debug
+	cd OTLib && gmake PLATFORM=freebsd debug
+	cd transaction && gmake PLATFORM=freebsd debug
+	cd testwallet && gmake -f Makefile.API PLATFORM=freebsd LANGUAGE=c debug
+	cd testwallet && gmake PLATFORM=freebsd debug
 
 rpc:
-	cd OTLib && make
-	cd transaction && make -f Makefile.rpc
-	cd testwallet && make -f Makefile.CPP_API rpc
-	cd testwallet && make -f Makefile.rpc
+	cd OTLib && gmake PLATFORM=freebsd
+	cd transaction && gmake PLATFORM=freebsd TRANSPORT=XmlRpc
+	cd testwallet && gmake -f Makefile.API TRANSPORT=XmlRpc PLATFORM=freebsd LANGUAGE=c
+	cd testwallet && gmake PLATFORM=freebsd TRANSPORT=XmlRpc
 
 debugrpc:
-	cd OTLib && make debug
-	cd transaction && make -f Makefile.rpc debug
-	cd testwallet && make -f Makefile.CPP_API debugrpc
-	cd testwallet && make -f Makefile.rpc debug
+	cd OTLib && gmake PLATFORM=freebsd debug
+	cd transaction && gmake PLATFORM=freebsd TRANSPORT=XmlRpc debug
+	cd testwallet && gmake -f Makefile.API TRANSPORT=XmlRpc PLATFORM=freebsd LANGUAGE=c debug
+	cd testwallet && gmake PLATFORM=freebsd TRANSPORT=XmlRpc debug
 
 clean:
-	cd OTLib && make clean
-	cd transaction && make clean
-	cd transaction && make -f Makefile.rpc clean
-	cd testwallet && make -f Makefile.CPP_API clean
-	cd testwallet && make -f Makefile.testwallet clean
-	cd testwallet && make -f Makefile.rpc clean
+	cd OTLib && gmake PLATFORM=freebsd clean
+	cd transaction && gmake PLATFORM=freebsd clean
+	cd transaction && gmake PLATFORM=freebsd TRANSPORT=XmlRpc clean
+	cd testwallet && gmake -f Makefile.API PLATFORM=freebsd LANGUAGE=c clean
+	cd testwallet && gmake PLATFORM=freebsd clean
+	cd testwallet && gmake PLATFORM=freebsd TRANSPORT=XmlRpc clean
 
  

@@ -641,12 +641,8 @@ bool OTServer::SaveMainFile()
 	if (!strMainFilePath.Exists())
 	{
 		strMainFilePath.Format(
-#ifdef _WIN32 
-		"%s%snotaryServer-Windows.xml", // todo fix hardcoding
-#else
-                "%s%snotaryServer.xml", // todo fix hardcoding
-#endif
-		OTLog::Path(), OTLog::PathSeparator());
+							   "%s%snotaryServer.xml", // todo fix hardcoding
+							   OTLog::Path(), OTLog::PathSeparator());
 	}
 
 	

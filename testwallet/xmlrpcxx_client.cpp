@@ -151,8 +151,13 @@ void OT_Sleep(int nMS);
 // ---------------------------------------------------------------------------
 
 
-extern OTClient	*	g_pClient;
-extern OTWallet	*	g_pWallet;
+
+// This global variable contains an OTWallet, an OTClient, etc. 
+// It's the C++ high-level interace to OT. 
+// Any client software will have an instance of this.
+OT_API g_OT_API; 
+// Note: Must call OT_API::Init() followed by g_OT_API.Init() in the main function, before using OT.
+
 
 extern OTPseudonym *g_pTemporaryNym;
 
@@ -165,10 +170,12 @@ int main(int argc, char* argv[])
 	OTLog::vOutput(0, "\n\nWelcome to Open Transactions... Test Client -- version %s\n"
 				   "(transport build: OTMessage -> XmlRpc -> HTTP)\n", 
 				   OTLog::Version());
-
+	
+	OT_API::InitOTAPI();
+	
 	// -----------------------------------------------------------------------
 	
-
+	
 	OTString strCAFile, strKeyFile, strSSLPassword;
 	
 	if (argc < 2)
@@ -180,7 +187,7 @@ int main(int argc, char* argv[])
 		strSSLPassword.Set(KEY_PASSWORD);
 		
 		OTString strClientPath(SERVER_PATH_DEFAULT);
-        OT_API_Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
+        g_OT_API.Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
 	}
 	else if (argc < 3)
 	{
@@ -190,14 +197,14 @@ int main(int argc, char* argv[])
 		strSSLPassword.Set(argv[1]);
 		
 		OTString strClientPath(SERVER_PATH_DEFAULT);
-        OT_API_Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
+        g_OT_API.Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
 	}
 	else 
 	{
 		strSSLPassword.Set(argv[1]);
 		
 		OTString strClientPath(argv[2]);
-        OT_API_Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
+        g_OT_API.Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
 	}	
 	
 	strCAFile. Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), CA_FILE);
@@ -228,12 +235,12 @@ int main(int argc, char* argv[])
 	OTLog::Output(0, "\nYou may wish to 'load' then 'stat'.\n");
 	OTLog::vOutput(4, "Starting client loop. u_header size in C code is %d.\n", OT_CMD_HEADER_SIZE);
 	
-
+	
 	// Set the logging level for the network transport code.
 	XmlRpc::setVerbosity(1);
-
+	
 	// -----------------------------------------------------------------------
-
+	
 	
 	for(;;)
 	{
@@ -260,13 +267,9 @@ int main(int argc, char* argv[])
 		if (strLine.compare(0,4,"load") == 0)
 		{
 			OTLog::Output(0, "User has instructed to load wallet.xml...\n");
-#ifdef _WIN32			
-			g_pWallet->LoadWallet("wallet-Windows.xml");
-#else
-			g_pWallet->LoadWallet("wallet.xml");
-#endif
+			g_OT_API.GetWallet()->LoadWallet("wallet.xml");
 			
-//			g_pWallet->SaveWallet("NEWwallet.xml"); // todo remove this test code.
+			//			g_OT_API.GetWallet()->SaveWallet("NEWwallet.xml"); // todo remove this test code.
 			
 			continue;
 		}
@@ -289,7 +292,7 @@ int main(int argc, char* argv[])
 			strTemp.OTfgets(std::cin);
 			
 			const OTIdentifier ACCOUNT_ID(strTemp), USER_ID(*g_pTemporaryNym);
-			OTAccount * pAccount = g_pWallet->GetAccount(ACCOUNT_ID);
+			OTAccount * pAccount = g_OT_API.GetWallet()->GetAccount(ACCOUNT_ID);
 			
 			if (NULL == pAccount)
 			{
@@ -329,7 +332,7 @@ int main(int argc, char* argv[])
 			strConsideration.OTfgets(std::cin);		
 			
 			const OTIdentifier	RECIPIENT_USER_ID(str_RECIPIENT_USER_ID), 
-								RECIPIENT_ACCT_ID(str_RECIPIENT_ACCT_ID);
+			RECIPIENT_ACCT_ID(str_RECIPIENT_ACCT_ID);
 			
 			
 			OTPaymentPlan thePlan(pAccount->GetRealServerID(), pAccount->GetAssetTypeID(),
@@ -344,7 +347,7 @@ int main(int argc, char* argv[])
 						  "10 minutes	==      600 Seconds\n"
 						  "1 hour		==     3600 Seconds\n"
 						  "1 day		==    86400 Seconds\n"
-						  "30 days		==  2592000 Seconds\n"
+						  "30 days			==  2592000 Seconds\n"
 						  "3 months		==  7776000 Seconds\n"
 						  "6 months		== 15552000 Seconds\n\n"
 						  );
@@ -498,7 +501,7 @@ int main(int argc, char* argv[])
 			strTemp.OTfgets(std::cin);
 			
 			const OTIdentifier ACCOUNT_ID(strTemp), USER_ID(*g_pTemporaryNym);
-			OTAccount * pAccount = g_pWallet->GetAccount(ACCOUNT_ID);
+			OTAccount * pAccount = g_OT_API.GetWallet()->GetAccount(ACCOUNT_ID);
 			
 			if (NULL == pAccount)
 			{
@@ -734,7 +737,7 @@ int main(int argc, char* argv[])
 			OTLog::Output(0, "User has instructed to display wallet contents...\n");
 			
 			OTString strStat;
-			g_pWallet->DisplayStatistics(strStat);
+			g_OT_API.GetWallet()->DisplayStatistics(strStat);
 			OTLog::vOutput(0, "%s\n", strStat.Get());
 			
 			continue;
@@ -766,18 +769,18 @@ int main(int argc, char* argv[])
 		OTString		SERVER_NAME;
 		
 		OTServerContract * pServerContract = NULL;
-
-		if (NULL == g_pWallet)
+		
+		if (NULL == g_OT_API.GetWallet())
 		{
 			OTLog::Output(0, "The wallet object is still NULL, somehow. Please load it.\n");
 			continue;
 		}	// Here, for testing, I'm just grabbing the first server in the wallet...
-		else if (false == g_pWallet->GetServer(0, SERVER_ID, SERVER_NAME))
+		else if (false == g_OT_API.GetWallet()->GetServer(0, SERVER_ID, SERVER_NAME))
 		{
 			OTLog::Output(0, "There are no server contracts in the wallet. Try 'load'.\n");
 			continue;
 		}
-		else if (NULL == (pServerContract = g_pWallet->GetServerContract(SERVER_ID)))
+		else if (NULL == (pServerContract = g_OT_API.GetWallet()->GetServerContract(SERVER_ID)))
 		{
 			OTLog::Error("Strange -- got a server contract ID based on index, but then no contract was found at that same index.\n");
 			continue;
@@ -797,7 +800,7 @@ int main(int argc, char* argv[])
 			OTLog::Error("Failed retrieving connection info from server contract.\n");
 			continue;
 		}
-
+		
 		// ------------------------------------------------------------------------------			
 		
 		bool bSendCommand	= false; // Determines whether to actually send a message to the server.
@@ -815,7 +818,7 @@ int main(int argc, char* argv[])
 			// are in place (since in RPC mode, each message could be from a different nym 
 			// and to a different server.)
 			//
-			g_pClient->SetFocusToServerAndNym(*pServerContract, *g_pTemporaryNym, &OT_XmlRpcCallback);
+			g_OT_API.GetClient()->SetFocusToServerAndNym(*pServerContract, *g_pTemporaryNym, &OT_XmlRpcCallback);
 			// NOTE -- This MAY be unnecessary for ProcessUserCommand (since these args are passed
 			// in there already) but it's definitely necessary soon after for ProcessServerReply()
 			// (which comes next.)
@@ -830,9 +833,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::checkServerID, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::checkServerID, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{				
 					bSendCommand = true;
 				}
@@ -849,9 +852,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::createUserAccount, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::createUserAccount, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -871,9 +874,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::checkUser, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::checkUser, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -890,9 +893,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::createAccount, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::createAccount, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -909,9 +912,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::issueAssetType, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::issueAssetType, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -928,9 +931,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::issueBasket, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::issueBasket, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -947,9 +950,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::exchangeBasket, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::exchangeBasket, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -966,9 +969,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::marketOffer, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::marketOffer, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -985,9 +988,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::getInbox, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::getInbox, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -1004,9 +1007,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::notarizeCheque, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::notarizeCheque, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -1023,9 +1026,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::withdrawVoucher, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::withdrawVoucher, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -1042,9 +1045,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::notarizeWithdrawal, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::notarizeWithdrawal, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -1061,9 +1064,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::notarizeDeposit, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::notarizeDeposit, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -1080,9 +1083,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::paymentPlan, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::paymentPlan, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -1099,9 +1102,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::notarizePurse, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::notarizePurse, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -1109,7 +1112,7 @@ int main(int argc, char* argv[])
 					OTLog::vError("Error processing deposit command in ProcessMessage: %c\n", buf[0]);
 				// ------------------------------------------------------------------------
 			}
-						
+			
 			// get account 
 			else if (!strcmp(buf, "get\n"))
 			{
@@ -1118,9 +1121,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::getAccount, theMessage, 
-												  *g_pTemporaryNym,  *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::getAccount, theMessage, 
+															 *g_pTemporaryNym,  *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -1137,9 +1140,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::getContract, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::getContract, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -1214,9 +1217,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::getMint, theMessage, 
-												  *g_pTemporaryNym,  *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::getMint, theMessage, 
+															 *g_pTemporaryNym,  *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -1233,9 +1236,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::notarizeTransfer, theMessage, 
-												  *g_pTemporaryNym,  *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::notarizeTransfer, theMessage, 
+															 *g_pTemporaryNym,  *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -1252,9 +1255,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::getRequest, theMessage, 
-												  *g_pTemporaryNym, *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::getRequest, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -1271,9 +1274,9 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------------			
 				// if successful setting up the command payload...
 				
-				if (g_pClient->ProcessUserCommand(OTClient::getTransactionNum, theMessage, 
-												  *g_pTemporaryNym,  *pServerContract,
-												  NULL)) // NULL pAccount on this command.
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::getTransactionNum, theMessage, 
+															 *g_pTemporaryNym,  *pServerContract,
+															 NULL)) // NULL pAccount on this command.
 				{
 					bSendCommand = true;
 				}
@@ -1296,12 +1299,12 @@ int main(int argc, char* argv[])
 		
 		else
 		{
-	//		OTLog::Error( "Your command was unrecognized or required resources that were not loaded.\n");
+			//		OTLog::Error( "Your command was unrecognized or required resources that were not loaded.\n");
 			OTLog::Output(0, "\n");
 		}
 		
 		// -----------------------------------------------------------
-
+		
 		const OTPseudonym * pServerNym = pServerContract->GetContractPublicNym();
 		
 		if (bSendCommand && (NULL != pServerNym))
@@ -1309,18 +1312,21 @@ int main(int argc, char* argv[])
 			OTString strEnvelopeContents;
 			// Save the ready-to-go message into a string.
 			theMessage.SaveContract(strEnvelopeContents);
-		
+			
 			OTEnvelope theEnvelope;
 			// Seal the string up into an encrypted Envelope
 			theEnvelope.Seal(*pServerNym, strEnvelopeContents);
-
+			
 			OTASCIIArmor ascEnvelope(theEnvelope); // ascEnvelope now contains the base64-encoded string of the sealed envelope contents.
 			
 			if (ascEnvelope.Exists())
 			{
 				// Here's our connection...
+#if defined (linux)
+				XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort, 0, false); // serverhost, port.
+#else
 				XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort); // serverhost, port.
-				
+#endif
 				// -----------------------------------------------------------
 				//
 				// Call the OT_XML_RPC method (thus passing the message to the server.)
@@ -1334,7 +1340,7 @@ int main(int argc, char* argv[])
 					OTASCIIArmor ascServerReply = str_Result.c_str();
 					
 					OTEnvelope theServerEnvelope(ascServerReply);
-					OTString	strServerReply;				// Maybe should use g_pClient->GetNym or some such...
+					OTString	strServerReply;				// Maybe should use g_OT_API.GetClient()->GetNym or some such...
 					bool bOpened = theServerEnvelope.Open(*g_pTemporaryNym, strServerReply);
 					
 					OTMessage theServerReply;
@@ -1342,7 +1348,7 @@ int main(int argc, char* argv[])
 					if (bOpened && strServerReply.Exists() && theServerReply.LoadContractFromString(strServerReply))
 					{
 						// Now the fully-loaded message object (from the server, this time) can be processed by the OT library...
-						g_pClient->ProcessServerReply(theServerReply); 
+						g_OT_API.GetClient()->ProcessServerReply(theServerReply); 
 					}
 					else
 					{
@@ -1375,25 +1381,4 @@ int main(int argc, char* argv[])
 	
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -1,7 +1,8 @@
 /************************************************************************************
  *    
- *  OTIdentifier.h
- *  
+ *  OTAPI.h   -- The include file if you want to call the library from C.
+ *	             (Also used to create stubs for many other languages via SWIG.)
+ *
  *		Open Transactions:  Library, Protocol, Server, and Test Client
  *    
  *    			-- Anonymous Numbered Accounts
@@ -82,72 +83,55 @@
  ************************************************************************************/
 
 
-#ifndef __OTIDENTIFIER_H__
-#define __OTIDENTIFIER_H__
+// Include this file if you want to use the C API. 
+//
+// The OTAPI_funcdef.h file contains the actual function definitions,
+// and is used by SWIG to generate bindings to many other scripting languages.
 
+
+#ifndef __OT_API_H__
+#define __OT_API_H__
+
+#ifdef __cplusplus
 extern "C"
 {
-#include <openssl/evp.h>	
+#endif
+
+	
+#include "OTAPI_funcdef.h"
+
+	
+#ifdef __cplusplus
 }
-
-#include "OTData.h"
-#include "OTString.h"
-
-// An Identifier is basically a 256 bit hash value.
-// This class makes it easy to convert IDs back and forth to strings.
-// 
-
-class OTPseudonym;
-class OTOffer;
-class OTMarket;
-
-class OTIdentifier : public OTData
-{
-protected:
-	// Some digests are handled in special ways before they can call OpenSSL. They are internal,
-	// like SAMY hash.
-	bool CalculateDigestInternal(const OTString & strInput, const OTString & strHashAlgorithm);
-	bool CalculateDigestInternal(const OTData & dataInput, const OTString & strHashAlgorithm);
-
-public:
-	static const OTString DefaultHashAlgorithm;
-	static const OTString HashAlgorithm1;
-	static const OTString HashAlgorithm2;
-
-	static const EVP_MD * GetOpenSSLDigestByName(const OTString & theName);
-
-	OTIdentifier();
-	OTIdentifier(const char * szStr);
-	OTIdentifier(const OTString &theStr);
-	OTIdentifier(const OTPseudonym &theNym);
-	OTIdentifier(const OTContract &theContract); // Get the contract's ID into this identifier.
-	OTIdentifier(const OTOffer &theOffer);
-	OTIdentifier(const OTMarket &theMarket);
-	virtual ~OTIdentifier();
-			
-	bool CalculateDigest(const OTData & dataInput);
-	bool CalculateDigest(const OTString & strInput);
-	
-	bool CalculateDigest(const OTString & strInput, const OTString & strHashAlgorithm);
-	bool CalculateDigest(const OTData & dataInput, const OTString & strHashAlgorithm);
-
-//	bool DigestFileWhirlpool(const OTString& strFilename);
-//	bool DigestStringWhirlpool(const OTString& theSource);
-//	bool DigestBinaryWhirlpool(const OTData& theSource);
-
-	bool XOR(const OTIdentifier & theInput);
-	
-	void CopyTo(unsigned char * szNewLocation) const;
-
-	// If someone passes in the pretty string of hex digits,
-	// convert it to the actual binary hash and set it internally.
-	void SetString(const char * szString);
-	void SetString(const OTString & theStr);
-	
-	// theStr will contain pretty hex string after call.
-	void GetString(OTString & theStr) const;
-};
+#endif
 
 
-#endif // __OTIDENTIFIER_H__
+
+#endif // __OT_API_H__
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

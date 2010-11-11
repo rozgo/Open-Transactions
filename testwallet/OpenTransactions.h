@@ -90,6 +90,8 @@ class OTString;
 class OTIdentifier;
 class OTServerContract;
 class OTEnvelope;
+class OTWallet;
+class OTClient;
 
 
 // This function is what makes Open Transactions go over XmlRpc/HTTP instead of TCP/SSL
@@ -100,98 +102,116 @@ void OT_XmlRpcCallback(OTServerContract & theServerContract, OTEnvelope & theEnv
 #endif
 
 
-	bool OT_API_Init(OTString & strClientPath);
+// --------------------------------------------------------------------
 
-	bool OT_API_loadWallet(OTString & strPath);
+class OT_API // The C++ high-level interface to the Open Transactions client-side.
+{
+	OTWallet *		m_pWallet;
+	OTClient *		m_pClient;
+
+	bool			m_bInitialized;
 	
-	bool OT_API_connectServer(OTIdentifier & SERVER_ID,
+public:
+
+	inline OTWallet * GetWallet() { return m_pWallet; }
+	inline OTClient * GetClient() { return m_pClient; }
+	
+	OT_API();
+	~OT_API();
+	
+			bool Init(OTString & strClientPath);	// Per instance.
+	static	bool InitOTAPI();						// Once per run.
+
+	bool loadWallet(OTString & strPath);
+	
+	bool connectServer(OTIdentifier & SERVER_ID,
 					   OTIdentifier	& USER_ID,
 					   OTString & strCA_FILE, 
 					   OTString & strKEY_FILE, 
 					   OTString & strKEY_PASSWORD);
 	
-	bool OT_API_processSockets();
+	bool processSockets();
 	
-	void OT_API_checkServerID(OTIdentifier & SERVER_ID,
+	void checkServerID(OTIdentifier & SERVER_ID,
+		  OTIdentifier & USER_ID);
+	
+	void createUserAccount(OTIdentifier & SERVER_ID,
 		   OTIdentifier & USER_ID);
 	
-	void OT_API_createUserAccount(OTIdentifier & SERVER_ID,
-		   OTIdentifier & USER_ID);
-	
-	void OT_API_checkUser(OTIdentifier & SERVER_ID,
+	void checkUser(OTIdentifier & SERVER_ID,
 	   OTIdentifier & USER_ID,
 	   OTIdentifier & USER_ID_CHECK);
 	
-	void OT_API_getRequest(OTIdentifier & SERVER_ID,
+	void getRequest(OTIdentifier & SERVER_ID,
 		OTIdentifier & USER_ID);
 	
 	
-	void OT_API_issueAssetType(OTIdentifier	&	SERVER_ID,
+	void issueAssetType(OTIdentifier	&	SERVER_ID,
 			OTIdentifier	&	USER_ID,
 			OTString		&	THE_CONTRACT);
 	
-	void OT_API_getContract(OTIdentifier & SERVER_ID,
+	void getContract(OTIdentifier & SERVER_ID,
 		 OTIdentifier & USER_ID,
 		 OTIdentifier & ASSET_ID);
 	
-	void OT_API_getMint(OTIdentifier & SERVER_ID,
+	void getMint(OTIdentifier & SERVER_ID,
 		 OTIdentifier & USER_ID,
 		 OTIdentifier & ASSET_ID);
 	
-	void OT_API_createAssetAccount(OTIdentifier & SERVER_ID,
+	void createAssetAccount(OTIdentifier & SERVER_ID,
 		OTIdentifier & USER_ID,
 		OTIdentifier & ASSET_ID);
 	
-	void OT_API_getAccount(OTIdentifier & SERVER_ID,
+	void getAccount(OTIdentifier & SERVER_ID,
 		OTIdentifier & USER_ID,
 		OTIdentifier & ACCT_ID);
 	
-	void OT_API_issueBasket(OTIdentifier	& SERVER_ID,
+	void issueBasket(OTIdentifier	& SERVER_ID,
 		 OTIdentifier	& USER_ID,
 		 OTString		& BASKET_INFO);
 	
-	void OT_API_exchangeBasket(OTIdentifier	& SERVER_ID,
+	void exchangeBasket(OTIdentifier	& SERVER_ID,
 		OTIdentifier	& USER_ID,
 		OTIdentifier	& BASKET_ASSET_ID,
 		OTString		& BASKET_INFO);
 		
-	void OT_API_getTransactionNumber(OTIdentifier & SERVER_ID,
+	void getTransactionNumber(OTIdentifier & SERVER_ID,
 		  OTIdentifier & USER_ID);
 	
-	void OT_API_notarizeWithdrawal(OTIdentifier	& SERVER_ID,
+	void notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 		OTIdentifier	& USER_ID,
 		OTIdentifier	& ACCT_ID,
 		OTString		& AMOUNT);
 	
-	void OT_API_notarizeDeposit(OTIdentifier	& SERVER_ID,
+	void notarizeDeposit(OTIdentifier	& SERVER_ID,
 		 OTIdentifier	& USER_ID,
 		 OTIdentifier	& ACCT_ID,
 		 OTString		& THE_PURSE);
 	
-	void OT_API_notarizeTransfer(OTIdentifier	& SERVER_ID,
+	void notarizeTransfer(OTIdentifier	& SERVER_ID,
 		  OTIdentifier	& USER_ID,
 		  OTIdentifier	& ACCT_FROM,
 		  OTIdentifier	& ACCT_TO,
 		  OTString		& AMOUNT,
 		  OTString		& NOTE);
 	
-	void OT_API_getInbox(OTIdentifier & SERVER_ID,
+	void getInbox(OTIdentifier & SERVER_ID,
 		  OTIdentifier & USER_ID,
 		  OTIdentifier & ACCT_ID);
 	
-	void OT_API_processInbox(OTIdentifier	& SERVER_ID,
+	void processInbox(OTIdentifier	& SERVER_ID,
 		  OTIdentifier	& USER_ID,
 		  OTIdentifier	& ACCT_ID,
 		  OTString		& ACCT_LEDGER);
 
-	void OT_API_withdrawVoucher(OTIdentifier	& SERVER_ID,
+	void withdrawVoucher(OTIdentifier	& SERVER_ID,
 		   OTIdentifier	& USER_ID,
 		   OTIdentifier	& ACCT_ID,
 		   OTIdentifier	& RECIPIENT_USER_ID,
 		   OTString		& CHEQUE_MEMO,
 		   OTString		& AMOUNT);
 	
-	void OT_API_depositCheque(OTIdentifier	& SERVER_ID,
+	void depositCheque(OTIdentifier	& SERVER_ID,
 		 OTIdentifier	& USER_ID,
 		 OTIdentifier	& ACCT_FROM_ID,
 		 OTString		& THE_CHEQUE);
@@ -199,17 +219,17 @@ void OT_XmlRpcCallback(OTServerContract & theServerContract, OTEnvelope & theEnv
 	
 	// --------------------------------------------------
 	
-	int OT_API_getNymCount();
-	int OT_API_getServerCount();
-	int OT_API_getAssetTypeCount();
-	int OT_API_getAccountCount();
+	int getNymCount();
+	int getServerCount();
+	int getAssetTypeCount();
+	int getAccountCount();
 	
-	bool OT_API_getNym(int iIndex, OTIdentifier & NYM_ID, OTString & NYM_NAME);
-	bool OT_API_getServer(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME);
-	bool OT_API_getAssetType(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME);
-	bool OT_API_getAccount(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME);		
+	bool getNym(int iIndex, OTIdentifier & NYM_ID, OTString & NYM_NAME);
+	bool getServer(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME);
+	bool getAssetType(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME);
+	bool getAccount(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME);		
 
-
+};
 		
 
 

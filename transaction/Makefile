@@ -13,16 +13,6 @@ DEBUG_PROGRAM = transaction.debug
 # easily run the sample by typing "make -f Makefile.Linux run".
 #
 
-#
-# The INCLUDEDIRS macro contains a list of include directories
-# to pass to the compiler so it can find necessary header files.
-#
-# The LIBDIRS macro contains a list of library directories
-# to pass to the linker so it can find necessary libraries.
-#
-# The LIBS macro contains a list of libraries that the the
-# executable must be linked against.
-#
 
 #
 # Make sure the first directory below has YOUR computer's path to the
@@ -35,26 +25,86 @@ DEBUG_PROGRAM = transaction.debug
 #        -I/usr/local/include \
 #
 
-INCLUDEDIRS = \
+ifeq ($(PLATFORM), freebsd)
+PLATFORM_INCLUDEDIRS = \
+	-I/usr/local/include \
+	-I../OTLib/irrxml \
+	-I../OTLib \
+	-I./SSL-Example \
+	-I./
+else
+PLATFORM_INCLUDEDIRS = \
 	-I/usr/local/ssl/include \
 	-I../OTLib/irrxml \
 	-I../OTLib \
 	-I./SSL-Example \
 	-I./
+endif
 
+
+#
+# The INCLUDEDIRS macro contains a list of include directories
+# to pass to the compiler so it can find necessary header files.
+#
+# The LIBDIRS macro contains a list of library directories
+# to pass to the linker so it can find necessary libraries.
+#
+# The LIBS macro contains a list of libraries that the the
+# executable must be linked against.
+#
 # For FreeBSD, add this library path:  
 # /usr/ports/security/openssl/work/openssl-1.0.0a
 #
 # Or this one, depending on your system:
 #  /usr/local/lib
 #
-LIBDIRS = \
+ifeq ($(PLATFORM), freebsd)
+PLATFORM_LIBDIRS = \
+	-L../OTLib \
+	-L/usr/local/lib
+else
+PLATFORM_LIBDIRS = \
 	-L../OTLib 
+endif
 
 
-LIBS = $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib
+ifeq ($(PLATFORM), darwin)
+XMLRPCPP_INCLUDEDIR = -I/usr/local/include/XmlRpc
+XMLRPCPP_LIBDIR = -L/usr/local/lib/XmlRpc
+endif
+ifeq ($(PLATFORM), linux)
+XMLRPCPP_INCLUDEDIR = -I/usr/include/XmlRpc
+XMLRPCPP_LIBDIR = -L/usr/lib/XmlRpc
+endif
+ifeq ($(PLATFORM), freebsd)
+XMLRPCPP_INCLUDEDIR = -I/usr/include/XmlRpc
+XMLRPCPP_LIBDIR = -L/usr/lib/XmlRpc
+endif
 
-DEBUG_LIBS = $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd
+
+
+TRANSPORT_CFLAG = # empty
+TRANSPORT_LDFLAG = # empty
+
+ifeq ($(TRANSPORT), XmlRpc)
+TRANSPORT_CFLAG += -DOT_XMLRPC_MODE
+TRANSPORT_LDFLAG += -lXmlRpc
+PLATFORM_LIBDIRS += $(XMLRPCPP_LIBDIR)
+PLATFORM_INCLUDEDIRS += $(XMLRPCPP_INCLUDEDIR)
+endif
+
+INCLUDEDIRS = $(PLATFORM_INCLUDEDIRS)
+LIBDIRS = $(PLATFORM_LIBDIRS)
+
+ifeq ($(PLATFORM), linux)
+LIBS = -ldl $(TRANSPORT_LDFLAG) $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib
+
+DEBUG_LIBS = -ldl $(TRANSPORT_LDFLAG) $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd
+else
+LIBS = $(TRANSPORT_LDFLAG) $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib
+
+DEBUG_LIBS = $(TRANSPORT_LDFLAG) $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd
+endif
 
 #LIBS = $(LIBDIRS) -lOTLib ../OTLib/libssl.a \
 #	../OTLib/libcrypto.a
@@ -79,21 +129,36 @@ DEBUG_LIBS = $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS)
 
 CSOURCES = SSL-Example/SFSocket.c
 
-CXXSOURCES = \
+SERVER_CXXSOURCES = \
 	OTClientConnection.cpp \
-	OTServer.cpp \
+	OTServer.cpp
+
+ifeq ($(TRANSPORT), XmlRpc)
+CXXSOURCES = \
+	$(SERVER_CXXSOURCES) \
+	xmlrpcxx_server.cpp
+else
+CXXSOURCES = \
+	$(SERVER_CXXSOURCES) \
 	testserver.cpp
+endif
 
 CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
 COBJECTS   = $(CSOURCES:.c=.o)
-CXXFLAGS   = $(INCLUDEDIRS)
-CFLAGS     = $(INCLUDEDIRS)
+CXXFLAGS   = $(TRANSPORT_CFLAG) $(INCLUDEDIRS)
+CFLAGS     = $(TRANSPORT_CFLAG) $(INCLUDEDIRS)
 DEBUG_FLAGS = -g
 CXX = g++
 CC = gcc
-LDFLAGS = $(LIBDIRS) $(LIBS)
 
-DEBUG_LDFLAGS = $(LIBDIRS) $(DEBUG_LIBS)
+
+PLATFORM_LDFLAGS = $(LIBDIRS) $(LIBS)
+PLATFORM_DEBUG_LDFLAGS = $(LIBDIRS) $(DEBUG_LIBS)
+
+LDFLAGS = $(PLATFORM_LDFLAGS)
+DEBUG_LDFLAGS = $(PLATFORM_DEBUG_LDFLAGS) 
+
+
 
 #
 # Default target: the first target is the default target.
@@ -131,8 +196,11 @@ OTServer.o: OTServer.cpp OTServer.h
 	$(CXX) $(CXXFLAGS) -c -o OTServer.o OTServer.cpp
 OTClientConnection.o: OTClientConnection.cpp OTClientConnection.h
 	$(CXX) $(CXXFLAGS) -c -o OTClientConnection.o OTClientConnection.cpp
+
 testserver.o: testserver.cpp
 	$(CXX) $(CXXFLAGS) -c -o testserver.o testserver.cpp
+xmlrpcxx_server.o: xmlrpcxx_server.cpp
+	$(CXX) $(CXXFLAGS) -c -o xmlrpcxx_server.o xmlrpcxx_server.cpp
 
 
 #

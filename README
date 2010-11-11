@@ -12,6 +12,8 @@ Featuring:
     -- Basket Currencies
     -- NEW! Markets with Trades
     -- NEW! Payment Plans 
+    -- NEW! Native API for Java, Ruby, Python, PHP, Perl, C, 
+       C++, Objective-C, C#, Tcl, and LISP
     -- NEW! XmlRpc/HTTP transport layer (build option)
     -- Soon: Stocks that pay dividends, Bonds that pay interest,
        and even Collateralized Debt Obligations.
@@ -64,8 +66,8 @@ comparable to Ricardo, the transaction server by IanG.)
 -- Triple-Signed Receipts. Client and server are able to agree on balances
 while simultaneously not storing any transaction history. No digital assets
 can ever be transferred or withdrawn without an authorizing signature from
-the account owner. (Account transfers are received via inbox. See Loom, or
-Bill St. Clair's excellent Trubanc for an example of this.)
+the account owner. (Account transfers are received via inbox. See Bill St. 
+Clair's excellent Trubanc for an example of this.)
 
 -- Open Transactions also features MARKETS. Any two asset types can be
 traded against each other. The markets are full-featured and include LIMIT
@@ -92,7 +94,7 @@ messages resemble PGP-signed XML files. All objects serialize to a string.
 (issuers and transaction servers being separate entities) as well as the
 DISTRIBUTION OF RISK. For example, Asset accounts can be distributed across
 multiple servers, and asset types can be distributed across multiple issuers
-(via baskets.)
+(via baskets.) See Loom for another example of this.
 
 -- Future (possible or planned) instruments include: interest-bearing bonds,
 dividend-paying stocks, and Collateralized Debt Obligations. The CDOs work
@@ -109,9 +111,9 @@ and encrypted. All transactions require signatures from relevant parties
 including the server.
 
 -- Open Transactions is open-source, written in C++, object-oriented, and
-includes a high-level API in C++ as well as a JNI Interface for Java. (Also
-supporting JRuby for Ruby developers, Jython for Python, and any other
-language that supports the JVM.)
+includes a high-level API in Java, Ruby, Python, C, C++, Obj-C, C#, Lisp,
+Perl, PHP, and Tcl. (Also supporting JRuby, Jython, and any other language
+available on the JVM.)
 
 -- The software is fully cross-platform: Linux, Mac OS X, FreeBSD, Android,
 and Windows are supported with makefiles, project files, and instructions.
