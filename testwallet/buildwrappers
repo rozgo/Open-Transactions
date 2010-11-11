@@ -1,0 +1,9 @@
+touch OTAPI_wrap.c; rm OTAPI_wrap.c; /usr/bin/swig -tcl OTAPI.i; touch OTAPI_wrap.c; mv OTAPI_wrap.c OTAPI_tcl.c
+touch OTAPI_wrap.c; rm OTAPI_wrap.c; /usr/bin/swig -ruby OTAPI.i; touch OTAPI_wrap.c; mv OTAPI_wrap.c OTAPI_ruby.c
+touch OTAPI_wrap.c; rm OTAPI_wrap.c; /usr/bin/swig -python OTAPI.i; touch OTAPI_wrap.c; mv OTAPI_wrap.c OTAPI_python.c
+touch OTAPI_wrap.c; rm OTAPI_wrap.c; /usr/bin/swig -php OTAPI.i; touch OTAPI_wrap.c; mv OTAPI_wrap.c OTAPI_php.c
+touch OTAPI_wrap.c; rm OTAPI_wrap.c; /usr/bin/swig -perl5 OTAPI.i; touch OTAPI_wrap.c; mv OTAPI_wrap.c OTAPI_perl5.c
+touch OTAPI_wrap.c; rm OTAPI_wrap.c; /usr/bin/swig -java OTAPI.i; touch OTAPI_wrap.c; mv OTAPI_wrap.c OTAPI_java.c
+touch OTAPI_wrap.c; rm OTAPI_wrap.c; /usr/bin/swig -csharp OTAPI.i; touch OTAPI_wrap.c; mv OTAPI_wrap.c OTAPI_csharp.c
+touch OTAPI_wrap.c; rm OTAPI_wrap.c; /usr/bin/swig -cffi OTAPI.i; touch OTAPI_wrap.c; mv OTAPI_wrap.c OTAPI_cffi.c
+

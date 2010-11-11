@@ -3,6 +3,15 @@ NOTES on the Version:
 
 // ---------------------------------------------------------------------
 
+   0.31 --- Native API, with easy Makefiles, added for C, C++, Objective-C,
+            C#, Java, Lisp, Ruby, Python, Perl, PHP, and Tcl. Also
+            supporting JRuby, Jython, and any other languages on the JVM. 
+
+            Transport is now implemented as a CALLBACK FUNCTION, which
+            means it is now VERY EASY to swap out to different forms of
+            transport (though XmlRpc is probably the last form we'll ever
+            need.)
+
    0.30 --- MAJOR RELEASE! Markets, Payment Plans, and OT as a Web Service!
 
           *** Open Transactions is now officially a WEB SERVICE! The

@@ -1,7 +1,14 @@
 
 To build the test client (it runs on the command-line):   
 
-MAC OR LINUX:  make -f Makefile.testwallet
+MAC OR LINUX:  make PLATFORM=darwin
+               make PLATFORM=linux
+
+
+You probably prefer to build in XmlRpc mode:
+
+               make PLATFORM=darwin TRANSPORT=XmlRpc
+               make PLATFORM=linux TRANSPORT=XmlRpc
 
 WINDOWS: inside the Open-Transactions\testwallet\testwallet folder is an MS Visual C++ 2010
 Express project that will build this project for Windows.
@@ -14,88 +21,112 @@ or Release folder.
 
 ------------------------------------------
 
-TO USE THE OT API IN YOUR OWN C++ PROJECTS:
 
-To build the static library for the C++ high-level interface:
 
-MAC OR LINUX:  make -f Makefile.CPP_API
 
-WINDOWS: Inside the CPP_API_Windows folder is an MS Visual C++ 2010 Express project
-for building this. The output is a static library.
+USING THE OTAPI (Makefile.API)
 
-The output will be a static library called libOTAPI.a (or libOTAPI.lib, or
-CPP_API_Windows.lib or whatever it's called on Windows after it builds.)
+Open Transactions now supports native interfaces to the
+following languages:
 
-TO USE IT:
-Just #include "OpenTransactions.h" in whatever C++ project you want to use,
-and make sure you statically link to libOTAPI.a (or whatever it is on Windows.)
+C, Obj-C, C++, C#, Java, Ruby, Python, Perl, Php, Tcl, Lisp
 
-------------------------------------------
+(Instructions for each language are below.)
 
-TO USE THE API IN YOUR OWN JAVA / JRUBY / JYTHON PROJECTS:
+Platforms supported are darwin, linux, and freebsd.
 
-To build the dynamic library for the Java JNI interface:
+You likely wish to add TRANSPORT=XmlRpc to the below commands, as well.
 
-1) First, make sure you build the C++ interface, since the JNI wraps it:
+----------------
+LINUX WARNING: On Linux, you must rebuild OTLib with the proper flags,
+before you can build the OTAPI, or you'll get errors. If you are using
+linux, do this now:
 
-   MAC OR LINUX:  make -f Makefile.CPP_API
+cd ../OTLib; make clean; make PLATFORM=linux DYNAMIC_OTLIB=1; cd ../testwallet
 
-   WINDOWS: Inside the CPP_API_Windows folder is an MS Visual C++ 2010 Express project
-   for building this. The output is a static library.
+Now you may continue with the rest of these instructions...
+----------------
 
-2) Then compile the java file:
 
-TO COMPILE THE JAVA CLASS:  javac OpenTransactionsJNI.java
-The output from javac will be a file called OpenTransactionsJNI.class
 
-LINUX ONLY:  I had to install Java on Ubuntu, using these two commands:  
-sudo apt-get install openjdk-6-jre; sudo apt-get install openjdk-6-jdk
+C, Obj-C, C++
 
-3) Then build the JNI C++ wrapper class:
+make -f Makefile.API PLATFORM=darwin LANGUAGE=c
 
-MAC:   make -f Makefile.JNI_API_MAC_OSX
-       (The output is libOT_JNI_API.jnilib)
+To use OT in C, C++, or Obj-C, link to libOTAPI.a, and...
+...to use the OTAPI C functions in C, Obj-C, or C++, include OTAPI.h
+...to use the OTAPI C++ class in C++, include OpenTransactions.h
 
-LINUX: make -f Makefile.JNI_API_Linux
-       (The output is libOT_JNI_API.so)
+--------------------------------
 
-WINDOWS: Inside the JNI_API_Windows folder is an MS Visual C++ 2010 Express project
-for building this. The output is a DLL.
+C#
+make -f Makefile.API PLATFORM=darwin LANGUAGE=csharp
 
----
+This builds the shared lib libOTAPI.so. Use OTAPI.cs in your C-Sharp project.
 
-To run the JNI interface from the command line, type this:
-java OpenTransactionsJNI
+--------------------------------
 
-(It contains a main function, so you can run it.)
+Java
+make -f Makefile.API PLATFORM=darwin LANGUAGE=java
 
-LINUX NOTE: libOT_JNI_API.so must be on the java.library.path for this to work.
+This builds the shared lib libOTAPI.jnilib. Use OTAPI.java in your Java project.
 
----
+--------------------------------
 
-Running "java OpenTransactionsJNI" will load up OpenTransactionsJNI.class, 
-which contains a main function. When main() runs, it will call loadLibrary("OT_JNI_API") 
-which will load up the libOT_JNI_API.jnilib or .so or DLL (depending on your
-platform) into memory.
+Ruby
+make -f Makefile.API PLATFORM=darwin LANGUAGE=ruby
 
-From here on out, any calls to the OpenTransactionsJNI methods in the
-java code will be passed through and executed by the C++ code in the
-dynamic library.
+This builds OTAPI.bundle which you can use in your Ruby project like any other native library.
 
-The test main() in OpenTransactionsJNI.java doesn't do much. It just loads
-the jnilib, then loads the wallet file, then connects to the server. Then
-it ends. From there, code it to do whatever you want using the JNI interface.
+On Linux I installed Ruby and Ruby-Dev:
+apt-get install ruby
+apt-get install ruby-dev
 
----
+--------------------------------
 
-If you want to create a new C++ header for the JNI interface (if you have
-been hacking the java class) then be sure to also do this:
+Python
+make -f Makefile.API PLATFORM=darwin LANGUAGE=python
 
-javah -jni OpenTransactionsJNI
+This builds _OTAPI.so, a shared library that you can call from your Python
+project using the OTAPI.py file.
 
-(javah is ONLY necessary if you hacked the java code to alter the interface.
-This updates the OpenTransactionsJNI.h header file to match whatever changes
-you have made to the java class. If you do this, you will also have to hack
-OpenTransactionsJNI.cpp in order to make whatever corresponding changes are
-necessary to match the header.)
+To do this on linux, I had to install Python-dev:
+apt-get install python-dev
+
+--------------------------------
+
+Perl5
+make -f Makefile.API PLATFORM=darwin LANGUAGE=perl5
+
+This builds OTAPI.bundle, which you can use in your Perl project via the file OTAPI.pm
+
+--------------------------------
+
+PHP
+make -f Makefile.API PLATFORM=darwin LANGUAGE=php5
+
+This builds OTAPI.so, which you can use in your PHP project via the file OTAPI.php
+
+On linux, make sure you have done this first:
+apt-get install php5-dev
+
+--------------------------------
+
+Tcl
+make -f Makefile.API PLATFORM=darwin LANGUAGE=tcl
+
+This builds OTAPI.so, which you can use in your Tcl project like so:
+load ./OTAPI.so OTAPI
+
+On Linux, I had to install Tcl and Tcl-Dev:
+apt-get install tcl
+apt-get install tcl-dev
+
+--------------------------------
+
+LISP
+make -f Makefile.API PLATFORM=darwin LANGUAGE=lisp
+
+This builds OTAPI.so, which you can use in your LISP project via OTAPI.lisp
+
 

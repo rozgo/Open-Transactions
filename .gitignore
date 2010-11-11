@@ -91,3 +91,9 @@ transaction/build/transaction.build/transaction.pbxindex/strings.pbxstrings/cont
 transaction/build/transaction.build/transaction.pbxindex/strings.pbxstrings/strings
 transaction/build/transaction.build/transaction.pbxindex/subclasses.pbxbtree
 transaction/build/transaction.build/transaction.pbxindex/symbols0.pbxsymbols
+testwallet/libOTAPI.jnilib
+testwallet/libOTAPI.so
+testwallet/_OTAPI.so
+testwallet/OTAPI.so
+testwallet/OTAPI.pyc
+testwallet/OTAPI.bundle

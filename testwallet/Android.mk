@@ -31,7 +31,7 @@ LOCAL_LDLIBS += -ldl -lz -llog
 
 LOCAL_C_INCLUDES += $(OPENSSL_DIR) $(OPENSSL_INCLUDE_DIR) $(OTLIB_DIR) $(LOCAL_PATH) $(LOCAL_PATH)/SSL-Example
 
-LOCAL_SRC_FILES := SSL-Example/SFSocket.c OTServerConnection.cpp OTClient.cpp OpenTransactions.cpp OpenTransactionsJNI.cpp
+LOCAL_SRC_FILES := SSL-Example/SFSocket.c OTServerConnection.cpp OTClient.cpp OpenTransactions.cpp OTAPI.cpp OTAPI_java.c
 
 LOCAL_STATIC_LIBRARIES := libssl libcrypto libOTLib libssl libcrypto libOTLib libssl libcrypto 
 

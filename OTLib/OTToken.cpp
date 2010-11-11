@@ -265,7 +265,7 @@ bool OTToken::IsTokenAlreadySpent(OTString & theCleartextToken)
 	
 	// Construct the local path of the spent token using the directory path (created above.)
 	OTString strTokenPath;
-	strTokenPath.Format("%s/%s", strTokenDirectoryPath.Get(), strTokenHash.Get());
+	strTokenPath.Format("%s%s%s", strTokenDirectoryPath.Get(),  OTLog::PathSeparator(), strTokenHash.Get());
 	
 	// See if the spent token file ALREADY EXISTS...
 	bool bTokenIsPresent = OTLog::ConfirmFile(strTokenPath.Get());
@@ -330,7 +330,7 @@ bool OTToken::RecordTokenAsSpent(OTString & theCleartextToken)
 	
 	// Construct the full path of the spent token using the directory path (created above.)
 	OTString strTokenPath;
-	strTokenPath.Format("%s/%s", strTokenDirectoryPath.Get(), strTokenHash.Get());
+	strTokenPath.Format("%s%s%s", strTokenDirectoryPath.Get(),  OTLog::PathSeparator(), strTokenHash.Get());
 	
 	// See if the spent token file ALREADY EXISTS...
 	bool bTokenIsPresent = OTLog::ConfirmFile(strTokenPath.Get());

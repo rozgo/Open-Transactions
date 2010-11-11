@@ -1,6 +1,6 @@
 /************************************************************************************
  *    
- *  OTIdentifier.h
+ *  OTAPI_funcdef.h  -- Any function defs added to the OTAPI interface go here.
  *  
  *		Open Transactions:  Library, Protocol, Server, and Test Client
  *    
@@ -81,73 +81,123 @@
  *    	
  ************************************************************************************/
 
+// DO NOT include this file anywhere. It's used internally.
+// Instead, include OTAPI.h if you want to use these functions.
+// That file will include this one, but in the appropriate way.
 
-#ifndef __OTIDENTIFIER_H__
-#define __OTIDENTIFIER_H__
-
-extern "C"
-{
-#include <openssl/evp.h>	
-}
-
-#include "OTData.h"
-#include "OTString.h"
-
-// An Identifier is basically a 256 bit hash value.
-// This class makes it easy to convert IDs back and forth to strings.
-// 
-
-class OTPseudonym;
-class OTOffer;
-class OTMarket;
-
-class OTIdentifier : public OTData
-{
-protected:
-	// Some digests are handled in special ways before they can call OpenSSL. They are internal,
-	// like SAMY hash.
-	bool CalculateDigestInternal(const OTString & strInput, const OTString & strHashAlgorithm);
-	bool CalculateDigestInternal(const OTData & dataInput, const OTString & strHashAlgorithm);
-
-public:
-	static const OTString DefaultHashAlgorithm;
-	static const OTString HashAlgorithm1;
-	static const OTString HashAlgorithm2;
-
-	static const EVP_MD * GetOpenSSLDigestByName(const OTString & theName);
-
-	OTIdentifier();
-	OTIdentifier(const char * szStr);
-	OTIdentifier(const OTString &theStr);
-	OTIdentifier(const OTPseudonym &theNym);
-	OTIdentifier(const OTContract &theContract); // Get the contract's ID into this identifier.
-	OTIdentifier(const OTOffer &theOffer);
-	OTIdentifier(const OTMarket &theMarket);
-	virtual ~OTIdentifier();
-			
-	bool CalculateDigest(const OTData & dataInput);
-	bool CalculateDigest(const OTString & strInput);
 	
-	bool CalculateDigest(const OTString & strInput, const OTString & strHashAlgorithm);
-	bool CalculateDigest(const OTData & dataInput, const OTString & strHashAlgorithm);
+int OT_API_Init(const char * szClientPath); // actually returns BOOL
 
-//	bool DigestFileWhirlpool(const OTString& strFilename);
-//	bool DigestStringWhirlpool(const OTString& theSource);
-//	bool DigestBinaryWhirlpool(const OTData& theSource);
+int OT_API_loadWallet(const char * szPath); // actually returns BOOL
 
-	bool XOR(const OTIdentifier & theInput);
+// actually returns BOOL  // Not necessary in HTTP mode.
+int OT_API_connectServer(const char * SERVER_ID, const char * USER_ID, const char * szCA_FILE, const char * szKEY_FILE, const char * szKEY_PASSWORD);
+
+ // actually returns BOOL
+int OT_API_processSockets(void);	// Probably not necessary in HTTP mode.
+
+void OT_API_checkServerID(const char * SERVER_ID, const char * USER_ID);
+
+void OT_API_createUserAccount(const char * SERVER_ID,
+							  const char * USER_ID);
+
+void OT_API_checkUser(const char * SERVER_ID,
+					  const char * USER_ID,
+					  const char * USER_ID_CHECK);
+
+void OT_API_getRequest(const char * SERVER_ID,
+					   const char * USER_ID);
+
+void OT_API_issueAssetType(const char *	SERVER_ID,
+						   const char *	USER_ID,
+						   const char *	THE_CONTRACT);
+
+void OT_API_getContract(const char * SERVER_ID,
+						const char * USER_ID,
+						const char * ASSET_ID);
+
+void OT_API_getMint(const char * SERVER_ID,
+					const char * USER_ID,
+					const char * ASSET_ID);
+
+void OT_API_createAssetAccount(const char * SERVER_ID,
+							   const char * USER_ID,
+							   const char * ASSET_ID);
+
+void OT_API_getAccount(const char * SERVER_ID,
+					   const char * USER_ID,
+					   const char * ACCT_ID);
+
+void OT_API_issueBasket(const char * SERVER_ID,
+						const char * USER_ID,
+						const char * BASKET_INFO);
+
+void OT_API_exchangeBasket(const char * SERVER_ID,
+						   const char * USER_ID,
+						   const char * BASKET_ASSET_ID,
+						   const char * BASKET_INFO);
+
+void OT_API_getTransactionNumber(const char * SERVER_ID,
+								 const char * USER_ID);
+
+void OT_API_notarizeWithdrawal(const char * SERVER_ID,
+							   const char * USER_ID,
+							   const char * ACCT_ID,
+							   const char * AMOUNT);
+
+void OT_API_notarizeDeposit(const char * SERVER_ID,
+							const char * USER_ID,
+							const char * ACCT_ID,
+							const char * THE_PURSE);
+
+void OT_API_notarizeTransfer(const char * SERVER_ID,
+							 const char * USER_ID,
+							 const char * ACCT_FROM,
+							 const char * ACCT_TO,
+							 const char * AMOUNT,
+							 const char * NOTE);
+
+void OT_API_getInbox(const char * SERVER_ID,
+					 const char * USER_ID,
+					 const char * ACCT_ID);
+
+void OT_API_processInbox(const char * SERVER_ID,
+						 const char * USER_ID,
+						 const char * ACCT_ID,
+						 const char * ACCT_LEDGER);
+
+void OT_API_withdrawVoucher(const char * SERVER_ID,
+							const char * USER_ID,
+							const char * ACCT_ID,
+							const char * RECIPIENT_USER_ID,
+							const char * CHEQUE_MEMO,
+							const char * AMOUNT);
+
+void OT_API_depositCheque(const char * SERVER_ID,
+						  const char * USER_ID,
+						  const char * ACCT_ID,
+						  const char * THE_CHEQUE);
+
+
+// --------------------------------------------------
+
+int OT_API_getNymCount(void);
+int OT_API_getServerCount(void);
+int OT_API_getAssetTypeCount(void);
+int OT_API_getAccountCount(void);
+
+int OT_API_getNym(int iIndex, const char * NYM_ID, const char * NYM_NAME); // actually returns BOOL
+int OT_API_getServer(int iIndex, const char * THE_ID, const char * THE_NAME); // actually returns BOOL
+int OT_API_getAssetType(int iIndex, const char * THE_ID, const char * THE_NAME); // actually returns BOOL
+
+int OT_API_GetAccountWallet(int iIndex, const char * THE_ID, const char * THE_NAME);	 // actually returns BOOL	
 	
-	void CopyTo(unsigned char * szNewLocation) const;
-
-	// If someone passes in the pretty string of hex digits,
-	// convert it to the actual binary hash and set it internally.
-	void SetString(const char * szString);
-	void SetString(const OTString & theStr);
 	
-	// theStr will contain pretty hex string after call.
-	void GetString(OTString & theStr) const;
-};
+	
 
 
-#endif // __OTIDENTIFIER_H__
+
+
+
+
 
