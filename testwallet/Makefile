@@ -62,9 +62,6 @@ ifeq ($(PLATFORM), darwin)
 
 PLATFORM_INCLUDEDIRS = -I/usr/local/ssl/include
 
-XMLRPCPP_INCLUDEDIR = -I/usr/local/include/XmlRpc
-XMLRPCPP_LIBDIR = -L/usr/local/lib/XmlRpc
-
 endif
 # End DARWIN -------------------------------------------------------------
 
@@ -75,10 +72,6 @@ ifeq ($(PLATFORM), linux)
 
 PLATFORM_INCLUDEDIRS = -I/usr/local/ssl/include
 #PLATFORM_LIBDIRS += -L/usr/local/lib
-
-XMLRPCPP_INCLUDEDIR = -I/usr/include/XmlRpc
-XMLRPCPP_LIBDIR = -L/usr/lib/XmlRpc
-
 
 API_LDFLAGS += -ldl
 
@@ -99,10 +92,6 @@ PLATFORM_INCLUDEDIRS = -I/usr/local/include
 PLATFORM_LIBDIRS += -L/usr/local/lib
 #PLATFORM_LIBDIRS += /usr/ports/security/openssl/work/openssl-1.0.0a
 # This one's for you, Ben.
-
-XMLRPCPP_INCLUDEDIR = -I/usr/include/XmlRpc
-XMLRPCPP_LIBDIR = -L/usr/lib/XmlRpc
-
 endif
 # End FreeBSD -------------------------------------------------------------
 
@@ -121,6 +110,10 @@ endif
 #                OR: make PLATFORM=freebsd TRANSPORT=XmlRpc
 # 		Etc...
 #
+
+XMLRPCPP_INCLUDEDIR = -I../xmlrpcpp/src
+XMLRPCPP_LIBDIR = -L../xmlrpcpp/
+
 ifeq ($(TRANSPORT), XmlRpc)
 API_CFLAGS += -DOT_XMLRPC_MODE
 API_LDFLAGS += -lXmlRpc

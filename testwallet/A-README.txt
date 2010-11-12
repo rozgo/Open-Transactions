@@ -46,6 +46,16 @@ cd ../OTLib; make clean; make PLATFORM=linux DYNAMIC_OTLIB=1; cd ../testwallet
 
 Now you may continue with the rest of these instructions...
 ----------------
+ADDITIONAL WARNING: I had python working on darwin, but then on linux I had issues
+loading the .so. But then I realized I was on 64-bit linux, and some pieces were
+linking with 64-bit, while others weren't, so that was the problem.
+
+My point?
+
+In EVERY CASE, issues are possible. If you can work through them, please let me
+know the details so I can add them to these notes. And if you need my help, contact
+me, since I want to support people who are using the API.
+----------------
 
 
 

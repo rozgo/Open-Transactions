@@ -68,18 +68,9 @@ PLATFORM_LIBDIRS = \
 endif
 
 
-ifeq ($(PLATFORM), darwin)
-XMLRPCPP_INCLUDEDIR = -I/usr/local/include/XmlRpc
-XMLRPCPP_LIBDIR = -L/usr/local/lib/XmlRpc
-endif
-ifeq ($(PLATFORM), linux)
-XMLRPCPP_INCLUDEDIR = -I/usr/include/XmlRpc
-XMLRPCPP_LIBDIR = -L/usr/lib/XmlRpc
-endif
-ifeq ($(PLATFORM), freebsd)
-XMLRPCPP_INCLUDEDIR = -I/usr/include/XmlRpc
-XMLRPCPP_LIBDIR = -L/usr/lib/XmlRpc
-endif
+
+XMLRPCPP_INCLUDEDIR = -I../xmlrpcpp/src
+XMLRPCPP_LIBDIR = -L../xmlrpcpp/
 
 
 

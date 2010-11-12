@@ -35,6 +35,9 @@ lost on me.)
    It's available for Windows.  If you don't want to install the library, that's
    okay, since the default build uses the OTMessage -> TCP -> SSL transport mode.
 
+PS the distribution now comes with a copy of XmlRpc++, so I might just be able to
+add it to the Windows project file... Simply not sure yet.
+ 
 ------------
 
 3) I had to install OpenSSL for Windows, (version 1.0.0 at least is necessary 
@@ -109,10 +112,10 @@ but if you prefer to use different directories, you will have to fix the path in
 these locations:
  
 The server config file: 
-Open-Transactions\transaction\notaryServer-Windows.xml
+Open-Transactions\transaction\notaryServer.xml
 
 As well as the client config file:  
-Open-Transactions\testwallet\wallet-Windows.xml
+Open-Transactions\testwallet\wallet.xml
 
 On Windows, if you use the VC++ project files that I distributed, the paths are in 
 these files: 
@@ -282,8 +285,8 @@ The client and server expect to be run from the command line in their respective
 
 (Assuming you have already built the projects, including OTLib first.)
 
-NOTE: Make sure you fix the paths in testwallet\wallet-Windows.xml and 
-transaction\notaryServer-Windows.xml
+NOTE: Make sure you fix the paths in testwallet\wallet.xml and 
+transaction\notaryServer.xml
 
 SERVER
 to enter the right folder:             cd Open-Transactions\transaction
