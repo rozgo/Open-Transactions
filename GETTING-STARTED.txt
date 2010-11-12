@@ -22,10 +22,10 @@ GETTING STARTED:
    applications such as the server and client come with different options
    for transport protocol.
    The preferred mode of transport is (OTMessage -> XmlRpc -> HTTP). But
-   this is not what is built by default. IF you have the XmlRpc++ library
-   installed, you can use 'make rpc' instead of 'make', (or 'make debugrpc'
+   this is not what is built by default. 
+   You can use 'make rpc' instead of 'make', (or 'make debugrpc'
    instead of 'make debug'), and you can run in the preferred HTTP mode.
-   But if you do NOT have that library installed, just use 'make' or 'make debug'
+   But if you prefer the old SSL/TCP mode, just use 'make' or 'make debug'
    and use the default transport, which is (OTMessage -> TCP -> SSL).
 
 4) You can *ignore* the ssl folder and the docs/SSL-NOTES.txt file unless 

@@ -139,14 +139,7 @@ extern "C"
 #include <openssl/ssl.h>
 }
 
-// I have XmlRpc installed in /usr/local/include/XmlRpc and /usr/local/lib/XmlRpc
-// (In order to avoid naming conflicts with other similar libraries on my system.)
-#if defined(linux)
 #include "XmlRpc.h"
-#else
-#include "XmlRpc/XmlRpc.h"
-#endif
-
 
 #include "main.h"
 

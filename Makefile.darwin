@@ -31,7 +31,6 @@ all:
 	cd OTLib && make PLATFORM=darwin
 	cd transaction && make PLATFORM=darwin
 	cd testwallet && make -f Makefile.API PLATFORM=darwin LANGUAGE=c
-	cd testwallet && make -f Makefile.API PLATFORM=darwin LANGUAGE=java
 	cd testwallet && make PLATFORM=darwin
 	cd util/otcreatemint && make && cp ./createmint.exe ../../transaction/data_folder/createmint.exe
 	cd util/signcontract && make && cp ./signcontract.exe ../../testwallet/data_folder/signcontract.exe
@@ -40,35 +39,34 @@ debug:
 	cd OTLib && make PLATFORM=darwin debug
 	cd transaction && make PLATFORM=darwin debug
 	cd testwallet && make -f Makefile.API PLATFORM=darwin LANGUAGE=c debug
-	cd testwallet && make -f Makefile.API PLATFORM=darwin LANGUAGE=java debug
 	cd testwallet && make PLATFORM=darwin debug
 	cd util/otcreatemint && make debug && cp ./createmint.debug ../../transaction/data_folder/createmint.debug
 	cd util/signcontract && make debug && cp ./signcontract.debug ../../testwallet/data_folder/signcontract.debug
 
 rpc:
 	cd OTLib && make PLATFORM=darwin
+	cd xmlrpcpp && make
 	cd transaction && make PLATFORM=darwin TRANSPORT=XmlRpc
 	cd testwallet && make -f Makefile.API TRANSPORT=XmlRpc PLATFORM=darwin LANGUAGE=c
-	cd testwallet && make -f Makefile.API TRANSPORT=XmlRpc PLATFORM=darwin LANGUAGE=java
 	cd testwallet && make PLATFORM=darwin TRANSPORT=XmlRpc
 	cd util/otcreatemint && make && cp ./createmint.exe ../../transaction/data_folder/createmint.exe
 	cd util/signcontract && make && cp ./signcontract.exe ../../testwallet/data_folder/signcontract.exe
 
 debugrpc:
 	cd OTLib && make PLATFORM=darwin debug
+	cd xmlrpcpp && make
 	cd transaction && make PLATFORM=darwin TRANSPORT=XmlRpc debug
 	cd testwallet && make -f Makefile.API TRANSPORT=XmlRpc PLATFORM=darwin LANGUAGE=c debug
-	cd testwallet && make -f Makefile.API TRANSPORT=XmlRpc PLATFORM=darwin LANGUAGE=java debug
 	cd testwallet && make PLATFORM=darwin TRANSPORT=XmlRpc debug
 	cd util/otcreatemint && make debug && cp ./createmint.debug ../../transaction/data_folder/createmint.debug
 	cd util/signcontract && make debug && cp ./signcontract.debug ../../testwallet/data_folder/signcontract.debug
 
 clean:
 	cd OTLib && make PLATFORM=darwin clean
+	cd xmlrpcpp && make clean
 	cd transaction && make PLATFORM=darwin clean
 	cd transaction && make PLATFORM=darwin TRANSPORT=XmlRpc clean
 	cd testwallet && make -f Makefile.API PLATFORM=darwin LANGUAGE=c clean
-	cd testwallet && make -f Makefile.API PLATFORM=darwin LANGUAGE=java clean
 	cd testwallet && make PLATFORM=darwin clean
 	cd testwallet && make PLATFORM=darwin TRANSPORT=XmlRpc clean
 	cd util/otcreatemint && make clean && touch ../../transaction/data_folder/createmint.tmp && rm ../../transaction/data_folder/createmint.*

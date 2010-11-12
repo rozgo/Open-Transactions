@@ -1323,7 +1323,7 @@ int main(int argc, char* argv[])
 			{
 				// Here's our connection...
 #if defined (linux)
-				XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort, 0, false); // serverhost, port.
+				XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort, 0); // serverhost, port.
 #else
 				XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort); // serverhost, port.
 #endif

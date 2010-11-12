@@ -18,7 +18,6 @@ all:
 	cd OTLib && make PLATFORM=linux
 	cd transaction && make PLATFORM=linux
 	cd testwallet && make -f Makefile.API PLATFORM=linux LANGUAGE=c
-	cd testwallet && make -f Makefile.API PLATFORM=linux LANGUAGE=java
 	cd testwallet && make PLATFORM=linux
 	cd util/otcreatemint && make -f Makefile.linux && cp ./createmint.exe ../../transaction/data_folder/createmint.exe
 	cd util/signcontract && make -f Makefile.linux && cp ./signcontract.exe ../../testwallet/data_folder/signcontract.exe
@@ -27,35 +26,34 @@ debug:
 	cd OTLib && make PLATFORM=linux debug
 	cd transaction && make PLATFORM=linux debug
 	cd testwallet && make -f Makefile.API PLATFORM=linux LANGUAGE=c debug
-	cd testwallet && make -f Makefile.API PLATFORM=linux LANGUAGE=java debug
 	cd testwallet && make PLATFORM=linux debug
 	cd util/otcreatemint && make -f Makefile.linux debug && cp ./createmint.debug ../../transaction/data_folder/createmint.debug
 	cd util/signcontract && make -f Makefile.linux debug && cp ./signcontract.debug ../../testwallet/data_folder/signcontract.debug
 
 rpc:
 	cd OTLib && make PLATFORM=linux
+	cd xmlrpcpp && make
 	cd transaction && make PLATFORM=linux TRANSPORT=XmlRpc
 	cd testwallet && make -f Makefile.API TRANSPORT=XmlRpc PLATFORM=linux LANGUAGE=c
-	cd testwallet && make -f Makefile.API TRANSPORT=XmlRpc PLATFORM=linux LANGUAGE=java
 	cd testwallet && make PLATFORM=linux TRANSPORT=XmlRpc
 	cd util/otcreatemint && make -f Makefile.linux && cp ./createmint.exe ../../transaction/data_folder/createmint.exe
 	cd util/signcontract && make -f Makefile.linux && cp ./signcontract.exe ../../testwallet/data_folder/signcontract.exe
 
 debugrpc:
 	cd OTLib && make PLATFORM=linux debug
+	cd xmlrpcpp && make
 	cd transaction && make PLATFORM=linux TRANSPORT=XmlRpc debug
 	cd testwallet && make -f Makefile.API TRANSPORT=XmlRpc PLATFORM=linux LANGUAGE=c debug
-	cd testwallet && make -f Makefile.API TRANSPORT=XmlRpc PLATFORM=linux LANGUAGE=java debug
 	cd testwallet && make PLATFORM=linux TRANSPORT=XmlRpc debug
 	cd util/otcreatemint && make -f Makefile.linux debug && cp ./createmint.debug ../../transaction/data_folder/createmint.debug
 	cd util/signcontract && make -f Makefile.linux debug && cp ./signcontract.debug ../../testwallet/data_folder/signcontract.debug
 
 clean:
 	cd OTLib && make PLATFORM=linux clean
+	cd xmlrpcpp && make clean
 	cd transaction && make PLATFORM=linux clean
 	cd transaction && make PLATFORM=linux TRANSPORT=XmlRpc clean
 	cd testwallet && make -f Makefile.API PLATFORM=linux LANGUAGE=c clean
-	cd testwallet && make -f Makefile.API PLATFORM=linux LANGUAGE=java clean
 	cd testwallet && make PLATFORM=linux clean
 	cd testwallet && make PLATFORM=linux TRANSPORT=XmlRpc clean
 	cd util/otcreatemint && make -f Makefile.linux clean && touch ../../transaction/data_folder/createmint.tmp && rm ../../transaction/data_folder/createmint.*

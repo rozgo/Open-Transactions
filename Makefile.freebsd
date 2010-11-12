@@ -1,7 +1,5 @@
 
-# COMMENT: This Makefile alone isn't enough for FreeBSD. Before you
-# run this, you still need to read INSTALL-FreeBSD.txt and follow
-# the instructions.  Sorry!  
+# FreeBSD
 
 
 
@@ -19,18 +17,21 @@ debug:
 
 rpc:
 	cd OTLib && gmake PLATFORM=freebsd
+	cd xmlrpcpp && gmake
 	cd transaction && gmake PLATFORM=freebsd TRANSPORT=XmlRpc
 	cd testwallet && gmake -f Makefile.API TRANSPORT=XmlRpc PLATFORM=freebsd LANGUAGE=c
 	cd testwallet && gmake PLATFORM=freebsd TRANSPORT=XmlRpc
 
 debugrpc:
 	cd OTLib && gmake PLATFORM=freebsd debug
+	cd xmlrpcpp && gmake
 	cd transaction && gmake PLATFORM=freebsd TRANSPORT=XmlRpc debug
 	cd testwallet && gmake -f Makefile.API TRANSPORT=XmlRpc PLATFORM=freebsd LANGUAGE=c debug
 	cd testwallet && gmake PLATFORM=freebsd TRANSPORT=XmlRpc debug
 
 clean:
 	cd OTLib && gmake PLATFORM=freebsd clean
+	cd xmlrpcpp && gmake clean
 	cd transaction && gmake PLATFORM=freebsd clean
 	cd transaction && gmake PLATFORM=freebsd TRANSPORT=XmlRpc clean
 	cd testwallet && gmake -f Makefile.API PLATFORM=freebsd LANGUAGE=c clean

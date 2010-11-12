@@ -2,7 +2,7 @@
 
 /*************************************************************************
  *    
- *    Open Transactions 0.31 --	Library, API, Protocol, Server, and Test Client
+ * Open Transactions 0.32 -- Library, API, Protocol, Server, Test Client
  *    
  *    			-- Anonymous Numbered Accounts...
  *    			-- Untraceable Digital Cash...
@@ -37,6 +37,8 @@
  *                          Used with permission. http://www.firstobject.com/
  *       PGP to OpenSSL --- Copyright (c) 2010 Mounir IDRASSI 
  *                          Used with permission. http://www.idrix.fr
+ *       XmlRpc++       --- LGPL, Copyright (c) 2002-2003 by C. Morley
+ *                          http://xmlrpcpp.sourceforge.net/
  *       SFSocket       --- Copyright (C) 2009 Matteo Bertozzi
  *                          Used with permission. http://th30z.netsons.org/
  *    
@@ -46,8 +48,6 @@
  *    
  *       OpenSSL        --- (Version 1.0.0a at time of writing.) 
  *                          http://openssl.org/about/
- *       XmlRpc++       --- LGPL, Copyright (c) 2002-2003 by C. Morley
- *                          http://xmlrpcpp.sourceforge.net/
  *       zlib           --- Copyright (C) 1995-2004 Jean-loup Gailly, Mark Adler
  *    
  *     ----------------------------------------------------------------
@@ -601,7 +601,7 @@ Paul C. Sutton	paul@openssl.org	paul@awe.com	UK
  *                          Used under terms of the GNU LGPL.
  *                          http://xmlrpcpp.sourceforge.net/
  *                          
- *                          Linked to version 0.7 of XmlRpc++, an implementation of the XmlRpc protocol
+ *                          OT includes version 0.7 of XmlRpc++, an implementation of the XmlRpc protocol
  *                          written in C++, based upon Shilad Sen's excellent py-xmlrpc library. Although
  *                          no code was re-used, the design and structure of the library is based upon the
  *                          py-xmlrpc implementation. The base64 decoder/encoder is by Konstantin Pilipchuk.

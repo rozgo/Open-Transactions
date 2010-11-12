@@ -24,19 +24,6 @@ PRE-BUILD:
 --- Make sure OpenSSL 1.0.0a is installed, earlier versions don't have
     WHIRLPOOL.
 
---- If you want to run in XmlRpc/HTTP mode (the preferred transport) then 
-    you need to install the XmlRpc++ library, which you can get here: 
-    http://xmlrpcpp.sourceforge.net/
-    
-    (For Mac, I had to install it using Mac Ports. If you don't install
-    this library, that's okay, you'll just be stuck running over TCP/SSL
-    instead of using XmlRpc/HTTP.)
-
-    For Linux, install the Linux version:
-    http://packages.ubuntu.com/hardy/libxmlrpc++-dev
-    The exact download link for linux is currently:
-    http://archive.ubuntu.com/ubuntu/pool/universe/x/xmlrpc++/xmlrpc++_0.7+cvs20040713.orig.tar.gz
-
 --- Find libssl.a and libcrypto.a and copy them to the OTLib folder.
 
 --- cd (change directory) to the Open-Transactions folder.
@@ -89,10 +76,9 @@ To build everything, use this command:
     make
 
 If you prefer to build in XmlRpc mode (preferred) then use this instead:
+   
     make rpc
 
-(As mentioned above, you must install the XmlRpc++ library first if you want
-to run in XmlRpc mode.)
 
 
 ---------------------------------------------------------------
@@ -101,6 +87,10 @@ to run in XmlRpc mode.)
 If you prefer to build all of the projects individually, they are below for
 my notes. But the above step should be enough to take care of everything for
 most people.
+
+--- (optional) build the XmlRpc++ library:
+cd xmlrpcpp;
+make
 
 --- Build the Library:
 cd OTLib;
