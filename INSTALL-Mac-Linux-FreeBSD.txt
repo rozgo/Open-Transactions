@@ -21,63 +21,84 @@ OpenTransactions for Mac OS X, Linux, and FreeBSD
 
 PRE-BUILD:
 
---- Make sure OpenSSL 1.0.0a is installed, earlier versions don't have
-    WHIRLPOOL.
+--- Make sure OpenSSL 1.0.0a is installed, since earlier versions don't
+    have WHIRLPOOL and the software won't work without it.
 
---- Find libssl.a and libcrypto.a and copy them to the OTLib folder.
+    To check current version:  openssl version
 
---- cd (change directory) to the Open-Transactions folder.
+    * To upgrade on Mac:    port install openssl
+      If that doesn't work: port install openssl-devel
 
---- Transaction server and client both still have a hardcoded path in the source code. 
+    * On Linux: apt-get install openssl
 
-    (It's just a DEFAULT path and IS configurable on the command line, 
-    so you don't HAVE to do anything about it, if you don't want to.)
+    * On FreeBSD:  cd /usr/ports/security/openssl/ && make install clean
+
+--- cd (change directory) to the Open-Transactions folder. <=== ("THE MAIN FOLDER")
+
+--- The server and client both still have a hardcoded path in the source code. 
+
+	IT'S JUST A DEFAULT!  It IS configurable on the command line.
+	If you want to change the default:
 
     Search the code for the word REDACTED, which appears once in the
     client and once in the server for each platform.
 
     The relevant source files: transaction/testserver.cpp and 
-    testwallet/testclient.cpp
+      testwallet/testclient.cpp
     As well as the new XmlRpc code: transaction/xmlrpcxx_server.cpp and 
-    testwallet/xmlrpcxx_client.cpp
+      testwallet/xmlrpcxx_client.cpp
 
-    Replace the REDACTED (entire path) with whatever path is appropriate for your system.
+    To search for all occurrences, use this command from the "main" folder:  
+    fgrep -n REDACTED * */* */*/* */*/*/*
 
-On Mac, if you use the XCode project files that I distributed, you have
-to fix those as well. (You COULD just use the Makefile, if you prefer.
-XCode not necessary.)
+    Make sure to replace the REDACTED (entire path) with whatever
+    path is appropriate for your system.
 
-They are:
+------------------------------------------------------------------------
+XCode NOTE:
+It's better to just use the Makefile. But if you prefer to use the XCode
+project files, then you need to fix the REDACTED inside those as well.
+
+XCode project files are:
 Open-Transactions/OTLib/OTLib.xcodeproj/project.pbxproj
 Open-Transactions/testwallet/testwallet.xcodeproj/project.pbxproj
 Open-Transactions/transaction/transaction.xcodeproj/project.pbxproj
 
-
 So make sure to edit all of those files and correct the paths within by
 searching each for the word 'REDACTED'.
-
 ------------------------------------------------------------------------
+
 
 
 NOW YOU ARE READY TO COMPILE THE CODE:
 
 
-STEP 1...
-For Mac:       cp ./Makefile.darwin ./Makefile
-For Linux:     cp ./Makefile.linux ./Makefile
-For FreeBSD*:  cp ./Makefile.freebsd ./Makefile
-
-*For FreeBSD, make sure you have gmake installed, since the Makefiles
-won't work with the default version of make.
-
-STEP 2...
 To build everything, use this command:
 
-    make
+      make
+
+Or:   make PLATFORM=[darwin|linux|freebsd]
+
+
+(It WILL try to auto-detect your operating system.)
 
 If you prefer to build in XmlRpc mode (preferred) then use this instead:
    
-    make rpc
+      make rpc
+Or:   make rpc PLATFORM=[darwin|linux|freebsd]
+
+
+Other build targets are debug, debugrpc, and clean.
+
+
+
+*For FreeBSD, make sure you have gmake installed, since the Makefiles won't
+work with the default version of make. Once you install it, you can build
+using these commands, depending on which options you prefer:
+      gmake
+      gmake PLATFORM=[darwin|linux|freebsd]
+      gmake rpc
+      gmake rpc PLATFORM=[darwin|linux|freebsd]
 
 
 
@@ -119,31 +140,28 @@ cd Open-Transactions/testwallet;
 make -f Makefile.API [TRANSPORT=XmlRpc] PLATFORM=[darwin|linux|freebsd] LANGUAGE=[c|csharp|java|ruby|python|perl|php|tcl|lisp]
 
 
-More detailed notes in Open-Transactions/testwallet/A-README.txt
+NOTE:
+For some languages (Python) on some platforms (Linux) it might require that OTLib
+is built with the variable DYNAMIC_OTLIB=1. So if you get a build error while building
+the API, do this:
+
+cd ../OTLib; make clean; make DYNAMIC_OTLIB=1; cd ../testwallet
+
+(Now try to build your API interface again.)
+
+More detailed notes in Open-Transactions/testwallet/API-README.txt
 
 --------------------------------------------------------
 
-(If you choose to use the XCode project instead of the Makefile, be warned that you have to 
-edit the XCode project file to fix the REDACTED issue. You'd also have to deal with dylibs, etc.
-Due to this inconvenience, I have insured that the Makefile works the same on Linux and Mac, so you
-can avoid XCode for building entirely, if you prefer.)
-
-
---- Make sure! You have at least version 1.0.0a of OpenSSL installed.
-
-   (HOW did I install OpenSSL?  My Mac already came with an old version of it. So first I downloaded the OpenSSL latest build, and followed the instructions to install that. I also installed a program called "MacPorts" (google it) and used that to install OpenSSL as well, which went into the /opt folder.  I also had to search my computer for libssl.a and libcrypto.a (using  spotlight in finder) and, after backing up the old files, I overwrote them with the new ones. I did the same for the header files and the dylib files. Most notably, the Mac development version of OpenSSL is in the /Developer SDK folders. I replaced the headers and libraries and dylibs in there and wherever else I could find that I could replace them.  I got the NEW dylib files from the MacPorts install, and I got the NEW .a files from the OpenSSL download and build.  Make sure the "make install" for the OpenSSL download is done using sudo. sudo make install.) 
-
----------------------------------------------------------
 
 TO RUN:
+
+(Assuming you have already built the projects, including OTLib first.)
 
 The client and server expect to be run from the command line in their respective folders. 
 
 cd testwallet       (for client) 
 cd transaction      (for server)
-
-(Assuming you have already built the projects, including OTLib first.)
-
 
 If you are in the transaction folder, then run it like this:
 ./transaction.exe

@@ -42,7 +42,7 @@ LINUX WARNING: On Linux, you must rebuild OTLib with the proper flags,
 before you can build the OTAPI, or you'll get errors. If you are using
 linux, do this now:
 
-cd ../OTLib; make clean; make PLATFORM=linux DYNAMIC_OTLIB=1; cd ../testwallet
+cd ../OTLib; make clean; make DYNAMIC_OTLIB=1; cd ../testwallet
 
 Now you may continue with the rest of these instructions...
 ----------------

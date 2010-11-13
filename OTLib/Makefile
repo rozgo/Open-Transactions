@@ -7,50 +7,89 @@
 PROGRAM = libOTLib.a 
 DEBUG_PROGRAM = libOTLibd.a 
 
-#
-# Command line parameters: Edit these parameters so that you can 
-# easily run the sample by typing "make -f Makefile.Linux run".
+
+# Find out what platform we're on.
+UNAME := $(shell uname -s)
+
+OT_PLATFORM := UNKNOWN_PLATFORM
+
+# I allow the user the option to force-override the build platform.
+# Using make PLATFORM=darwin, for example, you will build in darwin mode
+# even if you are on a linux box.
 #
 
-#
-# The INCLUDEDIRS macro contains a list of include directories
-# to pass to the compiler so it can find necessary header files.
-#
-# The LIBDIRS macro contains a list of library directories
-# to pass to the linker so it can find necessary libraries.
-#
-# The LIBS macro contains a list of libraries that the the
-# executable must be linked against.
-#
+ifeq ($(PLATFORM), darwin)
+UNAME := Darwin
+endif
 
-#
-# Make sure the first directory below has YOUR computer's path to the
-# OpenSSL include files. This is the one I use for Mac and Linux:
-#
-#        -I/usr/local/ssl/include \    
-#
-# Or, if you prefer, the FreeBSD path to the OpenSSL include files:
-#
-#        -I/usr/local/include \  
-#
+ifeq ($(PLATFORM), linux)
+UNAME := Linux
+endif
 
 ifeq ($(PLATFORM), freebsd)
-INCLUDEDIRS = \
-	-I/usr/local/include \
-	-I./irrxml \
-	-I./Lucre \
-	-I./
-else
-INCLUDEDIRS = \
-	-I/usr/local/ssl/include \
-	-I./irrxml \
-	-I./Lucre \
-	-I./
+UNAME := FreeBSD
+endif
+
+ifeq ($(UNAME), Darwin)
+OT_PLATFORM := darwin
+endif
+
+ifeq ($(UNAME), Linux)
+OT_PLATFORM := linux
+endif
+
+ifeq ($(UNAME), FreeBSD)
+OT_PLATFORM := freebsd
 endif
 
 
-LIBDIRS = \
+
+OT_INCLUDEDIRS = \
+	-I./irrxml \
+	-I./Lucre \
+	-I./
+
+
+OT_LIBDIRS = \
 	-L./
+
+
+PLATFORM_INCLUDEDIRS = # empty
+PLATFORM_LIBDIRS = # empty
+
+
+
+LINUX_LIBDIR = lib
+LBITS := $(shell getconf LONG_BIT)
+ifeq ($(LBITS),64)
+LINUX_LIBDIR = lib64
+endif
+
+# SSL Folders!
+# For Darwin I use /opt instead of /usr, since OpenSSL 1.0.0a is
+# installed to that location by MacPorts.
+#
+ifeq ($(OT_PLATFORM), darwin)
+SSL_INCLUDEDIRS = -I/opt/local/include
+SSL_LIBDIRS = -L/opt/local/lib
+endif
+
+ifeq ($(OT_PLATFORM), linux)
+SSL_INCLUDEDIRS = -I/usr/local/ssl/include
+SSL_LIBDIRS = -L/usr/local/ssl/$(LINUX_LIBDIR)
+endif
+
+ifeq ($(OT_PLATFORM), freebsd)
+SSL_INCLUDEDIRS = -I/usr/local/include
+SSL_LIBDIRS = -L/usr/local/lib
+#SSL_LIBDIRS = -L/usr/ports/security/openssl/work/openssl-1.0.0a
+endif
+
+
+
+
+INCLUDEDIRS = $(PLATFORM_INCLUDEDIRS) $(SSL_INCLUDEDIRS) $(OT_INCLUDEDIRS)
+LIBDIRS = $(PLATFORM_LIBDIRS)  $(SSL_LIBDIRS) $(OT_LIBDIRS)
 
 
 LIBS = -lssl -lcrypto
@@ -127,6 +166,9 @@ CXX = g++
 CC = gcc
 LDFLAGS = $(LIBDIRS) $(LIBS)
 DEBUG_LDFLAGS = $(LIBDIRS) $(DEBUG_LIBS)
+
+CXXFLAGS   := _____FLAGS_NOT_SET____
+CFLAGS     := _____FLAGS_NOT_SET____ 
 
 ifeq ($(DYNAMIC_OTLIB), 1)
 CXXFLAGS   = $(INCLUDEDIRS) -Wall -fPIC

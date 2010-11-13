@@ -8,64 +8,80 @@ PROGRAM = transaction.exe
 
 DEBUG_PROGRAM = transaction.debug
 
-#
-# Command line parameters: Edit these parameters so that you can 
-# easily run the sample by typing "make -f Makefile.Linux run".
-#
 
 
+# Find out what platform we're on.
+UNAME := $(shell uname -s)
+
+OT_PLATFORM := ___OT_PLATFORM_UNKNOWN___
+
+# I allow the user the option to force-override the build platform.
+# Using make PLATFORM=darwin, for example, you will build in darwin mode
+# even if you are on a linux box.
 #
-# Make sure the first directory below has YOUR computer's path to the
-# OpenSSL include files. This is the one I use for Mac and Linux:
+
+ifeq ($(PLATFORM), darwin)
+UNAME := Darwin
+endif
+ifeq ($(PLATFORM), linux)
+UNAME := Linux
+endif
+ifeq ($(PLATFORM), freebsd)
+UNAME := FreeBSD
+endif
+
+ifeq ($(UNAME), Darwin)
+OT_PLATFORM := darwin
+endif
+ifeq ($(UNAME), Linux)
+OT_PLATFORM := linux
+endif
+ifeq ($(UNAME), FreeBSD)
+OT_PLATFORM := freebsd
+endif
+
+
+PLATFORM = $(OT_PLATFORM)
+
+
+LINUX_LIBDIR = lib
+LBITS := $(shell getconf LONG_BIT)
+ifeq ($(LBITS),64)
+LINUX_LIBDIR = lib64
+endif
+
+# SSL Folders!
+
+# For Darwin I use /opt instead of /usr, since OpenSSL 1.0.0a is
+# installed to that location by MacPorts.
 #
-#        -I/usr/local/ssl/include \
-#
-# Or, if you prefer, the FreeBSD path to the OpenSSL include files:
-#
-#        -I/usr/local/include \
-#
+ifeq ($(PLATFORM), darwin)
+SSL_INCLUDEDIRS = -I/opt/local/include
+SSL_LIBDIRS = -L/opt/local/lib
+endif
+
+ifeq ($(PLATFORM), linux)
+SSL_INCLUDEDIRS = -I/usr/local/ssl/include
+SSL_LIBDIRS = -L/usr/local/ssl/$(LINUX_LIBDIR)
+endif
 
 ifeq ($(PLATFORM), freebsd)
+SSL_INCLUDEDIRS = -I/usr/local/include
+SSL_LIBDIRS = -L/usr/local/lib
+#SSL_LIBDIRS = -L/usr/ports/security/openssl/work/openssl-1.0.0a
+endif
+
+
 PLATFORM_INCLUDEDIRS = \
-	-I/usr/local/include \
+	$(SSL_INCLUDEDIRS) \
 	-I../OTLib/irrxml \
 	-I../OTLib \
 	-I./SSL-Example \
 	-I./
-else
-PLATFORM_INCLUDEDIRS = \
-	-I/usr/local/ssl/include \
-	-I../OTLib/irrxml \
-	-I../OTLib \
-	-I./SSL-Example \
-	-I./
-endif
 
-
-#
-# The INCLUDEDIRS macro contains a list of include directories
-# to pass to the compiler so it can find necessary header files.
-#
-# The LIBDIRS macro contains a list of library directories
-# to pass to the linker so it can find necessary libraries.
-#
-# The LIBS macro contains a list of libraries that the the
-# executable must be linked against.
-#
-# For FreeBSD, add this library path:  
-# /usr/ports/security/openssl/work/openssl-1.0.0a
-#
-# Or this one, depending on your system:
-#  /usr/local/lib
-#
-ifeq ($(PLATFORM), freebsd)
 PLATFORM_LIBDIRS = \
-	-L../OTLib \
-	-L/usr/local/lib
-else
-PLATFORM_LIBDIRS = \
-	-L../OTLib 
-endif
+	$(SSL_LIBDIRS) \
+	-L../OTLib
 
 
 
@@ -80,13 +96,17 @@ TRANSPORT_LDFLAG = # empty
 ifeq ($(TRANSPORT), XmlRpc)
 TRANSPORT_CFLAG += -DOT_XMLRPC_MODE
 TRANSPORT_LDFLAG += -lXmlRpc
-PLATFORM_LIBDIRS += $(XMLRPCPP_LIBDIR)
 PLATFORM_INCLUDEDIRS += $(XMLRPCPP_INCLUDEDIR)
+PLATFORM_LIBDIRS += $(XMLRPCPP_LIBDIR)
 endif
 
 INCLUDEDIRS = $(PLATFORM_INCLUDEDIRS)
 LIBDIRS = $(PLATFORM_LIBDIRS)
 
+# I know it seems strange to see the libraries repeated here multiple times. 
+# But I found a tip online to do this, and there are definitely build issues
+# on linux with at least one of these Makefiles, if you remove the repeats.
+# Weird.
 ifeq ($(PLATFORM), linux)
 LIBS = -ldl $(TRANSPORT_LDFLAG) $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib
 
