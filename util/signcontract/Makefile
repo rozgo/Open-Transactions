@@ -8,100 +8,215 @@ PROGRAM = signcontract.exe
 
 DEBUG_PROGRAM = signcontract.debug
 
-#
-# Command line parameters: Edit these parameters so that you can 
-# easily run the sample by typing "make -f Makefile.Linux run".
+
+# Find out what platform we're on.
+UNAME := $(shell uname -s)
+
+OT_PLATFORM := ___OT_PLATFORM_UNKNOWN___
+
+# I allow the user the option to force-override the build platform.
+# Using make PLATFORM=darwin, for example, you will build in darwin mode
+# even if you are on a linux box.
 #
 
-#
-# The INCLUDEDIRS macro contains a list of include directories
-# to pass to the compiler so it can find necessary header files.
-#
-# The LIBDIRS macro contains a list of library directories
-# to pass to the linker so it can find necessary libraries.
-#
-# The LIBS macro contains a list of libraries that the the
-# executable must be linked against.
-#
+ifeq ($(PLATFORM), darwin)
+UNAME := Darwin
+endif
+ifeq ($(PLATFORM), linux)
+UNAME := Linux
+endif
+ifeq ($(PLATFORM), freebsd)
+UNAME := FreeBSD
+endif
 
-#
-# Make sure the first directory below has YOUR computer's path to the
-# OpenSSL include files. This is the one I use for Mac and Linux:
-#
-#        -I/usr/local/ssl/include \
-#
-# Or, if you prefer, the FreeBSD path to the OpenSSL include files:
-#
-#        -I/usr/local/include \
-#
+ifeq ($(UNAME), Darwin)
+OT_PLATFORM := darwin
+endif
+ifeq ($(UNAME), Linux)
+OT_PLATFORM := linux
+endif
+ifeq ($(UNAME), FreeBSD)
+OT_PLATFORM := freebsd
+endif
 
-INCLUDEDIRS = \
-	-I/usr/local/ssl/include \
+
+PLATFORM = $(OT_PLATFORM)
+
+
+
+OT_INCLUDEDIRS = \
 	-I../../OTLib/irrxml \
 	-I../../OTLib \
 	-I./
 
 
-# For FreeBSD, add this library path:  
-# /usr/ports/security/openssl/work/openssl-1.0.0a
-#
-# Or this one, depending on your system:
-#  /usr/local/lib
-#
-LIBDIRS = \
+OT_LIBDIRS = \
 	-L../../OTLib
 
+PLATFORM_LIBDIRS = #empty
+PLATFORM_INCLUDEDIRS = #empty
 
-LIBS = $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib 
-DEBUG_LIBS = $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd 
+API_CXXSOURCES = # empty
+API_CFLAGS = # empty
+API_LDFLAGS = # empty
+
+
+# The LIBS macro contains a list of libraries that the the
+# executable must be linked against.
+API_LIBS =  -lssl -lcrypto  -lOTLib -lssl -lcrypto  -lOTLib  -lssl -lcrypto -lOTLib  -lssl -lcrypto -lOTLib
+API_DEBUG_LIBS = -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd  -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd
+#
+# FT: I tested this. The above version worked on Linux, and the below version did not.
+#
+#API_LIBS = -lssl  -lcrypto -lOTLib
+#API_DEBUG_LIBS =  -lssl -lcrypto  -lOTLibd
+
+
+
+
+LINUX_LIBDIR = lib
+LBITS := $(shell getconf LONG_BIT)
+ifeq ($(LBITS),64)
+LINUX_LIBDIR = lib64
+endif
+
+# SSL Folders!
+
+# For Darwin I use /opt instead of /usr, since OpenSSL 1.0.0a is
+# installed to that location by MacPorts.
+#
+ifeq ($(PLATFORM), darwin)
+SSL_INCLUDEDIRS = -I/opt/local/include
+SSL_LIBDIRS = -L/opt/local/lib
+endif
+
+ifeq ($(PLATFORM), linux)
+SSL_INCLUDEDIRS = -I/usr/local/ssl/include
+SSL_LIBDIRS = -L/usr/local/ssl/$(LINUX_LIBDIR)
+endif
+
+ifeq ($(PLATFORM), freebsd)
+SSL_INCLUDEDIRS = -I/usr/local/include
+SSL_LIBDIRS = -L/usr/local/lib
+#SSL_LIBDIRS = -L/usr/ports/security/openssl/work/openssl-1.0.0a
+endif
+
+
+
+
+PLATFORM_INCLUDEDIRS += $(SSL_INCLUDEDIRS)
+PLATFORM_LIBDIRS += $(SSL_LIBDIRS)
+
+
 
 #
-# The CXXSOURCES macro contains a list of source files.
+# Eventually more platform stuff can go below here, like 64-bit, etc.
 #
-# The CXXOBJECTS macro converts the CXXSOURCES macro into a list
-# of object files.
+# ---------------------------------------------------------------------
+
+# --- DARWIN
 #
-# The CXXFLAGS macro contains a list of options to be passed to
-# the compiler.  Adding "-g" to this line will cause the compiler
-# to add debugging information to the executable.
-#
-# The CXX macro defines the C++ compiler.
-#
-# The LDFLAGS macro contains all of the library and library
-# directory information to be passed to the linker.
-#
+ifeq ($(PLATFORM), darwin)
+
+endif
+# End DARWIN -------------------------------------------------------------
+
+
+
+ifeq ($(PLATFORM), linux)
+
+API_LDFLAGS += -ldl
+
+endif
+# End LINUX -------------------------------------------------------------
+
+
+
+
+# --- FreeBSD ----
+
+ifeq ($(PLATFORM), freebsd)
+
+endif
+# End FreeBSD -------------------------------------------------------------
+
+
+
+
+INCLUDEDIRS = $(PLATFORM_INCLUDEDIRS) $(OT_INCLUDEDIRS)
+
+LIBDIRS = $(PLATFORM_LIBDIRS) $(OT_LIBDIRS)
+
 
 CXXSOURCES = \
 			 main.cpp
 			 
 CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
-CXXFLAGS   = $(INCLUDEDIRS)
+CXXFLAGS   = $(INCLUDEDIRS) $(API_CFLAGS) -c
 DEBUG_FLAGS = -g
 CXX = g++
-LDFLAGS = $(LIBDIRS) $(LIBS)
-DEBUG_LDFLAGS = $(LIBDIRS) $(DEBUG_LIBS)
+
+LIBS = $(API_LIBS)
+DEBUG_LIBS = $(API_DEBUG_LIBS)
+
+# --- LDFLAGS
+#
+LDFLAGS = $(API_LDFLAGS) $(LIBDIRS) $(LIBS)
+DEBUG_LDFLAGS =  $(API_LDFLAGS) $(LIBDIRS) $(DEBUG_LIBS)
+
+
+
+
+
+
+
+# ---------------------------------------------------------------------
+
+# --- DARWIN
+#
+ifeq ($(PLATFORM), darwin)
+LINK_COMMAND = $(CXX) $(LDFLAGS) -o $(PROGRAM) $(CXXOBJECTS)
+DEBUG_LINK_COMMAND = $(CXX) $(DEBUG_LDFLAGS) -o $(DEBUG_PROGRAM) $(CXXOBJECTS)
+endif
+# End DARWIN -------------------------------------------------------------
+
+ifeq ($(PLATFORM), linux)
+LINK_COMMAND = $(CXX) $(CXXOBJECTS) $(LDFLAGS) -o $(PROGRAM)
+DEBUG_LINK_COMMAND = $(CXX)  $(CXXOBJECTS) $(DEBUG_LDFLAGS) -o $(DEBUG_PROGRAM)
+endif
+# End LINUX -------------------------------------------------------------
+
+# --- FreeBSD ----
+ifeq ($(PLATFORM), freebsd)
+LINK_COMMAND = $(CXX) $(CXXOBJECTS) $(LDFLAGS) -o $(PROGRAM)
+DEBUG_LINK_COMMAND = $(CXX)  $(CXXOBJECTS) $(DEBUG_LDFLAGS) -o $(DEBUG_PROGRAM)
+endif
+# End FreeBSD -------------------------------------------------------------
+
+
+
+
+# ---------------------------------------------------------------------
+
+# --- TARGETS
 
 #
 # Default target: the first target is the default target.
+# Just type "make PLATFORM=darwin" to build it.
 #
+
+$(PROGRAM): $(CXXOBJECTS)
+	$(LINK_COMMAND)
 
 all: $(PROGRAM)
 
 debug: CXXFLAGS += $(DEBUG_FLAGS)
 debug: LIBS = $(DEBUG_LIBS)
 debug: LDFLAGS = $(DEBUG_LDFLAGS)
-debug: $(DEBUG_PROGRAM)
+debug: $(CXXOBJECTS) $(COBJECTS) 
+	$(DEBUG_LINK_COMMAND)
 
-#
-# Link target: automatically builds its object dependencies before
-# executing its link command.
-#
 
-$(DEBUG_PROGRAM): $(CXXOBJECTS)
-	$(CXX) $(CXXOBJECTS) $(DEBUG_LIBS) -o $@
-
-$(PROGRAM): $(CXXOBJECTS)
-	$(CXX) $(CXXOBJECTS) $(LIBS) -o $@
 
 #
 # Object targets: rules that define objects, their dependencies, and
@@ -120,7 +235,7 @@ clean:
 	$(RM) -f $(CXXOBJECTS) $(PROGRAM) $(DEBUG_PROGRAM)
 
 #
-# Run target: "make -f Makefile.Linux run" to execute the application
+# Run target: "make run" to execute the application
 #             You will need to add $(VARIABLE_NAME) for any command line parameters 
 #             that you defined earlier in this file.
 # 

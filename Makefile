@@ -1,0 +1,165 @@
+
+# COMMENT: This is set up for Mac OS X, Linux, and FreeBSD. 
+# This makefile will build the entire project and all the assorted tools.
+#
+# For Mac and Linux, just type 'make'. For FreeBSD, type 'gmake'.
+#
+# RPC is the PREFERRED mode to run the software, since it uses xmlrpc over
+# http.  'make rpc'
+#
+
+
+# Declare some variables.
+#
+OT_PLATFORM := ___OT_UNKNOWN_PLATFORM___
+
+OT_MAKE := make
+
+
+
+# Find out what platform we're on.
+UNAME := $(shell uname -s)
+
+
+LINUX_LIBDIR = lib
+LBITS := $(shell getconf LONG_BIT)
+ifeq ($(LBITS),64)
+LINUX_LIBDIR = lib64
+endif
+
+# I allow the user the option to force-override the build platform.
+# Using make PLATFORM=darwin, for example, you will build in darwin mode
+# even if you are on a linux box.
+#
+ifeq ($(PLATFORM), darwin)
+UNAME := Darwin
+endif
+ifeq ($(PLATFORM), linux)
+UNAME := Linux
+endif
+ifeq ($(PLATFORM), freebsd)
+UNAME := FreeBSD
+endif
+
+
+# The SSL libraries are now set in the section below, for various platforms.
+# The Makefiles in the subfolders will only set those values (also by platform)
+# in the case where they aren't already set.  So you can set them here for the entire
+# project  :-)
+#
+# You can also override them, here or there, on the command line.
+
+# -------------------------------------
+
+ifeq ($(UNAME), Darwin)
+OT_PLATFORM := darwin
+
+# For Darwin I use /opt instead of /usr, since OpenSSL 1.0.0a is
+# installed to that location by MacPorts.
+SSL_INCLUDEDIRS = -I/opt/local/include
+SSL_LIBDIRS = -L/opt/local/lib
+
+endif
+
+
+# -------------------------------------
+
+ifeq ($(UNAME), Linux)
+OT_PLATFORM := linux
+SSL_INCLUDEDIRS = -I/usr/local/ssl/include
+SSL_LIBDIRS = -L/usr/local/ssl/$(LINUX_LIBDIR)
+endif
+
+# -------------------------------------
+
+
+ifeq ($(UNAME), FreeBSD)
+OT_PLATFORM := freebsd
+
+OT_MAKE := gmake
+
+# No extra targets for now on this platform.  Gotta fix those Makefiles first.
+
+SSL_INCLUDEDIRS = -I/usr/local/include
+SSL_LIBDIRS = -L/usr/local/lib
+#SSL_LIBDIRS = -L/usr/ports/security/openssl/work/openssl-1.0.0a
+
+endif
+
+# -------------------------------------
+
+
+
+OT_SSL_INCLUDE_AND_LIBS = SSL_INCLUDEDIRS=$(SSL_INCLUDEDIRS) SSL_LIBDIRS=$(SSL_LIBDIRS)
+
+
+OT_MAKE_PLATFORM_INC_LIBS = $(OT_MAKE) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS)
+
+
+EXTRA_TARGETS1 += cd util/otcreatemint && $(OT_MAKE_PLATFORM_INC_LIBS)  && cp ./createmint.exe ../../transaction/data_folder/createmint.exe
+EXTRA_TARGETS2 += cd util/signcontract && $(OT_MAKE_PLATFORM_INC_LIBS)  && cp ./signcontract.exe ../../testwallet/data_folder/signcontract.exe
+EXTRA_DEBUG_TARGETS1 += cd util/otcreatemint && $(OT_MAKE_PLATFORM_INC_LIBS)  debug && cp ./createmint.debug ../../transaction/data_folder/createmint.debug
+EXTRA_DEBUG_TARGETS2 += cd util/signcontract && $(OT_MAKE_PLATFORM_INC_LIBS)  debug && cp ./signcontract.debug ../../testwallet/data_folder/signcontract.debug
+EXTRA_RPC_TARGETS1 += cd util/otcreatemint && $(OT_MAKE_PLATFORM_INC_LIBS)  && cp ./createmint.exe ../../transaction/data_folder/createmint.exe
+EXTRA_RPC_TARGETS2 += cd util/signcontract && $(OT_MAKE_PLATFORM_INC_LIBS)  && cp ./signcontract.exe ../../testwallet/data_folder/signcontract.exe
+EXTRA_DEBUGRPC_TARGETS1 += cd util/otcreatemint && $(OT_MAKE_PLATFORM_INC_LIBS)  debug && cp ./createmint.debug ../../transaction/data_folder/createmint.debug
+EXTRA_DEBUGRPC_TARGETS2 += cd util/signcontract && $(OT_MAKE_PLATFORM_INC_LIBS)  debug && cp ./signcontract.debug ../../testwallet/data_folder/signcontract.debug
+EXTRA_CLEAN_TARGETS1 += cd util/otcreatemint && $(OT_MAKE_PLATFORM_INC_LIBS)  clean && touch ../../transaction/data_folder/createmint.tmp && rm ../../transaction/data_folder/createmint.*
+EXTRA_CLEAN_TARGETS2 += cd util/signcontract && $(OT_MAKE_PLATFORM_INC_LIBS)  clean && touch ../../testwallet/data_folder/signcontract.tmp && rm ../../testwallet/data_folder/signcontract.*
+
+
+
+
+# -------------------------------------
+
+all:
+	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS)   
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS) 
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=c
+	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS) 
+	$(EXTRA_TARGETS1)
+	$(EXTRA_TARGETS2)
+
+debug:
+	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS)  debug
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  debug
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=c debug
+	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)  debug
+	$(EXTRA_DEBUG_TARGETS1)
+	$(EXTRA_DEBUG_TARGETS2)
+
+rpc:
+	cd xmlrpcpp && $(OT_MAKE)
+	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) 
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c
+	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
+	$(EXTRA_RPC_TARGETS1)
+	$(EXTRA_RPC_TARGETS2)
+
+debugrpc:
+	cd xmlrpcpp && $(OT_MAKE)
+	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS)  debug
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc debug
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c debug
+	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)   TRANSPORT=XmlRpc debug
+	$(EXTRA_DEBUGRPC_TARGETS1)
+	$(EXTRA_DEBUGRPC_TARGETS2)
+
+clean:
+	cd xmlrpcpp && $(OT_MAKE) clean
+	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS)  clean
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  clean
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=c clean
+	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)  clean
+	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc clean
+	$(EXTRA_CLEAN_TARGETS1)
+	$(EXTRA_CLEAN_TARGETS2)
+	
+
+
+
+
+
+ 

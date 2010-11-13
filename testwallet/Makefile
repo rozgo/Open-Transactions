@@ -18,6 +18,40 @@ PROGRAM = testwallet.exe
 DEBUG_PROGRAM = testwallet.debug
 
 
+# Find out what platform we're on.
+UNAME := $(shell uname -s)
+
+OT_PLATFORM := ___OT_PLATFORM_UNKNOWN___
+
+# I allow the user the option to force-override the build platform.
+# Using make PLATFORM=darwin, for example, you will build in darwin mode
+# even if you are on a linux box.
+#
+
+ifeq ($(PLATFORM), darwin)
+UNAME := Darwin
+endif
+ifeq ($(PLATFORM), linux)
+UNAME := Linux
+endif
+ifeq ($(PLATFORM), freebsd)
+UNAME := FreeBSD
+endif
+
+ifeq ($(UNAME), Darwin)
+OT_PLATFORM := darwin
+endif
+ifeq ($(UNAME), Linux)
+OT_PLATFORM := linux
+endif
+ifeq ($(UNAME), FreeBSD)
+OT_PLATFORM := freebsd
+endif
+
+
+PLATFORM = $(OT_PLATFORM)
+
+
 OT_INCLUDEDIRS = \
 	-I../OTLib/irrxml \
 	-I../OTLib \
@@ -25,9 +59,6 @@ OT_INCLUDEDIRS = \
 	-I.
 
 
-# The LIBDIRS macro contains a list of library directories
-# to pass to the linker so it can find necessary libraries.
-#
 OT_LIBDIRS = \
 	-L../OTLib
 
@@ -54,24 +85,57 @@ API_DEBUG_LIBS = -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd  -lssl -lcrypto
 
 
 
+
+LINUX_LIBDIR = lib
+LBITS := $(shell getconf LONG_BIT)
+ifeq ($(LBITS),64)
+LINUX_LIBDIR = lib64
+endif
+
+# SSL Folders!
+
+# For Darwin I use /opt instead of /usr, since OpenSSL 1.0.0a is
+# installed to that location by MacPorts.
+#
+ifeq ($(PLATFORM), darwin)
+SSL_INCLUDEDIRS = -I/opt/local/include
+SSL_LIBDIRS = -L/opt/local/lib
+endif
+
+ifeq ($(PLATFORM), linux)
+SSL_INCLUDEDIRS = -I/usr/local/ssl/include
+SSL_LIBDIRS = -L/usr/local/ssl/$(LINUX_LIBDIR)
+endif
+
+ifeq ($(PLATFORM), freebsd)
+SSL_INCLUDEDIRS = -I/usr/local/include
+SSL_LIBDIRS = -L/usr/local/lib
+#SSL_LIBDIRS = -L/usr/ports/security/openssl/work/openssl-1.0.0a
+endif
+
+
+
+
+PLATFORM_INCLUDEDIRS += $(SSL_INCLUDEDIRS)
+PLATFORM_LIBDIRS += $(SSL_LIBDIRS)
+
+
+
+#
+# Eventually more platform stuff can go below here, like 64-bit, etc.
+#
 # ---------------------------------------------------------------------
 
 # --- DARWIN
 #
 ifeq ($(PLATFORM), darwin)
 
-PLATFORM_INCLUDEDIRS = -I/usr/local/ssl/include
-
 endif
 # End DARWIN -------------------------------------------------------------
 
 
 
-
 ifeq ($(PLATFORM), linux)
-
-PLATFORM_INCLUDEDIRS = -I/usr/local/ssl/include
-#PLATFORM_LIBDIRS += -L/usr/local/lib
 
 API_LDFLAGS += -ldl
 
@@ -83,15 +147,10 @@ endif
 
 
 
-
 # --- FreeBSD ----
 
 ifeq ($(PLATFORM), freebsd)
 
-PLATFORM_INCLUDEDIRS = -I/usr/local/include
-PLATFORM_LIBDIRS += -L/usr/local/lib
-#PLATFORM_LIBDIRS += /usr/ports/security/openssl/work/openssl-1.0.0a
-# This one's for you, Ben.
 endif
 # End FreeBSD -------------------------------------------------------------
 
@@ -126,27 +185,12 @@ endif
 
 
 
-# ---------------------------------------------------------------------
-#
-# The CSOURCES macro contains a list of source files.
-#
-# The COBJECTS macro converts the CSOURCES macro into a list
-# of object files.
-#
-# The CFLAGS macro contains a list of options to be passed to
-# the compiler.  Adding "-g" to this line will cause the compiler
-# to add debugging information to the executable.
-#
-# The CC macro defines the C compiler.
-#
-# The LDFLAGS macro contains all of the library and library
-# directory information to be passed to the linker.
-#
+
 
 INCLUDEDIRS = $(PLATFORM_INCLUDEDIRS) $(OT_INCLUDEDIRS)
 
-
 LIBDIRS = $(PLATFORM_LIBDIRS) $(OT_LIBDIRS)
+
 
 CSOURCES = $(API_CSOURCES)
 

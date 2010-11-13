@@ -251,7 +251,8 @@ XmlRpcClient::generateHeader(std::string const& body)
   header += buff;
   header += "Content-Type: text/xml\r\nContent-length: ";
 
-  sprintf(buff,"%d\r\n\r\n", body.size());
+  int nFT_temp = (int)body.size();
+  sprintf(buff,"%d\r\n\r\n", nFT_temp);
 
   return header + buff;
 }
