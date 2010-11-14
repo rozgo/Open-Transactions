@@ -187,8 +187,8 @@ class OTAPIPINVOKE {
   [DllImport("OTAPI", EntryPoint="CSharp_OT_API_Init")]
   public static extern int OT_API_Init(string jarg1);
 
-  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_loadWallet")]
-  public static extern int OT_API_loadWallet(string jarg1);
+  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_LoadWallet")]
+  public static extern int OT_API_LoadWallet(string jarg1);
 
   [DllImport("OTAPI", EntryPoint="CSharp_OT_API_connectServer")]
   public static extern int OT_API_connectServer(string jarg1, string jarg2, string jarg3, string jarg4, string jarg5);
@@ -253,27 +253,39 @@ class OTAPIPINVOKE {
   [DllImport("OTAPI", EntryPoint="CSharp_OT_API_depositCheque")]
   public static extern void OT_API_depositCheque(string jarg1, string jarg2, string jarg3, string jarg4);
 
-  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_getNymCount")]
-  public static extern int OT_API_getNymCount();
+  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_GetNymCount")]
+  public static extern int OT_API_GetNymCount();
 
-  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_getServerCount")]
-  public static extern int OT_API_getServerCount();
+  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_GetServerCount")]
+  public static extern int OT_API_GetServerCount();
 
-  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_getAssetTypeCount")]
-  public static extern int OT_API_getAssetTypeCount();
+  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_GetAssetTypeCount")]
+  public static extern int OT_API_GetAssetTypeCount();
 
-  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_getAccountCount")]
-  public static extern int OT_API_getAccountCount();
+  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_GetAccountCount")]
+  public static extern int OT_API_GetAccountCount();
 
-  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_getNym")]
-  public static extern int OT_API_getNym(int jarg1, string jarg2, string jarg3);
+  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_GetNym_ID")]
+  public static extern string OT_API_GetNym_ID(int jarg1);
 
-  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_getServer")]
-  public static extern int OT_API_getServer(int jarg1, string jarg2, string jarg3);
+  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_GetNym_Name")]
+  public static extern string OT_API_GetNym_Name(string jarg1);
 
-  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_getAssetType")]
-  public static extern int OT_API_getAssetType(int jarg1, string jarg2, string jarg3);
+  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_GetServer_ID")]
+  public static extern string OT_API_GetServer_ID(int jarg1);
 
-  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_GetAccountWallet")]
-  public static extern int OT_API_GetAccountWallet(int jarg1, string jarg2, string jarg3);
+  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_GetServer_Name")]
+  public static extern string OT_API_GetServer_Name(string jarg1);
+
+  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_GetAssetType_ID")]
+  public static extern string OT_API_GetAssetType_ID(int jarg1);
+
+  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_GetAssetType_Name")]
+  public static extern string OT_API_GetAssetType_Name(string jarg1);
+
+  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_GetAccountWallet_ID")]
+  public static extern string OT_API_GetAccountWallet_ID(int jarg1);
+
+  [DllImport("OTAPI", EntryPoint="CSharp_OT_API_GetAccountWallet_Name")]
+  public static extern string OT_API_GetAccountWallet_Name(string jarg1);
 }

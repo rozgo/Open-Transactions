@@ -1,3 +1,4 @@
+
 WHAT IS 'Open Transactions' ?
 
 It's a solid, easy-to-use, FINANCIAL CRYPTO and DIGITAL CASH LIBRARY.
@@ -33,101 +34,113 @@ Release Notes:
 http://github.com/FellowTraveler/Open-Transactions/wiki/Release-Notes
 
 
-"Seeking developers to contribute by writing client software and doing
-other integrations!  I will support you on the OT API. Let's make this
-happen!" -Fellow Traveler
+"Seeking developers to contribute by writing client software and
+doing other integrations!  I will support you on the OT API. Let's
+make this happen!" -Fellow Traveler
 
----------------------------------------------------------------------------
+--------------------------------------------------------------------
 
-The server itself is a transaction processor in the cypherpunk tradition. 
-In more detail:
 
--- Many financial instruments are supported: Users can write cheques,
-purchase cashier's cheques ('vouchers'), and withdraw in untraceable digital
-cash. The software uses Chaumian-style, blinded tokens courtesy of the Lucre
-library by Ben Laurie.
+The server itself is a transaction processor in the cypherpunk
+tradition. In more detail:
 
--- It's like PGP FOR MONEY. The idea is to have many cash algorithms, not
-just Lucre. I'd like to add Chaum's version, Brands' version, etc. So that,
-just like PGP, the software should support as many of the top algorithms as
-possible, and make it easy to swap them out when necessary.
+-- Many financial instruments are supported: Users can write
+cheques, purchase cashier's cheques ('vouchers'), and withdraw in
+untraceable digital cash. The software uses Chaumian-style, blinded
+tokens courtesy of the Lucre library by Ben Laurie.
 
--- User accounts are pseudonymous. A user account is a public key. (This is
-like PKTP.) You can open as many user accounts as you want. Full anonymity
-is possible only for 'cash-only' transactions (where users only perform
-token exchanges), whereas pseudonymity means that transactions can be linked
-to the key that signed them. (While the real life identity of the owner is
-hidden, continuity of reputation becomes possible.)
+-- It's like PGP FOR MONEY. The idea is to have many cash
+algorithms, not just Lucre. I'd like to add Chaum's version, Brands'
+version, etc. So that, just like PGP, the software should support as
+many of the top algorithms as possible, and make it easy to swap
+them out when necessary.
 
--- ANY USER CAN ISSUE new digital currencies and digital asset types, by
-uploading the new currency contract to the server. (This functionality is
-comparable to Ricardo, the transaction server by IanG.)
+-- User accounts are pseudonymous. A user account is a public key.
+(This is like PKTP.) You can open as many user accounts as you want.
+Full anonymity is possible only for 'cash-only' transactions (where
+users only perform token exchanges), whereas pseudonymity means that
+transactions can be linked to the key that signed them. (While the
+real life identity of the owner is hidden, continuity of reputation
+becomes possible.)
 
--- Triple-Signed Receipts. Client and server are able to agree on balances
-while simultaneously not storing any transaction history. No digital assets
-can ever be transferred or withdrawn without an authorizing signature from
-the account owner. (Account transfers are received via inbox. See Bill St. 
-Clair's excellent Trubanc for an example of this.)
+-- ANY USER CAN ISSUE new digital currencies and digital asset
+types, by uploading the new currency contract to the server. (This
+functionality is comparable to Ricardo, the transaction server by
+IanG.)
 
--- Open Transactions also features MARKETS. Any two asset types can be
-traded against each other. The markets are full-featured and include LIMIT
-ORDERS, STOP ORDERS, FILL-OR-KILL orders, DAY orders (date ranges), and stop
-limits.
+-- Triple-Signed Receipts. Client and server are able to agree on
+balances while simultaneously not storing any transaction history.
+No digital assets can ever be transferred or withdrawn without an
+authorizing signature from the account owner. (Account transfers are
+received via inbox. See Bill St. Clair's excellent Trubanc for an
+example of this.)
 
--- Open Transactions also supports BASKET CURRENCIES. Users can define their
-own, and the server handles the process of exchanging in and out of basket
-accounts. Baskets are treated by the software like any other asset type,
-(you can open accounts, transfer funds, withdraw cash, write cheques, and
-even trade basket currencies on markets.)
+-- Open Transactions also features MARKETS. Any two asset types can
+be traded against each other. The markets are full-featured and
+include LIMIT ORDERS, STOP ORDERS, FILL-OR-KILL orders, DAY orders
+(date ranges), and stop limits.
 
--- Open Transactions also supports PAYMENT PLANS. Users can sign contracts
-with each other, and the server will carry out the terms and implement the
-payment plan. (A future goal is to issue new asset types based on revenue
-from payment plans--so they can also be traded on markets.)
+-- Open Transactions also supports BASKET CURRENCIES. Users can
+define their own, and the server handles the process of exchanging
+in and out of basket accounts. Baskets are treated by the software
+like any other asset type, (you can open accounts, transfer funds,
+withdraw cash, write cheques, and even trade basket currencies on
+markets.)
 
--- CONTRACTS, in general, are very important to Open Transactions; they are
-the building block of the entire library. Open Transactions uses a
-Ricardian-style contract, and all the various instruments, data files, and
-messages resemble PGP-signed XML files. All objects serialize to a string.
+-- Open Transactions also supports PAYMENT PLANS. Users can sign
+contracts with each other, and the server will carry out the terms
+and implement the payment plan. (A future goal is to issue new asset
+types based on revenue from payment plans--so they can also be
+traded on markets.)
 
--- The philosophy of the software is based around the SEPARATION OF POWERS
-(issuers and transaction servers being separate entities) as well as the
-DISTRIBUTION OF RISK. For example, Asset accounts can be distributed across
-multiple servers, and asset types can be distributed across multiple issuers
-(via baskets.) See Loom for another example of this.
+-- CONTRACTS, in general, are very important to Open Transactions;
+they are the building block of the entire library. Open Transactions
+uses a Ricardian-style contract, and all the various instruments,
+data files, and messages resemble PGP-signed XML files. All objects
+serialize to a string.
 
--- Future (possible or planned) instruments include: interest-bearing bonds,
-dividend-paying stocks, and Collateralized Debt Obligations. The CDOs work
-by grouping a tranch of payment plans together so that the payments flow
-into an internal server backing account (for a new issuer account, to issue
-the shares in the CDO.) This is similar to how basket currencies are
-implemented. The shares can then be traded on markets like any other asset
-type. Stocks and Bonds will also do their payouts via a similar mechanism.
-These features aren't available yet, but they are easy to add given the
-existing OT infrastructure.
+-- The philosophy of the software is based around the SEPARATION OF
+POWERS (issuers and transaction servers being separate entities --
+See Loom for another example of this.) as well as the DISTRIBUTION
+OF RISK. For example, Asset accounts can be distributed across
+multiple servers, and asset types can be distributed across multiple
+issuers (via baskets.)
 
--- All communications are secured with OpenSSL. All messages are also signed
-and encrypted. All transactions require signatures from relevant parties
-including the server.
+-- Future (possible or planned) instruments include:
+interest-bearing bonds, dividend-paying stocks, and Collateralized
+Debt Obligations. The CDOs work by grouping a tranch of payment
+plans together so that the payments flow into an internal server
+backing account (for a new issuer account, to issue the shares in
+the CDO.) This is similar to how basket currencies are implemented.
+The shares can then be traded on markets like any other asset type.
+Stocks and Bonds will also do their payouts via a similar mechanism.
+These features aren't available yet, but they are easy to add given
+the existing OT infrastructure.
 
--- Open Transactions is open-source, written in C++, object-oriented, and
-includes a high-level API in Java, Ruby, Python, C, C++, Obj-C, C#, Lisp,
-Perl, PHP, and Tcl. (Also supporting JRuby, Jython, and any other language
-available on the JVM.)
+-- All communications are secured with OpenSSL. All messages are
+also signed and encrypted. All transactions require signatures from
+relevant parties including the server.
 
--- The software is fully cross-platform: Linux, Mac OS X, FreeBSD, Android,
-and Windows are supported with makefiles, project files, and instructions.
+-- Open Transactions is open-source, written in C++,
+object-oriented, and includes a high-level API in Java, Ruby,
+Python, C, C++, Obj-C, C#, Lisp, Perl, PHP, and Tcl. (Also
+supporting JRuby, Jython, and any other language available on the
+JVM.)
 
--- The library is transfer-protocol neutral as well as storage neutral, and
-could be utilized across a variety of different transfer protocols and
-storage systems. (The current test server and client use SSL for transfer
-in addition to XmlRpc/HTTP, and they use the filesystem for storage.)
+-- The software is fully cross-platform: Linux, Mac OS X, FreeBSD,
+Android, and Windows are supported with makefiles, project files,
+and instructions.
 
-The intention is for this software to be integrated as many places as
-possible... Games, digital cash wallets, distributed data stores, secure voip
-apps, anonymous bit torrent networks, mixnets, remailers, nym servers, etc.
-There are many other potential uses.
+-- The library is transfer-protocol neutral as well as storage
+neutral, and could be utilized across a variety of different
+transfer protocols and storage systems. (The current test server and
+client use SSL for transfer in addition to XmlRpc/HTTP, and they use
+the filesystem for storage.)
 
-This product includes software developed by Ben Laurie for use in the Lucre
-project.
+The intention is for this software to be integrated as many places
+as possible... Games, digital cash wallets, distributed data stores,
+secure voip apps, anonymous bit torrent networks, mixnets,
+remailers, nym servers, etc. There are many other potential uses.
 
+This product includes software developed by Ben Laurie for use in
+the Lucre project.

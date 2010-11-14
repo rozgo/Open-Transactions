@@ -16,8 +16,8 @@ public class OTAPI {
     return ret;
   }
 
-  public static int OT_API_loadWallet(string szPath) {
-    int ret = OTAPIPINVOKE.OT_API_loadWallet(szPath);
+  public static int OT_API_LoadWallet(string szPath) {
+    int ret = OTAPIPINVOKE.OT_API_LoadWallet(szPath);
     return ret;
   }
 
@@ -107,43 +107,63 @@ public class OTAPI {
     OTAPIPINVOKE.OT_API_depositCheque(SERVER_ID, USER_ID, ACCT_ID, THE_CHEQUE);
   }
 
-  public static int OT_API_getNymCount() {
-    int ret = OTAPIPINVOKE.OT_API_getNymCount();
+  public static int OT_API_GetNymCount() {
+    int ret = OTAPIPINVOKE.OT_API_GetNymCount();
     return ret;
   }
 
-  public static int OT_API_getServerCount() {
-    int ret = OTAPIPINVOKE.OT_API_getServerCount();
+  public static int OT_API_GetServerCount() {
+    int ret = OTAPIPINVOKE.OT_API_GetServerCount();
     return ret;
   }
 
-  public static int OT_API_getAssetTypeCount() {
-    int ret = OTAPIPINVOKE.OT_API_getAssetTypeCount();
+  public static int OT_API_GetAssetTypeCount() {
+    int ret = OTAPIPINVOKE.OT_API_GetAssetTypeCount();
     return ret;
   }
 
-  public static int OT_API_getAccountCount() {
-    int ret = OTAPIPINVOKE.OT_API_getAccountCount();
+  public static int OT_API_GetAccountCount() {
+    int ret = OTAPIPINVOKE.OT_API_GetAccountCount();
     return ret;
   }
 
-  public static int OT_API_getNym(int iIndex, string NYM_ID, string NYM_NAME) {
-    int ret = OTAPIPINVOKE.OT_API_getNym(iIndex, NYM_ID, NYM_NAME);
+  public static string OT_API_GetNym_ID(int nIndex) {
+    string ret = OTAPIPINVOKE.OT_API_GetNym_ID(nIndex);
     return ret;
   }
 
-  public static int OT_API_getServer(int iIndex, string THE_ID, string THE_NAME) {
-    int ret = OTAPIPINVOKE.OT_API_getServer(iIndex, THE_ID, THE_NAME);
+  public static string OT_API_GetNym_Name(string NYM_ID) {
+    string ret = OTAPIPINVOKE.OT_API_GetNym_Name(NYM_ID);
     return ret;
   }
 
-  public static int OT_API_getAssetType(int iIndex, string THE_ID, string THE_NAME) {
-    int ret = OTAPIPINVOKE.OT_API_getAssetType(iIndex, THE_ID, THE_NAME);
+  public static string OT_API_GetServer_ID(int nIndex) {
+    string ret = OTAPIPINVOKE.OT_API_GetServer_ID(nIndex);
     return ret;
   }
 
-  public static int OT_API_GetAccountWallet(int iIndex, string THE_ID, string THE_NAME) {
-    int ret = OTAPIPINVOKE.OT_API_GetAccountWallet(iIndex, THE_ID, THE_NAME);
+  public static string OT_API_GetServer_Name(string SERVER_ID) {
+    string ret = OTAPIPINVOKE.OT_API_GetServer_Name(SERVER_ID);
+    return ret;
+  }
+
+  public static string OT_API_GetAssetType_ID(int nIndex) {
+    string ret = OTAPIPINVOKE.OT_API_GetAssetType_ID(nIndex);
+    return ret;
+  }
+
+  public static string OT_API_GetAssetType_Name(string ASSET_TYPE_ID) {
+    string ret = OTAPIPINVOKE.OT_API_GetAssetType_Name(ASSET_TYPE_ID);
+    return ret;
+  }
+
+  public static string OT_API_GetAccountWallet_ID(int nIndex) {
+    string ret = OTAPIPINVOKE.OT_API_GetAccountWallet_ID(nIndex);
+    return ret;
+  }
+
+  public static string OT_API_GetAccountWallet_Name(string ACCOUNT_ID) {
+    string ret = OTAPIPINVOKE.OT_API_GetAccountWallet_Name(ACCOUNT_ID);
     return ret;
   }
 

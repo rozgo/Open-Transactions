@@ -49,7 +49,7 @@ del types
 
 
 OT_API_Init = _OTAPI.OT_API_Init
-OT_API_loadWallet = _OTAPI.OT_API_loadWallet
+OT_API_LoadWallet = _OTAPI.OT_API_LoadWallet
 OT_API_connectServer = _OTAPI.OT_API_connectServer
 OT_API_processSockets = _OTAPI.OT_API_processSockets
 OT_API_checkServerID = _OTAPI.OT_API_checkServerID
@@ -71,13 +71,17 @@ OT_API_getInbox = _OTAPI.OT_API_getInbox
 OT_API_processInbox = _OTAPI.OT_API_processInbox
 OT_API_withdrawVoucher = _OTAPI.OT_API_withdrawVoucher
 OT_API_depositCheque = _OTAPI.OT_API_depositCheque
-OT_API_getNymCount = _OTAPI.OT_API_getNymCount
-OT_API_getServerCount = _OTAPI.OT_API_getServerCount
-OT_API_getAssetTypeCount = _OTAPI.OT_API_getAssetTypeCount
-OT_API_getAccountCount = _OTAPI.OT_API_getAccountCount
-OT_API_getNym = _OTAPI.OT_API_getNym
-OT_API_getServer = _OTAPI.OT_API_getServer
-OT_API_getAssetType = _OTAPI.OT_API_getAssetType
-OT_API_GetAccountWallet = _OTAPI.OT_API_GetAccountWallet
+OT_API_GetNymCount = _OTAPI.OT_API_GetNymCount
+OT_API_GetServerCount = _OTAPI.OT_API_GetServerCount
+OT_API_GetAssetTypeCount = _OTAPI.OT_API_GetAssetTypeCount
+OT_API_GetAccountCount = _OTAPI.OT_API_GetAccountCount
+OT_API_GetNym_ID = _OTAPI.OT_API_GetNym_ID
+OT_API_GetNym_Name = _OTAPI.OT_API_GetNym_Name
+OT_API_GetServer_ID = _OTAPI.OT_API_GetServer_ID
+OT_API_GetServer_Name = _OTAPI.OT_API_GetServer_Name
+OT_API_GetAssetType_ID = _OTAPI.OT_API_GetAssetType_ID
+OT_API_GetAssetType_Name = _OTAPI.OT_API_GetAssetType_Name
+OT_API_GetAccountWallet_ID = _OTAPI.OT_API_GetAccountWallet_ID
+OT_API_GetAccountWallet_Name = _OTAPI.OT_API_GetAccountWallet_Name
 
 

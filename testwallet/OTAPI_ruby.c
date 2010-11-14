@@ -1675,6 +1675,30 @@ SWIG_AsVal_int (VALUE obj, int *val)
   return res;
 }
 
+
+SWIGINTERNINLINE VALUE 
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+{
+  if (carray) {
+    if (size > LONG_MAX) {
+      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+      return pchar_descriptor ? 
+	SWIG_NewPointerObj((char *)(carray), pchar_descriptor, 0) : Qnil;
+    } else {
+      return rb_str_new(carray, (long)(size));
+    }
+  } else {
+    return Qnil;
+  }
+}
+
+
+SWIGINTERNINLINE VALUE 
+SWIG_FromCharPtr(const char *cptr)
+{ 
+  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
+}
+
 SWIGINTERN VALUE
 _wrap_OT_API_Init(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
@@ -1703,7 +1727,7 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_OT_API_loadWallet(int argc, VALUE *argv, VALUE self) {
+_wrap_OT_API_LoadWallet(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   int result;
   int res1 ;
@@ -1716,10 +1740,10 @@ _wrap_OT_API_loadWallet(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_loadWallet" "', argument " "1"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_LoadWallet" "', argument " "1"" of type '" "char const *""'");
   }
   arg1 = (char *)(buf1);
-  result = (int)OT_API_loadWallet((char const *)arg1);
+  result = (int)OT_API_LoadWallet((char const *)arg1);
   vresult = SWIG_From_int((int)(result));
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return vresult;
@@ -2768,14 +2792,14 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_OT_API_getNymCount(int argc, VALUE *argv, VALUE self) {
+_wrap_OT_API_GetNymCount(int argc, VALUE *argv, VALUE self) {
   int result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  result = (int)OT_API_getNymCount();
+  result = (int)OT_API_GetNymCount();
   vresult = SWIG_From_int((int)(result));
   return vresult;
 fail:
@@ -2784,14 +2808,14 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_OT_API_getServerCount(int argc, VALUE *argv, VALUE self) {
+_wrap_OT_API_GetServerCount(int argc, VALUE *argv, VALUE self) {
   int result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  result = (int)OT_API_getServerCount();
+  result = (int)OT_API_GetServerCount();
   vresult = SWIG_From_int((int)(result));
   return vresult;
 fail:
@@ -2800,14 +2824,14 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_OT_API_getAssetTypeCount(int argc, VALUE *argv, VALUE self) {
+_wrap_OT_API_GetAssetTypeCount(int argc, VALUE *argv, VALUE self) {
   int result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  result = (int)OT_API_getAssetTypeCount();
+  result = (int)OT_API_GetAssetTypeCount();
   vresult = SWIG_From_int((int)(result));
   return vresult;
 fail:
@@ -2816,14 +2840,14 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_OT_API_getAccountCount(int argc, VALUE *argv, VALUE self) {
+_wrap_OT_API_GetAccountCount(int argc, VALUE *argv, VALUE self) {
   int result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  result = (int)OT_API_getAccountCount();
+  result = (int)OT_API_GetAccountCount();
   vresult = SWIG_From_int((int)(result));
   return vresult;
 fail:
@@ -2832,185 +2856,205 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_OT_API_getNym(int argc, VALUE *argv, VALUE self) {
+_wrap_OT_API_GetNym_ID(int argc, VALUE *argv, VALUE self) {
   int arg1 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  int result;
+  char *result = 0 ;
   int val1 ;
   int ecode1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
-  int res3 ;
-  char *buf3 = 0 ;
-  int alloc3 = 0 ;
   VALUE vresult = Qnil;
   
-  if ((argc < 3) || (argc > 3)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
   ecode1 = SWIG_AsVal_int(argv[0], &val1);
   if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_getNym" "', argument " "1"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_GetNym_ID" "', argument " "1"" of type '" "int""'");
   } 
   arg1 = (int)(val1);
-  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_getNym" "', argument " "2"" of type '" "char const *""'");
-  }
-  arg2 = (char *)(buf2);
-  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_getNym" "', argument " "3"" of type '" "char const *""'");
-  }
-  arg3 = (char *)(buf3);
-  result = (int)OT_API_getNym(arg1,(char const *)arg2,(char const *)arg3);
-  vresult = SWIG_From_int((int)(result));
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  result = (char *)OT_API_GetNym_ID(arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
   return vresult;
 fail:
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return Qnil;
 }
 
 
 SWIGINTERN VALUE
-_wrap_OT_API_getServer(int argc, VALUE *argv, VALUE self) {
-  int arg1 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  int result;
-  int val1 ;
-  int ecode1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
-  int res3 ;
-  char *buf3 = 0 ;
-  int alloc3 = 0 ;
+_wrap_OT_API_GetNym_Name(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
   VALUE vresult = Qnil;
   
-  if ((argc < 3) || (argc > 3)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
-  ecode1 = SWIG_AsVal_int(argv[0], &val1);
-  if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_getServer" "', argument " "1"" of type '" "int""'");
-  } 
-  arg1 = (int)(val1);
-  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_getServer" "', argument " "2"" of type '" "char const *""'");
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetNym_Name" "', argument " "1"" of type '" "char const *""'");
   }
-  arg2 = (char *)(buf2);
-  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_getServer" "', argument " "3"" of type '" "char const *""'");
-  }
-  arg3 = (char *)(buf3);
-  result = (int)OT_API_getServer(arg1,(char const *)arg2,(char const *)arg3);
-  vresult = SWIG_From_int((int)(result));
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_GetNym_Name((char const *)arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return vresult;
 fail:
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;
 }
 
 
 SWIGINTERN VALUE
-_wrap_OT_API_getAssetType(int argc, VALUE *argv, VALUE self) {
+_wrap_OT_API_GetServer_ID(int argc, VALUE *argv, VALUE self) {
   int arg1 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  int result;
+  char *result = 0 ;
   int val1 ;
   int ecode1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
-  int res3 ;
-  char *buf3 = 0 ;
-  int alloc3 = 0 ;
   VALUE vresult = Qnil;
   
-  if ((argc < 3) || (argc > 3)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
   ecode1 = SWIG_AsVal_int(argv[0], &val1);
   if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_getAssetType" "', argument " "1"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_GetServer_ID" "', argument " "1"" of type '" "int""'");
   } 
   arg1 = (int)(val1);
-  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_getAssetType" "', argument " "2"" of type '" "char const *""'");
-  }
-  arg2 = (char *)(buf2);
-  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_getAssetType" "', argument " "3"" of type '" "char const *""'");
-  }
-  arg3 = (char *)(buf3);
-  result = (int)OT_API_getAssetType(arg1,(char const *)arg2,(char const *)arg3);
-  vresult = SWIG_From_int((int)(result));
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  result = (char *)OT_API_GetServer_ID(arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
   return vresult;
 fail:
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return Qnil;
 }
 
 
 SWIGINTERN VALUE
-_wrap_OT_API_GetAccountWallet(int argc, VALUE *argv, VALUE self) {
-  int arg1 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  int result;
-  int val1 ;
-  int ecode1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
-  int res3 ;
-  char *buf3 = 0 ;
-  int alloc3 = 0 ;
+_wrap_OT_API_GetServer_Name(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
   VALUE vresult = Qnil;
   
-  if ((argc < 3) || (argc > 3)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetServer_Name" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_GetServer_Name((char const *)arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_GetAssetType_ID(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  char *result = 0 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
   ecode1 = SWIG_AsVal_int(argv[0], &val1);
   if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_GetAccountWallet" "', argument " "1"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_GetAssetType_ID" "', argument " "1"" of type '" "int""'");
   } 
   arg1 = (int)(val1);
-  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_GetAccountWallet" "', argument " "2"" of type '" "char const *""'");
-  }
-  arg2 = (char *)(buf2);
-  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_GetAccountWallet" "', argument " "3"" of type '" "char const *""'");
-  }
-  arg3 = (char *)(buf3);
-  result = (int)OT_API_GetAccountWallet(arg1,(char const *)arg2,(char const *)arg3);
-  vresult = SWIG_From_int((int)(result));
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  result = (char *)OT_API_GetAssetType_ID(arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
   return vresult;
 fail:
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_GetAssetType_Name(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetAssetType_Name" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_GetAssetType_Name((char const *)arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_GetAccountWallet_ID(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  char *result = 0 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_GetAccountWallet_ID" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  result = (char *)OT_API_GetAccountWallet_ID(arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_GetAccountWallet_Name(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetAccountWallet_Name" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_GetAccountWallet_Name((char const *)arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;
 }
 
@@ -3278,7 +3322,7 @@ SWIGEXPORT void Init_OTAPI(void) {
   
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mOTAPI, "OT_API_Init", _wrap_OT_API_Init, -1);
-  rb_define_module_function(mOTAPI, "OT_API_loadWallet", _wrap_OT_API_loadWallet, -1);
+  rb_define_module_function(mOTAPI, "OT_API_LoadWallet", _wrap_OT_API_LoadWallet, -1);
   rb_define_module_function(mOTAPI, "OT_API_connectServer", _wrap_OT_API_connectServer, -1);
   rb_define_module_function(mOTAPI, "OT_API_processSockets", _wrap_OT_API_processSockets, -1);
   rb_define_module_function(mOTAPI, "OT_API_checkServerID", _wrap_OT_API_checkServerID, -1);
@@ -3300,13 +3344,17 @@ SWIGEXPORT void Init_OTAPI(void) {
   rb_define_module_function(mOTAPI, "OT_API_processInbox", _wrap_OT_API_processInbox, -1);
   rb_define_module_function(mOTAPI, "OT_API_withdrawVoucher", _wrap_OT_API_withdrawVoucher, -1);
   rb_define_module_function(mOTAPI, "OT_API_depositCheque", _wrap_OT_API_depositCheque, -1);
-  rb_define_module_function(mOTAPI, "OT_API_getNymCount", _wrap_OT_API_getNymCount, -1);
-  rb_define_module_function(mOTAPI, "OT_API_getServerCount", _wrap_OT_API_getServerCount, -1);
-  rb_define_module_function(mOTAPI, "OT_API_getAssetTypeCount", _wrap_OT_API_getAssetTypeCount, -1);
-  rb_define_module_function(mOTAPI, "OT_API_getAccountCount", _wrap_OT_API_getAccountCount, -1);
-  rb_define_module_function(mOTAPI, "OT_API_getNym", _wrap_OT_API_getNym, -1);
-  rb_define_module_function(mOTAPI, "OT_API_getServer", _wrap_OT_API_getServer, -1);
-  rb_define_module_function(mOTAPI, "OT_API_getAssetType", _wrap_OT_API_getAssetType, -1);
-  rb_define_module_function(mOTAPI, "OT_API_GetAccountWallet", _wrap_OT_API_GetAccountWallet, -1);
+  rb_define_module_function(mOTAPI, "OT_API_GetNymCount", _wrap_OT_API_GetNymCount, -1);
+  rb_define_module_function(mOTAPI, "OT_API_GetServerCount", _wrap_OT_API_GetServerCount, -1);
+  rb_define_module_function(mOTAPI, "OT_API_GetAssetTypeCount", _wrap_OT_API_GetAssetTypeCount, -1);
+  rb_define_module_function(mOTAPI, "OT_API_GetAccountCount", _wrap_OT_API_GetAccountCount, -1);
+  rb_define_module_function(mOTAPI, "OT_API_GetNym_ID", _wrap_OT_API_GetNym_ID, -1);
+  rb_define_module_function(mOTAPI, "OT_API_GetNym_Name", _wrap_OT_API_GetNym_Name, -1);
+  rb_define_module_function(mOTAPI, "OT_API_GetServer_ID", _wrap_OT_API_GetServer_ID, -1);
+  rb_define_module_function(mOTAPI, "OT_API_GetServer_Name", _wrap_OT_API_GetServer_Name, -1);
+  rb_define_module_function(mOTAPI, "OT_API_GetAssetType_ID", _wrap_OT_API_GetAssetType_ID, -1);
+  rb_define_module_function(mOTAPI, "OT_API_GetAssetType_Name", _wrap_OT_API_GetAssetType_Name, -1);
+  rb_define_module_function(mOTAPI, "OT_API_GetAccountWallet_ID", _wrap_OT_API_GetAccountWallet_ID, -1);
+  rb_define_module_function(mOTAPI, "OT_API_GetAccountWallet_Name", _wrap_OT_API_GetAccountWallet_Name, -1);
 }
 

@@ -2,7 +2,7 @@
 
 /*************************************************************************
  *    
- * Open Transactions 0.33 -- Library, API, Protocol, Server, Test Client
+ * Open Transactions 0.34 -- Library, API, Protocol, Server, Test Client
  *    
  *    			-- Anonymous Numbered Accounts...
  *    			-- Untraceable Digital Cash...
@@ -216,12 +216,12 @@ Luke 16:13
 there is liberty."
 2 Corinthians 3:17
 
-"Is it not lawful for me to do what I wish with my own things?"
--Jesus Christ, Matthew 20:15
-
 "So in everything, do unto others what you would have them do unto you,
 for this sums up the Law and the Prophets."
 Matthew 7:12
+
+"Is it not lawful for me to do what I wish with my own things?"
+-Jesus Christ, Matthew 20:15
 
 "Proclaim liberty throughout all the land unto all its inhabitants."
 Leviticus 25:10

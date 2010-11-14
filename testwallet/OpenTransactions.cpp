@@ -284,53 +284,95 @@ bool OT_API::InitOTAPI()
 
 
 // "wallet.xml" (path set above.)
-bool OT_API::loadWallet(OTString & strPath)
+bool OT_API::LoadWallet(OTString & strPath)
 {
 	return m_pWallet->LoadWallet(strPath.Get());
 }
 
 
-int OT_API::getNymCount()
+int OT_API::GetNymCount()
 {
 	return m_pWallet->GetNymCount();
 }
 
-int OT_API::getServerCount()
+int OT_API::GetServerCount()
 {
 	return m_pWallet->GetServerCount();
 }
 
-int OT_API::getAssetTypeCount()
+int OT_API::GetAssetTypeCount()
 {
 	return m_pWallet->GetAssetTypeCount();
 }
 
-int OT_API::getAccountCount()
+int OT_API::GetAccountCount()
 {
 	return m_pWallet->GetAccountCount();
 }
 
-bool OT_API::getNym(int iIndex, OTIdentifier & NYM_ID, OTString & NYM_NAME)
+bool OT_API::GetNym(int iIndex, OTIdentifier & NYM_ID, OTString & NYM_NAME)
 {
 	return m_pWallet->GetNym(iIndex, NYM_ID, NYM_NAME);
 }
 
-bool OT_API::getServer(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME)
+bool OT_API::GetServer(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME)
 {
 	return m_pWallet->GetServer(iIndex, THE_ID, THE_NAME);
 }
 
-bool OT_API::getAssetType(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME)
+bool OT_API::GetAssetType(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME)
 {
 	return m_pWallet->GetAssetType(iIndex, THE_ID, THE_NAME);
 }
 
-bool OT_API::getAccount(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME)
+bool OT_API::GetAccount(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME)
 {
 	return m_pWallet->GetAccount(iIndex, THE_ID, THE_NAME);
 }
 
 
+OTPseudonym * OT_API::GetNym(const OTIdentifier & NYM_ID)
+{
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL != pWallet)
+		return pWallet->GetNymByID(NYM_ID);
+
+	return NULL;
+}
+
+OTServerContract * OT_API::GetServer(const OTIdentifier & THE_ID)
+{
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL != pWallet)
+		return pWallet->GetServerContract(THE_ID);
+
+	return NULL;
+}
+
+OTAssetContract * OT_API::GetAssetType(const OTIdentifier & THE_ID)
+{
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL != pWallet)
+		return pWallet->GetAssetContract(THE_ID);
+
+	return NULL;
+}
+
+OTAccount * OT_API::GetAccount(const OTIdentifier & THE_ID)	
+{
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL != pWallet)	
+		return pWallet->GetAccount(THE_ID);
+	
+	return NULL;
+}
+
+
+// ---------------------------------------------------------------------
 
 
 

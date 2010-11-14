@@ -1638,6 +1638,34 @@ SWIG_AsVal_int SWIG_PERL_DECL_ARGS_2(SV * obj, int *val)
   return res;
 }
 
+
+SWIGINTERNINLINE SV *
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+{
+  SV *obj = sv_newmortal();
+  if (carray) {
+    if (size && (carray[size - 1] == 0)) {
+      sv_setpv(obj, carray);
+    } else {
+      char *tmp = (char *)malloc((size + 1)*sizeof(char));
+      memcpy(tmp, carray, size);
+      tmp[size] = 0;
+      sv_setpv(obj, tmp);
+      free((char*)tmp);
+    }
+  } else {
+    sv_setsv(obj, &PL_sv_undef);
+  }
+  return obj;
+}
+
+
+SWIGINTERNINLINE SV * 
+SWIG_FromCharPtr(const char *cptr)
+{ 
+  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
+}
+
 #ifdef PERL_OBJECT
 #define MAGIC_CLASS _wrap_OTAPI_var::
 class _wrap_OTAPI_var : public CPerlObj {
@@ -1688,7 +1716,7 @@ XS(_wrap_OT_API_Init) {
 }
 
 
-XS(_wrap_OT_API_loadWallet) {
+XS(_wrap_OT_API_LoadWallet) {
   {
     char *arg1 = (char *) 0 ;
     int result;
@@ -1699,14 +1727,14 @@ XS(_wrap_OT_API_loadWallet) {
     dXSARGS;
     
     if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: OT_API_loadWallet(szPath);");
+      SWIG_croak("Usage: OT_API_LoadWallet(szPath);");
     }
     res1 = SWIG_AsCharPtrAndSize(ST(0), &buf1, NULL, &alloc1);
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_loadWallet" "', argument " "1"" of type '" "char const *""'");
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_LoadWallet" "', argument " "1"" of type '" "char const *""'");
     }
     arg1 = (char *)(buf1);
-    result = (int)OT_API_loadWallet((char const *)arg1);
+    result = (int)OT_API_LoadWallet((char const *)arg1);
     ST(argvi) = SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)(result)); argvi++ ;
     if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
     XSRETURN(argvi);
@@ -2835,16 +2863,16 @@ XS(_wrap_OT_API_depositCheque) {
 }
 
 
-XS(_wrap_OT_API_getNymCount) {
+XS(_wrap_OT_API_GetNymCount) {
   {
     int result;
     int argvi = 0;
     dXSARGS;
     
     if ((items < 0) || (items > 0)) {
-      SWIG_croak("Usage: OT_API_getNymCount();");
+      SWIG_croak("Usage: OT_API_GetNymCount();");
     }
-    result = (int)OT_API_getNymCount();
+    result = (int)OT_API_GetNymCount();
     ST(argvi) = SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)(result)); argvi++ ;
     XSRETURN(argvi);
   fail:
@@ -2853,16 +2881,16 @@ XS(_wrap_OT_API_getNymCount) {
 }
 
 
-XS(_wrap_OT_API_getServerCount) {
+XS(_wrap_OT_API_GetServerCount) {
   {
     int result;
     int argvi = 0;
     dXSARGS;
     
     if ((items < 0) || (items > 0)) {
-      SWIG_croak("Usage: OT_API_getServerCount();");
+      SWIG_croak("Usage: OT_API_GetServerCount();");
     }
-    result = (int)OT_API_getServerCount();
+    result = (int)OT_API_GetServerCount();
     ST(argvi) = SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)(result)); argvi++ ;
     XSRETURN(argvi);
   fail:
@@ -2871,16 +2899,16 @@ XS(_wrap_OT_API_getServerCount) {
 }
 
 
-XS(_wrap_OT_API_getAssetTypeCount) {
+XS(_wrap_OT_API_GetAssetTypeCount) {
   {
     int result;
     int argvi = 0;
     dXSARGS;
     
     if ((items < 0) || (items > 0)) {
-      SWIG_croak("Usage: OT_API_getAssetTypeCount();");
+      SWIG_croak("Usage: OT_API_GetAssetTypeCount();");
     }
-    result = (int)OT_API_getAssetTypeCount();
+    result = (int)OT_API_GetAssetTypeCount();
     ST(argvi) = SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)(result)); argvi++ ;
     XSRETURN(argvi);
   fail:
@@ -2889,16 +2917,16 @@ XS(_wrap_OT_API_getAssetTypeCount) {
 }
 
 
-XS(_wrap_OT_API_getAccountCount) {
+XS(_wrap_OT_API_GetAccountCount) {
   {
     int result;
     int argvi = 0;
     dXSARGS;
     
     if ((items < 0) || (items > 0)) {
-      SWIG_croak("Usage: OT_API_getAccountCount();");
+      SWIG_croak("Usage: OT_API_GetAccountCount();");
     }
-    result = (int)OT_API_getAccountCount();
+    result = (int)OT_API_GetAccountCount();
     ST(argvi) = SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)(result)); argvi++ ;
     XSRETURN(argvi);
   fail:
@@ -2907,201 +2935,229 @@ XS(_wrap_OT_API_getAccountCount) {
 }
 
 
-XS(_wrap_OT_API_getNym) {
+XS(_wrap_OT_API_GetNym_ID) {
   {
     int arg1 ;
-    char *arg2 = (char *) 0 ;
-    char *arg3 = (char *) 0 ;
-    int result;
+    char *result = 0 ;
     int val1 ;
     int ecode1 = 0 ;
-    int res2 ;
-    char *buf2 = 0 ;
-    int alloc2 = 0 ;
-    int res3 ;
-    char *buf3 = 0 ;
-    int alloc3 = 0 ;
     int argvi = 0;
     dXSARGS;
     
-    if ((items < 3) || (items > 3)) {
-      SWIG_croak("Usage: OT_API_getNym(iIndex,NYM_ID,NYM_NAME);");
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OT_API_GetNym_ID(nIndex);");
     }
     ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
     if (!SWIG_IsOK(ecode1)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_getNym" "', argument " "1"" of type '" "int""'");
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_GetNym_ID" "', argument " "1"" of type '" "int""'");
     } 
     arg1 = (int)(val1);
-    res2 = SWIG_AsCharPtrAndSize(ST(1), &buf2, NULL, &alloc2);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_getNym" "', argument " "2"" of type '" "char const *""'");
-    }
-    arg2 = (char *)(buf2);
-    res3 = SWIG_AsCharPtrAndSize(ST(2), &buf3, NULL, &alloc3);
-    if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_getNym" "', argument " "3"" of type '" "char const *""'");
-    }
-    arg3 = (char *)(buf3);
-    result = (int)OT_API_getNym(arg1,(char const *)arg2,(char const *)arg3);
-    ST(argvi) = SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)(result)); argvi++ ;
+    result = (char *)OT_API_GetNym_ID(arg1);
+    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
     
-    if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     XSRETURN(argvi);
   fail:
     
-    if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     SWIG_croak_null();
   }
 }
 
 
-XS(_wrap_OT_API_getServer) {
+XS(_wrap_OT_API_GetNym_Name) {
   {
-    int arg1 ;
-    char *arg2 = (char *) 0 ;
-    char *arg3 = (char *) 0 ;
-    int result;
-    int val1 ;
-    int ecode1 = 0 ;
-    int res2 ;
-    char *buf2 = 0 ;
-    int alloc2 = 0 ;
-    int res3 ;
-    char *buf3 = 0 ;
-    int alloc3 = 0 ;
+    char *arg1 = (char *) 0 ;
+    char *result = 0 ;
+    int res1 ;
+    char *buf1 = 0 ;
+    int alloc1 = 0 ;
     int argvi = 0;
     dXSARGS;
     
-    if ((items < 3) || (items > 3)) {
-      SWIG_croak("Usage: OT_API_getServer(iIndex,THE_ID,THE_NAME);");
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OT_API_GetNym_Name(NYM_ID);");
     }
-    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
-    if (!SWIG_IsOK(ecode1)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_getServer" "', argument " "1"" of type '" "int""'");
-    } 
-    arg1 = (int)(val1);
-    res2 = SWIG_AsCharPtrAndSize(ST(1), &buf2, NULL, &alloc2);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_getServer" "', argument " "2"" of type '" "char const *""'");
+    res1 = SWIG_AsCharPtrAndSize(ST(0), &buf1, NULL, &alloc1);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetNym_Name" "', argument " "1"" of type '" "char const *""'");
     }
-    arg2 = (char *)(buf2);
-    res3 = SWIG_AsCharPtrAndSize(ST(2), &buf3, NULL, &alloc3);
-    if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_getServer" "', argument " "3"" of type '" "char const *""'");
-    }
-    arg3 = (char *)(buf3);
-    result = (int)OT_API_getServer(arg1,(char const *)arg2,(char const *)arg3);
-    ST(argvi) = SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)(result)); argvi++ ;
-    
-    if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+    arg1 = (char *)(buf1);
+    result = (char *)OT_API_GetNym_Name((char const *)arg1);
+    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
     XSRETURN(argvi);
   fail:
-    
-    if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
     SWIG_croak_null();
   }
 }
 
 
-XS(_wrap_OT_API_getAssetType) {
+XS(_wrap_OT_API_GetServer_ID) {
   {
     int arg1 ;
-    char *arg2 = (char *) 0 ;
-    char *arg3 = (char *) 0 ;
-    int result;
+    char *result = 0 ;
     int val1 ;
     int ecode1 = 0 ;
-    int res2 ;
-    char *buf2 = 0 ;
-    int alloc2 = 0 ;
-    int res3 ;
-    char *buf3 = 0 ;
-    int alloc3 = 0 ;
     int argvi = 0;
     dXSARGS;
     
-    if ((items < 3) || (items > 3)) {
-      SWIG_croak("Usage: OT_API_getAssetType(iIndex,THE_ID,THE_NAME);");
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OT_API_GetServer_ID(nIndex);");
     }
     ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
     if (!SWIG_IsOK(ecode1)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_getAssetType" "', argument " "1"" of type '" "int""'");
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_GetServer_ID" "', argument " "1"" of type '" "int""'");
     } 
     arg1 = (int)(val1);
-    res2 = SWIG_AsCharPtrAndSize(ST(1), &buf2, NULL, &alloc2);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_getAssetType" "', argument " "2"" of type '" "char const *""'");
-    }
-    arg2 = (char *)(buf2);
-    res3 = SWIG_AsCharPtrAndSize(ST(2), &buf3, NULL, &alloc3);
-    if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_getAssetType" "', argument " "3"" of type '" "char const *""'");
-    }
-    arg3 = (char *)(buf3);
-    result = (int)OT_API_getAssetType(arg1,(char const *)arg2,(char const *)arg3);
-    ST(argvi) = SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)(result)); argvi++ ;
+    result = (char *)OT_API_GetServer_ID(arg1);
+    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
     
-    if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     XSRETURN(argvi);
   fail:
     
-    if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     SWIG_croak_null();
   }
 }
 
 
-XS(_wrap_OT_API_GetAccountWallet) {
+XS(_wrap_OT_API_GetServer_Name) {
   {
-    int arg1 ;
-    char *arg2 = (char *) 0 ;
-    char *arg3 = (char *) 0 ;
-    int result;
-    int val1 ;
-    int ecode1 = 0 ;
-    int res2 ;
-    char *buf2 = 0 ;
-    int alloc2 = 0 ;
-    int res3 ;
-    char *buf3 = 0 ;
-    int alloc3 = 0 ;
+    char *arg1 = (char *) 0 ;
+    char *result = 0 ;
+    int res1 ;
+    char *buf1 = 0 ;
+    int alloc1 = 0 ;
     int argvi = 0;
     dXSARGS;
     
-    if ((items < 3) || (items > 3)) {
-      SWIG_croak("Usage: OT_API_GetAccountWallet(iIndex,THE_ID,THE_NAME);");
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OT_API_GetServer_Name(SERVER_ID);");
+    }
+    res1 = SWIG_AsCharPtrAndSize(ST(0), &buf1, NULL, &alloc1);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetServer_Name" "', argument " "1"" of type '" "char const *""'");
+    }
+    arg1 = (char *)(buf1);
+    result = (char *)OT_API_GetServer_Name((char const *)arg1);
+    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    XSRETURN(argvi);
+  fail:
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OT_API_GetAssetType_ID) {
+  {
+    int arg1 ;
+    char *result = 0 ;
+    int val1 ;
+    int ecode1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OT_API_GetAssetType_ID(nIndex);");
     }
     ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
     if (!SWIG_IsOK(ecode1)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_GetAccountWallet" "', argument " "1"" of type '" "int""'");
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_GetAssetType_ID" "', argument " "1"" of type '" "int""'");
     } 
     arg1 = (int)(val1);
-    res2 = SWIG_AsCharPtrAndSize(ST(1), &buf2, NULL, &alloc2);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_GetAccountWallet" "', argument " "2"" of type '" "char const *""'");
-    }
-    arg2 = (char *)(buf2);
-    res3 = SWIG_AsCharPtrAndSize(ST(2), &buf3, NULL, &alloc3);
-    if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_GetAccountWallet" "', argument " "3"" of type '" "char const *""'");
-    }
-    arg3 = (char *)(buf3);
-    result = (int)OT_API_GetAccountWallet(arg1,(char const *)arg2,(char const *)arg3);
-    ST(argvi) = SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)(result)); argvi++ ;
+    result = (char *)OT_API_GetAssetType_ID(arg1);
+    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
     
-    if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     XSRETURN(argvi);
   fail:
     
-    if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OT_API_GetAssetType_Name) {
+  {
+    char *arg1 = (char *) 0 ;
+    char *result = 0 ;
+    int res1 ;
+    char *buf1 = 0 ;
+    int alloc1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OT_API_GetAssetType_Name(ASSET_TYPE_ID);");
+    }
+    res1 = SWIG_AsCharPtrAndSize(ST(0), &buf1, NULL, &alloc1);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetAssetType_Name" "', argument " "1"" of type '" "char const *""'");
+    }
+    arg1 = (char *)(buf1);
+    result = (char *)OT_API_GetAssetType_Name((char const *)arg1);
+    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    XSRETURN(argvi);
+  fail:
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OT_API_GetAccountWallet_ID) {
+  {
+    int arg1 ;
+    char *result = 0 ;
+    int val1 ;
+    int ecode1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OT_API_GetAccountWallet_ID(nIndex);");
+    }
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_GetAccountWallet_ID" "', argument " "1"" of type '" "int""'");
+    } 
+    arg1 = (int)(val1);
+    result = (char *)OT_API_GetAccountWallet_ID(arg1);
+    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OT_API_GetAccountWallet_Name) {
+  {
+    char *arg1 = (char *) 0 ;
+    char *result = 0 ;
+    int res1 ;
+    char *buf1 = 0 ;
+    int alloc1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OT_API_GetAccountWallet_Name(ACCOUNT_ID);");
+    }
+    res1 = SWIG_AsCharPtrAndSize(ST(0), &buf1, NULL, &alloc1);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetAccountWallet_Name" "', argument " "1"" of type '" "char const *""'");
+    }
+    arg1 = (char *)(buf1);
+    result = (char *)OT_API_GetAccountWallet_Name((char const *)arg1);
+    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    XSRETURN(argvi);
+  fail:
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
     SWIG_croak_null();
   }
 }
@@ -3136,7 +3192,7 @@ static swig_variable_info swig_variables[] = {
 };
 static swig_command_info swig_commands[] = {
 {"OTAPIc::OT_API_Init", _wrap_OT_API_Init},
-{"OTAPIc::OT_API_loadWallet", _wrap_OT_API_loadWallet},
+{"OTAPIc::OT_API_LoadWallet", _wrap_OT_API_LoadWallet},
 {"OTAPIc::OT_API_connectServer", _wrap_OT_API_connectServer},
 {"OTAPIc::OT_API_processSockets", _wrap_OT_API_processSockets},
 {"OTAPIc::OT_API_checkServerID", _wrap_OT_API_checkServerID},
@@ -3158,14 +3214,18 @@ static swig_command_info swig_commands[] = {
 {"OTAPIc::OT_API_processInbox", _wrap_OT_API_processInbox},
 {"OTAPIc::OT_API_withdrawVoucher", _wrap_OT_API_withdrawVoucher},
 {"OTAPIc::OT_API_depositCheque", _wrap_OT_API_depositCheque},
-{"OTAPIc::OT_API_getNymCount", _wrap_OT_API_getNymCount},
-{"OTAPIc::OT_API_getServerCount", _wrap_OT_API_getServerCount},
-{"OTAPIc::OT_API_getAssetTypeCount", _wrap_OT_API_getAssetTypeCount},
-{"OTAPIc::OT_API_getAccountCount", _wrap_OT_API_getAccountCount},
-{"OTAPIc::OT_API_getNym", _wrap_OT_API_getNym},
-{"OTAPIc::OT_API_getServer", _wrap_OT_API_getServer},
-{"OTAPIc::OT_API_getAssetType", _wrap_OT_API_getAssetType},
-{"OTAPIc::OT_API_GetAccountWallet", _wrap_OT_API_GetAccountWallet},
+{"OTAPIc::OT_API_GetNymCount", _wrap_OT_API_GetNymCount},
+{"OTAPIc::OT_API_GetServerCount", _wrap_OT_API_GetServerCount},
+{"OTAPIc::OT_API_GetAssetTypeCount", _wrap_OT_API_GetAssetTypeCount},
+{"OTAPIc::OT_API_GetAccountCount", _wrap_OT_API_GetAccountCount},
+{"OTAPIc::OT_API_GetNym_ID", _wrap_OT_API_GetNym_ID},
+{"OTAPIc::OT_API_GetNym_Name", _wrap_OT_API_GetNym_Name},
+{"OTAPIc::OT_API_GetServer_ID", _wrap_OT_API_GetServer_ID},
+{"OTAPIc::OT_API_GetServer_Name", _wrap_OT_API_GetServer_Name},
+{"OTAPIc::OT_API_GetAssetType_ID", _wrap_OT_API_GetAssetType_ID},
+{"OTAPIc::OT_API_GetAssetType_Name", _wrap_OT_API_GetAssetType_Name},
+{"OTAPIc::OT_API_GetAccountWallet_ID", _wrap_OT_API_GetAccountWallet_ID},
+{"OTAPIc::OT_API_GetAccountWallet_Name", _wrap_OT_API_GetAccountWallet_Name},
 {0,0}
 };
 /* -----------------------------------------------------------------------------

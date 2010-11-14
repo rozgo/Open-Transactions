@@ -12,8 +12,8 @@ public class OTAPI {
     return OTAPIJNI.OT_API_Init(szClientPath);
   }
 
-  public static int OT_API_loadWallet(String szPath) {
-    return OTAPIJNI.OT_API_loadWallet(szPath);
+  public static int OT_API_LoadWallet(String szPath) {
+    return OTAPIJNI.OT_API_LoadWallet(szPath);
   }
 
   public static int OT_API_connectServer(String SERVER_ID, String USER_ID, String szCA_FILE, String szKEY_FILE, String szKEY_PASSWORD) {
@@ -100,36 +100,52 @@ public class OTAPI {
     OTAPIJNI.OT_API_depositCheque(SERVER_ID, USER_ID, ACCT_ID, THE_CHEQUE);
   }
 
-  public static int OT_API_getNymCount() {
-    return OTAPIJNI.OT_API_getNymCount();
+  public static int OT_API_GetNymCount() {
+    return OTAPIJNI.OT_API_GetNymCount();
   }
 
-  public static int OT_API_getServerCount() {
-    return OTAPIJNI.OT_API_getServerCount();
+  public static int OT_API_GetServerCount() {
+    return OTAPIJNI.OT_API_GetServerCount();
   }
 
-  public static int OT_API_getAssetTypeCount() {
-    return OTAPIJNI.OT_API_getAssetTypeCount();
+  public static int OT_API_GetAssetTypeCount() {
+    return OTAPIJNI.OT_API_GetAssetTypeCount();
   }
 
-  public static int OT_API_getAccountCount() {
-    return OTAPIJNI.OT_API_getAccountCount();
+  public static int OT_API_GetAccountCount() {
+    return OTAPIJNI.OT_API_GetAccountCount();
   }
 
-  public static int OT_API_getNym(int iIndex, String NYM_ID, String NYM_NAME) {
-    return OTAPIJNI.OT_API_getNym(iIndex, NYM_ID, NYM_NAME);
+  public static String OT_API_GetNym_ID(int nIndex) {
+    return OTAPIJNI.OT_API_GetNym_ID(nIndex);
   }
 
-  public static int OT_API_getServer(int iIndex, String THE_ID, String THE_NAME) {
-    return OTAPIJNI.OT_API_getServer(iIndex, THE_ID, THE_NAME);
+  public static String OT_API_GetNym_Name(String NYM_ID) {
+    return OTAPIJNI.OT_API_GetNym_Name(NYM_ID);
   }
 
-  public static int OT_API_getAssetType(int iIndex, String THE_ID, String THE_NAME) {
-    return OTAPIJNI.OT_API_getAssetType(iIndex, THE_ID, THE_NAME);
+  public static String OT_API_GetServer_ID(int nIndex) {
+    return OTAPIJNI.OT_API_GetServer_ID(nIndex);
   }
 
-  public static int OT_API_GetAccountWallet(int iIndex, String THE_ID, String THE_NAME) {
-    return OTAPIJNI.OT_API_GetAccountWallet(iIndex, THE_ID, THE_NAME);
+  public static String OT_API_GetServer_Name(String SERVER_ID) {
+    return OTAPIJNI.OT_API_GetServer_Name(SERVER_ID);
+  }
+
+  public static String OT_API_GetAssetType_ID(int nIndex) {
+    return OTAPIJNI.OT_API_GetAssetType_ID(nIndex);
+  }
+
+  public static String OT_API_GetAssetType_Name(String ASSET_TYPE_ID) {
+    return OTAPIJNI.OT_API_GetAssetType_Name(ASSET_TYPE_ID);
+  }
+
+  public static String OT_API_GetAccountWallet_ID(int nIndex) {
+    return OTAPIJNI.OT_API_GetAccountWallet_ID(nIndex);
+  }
+
+  public static String OT_API_GetAccountWallet_Name(String ACCOUNT_ID) {
+    return OTAPIJNI.OT_API_GetAccountWallet_Name(ACCOUNT_ID);
   }
 
 }

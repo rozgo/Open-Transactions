@@ -261,13 +261,13 @@ SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_Init(char * jarg1) {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_loadWallet(char * jarg1) {
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_LoadWallet(char * jarg1) {
   int jresult ;
   char *arg1 = (char *) 0 ;
   int result;
   
   arg1 = (char *)jarg1; 
-  result = (int)OT_API_loadWallet((char const *)arg1);
+  result = (int)OT_API_LoadWallet((char const *)arg1);
   jresult = result; 
   return jresult;
 }
@@ -545,106 +545,138 @@ SWIGEXPORT void SWIGSTDCALL CSharp_OT_API_depositCheque(char * jarg1, char * jar
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_getNymCount() {
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_GetNymCount() {
   int jresult ;
   int result;
   
-  result = (int)OT_API_getNymCount();
+  result = (int)OT_API_GetNymCount();
   jresult = result; 
   return jresult;
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_getServerCount() {
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_GetServerCount() {
   int jresult ;
   int result;
   
-  result = (int)OT_API_getServerCount();
+  result = (int)OT_API_GetServerCount();
   jresult = result; 
   return jresult;
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_getAssetTypeCount() {
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_GetAssetTypeCount() {
   int jresult ;
   int result;
   
-  result = (int)OT_API_getAssetTypeCount();
+  result = (int)OT_API_GetAssetTypeCount();
   jresult = result; 
   return jresult;
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_getAccountCount() {
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_GetAccountCount() {
   int jresult ;
   int result;
   
-  result = (int)OT_API_getAccountCount();
+  result = (int)OT_API_GetAccountCount();
   jresult = result; 
   return jresult;
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_getNym(int jarg1, char * jarg2, char * jarg3) {
-  int jresult ;
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetNym_ID(int jarg1) {
+  char * jresult ;
   int arg1 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  int result;
+  char *result = 0 ;
   
   arg1 = (int)jarg1; 
-  arg2 = (char *)jarg2; 
-  arg3 = (char *)jarg3; 
-  result = (int)OT_API_getNym(arg1,(char const *)arg2,(char const *)arg3);
-  jresult = result; 
+  result = (char *)OT_API_GetNym_ID(arg1);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
   return jresult;
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_getServer(int jarg1, char * jarg2, char * jarg3) {
-  int jresult ;
-  int arg1 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  int result;
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetNym_Name(char * jarg1) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
   
-  arg1 = (int)jarg1; 
-  arg2 = (char *)jarg2; 
-  arg3 = (char *)jarg3; 
-  result = (int)OT_API_getServer(arg1,(char const *)arg2,(char const *)arg3);
-  jresult = result; 
+  arg1 = (char *)jarg1; 
+  result = (char *)OT_API_GetNym_Name((char const *)arg1);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
   return jresult;
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_getAssetType(int jarg1, char * jarg2, char * jarg3) {
-  int jresult ;
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetServer_ID(int jarg1) {
+  char * jresult ;
   int arg1 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  int result;
+  char *result = 0 ;
   
   arg1 = (int)jarg1; 
-  arg2 = (char *)jarg2; 
-  arg3 = (char *)jarg3; 
-  result = (int)OT_API_getAssetType(arg1,(char const *)arg2,(char const *)arg3);
-  jresult = result; 
+  result = (char *)OT_API_GetServer_ID(arg1);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
   return jresult;
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_GetAccountWallet(int jarg1, char * jarg2, char * jarg3) {
-  int jresult ;
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetServer_Name(char * jarg1) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  result = (char *)OT_API_GetServer_Name((char const *)arg1);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetAssetType_ID(int jarg1) {
+  char * jresult ;
   int arg1 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  int result;
+  char *result = 0 ;
   
   arg1 = (int)jarg1; 
-  arg2 = (char *)jarg2; 
-  arg3 = (char *)jarg3; 
-  result = (int)OT_API_GetAccountWallet(arg1,(char const *)arg2,(char const *)arg3);
-  jresult = result; 
+  result = (char *)OT_API_GetAssetType_ID(arg1);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetAssetType_Name(char * jarg1) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  result = (char *)OT_API_GetAssetType_Name((char const *)arg1);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetAccountWallet_ID(int jarg1) {
+  char * jresult ;
+  int arg1 ;
+  char *result = 0 ;
+  
+  arg1 = (int)jarg1; 
+  result = (char *)OT_API_GetAccountWallet_ID(arg1);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetAccountWallet_Name(char * jarg1) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  result = (char *)OT_API_GetAccountWallet_Name((char const *)arg1);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
   return jresult;
 }
 
