@@ -9,7 +9,7 @@
 
 class OTAPIJNI {
   public final static native int OT_API_Init(String jarg1);
-  public final static native int OT_API_loadWallet(String jarg1);
+  public final static native int OT_API_LoadWallet(String jarg1);
   public final static native int OT_API_connectServer(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5);
   public final static native int OT_API_processSockets();
   public final static native void OT_API_checkServerID(String jarg1, String jarg2);
@@ -31,12 +31,16 @@ class OTAPIJNI {
   public final static native void OT_API_processInbox(String jarg1, String jarg2, String jarg3, String jarg4);
   public final static native void OT_API_withdrawVoucher(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5, String jarg6);
   public final static native void OT_API_depositCheque(String jarg1, String jarg2, String jarg3, String jarg4);
-  public final static native int OT_API_getNymCount();
-  public final static native int OT_API_getServerCount();
-  public final static native int OT_API_getAssetTypeCount();
-  public final static native int OT_API_getAccountCount();
-  public final static native int OT_API_getNym(int jarg1, String jarg2, String jarg3);
-  public final static native int OT_API_getServer(int jarg1, String jarg2, String jarg3);
-  public final static native int OT_API_getAssetType(int jarg1, String jarg2, String jarg3);
-  public final static native int OT_API_GetAccountWallet(int jarg1, String jarg2, String jarg3);
+  public final static native int OT_API_GetNymCount();
+  public final static native int OT_API_GetServerCount();
+  public final static native int OT_API_GetAssetTypeCount();
+  public final static native int OT_API_GetAccountCount();
+  public final static native String OT_API_GetNym_ID(int jarg1);
+  public final static native String OT_API_GetNym_Name(String jarg1);
+  public final static native String OT_API_GetServer_ID(int jarg1);
+  public final static native String OT_API_GetServer_Name(String jarg1);
+  public final static native String OT_API_GetAssetType_ID(int jarg1);
+  public final static native String OT_API_GetAssetType_Name(String jarg1);
+  public final static native String OT_API_GetAccountWallet_ID(int jarg1);
+  public final static native String OT_API_GetAccountWallet_Name(String jarg1);
 }

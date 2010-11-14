@@ -85,6 +85,11 @@
 
 #include "OTIdentifier.h"
 #include "OTString.h"
+#include "OTPseudonym.h"
+#include "OTAssetContract.h"
+#include "OTServerContract.h"
+#include "OTAccount.h"
+
 
 // A C++ class, high-level interface to OT. The class-based API.
 #include "OpenTransactions.h"
@@ -148,20 +153,319 @@ OT_BOOL OT_API_Init(const char * szClientPath)
 	return OT_FALSE;
 }
 
-	
-OT_BOOL OT_API_loadWallet(const char * szPath)
+
+
+OT_BOOL OT_API_LoadWallet(const char * szPath)
 {
 	OT_ASSERT(NULL != szPath);
 
 	OTString strPath(szPath);
 	
-	bool bLoaded = g_OT_API.loadWallet(strPath);
+	bool bLoaded = g_OT_API.LoadWallet(strPath);
 	
 	if (bLoaded)
 		return OT_TRUE;
 	
 	return OT_FALSE;
 }
+
+
+
+// --------------------------------------------------
+
+
+
+
+int OT_API_GetNymCount(void)
+{
+	return g_OT_API.GetNymCount();
+}
+
+int OT_API_GetServerCount(void)
+{
+	return g_OT_API.GetServerCount();
+}
+
+int OT_API_GetAssetTypeCount(void)
+{
+	return g_OT_API.GetAssetTypeCount();
+}
+
+int OT_API_GetAccountCount(void)
+{
+	return g_OT_API.GetAccountCount();
+}
+
+
+static char g_tempBuf[MAX_STRING_LENGTH];
+
+
+// based on Index (above 4 functions) this returns the Nym's ID
+const char * OT_API_GetNym_ID(int nIndex)
+{
+	OT_ASSERT(nIndex >= 0);
+	
+	OTIdentifier	theNymID;
+	OTString		strName;
+	
+	bool bGetNym = g_OT_API.GetNym(nIndex, theNymID, strName);
+	
+	if (bGetNym)
+	{
+		OTString strNymID(theNymID);
+		
+		const char * pBuf = strNymID.Get();
+
+#ifdef _WIN32
+		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+		OT_ASSERT(strlen(pBuf) < MAX_STRING_LENGTH);
+		strcpy(g_tempBuf, pBuf);
+#endif
+	
+		return g_tempBuf;
+	}
+	
+	return NULL;
+}
+
+// Returns Nym Name (based on NymID)
+const char * OT_API_GetNym_Name(const char * NYM_ID)
+{
+	OT_ASSERT(NULL != NYM_ID);
+	
+	OTIdentifier	theNymID(NYM_ID);
+	
+	OTPseudonym * pNym = g_OT_API.GetNym(theNymID);
+	
+	if (NULL != pNym)
+	{
+		OTString & strName = pNym->GetNymName();
+		const char * pBuf = strName.Get();
+		
+#ifdef _WIN32
+		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+		OT_ASSERT(strlen(pBuf) < MAX_STRING_LENGTH);
+		strcpy(g_tempBuf, pBuf);
+#endif
+		
+		return g_tempBuf;
+	}
+	
+	return NULL;
+}
+
+// based on Index (above 4 functions) this returns the Server's ID
+const char * OT_API_GetServer_ID(int nIndex)
+{
+	OT_ASSERT(nIndex >= 0);
+	
+	OTIdentifier	theID;
+	OTString		strName;
+	
+	bool bGetServer = g_OT_API.GetServer(nIndex, theID, strName);
+	
+	if (bGetServer)
+	{
+		OTString strID(theID);
+		
+		const char * pBuf = strID.Get();
+		
+#ifdef _WIN32
+		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+		OT_ASSERT(strlen(pBuf) < MAX_STRING_LENGTH);
+		strcpy(g_tempBuf, pBuf);
+#endif
+		
+		return g_tempBuf;		
+	}
+	return NULL;
+}
+
+
+// Return's Server's name (based on server ID)
+const char * OT_API_GetServer_Name(const char * THE_ID)
+{
+	OT_ASSERT(NULL != THE_ID);
+	
+	OTIdentifier	theID(THE_ID);
+	
+	OTServerContract * pContract = g_OT_API.GetServer(theID);
+	
+	if (NULL != pContract)
+	{
+		OTString strName;
+		pContract->GetName(strName);
+		const char * pBuf = strName.Get();
+		
+#ifdef _WIN32
+		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+		OT_ASSERT(strlen(pBuf) < MAX_STRING_LENGTH);
+		strcpy(g_tempBuf, pBuf);
+#endif
+		
+		return g_tempBuf;
+	}
+	
+	return NULL;
+}
+
+// returns Asset Type ID (based on index from GetAssetTypeCount)
+const char * OT_API_GetAssetType_ID(int nIndex)
+{
+	OT_ASSERT(nIndex >= 0);
+	
+	OTIdentifier	theID;
+	OTString		strName;
+	
+	bool bGetServer = g_OT_API.GetAssetType(nIndex, theID, strName);
+	
+	if (bGetServer)
+	{
+		OTString strID(theID);
+		
+		const char * pBuf = strID.Get();
+		
+#ifdef _WIN32
+		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+		OT_ASSERT(strlen(pBuf) < MAX_STRING_LENGTH);
+		strcpy(g_tempBuf, pBuf);
+#endif
+		
+		return g_tempBuf;		
+	}
+	return NULL;
+}
+
+// Returns asset type Name based on Asset Type ID
+const char * OT_API_GetAssetType_Name(const char * THE_ID)
+{
+	OT_ASSERT(NULL != THE_ID);
+	
+	OTIdentifier	theID(THE_ID);
+	
+	OTAssetContract * pContract = g_OT_API.GetAssetType(theID);
+	
+	if (NULL != pContract)
+	{
+		OTString strName;
+		pContract->GetName(strName);
+		const char * pBuf = strName.Get();
+		
+#ifdef _WIN32
+		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+		OT_ASSERT(strlen(pBuf) < MAX_STRING_LENGTH);
+		strcpy(g_tempBuf, pBuf);
+#endif
+		
+		return g_tempBuf;
+	}
+	
+	return NULL;
+}
+
+
+
+// returns a string containing the account ID, based on index.
+const char * OT_API_GetAccountWallet_ID(int nIndex)
+{
+	OT_ASSERT(nIndex >= 0);
+	
+	OTIdentifier	theID;
+	OTString		strName;
+	
+	bool bGetServer = g_OT_API.GetAccount(nIndex, theID, strName);
+	
+	if (bGetServer)
+	{
+		OTString strID(theID);
+		
+		const char * pBuf = strID.Get();
+		
+#ifdef _WIN32
+		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+		OT_ASSERT(strlen(pBuf) < MAX_STRING_LENGTH);
+		strcpy(g_tempBuf, pBuf);
+#endif
+		
+		return g_tempBuf;		
+	}
+	return NULL;
+}
+
+
+// returns the account name, based on account ID.
+const char * OT_API_GetAccountWallet_Name(const char * THE_ID)
+{
+	OT_ASSERT(NULL != THE_ID);
+	
+	OTIdentifier	theID(THE_ID);
+	
+	OTAccount * pContract = g_OT_API.GetAccount(theID);
+	
+	if (NULL != pContract)
+	{
+		OTString strName;
+		pContract->GetName(strName);
+		const char * pBuf = strName.Get();
+		
+#ifdef _WIN32
+		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+		OT_ASSERT(strlen(pBuf) < MAX_STRING_LENGTH);
+		strcpy(g_tempBuf, pBuf);
+#endif
+		
+		return g_tempBuf;
+	}
+	
+	return NULL;
+}
+
+
+// returns the account balance, based on account ID.
+const char * OT_API_GetAccountWallet_Balance(const char * THE_ID)
+{
+	OT_ASSERT(NULL != THE_ID);
+	
+	OTIdentifier	theID(THE_ID);
+	
+	OTAccount * pContract = g_OT_API.GetAccount(theID);
+	
+	if (NULL != pContract)
+	{
+		long lBalance = pContract->GetBalance();
+
+		OTString strBalance;
+		
+		strBalance.Format("%ld", lBalance);
+		
+		const char * pBuf = strBalance.Get();
+
+#ifdef _WIN32
+		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+		OT_ASSERT(strlen(pBuf) < MAX_STRING_LENGTH);
+		strcpy(g_tempBuf, pBuf);
+#endif
+		
+		return g_tempBuf;
+	}
+	
+	return NULL;	
+}
+
+
+
+
+// --------------------------------------------------
+
 
 
 // NOT necessary in XmlRpc->HTTP mode (the preferred way.)
@@ -316,24 +620,6 @@ void OT_API_createAssetAccount(const char * SERVER_ID,
 }
 
 	
-
-// Queries the wallet for an asset account.
-OT_BOOL OT_API_GetAccountWallet(int iIndex, const char * THE_ID, const char * THE_NAME)
-{
-	OT_ASSERT(NULL != THE_ID);
-	OT_ASSERT(NULL != THE_NAME);
-	OT_ASSERT(iIndex > 0);
-	
-	OTIdentifier	theID(THE_ID);
-	OTString		strName(THE_NAME);
-	
-	bool bGetAccount = g_OT_API.getAccount(iIndex, theID, strName);
-	
-	if (bGetAccount)
-		return OT_TRUE;
-	
-	return OT_FALSE;
-}
 
 // Sends a message to the server to retrieve latest copy of an asset acct.
 void OT_API_getAccount(const char * SERVER_ID,
@@ -527,84 +813,6 @@ void OT_API_depositCheque(const char * SERVER_ID,
 }
 
 	
-	
-	// --------------------------------------------------
-	
-int OT_API_getNymCount(void)
-{
-	return g_OT_API.getNymCount();
-}
-
-int OT_API_getServerCount(void)
-{
-	return g_OT_API.getServerCount();
-}
-
-int OT_API_getAssetTypeCount(void)
-{
-	return g_OT_API.getAssetTypeCount();
-}
-
-int OT_API_getAccountCount(void)
-{
-	return g_OT_API.getAccountCount();
-}
-
-	
-OT_BOOL OT_API_getNym(int iIndex, const char * NYM_ID, const char * NYM_NAME)
-{
-	OT_ASSERT(NULL != NYM_ID);
-	OT_ASSERT(NULL != NYM_NAME);
-	OT_ASSERT(iIndex > 0);
-	
-	OTIdentifier	theNymID(NYM_ID);
-	OTString		strName(NYM_NAME);
-
-	bool bGetNym = g_OT_API.getNym(iIndex, theNymID, strName);
-	
-	if (bGetNym)
-		return OT_TRUE;
-	
-	return OT_FALSE;
-}
-
-OT_BOOL OT_API_getServer(int iIndex, const char * THE_ID, const char * THE_NAME)
-{
-	OT_ASSERT(NULL != THE_ID);
-	OT_ASSERT(NULL != THE_NAME);
-	OT_ASSERT(iIndex > 0);
-
-	OTIdentifier	theID(THE_ID);
-	OTString		strName(THE_NAME);
-	
-	bool bGetServer = g_OT_API.getServer(iIndex, theID, strName);
-	
-	if (bGetServer)
-		return OT_TRUE;
-	
-	return OT_FALSE;
-}
-
-OT_BOOL OT_API_getAssetType(int iIndex, const char * THE_ID, const char * THE_NAME)
-{
-	OT_ASSERT(NULL != THE_ID);
-	OT_ASSERT(NULL != THE_NAME);
-	OT_ASSERT(iIndex > 0);
-
-	OTIdentifier	theID(THE_ID);
-	OTString		strName(THE_NAME);
-
-	bool bGetAssetType = g_OT_API.getAssetType(iIndex, theID, strName);
-	
-	if (bGetAssetType)
-		return OT_TRUE;
-	
-	return OT_FALSE;
-}
-
-		
-
-
 
 
 

@@ -198,7 +198,7 @@ SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1Init(JNIEnv *jenv, jclass jcls, j
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1loadWallet(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1LoadWallet(JNIEnv *jenv, jclass jcls, jstring jarg1) {
   jint jresult = 0 ;
   char *arg1 = (char *) 0 ;
   int result;
@@ -210,7 +210,7 @@ SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1loadWallet(JNIEnv *jenv, jclass j
     arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
     if (!arg1) return 0;
   }
-  result = (int)OT_API_loadWallet((char const *)arg1);
+  result = (int)OT_API_LoadWallet((char const *)arg1);
   jresult = (jint)result; 
   if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
   return jresult;
@@ -876,162 +876,182 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1depositCheque(JNIEnv *jenv, jclas
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1getNymCount(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1GetNymCount(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
   
   (void)jenv;
   (void)jcls;
-  result = (int)OT_API_getNymCount();
+  result = (int)OT_API_GetNymCount();
   jresult = (jint)result; 
   return jresult;
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1getServerCount(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1GetServerCount(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
   
   (void)jenv;
   (void)jcls;
-  result = (int)OT_API_getServerCount();
+  result = (int)OT_API_GetServerCount();
   jresult = (jint)result; 
   return jresult;
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1getAssetTypeCount(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1GetAssetTypeCount(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
   
   (void)jenv;
   (void)jcls;
-  result = (int)OT_API_getAssetTypeCount();
+  result = (int)OT_API_GetAssetTypeCount();
   jresult = (jint)result; 
   return jresult;
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1getAccountCount(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1GetAccountCount(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
   
   (void)jenv;
   (void)jcls;
-  result = (int)OT_API_getAccountCount();
+  result = (int)OT_API_GetAccountCount();
   jresult = (jint)result; 
   return jresult;
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1getNym(JNIEnv *jenv, jclass jcls, jint jarg1, jstring jarg2, jstring jarg3) {
-  jint jresult = 0 ;
+SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetNym_1ID(JNIEnv *jenv, jclass jcls, jint jarg1) {
+  jstring jresult = 0 ;
   int arg1 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  int result;
+  char *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   arg1 = (int)jarg1; 
-  arg2 = 0;
-  if (jarg2) {
-    arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-    if (!arg2) return 0;
-  }
-  arg3 = 0;
-  if (jarg3) {
-    arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
-    if (!arg3) return 0;
-  }
-  result = (int)OT_API_getNym(arg1,(char const *)arg2,(char const *)arg3);
-  jresult = (jint)result; 
-  if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
-  if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, (const char *)arg3);
+  result = (char *)OT_API_GetNym_ID(arg1);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
   return jresult;
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1getServer(JNIEnv *jenv, jclass jcls, jint jarg1, jstring jarg2, jstring jarg3) {
-  jint jresult = 0 ;
-  int arg1 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  int result;
+SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetNym_1Name(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+  jstring jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = (int)jarg1; 
-  arg2 = 0;
-  if (jarg2) {
-    arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-    if (!arg2) return 0;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
   }
-  arg3 = 0;
-  if (jarg3) {
-    arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
-    if (!arg3) return 0;
-  }
-  result = (int)OT_API_getServer(arg1,(char const *)arg2,(char const *)arg3);
-  jresult = (jint)result; 
-  if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
-  if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, (const char *)arg3);
+  result = (char *)OT_API_GetNym_Name((char const *)arg1);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
   return jresult;
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1getAssetType(JNIEnv *jenv, jclass jcls, jint jarg1, jstring jarg2, jstring jarg3) {
-  jint jresult = 0 ;
+SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetServer_1ID(JNIEnv *jenv, jclass jcls, jint jarg1) {
+  jstring jresult = 0 ;
   int arg1 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  int result;
+  char *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   arg1 = (int)jarg1; 
-  arg2 = 0;
-  if (jarg2) {
-    arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-    if (!arg2) return 0;
-  }
-  arg3 = 0;
-  if (jarg3) {
-    arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
-    if (!arg3) return 0;
-  }
-  result = (int)OT_API_getAssetType(arg1,(char const *)arg2,(char const *)arg3);
-  jresult = (jint)result; 
-  if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
-  if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, (const char *)arg3);
+  result = (char *)OT_API_GetServer_ID(arg1);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
   return jresult;
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1GetAccountWallet(JNIEnv *jenv, jclass jcls, jint jarg1, jstring jarg2, jstring jarg3) {
-  jint jresult = 0 ;
+SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetServer_1Name(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+  jstring jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
+  }
+  result = (char *)OT_API_GetServer_Name((char const *)arg1);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAssetType_1ID(JNIEnv *jenv, jclass jcls, jint jarg1) {
+  jstring jresult = 0 ;
   int arg1 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  int result;
+  char *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   arg1 = (int)jarg1; 
-  arg2 = 0;
-  if (jarg2) {
-    arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-    if (!arg2) return 0;
+  result = (char *)OT_API_GetAssetType_ID(arg1);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAssetType_1Name(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+  jstring jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
   }
-  arg3 = 0;
-  if (jarg3) {
-    arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
-    if (!arg3) return 0;
+  result = (char *)OT_API_GetAssetType_Name((char const *)arg1);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAccountWallet_1ID(JNIEnv *jenv, jclass jcls, jint jarg1) {
+  jstring jresult = 0 ;
+  int arg1 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = (int)jarg1; 
+  result = (char *)OT_API_GetAccountWallet_ID(arg1);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAccountWallet_1Name(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+  jstring jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
   }
-  result = (int)OT_API_GetAccountWallet(arg1,(char const *)arg2,(char const *)arg3);
-  jresult = (jint)result; 
-  if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
-  if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, (const char *)arg3);
+  result = (char *)OT_API_GetAccountWallet_Name((char const *)arg1);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
   return jresult;
 }
 

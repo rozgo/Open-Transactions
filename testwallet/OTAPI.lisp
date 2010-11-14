@@ -51,7 +51,7 @@
 (cffi:defcfun ("OT_API_Init" OT_API_Init) :int
   (szClientPath :string))
 
-(cffi:defcfun ("OT_API_loadWallet" OT_API_loadWallet) :int
+(cffi:defcfun ("OT_API_LoadWallet" OT_API_LoadWallet) :int
   (szPath :string))
 
 (cffi:defcfun ("OT_API_connectServer" OT_API_connectServer) :int
@@ -165,32 +165,36 @@
   (ACCT_ID :string)
   (THE_CHEQUE :string))
 
-(cffi:defcfun ("OT_API_getNymCount" OT_API_getNymCount) :int)
+(cffi:defcfun ("OT_API_GetNymCount" OT_API_GetNymCount) :int)
 
-(cffi:defcfun ("OT_API_getServerCount" OT_API_getServerCount) :int)
+(cffi:defcfun ("OT_API_GetServerCount" OT_API_GetServerCount) :int)
 
-(cffi:defcfun ("OT_API_getAssetTypeCount" OT_API_getAssetTypeCount) :int)
+(cffi:defcfun ("OT_API_GetAssetTypeCount" OT_API_GetAssetTypeCount) :int)
 
-(cffi:defcfun ("OT_API_getAccountCount" OT_API_getAccountCount) :int)
+(cffi:defcfun ("OT_API_GetAccountCount" OT_API_GetAccountCount) :int)
 
-(cffi:defcfun ("OT_API_getNym" OT_API_getNym) :int
-  (iIndex :int)
-  (NYM_ID :string)
-  (NYM_NAME :string))
+(cffi:defcfun ("OT_API_GetNym_ID" OT_API_GetNym_ID) :string
+  (nIndex :int))
 
-(cffi:defcfun ("OT_API_getServer" OT_API_getServer) :int
-  (iIndex :int)
-  (THE_ID :string)
-  (THE_NAME :string))
+(cffi:defcfun ("OT_API_GetNym_Name" OT_API_GetNym_Name) :string
+  (NYM_ID :string))
 
-(cffi:defcfun ("OT_API_getAssetType" OT_API_getAssetType) :int
-  (iIndex :int)
-  (THE_ID :string)
-  (THE_NAME :string))
+(cffi:defcfun ("OT_API_GetServer_ID" OT_API_GetServer_ID) :string
+  (nIndex :int))
 
-(cffi:defcfun ("OT_API_GetAccountWallet" OT_API_GetAccountWallet) :int
-  (iIndex :int)
-  (THE_ID :string)
-  (THE_NAME :string))
+(cffi:defcfun ("OT_API_GetServer_Name" OT_API_GetServer_Name) :string
+  (SERVER_ID :string))
+
+(cffi:defcfun ("OT_API_GetAssetType_ID" OT_API_GetAssetType_ID) :string
+  (nIndex :int))
+
+(cffi:defcfun ("OT_API_GetAssetType_Name" OT_API_GetAssetType_Name) :string
+  (ASSET_TYPE_ID :string))
+
+(cffi:defcfun ("OT_API_GetAccountWallet_ID" OT_API_GetAccountWallet_ID) :string
+  (nIndex :int))
+
+(cffi:defcfun ("OT_API_GetAccountWallet_Name" OT_API_GetAccountWallet_Name) :string
+  (ACCOUNT_ID :string))
 
 

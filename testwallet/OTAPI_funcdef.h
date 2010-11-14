@@ -88,7 +88,7 @@
 	
 int OT_API_Init(const char * szClientPath); // actually returns BOOL
 
-int OT_API_loadWallet(const char * szPath); // actually returns BOOL
+int OT_API_LoadWallet(const char * szPath); // actually returns BOOL
 
 // actually returns BOOL  // Not necessary in HTTP mode.
 int OT_API_connectServer(const char * SERVER_ID, const char * USER_ID, const char * szCA_FILE, const char * szKEY_FILE, const char * szKEY_PASSWORD);
@@ -181,16 +181,23 @@ void OT_API_depositCheque(const char * SERVER_ID,
 
 // --------------------------------------------------
 
-int OT_API_getNymCount(void);
-int OT_API_getServerCount(void);
-int OT_API_getAssetTypeCount(void);
-int OT_API_getAccountCount(void);
+int OT_API_GetNymCount(void);
+int OT_API_GetServerCount(void);
+int OT_API_GetAssetTypeCount(void);
+int OT_API_GetAccountCount(void);
 
-int OT_API_getNym(int iIndex, const char * NYM_ID, const char * NYM_NAME); // actually returns BOOL
-int OT_API_getServer(int iIndex, const char * THE_ID, const char * THE_NAME); // actually returns BOOL
-int OT_API_getAssetType(int iIndex, const char * THE_ID, const char * THE_NAME); // actually returns BOOL
+const char * OT_API_GetNym_ID(int nIndex); // based on Index (above 4 functions) this returns the Nym's ID
+const char * OT_API_GetNym_Name(const char * NYM_ID); // Returns Nym Name (based on NymID)
 
-int OT_API_GetAccountWallet(int iIndex, const char * THE_ID, const char * THE_NAME);	 // actually returns BOOL	
+const char * OT_API_GetServer_ID(int nIndex); // based on Index (above 4 functions) this returns the Server's ID
+const char * OT_API_GetServer_Name(const char * SERVER_ID); // Return's Server's name (based on server ID)
+
+const char * OT_API_GetAssetType_ID(int nIndex); // returns Asset Type ID (based on index from GetAssetTypeCount)
+const char * OT_API_GetAssetType_Name(const char * ASSET_TYPE_ID); // Returns asset type name based on Asset Type ID
+
+const char * OT_API_GetAccountWallet_ID(int nIndex);	 // returns a string containing the account ID, based on index.
+const char * OT_API_GetAccountWallet_Name(const char * ACCOUNT_ID);	 // returns the account name, based on account ID.
+const char * OT_API_GetAccountWallet_Balance(const char * ACCOUNT_ID);	 // returns the account balance, based on account ID.
 	
 	
 	

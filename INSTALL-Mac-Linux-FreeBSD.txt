@@ -26,12 +26,12 @@ PRE-BUILD:
 
     To check current version:  openssl version
 
-    * To upgrade on Mac:    port install openssl
-      If that doesn't work: port install openssl-devel
+    * To upgrade on Mac:    sudo port install openssl
+      If that doesn't work: sudo port install openssl-devel
 
-    * On Linux: apt-get install openssl
+    * On Linux: sudo apt-get install openssl
 
-    * On FreeBSD:  cd /usr/ports/security/openssl/ && make install clean
+    * On FreeBSD (as root):  cd /usr/ports/security/openssl/ && make install clean
 
 --- cd (change directory) to the Open-Transactions folder. <=== ("THE MAIN FOLDER")
 

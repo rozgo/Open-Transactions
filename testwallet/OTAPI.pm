@@ -50,7 +50,7 @@ sub this {
 package OTAPI;
 
 *OT_API_Init = *OTAPIc::OT_API_Init;
-*OT_API_loadWallet = *OTAPIc::OT_API_loadWallet;
+*OT_API_LoadWallet = *OTAPIc::OT_API_LoadWallet;
 *OT_API_connectServer = *OTAPIc::OT_API_connectServer;
 *OT_API_processSockets = *OTAPIc::OT_API_processSockets;
 *OT_API_checkServerID = *OTAPIc::OT_API_checkServerID;
@@ -72,14 +72,18 @@ package OTAPI;
 *OT_API_processInbox = *OTAPIc::OT_API_processInbox;
 *OT_API_withdrawVoucher = *OTAPIc::OT_API_withdrawVoucher;
 *OT_API_depositCheque = *OTAPIc::OT_API_depositCheque;
-*OT_API_getNymCount = *OTAPIc::OT_API_getNymCount;
-*OT_API_getServerCount = *OTAPIc::OT_API_getServerCount;
-*OT_API_getAssetTypeCount = *OTAPIc::OT_API_getAssetTypeCount;
-*OT_API_getAccountCount = *OTAPIc::OT_API_getAccountCount;
-*OT_API_getNym = *OTAPIc::OT_API_getNym;
-*OT_API_getServer = *OTAPIc::OT_API_getServer;
-*OT_API_getAssetType = *OTAPIc::OT_API_getAssetType;
-*OT_API_GetAccountWallet = *OTAPIc::OT_API_GetAccountWallet;
+*OT_API_GetNymCount = *OTAPIc::OT_API_GetNymCount;
+*OT_API_GetServerCount = *OTAPIc::OT_API_GetServerCount;
+*OT_API_GetAssetTypeCount = *OTAPIc::OT_API_GetAssetTypeCount;
+*OT_API_GetAccountCount = *OTAPIc::OT_API_GetAccountCount;
+*OT_API_GetNym_ID = *OTAPIc::OT_API_GetNym_ID;
+*OT_API_GetNym_Name = *OTAPIc::OT_API_GetNym_Name;
+*OT_API_GetServer_ID = *OTAPIc::OT_API_GetServer_ID;
+*OT_API_GetServer_Name = *OTAPIc::OT_API_GetServer_Name;
+*OT_API_GetAssetType_ID = *OTAPIc::OT_API_GetAssetType_ID;
+*OT_API_GetAssetType_Name = *OTAPIc::OT_API_GetAssetType_Name;
+*OT_API_GetAccountWallet_ID = *OTAPIc::OT_API_GetAccountWallet_ID;
+*OT_API_GetAccountWallet_Name = *OTAPIc::OT_API_GetAccountWallet_Name;
 
 # ------- VARIABLE STUBS --------
 

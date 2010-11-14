@@ -92,7 +92,10 @@ class OTServerContract;
 class OTEnvelope;
 class OTWallet;
 class OTClient;
-
+class OTPseudonym;
+class OTAccount;
+class OTAssetContract;
+class OTServerContract;
 
 // This function is what makes Open Transactions go over XmlRpc/HTTP instead of TCP/SSL
 // (If you compile it in rpc mode using "make rpc"
@@ -122,7 +125,7 @@ public:
 			bool Init(OTString & strClientPath);	// Per instance.
 	static	bool InitOTAPI();						// Once per run.
 
-	bool loadWallet(OTString & strPath);
+	bool LoadWallet(OTString & strPath);
 	
 	bool connectServer(OTIdentifier & SERVER_ID,
 					   OTIdentifier	& USER_ID,
@@ -219,16 +222,21 @@ public:
 	
 	// --------------------------------------------------
 	
-	int getNymCount();
-	int getServerCount();
-	int getAssetTypeCount();
-	int getAccountCount();
+	int GetNymCount();
+	int GetServerCount();
+	int GetAssetTypeCount();
+	int GetAccountCount();
 	
-	bool getNym(int iIndex, OTIdentifier & NYM_ID, OTString & NYM_NAME);
-	bool getServer(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME);
-	bool getAssetType(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME);
-	bool getAccount(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME);		
-
+	bool GetNym(int iIndex, OTIdentifier & NYM_ID, OTString & NYM_NAME);
+	bool GetServer(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME);
+	bool GetAssetType(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME);
+	bool GetAccount(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME);
+	
+	// In this case, the ID is input, the pointer is output.
+	OTPseudonym *		GetNym(const OTIdentifier & NYM_ID);
+	OTServerContract *	GetServer(const OTIdentifier & THE_ID);
+	OTAssetContract *	GetAssetType(const OTIdentifier & THE_ID);
+	OTAccount *			GetAccount(const OTIdentifier & THE_ID);		
 };
 		
 
