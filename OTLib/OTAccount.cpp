@@ -136,6 +136,19 @@ using namespace io;
 #include "OTPseudonym.h"
 #include "OTLog.h"
 
+
+
+const char * OTAccount::_TypeStrings[] = 
+{
+	"simple",
+	"issuer",
+	"basket",
+	"err_acct"
+};
+
+
+
+
 // TODO:  add an override so that OTAccount, when it loads up, it performs the check to
 // see the ServerID, look at the Server Contract and make sure the server hashes match.
 // 
@@ -345,7 +358,7 @@ char* myGetTimeOfDay(char* buffer, int bufferLength)
 #ifdef _WIN32
 		strcat_s(buffer, strlen(sp), sp);
 #else
-		strcat(buffer, sp);
+		strlcat(buffer, sp, strlen(sp));
 #endif		
 		
 //		delete [] sp; // wtf is this? Am I supposed to delete this? commenting it out for now. weird to see this here.

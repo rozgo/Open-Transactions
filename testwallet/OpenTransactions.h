@@ -96,6 +96,11 @@ class OTPseudonym;
 class OTAccount;
 class OTAssetContract;
 class OTServerContract;
+class OTPurse;
+class OTCheque;
+class OTMint;
+class OTLedger;
+
 
 // This function is what makes Open Transactions go over XmlRpc/HTTP instead of TCP/SSL
 // (If you compile it in rpc mode using "make rpc"
@@ -127,100 +132,17 @@ public:
 
 	bool LoadWallet(OTString & strPath);
 	
-	bool connectServer(OTIdentifier & SERVER_ID,
+	// Note: these two functions are NOT used in XmlRpc Mode
+	// ONLY for SSL/TCP mode...
+	bool ConnectServer(OTIdentifier & SERVER_ID,
 					   OTIdentifier	& USER_ID,
 					   OTString & strCA_FILE, 
 					   OTString & strKEY_FILE, 
 					   OTString & strKEY_PASSWORD);
-	
-	bool processSockets();
-	
-	void checkServerID(OTIdentifier & SERVER_ID,
-		  OTIdentifier & USER_ID);
-	
-	void createUserAccount(OTIdentifier & SERVER_ID,
-		   OTIdentifier & USER_ID);
-	
-	void checkUser(OTIdentifier & SERVER_ID,
-	   OTIdentifier & USER_ID,
-	   OTIdentifier & USER_ID_CHECK);
-	
-	void getRequest(OTIdentifier & SERVER_ID,
-		OTIdentifier & USER_ID);
-	
-	
-	void issueAssetType(OTIdentifier	&	SERVER_ID,
-			OTIdentifier	&	USER_ID,
-			OTString		&	THE_CONTRACT);
-	
-	void getContract(OTIdentifier & SERVER_ID,
-		 OTIdentifier & USER_ID,
-		 OTIdentifier & ASSET_ID);
-	
-	void getMint(OTIdentifier & SERVER_ID,
-		 OTIdentifier & USER_ID,
-		 OTIdentifier & ASSET_ID);
-	
-	void createAssetAccount(OTIdentifier & SERVER_ID,
-		OTIdentifier & USER_ID,
-		OTIdentifier & ASSET_ID);
-	
-	void getAccount(OTIdentifier & SERVER_ID,
-		OTIdentifier & USER_ID,
-		OTIdentifier & ACCT_ID);
-	
-	void issueBasket(OTIdentifier	& SERVER_ID,
-		 OTIdentifier	& USER_ID,
-		 OTString		& BASKET_INFO);
-	
-	void exchangeBasket(OTIdentifier	& SERVER_ID,
-		OTIdentifier	& USER_ID,
-		OTIdentifier	& BASKET_ASSET_ID,
-		OTString		& BASKET_INFO);
-		
-	void getTransactionNumber(OTIdentifier & SERVER_ID,
-		  OTIdentifier & USER_ID);
-	
-	void notarizeWithdrawal(OTIdentifier	& SERVER_ID,
-		OTIdentifier	& USER_ID,
-		OTIdentifier	& ACCT_ID,
-		OTString		& AMOUNT);
-	
-	void notarizeDeposit(OTIdentifier	& SERVER_ID,
-		 OTIdentifier	& USER_ID,
-		 OTIdentifier	& ACCT_ID,
-		 OTString		& THE_PURSE);
-	
-	void notarizeTransfer(OTIdentifier	& SERVER_ID,
-		  OTIdentifier	& USER_ID,
-		  OTIdentifier	& ACCT_FROM,
-		  OTIdentifier	& ACCT_TO,
-		  OTString		& AMOUNT,
-		  OTString		& NOTE);
-	
-	void getInbox(OTIdentifier & SERVER_ID,
-		  OTIdentifier & USER_ID,
-		  OTIdentifier & ACCT_ID);
-	
-	void processInbox(OTIdentifier	& SERVER_ID,
-		  OTIdentifier	& USER_ID,
-		  OTIdentifier	& ACCT_ID,
-		  OTString		& ACCT_LEDGER);
-
-	void withdrawVoucher(OTIdentifier	& SERVER_ID,
-		   OTIdentifier	& USER_ID,
-		   OTIdentifier	& ACCT_ID,
-		   OTIdentifier	& RECIPIENT_USER_ID,
-		   OTString		& CHEQUE_MEMO,
-		   OTString		& AMOUNT);
-	
-	void depositCheque(OTIdentifier	& SERVER_ID,
-		 OTIdentifier	& USER_ID,
-		 OTIdentifier	& ACCT_FROM_ID,
-		 OTString		& THE_CHEQUE);
-	
-	
+	bool ProcessSockets();
 	// --------------------------------------------------
+	
+	// Reading data about the local wallet.. presumably already loaded.
 	
 	int GetNymCount();
 	int GetServerCount();
@@ -232,11 +154,147 @@ public:
 	bool GetAssetType(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME);
 	bool GetAccount(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME);
 	
+	// ----------------------------------------------------
 	// In this case, the ID is input, the pointer is output.
+	// Gets the data from Wallet.
+	//
 	OTPseudonym *		GetNym(const OTIdentifier & NYM_ID);
 	OTServerContract *	GetServer(const OTIdentifier & THE_ID);
 	OTAssetContract *	GetAssetType(const OTIdentifier & THE_ID);
-	OTAccount *			GetAccount(const OTIdentifier & THE_ID);		
+	OTAccount *			GetAccount(const OTIdentifier & THE_ID);	
+	
+	// ----------------------------------------------------
+	
+	// Accessing local storage...
+	// (Caller responsible to delete.)
+	//
+	OTPseudonym *		LoadPublicNym(const OTIdentifier & NYM_ID);
+	OTPseudonym *		LoadPrivateNym(const OTIdentifier & NYM_ID);
+	
+	// ----------------------------------------------------
+	//
+	// Returns an OTCheque pointer, or NULL. 
+	// (Caller responsible to delete.)
+	OTCheque * WriteCheque(const OTIdentifier & SERVER_ID,
+						   const long &			CHEQUE_AMOUNT, 
+						   const time_t &		VALID_FROM, 
+						   const time_t &		VALID_TO,
+						   const OTIdentifier & SENDER_ACCT_ID,
+						   const OTIdentifier & SENDER_USER_ID,
+						   const OTString &		CHEQUE_MEMO, 
+						   const OTIdentifier * pRECIPIENT_USER_ID=NULL);
+	
+	// ----------------------------------------------------
+	
+	OTPurse * LoadPurse(const OTIdentifier & SERVER_ID,
+						const OTIdentifier & ASSET_ID);
+	
+	OTMint * LoadMint(const OTIdentifier & SERVER_ID,
+					  const OTIdentifier & ASSET_ID);
+	
+	OTAssetContract * LoadAssetContract(const OTIdentifier & ASSET_ID);
+	
+	// ----------------------------------------------------
+
+	OTAccount * LoadAssetAccount(const OTIdentifier & SERVER_ID,
+								 const OTIdentifier & USER_ID,
+								 const OTIdentifier & ACCOUNT_ID);
+	
+	OTLedger * LoadInbox(const OTIdentifier & SERVER_ID,
+						 const OTIdentifier & USER_ID,
+						 const OTIdentifier & ACCOUNT_ID);
+	
+	OTLedger * LoadOutbox(const OTIdentifier & SERVER_ID,
+						  const OTIdentifier & USER_ID,
+						  const OTIdentifier & ACCOUNT_ID);
+	
+	// ****************************************************
+	
+	// These commands below send messages to the server:
+	
+	void checkServerID(OTIdentifier & SERVER_ID,
+					   OTIdentifier & USER_ID);
+	
+	void createUserAccount(OTIdentifier & SERVER_ID,
+						   OTIdentifier & USER_ID);
+	
+	void checkUser(OTIdentifier & SERVER_ID,
+				   OTIdentifier & USER_ID,
+				   OTIdentifier & USER_ID_CHECK);
+	
+	void getRequest(OTIdentifier & SERVER_ID,
+					OTIdentifier & USER_ID);
+	
+	
+	void issueAssetType(OTIdentifier	&	SERVER_ID,
+						OTIdentifier	&	USER_ID,
+						OTString		&	THE_CONTRACT);
+	
+	void getContract(OTIdentifier & SERVER_ID,
+					 OTIdentifier & USER_ID,
+					 OTIdentifier & ASSET_ID);
+	
+	void getMint(OTIdentifier & SERVER_ID,
+				 OTIdentifier & USER_ID,
+				 OTIdentifier & ASSET_ID);
+	
+	void createAssetAccount(OTIdentifier & SERVER_ID,
+							OTIdentifier & USER_ID,
+							OTIdentifier & ASSET_ID);
+	
+	void getAccount(OTIdentifier & SERVER_ID,
+					OTIdentifier & USER_ID,
+					OTIdentifier & ACCT_ID);
+	
+	void issueBasket(OTIdentifier	& SERVER_ID,
+					 OTIdentifier	& USER_ID,
+					 OTString		& BASKET_INFO);
+	
+	void exchangeBasket(OTIdentifier	& SERVER_ID,
+						OTIdentifier	& USER_ID,
+						OTIdentifier	& BASKET_ASSET_ID,
+						OTString		& BASKET_INFO);
+	
+	void getTransactionNumber(OTIdentifier & SERVER_ID,
+							  OTIdentifier & USER_ID);
+	
+	void notarizeWithdrawal(OTIdentifier	& SERVER_ID,
+							OTIdentifier	& USER_ID,
+							OTIdentifier	& ACCT_ID,
+							OTString		& AMOUNT);
+	
+	void notarizeDeposit(OTIdentifier	& SERVER_ID,
+						 OTIdentifier	& USER_ID,
+						 OTIdentifier	& ACCT_ID,
+						 OTString		& THE_PURSE);
+	
+	void notarizeTransfer(OTIdentifier	& SERVER_ID,
+						  OTIdentifier	& USER_ID,
+						  OTIdentifier	& ACCT_FROM,
+						  OTIdentifier	& ACCT_TO,
+						  OTString		& AMOUNT,
+						  OTString		& NOTE);
+	
+	void getInbox(OTIdentifier & SERVER_ID,
+				  OTIdentifier & USER_ID,
+				  OTIdentifier & ACCT_ID);
+	
+	void processInbox(OTIdentifier	& SERVER_ID,
+					  OTIdentifier	& USER_ID,
+					  OTIdentifier	& ACCT_ID,
+					  OTString		& ACCT_LEDGER);
+	
+	void withdrawVoucher(OTIdentifier	& SERVER_ID,
+						 OTIdentifier	& USER_ID,
+						 OTIdentifier	& ACCT_ID,
+						 OTIdentifier	& RECIPIENT_USER_ID,
+						 OTString		& CHEQUE_MEMO,
+						 OTString		& AMOUNT);
+	
+	void depositCheque(OTIdentifier	& SERVER_ID,
+					   OTIdentifier	& USER_ID,
+					   OTIdentifier	& ACCT_FROM_ID,
+					   OTString		& THE_CHEQUE);
 };
 		
 

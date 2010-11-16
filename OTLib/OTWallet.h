@@ -141,11 +141,13 @@ public:
 	
 	OTServerContract *	GetServerContract(const OTIdentifier & SERVER_ID);
 	
+	void				AddNym			(const OTPseudonym & theNym);
+	void				AddAccount		(const OTAccount & theAcct);
+	
 	void				AddAssetContract(const OTAssetContract & theContract);
 	OTAssetContract *	GetAssetContract(const OTIdentifier & theContractID);
 	
 	OTAccount * GetAccount(const OTIdentifier & theAccountID);
-	void AddAccount(OTAccount & theAcct);
 
 	// While waiting on server response to a withdrawal, we keep the private coin
 	// data here so we can unblind the response.

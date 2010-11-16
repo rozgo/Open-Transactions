@@ -13,10 +13,17 @@ GETTING STARTED:
 2) See INSTALL files (this folder) for instructions on building everything.
    There are versions for Android, Windows, and Mac/Linux/FreeBSD.
 
-   For most users, you can choose your makefile:
-   make -f Makefile.darwin
-   make -f Makefile.freebsd
-   make -f Makefile.linux
+   For most users, you just type this:
+   
+     make
+
+   (It will auto-detect platform, etc.)  EVEN BETTER:
+
+    make rpc
+
+   XmlRpc is the preferred method of building, so it's better to build
+   with "make rpc", even though it's not the default. YOU'LL PREFER IT.
+
 
 3) While the Open Transactions library itself is transport neutral, the
    applications such as the server and client come with different options

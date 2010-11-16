@@ -15,6 +15,13 @@ UNAME := $(shell uname -s)
 
 OT_PLATFORM := ___OT_PLATFORM_UNKNOWN___
 
+ifeq ($(FELLOW_TRAVELER), 1)
+FT_FLAGS  = -DFELLOW_TRAVELER
+else
+FT_FLAGS  = #empty
+endif
+
+
 # I allow the user the option to force-override the build platform.
 # Using make PLATFORM=darwin, for example, you will build in darwin mode
 # even if you are on a linux box.
@@ -156,7 +163,7 @@ endif
 
 CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
 COBJECTS   = $(CSOURCES:.c=.o)
-CXXFLAGS   = $(TRANSPORT_CFLAG) $(INCLUDEDIRS)
+CXXFLAGS   = $(TRANSPORT_CFLAG) $(INCLUDEDIRS) $(FT_FLAGS)
 CFLAGS     = $(TRANSPORT_CFLAG) $(INCLUDEDIRS)
 DEBUG_FLAGS = -g
 CXX = g++

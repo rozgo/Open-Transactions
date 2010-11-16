@@ -139,7 +139,7 @@ extern "C"
 // (Or right here.)
 int OTLog::__CurrentLogLevel = 1;
 
-OTString OTLog::__Version = "0.34";
+OTString OTLog::__Version = "0.35";
 
 
 
@@ -353,7 +353,7 @@ void OTLog::vOutput(int nVerbosity, const char *szOutput, ...)
 #ifdef _WIN32
 	vsprintf_s(new_string, MAX_STRING_LENGTH, szOutput, args);
 #else
-	vsprintf(new_string, szOutput, args);
+	vsnprintf(new_string, MAX_STRING_LENGTH, szOutput, args);
 #endif
 	
 	va_end(args);
@@ -415,7 +415,7 @@ void OTLog::vError(const char *szError, ...)
 #ifdef _WIN32
 	vsprintf_s(new_string, MAX_STRING_LENGTH, szError, args);
 #else
-	vsprintf(new_string, szError, args);
+	vsnprintf(new_string, MAX_STRING_LENGTH, szError, args);
 #endif
 	
 	va_end(args);

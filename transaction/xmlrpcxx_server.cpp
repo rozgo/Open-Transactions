@@ -289,20 +289,45 @@ int main(int argc, char* argv[])
 	
 	if (argc < 2)
 	{
-		OTLog::vOutput(0, "Usage:  transaction <SSL-password> <data_folder>\n\n"
-					   "(Password DEFAULTS to '%s' if left blank on the command line.)\n"
-					   "(Folder DEFAULTS to '%s' if left blank.)\n", KEY_PASSWORD, SERVER_PATH_DEFAULT);
+		OTLog::vOutput(0, "\n==> USAGE:    %s  <SSL-password>  <absolute_path_to_data_folder>\n\n"
+#if defined (FELLOW_TRAVELER)					   
+					   "(Password defaults to '%s' if left blank.)\n"
+					   "(Folder defaults to '%s' if left blank.)\n"
+#else
+					   "(The test password is always 'test'.\n'cd data_folder' then 'pwd' to see the absolute path.)\n"
+#endif
+					   "\n\n", argv[0]
+#if defined (FELLOW_TRAVELER)					   
+					   , KEY_PASSWORD, 
+					   SERVER_PATH_DEFAULT
+#endif					   
+					   );
 		
+#if defined (FELLOW_TRAVELER)
 		strSSLPassword.Set(KEY_PASSWORD);
 		OTLog::SetMainPath(SERVER_PATH_DEFAULT);
+#else
+		exit(1);
+#endif
 	}
 	else if (argc < 3)
 	{
-		OTLog::vOutput(0, "Usage:  transaction <SSL-password> <data_folder>\n\n"
-					   "(Folder DEFAULTS to '%s' if left blank.)\n", SERVER_PATH_DEFAULT);
+		OTLog::vOutput(0, "\n==> USAGE:  %s <SSL-password> <absolute_path_to_data_folder>\n\n"
+#if defined (FELLOW_TRAVELER)					      
+					   "(Folder defaults to '%s' if left blank.)\n"
+#endif
+					   "\n\n", argv[0]
+#if defined (FELLOW_TRAVELER)
+					   , SERVER_PATH_DEFAULT
+#endif
+					   );
 		
+#if defined (FELLOW_TRAVELER)					   
 		strSSLPassword.Set(argv[1]);
 		OTLog::SetMainPath(SERVER_PATH_DEFAULT);
+#else
+		exit(1);
+#endif
 	}
 	else 
 	{
@@ -313,6 +338,7 @@ int main(int argc, char* argv[])
 	strCAFile. Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), CA_FILE);
 	strDHFile. Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), DH_FILE);
 	strKeyFile.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), KEY_FILE);
+	
 	
 	
 	// -----------------------------------------------------------------------

@@ -180,24 +180,49 @@ int main(int argc, char* argv[])
 	
 	if (argc < 2)
 	{
-		OTLog::vOutput(0, "\nUsage:  testwallet <SSL-password> <data_folder>\n\n"
+		OTLog::vOutput(0, "\n==> USAGE:    %s   <SSL-password>  <absolute_path_to_data_folder>\n\n"
+#if defined (FELLOW_TRAVELER)					   
 					   "(Password defaults to '%s' if left blank.)\n"
-					   "(Folder defaults to '%s' if left blank.)\n", KEY_PASSWORD, SERVER_PATH_DEFAULT);
+					   "(Folder defaults to '%s' if left blank.)\n"
+#else
+					   "(The test password is always 'test'.\n'cd data_folder' then 'pwd' to see the absolute path.)\n"
+#endif
+					   "\n\n", argv[0]
+#if defined (FELLOW_TRAVELER)					   
+					   , KEY_PASSWORD, 
+					   SERVER_PATH_DEFAULT
+#endif					   
+					   );
 		
+#if defined (FELLOW_TRAVELER)
 		strSSLPassword.Set(KEY_PASSWORD);
 		
 		OTString strClientPath(SERVER_PATH_DEFAULT);
         g_OT_API.Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
+#else
+		exit(1);
+#endif
 	}
 	else if (argc < 3)
 	{
-		OTLog::vOutput(0, "\nUsage:  testwallet <SSL-password> <data_folder>\n\n"
-					   "(Folder defaults to '%s' if left blank.)\n\n", SERVER_PATH_DEFAULT);
+		OTLog::vOutput(0, "\n==> USAGE:    %s   <SSL-password>  <absolute_path_to_data_folder>\n\n"
+#if defined (FELLOW_TRAVELER)					      
+					   "(Folder defaults to '%s' if left blank.)\n"
+#endif
+					   "\n\n", argv[0]
+#if defined (FELLOW_TRAVELER)
+					   , SERVER_PATH_DEFAULT
+#endif
+					   );
 		
+#if defined (FELLOW_TRAVELER)					   
 		strSSLPassword.Set(argv[1]);
 		
 		OTString strClientPath(SERVER_PATH_DEFAULT);
         g_OT_API.Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
+#else
+		exit(1);
+#endif
 	}
 	else 
 	{

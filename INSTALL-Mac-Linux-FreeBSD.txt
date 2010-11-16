@@ -33,20 +33,24 @@ PRE-BUILD:
 
     * On FreeBSD (as root):  cd /usr/ports/security/openssl/ && make install clean
 
+
 --- cd (change directory) to the Open-Transactions folder. <=== ("THE MAIN FOLDER")
 
---- The server and client both still have a hardcoded path in the source code. 
 
-	IT'S JUST A DEFAULT!  It IS configurable on the command line.
-	If you want to change the default:
+------------------------------------------------------------------------
+XCode NOTES:  (IGNORE this section if you aren't using XCode on Mac.)
 
-    Search the code for the word REDACTED, which appears once in the
-    client and once in the server for each platform.
+It's better to just use the Makefile. But if you prefer to use the XCode
+project files, then you need to fix the REDACTED inside those.
 
-    The relevant source files: transaction/testserver.cpp and 
-      testwallet/testclient.cpp
-    As well as the new XmlRpc code: transaction/xmlrpcxx_server.cpp and 
-      testwallet/xmlrpcxx_client.cpp
+XCode project files are:
+Open-Transactions/OTLib/OTLib.xcodeproj/project.pbxproj
+Open-Transactions/testwallet/testwallet.xcodeproj/project.pbxproj
+Open-Transactions/transaction/transaction.xcodeproj/project.pbxproj
+
+Edit those three files and fix wherever it says REDACTED (it will be
+a path -- just set it to whatever path is correct for your own system, 
+you will see what I mean.)
 
     To search for all occurrences, use this command from the "main" folder:  
     fgrep -n REDACTED * */* */*/* */*/*/*
@@ -54,18 +58,22 @@ PRE-BUILD:
     Make sure to replace the REDACTED (entire path) with whatever
     path is appropriate for your system.
 
-------------------------------------------------------------------------
-XCode NOTE:
-It's better to just use the Makefile. But if you prefer to use the XCode
-project files, then you need to fix the REDACTED inside those as well.
+TWO more XCode notes:
+1) The include path issue is addressed by changing:
+Search Paths->Header Search Paths = "/opt/local/include" instead
+of "/usr/local/include" (So you get the macports version of OpenSSL,
+which is 1.0.0a, instead of the default version, which is 0.9.8)
 
-XCode project files are:
-Open-Transactions/OTLib/OTLib.xcodeproj/project.pbxproj
-Open-Transactions/testwallet/testwallet.xcodeproj/project.pbxproj
-Open-Transactions/transaction/transaction.xcodeproj/project.pbxproj
+2) You also have to change a couple links that the Mac system uses to
+point at the "current" OpenSSL:
 
-So make sure to edit all of those files and correct the paths within by
-searching each for the word 'REDACTED'.
+sudo rm /usr/lib/libcrypto.dylib
+sudo ln -s /opt/local/lib/libcrypto.1.0.0.dylib /usr/lib/libcrypto.dylib
+sudo rm /usr/lib/libssl.dylib
+sudo ln -s /opt/local/lib/libssl.1.0.0.dylib /usr/lib/libssl.dylib
+
+Now you should be good to go with XCode!
+
 ------------------------------------------------------------------------
 
 

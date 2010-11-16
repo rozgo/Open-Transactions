@@ -11,24 +11,15 @@ Hash: SAMY
  serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de"
  assetTypeID="19bd9309ee3687224046c47fd3881eb37d5dbc78e5b35de6b7455dc9baa16ca6aebb9011a51dc843c838c48a7a17f130f9d5a1f6fce9d756cb529553f9f48c7d" >
 
-<balance amount="0"/>
+<balance amount="-1000"/>
 
 </assetAccount>
 -----BEGIN ACCOUNT SIGNATURE-----
-Version: Open Transactions 0.31
+Version: Open Transactions 0.35
 Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
 
-zoGZlAE+UcGjPFByhbEYP1x+Mxsag1iZjsAQUZMnZrh7nJsiH3jNng210GLrBT1e
-qG2WzHa6j90wDAuhHnkkiaItJItuwXj1eKMbKyEzl7eEhBUBLgYArgKNZUkWCOez
-nXG6TGk0f1h1A3ccCRR8UO2YsRssz8eTgpdSjX1lebU=
------END ACCOUNT SIGNATURE-----
-
------BEGIN ACCOUNT SIGNATURE-----
-Version: Open Transactions 0.31
-Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
-
-EKHUTzdV3bf4IktN3Xlks72H1/i3PtJ1LuhLS/jTKuCf0WhB4uzeTz9rogvxvcYz
-t2qB6sbx6xrFhNdYELb2rnUl8jFGvnEJ0s4vtD+JtwxN37ftvKLaYAelbDdoe5NR
-D0+yxKXPEjfycBBgR61yAbhlHuK1HmYo3bQKxn6I7BY=
+TR8pV6ktbolPxQ7Tjy7y5Z7Etwgt/LH5Q9R3/gCBMIxfZtbriguXyyWB8VGUxZyu
+z8NZwuOfsgdJ8lAc5Yeh6oMfVFZX08n8IRtr8Q6Vik4SoHOOxTKPil6Lf+eBjz+A
+TrxvTjJcGwOKg3TCN90s1wpjox7VP+Y88wqAJy3ITMY=
 -----END ACCOUNT SIGNATURE-----
 

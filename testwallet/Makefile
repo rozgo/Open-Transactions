@@ -23,6 +23,20 @@ UNAME := $(shell uname -s)
 
 OT_PLATFORM := ___OT_PLATFORM_UNKNOWN___
 
+ifeq ($(FELLOW_TRAVELER), 1)
+FT_FLAGS = -DFELLOW_TRAVELER
+else
+FT_FLAGS = #empty
+endif
+
+
+# The code will automatically accept the entire inbox, if compiled
+# in test client mode.  But if it's compiled in API mode, then you
+# have to manually go through the inbox items and allow your user
+# the opportunity to accept or reject them.
+#
+TEST_CLIENT := 1
+
 # I allow the user the option to force-override the build platform.
 # Using make PLATFORM=darwin, for example, you will build in darwin mode
 # even if you are on a linux box.
@@ -202,7 +216,7 @@ CXXSOURCES = \
 
 CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
 COBJECTS   = $(CSOURCES:.c=.o)
-CFLAGS     = $(INCLUDEDIRS) $(API_CFLAGS) -c
+CFLAGS     = $(INCLUDEDIRS) $(API_CFLAGS) $(FT_FLAGS) -c 
 DEBUG_FLAGS = -g
 CXX = g++
 CC = $(C_COMPILER)

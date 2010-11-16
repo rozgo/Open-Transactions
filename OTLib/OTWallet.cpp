@@ -575,7 +575,51 @@ int OTWallet::SaveWallet(const char * szFilename)
 
 
 
-void OTWallet::AddAccount(OTAccount & theAcct)
+
+
+// Wallet takes ownership and will delete.
+// theNym is passed as reference only to prove that it's real.
+//
+// This function assumes the Nym has already been loaded, verified, etc.
+// AND that it's been dynamically allocated.
+//
+void OTWallet::AddNym(const OTPseudonym & theNym)
+{
+	g_pTemporaryNym = (OTPseudonym *)&theNym; // TODO remove this temporary line used for testing only.	
+
+	
+	
+	const OTIdentifier	NYM_ID(theNym);
+
+	OTPseudonym * pNym	= NULL;
+	OTIdentifier aNymID;
+	
+	for (mapOfNyms::iterator ii = m_mapNyms.begin(); ii != m_mapNyms.end(); ++ii)
+	{	
+		pNym = (*ii).second;
+		
+		OT_ASSERT(NULL != pNym);
+		
+		pNym->GetIdentifier(aNymID);
+		
+		if (aNymID == NYM_ID)
+		{
+			m_mapNyms.erase(ii);
+			delete pNym;
+			pNym = NULL;
+			
+			OTLog::Error("Error: Adding Nym to wallet when there was already one there with same ID...\n");
+			
+			break;
+		}
+	}
+		
+	const OTString	strNymID(NYM_ID);
+	m_mapNyms[strNymID.Get()] = (OTPseudonym *)&theNym; // Insert to wallet's list of Nyms.
+}
+
+
+void OTWallet::AddAccount(const OTAccount & theAcct)
 {
 	const OTIdentifier	ACCOUNT_ID(theAcct);
 	
@@ -598,12 +642,13 @@ void OTWallet::AddAccount(OTAccount & theAcct)
 			m_mapAccounts.erase(ii);
 			delete pAccount;
 			pAccount = NULL;
+			
 			break;
 		}
 	}
 	
 	const OTString	strAcctID(ACCOUNT_ID);
-	m_mapAccounts[strAcctID.Get()] = &theAcct;
+	m_mapAccounts[strAcctID.Get()] = (OTAccount *)&theAcct;
 }
 
 
@@ -669,6 +714,10 @@ OTAssetContract * OTWallet::GetAssetContract(const OTIdentifier & theContractID)
 	
 	return NULL;	
 }
+
+
+
+
 
 bool OTWallet::LoadWallet(const char * szFilename)
 {
@@ -780,9 +829,9 @@ bool OTWallet::LoadWallet(const char * szFilename)
 							{
 	   // pNym->SaveSignedNymfile(*pNym); // Uncomment this if you want to generate a new nym by hand. NORMALLY LEAVE IT COMMENTED OUT!!!! IT'S DANGEROUS!!!
 								
-								m_mapNyms[NymID.Get()] = pNym; // Nym loaded. Insert to wallet's list of Nyms.
+								this->AddNym(*pNym); // Nym loaded. Insert to wallet's list of Nyms.
 								
-								g_pTemporaryNym = pNym; // TODO remove this temporary line used for testing only.
+								// ------------------------------------------------------------
 							}
 							else 
 							{
@@ -892,24 +941,8 @@ bool OTWallet::LoadWallet(const char * szFilename)
 					
 					if (pAccount)
 					{
-						m_mapAccounts[AcctID.Get()] = pAccount;
-						
-						// TODO remove this test code that makes sure the first pseudonym loaded is the signer on these accounts
-						if (g_pTemporaryNym)
-						{
-							bool bVerified = pAccount->VerifySignature(*g_pTemporaryNym);
-							
-							if (bVerified) {
-								OTLog::Output(0, "Verified that this Pseudonym HAS signed this account.\n");
-							}
-							else
-							{
-								OTLog::vOutput(0, "Verified that this Pseudonym has *NOT* signed this account: %s\n",
-										AcctID.Get());
-							}
-						}
-						// --------------------------------------------------------------
-						
+						this->AddAccount(*pAccount);
+						// -----------------------------------------------------
 					}
 					else 
 					{
