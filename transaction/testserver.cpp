@@ -171,8 +171,8 @@ int main (int argc, char **argv)
 {
 	OTLog::vOutput(0, "\n\nWelcome to Open Transactions... Test Server -- version %s\n"
 				   "(transport build: OTMessage -> TCP -> SSL)\n"
-				   "NOTE: IF YOU PREFER TO USE XmlRpc with Http transport, then rebuild using:\n"
-				   "\"make -f Makefile.rpc\" (but make sure the client is built the same way.)\n\n", 
+				   "IF YOU PREFER TO USE XmlRpc with HTTP, then rebuild from main folder like this:\n\n"
+				   "cd ..; make clean; make rpc\n\n", 
 				   OTLog::Version());
 	
 	// -----------------------------------------------------------------------
@@ -195,34 +195,59 @@ int main (int argc, char **argv)
 	// -----------------------------------------------------------------------
 
 	OTString strCAFile, strDHFile, strKeyFile, strSSLPassword;
-
+	
 	if (argc < 2)
 	{
-		OTLog::vOutput(0, "Usage:  transaction <SSL-password> <data_folder path>\n\n"
-				"(Password defaults to '%s' if left blank on the command line.)\n"
-				"(Folder defaults to '%s' if left blank.)\n", KEY_PASSWORD, SERVER_PATH_DEFAULT);
+		OTLog::vOutput(0, "\n==> USAGE:  %s <SSL-password> <absolute_path_to_data_folder>\n\n"
+#if defined (FELLOW_TRAVELER)					   
+					   "(Password defaults to '%s' if left blank.)\n"
+					   "(Folder defaults to '%s' if left blank.)\n"
+#else
+					   "(The test password is always 'test'.\n'cd data_folder' then 'pwd' to see the absolute path.)\n"
+#endif
+					   "\n\n", argv[0]
+#if defined (FELLOW_TRAVELER)					   
+					   , KEY_PASSWORD, 
+					   SERVER_PATH_DEFAULT
+#endif					   
+					   );
 		
+#if defined (FELLOW_TRAVELER)
 		strSSLPassword.Set(KEY_PASSWORD);
 		OTLog::SetMainPath(SERVER_PATH_DEFAULT);
+#else
+		exit(1);
+#endif
 	}
 	else if (argc < 3)
 	{
-		OTLog::vOutput(0, "Usage:  transaction <SSL-password> <data_folder path>\n\n"
-				"(Folder defaults to '%s' if left blank.)\n", SERVER_PATH_DEFAULT);
+		OTLog::vOutput(0, "\n==> USAGE:    %s   <SSL-password>   <absolute_path_to_data_folder>\n\n"
+#if defined (FELLOW_TRAVELER)					      
+					   "(Folder defaults to '%s' if left blank.)\n"
+#endif
+					   "\n\n", argv[0]
+#if defined (FELLOW_TRAVELER)
+					   , SERVER_PATH_DEFAULT
+#endif
+					   );
 		
+#if defined (FELLOW_TRAVELER)					   
 		strSSLPassword.Set(argv[1]);
 		OTLog::SetMainPath(SERVER_PATH_DEFAULT);
+#else
+		exit(1);
+#endif
 	}
 	else 
 	{
 		strSSLPassword.Set(argv[1]);
 		OTLog::SetMainPath(argv[2]);
 	}	
-
+	
 	strCAFile. Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), CA_FILE);
 	strDHFile. Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), DH_FILE);
 	strKeyFile.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), KEY_FILE);
-
+	
 	
 	// -----------------------------------------------------------------------
 

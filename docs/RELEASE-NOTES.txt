@@ -3,6 +3,93 @@ NOTES on the Version:
 
 // ---------------------------------------------------------------------
 
+   0.35 --- Huge additions to the API! See testwallet/OTAPI_funcdef.h
+            for the complete interface, with NOTES above each function.
+ 
+            That same interface is also wrapped by SWIG, and available
+            in Java, Python, Ruby, Perl, Php, Lisp, etc, so those OTAPI
+            functions are relevant to ALL developers...
+
+            People have asked about documentation so hopefully the API,
+            plus the notes within, will answer any questions for now
+            until more professional docs can be written. As always, feel
+            free to contact me with any questions.
+
+            This release continues my push to make the library EASY and
+            ACCESSIBLE to all developers, in all languages, on all
+            platforms.  There are already multiple developers who are
+            starting to play around with client software using the OTAPI,
+            and I am very responsive to their needs.
+
+            *** The latest SECURITY notes..
+
+            ..Any new software requires testing with users AND peer review!
+              Open Transactions was recently reviewed by Ben Laurie, and
+              I accepted all the changes that he submitted. It's a good
+              start!  This process must continue.
+
+            ..In this release I have replaced all instances of strcpy
+              with strlcpy/strcpy_s, and all instances of sprintf with
+              snprintf/sprintf_s, and all instances of vsprintf with
+              vsnprintf/vsprintf_s, and all instances of strcat with
+              strlcat/strcat_s.  It's important to make sure there are no
+              buffer overflows in this code.
+
+            ..I also set up the code with Valgrind, and went through all
+              the warnings, adding comments, fixes, and exclusions where
+              appropriate or necessary. This process will continue, but
+              it's important to run code scanners on this sort of software!
+            
+   0.34 --- (Various additions to the API at developer request.)
+ 
+   0.33 --- Slicker build process. This release is all about having an
+            EASY BUILD PROCESS, and is based on real-world feedback I've
+            been getting from YOU, my testers: 
+
+        *   For ALL users: XmlRpc++ is now part of the distribution,
+            and is part of the build process. Various users had trouble
+            installing this library separately, so I integrated it into
+            the project. Now it's built-in! 
+
+        *   For ALL users: Platform now auto-detected by MUCH easier/
+            slicker Makefiles. 
+            (And as with the last release, I was able to eliminate 
+            several Makefiles.) To build (from main folder), just type: 
+
+             make 
+
+   (You may prefer 'make rpc', to build in the preferred XmlRpc mode.)
+
+         *   To build the API: 
+             cd testwallet; 
+             make -f Makefile.API TRANSPORT=XmlRpc LANGUAGE=c 
+             make -f Makefile.API TRANSPORT=XmlRpc LANGUAGE=ruby 
+             make -f Makefile.API TRANSPORT=XmlRpc LANGUAGE=java 
+             make -f Makefile.API TRANSPORT=XmlRpc LANGUAGE=python 
+             make -f Makefile.API TRANSPORT=XmlRpc LANGUAGE=perl5 
+             make -f Makefile.API TRANSPORT=XmlRpc LANGUAGE=php5 
+             make -f Makefile.API TRANSPORT=XmlRpc LANGUAGE=lisp 
+             Etc... 
+             Slick, eh? In all the above cases, the platform is
+             automatically detected. 
+             See testwallet/API-README.txt for more notes. 
+
+        *   For MAC users: The Makefiles had been using the wrong
+            location for OpenSSL (at least, for the Macports 1.0.0a
+            version) so I fixed this. The previous Makefiles referenced
+            the default location, where (the wrong) version 0.9.8 can be
+            found. (The new version looks in /opt, as used by MacPorts.) 
+
+         *   For LINUX users: Now, OT attempts to link 64-bit libs where
+             appropriate. 
+
+         *   For FREEBSD users: The full new Makefile is now FULLY
+             operational on FreeBSD, including the utilities
+             "createmint.exe" and "signcontract.exe", which were
+             previously unsupported on FreeBSD. 
+
+  // ---------------------------------------------------------------------
+
    0.31 --- Native API, with easy Makefiles, added for C, C++, Objective-C,
             C#, Java, Lisp, Ruby, Python, Perl, PHP, and Tcl. Also
             supporting JRuby, Jython, and any other languages on the JVM. 
@@ -11,6 +98,8 @@ NOTES on the Version:
             means it is now VERY EASY to swap out to different forms of
             transport (though XmlRpc is probably the last form we'll ever
             need.)
+
+  // ---------------------------------------------------------------------
 
    0.30 --- MAJOR RELEASE! Markets, Payment Plans, and OT as a Web Service!
 

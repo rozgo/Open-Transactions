@@ -152,7 +152,7 @@ class OTLedger;
 
 typedef std::list  <OTItem *>	listOfItems;
 
-//TODO: need to enforce transaction numbers. request numbers are real but transaction nubmers aren't (yet).
+
 
 class OTTransaction : public OTTransactionType
 {	
@@ -186,7 +186,7 @@ public:
 		atPaymentPlan,	// reply from the server regarding a payment plan
 // --------------------------------------------------------------------------------------
 		error_state
-	};
+	}; // If you add any types to this list, update the list of strings at the top of the .CPP file.
 
 	
 protected:	
@@ -207,6 +207,7 @@ protected:
 	virtual void UpdateContents(); // Before transmission or serialization, this is where the transaction saves its contents 
 	
 public:
+	
 	OTTransaction(const OTLedger & theOwner);
 	OTTransaction(const OTIdentifier & theUserID, const OTIdentifier & theAccountID, const OTIdentifier & theServerID);
 	OTTransaction(const OTIdentifier & theUserID, const OTIdentifier & theAccountID, const OTIdentifier & theServerID, long lTransactionNum);
@@ -234,6 +235,15 @@ public:
 									// OTTransaction will take care of it from there and will delete it in destructor.
 //	virtual bool SaveContractWallet(FILE * fl);	
 	virtual bool SaveContractWallet(std::ofstream & ofs);
+
+// --------------------------------------------------------------
+	
+	static const char * _TypeStrings[]; // for translating transaction type into a string.
+	
+	static inline const char * _GetTypeString(transactionType theType)
+		{ int nType = (int)theType; return OTTransaction::_TypeStrings[nType]; }
+	
+	inline const char * GetTypeString() { return OTTransaction::_GetTypeString(m_Type); }
 };
 
 

@@ -155,6 +155,9 @@ size_t strlcat(char *d, const char *s, size_t bufsize)
  */
 
 
+
+
+
 // ------ I cannot vouch for these top four functions, I wrote them so long ago.
 // ------ But they can't hurt and I don't think they're being used anyway so I left them in for now.
 //
@@ -619,7 +622,8 @@ void OTString::Format(const char *arg, ...)
 #ifdef _WIN32
 	vsprintf_s(new_string, MAX_STRING_LENGTH, arg, args);
 #else
-	vsprintf(new_string, arg, args);
+//	vsprintf(new_string, arg, args);
+	vsnprintf(new_string, MAX_STRING_LENGTH, arg, args);
 #endif
 
    va_end(args);
@@ -651,7 +655,7 @@ void OTString::Concatenate(const OTString & strBuf)
       sprintf_s(new_string, MAX_STRING_LENGTH, "%s%s", m_strBuffer, pBuf);
    }
 #else
-      sprintf(new_string, "%s%s", m_strBuffer, strBuf.Get());
+	snprintf(new_string, MAX_STRING_LENGTH, "%s%s", m_strBuffer, strBuf.Get());
 #endif
    else
 #ifdef _WIN32
@@ -660,7 +664,7 @@ void OTString::Concatenate(const OTString & strBuf)
 	   strcpy_s(new_string, MAX_STRING_LENGTH, pBuf);
    }
 #else
-      strcpy(new_string, strBuf.Get());
+      strlcpy(new_string, strBuf.Get(), MAX_STRING_LENGTH);
 #endif
 
    Set(new_string);
@@ -703,7 +707,8 @@ void OTString::Concatenate(const char *arg, ...)
 #ifdef _WIN32
 	vsprintf_s(arg_string, MAX_STRING_LENGTH, arg, args);
 #else
-	vsprintf(arg_string, arg, args); // TODO: replace this with a secure version.
+//	vsprintf(arg_string, arg, args);
+	vsnprintf(arg_string, MAX_STRING_LENGTH, arg, args);
 #endif
 
    va_end(args);
@@ -712,13 +717,13 @@ void OTString::Concatenate(const char *arg, ...)
 #ifdef _WIN32
 		sprintf_s(new_string, MAX_STRING_LENGTH, "%s%s", m_strBuffer, arg_string);
 #else
-		sprintf(new_string, "%s%s", m_strBuffer, arg_string);
+		snprintf(new_string, MAX_STRING_LENGTH, "%s%s", m_strBuffer, arg_string);
 #endif // _WIN32
 	else
 #ifdef _WIN32
 		strcpy_s(new_string, MAX_STRING_LENGTH, arg_string);
 #else
-		strcpy(new_string, arg_string);
+		strlcpy(new_string, arg_string, MAX_STRING_LENGTH);
 #endif // _WIN32
 
 	
@@ -732,9 +737,9 @@ void OTString::Concatenate(const char *arg_string)
    char new_string[MAX_STRING_LENGTH];
 
    if (Exists())
-      sprintf(new_string, "%s%s", m_strBuffer, arg_string);
+      snprintf(new_string, MAX_STRING_LENGTH, "%s%s", m_strBuffer, arg_string);
    else
-      strcpy(new_string, arg_string);
+      strlcpy(new_string, arg_string, MAX_STRING_LENGTH);
 
    Set(new_string);
 }
@@ -786,7 +791,7 @@ char *str_dup1(const char *str)
 #ifdef _WIN32
   strcpy_s(str_new, strlen(str), str);
 #else
-  strcpy(str_new, str);
+  strlcpy(str_new, str, strlen(str));
 #endif
 
   return str_new;

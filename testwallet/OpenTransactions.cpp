@@ -108,13 +108,13 @@ extern "C"
 #include "OTMessage.h"
 #include "OTWallet.h"
 #include "OTEnvelope.h"
-
+#include "OTCheque.h"
+#include "OTAccount.h"
 #include "OTTransaction.h"
 #include "OTMint.h"
 #include "OTToken.h"
 #include "OTPurse.h"
 #include "OTLedger.h"
-#include "OTCheque.h"
 #include "OTLog.h"
 
 #include "OpenTransactions.h"
@@ -372,6 +372,632 @@ OTAccount * OT_API::GetAccount(const OTIdentifier & THE_ID)
 }
 
 
+
+// CALLER is responsible to delete this Nym!
+//
+OTPseudonym * OT_API::LoadPublicNym(const OTIdentifier & NYM_ID)
+{
+	OTPseudonym * pNym = new OTPseudonym(NYM_ID);
+	
+	OT_ASSERT(NULL != pNym);
+	
+	// First load the public key
+	if (false == pNym->LoadPublicKey())
+	{
+		OTString strNymID(NYM_ID);
+		OTLog::vError("Failure loading Nym public key in OT_API::LoadPublicNym: %s\n", 
+					  strNymID.Get());
+	}
+	else if (false == pNym->VerifyPseudonym())
+	{
+		OTString strNymID(NYM_ID);
+		OTLog::vError("Failure verifying Nym public key in OT_API::LoadPublicNym: %s\n", 
+					  strNymID.Get());
+	}
+	else if (false == pNym->LoadSignedNymfile(*pNym))
+	{
+		OTString strNymID(NYM_ID);
+		OTLog::vError("Failure loading signed NymFile in OT_API::LoadPublicNym: %s\n", 
+					  strNymID.Get());
+	}
+	else // success 
+	{
+		return pNym;
+	}
+	
+	delete pNym; 
+	pNym = NULL;
+
+	return NULL;
+}
+
+
+// CALLER is responsible to delete the Nym that's returned here!
+//
+OTPseudonym * OT_API::LoadPrivateNym(const OTIdentifier & NYM_ID)
+{	
+	OTPseudonym * pNym = new OTPseudonym(NYM_ID);
+	
+	OT_ASSERT(NULL != pNym);
+	
+	if (pNym->Loadx509CertAndPrivateKey())
+	{
+		if (pNym->VerifyPseudonym()) 
+		{
+			if (pNym->LoadSignedNymfile(*pNym)) 
+			{
+				return pNym;
+			}
+			else 
+			{
+				OTString strNymID(NYM_ID);
+				OTLog::vError("Failure calling LoadSignedNymfile in OT_API::LoadPrivateNym: %s\n", 
+							  strNymID.Get());
+			}
+		}
+		else 
+		{
+			OTString strNymID(NYM_ID);
+			OTLog::vError("Failure verifying Nym public key in OT_API::LoadPrivateNym: %s\n", 
+						  strNymID.Get());
+		}
+	}
+	else 
+	{
+		// Error loading x509CertAndPrivateKey.
+		OTString strNymID(NYM_ID);
+		OTLog::vError("Failure calling Loadx509CertAndPrivateKey in OT_API::LoadPrivateNym: %s\n", 
+					  strNymID.Get());
+	}
+	
+	delete pNym; 
+	pNym = NULL;
+	
+	return NULL;
+}
+
+
+
+// WRITE CHEQUE
+//
+// Returns an OTCheque pointer, or NULL. 
+// (Caller responsible to delete.)
+//
+OTCheque * OT_API::WriteCheque(const OTIdentifier & SERVER_ID,
+							   const long &			CHEQUE_AMOUNT, 
+							   const time_t &		VALID_FROM, 
+							   const time_t &		VALID_TO,
+							   const OTIdentifier & SENDER_ACCT_ID,
+							   const OTIdentifier & SENDER_USER_ID,
+							   const OTString &		CHEQUE_MEMO, 
+							   const OTIdentifier * pRECIPIENT_USER_ID/*=NULL*/)
+{
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(SENDER_USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(SENDER_USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return NULL;
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+
+	OTAccount * pAccount = pWallet->GetAccount(SENDER_ACCT_ID);
+	
+	if (NULL == pAccount)
+	{
+		OTLog::Output(0, "There's no asset account in the wallet with that ID. Trying to load from storage...\n");
+		
+		pAccount =  OTAccount::LoadExistingAccount(SENDER_ACCT_ID, SERVER_ID);
+		
+		if (NULL != pAccount) // It loaded...
+		{
+			if (SERVER_ID != pAccount->GetRealServerID())
+			{
+				OTLog::Output(0, "Writing a cheque, server ID passed in didn't match the one on the account.\n");
+				delete pAccount; pAccount = NULL;
+				return NULL;			
+			}
+			
+			pWallet->AddAccount(*pAccount);
+			// -----------------------------------------------------
+		}
+		else 
+		{
+			OTLog::Error("Error loading Asset Account in OT_API::WriteCheque\n");
+			return NULL;
+		}
+	}
+	
+	// By this point, pAccount is a good pointer and in the wallet. 
+	// (No need to cleanup.) I also know it has the right Server ID.
+		
+	// -----------------------------------------------------
+	
+	if (false == pAccount->VerifyOwner(*pNym)) // Verifies Ownership.
+	{
+		OTLog::Output(0, "User is not the owner of the account / tried to write a cheque.\n");
+		return NULL;			
+	}
+	
+	// By this point, I know the user is listed on the account as the owner.
+	
+	// -----------------------------------------------------
+	
+	if (false == pAccount->VerifyAccount(*pNym)) // Verifies ContractID and Signature.
+	{
+		OTLog::Output(0, "Bad signature or Account ID / tried to write a cheque.\n");
+		return NULL;			
+	}
+	
+	// By this point, I know that everything checks out. Signature and Account ID.
+	
+	// -----------------------------------------------------
+	
+	// To write a cheque, we need to burn one of our transaction numbers. (Presumably the wallet
+	// is also storing a couple of these, since they are needed to perform any transaction.)
+	//
+	// I don't have to contact the server to write a cheque -- as long as I already have a transaction
+	// number I can use to write it with. (Otherwise I'd have to ask the server to send me one first.)
+	//
+	OTString strServerID(SERVER_ID);
+	long lTransactionNumber=0; // Notice I use the server ID on the ACCOUNT.
+	
+	if (false == pNym->GetNextTransactionNum(*pNym, strServerID, lTransactionNumber))
+	{
+		OTLog::Output(0, "User attempted to write a cheque, but had no transaction numbers.\n");
+		return NULL;
+	}
+	
+	// At this point, I know that lTransactionNumber contains one I can use.
+	
+	// -----------------------------------------------------
+	
+	OTCheque * pCheque = new OTCheque(pAccount->GetRealServerID(), 
+									  pAccount->GetAssetTypeID());
+	
+	OT_ASSERT(NULL != pCheque);
+	
+	// At this point, I know that pCheque is a good pointer that I either
+	// have to delete, or return to the caller.
+	
+	// -----------------------------------------------------
+
+	bool bIssueCheque = pCheque->IssueCheque(CHEQUE_AMOUNT, 
+											 lTransactionNumber, 
+											 VALID_FROM, VALID_TO, 
+											 SENDER_ACCT_ID, 
+											 SENDER_USER_ID, 
+											 CHEQUE_MEMO,
+											 pRECIPIENT_USER_ID);
+	if (false == bIssueCheque) 
+	{
+		OTLog::Error("OTCheque::IssueCheque failed in OT_API::WriteCheque.\n");
+		
+		delete pCheque; pCheque = NULL;
+		return NULL;			
+	}
+	
+	return pCheque;
+}
+
+
+// LOAD PURSE
+//
+// Returns an OTPurse pointer, or NULL. 
+// (Caller responsible to delete.)
+//
+OTPurse * OT_API::LoadPurse(const OTIdentifier & SERVER_ID,
+							const OTIdentifier & ASSET_ID)
+{	
+	const OTString strAssetTypeID(ASSET_ID);
+	
+	// -----------------------------------------------------------------
+	
+	bool bConfirmPurseMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::PurseFolder());
+	
+	if (!bConfirmPurseMAINFolder)
+	{
+		OTLog::vError("OT_API::LoadPurse: Unable to find or "
+					  "create main purse directory: %s%s%s\n", 
+					  OTLog::Path(), OTLog::PathSeparator(), OTLog::PurseFolder());
+		
+		return NULL;
+	}
+	
+	// -----------------------------------------------------------------
+	
+	OTString strServerID(SERVER_ID);
+	
+	OTString strPurseDirectoryPath;
+	strPurseDirectoryPath.Format("%s%s%s", 
+								 OTLog::PurseFolder(), OTLog::PathSeparator(),
+								 strServerID.Get());
+	
+	bool bConfirmPurseFolder = OTLog::ConfirmOrCreateFolder(strPurseDirectoryPath.Get());
+	
+	if (!bConfirmPurseFolder)
+	{
+		OTLog::vError("OT_API::LoadPurse: Unable to find or create purse subdir "
+					  "for server ID: %s\n\n", 
+					  strPurseDirectoryPath.Get());
+		return NULL;
+	}
+	
+	// ----------------------------------------------------------------------------
+	
+	OTString strPursePath;
+	strPursePath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+						strPurseDirectoryPath.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
+	
+	OTPurse * pPurse = new OTPurse(SERVER_ID, ASSET_ID);
+	
+	OT_ASSERT(NULL != pPurse); // responsible to delete or return pPurse below this point.
+	
+	if (pPurse->LoadContract(strPursePath.Get()))
+		return pPurse;
+
+	delete pPurse; 
+	pPurse = NULL;
+	
+	return NULL;
+}
+
+
+// LOAD Mint
+//
+// Returns an OTMint pointer, or NULL. 
+// (Caller responsible to delete.)
+//
+OTMint * OT_API::LoadMint(const OTIdentifier & SERVER_ID,
+						  const OTIdentifier & ASSET_ID)
+{	
+	const OTString strAssetTypeID(ASSET_ID);
+	
+	// -----------------------------------------------------------------
+	
+	bool bConfirmMintMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::MintFolder());
+	
+	if (!bConfirmMintMAINFolder)
+	{
+		OTLog::vError("OT_API::LoadMint: Unable to find or "
+					  "create main Mint directory: %s%s%s\n", 
+					  OTLog::Path(), OTLog::PathSeparator(), OTLog::MintFolder());
+		
+		return NULL;
+	}
+	
+	// -----------------------------------------------------------------
+	
+	OTString strServerID(SERVER_ID);
+	
+	OTString strMintDirectoryPath;
+	strMintDirectoryPath.Format("%s%s%s", 
+								 OTLog::MintFolder(), OTLog::PathSeparator(),
+								 strServerID.Get());
+	
+	bool bConfirmMintFolder = OTLog::ConfirmOrCreateFolder(strMintDirectoryPath.Get());
+	
+	if (!bConfirmMintFolder)
+	{
+		OTLog::vError("OT_API::LoadMint: Unable to find or create Mint subdir "
+					  "for server ID: %s\n\n", 
+					  strMintDirectoryPath.Get());
+		return NULL;
+	}
+	
+	// ----------------------------------------------------------------------------
+	
+	OTString strMintPath;
+	strMintPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+						strMintDirectoryPath.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
+	
+	OTMint * pMint = new OTMint(strAssetTypeID, strMintPath, strAssetTypeID);
+	
+	OT_ASSERT(NULL != pMint); // responsible to delete or return pMint below this point.
+	
+	if (false == pMint->LoadContract())
+	{
+		OTLog::vOutput(0, "OT_API::LoadMint: Unable to load Mintfile : %s\n", 
+					   strMintPath.Get());
+		delete pMint; pMint = NULL;
+		return NULL;		
+	}
+	
+	// I know by this point that pMint is a good pointer AND
+	// that I have successfully loaded the Mint file...
+	
+	return pMint;
+}
+
+
+// LOAD ASSET CONTRACT (from local storage)
+//
+// Caller is responsible to delete.
+//
+OTAssetContract * OT_API::LoadAssetContract(const OTIdentifier & ASSET_ID)
+{
+	OTString strAssetTypeID(ASSET_ID);
+	
+	// -----------------------------------------------------------------
+	
+	bool bConfirmContractFolder = OTLog::ConfirmOrCreateFolder(OTLog::ContractFolder());
+	
+	if (!bConfirmContractFolder)
+	{
+		OTLog::vError("OT_API::LoadAssetContract: Unable to find or "
+					  "create Contract directory: %s%s%s\n", 
+					  OTLog::Path(), OTLog::PathSeparator(), OTLog::ContractFolder());
+		
+		return NULL;
+	}
+	
+	// -----------------------------------------------------------------
+	
+	OTString strContractPath;
+	strContractPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						   OTLog::ContractFolder(),
+						   OTLog::PathSeparator(), strAssetTypeID.Get());
+	
+	OTAssetContract * pContract = new OTAssetContract(strAssetTypeID, strContractPath, strAssetTypeID);
+	
+	OT_ASSERT_MSG(NULL != pContract, "Error allocating memory for Asset "
+				  "Contract in OT_API::LoadAssetContract\n");
+	
+	if (pContract->LoadContract() && pContract->VerifyContract())
+	{
+		return pContract;
+	}
+	
+	delete pContract; 
+	pContract = NULL;
+	
+	return NULL;
+}
+
+
+
+// LOAD ASSET ACCOUNT
+//
+// Caller is NOT responsible to delete -- I add it to the wallet!
+//
+OTAccount * OT_API::LoadAssetAccount(const OTIdentifier & SERVER_ID,
+									 const OTIdentifier & USER_ID,
+									 const OTIdentifier & ACCOUNT_ID)
+{
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			return NULL;
+		}
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	// We don't care if this asset account is already loaded in the wallet.
+	// Presumably, the user has just download the latest copy of the account
+	// from the server, and the one in the wallet is old, so now this function
+	// is being called to load the new one from storage and update the wallet.
+	//
+	OTAccount * pAcct = OTAccount::LoadExistingAccount(ACCOUNT_ID, SERVER_ID);
+	
+	if (NULL == pAcct)
+	{
+		OTString strServerID(SERVER_ID), strAcctID(ACCOUNT_ID);
+		OTLog::vOutput(0, "Failed calling OTAccount::LoadExistingAccount in OT_API::LoadAssetAccount.\n"
+					   " Server ID: %s\n Account ID: %s\n", strServerID.Get(), strAcctID.Get());
+		return NULL;
+	}
+	
+	// Beyond this point, I know that pAcct is loaded and will need to be deleted or returned.
+	// ------------------------------------------------------
+	
+	// I call VerifySignature here since VerifyContractID was already called in LoadExistingAccount().
+	if (!pAcct->VerifyOwner(*pNym) || !pAcct->VerifySignature(*pNym))
+	{
+		OTString strUserID(USER_ID), strAcctID(ACCOUNT_ID);
+		
+		OTLog::vOutput(0, "Unable to verify ownership or signature on account:\n%s\n For user:\n%s\n",
+					   strAcctID.Get(), strUserID.Get());
+		
+		delete pAcct;
+		pAcct = NULL;
+		
+		return  NULL;
+	}
+	
+	// Beyond this point, I know the account is verified for the Nym...
+	// Therefore, add it to the wallet (caller is NOT responsible to delete.)
+	//
+	pWallet->AddAccount(*pAcct);
+	
+	return pAcct;
+}
+
+
+// LOAD INBOX
+//
+// Caller IS responsible to delete
+//
+OTLedger * OT_API::LoadInbox(const OTIdentifier & SERVER_ID,
+							 const OTIdentifier & USER_ID,
+							 const OTIdentifier & ACCOUNT_ID)
+{
+	// -----------------------------------------------------
+
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			return NULL;
+		}
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	OTLedger * pLedger = new OTLedger(USER_ID, ACCOUNT_ID, SERVER_ID);
+	
+	OT_ASSERT(NULL != pLedger);
+	
+	// Beyond this point, I know that pLedger will need to be deleted or returned.
+	// ------------------------------------------------------
+	
+	if (pLedger->LoadInbox() && pLedger->VerifyAccount(*pNym))
+		return pLedger;
+	else
+	{
+		OTString strUserID(USER_ID), strAcctID(ACCOUNT_ID);
+		
+		OTLog::vOutput(0, "Unable to load or verify inbox:\n%s\n For user:\n%s\n",
+					   strAcctID.Get(), strUserID.Get());
+		
+		delete pLedger;
+		pLedger = NULL;		
+	}
+	
+	return  NULL;
+}
+
+
+// LOAD OUTBOX
+//
+// Caller IS responsible to delete
+//
+OTLedger * OT_API::LoadOutbox(const OTIdentifier & SERVER_ID,
+							 const OTIdentifier & USER_ID,
+							 const OTIdentifier & ACCOUNT_ID)
+{	
+	// -----------------------------------------------------------------
+
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			return NULL;
+		}
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	OTLedger * pLedger = new OTLedger(USER_ID, ACCOUNT_ID, SERVER_ID);
+	
+	OT_ASSERT(NULL != pLedger);
+	
+	// Beyond this point, I know that pLedger is loaded and will need to be deleted or returned.
+	// ------------------------------------------------------
+	
+	if (pLedger->LoadOutbox() && pLedger->VerifyAccount(*pNym))
+		return pLedger;
+	else
+	{
+		OTString strUserID(USER_ID), strAcctID(ACCOUNT_ID);
+		
+		OTLog::vOutput(0, "Unable to load or verify outbox:\n%s\n For user:\n%s\n",
+					   strAcctID.Get(), strUserID.Get());
+		
+		delete pLedger;
+		pLedger = NULL;		
+	}
+	
+	return  NULL;
+}
+
+// --------------------------------------------------------------------
+
+
+
+
+
+// ABOVE ARE COMMANDS TO MANIPULATE LOCAL DATA (**NOT** MESSAGE THE SERVER.)
+
+
 // ---------------------------------------------------------------------
 
 
@@ -383,7 +1009,7 @@ OTAccount * OT_API::GetAccount(const OTIdentifier & THE_ID)
 // But for right now, it just connects to the first server in the list.
 // TODO: make it connect to the server ID instead of the first one in the list.
 //
-bool OT_API::connectServer(OTIdentifier & SERVER_ID, OTIdentifier	& USER_ID,
+bool OT_API::ConnectServer(OTIdentifier & SERVER_ID, OTIdentifier	& USER_ID,
 						   OTString & strCA_FILE, OTString & strKEY_FILE, OTString & strKEY_PASSWORD)
 {
 #if defined(OT_XMLRPC_MODE)
@@ -427,7 +1053,7 @@ bool OT_API::connectServer(OTIdentifier & SERVER_ID, OTIdentifier	& USER_ID,
 // Perhaps once per second, and more often immediately following
 // a request.  (Usually only one response comes for each request.)
 //
-bool OT_API::processSockets()
+bool OT_API::ProcessSockets()
 {
 #if defined(OT_XMLRPC_MODE)
 	return false;
@@ -635,13 +1261,50 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
+	bool bConfirmMintMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::MintFolder());
+	
+	if (!bConfirmMintMAINFolder)
+	{
+		OTLog::vError("OT_API::notarizeWithdrawal: Unable to find or "
+					  "create main Mint directory: %s%s%s\n", 
+					  OTLog::Path(), OTLog::PathSeparator(), OTLog::MintFolder());
+		
+		return;
+	}
+	
+	// -----------------------------------------------------------------
+	
+	OTString strServerID(SERVER_ID);
+	
+	OTString strMintDirectoryPath;
+	strMintDirectoryPath.Format("%s%s%s", 
+								OTLog::MintFolder(), OTLog::PathSeparator(),
+								strServerID.Get());
+	
+	bool bConfirmMintFolder = OTLog::ConfirmOrCreateFolder(strMintDirectoryPath.Get());
+	
+	if (!bConfirmMintFolder)
+	{
+		OTLog::vError("OT_API::notarizeWithdrawal: Unable to find or create Mint subdir "
+					  "for server ID: %s\n\n", 
+					  strMintDirectoryPath.Get());
+		return;
+	}
+	
+	// ----------------------------------------------------------------------------
+	
+	OTString strMintPath;
+	strMintPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+					   strMintDirectoryPath.Get(), OTLog::PathSeparator(), strContractID.Get());
+	
+	// -----------------------------------------------------------------	
 	
 	OTMessage theMessage;
 	
 	long lRequestNumber = 0;
 	long lAmount = atol(AMOUNT.Get());
 	
-	OTString strServerID(SERVER_ID), strNymID(USER_ID), strFromAcct(ACCT_ID);
+	OTString strNymID(USER_ID), strFromAcct(ACCT_ID);
 	
 	long lStoredTransactionNumber=0;
 	bool bGotTransNum = pNym->GetNextTransactionNum(*pNym, strServerID, lStoredTransactionNumber);
@@ -657,10 +1320,7 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 		pItem->m_lAmount	= lAmount;
 		
 		const OTPseudonym * pServerNym = pServer->GetContractPublicNym();
-		
-		OTString strMintPath;
-		strMintPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), OTLog::MintFolder(),
-						   OTLog::PathSeparator(), strContractID.Get()); 
+				
 		OTMint theMint(strContractID, strMintPath, strContractID);
 		
 		if (pServerNym && theMint.LoadContract() && theMint.VerifyMint((OTPseudonym&)*pServerNym))

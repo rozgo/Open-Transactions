@@ -88,11 +88,11 @@
 #include <fstream>
 
 #include "OTTransactionType.h"
+#include "OTTransaction.h"
 #include "OTString.h"
 
 class OTAccount;
 class OTMessage;
-class OTTransaction;
 
 // transaction ID is a long, assigned by the server. Each transaction has one.
 // FIRST the server issues the ID. THEN we create the blank transaction object with the
@@ -109,8 +109,7 @@ class OTLedger : public OTTransactionType
 private:
 	mapOfTransactions	m_mapTransactions;	// a ledger contains a map of transactions.
 	
-	// hopefully keep it here.
-	OTLedger();
+	OTLedger(); // Hopefully stays here.
 
 protected:	
 	// return -1 if error, 0 if nothing, and 1 if the node was processed.
@@ -131,7 +130,10 @@ public:
 		
 	bool AddTransaction(OTTransaction & theTransaction);
 	bool RemoveTransaction(long lTransactionNum); // if false, transaction wasn't found.
+	
+	OTTransaction * GetTransaction(const OTTransaction::transactionType theType);
 	OTTransaction * GetTransaction(long lTransactionNum);	
+	OTTransaction * GetTransactionByIndex(int nIndex);
 	OTTransaction * GetPendingTransaction(long lTransactionNum);
 
 	bool SaveInbox();
@@ -140,6 +142,8 @@ public:
 	bool LoadOutbox();
 	
 	mapOfTransactions & GetTransactionMap();
+	
+	inline int GetTransactionCount() { return m_mapTransactions.size(); }
 	
 	OTLedger(const OTIdentifier & theUserID, const OTIdentifier & theAccountID, const OTIdentifier & theServerID);	
 	virtual ~OTLedger();

@@ -95,16 +95,15 @@ class OTPseudonym;
 class OTAccount;
 class OTMessage;
 
-class OTAccount : public OTTransactionType {
-private:
-
+class OTAccount : public OTTransactionType 
+{
 public:
 	enum AccountType {
 		simple,
 		issuer,
 		basket,
 		err_acct
-	};
+	};  // If you add any types to this list, update the list of strings at the top of the .CPP file.
 	
 protected:
 	
@@ -155,6 +154,16 @@ public:
 		
 //	virtual bool SaveContractWallet(FILE * fl);
 	virtual bool SaveContractWallet(std::ofstream & ofs);
+
+
+	// --------------------------------------------------------------
+
+	static const char * _TypeStrings[]; // for translating transaction type into a string.
+	
+	static inline const char * _GetTypeString(AccountType theType)
+	{ int nType = (int)theType; return OTAccount::_TypeStrings[nType]; }
+	
+	inline const char * GetTypeString() { return OTAccount::_GetTypeString(m_AcctType); }
 };
 
 typedef std::list <OTAccount *>	listOfAccounts;

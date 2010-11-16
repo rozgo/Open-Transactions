@@ -729,6 +729,9 @@ void OTIdentifier::GetString(OTString & theStr) const
 		theStr.Concatenate("%02x", n);
 	}
 	
+	if (128 != theStr.GetLength())
+		OTLog::vError("STRING LENGTH:  %d\n", theStr.GetLength());
+	
 	OT_ASSERT_MSG(128 == theStr.GetLength(), "String wrong length after ID calculation.");
 }
 

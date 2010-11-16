@@ -409,6 +409,27 @@ bool OTLedger::AddTransaction(OTTransaction & theTransaction)
 }
 
 
+
+
+// While processing a transaction, you may wish to query it for items of a certain type.
+OTTransaction * OTLedger::GetTransaction(const OTTransaction::transactionType theType) 
+{
+	// loop through the items that make up this transaction and print them out here, base64-encoded, of course.
+	
+	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); ii != m_mapTransactions.end(); ++ii)
+	{
+		OTTransaction * pTransaction = (*ii).second;
+		OT_ASSERT(NULL != pTransaction);
+		
+		if (theType == pTransaction->GetType())
+			return pTransaction;
+	}
+	
+	return NULL;
+}
+
+
+
 // Look up a transaction by transaction number and see if it is in the ledger.
 // If it is, return a pointer to it, otherwise return NULL.
 OTTransaction * OTLedger::GetTransaction(long lTransactionNum)
@@ -434,11 +455,38 @@ OTTransaction * OTLedger::GetTransaction(long lTransactionNum)
 			OTLog::vError("Expected transaction number %ld, but found %ld on the list instead. Bad data?\n",
 						  lTransactionNum, pTransaction->GetTransactionNum());
 	}
-
+	
 	return NULL;
 }
 
 
+// Look up a transaction by transaction number and see if it is in the ledger.
+// If it is, return a pointer to it, otherwise return NULL.
+OTTransaction * OTLedger::GetTransactionByIndex(int nIndex)
+{
+	// Out of bounds.
+	if ((nIndex < 0) || (nIndex >= GetTransactionCount()))
+		return NULL;
+	
+	int nIndexCount = -1;
+	
+	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); ii != m_mapTransactions.end(); ++ii)
+	{
+		nIndexCount++; // On first iteration, this is now 0, same as nIndex.
+		OTTransaction * pTransaction = (*ii).second; 
+		OT_ASSERT((NULL != pTransaction)); // Should always be good.
+		
+		// If this transaction is the one at the requested index
+		if (nIndexCount == nIndex)
+			return pTransaction;
+	}
+	
+	return NULL; // Should never reach this point, since bounds are checked at the top.
+}
+
+
+		
+		
 // If you TRANSFER REQUEST to me (transaction #1), then the server will create a 
 // PENDING transaction in my inbox (transaction #41) and a PENDING transaction in 
 // your outbox (transaction #58) which both contain a copy of transaction#1 in their

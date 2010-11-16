@@ -440,6 +440,8 @@ void OTClient::ProcessDepositResponse(OTTransaction & theTransaction, OTServerCo
 }
 
 
+
+
 // It's definitely a withdrawal, we just need to iterate through the items in the transaction and
 // grab any cash tokens that are inside, to save inside a purse.  Also want to display any vouchers.
 void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServerConnection & theConnection, OTMessage & theReply)
@@ -490,6 +492,7 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 			pItem->GetAttachment(strPurse);
 			
 			OTPurse		thePurse(SERVER_ID);
+			
 			if (thePurse.LoadContractFromString(strPurse))
 			{
 				// When we made the withdrawal request, we saved that purse pointer in the
@@ -499,16 +502,87 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 				OTToken * pToken			= NULL;
 				OTToken * pOriginalToken	= NULL;
 				
-				OTString strMintPath, ASSET_ID(thePurse.GetAssetID());
+				OTString strServerID(SERVER_ID), strAssetID(thePurse.GetAssetID());
 				
-				strMintPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-								   OTLog::MintFolder(), OTLog::PathSeparator(), ASSET_ID.Get());
-				OTMint theMint(ASSET_ID, strMintPath, ASSET_ID);
+				// -----------------------------------------------------------------
+				
+				bool bConfirmMintMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::MintFolder());
+				
+				if (!bConfirmMintMAINFolder)
+				{
+					OTLog::vError("OTClient::ProcessWithdrawalResponse: Unable to find or "
+								  "create main Mint directory: %s%s%s\n", 
+								  OTLog::Path(), OTLog::PathSeparator(), OTLog::MintFolder());
+					
+					return;
+				}
+				
+				// -----------------------------------------------------------------
+				
+				OTString strMintDirectoryPath;
+				strMintDirectoryPath.Format("%s%s%s", 
+											OTLog::MintFolder(), OTLog::PathSeparator(),
+											strServerID.Get());
+				
+				bool bConfirmMintFolder = OTLog::ConfirmOrCreateFolder(strMintDirectoryPath.Get());
+				
+				if (!bConfirmMintFolder)
+				{
+					OTLog::vError("OTClient::ProcessWithdrawalResponse: Unable to find or create Mint subdir "
+								  "for server ID: %s\n\n", 
+								  strMintDirectoryPath.Get());
+					return;
+				}
+				
+				// ----------------------------------------------------------------------------
+				
+				OTString strMintPath;
+				strMintPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+								   strMintDirectoryPath.Get(), OTLog::PathSeparator(), strAssetID.Get());
+				
+				// -----------------------------------------------------------------	
 
+				OTMint theMint(strAssetID, strMintPath, strAssetID);
+
+				// -----------------------------------------------------------------
+
+				bool bConfirmPurseMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::PurseFolder());
+				
+				if (!bConfirmPurseMAINFolder)
+				{
+					OTLog::vError("ProcessWithdrawalResponse: Unable to find or "
+								  "create main purse directory: %s%s%s\n%s\n", 
+								  OTLog::Path(), OTLog::PathSeparator(), OTLog::PurseFolder(),
+								  strPurse.Get()); // Output it so it's safe in the log. (Since couldn't write.)
+					return;
+				}
+				
+				// -----------------------------------------------------------------
+				
+				
+				OTString strPurseDirectoryPath;
+				strPurseDirectoryPath.Format("%s%s%s", 
+											 OTLog::PurseFolder(), OTLog::PathSeparator(),
+											 strServerID.Get());
+				
+				bool bConfirmPurseFolder = OTLog::ConfirmOrCreateFolder(strPurseDirectoryPath.Get());
+				
+				if (!bConfirmPurseFolder)
+				{
+					OTLog::vError("ProcessWithdrawalResponse: Unable to find or create purse subdir "
+								  "for server ID: %s\n\n%s\n", 
+								  strPurseDirectoryPath.Get(),
+								  strPurse.Get()); // Output the purse so it's safe in the log. (Since couldn't write.)
+					return;
+				}
+				
+				// ----------------------------------------------------------------------------
+				
 				OTString strPursePath;
 				strPursePath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-									OTLog::PurseFolder(), OTLog::PathSeparator(), ASSET_ID.Get());
+									strPurseDirectoryPath.Get(), OTLog::PathSeparator(), strAssetID.Get());
 				
+								
 				// Unlike the purse which we read out of a message,
 				// now we try to open a purse as a file on the client side,
 				// keyed by Asset ID.  (The client should already have one
@@ -699,23 +773,37 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		// Load the ledger object from that string.				
 		OTLedger theInbox(USER_ID, ACCOUNT_ID, SERVER_ID);	
 		
-		// Obviously a real client will never do something as foolish as this below...
-		// (Accepting the entire inbox automatically--literally sending a signed message right
-		// back to the server accepting whatever was inside this ledger, without giving the user
-		// the opportunity to examine and reject those inbox items.)
-		// This could empty your account!  But of course for testing, I want to get the inbox
-		// and process it at the same time, since I already know what all the transactions are
-		// supposed to be.
+		
+		// I receive the inbox, verify the server's signature, then RE-SIGN IT WITH MY OWN
+		// SIGNATURE, then SAVE it to local storage.  So any FUTURE checks of this inbox
+		// would require MY signature, not the server's, to verify. But in this one spot, 
+		// just before saving, I need to verify the server's first.
 		if (theInbox.LoadContractFromString(strInbox) && theInbox.VerifyAccount(*pServerNym))
+		{
+			theInbox.ReleaseSignatures();
+			theInbox.SignContract(*pNym);
+			theInbox.SaveContract();
+			theInbox.SaveInbox();
+			
+			
+			// Obviously a real client will never do something as foolish as this below...
+			// (Accepting the entire inbox automatically--literally sending a signed message right
+			// back to the server accepting whatever was inside this ledger, without giving the user
+			// the opportunity to examine and reject those inbox items.)
+			// This could empty your account!  But of course for testing, I want to get the inbox
+			// and process it at the same time, since I already know what all the transactions are
+			// supposed to be.
+#if defined (TEST_CLIENT)
 			AcceptEntireInbox(theInbox, theConnection);// Perhaps just Verify Contract so it verifies signature too, and ServerID too if I override it and add that...
-				
+#endif
+		}
+		
 		return true;
 	}
 	else if (theReply.m_bSuccess && theReply.m_strCommand.Compare("@getContract"))
 	{
 		// base64-Decode the server reply's payload into strContract
 		OTString strContract(theReply.m_ascPayload);
-		
 		
 		
 //		OTLog::vError("CONTRACT FROM SERVER:  \n--->%s<---\n", strContract.Get());
@@ -734,7 +822,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		{
 			OTLog::vError("Unable to create or confirm folder \"%s\" in order to get a contract:\n%s\n",
 						  OTLog::ContractFolder(), strFilename.Get());
-			return false;
+			return true;
 		}
 				
 		// Load the contract object from that string, and save it to file.
@@ -775,23 +863,56 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 	}
 	else if (theReply.m_bSuccess && theReply.m_strCommand.Compare("@getMint"))
 	{
+		// -----------------------------------------------------------------
+		
+		bool bConfirmMintMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::MintFolder());
+		
+		if (!bConfirmMintMAINFolder)
+		{
+			OTLog::vError("@getMint: Unable to find or "
+						  "create main Mint directory: %s%s%s\n", 
+						  OTLog::Path(), OTLog::PathSeparator(), OTLog::MintFolder());
+			
+			return true;
+		}
+		
+		// -----------------------------------------------------------------
+		
+		OTString strMintDirectoryPath;
+		strMintDirectoryPath.Format("%s%s%s", 
+									OTLog::MintFolder(), OTLog::PathSeparator(),
+									theReply.m_strServerID.Get());
+		
+		bool bConfirmMintFolder = OTLog::ConfirmOrCreateFolder(strMintDirectoryPath.Get());
+		
+		if (!bConfirmMintFolder)
+		{
+			OTLog::vError("@getMint: Unable to find or create Mint subdir "
+						  "for server ID: %s\n\n", 
+						  strMintDirectoryPath.Get());
+			return true;
+		}
+		
+		// ----------------------------------------------------------------------------
+		
+		OTString strMintPath;
+		strMintPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+						   strMintDirectoryPath.Get(), OTLog::PathSeparator(), 
+						   theReply.m_strAssetID.Get());
+		
+		// -----------------------------------------------------------------	
+		
 		// base64-Decode the server reply's payload into strMint
 		OTString strMint(theReply.m_ascPayload);
+				
+		// Load the mint object from that string...				
+		OTMint theMint(theReply.m_strAssetID, strMintPath, theReply.m_strAssetID);
 		
-		OTString strFilename;
-		strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-						   OTLog::MintFolder(),
-						   OTLog::PathSeparator(), theReply.m_strAssetID.Get());
-		
-		// Load the account object from that string.				
-		OTMint theMint(theReply.m_strAssetID, strFilename, theReply.m_strAssetID);
-		
-		// TODO check the server signature on the account here. (Perhaps the message is good enough?
-		// After all, the message IS signed by the server and contains the Account.
+		// TODO check the server signature on the mint here...
 		if (theMint.LoadContractFromString(strMint))
 		{
 			OTLog::Output(0, "Saving mint file to disk...\n");
-			theMint.SaveContract(strFilename.Get());
+			theMint.SaveContract(strMintPath.Get());
 		}
 		return true;
 	}
@@ -2045,13 +2166,28 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			// Testing encrypted envelopes...
 			const OTPseudonym * pServerNym = theServer.GetContractPublicNym();
 			
+			// -----------------------------------------------------------------
+
+			OTString strMintDirectoryPath;
+			strMintDirectoryPath.Format("%s%s%s", 
+										OTLog::MintFolder(), OTLog::PathSeparator(),
+										strServerID.Get());
+
+			// ----------------------------------------------------------------------------
+			
 			OTString strMintPath;
 			strMintPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-							   OTLog::MintFolder(),
-							   OTLog::PathSeparator(), strContractID.Get()); 
+							   strMintDirectoryPath.Get(), OTLog::PathSeparator(), strContractID.Get());
+			
+			// -----------------------------------------------------------------	
+			
 			OTMint theMint(strContractID, strMintPath, strContractID);
 			
-			if (pServerNym && theMint.LoadContract() && theMint.VerifyMint((OTPseudonym&)*pServerNym))
+			if (pServerNym && 
+				OTLog::ConfirmOrCreateFolder(OTLog::MintFolder()) &&
+				OTLog::ConfirmOrCreateFolder(strMintDirectoryPath.Get()) &&
+				theMint.LoadContract() && 
+				theMint.VerifyMint((OTPseudonym&)*pServerNym))
 			{
 				OTPurse * pPurse		= new OTPurse(SERVER_ID, CONTRACT_ID);
 				OTPurse * pPurseMyCopy	= new OTPurse(SERVER_ID, CONTRACT_ID);
