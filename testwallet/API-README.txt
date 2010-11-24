@@ -72,23 +72,29 @@ To use OT in C, C++, or Obj-C, link to libOTAPI.a, and...
 --------------------------------
 
 C#
+
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=csharp
 
-This builds the shared lib libOTAPI.so. Use OTAPI.cs in your C-Sharp project.
+This builds the shared lib libOTAPI.so. Use OTAPI.cs in your C-Sharp
+project.
 
 --------------------------------
 
 Java
+
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=java
 
-This builds the shared lib libOTAPI.jnilib. Use OTAPI.java in your Java project.
+This builds the shared lib libOTAPI.jnilib. Use OTAPI.java in your Java 
+project.
 
 --------------------------------
 
 Ruby
+
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=ruby
 
-This builds OTAPI.bundle which you can use in your Ruby project like any other native library.
+This builds OTAPI.bundle which you can use in your Ruby project like any 
+other native library.
 
 On Linux I installed Ruby and Ruby-Dev:
 apt-get install ruby
@@ -97,6 +103,7 @@ apt-get install ruby-dev
 --------------------------------
 
 Python
+
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=python
 
 This builds _OTAPI.so, a shared library that you can call from your Python
@@ -108,13 +115,42 @@ apt-get install python-dev
 --------------------------------
 
 Perl5
+
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=perl5
 
-This builds OTAPI.bundle, which you can use in your Perl project via the file OTAPI.pm
+This builds OTAPI.bundle, which you can use in your Perl project via
+ the file OTAPI.pm
+
+Problems BUILDING?  Check the version of Perl being included / linked
+in the Makefile, and make sure it matches the location on your system.
+You might have 5.10.1 instead of 5.10.0
+
+Problems RUNNING?  One user reported a segmentation fault on his Mac.
+It was later determined that the user was building with version 5.10.1,
+but running perl version 5.8.8, which was segfaulting. Try EXPLICITLY
+running the correct version of perl at the command line, by typing 
+perl5.10.0 or perl5.10.1, instead of just typing perl, when you run the
+software. (This fixed the problem for me on my Mac.)
+
+
+$ 
+$ 
+$ perl -e "use OTAPI;"
+Segmentation fault
+$ 
+$ 
+$ perl5.10.0 -e "use OTAPI;"
+$ 
+$ 
+$  
+
+(Notice, no segfault when I do it the second way -- because I am
+running the correct version of perl that time.)
 
 --------------------------------
 
 PHP
+
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=php5
 
 This builds OTAPI.so, which you can use in your PHP project via the file OTAPI.php
@@ -125,6 +161,7 @@ apt-get install php5-dev
 --------------------------------
 
 Tcl
+
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=tcl
 
 This builds OTAPI.so, which you can use in your Tcl project like so:
@@ -137,6 +174,7 @@ apt-get install tcl-dev
 --------------------------------
 
 LISP
+
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=lisp
 
 This builds OTAPI.so, which you can use in your LISP project via OTAPI.lisp
