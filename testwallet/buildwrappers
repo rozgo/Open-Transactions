@@ -1,12 +1,12 @@
-touch OTAPI.cs; rm OTAPI.cs;
-touch OTAPI.java; rm OTAPI.java;
-touch OTAPI.lisp; rm OTAPI.lisp;
-touch OTAPI.php; rm OTAPI.php;
-touch OTAPI.pm; rm OTAPI.pm;
-touch OTAPI.py; rm OTAPI.py;
+touch otapi.cs; rm otapi.cs;
+touch otapi.java; rm otapi.java;
+touch otapi.lisp; rm otapi.lisp;
+touch otapi.php; rm otapi.php;
+touch otapi.pm; rm otapi.pm;
+touch otapi.py; rm otapi.py;
 touch OTAPI.pyc; rm OTAPI.pyc;
-touch OTAPIJNI.java; rm OTAPIJNI.java;
-touch OTAPIPINVOKE.cs; rm OTAPIPINVOKE.cs;
+touch otapiJNI.java; rm otapiJNI.java;
+touch otapiPINVOKE.cs; rm otapiPINVOKE.cs;
 touch OTAPI_cffi.c; rm OTAPI_cffi.c;
 touch OTAPI_csharp.c; rm OTAPI_csharp.c;
 touch OTAPI_java.c; rm OTAPI_java.c;
@@ -15,7 +15,7 @@ touch OTAPI_php.c; rm OTAPI_php.c;
 touch OTAPI_python.c; rm OTAPI_python.c;
 touch OTAPI_ruby.c; rm OTAPI_ruby.c;
 touch OTAPI_tcl.c; rm OTAPI_tcl.c;
-touch php_OTAPI.h; rm php_OTAPI.h;
+touch php_otapi.h; rm php_otapi.h;
 touch OTAPI_wrap.c; rm OTAPI_wrap.c; /usr/bin/swig -tcl OTAPI.i; touch OTAPI_wrap.c; mv OTAPI_wrap.c OTAPI_tcl.c
 touch OTAPI_wrap.c; rm OTAPI_wrap.c; /usr/bin/swig -ruby OTAPI.i; touch OTAPI_wrap.c; mv OTAPI_wrap.c OTAPI_ruby.c
 touch OTAPI_wrap.c; rm OTAPI_wrap.c; /usr/bin/swig -python OTAPI.i; touch OTAPI_wrap.c; mv OTAPI_wrap.c OTAPI_python.c

@@ -1,4 +1,4 @@
-%module OTAPI
+%module otapi
  %{
  #include "OTAPI_funcdef.h"
  %}

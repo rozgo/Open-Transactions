@@ -50,6 +50,11 @@ UNAME := FreeBSD
 endif
 
 
+
+DYNAMIC_FLAG = # empty
+
+
+
 # The SSL libraries are now set in the section below, for various platforms.
 # The Makefiles in the subfolders will only set those values (also by platform)
 # in the case where they aren't already set.  So you can set them here for the entire
@@ -76,6 +81,7 @@ ifeq ($(UNAME), Linux)
 OT_PLATFORM := linux
 SSL_INCLUDEDIRS = -I/usr/local/ssl/include
 SSL_LIBDIRS = -L/usr/local/ssl/$(LINUX_LIBDIR)
+DYNAMIC_FLAG = DYNAMIC_OTLIB=1
 endif
 
 # -------------------------------------
@@ -135,6 +141,26 @@ debug:
 	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)  debug
 	$(EXTRA_DEBUG_TARGETS1)
 	$(EXTRA_DEBUG_TARGETS2)
+
+ruby:
+	cd xmlrpcpp && $(OT_MAKE) $(DYNAMIC_FLAG)
+	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) $(DYNAMIC_FLAG)
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=ruby clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=ruby
+	$(EXTRA_RPC_TARGETS1)
+	$(EXTRA_RPC_TARGETS2)
+
+perl5:
+	cd xmlrpcpp && $(OT_MAKE) $(DYNAMIC_FLAG)
+	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) $(DYNAMIC_FLAG)
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=perl5 clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=perl5
+	$(EXTRA_RPC_TARGETS1)
+	$(EXTRA_RPC_TARGETS2)
 
 rpc:
 	cd xmlrpcpp && $(OT_MAKE)

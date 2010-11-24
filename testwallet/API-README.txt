@@ -75,7 +75,7 @@ C#
 
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=csharp
 
-This builds the shared lib libOTAPI.so. Use OTAPI.cs in your C-Sharp
+This builds the shared lib libotapi.so. Use otapi.cs in your C-Sharp
 project.
 
 --------------------------------
@@ -84,7 +84,7 @@ Java
 
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=java
 
-This builds the shared lib libOTAPI.jnilib. Use OTAPI.java in your Java 
+This builds the shared lib libotapi.jnilib. Use otapi.java in your Java 
 project.
 
 --------------------------------
@@ -93,24 +93,72 @@ Ruby
 
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=ruby
 
-This builds OTAPI.bundle which you can use in your Ruby project like any 
-other native library.
+This builds otapi.bundle on Mac, and otapi.so on Linux, which you can use
+in your Ruby project like any other native library.
 
 On Linux I installed Ruby and Ruby-Dev:
 apt-get install ruby
 apt-get install ruby-dev
 
+
+
+NOTE: The Ruby API now features a top-level build target! Especially on Linux,
+this is the easiest way to build the Ruby API. To build for ruby, do it from
+the MAIN folder:
+
+	cd Open-Transactions; make clean; make ruby;
+
+
+To test the Ruby API, follow these tests from there:
+
+1)	cd testwallet; ruby
+
+2) After you hit enter, paste the below ruby code, followed by a Ctrl-D as
+depicted below:
+
+require 'otapi'
+
+Otapi.OT_API_Init "/full-path-goes-here/Open-Transactions/testwallet/data_folder"
+
+Otapi.OT_API_LoadWallet "wallet.xml"
+
+^D
+
+NOTE: Use an actual Ctrl-D, and do not simply paste the one that appears above.
+ADDITIONAL NOTE: Make sure you use the correct path, above where it says "full-
+path-goes-here" you should substitute that for the appropriate path on your own
+system. (On the command line, use the pwd command to see what the path is on your 
+own system.)
+
+If everything is successful, you will see the wallet loaded on the screen!
+
+
 --------------------------------
+
 
 Python
 
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=python
 
-This builds _OTAPI.so, a shared library that you can call from your Python
-project using the OTAPI.py file.
+This builds _otapi.so, a shared library that you can call from your Python
+project using the otapi.py file.
 
 To do this on linux, I had to install Python-dev:
 apt-get install python-dev
+
+From the testwallet folder, you can verify the Python API like this:
+
+$
+$
+$
+$ python
+>>> import otapi
+>>> otapi.OT_API_Init("/full-path-goes-here/Open-Transactions/testwallet/data_folder")
+>>> otapi.OT_API_LoadWallet("wallet.xml")
+
+
+Let me know if it works for you!
+
 
 --------------------------------
 
@@ -118,34 +166,58 @@ Perl5
 
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=perl5
 
-This builds OTAPI.bundle, which you can use in your Perl project via
- the file OTAPI.pm
+This builds otapi.bundle, which you can use in your Perl project via
+ the file otapi.pm
 
 Problems BUILDING?  Check the version of Perl being included / linked
 in the Makefile, and make sure it matches the location on your system.
 You might have 5.10.1 instead of 5.10.0
 
-Problems RUNNING?  One user reported a segmentation fault on his Mac.
-It was later determined that the user was building with version 5.10.1,
-but running perl version 5.8.8, which was segfaulting. Try EXPLICITLY
+Problems RUNNING?  One user reported a segmentation fault on his MAC OS X.
+It was later determined that the user was building with perl 5.10.1,
+but running perl version 5.8.8, which was segfaulting. So, try EXPLICITLY
 running the correct version of perl at the command line, by typing 
 perl5.10.0 or perl5.10.1, instead of just typing perl, when you run the
 software. (This fixed the problem for me on my Mac.)
-
-
+Example:
 $ 
-$ 
-$ perl -e "use OTAPI;"
+$ perl -e "use otapi;"
 Segmentation fault
 $ 
 $ 
-$ perl5.10.0 -e "use OTAPI;"
+$ perl5.10.0 -e "use otapi;"
 $ 
 $ 
 $  
 
-(Notice, no segfault when I do it the second way -- because I am
-running the correct version of perl that time.)
+
+Notice: no segfault when I do it the second way -- because I am
+running the correct version of perl that time. Try it both ways
+to test on your own computer which one is right.
+
+
+PERL NOTE!!! There is now a TOP LEVEL option for building perl5!
+Since some platforms require XmlRpc and OTLib to be rebuilt with
+certain flags, I made it easy by adding a top-level target, since
+we have a client developer who is actively targeting perl.
+
+TO USE IT:
+
+	cd Open-Transactions; make clean; make perl5;
+
+
+It's that easy! To test it on the command line:
+
+$ cd testwallet
+$
+$ perl5.10.0   (or just perl, depending on your system)
+use otapi;
+otapi::OT_API_Init("/full-path-goes-here/Open-Transactions/testwallet/data_folder");
+otapi::OT_API_LoadWallet("wallet.xml");
+^D
+Loading wallet: Fellow Traveler's test wallet, version: 1.0
+
+(Etc. The entire wallet loaded.)
 
 --------------------------------
 
@@ -153,7 +225,7 @@ PHP
 
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=php5
 
-This builds OTAPI.so, which you can use in your PHP project via the file OTAPI.php
+This builds otapi.so, which you can use in your PHP project via the file otapi.php
 
 On linux, make sure you have done this first:
 apt-get install php5-dev
@@ -164,8 +236,8 @@ Tcl
 
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=tcl
 
-This builds OTAPI.so, which you can use in your Tcl project like so:
-load ./OTAPI.so OTAPI
+This builds otapi.so, which you can use in your Tcl project like so:
+load ./otapi.so otapi
 
 On Linux, I had to install Tcl and Tcl-Dev:
 apt-get install tcl
@@ -177,6 +249,6 @@ LISP
 
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=lisp
 
-This builds OTAPI.so, which you can use in your LISP project via OTAPI.lisp
+This builds otapi.so, which you can use in your LISP project via otapi.lisp
 
 

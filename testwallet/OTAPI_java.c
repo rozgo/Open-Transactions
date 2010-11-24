@@ -179,7 +179,7 @@ static void SWIGUNUSED SWIG_JavaThrowException(JNIEnv *jenv, SWIG_JavaExceptionC
 extern "C" {
 #endif
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1Init(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1Init(JNIEnv *jenv, jclass jcls, jstring jarg1) {
   jint jresult = 0 ;
   char *arg1 = (char *) 0 ;
   int result;
@@ -198,7 +198,7 @@ SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1Init(JNIEnv *jenv, jclass jcls, j
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1LoadWallet(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1LoadWallet(JNIEnv *jenv, jclass jcls, jstring jarg1) {
   jint jresult = 0 ;
   char *arg1 = (char *) 0 ;
   int result;
@@ -217,7 +217,7 @@ SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1LoadWallet(JNIEnv *jenv, jclass j
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1ConnectServer(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
+SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1ConnectServer(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
   jint jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -264,7 +264,7 @@ SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1ConnectServer(JNIEnv *jenv, jclas
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1ProcessSockets(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1ProcessSockets(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
   
@@ -276,7 +276,7 @@ SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1ProcessSockets(JNIEnv *jenv, jcla
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1GetNymCount(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1GetNymCount(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
   
@@ -288,7 +288,7 @@ SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1GetNymCount(JNIEnv *jenv, jclass 
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1GetServerCount(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1GetServerCount(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
   
@@ -300,7 +300,7 @@ SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1GetServerCount(JNIEnv *jenv, jcla
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1GetAssetTypeCount(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1GetAssetTypeCount(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
   
@@ -312,7 +312,7 @@ SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1GetAssetTypeCount(JNIEnv *jenv, j
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1GetAccountCount(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1GetAccountCount(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
   
@@ -324,7 +324,7 @@ SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1GetAccountCount(JNIEnv *jenv, jcl
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetNym_1ID(JNIEnv *jenv, jclass jcls, jint jarg1) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetNym_1ID(JNIEnv *jenv, jclass jcls, jint jarg1) {
   jstring jresult = 0 ;
   int arg1 ;
   char *result = 0 ;
@@ -338,7 +338,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetNym_1ID(JNIEnv *jenv, jclas
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetNym_1Name(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetNym_1Name(JNIEnv *jenv, jclass jcls, jstring jarg1) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *result = 0 ;
@@ -357,7 +357,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetNym_1Name(JNIEnv *jenv, jcl
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetServer_1ID(JNIEnv *jenv, jclass jcls, jint jarg1) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetServer_1ID(JNIEnv *jenv, jclass jcls, jint jarg1) {
   jstring jresult = 0 ;
   int arg1 ;
   char *result = 0 ;
@@ -371,7 +371,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetServer_1ID(JNIEnv *jenv, jc
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetServer_1Name(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetServer_1Name(JNIEnv *jenv, jclass jcls, jstring jarg1) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *result = 0 ;
@@ -390,7 +390,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetServer_1Name(JNIEnv *jenv, 
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAssetType_1ID(JNIEnv *jenv, jclass jcls, jint jarg1) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetAssetType_1ID(JNIEnv *jenv, jclass jcls, jint jarg1) {
   jstring jresult = 0 ;
   int arg1 ;
   char *result = 0 ;
@@ -404,7 +404,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAssetType_1ID(JNIEnv *jenv,
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAssetType_1Name(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetAssetType_1Name(JNIEnv *jenv, jclass jcls, jstring jarg1) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *result = 0 ;
@@ -423,7 +423,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAssetType_1Name(JNIEnv *jen
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAccountWallet_1ID(JNIEnv *jenv, jclass jcls, jint jarg1) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetAccountWallet_1ID(JNIEnv *jenv, jclass jcls, jint jarg1) {
   jstring jresult = 0 ;
   int arg1 ;
   char *result = 0 ;
@@ -437,7 +437,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAccountWallet_1ID(JNIEnv *j
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAccountWallet_1Name(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetAccountWallet_1Name(JNIEnv *jenv, jclass jcls, jstring jarg1) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *result = 0 ;
@@ -456,7 +456,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAccountWallet_1Name(JNIEnv 
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAccountWallet_1Balance(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetAccountWallet_1Balance(JNIEnv *jenv, jclass jcls, jstring jarg1) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *result = 0 ;
@@ -475,7 +475,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAccountWallet_1Balance(JNIE
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAccountWallet_1Type(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetAccountWallet_1Type(JNIEnv *jenv, jclass jcls, jstring jarg1) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *result = 0 ;
@@ -494,7 +494,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAccountWallet_1Type(JNIEnv 
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAccountWallet_1AssetTypeID(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetAccountWallet_1AssetTypeID(JNIEnv *jenv, jclass jcls, jstring jarg1) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *result = 0 ;
@@ -513,7 +513,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1GetAccountWallet_1AssetTypeID(
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1WriteCheque(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6, jstring jarg7, jstring jarg8) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1WriteCheque(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6, jstring jarg7, jstring jarg8) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -581,7 +581,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1WriteCheque(JNIEnv *jenv, jcla
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1LoadUserPubkey(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1LoadUserPubkey(JNIEnv *jenv, jclass jcls, jstring jarg1) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *result = 0 ;
@@ -600,7 +600,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1LoadUserPubkey(JNIEnv *jenv, j
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1VerifyUserPrivateKey(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1VerifyUserPrivateKey(JNIEnv *jenv, jclass jcls, jstring jarg1) {
   jint jresult = 0 ;
   char *arg1 = (char *) 0 ;
   int result;
@@ -619,7 +619,7 @@ SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1VerifyUserPrivateKey(JNIEnv *jenv
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1LoadPurse(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1LoadPurse(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -645,7 +645,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1LoadPurse(JNIEnv *jenv, jclass
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1LoadMint(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1LoadMint(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -671,7 +671,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1LoadMint(JNIEnv *jenv, jclass 
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1LoadAssetContract(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1LoadAssetContract(JNIEnv *jenv, jclass jcls, jstring jarg1) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *result = 0 ;
@@ -690,7 +690,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1LoadAssetContract(JNIEnv *jenv
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1LoadAssetAccount(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1LoadAssetAccount(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -723,7 +723,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1LoadAssetAccount(JNIEnv *jenv,
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1LoadInbox(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1LoadInbox(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -756,7 +756,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1LoadInbox(JNIEnv *jenv, jclass
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1LoadOutbox(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1LoadOutbox(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -789,7 +789,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1LoadOutbox(JNIEnv *jenv, jclas
 }
 
 
-SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1Ledger_1GetCount(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1Ledger_1GetCount(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
   jint jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -829,7 +829,7 @@ SWIGEXPORT jint JNICALL Java_OTAPIJNI_OT_1API_1Ledger_1GetCount(JNIEnv *jenv, jc
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1Ledger_1CreateResponse(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Ledger_1CreateResponse(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -869,7 +869,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1Ledger_1CreateResponse(JNIEnv 
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1Ledger_1GetTransactionByIndex(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jint jarg5) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Ledger_1GetTransactionByIndex(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jint jarg5) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -911,7 +911,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1Ledger_1GetTransactionByIndex(
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1Ledger_1GetTransactionByID(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Ledger_1GetTransactionByID(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -958,7 +958,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1Ledger_1GetTransactionByID(JNI
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1Ledger_1GetTransactionIDByIndex(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jint jarg5) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Ledger_1GetTransactionIDByIndex(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jint jarg5) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -1000,7 +1000,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1Ledger_1GetTransactionIDByInde
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1Ledger_1AddTransaction(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Ledger_1AddTransaction(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -1047,7 +1047,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1Ledger_1AddTransaction(JNIEnv 
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1Transaction_1CreateResponse(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jint jarg6) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Transaction_1CreateResponse(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jint jarg6) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -1096,7 +1096,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1Transaction_1CreateResponse(JN
 }
 
 
-SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1Transaction_1GetType(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Transaction_1GetType(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -1136,7 +1136,7 @@ SWIGEXPORT jstring JNICALL Java_OTAPIJNI_OT_1API_1Transaction_1GetType(JNIEnv *j
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1checkServerID(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1checkServerID(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   
@@ -1158,7 +1158,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1checkServerID(JNIEnv *jenv, jclas
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1createUserAccount(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1createUserAccount(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   
@@ -1180,7 +1180,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1createUserAccount(JNIEnv *jenv, j
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1checkUser(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1checkUser(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -1209,7 +1209,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1checkUser(JNIEnv *jenv, jclass jc
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1getRequest(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1getRequest(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   
@@ -1231,7 +1231,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1getRequest(JNIEnv *jenv, jclass j
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1getTransactionNumber(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1getTransactionNumber(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   
@@ -1253,7 +1253,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1getTransactionNumber(JNIEnv *jenv
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1issueAssetType(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1issueAssetType(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -1282,7 +1282,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1issueAssetType(JNIEnv *jenv, jcla
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1getContract(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1getContract(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -1311,7 +1311,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1getContract(JNIEnv *jenv, jclass 
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1getMint(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1getMint(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -1340,7 +1340,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1getMint(JNIEnv *jenv, jclass jcls
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1createAssetAccount(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1createAssetAccount(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -1369,7 +1369,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1createAssetAccount(JNIEnv *jenv, 
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1getAccount(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1getAccount(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -1398,7 +1398,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1getAccount(JNIEnv *jenv, jclass j
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1issueBasket(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1issueBasket(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -1427,7 +1427,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1issueBasket(JNIEnv *jenv, jclass 
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1exchangeBasket(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1exchangeBasket(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -1463,7 +1463,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1exchangeBasket(JNIEnv *jenv, jcla
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1notarizeWithdrawal(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1notarizeWithdrawal(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -1499,7 +1499,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1notarizeWithdrawal(JNIEnv *jenv, 
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1notarizeDeposit(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1notarizeDeposit(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -1535,7 +1535,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1notarizeDeposit(JNIEnv *jenv, jcl
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1notarizeTransfer(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1notarizeTransfer(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -1585,7 +1585,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1notarizeTransfer(JNIEnv *jenv, jc
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1getInbox(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1getInbox(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -1614,7 +1614,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1getInbox(JNIEnv *jenv, jclass jcl
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1processInbox(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1processInbox(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -1650,7 +1650,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1processInbox(JNIEnv *jenv, jclass
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1withdrawVoucher(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1withdrawVoucher(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -1700,7 +1700,7 @@ SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1withdrawVoucher(JNIEnv *jenv, jcl
 }
 
 
-SWIGEXPORT void JNICALL Java_OTAPIJNI_OT_1API_1depositCheque(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT void JNICALL Java_otapiJNI_OT_1API_1depositCheque(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;

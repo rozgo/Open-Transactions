@@ -14,8 +14,15 @@ LIB		= ./libXmlRpc.a
 # Linux: none
 # Solaris: -lsocket -lnsl
 #SYSTEMLIBS	= -lsocket -lnsl
-SYSTEMLIBS	=
-LDLIBS		= $(LIB) $(SYSTEMLIBS)
+
+SYSTEMLIBS = # empty
+
+
+ifeq ($(DYNAMIC_OTLIB), 1)
+CPPFLAGS += -fPIC
+endif
+
+LDLIBS = $(LIB) $(SYSTEMLIBS)
 
 OBJ		= $(SRC)/XmlRpcClient.o $(SRC)/XmlRpcDispatch.o \
 		$(SRC)/XmlRpcServer.o $(SRC)/XmlRpcServerConnection.o \

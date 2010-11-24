@@ -2463,11 +2463,11 @@ static swig_module_info swig_module = {swig_types, 1, 0, 0, 0, 0};
 #endif
 
 /*-----------------------------------------------
-              @(target):= _OTAPI.so
+              @(target):= _otapi.so
   ------------------------------------------------*/
-#define SWIG_init    init_OTAPI
+#define SWIG_init    init_otapi
 
-#define SWIG_name    "_OTAPI"
+#define SWIG_name    "_otapi"
 
 #define SWIGVERSION 0x010331 
 #define SWIG_VERSION SWIGVERSION
