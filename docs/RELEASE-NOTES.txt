@@ -3,6 +3,22 @@ NOTES on the Version:
 
 // ---------------------------------------------------------------------
 
+   0.36 --- Top-level build targets added for API in Python, Ruby, PHP,
+            and Perl!  It's now this easy to build the API:
+
+            cd Open-Transactions
+            make clean
+
+           Then, from the same folder:
+
+            make ruby
+            make python
+            make php5
+            make perl5
+     
+           (More languages are supported, but for now these are the ones
+           available at the top level.)    
+ 
    0.35 --- Huge additions to the API! See testwallet/OTAPI_funcdef.h
             for the complete interface, with NOTES above each function.
  
