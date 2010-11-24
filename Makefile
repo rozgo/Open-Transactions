@@ -7,10 +7,17 @@
 # RPC is the PREFERRED mode to run the software, since it uses xmlrpc over
 # http.  'make rpc'
 #
-
-
-# Declare some variables.
+# (Both of the above options will also build the API in C.)
 #
+# If you would like to build the API for python, ruby, perl5, or php5:
+#
+# make [python|ruby|perl5|php5]
+#
+# (gmake on FreeBSD)
+#
+
+
+
 OT_PLATFORM := ___OT_UNKNOWN_PLATFORM___
 
 ifeq ($(FELLOW_TRAVELER), 1)
@@ -159,6 +166,26 @@ perl5:
 	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c clean
 	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=perl5 clean
 	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=perl5
+	$(EXTRA_RPC_TARGETS1)
+	$(EXTRA_RPC_TARGETS2)
+
+python:
+	cd xmlrpcpp && $(OT_MAKE) $(DYNAMIC_FLAG)
+	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) $(DYNAMIC_FLAG)
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=python clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=python
+	$(EXTRA_RPC_TARGETS1)
+	$(EXTRA_RPC_TARGETS2)
+
+php5:
+	cd xmlrpcpp && $(OT_MAKE) $(DYNAMIC_FLAG)
+	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) $(DYNAMIC_FLAG)
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=php5 clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=php5
 	$(EXTRA_RPC_TARGETS1)
 	$(EXTRA_RPC_TARGETS2)
 

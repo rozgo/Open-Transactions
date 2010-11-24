@@ -139,7 +139,7 @@ extern "C"
 // (Or right here.)
 int OTLog::__CurrentLogLevel = 1;
 
-OTString OTLog::__Version = "0.35";
+OTString OTLog::__Version = "0.36";
 
 
 
