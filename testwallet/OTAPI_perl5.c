@@ -1414,10 +1414,10 @@ static swig_module_info swig_module = {swig_types, 1, 0, 0, 0, 0};
 
 /* -------- TYPES TABLE (END) -------- */
 
-#define SWIG_init    boot_OTAPI
+#define SWIG_init    boot_otapi
 
-#define SWIG_name   "OTAPIc::boot_OTAPI"
-#define SWIG_prefix "OTAPIc::"
+#define SWIG_name   "otapic::boot_otapi"
+#define SWIG_prefix "otapic::"
 
 #define SWIGVERSION 0x010331 
 #define SWIG_VERSION SWIGVERSION
@@ -1667,8 +1667,8 @@ SWIG_FromCharPtr(const char *cptr)
 }
 
 #ifdef PERL_OBJECT
-#define MAGIC_CLASS _wrap_OTAPI_var::
-class _wrap_OTAPI_var : public CPerlObj {
+#define MAGIC_CLASS _wrap_otapi_var::
+class _wrap_otapi_var : public CPerlObj {
 public:
 #else
 #define MAGIC_CLASS
@@ -4263,61 +4263,61 @@ static swig_variable_info swig_variables[] = {
 {0,0,0,0}
 };
 static swig_command_info swig_commands[] = {
-{"OTAPIc::OT_API_Init", _wrap_OT_API_Init},
-{"OTAPIc::OT_API_LoadWallet", _wrap_OT_API_LoadWallet},
-{"OTAPIc::OT_API_ConnectServer", _wrap_OT_API_ConnectServer},
-{"OTAPIc::OT_API_ProcessSockets", _wrap_OT_API_ProcessSockets},
-{"OTAPIc::OT_API_GetNymCount", _wrap_OT_API_GetNymCount},
-{"OTAPIc::OT_API_GetServerCount", _wrap_OT_API_GetServerCount},
-{"OTAPIc::OT_API_GetAssetTypeCount", _wrap_OT_API_GetAssetTypeCount},
-{"OTAPIc::OT_API_GetAccountCount", _wrap_OT_API_GetAccountCount},
-{"OTAPIc::OT_API_GetNym_ID", _wrap_OT_API_GetNym_ID},
-{"OTAPIc::OT_API_GetNym_Name", _wrap_OT_API_GetNym_Name},
-{"OTAPIc::OT_API_GetServer_ID", _wrap_OT_API_GetServer_ID},
-{"OTAPIc::OT_API_GetServer_Name", _wrap_OT_API_GetServer_Name},
-{"OTAPIc::OT_API_GetAssetType_ID", _wrap_OT_API_GetAssetType_ID},
-{"OTAPIc::OT_API_GetAssetType_Name", _wrap_OT_API_GetAssetType_Name},
-{"OTAPIc::OT_API_GetAccountWallet_ID", _wrap_OT_API_GetAccountWallet_ID},
-{"OTAPIc::OT_API_GetAccountWallet_Name", _wrap_OT_API_GetAccountWallet_Name},
-{"OTAPIc::OT_API_GetAccountWallet_Balance", _wrap_OT_API_GetAccountWallet_Balance},
-{"OTAPIc::OT_API_GetAccountWallet_Type", _wrap_OT_API_GetAccountWallet_Type},
-{"OTAPIc::OT_API_GetAccountWallet_AssetTypeID", _wrap_OT_API_GetAccountWallet_AssetTypeID},
-{"OTAPIc::OT_API_WriteCheque", _wrap_OT_API_WriteCheque},
-{"OTAPIc::OT_API_LoadUserPubkey", _wrap_OT_API_LoadUserPubkey},
-{"OTAPIc::OT_API_VerifyUserPrivateKey", _wrap_OT_API_VerifyUserPrivateKey},
-{"OTAPIc::OT_API_LoadPurse", _wrap_OT_API_LoadPurse},
-{"OTAPIc::OT_API_LoadMint", _wrap_OT_API_LoadMint},
-{"OTAPIc::OT_API_LoadAssetContract", _wrap_OT_API_LoadAssetContract},
-{"OTAPIc::OT_API_LoadAssetAccount", _wrap_OT_API_LoadAssetAccount},
-{"OTAPIc::OT_API_LoadInbox", _wrap_OT_API_LoadInbox},
-{"OTAPIc::OT_API_LoadOutbox", _wrap_OT_API_LoadOutbox},
-{"OTAPIc::OT_API_Ledger_GetCount", _wrap_OT_API_Ledger_GetCount},
-{"OTAPIc::OT_API_Ledger_CreateResponse", _wrap_OT_API_Ledger_CreateResponse},
-{"OTAPIc::OT_API_Ledger_GetTransactionByIndex", _wrap_OT_API_Ledger_GetTransactionByIndex},
-{"OTAPIc::OT_API_Ledger_GetTransactionByID", _wrap_OT_API_Ledger_GetTransactionByID},
-{"OTAPIc::OT_API_Ledger_GetTransactionIDByIndex", _wrap_OT_API_Ledger_GetTransactionIDByIndex},
-{"OTAPIc::OT_API_Ledger_AddTransaction", _wrap_OT_API_Ledger_AddTransaction},
-{"OTAPIc::OT_API_Transaction_CreateResponse", _wrap_OT_API_Transaction_CreateResponse},
-{"OTAPIc::OT_API_Transaction_GetType", _wrap_OT_API_Transaction_GetType},
-{"OTAPIc::OT_API_checkServerID", _wrap_OT_API_checkServerID},
-{"OTAPIc::OT_API_createUserAccount", _wrap_OT_API_createUserAccount},
-{"OTAPIc::OT_API_checkUser", _wrap_OT_API_checkUser},
-{"OTAPIc::OT_API_getRequest", _wrap_OT_API_getRequest},
-{"OTAPIc::OT_API_getTransactionNumber", _wrap_OT_API_getTransactionNumber},
-{"OTAPIc::OT_API_issueAssetType", _wrap_OT_API_issueAssetType},
-{"OTAPIc::OT_API_getContract", _wrap_OT_API_getContract},
-{"OTAPIc::OT_API_getMint", _wrap_OT_API_getMint},
-{"OTAPIc::OT_API_createAssetAccount", _wrap_OT_API_createAssetAccount},
-{"OTAPIc::OT_API_getAccount", _wrap_OT_API_getAccount},
-{"OTAPIc::OT_API_issueBasket", _wrap_OT_API_issueBasket},
-{"OTAPIc::OT_API_exchangeBasket", _wrap_OT_API_exchangeBasket},
-{"OTAPIc::OT_API_notarizeWithdrawal", _wrap_OT_API_notarizeWithdrawal},
-{"OTAPIc::OT_API_notarizeDeposit", _wrap_OT_API_notarizeDeposit},
-{"OTAPIc::OT_API_notarizeTransfer", _wrap_OT_API_notarizeTransfer},
-{"OTAPIc::OT_API_getInbox", _wrap_OT_API_getInbox},
-{"OTAPIc::OT_API_processInbox", _wrap_OT_API_processInbox},
-{"OTAPIc::OT_API_withdrawVoucher", _wrap_OT_API_withdrawVoucher},
-{"OTAPIc::OT_API_depositCheque", _wrap_OT_API_depositCheque},
+{"otapic::OT_API_Init", _wrap_OT_API_Init},
+{"otapic::OT_API_LoadWallet", _wrap_OT_API_LoadWallet},
+{"otapic::OT_API_ConnectServer", _wrap_OT_API_ConnectServer},
+{"otapic::OT_API_ProcessSockets", _wrap_OT_API_ProcessSockets},
+{"otapic::OT_API_GetNymCount", _wrap_OT_API_GetNymCount},
+{"otapic::OT_API_GetServerCount", _wrap_OT_API_GetServerCount},
+{"otapic::OT_API_GetAssetTypeCount", _wrap_OT_API_GetAssetTypeCount},
+{"otapic::OT_API_GetAccountCount", _wrap_OT_API_GetAccountCount},
+{"otapic::OT_API_GetNym_ID", _wrap_OT_API_GetNym_ID},
+{"otapic::OT_API_GetNym_Name", _wrap_OT_API_GetNym_Name},
+{"otapic::OT_API_GetServer_ID", _wrap_OT_API_GetServer_ID},
+{"otapic::OT_API_GetServer_Name", _wrap_OT_API_GetServer_Name},
+{"otapic::OT_API_GetAssetType_ID", _wrap_OT_API_GetAssetType_ID},
+{"otapic::OT_API_GetAssetType_Name", _wrap_OT_API_GetAssetType_Name},
+{"otapic::OT_API_GetAccountWallet_ID", _wrap_OT_API_GetAccountWallet_ID},
+{"otapic::OT_API_GetAccountWallet_Name", _wrap_OT_API_GetAccountWallet_Name},
+{"otapic::OT_API_GetAccountWallet_Balance", _wrap_OT_API_GetAccountWallet_Balance},
+{"otapic::OT_API_GetAccountWallet_Type", _wrap_OT_API_GetAccountWallet_Type},
+{"otapic::OT_API_GetAccountWallet_AssetTypeID", _wrap_OT_API_GetAccountWallet_AssetTypeID},
+{"otapic::OT_API_WriteCheque", _wrap_OT_API_WriteCheque},
+{"otapic::OT_API_LoadUserPubkey", _wrap_OT_API_LoadUserPubkey},
+{"otapic::OT_API_VerifyUserPrivateKey", _wrap_OT_API_VerifyUserPrivateKey},
+{"otapic::OT_API_LoadPurse", _wrap_OT_API_LoadPurse},
+{"otapic::OT_API_LoadMint", _wrap_OT_API_LoadMint},
+{"otapic::OT_API_LoadAssetContract", _wrap_OT_API_LoadAssetContract},
+{"otapic::OT_API_LoadAssetAccount", _wrap_OT_API_LoadAssetAccount},
+{"otapic::OT_API_LoadInbox", _wrap_OT_API_LoadInbox},
+{"otapic::OT_API_LoadOutbox", _wrap_OT_API_LoadOutbox},
+{"otapic::OT_API_Ledger_GetCount", _wrap_OT_API_Ledger_GetCount},
+{"otapic::OT_API_Ledger_CreateResponse", _wrap_OT_API_Ledger_CreateResponse},
+{"otapic::OT_API_Ledger_GetTransactionByIndex", _wrap_OT_API_Ledger_GetTransactionByIndex},
+{"otapic::OT_API_Ledger_GetTransactionByID", _wrap_OT_API_Ledger_GetTransactionByID},
+{"otapic::OT_API_Ledger_GetTransactionIDByIndex", _wrap_OT_API_Ledger_GetTransactionIDByIndex},
+{"otapic::OT_API_Ledger_AddTransaction", _wrap_OT_API_Ledger_AddTransaction},
+{"otapic::OT_API_Transaction_CreateResponse", _wrap_OT_API_Transaction_CreateResponse},
+{"otapic::OT_API_Transaction_GetType", _wrap_OT_API_Transaction_GetType},
+{"otapic::OT_API_checkServerID", _wrap_OT_API_checkServerID},
+{"otapic::OT_API_createUserAccount", _wrap_OT_API_createUserAccount},
+{"otapic::OT_API_checkUser", _wrap_OT_API_checkUser},
+{"otapic::OT_API_getRequest", _wrap_OT_API_getRequest},
+{"otapic::OT_API_getTransactionNumber", _wrap_OT_API_getTransactionNumber},
+{"otapic::OT_API_issueAssetType", _wrap_OT_API_issueAssetType},
+{"otapic::OT_API_getContract", _wrap_OT_API_getContract},
+{"otapic::OT_API_getMint", _wrap_OT_API_getMint},
+{"otapic::OT_API_createAssetAccount", _wrap_OT_API_createAssetAccount},
+{"otapic::OT_API_getAccount", _wrap_OT_API_getAccount},
+{"otapic::OT_API_issueBasket", _wrap_OT_API_issueBasket},
+{"otapic::OT_API_exchangeBasket", _wrap_OT_API_exchangeBasket},
+{"otapic::OT_API_notarizeWithdrawal", _wrap_OT_API_notarizeWithdrawal},
+{"otapic::OT_API_notarizeDeposit", _wrap_OT_API_notarizeDeposit},
+{"otapic::OT_API_notarizeTransfer", _wrap_OT_API_notarizeTransfer},
+{"otapic::OT_API_getInbox", _wrap_OT_API_getInbox},
+{"otapic::OT_API_processInbox", _wrap_OT_API_processInbox},
+{"otapic::OT_API_withdrawVoucher", _wrap_OT_API_withdrawVoucher},
+{"otapic::OT_API_depositCheque", _wrap_OT_API_depositCheque},
 {0,0}
 };
 /* -----------------------------------------------------------------------------

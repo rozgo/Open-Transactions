@@ -903,38 +903,38 @@ static swig_module_info swig_module = {swig_types, 0, 0, 0, 0, 0};
   |                                                                      |
   +----------------------------------------------------------------------+
  */
-ZEND_BEGIN_MODULE_GLOBALS(OTAPI)
+ZEND_BEGIN_MODULE_GLOBALS(otapi)
 char *error_msg;
 int error_code;
-ZEND_END_MODULE_GLOBALS(OTAPI)
-ZEND_DECLARE_MODULE_GLOBALS(OTAPI)
+ZEND_END_MODULE_GLOBALS(otapi)
+ZEND_DECLARE_MODULE_GLOBALS(otapi)
 #ifdef ZTS
-#define SWIG_ErrorMsg() TSRMG(OTAPI_globals_id, zend_OTAPI_globals *, error_msg )
-#define SWIG_ErrorCode() TSRMG(OTAPI_globals_id, zend_OTAPI_globals *, error_code )
+#define SWIG_ErrorMsg() TSRMG(otapi_globals_id, zend_otapi_globals *, error_msg )
+#define SWIG_ErrorCode() TSRMG(otapi_globals_id, zend_otapi_globals *, error_code )
 #else
-#define SWIG_ErrorMsg() (OTAPI_globals.error_msg)
-#define SWIG_ErrorCode() (OTAPI_globals.error_code)
+#define SWIG_ErrorMsg() (otapi_globals.error_msg)
+#define SWIG_ErrorCode() (otapi_globals.error_code)
 #endif
 
-static void OTAPI_init_globals(zend_OTAPI_globals *globals ) {
+static void otapi_init_globals(zend_otapi_globals *globals ) {
   globals->error_msg = default_error_msg;
   globals->error_code = default_error_code;
 }
-static void OTAPI_destroy_globals(zend_OTAPI_globals * globals) { (void)globals; }
+static void otapi_destroy_globals(zend_otapi_globals * globals) { (void)globals; }
 
 static void SWIG_ResetError() {
   TSRMLS_FETCH();
   SWIG_ErrorMsg() = default_error_msg;
   SWIG_ErrorCode() = default_error_code;
 }
-#define SWIG_name  "OTAPI"
+#define SWIG_name  "otapi"
 #ifdef __cplusplus
 extern "C" {
 #endif
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
-#include "php_OTAPI.h"
+#include "php_otapi.h"
 #ifdef __cplusplus
 }
 #endif
@@ -3063,7 +3063,7 @@ fail:
 
 /* entry subsection */
 /* Every non-class user visible function must have an entry here */
-static function_entry OTAPI_functions[] = {
+static function_entry otapi_functions[] = {
  ZEND_NAMED_FE(ot_api_init,_wrap_OT_API_Init,NULL)
  ZEND_NAMED_FE(ot_api_loadwallet,_wrap_OT_API_LoadWallet,NULL)
  ZEND_NAMED_FE(ot_api_connectserver,_wrap_OT_API_ConnectServer,NULL)
@@ -3123,33 +3123,33 @@ static function_entry OTAPI_functions[] = {
 };
 
 /* init section */
-zend_module_entry OTAPI_module_entry = {
+zend_module_entry otapi_module_entry = {
 #if ZEND_MODULE_API_NO > 20010900
     STANDARD_MODULE_HEADER,
 #endif
-    "OTAPI",
-    OTAPI_functions,
-    PHP_MINIT(OTAPI),
-    PHP_MSHUTDOWN(OTAPI),
-    PHP_RINIT(OTAPI),
-    PHP_RSHUTDOWN(OTAPI),
-    PHP_MINFO(OTAPI),
+    "otapi",
+    otapi_functions,
+    PHP_MINIT(otapi),
+    PHP_MSHUTDOWN(otapi),
+    PHP_RINIT(otapi),
+    PHP_RSHUTDOWN(otapi),
+    PHP_MINFO(otapi),
 #if ZEND_MODULE_API_NO > 20010900
     NO_VERSION_YET,
 #endif
     STANDARD_MODULE_PROPERTIES
 };
-zend_module_entry* SWIG_module_entry = &OTAPI_module_entry;
+zend_module_entry* SWIG_module_entry = &otapi_module_entry;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-SWIGEXPORT zend_module_entry *get_module(void) { return &OTAPI_module_entry; }
+SWIGEXPORT zend_module_entry *get_module(void) { return &otapi_module_entry; }
 #ifdef __cplusplus
 }
 #endif
 
-#define SWIG_php_minit PHP_MINIT_FUNCTION(OTAPI)
+#define SWIG_php_minit PHP_MINIT_FUNCTION(otapi)
 /* -----------------------------------------------------------------------------
  * Type initialization:
  * This problem is tough by the requirement that no dynamic 
@@ -3383,7 +3383,7 @@ SWIG_PropagateClientData(void) {
     SWIG_InitializeModule(0);
 
 /* oinit subsection */
-ZEND_INIT_MODULE_GLOBALS(OTAPI, OTAPI_init_globals, OTAPI_destroy_globals);
+ZEND_INIT_MODULE_GLOBALS(otapi, otapi_init_globals, otapi_destroy_globals);
 CG(active_class_entry) = NULL;
 /* end oinit subsection */
 
@@ -3393,7 +3393,7 @@ CG(active_class_entry) = NULL;
     return SUCCESS;
 }
 
-PHP_RINIT_FUNCTION(OTAPI)
+PHP_RINIT_FUNCTION(otapi)
 {
 /* rinit section */
 
@@ -3403,21 +3403,21 @@ PHP_RINIT_FUNCTION(OTAPI)
     return SUCCESS;
 }
 
-PHP_MSHUTDOWN_FUNCTION(OTAPI)
+PHP_MSHUTDOWN_FUNCTION(otapi)
 {
 /* shutdown section */
 
     return SUCCESS;
 }
 
-PHP_RSHUTDOWN_FUNCTION(OTAPI)
+PHP_RSHUTDOWN_FUNCTION(otapi)
 {
 /* rshutdown section */
 
     return SUCCESS;
 }
 
-PHP_MINFO_FUNCTION(OTAPI)
+PHP_MINFO_FUNCTION(otapi)
 {
 }
 /* end init section */

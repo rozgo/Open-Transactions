@@ -1532,10 +1532,10 @@ static swig_module_info swig_module = {swig_types, 1, 0, 0, 0, 0};
 
 /* -------- TYPES TABLE (END) -------- */
 
-#define SWIG_init    Init_OTAPI
-#define SWIG_name    "OTAPI"
+#define SWIG_init    Init_otapi
+#define SWIG_name    "Otapi"
 
-static VALUE mOTAPI;
+static VALUE mOtapi;
 
 #define SWIGVERSION 0x010331 
 #define SWIG_VERSION SWIGVERSION
@@ -4335,11 +4335,11 @@ SWIG_PropagateClientData(void) {
 #ifdef __cplusplus
 extern "C"
 #endif
-SWIGEXPORT void Init_OTAPI(void) {
+SWIGEXPORT void Init_otapi(void) {
   size_t i;
   
   SWIG_InitRuntime();
-  mOTAPI = rb_define_module("OTAPI");
+  mOtapi = rb_define_module("Otapi");
   
   SWIG_InitializeModule(0);
   for (i = 0; i < swig_module.size; i++) {
@@ -4347,60 +4347,60 @@ SWIGEXPORT void Init_OTAPI(void) {
   }
   
   SWIG_RubyInitializeTrackings();
-  rb_define_module_function(mOTAPI, "OT_API_Init", _wrap_OT_API_Init, -1);
-  rb_define_module_function(mOTAPI, "OT_API_LoadWallet", _wrap_OT_API_LoadWallet, -1);
-  rb_define_module_function(mOTAPI, "OT_API_ConnectServer", _wrap_OT_API_ConnectServer, -1);
-  rb_define_module_function(mOTAPI, "OT_API_ProcessSockets", _wrap_OT_API_ProcessSockets, -1);
-  rb_define_module_function(mOTAPI, "OT_API_GetNymCount", _wrap_OT_API_GetNymCount, -1);
-  rb_define_module_function(mOTAPI, "OT_API_GetServerCount", _wrap_OT_API_GetServerCount, -1);
-  rb_define_module_function(mOTAPI, "OT_API_GetAssetTypeCount", _wrap_OT_API_GetAssetTypeCount, -1);
-  rb_define_module_function(mOTAPI, "OT_API_GetAccountCount", _wrap_OT_API_GetAccountCount, -1);
-  rb_define_module_function(mOTAPI, "OT_API_GetNym_ID", _wrap_OT_API_GetNym_ID, -1);
-  rb_define_module_function(mOTAPI, "OT_API_GetNym_Name", _wrap_OT_API_GetNym_Name, -1);
-  rb_define_module_function(mOTAPI, "OT_API_GetServer_ID", _wrap_OT_API_GetServer_ID, -1);
-  rb_define_module_function(mOTAPI, "OT_API_GetServer_Name", _wrap_OT_API_GetServer_Name, -1);
-  rb_define_module_function(mOTAPI, "OT_API_GetAssetType_ID", _wrap_OT_API_GetAssetType_ID, -1);
-  rb_define_module_function(mOTAPI, "OT_API_GetAssetType_Name", _wrap_OT_API_GetAssetType_Name, -1);
-  rb_define_module_function(mOTAPI, "OT_API_GetAccountWallet_ID", _wrap_OT_API_GetAccountWallet_ID, -1);
-  rb_define_module_function(mOTAPI, "OT_API_GetAccountWallet_Name", _wrap_OT_API_GetAccountWallet_Name, -1);
-  rb_define_module_function(mOTAPI, "OT_API_GetAccountWallet_Balance", _wrap_OT_API_GetAccountWallet_Balance, -1);
-  rb_define_module_function(mOTAPI, "OT_API_GetAccountWallet_Type", _wrap_OT_API_GetAccountWallet_Type, -1);
-  rb_define_module_function(mOTAPI, "OT_API_GetAccountWallet_AssetTypeID", _wrap_OT_API_GetAccountWallet_AssetTypeID, -1);
-  rb_define_module_function(mOTAPI, "OT_API_WriteCheque", _wrap_OT_API_WriteCheque, -1);
-  rb_define_module_function(mOTAPI, "OT_API_LoadUserPubkey", _wrap_OT_API_LoadUserPubkey, -1);
-  rb_define_module_function(mOTAPI, "OT_API_VerifyUserPrivateKey", _wrap_OT_API_VerifyUserPrivateKey, -1);
-  rb_define_module_function(mOTAPI, "OT_API_LoadPurse", _wrap_OT_API_LoadPurse, -1);
-  rb_define_module_function(mOTAPI, "OT_API_LoadMint", _wrap_OT_API_LoadMint, -1);
-  rb_define_module_function(mOTAPI, "OT_API_LoadAssetContract", _wrap_OT_API_LoadAssetContract, -1);
-  rb_define_module_function(mOTAPI, "OT_API_LoadAssetAccount", _wrap_OT_API_LoadAssetAccount, -1);
-  rb_define_module_function(mOTAPI, "OT_API_LoadInbox", _wrap_OT_API_LoadInbox, -1);
-  rb_define_module_function(mOTAPI, "OT_API_LoadOutbox", _wrap_OT_API_LoadOutbox, -1);
-  rb_define_module_function(mOTAPI, "OT_API_Ledger_GetCount", _wrap_OT_API_Ledger_GetCount, -1);
-  rb_define_module_function(mOTAPI, "OT_API_Ledger_CreateResponse", _wrap_OT_API_Ledger_CreateResponse, -1);
-  rb_define_module_function(mOTAPI, "OT_API_Ledger_GetTransactionByIndex", _wrap_OT_API_Ledger_GetTransactionByIndex, -1);
-  rb_define_module_function(mOTAPI, "OT_API_Ledger_GetTransactionByID", _wrap_OT_API_Ledger_GetTransactionByID, -1);
-  rb_define_module_function(mOTAPI, "OT_API_Ledger_GetTransactionIDByIndex", _wrap_OT_API_Ledger_GetTransactionIDByIndex, -1);
-  rb_define_module_function(mOTAPI, "OT_API_Ledger_AddTransaction", _wrap_OT_API_Ledger_AddTransaction, -1);
-  rb_define_module_function(mOTAPI, "OT_API_Transaction_CreateResponse", _wrap_OT_API_Transaction_CreateResponse, -1);
-  rb_define_module_function(mOTAPI, "OT_API_Transaction_GetType", _wrap_OT_API_Transaction_GetType, -1);
-  rb_define_module_function(mOTAPI, "OT_API_checkServerID", _wrap_OT_API_checkServerID, -1);
-  rb_define_module_function(mOTAPI, "OT_API_createUserAccount", _wrap_OT_API_createUserAccount, -1);
-  rb_define_module_function(mOTAPI, "OT_API_checkUser", _wrap_OT_API_checkUser, -1);
-  rb_define_module_function(mOTAPI, "OT_API_getRequest", _wrap_OT_API_getRequest, -1);
-  rb_define_module_function(mOTAPI, "OT_API_getTransactionNumber", _wrap_OT_API_getTransactionNumber, -1);
-  rb_define_module_function(mOTAPI, "OT_API_issueAssetType", _wrap_OT_API_issueAssetType, -1);
-  rb_define_module_function(mOTAPI, "OT_API_getContract", _wrap_OT_API_getContract, -1);
-  rb_define_module_function(mOTAPI, "OT_API_getMint", _wrap_OT_API_getMint, -1);
-  rb_define_module_function(mOTAPI, "OT_API_createAssetAccount", _wrap_OT_API_createAssetAccount, -1);
-  rb_define_module_function(mOTAPI, "OT_API_getAccount", _wrap_OT_API_getAccount, -1);
-  rb_define_module_function(mOTAPI, "OT_API_issueBasket", _wrap_OT_API_issueBasket, -1);
-  rb_define_module_function(mOTAPI, "OT_API_exchangeBasket", _wrap_OT_API_exchangeBasket, -1);
-  rb_define_module_function(mOTAPI, "OT_API_notarizeWithdrawal", _wrap_OT_API_notarizeWithdrawal, -1);
-  rb_define_module_function(mOTAPI, "OT_API_notarizeDeposit", _wrap_OT_API_notarizeDeposit, -1);
-  rb_define_module_function(mOTAPI, "OT_API_notarizeTransfer", _wrap_OT_API_notarizeTransfer, -1);
-  rb_define_module_function(mOTAPI, "OT_API_getInbox", _wrap_OT_API_getInbox, -1);
-  rb_define_module_function(mOTAPI, "OT_API_processInbox", _wrap_OT_API_processInbox, -1);
-  rb_define_module_function(mOTAPI, "OT_API_withdrawVoucher", _wrap_OT_API_withdrawVoucher, -1);
-  rb_define_module_function(mOTAPI, "OT_API_depositCheque", _wrap_OT_API_depositCheque, -1);
+  rb_define_module_function(mOtapi, "OT_API_Init", _wrap_OT_API_Init, -1);
+  rb_define_module_function(mOtapi, "OT_API_LoadWallet", _wrap_OT_API_LoadWallet, -1);
+  rb_define_module_function(mOtapi, "OT_API_ConnectServer", _wrap_OT_API_ConnectServer, -1);
+  rb_define_module_function(mOtapi, "OT_API_ProcessSockets", _wrap_OT_API_ProcessSockets, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetNymCount", _wrap_OT_API_GetNymCount, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetServerCount", _wrap_OT_API_GetServerCount, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetAssetTypeCount", _wrap_OT_API_GetAssetTypeCount, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetAccountCount", _wrap_OT_API_GetAccountCount, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetNym_ID", _wrap_OT_API_GetNym_ID, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetNym_Name", _wrap_OT_API_GetNym_Name, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetServer_ID", _wrap_OT_API_GetServer_ID, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetServer_Name", _wrap_OT_API_GetServer_Name, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetAssetType_ID", _wrap_OT_API_GetAssetType_ID, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetAssetType_Name", _wrap_OT_API_GetAssetType_Name, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetAccountWallet_ID", _wrap_OT_API_GetAccountWallet_ID, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetAccountWallet_Name", _wrap_OT_API_GetAccountWallet_Name, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetAccountWallet_Balance", _wrap_OT_API_GetAccountWallet_Balance, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetAccountWallet_Type", _wrap_OT_API_GetAccountWallet_Type, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetAccountWallet_AssetTypeID", _wrap_OT_API_GetAccountWallet_AssetTypeID, -1);
+  rb_define_module_function(mOtapi, "OT_API_WriteCheque", _wrap_OT_API_WriteCheque, -1);
+  rb_define_module_function(mOtapi, "OT_API_LoadUserPubkey", _wrap_OT_API_LoadUserPubkey, -1);
+  rb_define_module_function(mOtapi, "OT_API_VerifyUserPrivateKey", _wrap_OT_API_VerifyUserPrivateKey, -1);
+  rb_define_module_function(mOtapi, "OT_API_LoadPurse", _wrap_OT_API_LoadPurse, -1);
+  rb_define_module_function(mOtapi, "OT_API_LoadMint", _wrap_OT_API_LoadMint, -1);
+  rb_define_module_function(mOtapi, "OT_API_LoadAssetContract", _wrap_OT_API_LoadAssetContract, -1);
+  rb_define_module_function(mOtapi, "OT_API_LoadAssetAccount", _wrap_OT_API_LoadAssetAccount, -1);
+  rb_define_module_function(mOtapi, "OT_API_LoadInbox", _wrap_OT_API_LoadInbox, -1);
+  rb_define_module_function(mOtapi, "OT_API_LoadOutbox", _wrap_OT_API_LoadOutbox, -1);
+  rb_define_module_function(mOtapi, "OT_API_Ledger_GetCount", _wrap_OT_API_Ledger_GetCount, -1);
+  rb_define_module_function(mOtapi, "OT_API_Ledger_CreateResponse", _wrap_OT_API_Ledger_CreateResponse, -1);
+  rb_define_module_function(mOtapi, "OT_API_Ledger_GetTransactionByIndex", _wrap_OT_API_Ledger_GetTransactionByIndex, -1);
+  rb_define_module_function(mOtapi, "OT_API_Ledger_GetTransactionByID", _wrap_OT_API_Ledger_GetTransactionByID, -1);
+  rb_define_module_function(mOtapi, "OT_API_Ledger_GetTransactionIDByIndex", _wrap_OT_API_Ledger_GetTransactionIDByIndex, -1);
+  rb_define_module_function(mOtapi, "OT_API_Ledger_AddTransaction", _wrap_OT_API_Ledger_AddTransaction, -1);
+  rb_define_module_function(mOtapi, "OT_API_Transaction_CreateResponse", _wrap_OT_API_Transaction_CreateResponse, -1);
+  rb_define_module_function(mOtapi, "OT_API_Transaction_GetType", _wrap_OT_API_Transaction_GetType, -1);
+  rb_define_module_function(mOtapi, "OT_API_checkServerID", _wrap_OT_API_checkServerID, -1);
+  rb_define_module_function(mOtapi, "OT_API_createUserAccount", _wrap_OT_API_createUserAccount, -1);
+  rb_define_module_function(mOtapi, "OT_API_checkUser", _wrap_OT_API_checkUser, -1);
+  rb_define_module_function(mOtapi, "OT_API_getRequest", _wrap_OT_API_getRequest, -1);
+  rb_define_module_function(mOtapi, "OT_API_getTransactionNumber", _wrap_OT_API_getTransactionNumber, -1);
+  rb_define_module_function(mOtapi, "OT_API_issueAssetType", _wrap_OT_API_issueAssetType, -1);
+  rb_define_module_function(mOtapi, "OT_API_getContract", _wrap_OT_API_getContract, -1);
+  rb_define_module_function(mOtapi, "OT_API_getMint", _wrap_OT_API_getMint, -1);
+  rb_define_module_function(mOtapi, "OT_API_createAssetAccount", _wrap_OT_API_createAssetAccount, -1);
+  rb_define_module_function(mOtapi, "OT_API_getAccount", _wrap_OT_API_getAccount, -1);
+  rb_define_module_function(mOtapi, "OT_API_issueBasket", _wrap_OT_API_issueBasket, -1);
+  rb_define_module_function(mOtapi, "OT_API_exchangeBasket", _wrap_OT_API_exchangeBasket, -1);
+  rb_define_module_function(mOtapi, "OT_API_notarizeWithdrawal", _wrap_OT_API_notarizeWithdrawal, -1);
+  rb_define_module_function(mOtapi, "OT_API_notarizeDeposit", _wrap_OT_API_notarizeDeposit, -1);
+  rb_define_module_function(mOtapi, "OT_API_notarizeTransfer", _wrap_OT_API_notarizeTransfer, -1);
+  rb_define_module_function(mOtapi, "OT_API_getInbox", _wrap_OT_API_getInbox, -1);
+  rb_define_module_function(mOtapi, "OT_API_processInbox", _wrap_OT_API_processInbox, -1);
+  rb_define_module_function(mOtapi, "OT_API_withdrawVoucher", _wrap_OT_API_withdrawVoucher, -1);
+  rb_define_module_function(mOtapi, "OT_API_depositCheque", _wrap_OT_API_depositCheque, -1);
 }
 

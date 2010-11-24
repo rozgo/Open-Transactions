@@ -180,7 +180,7 @@ endif
 
 #
 # Default target: the first target is the default target.
-# Just type "make -f Makefile.Linux" to build it.
+# Just type "make" to build it.
 #
 
 all: $(PROGRAM)
