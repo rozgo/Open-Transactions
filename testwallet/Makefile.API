@@ -1,10 +1,11 @@
 #
 # IMPORTANT:  WHEN USING THIS MAKEFILE, YOU *MUST* USE THE OPTIONS. EXAMPLE:
 #
-# So you have to do: make -f Makefile.API PLATFORM=linux LANGUAGE=php5 TRANSPORT=XmlRpc
-#                OR: make -f Makefile.API PLATFORM=darwin LANGUAGE=c  TRANSPORT=XmlRpc debug
-#                OR: make -f Makefile.API PLATFORM=freebsd LANGUAGE=ruby
-# 		Etc...
+# So you have to do: 
+#      make -f Makefile.API PLATFORM=linux LANGUAGE=php5 TRANSPORT=XmlRpc
+#  OR: make -f Makefile.API PLATFORM=darwin LANGUAGE=c  TRANSPORT=XmlRpc debug
+#  OR: make -f Makefile.API PLATFORM=freebsd LANGUAGE=ruby
+#  Etc...
 #
 # (Example only. Transport is optional, but you MUST choose a platform and language.)
 #
@@ -145,6 +146,9 @@ ifeq ($(PLATFORM), darwin)
 
 DYNAMIC_OTLIB_CONTENTS = # empty
 
+# C_COMPILER = gcc
+
+
 # --- Common Lisp
 LISP_PROGRAM = OTAPI.so
 LISP_DEBUG_PROGRAM = OTAPId.so 
@@ -167,15 +171,16 @@ JAVA_LDFLAGS = -framework JavaVM -bundle
 # NOTE: the perl commands here (commented out), used at the command line, generated
 # the actual CFLAGS and LDFLAGS that are used below in the uncommented section.
 # (You may find them similarly useful on your machine.)
-#CFLAGS += -bundle $(shell perl -MExtUtils::Embed -e ccopts)
-#LDFLAGS += -bundle $(shell perl -MExtUtils::Embed -e ldopts)
+#PERL5_CFLAGS = -bundle $(shell perl -MExtUtils::Embed -e ccopts)
+#PERL5_LDFLAGS = -bundle $(shell perl -MExtUtils::Embed -e ldopts)
 #DEBUG_LDFLAGS += -bundle $(shell perl -MExtUtils::Embed -e ldopts)
 #
 PERL5_PROGRAM = OTAPI.bundle 
 PERL5_DEBUG_PROGRAM = OTAPId.bundle
 PERL5_INCLUDEDIRS = # empty
-PERL5_CFLAGS = -bundle -arch x86_64 -g -pipe -fno-common -DPERL_DARWIN -fno-strict-aliasing -I/usr/local/include  -I/System/Library/Perl/5.10.0/darwin-thread-multi-2level/CORE
-PERL5_LDFLAGS = -bundle -arch x86_64 -L/usr/local/lib  -L/System/Library/Perl/5.10.0/darwin-thread-multi-2level/CORE -lperl -ldl -lm -lutil -lc
+PERL5_CFLAGS =  -bundle -arch x86_64  -g -pipe -fno-common -DPERL_DARWIN -fno-strict-aliasing  -no-cpp-precomp -I/opt/local/include  -I/System/Library/Perl/5.10.0/darwin-thread-multi-2level/CORE
+PERL5_LDFLAGS = -bundle -arch x86_64 -L/opt/local/lib  -L/System/Library/Perl/5.10.0/darwin-thread-multi-2level/CORE -lperl -ldl -lm -lutil -lc
+
 
 # --- PHP5
 #/usr/libexec/apache2/libphp5.so
