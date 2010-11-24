@@ -210,11 +210,13 @@ It's that easy! To test it on the command line:
 
 $ cd testwallet
 $
-$ perl5.10.0   (or just perl, depending on your system)
+$ perl5.10.0
 use otapi;
 otapi::OT_API_Init("/full-path-goes-here/Open-Transactions/testwallet/data_folder");
 otapi::OT_API_LoadWallet("wallet.xml");
+
 ^D
+
 Loading wallet: Fellow Traveler's test wallet, version: 1.0
 
 (Etc. The entire wallet loaded.)
