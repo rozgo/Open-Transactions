@@ -137,9 +137,14 @@ extern "C"
 // By default, only those are actually logged. If you want to see the other messages,
 // then set this log level to a higher value sometime when you start execution.
 // (Or right here.)
-int OTLog::__CurrentLogLevel = 1;
 
-OTString OTLog::__Version = "0.36";
+#if defined (DSP)					   
+int OTLog::__CurrentLogLevel = -1;	// If you build with DSP=1, it assumes a special location for OpenSSL,
+#else								// and it turns off all the output.
+int OTLog::__CurrentLogLevel = 1;
+#endif
+
+OTString OTLog::__Version = "0.37";
 
 
 
@@ -278,7 +283,8 @@ int OTLog::Assert(const char * szFilename, int nLinenumber)
 void OTLog::Output(int nVerbosity, const char *szOutput)
 {
 	// If log level is 0, and verbosity of this message is 2, don't bother logging it.
-	if (nVerbosity > OTLog::__CurrentLogLevel || (NULL == szOutput))
+//	if (nVerbosity > OTLog::__CurrentLogLevel || (NULL == szOutput))
+	if ((nVerbosity > OTLog::__CurrentLogLevel) || (NULL == szOutput) || (OTLog::__CurrentLogLevel == (-1)))		
 		return; 
 	
 #ifndef ANDROID // if NOT android

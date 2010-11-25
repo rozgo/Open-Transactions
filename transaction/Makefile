@@ -15,11 +15,22 @@ UNAME := $(shell uname -s)
 
 OT_PLATFORM := ___OT_PLATFORM_UNKNOWN___
 
+# ---------------------------------------------------------------------
+
 ifeq ($(FELLOW_TRAVELER), 1)
-FT_FLAGS  = -DFELLOW_TRAVELER
+FT_FLAGS = -DFELLOW_TRAVELER
 else
-FT_FLAGS  = #empty
+FT_FLAGS = #empty
 endif
+
+# ---------------------------------------------------------------------
+
+ifeq ($(DSP), 1)
+FT_FLAGS += -DDSP
+endif
+
+# ---------------------------------------------------------------------
+
 
 
 # I allow the user the option to force-override the build platform.
@@ -49,6 +60,42 @@ endif
 
 
 PLATFORM = $(OT_PLATFORM)
+# ---------------------------------------------------------------------
+
+
+OT_INCLUDEDIRS = \
+	-I../OTLib/irrxml \
+	-I../OTLib \
+	-I./SSL-Example \
+	-I.
+
+
+OT_LIBDIRS = \
+	-L../OTLib
+
+
+PLATFORM_LIBDIRS = #empty
+PLATFORM_INCLUDEDIRS = #empty
+
+API_CSOURCES = SSL-Example/SFSocket.c
+API_CXXSOURCES = # empty
+API_CFLAGS = # empty
+API_LDFLAGS = # empty
+
+
+C_COMPILER = cc
+
+# The LIBS macro contains a list of libraries that the the
+# executable must be linked against.
+API_LIBS =  -lssl -lcrypto  -lOTLib -lssl -lcrypto  -lOTLib  -lssl -lcrypto -lOTLib  -lssl -lcrypto -lOTLib
+API_DEBUG_LIBS = -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd  -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd
+#
+# FT: I tested this. The above version worked on Linux, and the below version did not.
+#
+#API_LIBS = -lssl  -lcrypto -lOTLib
+#API_DEBUG_LIBS =  -lssl -lcrypto  -lOTLibd
+
+
 
 
 LINUX_LIBDIR = lib
@@ -57,6 +104,7 @@ ifeq ($(LBITS),64)
 LINUX_LIBDIR = lib64
 endif
 
+# ---------------------------------------------------------------------
 # SSL Folders!
 
 # For Darwin I use /opt instead of /usr, since OpenSSL 1.0.0a is
@@ -78,147 +126,185 @@ SSL_LIBDIRS = -L/usr/local/lib
 #SSL_LIBDIRS = -L/usr/ports/security/openssl/work/openssl-1.0.0a
 endif
 
-
-PLATFORM_INCLUDEDIRS = \
-	$(SSL_INCLUDEDIRS) \
-	-I../OTLib/irrxml \
-	-I../OTLib \
-	-I./SSL-Example \
-	-I./
-
-PLATFORM_LIBDIRS = \
-	$(SSL_LIBDIRS) \
-	-L../OTLib
+# ---------------------------------------------------------------------
 
 
+ifeq ($(DSP), 1)
+SSL_INCLUDEDIRS = -I../openssl-1.0.0b/include
+SSL_LIBDIRS = -L../openssl-1.0.0b
+endif
+
+# ---------------------------------------------------------------------
+
+PLATFORM_INCLUDEDIRS += $(SSL_INCLUDEDIRS)
+PLATFORM_LIBDIRS += $(SSL_LIBDIRS)
+
+
+# ---------------------------------------------------------------------
+
+
+
+#
+# Eventually more platform stuff can go below here, like 64-bit, etc.
+#
+# ---------------------------------------------------------------------
+
+# --- DARWIN
+#
+ifeq ($(PLATFORM), darwin)
+endif
+# End DARWIN -------------------------------------------------------------
+
+
+
+ifeq ($(PLATFORM), linux)
+API_LDFLAGS += -ldl
+C_COMPILER = gcc
+endif
+# End LINUX -------------------------------------------------------------
+
+
+
+
+# --- FreeBSD ----
+
+ifeq ($(PLATFORM), freebsd)
+endif
+# End FreeBSD -------------------------------------------------------------
+
+
+
+
+
+# ---------------------------------------------------------------------
+
+# --- TRANSPORT
+
+# This is not a target, but a command-line option.
+#
+# So you have to do: make PLATFORM=linux TRANSPORT=XmlRpc
+#                OR: make PLATFORM=darwin TRANSPORT=XmlRpc debug
+#                OR: make PLATFORM=freebsd TRANSPORT=XmlRpc
+# 		Etc...
+#
 
 XMLRPCPP_INCLUDEDIR = -I../xmlrpcpp/src
 XMLRPCPP_LIBDIR = -L../xmlrpcpp/
 
-
-
-TRANSPORT_CFLAG = # empty
-TRANSPORT_LDFLAG = # empty
-
 ifeq ($(TRANSPORT), XmlRpc)
-TRANSPORT_CFLAG += -DOT_XMLRPC_MODE
-TRANSPORT_LDFLAG += -lXmlRpc
+API_CFLAGS += -DOT_XMLRPC_MODE
+API_LDFLAGS += -lXmlRpc
 PLATFORM_INCLUDEDIRS += $(XMLRPCPP_INCLUDEDIR)
 PLATFORM_LIBDIRS += $(XMLRPCPP_LIBDIR)
-endif
-
-INCLUDEDIRS = $(PLATFORM_INCLUDEDIRS)
-LIBDIRS = $(PLATFORM_LIBDIRS)
-
-# I know it seems strange to see the libraries repeated here multiple times. 
-# But I found a tip online to do this, and there are definitely build issues
-# on linux with at least one of these Makefiles, if you remove the repeats.
-# Weird.
-ifeq ($(PLATFORM), linux)
-LIBS = -ldl $(TRANSPORT_LDFLAG) $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib
-
-DEBUG_LIBS = -ldl $(TRANSPORT_LDFLAG) $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd
+API_CXXSOURCES += xmlrpcxx_server.cpp
 else
-LIBS = $(TRANSPORT_LDFLAG) $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLib
-
-DEBUG_LIBS = $(TRANSPORT_LDFLAG) $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd $(LIBDIRS) -lssl $(LIBDIRS) -lcrypto $(LIBDIRS) -lOTLibd
+API_CXXSOURCES += testserver.cpp
 endif
 
-#LIBS = $(LIBDIRS) -lOTLib ../OTLib/libssl.a \
-#	../OTLib/libcrypto.a
-# LIBS = $(LIBDIRS) -lOTLib /home/ben/work/openssl-1.0.0/libssl.a \
-#         /home/ben/work/openssl-1.0.0/libcrypto.a
 
-#
-# The CXXSOURCES macro contains a list of source files.
-#
-# The CXXOBJECTS macro converts the CXXSOURCES macro into a list
-# of object files.
-#
-# The CXXFLAGS macro contains a list of options to be passed to
-# the compiler.  Adding "-g" to this line will cause the compiler
-# to add debugging information to the executable.
-#
-# The CXX macro defines the C++ compiler.
-#
-# The LDFLAGS macro contains all of the library and library
-# directory information to be passed to the linker.
-#
 
-CSOURCES = SSL-Example/SFSocket.c
 
-SERVER_CXXSOURCES = \
+
+INCLUDEDIRS = $(PLATFORM_INCLUDEDIRS) $(OT_INCLUDEDIRS)
+
+LIBDIRS = $(PLATFORM_LIBDIRS) $(OT_LIBDIRS)
+
+
+CSOURCES = $(API_CSOURCES)
+
+
+CXXSOURCES = \
 	OTClientConnection.cpp \
-	OTServer.cpp
+	OTServer.cpp \
+	$(API_CXXSOURCES)
 
-ifeq ($(TRANSPORT), XmlRpc)
-CXXSOURCES = \
-	$(SERVER_CXXSOURCES) \
-	xmlrpcxx_server.cpp
-else
-CXXSOURCES = \
-	$(SERVER_CXXSOURCES) \
-	testserver.cpp
-endif
 
 CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
 COBJECTS   = $(CSOURCES:.c=.o)
-CXXFLAGS   = $(TRANSPORT_CFLAG) $(INCLUDEDIRS) $(FT_FLAGS)
-CFLAGS     = $(TRANSPORT_CFLAG) $(INCLUDEDIRS)
+CFLAGS     = $(INCLUDEDIRS) $(API_CFLAGS) $(FT_FLAGS) -c 
 DEBUG_FLAGS = -g
 CXX = g++
-CC = gcc
+CC = $(C_COMPILER)
+
+LIBS = $(API_LIBS)
+DEBUG_LIBS = $(API_DEBUG_LIBS)
 
 
-PLATFORM_LDFLAGS = $(LIBDIRS) $(LIBS)
-PLATFORM_DEBUG_LDFLAGS = $(LIBDIRS) $(DEBUG_LIBS)
+# --- LDFLAGS
+#
+LDFLAGS = $(API_LDFLAGS) $(LIBDIRS) $(LIBS)
+DEBUG_LDFLAGS =  $(API_LDFLAGS) $(LIBDIRS) $(DEBUG_LIBS)
 
-LDFLAGS = $(PLATFORM_LDFLAGS)
-DEBUG_LDFLAGS = $(PLATFORM_DEBUG_LDFLAGS) 
 
 
+# ---------------------------------------------------------------------
+
+# --- DARWIN
+#
+ifeq ($(PLATFORM), darwin)
+LINK_COMMAND = $(CXX) $(LDFLAGS) -o $(PROGRAM) $(CXXOBJECTS) $(COBJECTS)
+DEBUG_LINK_COMMAND = $(CXX) $(DEBUG_LDFLAGS) -o $(DEBUG_PROGRAM) $(CXXOBJECTS) $(COBJECTS)
+endif
+# End DARWIN -------------------------------------------------------------
+
+ifeq ($(PLATFORM), linux)
+LINK_COMMAND = $(CXX) $(CXXOBJECTS) $(COBJECTS) $(LDFLAGS) -o $(PROGRAM)
+DEBUG_LINK_COMMAND = $(CXX)  $(CXXOBJECTS) $(COBJECTS) $(DEBUG_LDFLAGS) -o $(DEBUG_PROGRAM)
+endif
+# End LINUX -------------------------------------------------------------
+
+# --- FreeBSD ----
+ifeq ($(PLATFORM), freebsd)
+LINK_COMMAND = $(CXX) $(CXXOBJECTS) $(COBJECTS) $(LDFLAGS) -o $(PROGRAM)
+DEBUG_LINK_COMMAND = $(CXX)  $(CXXOBJECTS) $(COBJECTS) $(DEBUG_LDFLAGS) -o $(DEBUG_PROGRAM)
+endif
+# End FreeBSD -------------------------------------------------------------
+
+
+
+
+
+# ---------------------------------------------------------------------
+
+# --- TARGETS
 
 #
 # Default target: the first target is the default target.
-# Just type "make -f Makefile.Linux" to build it.
+# Just type "make PLATFORM=darwin" to build it.
 #
+
+$(PROGRAM): $(CXXOBJECTS) $(COBJECTS)
+	$(LINK_COMMAND)
 
 all: $(PROGRAM)
 
-debug: CXXFLAGS += $(DEBUG_FLAGS)
+debug: CFLAGS += $(DEBUG_FLAGS)
 debug: LIBS = $(DEBUG_LIBS)
 debug: LDFLAGS = $(DEBUG_LDFLAGS)
-debug: $(DEBUG_PROGRAM)
+debug: $(CXXOBJECTS) $(COBJECTS) 
+	$(DEBUG_LINK_COMMAND)
 
 
-#
-# Link target: automatically builds its object dependencies before
-# executing its link command.
-#
-
-$(DEBUG_PROGRAM): $(CXXOBJECTS) $(COBJECTS) 
-	$(CXX) $(CXXOBJECTS) $(COBJECTS) $(DEBUG_LIBS) -o $@
-
-$(PROGRAM): $(CXXOBJECTS) $(COBJECTS) 
-	$(CXX) $(CXXOBJECTS) $(COBJECTS) $(LIBS) -o $@
+# ---------------------------------------------------------------------
 
 #
 # Object targets: rules that define objects, their dependencies, and
 # a list of commands for compilation.
 #
 
+
 SSL-Example/SFSocket.o: ./SSL-Example/SFSocket.c ./SSL-Example/SFSocket.h
-	$(CC) $(CFLAGS) -c -o ./SSL-Example/SFSocket.o ./SSL-Example/SFSocket.c
+	$(CC) $(CFLAGS) -o ./SSL-Example/SFSocket.o ./SSL-Example/SFSocket.c
 
 OTServer.o: OTServer.cpp OTServer.h
-	$(CXX) $(CXXFLAGS) -c -o OTServer.o OTServer.cpp
+	$(CXX) $(CFLAGS) -o OTServer.o OTServer.cpp
 OTClientConnection.o: OTClientConnection.cpp OTClientConnection.h
-	$(CXX) $(CXXFLAGS) -c -o OTClientConnection.o OTClientConnection.cpp
+	$(CXX) $(CFLAGS) -o OTClientConnection.o OTClientConnection.cpp
 
 testserver.o: testserver.cpp
-	$(CXX) $(CXXFLAGS) -c -o testserver.o testserver.cpp
+	$(CXX) $(CFLAGS) -o testserver.o testserver.cpp
 xmlrpcxx_server.o: xmlrpcxx_server.cpp
-	$(CXX) $(CXXFLAGS) -c -o xmlrpcxx_server.o xmlrpcxx_server.cpp
+	$(CXX) $(CFLAGS) -o xmlrpcxx_server.o xmlrpcxx_server.cpp
 
 
 #
@@ -231,7 +317,7 @@ clean:
 	$(RM) -f $(CXXOBJECTS) $(COBJECTS) $(PROGRAM) $(DEBUG_PROGRAM)
 
 #
-# Run target: "make -f Makefile.Linux run" to execute the application
+# Run target: "make run" to execute the application
 #             You will need to add $(VARIABLE_NAME) for any command line parameters 
 #             that you defined earlier in this file.
 # 

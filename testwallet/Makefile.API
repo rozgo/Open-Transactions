@@ -23,12 +23,21 @@ UNAME := $(shell uname -s)
 
 OT_PLATFORM := ___OT_PLATFORM_UNKNOWN___
 
+# ---------------------------------------------------------------------
+
 ifeq ($(FELLOW_TRAVELER), 1)
 FT_FLAGS = -DFELLOW_TRAVELER
 else
 FT_FLAGS = #empty
 endif
 
+# ---------------------------------------------------------------------
+
+ifeq ($(DSP), 1)
+FT_FLAGS += -DDSP
+endif
+
+# ---------------------------------------------------------------------
 
 # I allow the user the option to force-override the build platform.
 # Using make PLATFORM=darwin, for example, you will build in darwin mode
@@ -102,6 +111,8 @@ ifeq ($(LBITS),64)
 LINUX_LIBDIR = lib64
 endif
 
+# ---------------------------------------------------------------------
+
 # SSL Folders!
 
 # For Darwin I use /opt instead of /usr, since OpenSSL 1.0.0a is
@@ -123,6 +134,15 @@ SSL_LIBDIRS = -L/usr/local/lib
 #SSL_LIBDIRS = -L/usr/ports/security/openssl/work/openssl-1.0.0a
 endif
 
+
+# ---------------------------------------------------------------------
+
+ifeq ($(DSP), 1)
+SSL_INCLUDEDIRS = -I../openssl-1.0.0b/include
+SSL_LIBDIRS = -L../openssl-1.0.0b
+endif
+
+# ---------------------------------------------------------------------
 
 
 
@@ -705,9 +725,9 @@ OTAPI_tcl.o: OTAPI_tcl.c
 #
 # Clean target: "make -f Makefile.API clean" to remove unwanted objects and executables.
 #
-RM=rm
+RM=rm -f
 
 clean:
-	$(RM) -f $(COBJECTS) $(CXXOBJECTS) $(PROGRAM) $(DEBUG_PROGRAM)
+	$(RM) otapi.so otapi.bundle _otapi.so _otapi.bundle otapi.dylib _otapi.dylib $(COBJECTS) $(CXXOBJECTS) $(PROGRAM) $(DEBUG_PROGRAM)
 
 

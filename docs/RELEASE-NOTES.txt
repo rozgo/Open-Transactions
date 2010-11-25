@@ -2,6 +2,8 @@
 NOTES on the Version:
 
 // ---------------------------------------------------------------------
+   0.37 --- Added build option DSP=1, for using custom builds of OpenSSL,
+            and for turning off all the output logs.
 
    0.36 --- Top-level build targets added for API in Python, Ruby, PHP,
             and Perl!  It's now this easy to build the API:
