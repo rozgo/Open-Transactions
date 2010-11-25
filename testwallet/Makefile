@@ -2,13 +2,13 @@
 # IMPORTANT:  WHEN USING THIS MAKEFILE, YOU *MUST* USE THE OPTIONS.
 # EXAMPLE:
 #
-# make PLATFORM=linux  TRANSPORT=XmlRpc
-# make PLATFORM=darwin TRANSPORT=ssltcp debug
+# make TRANSPORT=XmlRpc
+# make TRANSPORT=ssltcp debug
 # Etc...
 #
-# Transport and platform are mandatory.
+# Transport is mandatory.
 #
-# Platform options are darwin, linux and freebsd (untested)
+# Platform options are darwin, linux and freebsd (these are auto-detected now)
 #
 # Language options are c, csharp, java, ruby, python, perl5, php5, 
 # tcl, and lisp. 
@@ -23,12 +23,21 @@ UNAME := $(shell uname -s)
 
 OT_PLATFORM := ___OT_PLATFORM_UNKNOWN___
 
+# ---------------------------------------------------------------------
+
 ifeq ($(FELLOW_TRAVELER), 1)
 FT_FLAGS = -DFELLOW_TRAVELER
 else
 FT_FLAGS = #empty
 endif
 
+# ---------------------------------------------------------------------
+
+ifeq ($(DSP), 1)
+FT_FLAGS += -DDSP
+endif
+
+# ---------------------------------------------------------------------
 
 # The code will automatically accept the entire inbox, if compiled
 # in test client mode.  But if it's compiled in API mode, then you
@@ -64,6 +73,9 @@ endif
 
 
 PLATFORM = $(OT_PLATFORM)
+
+
+# ---------------------------------------------------------------------
 
 
 OT_INCLUDEDIRS = \
@@ -106,6 +118,7 @@ ifeq ($(LBITS),64)
 LINUX_LIBDIR = lib64
 endif
 
+# ---------------------------------------------------------------------
 # SSL Folders!
 
 # For Darwin I use /opt instead of /usr, since OpenSSL 1.0.0a is
@@ -127,12 +140,20 @@ SSL_LIBDIRS = -L/usr/local/lib
 #SSL_LIBDIRS = -L/usr/ports/security/openssl/work/openssl-1.0.0a
 endif
 
+# ---------------------------------------------------------------------
 
 
+ifeq ($(DSP), 1)
+SSL_INCLUDEDIRS = -I../openssl-1.0.0b/include
+SSL_LIBDIRS = -L../openssl-1.0.0b
+endif
+
+# ---------------------------------------------------------------------
 
 PLATFORM_INCLUDEDIRS += $(SSL_INCLUDEDIRS)
 PLATFORM_LIBDIRS += $(SSL_LIBDIRS)
 
+# ---------------------------------------------------------------------
 
 
 #

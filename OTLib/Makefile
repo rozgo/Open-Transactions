@@ -13,6 +13,24 @@ UNAME := $(shell uname -s)
 
 OT_PLATFORM := UNKNOWN_PLATFORM
 
+
+# ---------------------------------------------------------------------
+
+ifeq ($(FELLOW_TRAVELER), 1)
+FT_FLAGS = -DFELLOW_TRAVELER
+else
+FT_FLAGS = #empty
+endif
+
+# ---------------------------------------------------------------------
+
+ifeq ($(DSP), 1)
+FT_FLAGS += -DDSP
+endif
+
+# ---------------------------------------------------------------------
+
+
 # I allow the user the option to force-override the build platform.
 # Using make PLATFORM=darwin, for example, you will build in darwin mode
 # even if you are on a linux box.
@@ -58,12 +76,15 @@ PLATFORM_INCLUDEDIRS = # empty
 PLATFORM_LIBDIRS = # empty
 
 
+# -----------------------------------------
 
 LINUX_LIBDIR = lib
 LBITS := $(shell getconf LONG_BIT)
 ifeq ($(LBITS),64)
 LINUX_LIBDIR = lib64
 endif
+
+# -----------------------------------------
 
 # SSL Folders!
 # For Darwin I use /opt instead of /usr, since OpenSSL 1.0.0a is
@@ -86,6 +107,15 @@ SSL_LIBDIRS = -L/usr/local/lib
 endif
 
 
+# -----------------------------------------
+
+
+ifeq ($(DSP), 1)
+SSL_INCLUDEDIRS = -I../openssl-1.0.0b/include
+SSL_LIBDIRS = -L../openssl-1.0.0b
+endif
+
+# -----------------------------------------
 
 
 INCLUDEDIRS = $(PLATFORM_INCLUDEDIRS) $(SSL_INCLUDEDIRS) $(OT_INCLUDEDIRS)

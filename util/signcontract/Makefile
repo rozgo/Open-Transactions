@@ -9,10 +9,28 @@ PROGRAM = signcontract.exe
 DEBUG_PROGRAM = signcontract.debug
 
 
+
 # Find out what platform we're on.
 UNAME := $(shell uname -s)
 
 OT_PLATFORM := ___OT_PLATFORM_UNKNOWN___
+
+
+# ---------------------------------------------------------------------
+
+ifeq ($(FELLOW_TRAVELER), 1)
+FT_FLAGS = -DFELLOW_TRAVELER
+else
+FT_FLAGS = #empty
+endif
+
+# ---------------------------------------------------------------------
+
+ifeq ($(DSP), 1)
+FT_FLAGS += -DDSP
+endif
+
+# ---------------------------------------------------------------------
 
 # I allow the user the option to force-override the build platform.
 # Using make PLATFORM=darwin, for example, you will build in darwin mode
@@ -63,14 +81,8 @@ API_LDFLAGS = # empty
 
 # The LIBS macro contains a list of libraries that the the
 # executable must be linked against.
-API_LIBS =  -lssl -lcrypto  -lOTLib -lssl -lcrypto  -lOTLib  -lssl -lcrypto -lOTLib  -lssl -lcrypto -lOTLib
-API_DEBUG_LIBS = -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd  -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd
-#
-# FT: I tested this. The above version worked on Linux, and the below version did not.
-#
-#API_LIBS = -lssl  -lcrypto -lOTLib
-#API_DEBUG_LIBS =  -lssl -lcrypto  -lOTLibd
-
+#API_LIBS =  -lssl -lcrypto  -lOTLib -lssl -lcrypto  -lOTLib  -lssl -lcrypto -lOTLib  -lssl -lcrypto -lOTLib
+#API_DEBUG_LIBS = -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd  -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd
 
 
 
@@ -102,10 +114,21 @@ SSL_LIBDIRS = -L/usr/local/lib
 endif
 
 
+# ---------------------------------------------------------------------
 
 
+ifeq ($(DSP), 1)
+PLATFORM_INCLUDEDIRS += -I../../openssl-1.0.0b/include
+PLATFORM_LIBDIRS += -L../../openssl-1.0.0b
+else
 PLATFORM_INCLUDEDIRS += $(SSL_INCLUDEDIRS)
 PLATFORM_LIBDIRS += $(SSL_LIBDIRS)
+
+endif
+
+# ---------------------------------------------------------------------
+
+
 
 
 
@@ -117,7 +140,8 @@ PLATFORM_LIBDIRS += $(SSL_LIBDIRS)
 # --- DARWIN
 #
 ifeq ($(PLATFORM), darwin)
-
+API_LIBS = -lssl  -lcrypto -lOTLib 
+API_DEBUG_LIBS =  -lssl -lcrypto -lOTLibd 
 endif
 # End DARWIN -------------------------------------------------------------
 
@@ -126,6 +150,9 @@ endif
 ifeq ($(PLATFORM), linux)
 
 API_LDFLAGS += -ldl
+
+API_LIBS = -lOTLib -lssl  -lcrypto 
+API_DEBUG_LIBS =  -lOTLibd -lssl -lcrypto  
 
 endif
 # End LINUX -------------------------------------------------------------
@@ -136,7 +163,8 @@ endif
 # --- FreeBSD ----
 
 ifeq ($(PLATFORM), freebsd)
-
+API_LIBS = -lssl  -lcrypto -lOTLib 
+API_DEBUG_LIBS =  -lssl -lcrypto -lOTLibd 
 endif
 # End FreeBSD -------------------------------------------------------------
 
@@ -152,7 +180,7 @@ CXXSOURCES = \
 			 main.cpp
 			 
 CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
-CXXFLAGS   = $(INCLUDEDIRS) $(API_CFLAGS) -c
+CXXFLAGS   = $(INCLUDEDIRS) $(API_CFLAGS) $(FT_FLAGS) -c
 DEBUG_FLAGS = -g
 CXX = g++
 
@@ -242,3 +270,4 @@ clean:
 
 run:
 	./$(PROGRAM) 
+

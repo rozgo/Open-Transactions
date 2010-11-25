@@ -20,11 +20,23 @@
 
 OT_PLATFORM := ___OT_UNKNOWN_PLATFORM___
 
+# ---------------------------------------------------------------------
+
+
 ifeq ($(FELLOW_TRAVELER), 1)
 FT_FLAGS = FELLOW_TRAVELER=1
 else
 FT_FLAGS = #empty
 endif
+
+
+# ---------------------------------------------------------------------
+
+ifeq ($(DSP), 1)
+FT_FLAGS += DSP=1
+endif
+
+# ---------------------------------------------------------------------
 
 
 
@@ -86,9 +98,9 @@ endif
 
 ifeq ($(UNAME), Linux)
 OT_PLATFORM := linux
+DYNAMIC_FLAG = DYNAMIC_OTLIB=1
 SSL_INCLUDEDIRS = -I/usr/local/ssl/include
 SSL_LIBDIRS = -L/usr/local/ssl/$(LINUX_LIBDIR)
-DYNAMIC_FLAG = DYNAMIC_OTLIB=1
 endif
 
 # -------------------------------------
@@ -109,6 +121,14 @@ endif
 
 # -------------------------------------
 
+
+
+ifeq ($(DSP), 1)
+SSL_INCLUDEDIRS = -I../openssl-1.0.0b/include
+SSL_LIBDIRS = -L../openssl-1.0.0b
+endif
+
+# -------------------------------------
 
 
 OT_SSL_INCLUDE_AND_LIBS = $(FT_FLAGS) SSL_INCLUDEDIRS=$(SSL_INCLUDEDIRS) SSL_LIBDIRS=$(SSL_LIBDIRS)
@@ -174,6 +194,7 @@ python:
 	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) $(DYNAMIC_FLAG)
 	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
 	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=ruby clean
 	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=python clean
 	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=python
 	$(EXTRA_RPC_TARGETS1)
