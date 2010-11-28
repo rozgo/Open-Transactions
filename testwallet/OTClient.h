@@ -97,6 +97,7 @@ class OTTransaction;
 class OTWallet;
 
 #include "OTServerConnection.h"
+#include "OTMessageBuffer.h"
 
 // This class represents the "test client"
 //
@@ -110,6 +111,8 @@ class OTClient
 private:
 	OTWallet * m_pWallet;
 	
+	OTMessageBuffer	m_MessageBuffer;
+
 public:
 	enum OT_CLIENT_CMD_TYPE 
 	{
@@ -219,6 +222,9 @@ public:
 	
 	OTServerConnection * m_pConnection;
 	
+	inline OTMessageBuffer & GetMessageBuffer() { return m_MessageBuffer; }
+
+
 	inline bool IsConnected() { return m_pConnection->IsConnected(); }
 
 	// For RPC mode

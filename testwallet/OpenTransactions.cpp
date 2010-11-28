@@ -109,6 +109,7 @@ extern "C"
 #include "OTWallet.h"
 #include "OTEnvelope.h"
 #include "OTCheque.h"
+#include "OTPaymentPlan.h"
 #include "OTAccount.h"
 #include "OTTransaction.h"
 #include "OTMint.h"
@@ -116,6 +117,12 @@ extern "C"
 #include "OTPurse.h"
 #include "OTLedger.h"
 #include "OTLog.h"
+#include "OTMessage.h"
+#include "OTMessageBuffer.h"
+#include "OTBasket.h"
+#include "OTOffer.h"
+#include "OTTrade.h"
+#include "OTMarket.h"
 
 #include "OpenTransactions.h"
 
@@ -190,17 +197,19 @@ void OT_XmlRpcCallback(OTServerContract & theServerContract, OTEnvelope & theEnv
 			OTString	strServerReply;	
 			bool bOpened = theServerEnvelope.Open(*(g_OT_API.GetClient()->m_pConnection->GetNym()), strServerReply);
 			
-			OTMessage theServerReply;
+			OTMessage * pServerReply = new OTMessage;
 			
-			if (bOpened && strServerReply.Exists() && theServerReply.LoadContractFromString(strServerReply))
+			OT_ASSERT(NULL != pServerReply);
+			
+			if (bOpened && strServerReply.Exists() && pServerReply->LoadContractFromString(strServerReply))
 			{
 				// Now the fully-loaded message object (from the server, this time) can be processed by the OT library...
-				g_OT_API.GetClient()->ProcessServerReply(theServerReply); 
-				// Could also use OTMessageBuffer here, just store the server reply, and then let the client
-				// come back later and call another API function to read the replies out of the buffer
+				g_OT_API.GetClient()->ProcessServerReply(*pServerReply); // the Client takes ownership and will handle cleanup.
 			}
 			else
 			{
+				delete pServerReply;
+				pServerReply = NULL;
 				OTLog::Error("Error loading server reply from string after call to 'OT_XML_RPC'\n");
 			}
 		}
@@ -519,7 +528,30 @@ OTCheque * OT_API::WriteCheque(const OTIdentifier & SERVER_ID,
 				return NULL;			
 			}
 			
+			if (false == pAccount->VerifyOwner(*pNym)) // Verifies Ownership.
+			{
+				OTLog::Output(0, "User is not the owner of the account / tried to write a cheque.\n");
+				delete pAccount; pAccount = NULL;
+				return NULL;			
+			}
+			
+			// By this point, I know the user is listed on the account as the owner.
+			
+			// -----------------------------------------------------
+			
+			if (false == pAccount->VerifyAccount(*pNym)) // Verifies ContractID and Signature.
+			{
+				OTLog::Output(0, "Bad signature or Account ID / tried to write a cheque.\n");
+				delete pAccount; pAccount = NULL;
+				return NULL;			
+			}
+			
+			// By this point, I know that everything checks out. Signature and Account ID.
+			
+			// -----------------------------------------------------
+			
 			pWallet->AddAccount(*pAccount);
+			
 			// -----------------------------------------------------
 		}
 		else 
@@ -551,7 +583,7 @@ OTCheque * OT_API::WriteCheque(const OTIdentifier & SERVER_ID,
 	}
 	
 	// By this point, I know that everything checks out. Signature and Account ID.
-	
+	// pAccount is good, and no need to clean it up.
 	// -----------------------------------------------------
 	
 	// To write a cheque, we need to burn one of our transaction numbers. (Presumably the wallet
@@ -600,6 +632,283 @@ OTCheque * OT_API::WriteCheque(const OTIdentifier & SERVER_ID,
 	
 	return pCheque;
 }
+
+
+
+
+
+
+// WRITE PAYMENT PLAN
+//
+// Returns an OTPaymentPlan pointer, or NULL. 
+// (Caller responsible to delete.)
+//
+// The process (currently) is:
+// 1) Payment Plan is written by the sender (this function.)
+// 2) This is necessary because the transaction number must be on
+//    the sender's nym when he submits it to the server.
+// 3) Also, the sender must be the one to submit it.
+// 4) Recipient must sign it beforehand, so it must be sent to
+//    recipient and then sent BACK to sender for submittal.
+// 
+// THAT SUCKS!   Here's what it should do:
+// 
+// 1) Payment plan is written, and signed, by the recipient. 
+// 2) He sends it to the sender, who signs it and submits it.
+// 3) The server loads the recipient nym to verify the transaction
+//    number. The sender also had to burn a transaction number (to
+//    submit it) so now, both have verified trns#s in this way.
+//
+// ==> Unfortunately, the current code is described by the first
+// process above, not the second one. However, I think the API is
+// the same either way -- just need to fix the server to support
+// EITHER sender OR recipient being able to submit (it should simply
+// check BOTH of them for the transaction number... 
+// We'll get there...
+//
+//----------------------
+//
+// Payment Plan Delay, and Payment Plan Period, both default to 30 days (if you pass 0.)
+// Payment Plan Length, and Payment Plan Max Payments, both default to 0, which means
+// no maximum length and no maximum number of payments.
+OTPaymentPlan * OT_API::WritePaymentPlan(const OTIdentifier & SERVER_ID,
+										 // ----------------------------------------
+										 const time_t		& VALID_FROM,	// Default (0) == NOW
+										 const time_t		& VALID_TO,		// Default (0) == no expiry / cancel anytime
+										 // ----------------------------------------
+										 const OTIdentifier & SENDER_ACCT_ID,
+										 const OTIdentifier & SENDER_USER_ID,
+										 // ----------------------------------------
+										 const OTString		& PLAN_CONSIDERATION, // Like a memo.
+										 // ----------------------------------------
+										 const OTIdentifier & RECIPIENT_ACCT_ID,
+										 const OTIdentifier & RECIPIENT_USER_ID,
+										 // ----------------------------------------  // If it's above zero, the initial
+										 const long			& INITIAL_PAYMENT_AMOUNT, // amount will be processed after
+										 const time_t		& INITIAL_PAYMENT_DELAY,  // delay (seconds from now.) 
+										 // ----------------------------------------  // AND SEPARATELY FROM THIS...
+										 const long			& PAYMENT_PLAN_AMOUNT,	// The regular amount charged,
+										 const time_t		& PAYMENT_PLAN_DELAY,	// which begins occuring after delay
+										 const time_t		& PAYMENT_PLAN_PERIOD,	// (seconds from now) and happens
+										 // ----------------------------------------// every period, ad infinitum, until
+										 time_t	  PAYMENT_PLAN_LENGTH /*=0*/,		// after the length (in seconds)
+										 int	  PAYMENT_PLAN_MAX_PAYMENTS /*=0*/	// expires, or after the maximum
+										 )											// number of payments. These last 
+{																					// two arguments are optional.
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(SENDER_USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(SENDER_USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return NULL;
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	OTAccount * pAccount = pWallet->GetAccount(SENDER_ACCT_ID);
+	
+	if (NULL == pAccount)
+	{
+		OTLog::Output(0, "There's no asset account in the wallet with that ID. Trying to load from storage...\n");
+		
+		pAccount =  OTAccount::LoadExistingAccount(SENDER_ACCT_ID, SERVER_ID);
+		
+		if (NULL != pAccount) // It loaded...
+		{
+			if (SERVER_ID != pAccount->GetRealServerID())
+			{
+				OTLog::Output(0, "OT_API::WritePaymentPlan: server ID passed in didn't match the one on the account.\n");
+				delete pAccount; pAccount = NULL;
+				return NULL;			
+			}
+			
+			pWallet->AddAccount(*pAccount);
+			// -----------------------------------------------------
+		}
+		else 
+		{
+			OTLog::Error("Error loading Asset Account in OT_API::WritePaymentPlan\n");
+			return NULL;
+		}
+	}
+	
+	// By this point, pAccount is a good pointer and in the wallet. 
+	// (No need to cleanup.) I also know it has the right Server ID.
+	
+	// -----------------------------------------------------
+	
+	if (false == pAccount->VerifyOwner(*pNym)) // Verifies Ownership.
+	{
+		OTLog::Output(0, "User is not the owner of the account in OT_API::WritePaymentPlan.\n");
+		return NULL;			
+	}
+	
+	// By this point, I know the user is listed on the account as the owner.
+	
+	// -----------------------------------------------------
+	
+	if (false == pAccount->VerifyAccount(*pNym)) // Verifies ContractID and Signature.
+	{
+		OTLog::Output(0, "Bad signature or Account ID in OT_API::WritePaymentPlan.\n");
+		return NULL;			
+	}
+	
+	// By this point, I know that everything checks out. Signature and Account ID.
+	
+	// -----------------------------------------------------
+	
+	// To write a payment plan, we need to burn one of our transaction numbers. 
+	// (Presumably the wallet is also storing a couple of these, since they are
+	// needed to perform any transaction.)
+	//
+	// I don't have to contact the server to write a payment plan,
+	// as long as I already have a transaction number I can use to 
+	// write it with. (Otherwise I'd have to ask the server to send
+	// me one first.)
+	//
+	OTString strServerID(SERVER_ID);
+	long lTransactionNumber=0; // Notice I use the server ID on the ACCOUNT.
+	
+	if (false == pNym->GetNextTransactionNum(*pNym, strServerID, lTransactionNumber))
+	{
+		OTLog::Output(0, "OT_API::WritePaymentPlan: Failure, out of transaction numbers.\n");
+		return NULL;
+	}
+	
+	// At this point, I know that lTransactionNumber contains one I can use.
+	
+	// -----------------------------------------------------
+	
+	OTPaymentPlan * pPlan = new OTPaymentPlan(pAccount->GetRealServerID(), 
+											  pAccount->GetAssetTypeID(),
+											  pAccount->GetRealAccountID(),	pAccount->GetUserID(),
+											  RECIPIENT_ACCT_ID, RECIPIENT_USER_ID);
+	
+	OT_ASSERT(NULL != pPlan);
+	
+	// At this point, I know that pPlan is a good pointer that I either
+	// have to delete, or return to the caller. CLEANUP WARNING!
+	
+	// -----------------------------------------------------
+	
+	// The "Creation Date" of the agreement is set here.
+	bool bSuccessSetAgreement = pPlan->SetAgreement(lTransactionNumber, PLAN_CONSIDERATION, VALID_FROM, VALID_TO);
+	
+	if (!bSuccessSetAgreement)
+	{
+		OTLog::Output(0, "Failed trying to set the agreement in OT_API::WritePaymentPlan.\n");
+		delete pPlan; pPlan = NULL;
+		return NULL;
+	}
+	
+	// -----------------------------------------------------------------------
+
+	bool bSuccessSetInitialPayment	= true; // the default, in case user chooses not to even have this payment.
+	bool bSuccessSetPaymentPlan		= true; // the default, in case user chooses not to have a payment plan
+	
+	// -----------------------------------------------------------------------
+	
+	if ((INITIAL_PAYMENT_AMOUNT > 0) && (INITIAL_PAYMENT_DELAY >= 0))
+	{		
+		// The Initial payment delay is measured in seconds, starting from the "Creation Date". 
+		bSuccessSetInitialPayment = pPlan->SetInitialPayment(INITIAL_PAYMENT_AMOUNT, INITIAL_PAYMENT_DELAY);
+	}
+	
+	if (!bSuccessSetInitialPayment)
+	{
+		OTLog::Output(0, "Failed trying to set the initial payment in OT_API::WritePaymentPlan.\n");
+		delete pPlan; pPlan = NULL;
+		return NULL;
+	}
+	
+	// -----------------------------------------------------------------------
+		
+//	
+//				  " 6 minutes	==      360 Seconds\n"
+//				  "10 minutes	==      600 Seconds\n"
+//				  "1 hour		==     3600 Seconds\n"
+//				  "1 day		==    86400 Seconds\n"
+//				  "30 days		==  2592000 Seconds\n"
+//				  "3 months		==  7776000 Seconds\n"
+//				  "6 months		== 15552000 Seconds\n\n"
+//	
+	
+	if (PAYMENT_PLAN_AMOUNT > 0) // If there are regular payments.
+	{
+		// -----------------------------------------------------------------------
+		
+		// The payment plan delay is measured in seconds, starting from the "Creation Date".
+		time_t	PAYMENT_DELAY = LENGTH_OF_MONTH_IN_SECONDS; // Defaults to 30 days, measured in seconds (if you pass 0.)
+				
+		if (PAYMENT_PLAN_DELAY > 0)
+			PAYMENT_DELAY = PAYMENT_PLAN_DELAY;
+		
+		// -----------------------------------------------------------------------
+		
+		time_t	PAYMENT_PERIOD = LENGTH_OF_MONTH_IN_SECONDS; // Defaults to 30 days, measured in seconds (if you pass 0.)
+			
+		if (PAYMENT_PLAN_PERIOD > 0)
+			PAYMENT_PERIOD = PAYMENT_PLAN_PERIOD;
+		
+		// -----------------------------------------------------------------------
+		
+		time_t	PLAN_LENGTH = 0; // Defaults to 0 seconds (for no max length).
+				
+		if (PAYMENT_PLAN_LENGTH > 0)
+			PLAN_LENGTH = PAYMENT_PLAN_LENGTH;
+		
+		// -----------------------------------------------------------------------
+		
+		int nMaxPayments = 0; // Defaults to 0 maximum payments (for no maximum).
+		
+		if (PAYMENT_PLAN_MAX_PAYMENTS > 0)
+			nMaxPayments = PAYMENT_PLAN_MAX_PAYMENTS;
+		
+		// -----------------------------------------------------------------------
+
+		bSuccessSetPaymentPlan = pPlan->SetPaymentPlan(PAYMENT_PLAN_AMOUNT, 
+													   PAYMENT_DELAY, PAYMENT_PERIOD, 
+													   PLAN_LENGTH, nMaxPayments);
+	}
+	
+	if (!bSuccessSetPaymentPlan)
+	{
+		OTLog::Output(0, "Failed trying to set the payment plan in OT_API::WritePaymentPlan\n");
+		delete pPlan; pPlan = NULL;
+		return NULL;
+	}
+	
+	pPlan->SignContract(*pNym);
+	pPlan->SaveContract();
+	
+	return pPlan;
+}
+
+
+
+
 
 
 // LOAD PURSE
@@ -662,6 +971,8 @@ OTPurse * OT_API::LoadPurse(const OTIdentifier & SERVER_ID,
 	
 	return NULL;
 }
+
+
 
 
 // LOAD Mint
@@ -989,6 +1300,38 @@ OTLedger * OT_API::LoadOutbox(const OTIdentifier & SERVER_ID,
 	return  NULL;
 }
 
+
+
+
+
+
+// YOU are responsible to delete the OTMessage object, once
+// you receive the pointer that comes back from this function.
+// (It also might return NULL, if there are none there.)
+//
+OTMessage * OT_API::PopMessageBuffer()
+{
+	OT_ASSERT(NULL != m_pClient);
+	
+	return m_pClient->GetMessageBuffer().GetNextMessage();
+}
+
+void OT_API::FlushMessageBuffer()
+{
+	OT_ASSERT(NULL != m_pClient);
+	
+	OTMessage * pMsg = m_pClient->GetMessageBuffer().GetNextMessage();
+	
+	while (NULL != pMsg)
+	{
+		delete pMsg;
+		pMsg = m_pClient->GetMessageBuffer().GetNextMessage();
+	}
+}
+
+
+
+
 // --------------------------------------------------------------------
 
 
@@ -1063,11 +1406,13 @@ bool OT_API::ProcessSockets()
 	
 	do 
 	{
-		OTMessage theMsg;
+		OTMessage * pMsg = new OTMessage;
+		
+		OT_ASSERT(NULL != pMsg);
 		
 		// If this returns true, that means a Message was
 		// received and processed into an OTMessage object (theMsg)
-		bFoundMessage = m_pClient->ProcessInBuffer(theMsg);
+		bFoundMessage = m_pClient->ProcessInBuffer(*pMsg);
 		
 		if (true == bFoundMessage)
 		{
@@ -1077,8 +1422,14 @@ bool OT_API::ProcessSockets()
 			//				theMsg.SaveContract(strReply);
 			//				OTLog::vError("\n\n**********************************************\n"
 			//						"Successfully in-processed server response.\n\n%s\n", strReply.Get());
-			m_pClient->ProcessServerReply(theMsg);
+			m_pClient->ProcessServerReply(*pMsg); // the Client takes ownership and will handle cleanup.
 		}
+		else 
+		{
+			delete pMsg;
+			pMsg = NULL;
+		}
+
 		
 	} while (true == bFoundMessage);
 	
@@ -1089,10 +1440,722 @@ bool OT_API::ProcessSockets()
 
 
 
-void OT_API::exchangeBasket(OTIdentifier	& SERVER_ID,
-							OTIdentifier	& USER_ID,
-							OTIdentifier	& BASKET_ASSET_ID,
-							OTString		& BASKET_INFO)
+
+
+
+
+
+// --------------------------------------------------------------
+// IS BASKET CURRENCY ?
+//
+// Tells you whether or not a given asset type is actually a basket currency.
+//
+bool OT_API::IsBasketCurrency(const OTIdentifier & BASKET_ASSET_TYPE_ID) // returns true or false.
+{
+	// -----------------------------------------------------
+	
+	// There is an OT_ASSERT in here for memory failure,
+	// but it still might return NULL if various verification fails.
+	OTAssetContract * pContract = this->GetAssetType(BASKET_ASSET_TYPE_ID); 
+	
+	if (!pContract)
+	{
+		OTLog::Output(0, "OT_API::IsBasketCurrency: No such asset contract.\n");
+		
+		return false;
+	}
+	// No need to cleanup pContract.
+	// -----------------------------------------------------
+	
+	
+	// Next load the OTBasket object out of that contract.
+	OTBasket theBasket;
+	
+	// todo perhaps verify the basket here, even though I already verified the asset contract itself...
+	// Can't never be too sure.
+	if (pContract->GetBasketInfo().Exists() && theBasket.LoadContractFromString(pContract->GetBasketInfo()))
+	{
+		if (theBasket.Count() > 0)
+		return true;
+	}
+	
+	return false;	
+}
+
+
+
+// --------------------------------------------------------------------
+// Get Basket Count (of member currency types.)
+//
+// Returns the number of asset types that make up this basket.
+// (Or zero.)
+//
+int OT_API::GetBasketMemberCount(const OTIdentifier & BASKET_ASSET_TYPE_ID)
+{
+	// -----------------------------------------------------
+	
+	// There is an OT_ASSERT in here for memory failure,
+	// but it still might return NULL if various verification fails.
+	OTAssetContract * pContract = this->GetAssetType(BASKET_ASSET_TYPE_ID); 
+	
+	if (!pContract)
+	{
+		OTLog::Output(0, "OT_API::GetBasketMemberCount: No such asset contract.\n");
+		
+		return 0;
+	}
+	// No need to cleanup pContract.
+	// -----------------------------------------------------
+	
+	
+	// Next load the OTBasket object out of that contract.
+	OTBasket theBasket;
+	
+	// todo perhaps verify the basket here, even though I already verified the asset contract itself...
+	// Can't never be too sure.
+	if (pContract->GetBasketInfo().Exists() && theBasket.LoadContractFromString(pContract->GetBasketInfo()))
+	{
+		return theBasket.Count();
+	}
+	
+	return 0;
+}
+
+
+
+// --------------------------------------------------------------------
+// Get Basket Member Asset Type
+//
+// Returns one of the asset types that make up this basket,
+// by index, and true.
+// (Or false.)
+//
+bool OT_API::GetBasketMemberType(const OTIdentifier & BASKET_ASSET_TYPE_ID,
+								 const int nIndex,
+								 OTIdentifier & theOutputMemberType)
+{
+	// -----------------------------------------------------
+	
+	// There is an OT_ASSERT in here for memory failure,
+	// but it still might return NULL if various verification fails.
+	OTAssetContract * pContract = this->GetAssetType(BASKET_ASSET_TYPE_ID); 
+	
+	if (!pContract)
+	{
+		OTLog::Output(0, "OT_API::GetBasketMemberType: No such asset contract.\n");
+		
+		return false;
+	}
+	// No need to cleanup pContract.
+	// -----------------------------------------------------
+	
+	
+	// Next load the OTBasket object out of that contract.
+	OTBasket theBasket;
+	
+	// todo perhaps verify the basket here, even though I already verified the asset contract itself...
+	// Can't never be too sure.
+	if (pContract->GetBasketInfo().Exists() && theBasket.LoadContractFromString(pContract->GetBasketInfo()))
+	{
+		if ((nIndex >= theBasket.Count()) || (nIndex < 0))
+		{
+			OTLog::vError("OT_API::GetBasketMemberType: Index out of bounds: %d\n", nIndex);
+			return false;
+		}
+		
+		BasketItem * pItem = theBasket.At(nIndex);
+		
+		OT_ASSERT(NULL != pItem);
+		
+		theOutputMemberType = pItem->SUB_CONTRACT_ID;
+		
+		return true;
+	}
+	
+	return false;
+}
+
+
+
+
+// --------------------------------------------------------------------
+// Get Basket Member Minimum Transfer Amount
+//
+// Returns the minimum transfer amount for one of the asset types that
+// makes up this basket, by index.
+// (Or 0.)
+//
+long OT_API::GetBasketMemberMinimumTransferAmount(const OTIdentifier & BASKET_ASSET_TYPE_ID,
+												  const int nIndex)
+{
+	// -----------------------------------------------------
+	
+	// There is an OT_ASSERT in here for memory failure,
+	// but it still might return NULL if various verification fails.
+	OTAssetContract * pContract = this->GetAssetType(BASKET_ASSET_TYPE_ID); 
+	
+	if (!pContract)
+	{
+		OTLog::Output(0, "OT_API::GetBasketMemberMinimumTransferAmount: No such asset contract.\n");
+		
+		return 0;
+	}
+	// No need to cleanup pContract.
+	// -----------------------------------------------------
+	
+	
+	// Next load the OTBasket object out of that contract.
+	OTBasket theBasket;
+	
+	// todo perhaps verify the basket here, even though I already verified the asset contract itself...
+	// Can't never be too sure.
+	if (pContract->GetBasketInfo().Exists() && theBasket.LoadContractFromString(pContract->GetBasketInfo()))
+	{
+		if ((nIndex >= theBasket.Count()) || (nIndex < 0))
+		{
+			OTLog::vError("OT_API::GetBasketMemberMinimumTransferAmount: Index out of bounds: %d\n", nIndex);
+			return 0;
+		}
+		
+		BasketItem * pItem = theBasket.At(nIndex);
+		
+		OT_ASSERT(NULL != pItem);
+		
+		return pItem->lMinimumTransferAmount;;
+	}
+	
+	return 0;
+}
+
+
+
+// --------------------------------------------------------------------
+// Get Basket Minimum Transfer Amount
+//
+// Returns the minimum transfer amount for the basket.
+// (Or 0.)
+//
+long OT_API::GetBasketMinimumTransferAmount(const OTIdentifier & BASKET_ASSET_TYPE_ID)
+{
+	// -----------------------------------------------------
+	
+	// There is an OT_ASSERT in here for memory failure,
+	// but it still might return NULL if various verification fails.
+	OTAssetContract * pContract = this->GetAssetType(BASKET_ASSET_TYPE_ID); 
+	
+	if (!pContract)
+	{
+		OTLog::Output(0, "OT_API::GetBasketMinimumTransferAmount: No such asset contract.\n");
+		
+		return 0;
+	}
+	// No need to cleanup pContract.
+	// -----------------------------------------------------
+	
+	
+	// Next load the OTBasket object out of that contract.
+	OTBasket theBasket;
+	
+	// todo perhaps verify the basket here, even though I already verified the asset contract itself...
+	// Can't never be too sure.
+	if (pContract->GetBasketInfo().Exists() && theBasket.LoadContractFromString(pContract->GetBasketInfo()))
+	{
+		return theBasket.GetMinimumTransfer();
+	}
+	
+	return 0;
+}
+
+
+
+
+
+// --------------------------------------------------------
+// GENERATE BASKET CREATION REQUEST
+//
+// Creates a new request (for generating a new Basket type).
+// (Each currency in this request will be added with
+// subsequent calls to OT_API::GenerateBasketItem()).
+//
+// (Caller is responsible to delete.)
+//
+OTBasket * OT_API::GenerateBasketCreation(const OTIdentifier & USER_ID,
+										  const long MINIMUM_TRANSFER) // Must be above zero. If <= 0, defaults to 10.
+{
+	long lMinimumTransferAmount = 10;
+	
+	if (MINIMUM_TRANSFER > 0)
+		lMinimumTransferAmount = MINIMUM_TRANSFER;
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return false;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return false;
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+
+	OTBasket * pBasket = new OTBasket(0, lMinimumTransferAmount);
+	
+	OT_ASSERT(NULL != pBasket);
+	
+	pBasket->SignContract(*pNym);
+	pBasket->SaveContract();
+	
+	return pBasket;
+}
+
+
+// --------------------------------------------------------
+// ADD BASKET CREATION ITEM
+//
+// Used for creating a request to generate a new basket currency.
+bool OT_API::AddBasketCreationItem(const OTIdentifier & USER_ID, // for signature.
+								   OTBasket & theBasket, 
+								   const OTIdentifier & ASSET_TYPE_ID, 
+								   const long MINIMUM_TRANSFER)
+{
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return false;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return false;
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+
+	// There is an OT_ASSERT in here for memory failure,
+	// but it still might return NULL if various verification fails.
+	OTAssetContract * pContract = this->GetAssetType(ASSET_TYPE_ID); 
+	
+	if (!pContract)
+	{
+		OTLog::Output(0, "No such asset contract.\n");
+		
+		return false;
+	}
+	// No need to cleanup pContract.
+	// -----------------------------------------------------
+
+	
+	theBasket.AddSubContract(ASSET_TYPE_ID, MINIMUM_TRANSFER);
+
+	theBasket.IncrementSubCount();
+
+	theBasket.ReleaseSignatures();
+	
+	theBasket.SignContract(*pNym);
+	theBasket.SaveContract();
+	
+	return true;
+}
+
+
+
+// ---------------------------------------------------------------
+// GENERATE BASKET EXCHANGE REQUEST
+//
+// Creates a new request (for exchanging funds in/out of a Basket).
+// (Each currency in this request will be added with
+// subsequent calls to OT_API::GenerateBasketItem()).
+//
+// (Caller is responsible to delete.)
+//
+OTBasket * OT_API::GenerateBasketExchange(const OTIdentifier & SERVER_ID,
+										  const OTIdentifier & USER_ID,
+										  const OTIdentifier & BASKET_ASSET_TYPE_ID,
+										  const OTIdentifier & BASKET_ASSET_ACCT_ID,
+										  const int TRANSFER_MULTIPLE)	// 1			2			 3
+{																		// 5=2,3,4  OR  10=4,6,8  OR 15=6,9,12
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return NULL;
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	int nTransferMultiple = 1;
+	
+	if (TRANSFER_MULTIPLE > 0)
+		nTransferMultiple = TRANSFER_MULTIPLE;
+	
+	// -----------------------------------------------------------------
+	
+	// There is an OT_ASSERT in here for memory failure,
+	// but it still might return NULL if various verification fails.
+	OTAssetContract * pContract = this->GetAssetType(BASKET_ASSET_TYPE_ID); 
+
+	if (!pContract)
+	{
+		OTLog::Output(0, "No such asset contract.\n");
+		
+		return NULL;
+	}
+	// No need to cleanup pContract.
+	// -----------------------------------------------------
+	
+	OTAccount * pAccount = pWallet->GetAccount(BASKET_ASSET_ACCT_ID);
+	
+	if (NULL == pAccount)
+	{
+		OTLog::Output(0, "There's no asset account in the wallet with that ID. Trying to load from storage...\n");
+		
+		pAccount =  OTAccount::LoadExistingAccount(BASKET_ASSET_ACCT_ID, SERVER_ID);
+		
+		if (NULL != pAccount) // It loaded...
+		{
+			if (SERVER_ID != pAccount->GetRealServerID())
+			{
+				OTLog::Output(0, "OT_API::GenerateBasketExchange: server ID passed in didn't match "
+							  "the one on the account.\n");
+				delete pAccount; pAccount = NULL;
+				return NULL;			
+			}
+			
+			if (false == pAccount->VerifyOwner(*pNym)) // Verifies Ownership.
+			{
+				OTLog::Output(0, "OT_API::GenerateBasketExchange: User is not the owner of the account..\n");
+				delete pAccount; pAccount = NULL;
+				return NULL;			
+			}
+			
+			// By this point, I know the user is listed on the account as the owner.
+			
+			// -----------------------------------------------------
+			
+			if (false == pAccount->VerifyAccount(*pNym)) // Verifies ContractID and Signature.
+			{
+				OTLog::Output(0, "OT_API::GenerateBasketExchange: Bad signature or Account ID.\n");
+				delete pAccount; pAccount = NULL;
+				return NULL;			
+			}
+			
+			// By this point, I know that everything checks out. Signature and Account ID.
+			
+			// -----------------------------------------------------
+			
+			pWallet->AddAccount(*pAccount);
+			
+			// -----------------------------------------------------
+		}
+		else 
+		{
+			OTLog::Error("Error loading Asset Account in OT_API::GenerateBasketExchange\n");
+			return NULL;
+		}
+	}
+	
+	// By this point, pAccount is a good pointer and in the wallet. 
+	// (No need to cleanup.) I also know it has the right Server ID.
+	
+	// -----------------------------------------------------
+	// I checked these things above. But since I only check them when ADDING,
+	// I also want to check here, in cases where I get successfully and didn't
+	// need to add.
+	//
+	if (false == pAccount->VerifyOwner(*pNym)) // Verifies Ownership.
+	{
+		OTLog::Output(0, "OT_API::GenerateBasketExchange: User is not the owner of the account.\n");
+		return NULL;			
+	}
+	
+	// By this point, I know the user is listed on the account as the owner.
+	
+	// -----------------------------------------------------
+	
+	if (false == pAccount->VerifyAccount(*pNym)) // Verifies ContractID and Signature.
+	{
+		OTLog::Output(0, "OT_API::GenerateBasketExchange: Bad signature or Account ID.\n");
+		return NULL;			
+	}
+	
+	if (BASKET_ASSET_TYPE_ID != pAccount->GetAssetTypeID())
+	{
+		OTLog::Output(0, "Wrong asset type ID on account in OT_API::GenerateBasketExchange.\n");
+		return NULL;			
+	}
+	
+	// By this point, I know that everything checks out. Signature and Account ID.
+	// pAccount is good, and no need to clean it up.
+	// -----------------------------------------------------
+	
+	// Next load the OTBasket object out of that contract.
+	OTBasket theBasket;
+	OTBasket * pRequestBasket = NULL; // return value.
+	
+	// todo perhaps verify the basket here, even though I already verified the asset contract itself...
+	// Can't never be too sure.
+	if (pContract->GetBasketInfo().GetLength() && theBasket.LoadContractFromString(pContract->GetBasketInfo()))
+	{
+		pRequestBasket = new OTBasket(theBasket.Count(), theBasket.GetMinimumTransfer());
+		
+		OT_ASSERT(NULL != pRequestBasket);
+
+		pRequestBasket->SetTransferMultiple(nTransferMultiple);
+	
+		// Make sure the server knows where to put my new basket currency funds, 
+		// once the exchange is done.
+		pRequestBasket->SetRequestAccountID(BASKET_ASSET_ACCT_ID);
+				
+		pRequestBasket->SignContract(*pNym);
+		pRequestBasket->SaveContract();
+	}
+	else 
+	{
+		OTLog::Output(0, "OT_API::GenerateBasketExchange: Error loading "
+					  "basket info from asset contract. "
+					  "Are you SURE this is a basket currency?\n");
+		return NULL;
+	}	
+		
+	return pRequestBasket;
+}
+
+
+
+
+
+
+
+// --------------------------------------------------------
+// ADD BASKET EXCHANGE ITEM
+//
+bool OT_API::AddBasketExchangeItem(const OTIdentifier & SERVER_ID,
+								   const OTIdentifier & USER_ID,
+								   OTBasket & theBasket, 
+								   const OTIdentifier & ASSET_TYPE_ID,
+								   const OTIdentifier & ASSET_ACCT_ID)
+{
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return false;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return false;
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------------------
+	
+	// There is an OT_ASSERT in here for memory failure,
+	// but it still might return NULL if various verification fails.
+	OTAssetContract * pContract = this->GetAssetType(ASSET_TYPE_ID); 
+	
+	if (!pContract)
+	{
+		OTLog::Output(0, "No such asset contract.\n");
+		
+		return false;
+	}
+	// No need to cleanup pContract.
+	// -----------------------------------------------------
+	
+	OTAccount * pAccount = pWallet->GetAccount(ASSET_ACCT_ID);
+	
+	if (NULL == pAccount)
+	{
+		OTLog::Output(0, "There's no asset account in the wallet with that ID. Trying to load from storage...\n");
+		
+		pAccount =  OTAccount::LoadExistingAccount(ASSET_ACCT_ID, SERVER_ID);
+		
+		if (NULL != pAccount) // It loaded...
+		{
+			if (SERVER_ID != pAccount->GetRealServerID())
+			{
+				OTLog::Output(0, "OT_API::AddBasketExchangeItem: server ID passed in didn't match "
+							  "the one on the account.\n");
+				delete pAccount; pAccount = NULL;
+				return false;			
+			}
+			
+			if (false == pAccount->VerifyOwner(*pNym)) // Verifies Ownership.
+			{
+				OTLog::Output(0, "OT_API::AddBasketExchangeItem: User is not the owner of the account..\n");
+				delete pAccount; pAccount = NULL;
+				return false;			
+			}
+			
+			// By this point, I know the user is listed on the account as the owner.
+			
+			// -----------------------------------------------------
+			
+			if (false == pAccount->VerifyAccount(*pNym)) // Verifies ContractID and Signature.
+			{
+				OTLog::Output(0, "OT_API::AddBasketExchangeItem: Bad signature or Account ID.\n");
+				delete pAccount; pAccount = NULL;
+				return false;			
+			}
+			
+			// By this point, I know that everything checks out. Signature and Account ID.
+			
+			// -----------------------------------------------------
+			
+			pWallet->AddAccount(*pAccount);
+			
+			// -----------------------------------------------------
+		}
+		else 
+		{
+			OTLog::Error("Error loading Asset Account in OT_API::AddBasketExchangeItem\n");
+			return false;
+		}
+	}
+	
+	// By this point, pAccount is a good pointer and in the wallet. 
+	// (No need to cleanup.) I also know it has the right Server ID.
+	
+	// -----------------------------------------------------
+	// I checked these things above. But since I only check them when ADDING,
+	// I also want to check here, in cases where I get successfully and didn't
+	// need to add.
+	//
+	if (false == pAccount->VerifyOwner(*pNym)) // Verifies Ownership.
+	{
+		OTLog::Output(0, "OT_API::AddBasketExchangeItem: User is not the owner of the account.\n");
+		return false;			
+	}
+	
+	// By this point, I know the user is listed on the account as the owner.
+	
+	// -----------------------------------------------------
+	
+	if (false == pAccount->VerifyAccount(*pNym)) // Verifies ContractID and Signature.
+	{
+		OTLog::Output(0, "OT_API::AddBasketExchangeItem: Bad signature or Account ID.\n");
+		return false;			
+	}
+	
+	if (ASSET_TYPE_ID != pAccount->GetAssetTypeID())
+	{
+		OTLog::Output(0, "Wrong asset type ID on account in OT_API::AddBasketExchangeItem.\n");
+		return false;			
+	}
+	
+	// By this point, I know that everything checks out. Signature and Account ID.
+	// pAccount is good, and no need to clean it up.
+	// -----------------------------------------------------
+		
+	theBasket.AddRequestSubContract(ASSET_TYPE_ID, ASSET_ACCT_ID);
+
+	theBasket.ReleaseSignatures();
+	
+	theBasket.SignContract(*pNym);
+	theBasket.SaveContract();
+	
+	return true;
+}
+
+// ------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+// -----------------------------------------------------
+// ISSUE BASKET CREATION REQUEST (to server.)
+//
+void OT_API::issueBasket(OTIdentifier	& SERVER_ID,
+						 OTIdentifier	& USER_ID,
+						 OTString		& BASKET_INFO)
 {
 	// -----------------------------------------------------------------
 	
@@ -1106,29 +2169,117 @@ void OT_API::exchangeBasket(OTIdentifier	& SERVER_ID,
 	}
 	
 	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	// AT SOME POINT, BASKET_INFO has been populated with the relevant data. (see test client for example.)
+	
+	OTString strServerID(SERVER_ID), strNymID(USER_ID);
+	
+	OTMessage theMessage;
+	long lRequestNumber = 0;
+	
+	// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+	pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
+	theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+	pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
+	
+	// (1) Set up member variables 
+	theMessage.m_strCommand			= "issueBasket";
+	theMessage.m_strNymID			= strNymID;
+	theMessage.m_strServerID		= strServerID;
+	
+	theMessage.m_ascPayload.SetString(BASKET_INFO);
+	
+	// (2) Sign the Message 
+	theMessage.SignContract(*pNym);		
+	
+	// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+	theMessage.SaveContract();
+	
+	// (Send it)
+#if defined(OT_XMLRPC_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+	m_pClient->ProcessMessageOut(theMessage);
+}
+
+
+
+
+// -----------------------------------------------------
+// EXCHANGE (into or out of) BASKET (request to server.)
+//
+void OT_API::exchangeBasket(OTIdentifier	& SERVER_ID,
+							OTIdentifier	& USER_ID,
+							OTIdentifier	& BASKET_ASSET_ID,
+							OTString		& BASKET_INFO,
+							// ----------------------------------------
+							const bool bExchangeInOrOut	// exchanging in == true, out == false.
+							// ----------------------------------------
+							)
+{
+	// -----------------------------------------------------------------
+	
+	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
+	
+	if (!pServer)
 	{
 		// todo error message
 		
 		return;
 	}
 	
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
 	// -----------------------------------------------------------------
 	
-	OTAssetContract * pAssetContract = m_pWallet->GetAssetContract(BASKET_ASSET_ID);
+	// There is an OT_ASSERT in here for memory failure,
+	// but it still might return NULL if various verification fails.
+	OTAssetContract * pContract = this->GetAssetType(BASKET_ASSET_ID); 
 	
-	if (!pAssetContract)
+	if (!pContract)
 	{
-		// todo error message
+		OTLog::Output(0, "No such asset contract.\n");
 		
 		return;
 	}
-	
-	// -----------------------------------------------------------------
+	// No need to cleanup pContract.
+	// -----------------------------------------------------
 	
 	OTMessage theMessage;
 	long lRequestNumber = 0;
@@ -1145,6 +2296,8 @@ void OT_API::exchangeBasket(OTIdentifier	& SERVER_ID,
 	theMessage.m_strNymID			= strNymID;
 	theMessage.m_strServerID		= strServerID;
 	theMessage.m_strAssetID			= strAssetTypeID;
+	
+	theMessage.m_bBool = bExchangeInOrOut;
 	
 	theMessage.m_ascPayload.SetString(BASKET_INFO);
 	
@@ -1168,6 +2321,8 @@ void OT_API::exchangeBasket(OTIdentifier	& SERVER_ID,
 void OT_API::getTransactionNumber(OTIdentifier & SERVER_ID,
 								  OTIdentifier & USER_ID)
 {
+	OT_ASSERT(NULL != m_pWallet);
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -1180,18 +2335,25 @@ void OT_API::getTransactionNumber(OTIdentifier & SERVER_ID,
 	}
 	
 	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
 	
 	OTMessage theMessage;
 	
@@ -1217,6 +2379,8 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 								OTIdentifier	& ACCT_ID,
 								OTString		& AMOUNT)
 {
+	OT_ASSERT(NULL != m_pWallet);
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -1228,19 +2392,25 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 		return;
 	}
 	
-	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
 	
 	OTIdentifier	CONTRACT_ID;
 	OTString		strContractID;
@@ -1459,6 +2629,8 @@ void OT_API::notarizeDeposit(OTIdentifier	& SERVER_ID,
 							 OTIdentifier	& ACCT_ID,
 							 OTString		& THE_PURSE)
 {
+	OT_ASSERT(NULL != m_pWallet);
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -1471,18 +2643,25 @@ void OT_API::notarizeDeposit(OTIdentifier	& SERVER_ID,
 	}
 	
 	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
 	
 	OTIdentifier	CONTRACT_ID;
 	OTString		strContractID;
@@ -1657,6 +2836,8 @@ void OT_API::withdrawVoucher(OTIdentifier	& SERVER_ID,
 							 OTString		& CHEQUE_MEMO,
 							 OTString		& AMOUNT)
 {
+	OT_ASSERT(NULL != m_pWallet);
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -1669,18 +2850,25 @@ void OT_API::withdrawVoucher(OTIdentifier	& SERVER_ID,
 	}
 	
 	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
 	
 	OTIdentifier	CONTRACT_ID;
 	OTString		strContractID;
@@ -1809,11 +2997,39 @@ void OT_API::withdrawVoucher(OTIdentifier	& SERVER_ID,
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ------------------------------------------------------------------------
+
+
+
+
+
+
+
+// ----------------------------------------------------------------
+// DEPOSIT CHEQUE
+//
+
 void OT_API::depositCheque(OTIdentifier	& SERVER_ID,
 						   OTIdentifier	& USER_ID,
 						   OTIdentifier	& ACCT_ID,
 						   OTString		& THE_CHEQUE)
 {
+	OT_ASSERT(NULL != m_pWallet);
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -1826,18 +3042,25 @@ void OT_API::depositCheque(OTIdentifier	& SERVER_ID,
 	}
 	
 	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
 	
 	OTIdentifier	CONTRACT_ID;
 	OTString		strContractID;
@@ -1930,7 +3153,7 @@ void OT_API::depositCheque(OTIdentifier	& SERVER_ID,
 		
 		// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
 		theMessage.SaveContract();
-			
+		
 		// (Send it)
 #if defined(OT_XMLRPC_MODE)
 		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
@@ -1938,7 +3161,485 @@ void OT_API::depositCheque(OTIdentifier	& SERVER_ID,
 		m_pClient->ProcessMessageOut(theMessage);	
 		
 	} // bSuccess
+	else 
+	{
+		OTLog::Output(0, "Unable to load cheque from string. Sorry.\n");
+	}
 }
+
+
+
+
+
+// ----------------------------------------------------------------
+// DEPOSIT PAYMENT PLAN
+//
+// The sender must initially create the Payment Plan, then the
+// Recipient must sign it, then the sender must deposit it.
+// That's currently how it works, rev 1. This is that final step,
+// where the double-signed payment plan contract is now being
+// deposited by the original creator (who is also the sender),
+// in a message to the server.
+//
+void OT_API::depositPaymentPlan(const OTIdentifier	& SERVER_ID,
+								const OTIdentifier	& USER_ID,
+								const OTString		& THE_PAYMENT_PLAN)
+{
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+		
+	OTServerContract * pServer = pWallet->GetServerContract(SERVER_ID);
+	
+	if (!pServer)
+	{
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
+		
+		return;
+	}
+	
+	// By this point, pServer is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------------------
+
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			return;
+		}
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	OTPaymentPlan	thePlan;
+	OTMessage		theMessage;
+	
+	long lRequestNumber = 0;
+	
+	const OTString strServerID(SERVER_ID), strNymID(USER_ID);
+	
+	
+	if (thePlan.LoadContractFromString(THE_PAYMENT_PLAN) &&
+		thePlan.VerifySignature(*pNym))
+	{
+		const OTIdentifier	SENDER_ACCT_ID(thePlan.GetSenderAcctID());
+		const OTString		strFromAcct(SENDER_ACCT_ID);
+	
+		OTAccount * pAccount = pWallet->GetAccount(SENDER_ACCT_ID);
+		
+		if (NULL == pAccount)
+		{
+			OTLog::Output(0, "There's no asset account in the wallet with that ID. Trying to load from storage...\n");
+			
+			pAccount =  OTAccount::LoadExistingAccount(SENDER_ACCT_ID, SERVER_ID);
+			
+			if (NULL != pAccount) // It loaded...
+			{
+				if (SERVER_ID != pAccount->GetRealServerID())
+				{
+					OTLog::Output(0, "Depositing a payment plan, server ID passed in didn't match the one on the account.\n");
+					delete pAccount; pAccount = NULL;
+					return;			
+				}
+						
+				if (false == pAccount->VerifyOwner(*pNym)) // Verifies Ownership.
+				{
+					OTLog::Output(0, "depositPaymentPlan: User is not the owner of the account.\n");
+					delete pAccount; pAccount = NULL;
+					return;			
+				}
+				
+				// By this point, I know the user is listed on the account as the owner.
+				
+				// -----------------------------------------------------
+				
+				if (false == pAccount->VerifyAccount(*pNym)) // Verifies ContractID and Signature.
+				{
+					OTLog::Output(0, "depositPaymentPlan: Bad signature or Account ID.\n");
+					delete pAccount; pAccount = NULL;
+					return;			
+				}
+				
+				// By this point, I know that everything checks out. Signature and Account ID.
+				
+				// -----------------------------------------------------
+				
+				pWallet->AddAccount(*pAccount);
+
+				// -----------------------------------------------------
+			}
+			else 
+			{
+				OTLog::Error("Error loading Asset Account in OT_API::depositPaymentPlan\n");
+				return;
+			}
+		} // if NULL == pAccount == pWallet->getAccount()
+		
+		if (false == pAccount->VerifyOwner(*pNym)) // Verifies Ownership.
+		{
+			OTLog::Output(0, "depositPaymentPlan: User is not the owner of the account.\n");
+			return;			
+		}
+		
+		// By this point, I know the user is listed on the account as the owner.
+		
+		// -----------------------------------------------------
+		
+		if (false == pAccount->VerifyAccount(*pNym)) // Verifies ContractID and Signature.
+		{
+			OTLog::Output(0, "depositPaymentPlan: Bad signature or Account ID.\n");
+			return;			
+		}
+		
+		// By this point, I know that everything checks out. Signature and Account ID.
+		
+		// -----------------------------------------------------
+		
+		// By this point, pAccount is a good pointer and in the wallet. 
+		// (No need to cleanup.) I also know it has the right Server ID
+		// and that the Nym owns it, and has signed it.
+		// -----------------------------------------------------
+		
+		// Create a transaction
+		OTTransaction * pTransaction = OTTransaction::GenerateTransaction (USER_ID, SENDER_ACCT_ID, SERVER_ID, 
+																		   OTTransaction::paymentPlan, thePlan.GetTransactionNum()); 
+		
+		// set up the transaction item (each transaction may have multiple items...)
+		OTItem * pItem		= OTItem::CreateItemFromTransaction(*pTransaction, OTItem::paymentPlan);
+		
+		OTString strPlan(thePlan);
+		
+		// Add the payment plan string as the attachment on the transaction item.
+		pItem->SetAttachment(strPlan); // The payment plan is contained in the reference string.
+		
+		// sign the item
+		pItem->SignContract(*pNym);
+		pItem->SaveContract();
+		
+		// the Transaction "owns" the item now and will handle cleaning it up.
+		pTransaction->AddItem(*pItem); // the Transaction's destructor will cleanup the item. It "owns" it now.
+		
+		// sign the transaction
+		pTransaction->SignContract(*pNym);
+		pTransaction->SaveContract();
+		
+		// set up the ledger
+		OTLedger theLedger(USER_ID, SENDER_ACCT_ID, SERVER_ID);
+		theLedger.GenerateLedger(SENDER_ACCT_ID, SERVER_ID, OTLedger::message); // bGenerateLedger defaults to false, which is correct.
+		theLedger.AddTransaction(*pTransaction); // now the ledger "owns" and will handle cleaning up the transaction.
+		
+		// sign the ledger
+		theLedger.SignContract(*pNym);
+		theLedger.SaveContract();
+		
+		// extract the ledger in ascii-armored form... encoding...
+		OTString		strLedger(theLedger);
+		OTASCIIArmor	ascLedger(strLedger);
+		
+		// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+		pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
+		theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+		pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
+		
+		// (1) Set up member variables 
+		theMessage.m_strCommand			= "notarizeTransactions";
+		theMessage.m_strNymID			= strNymID;
+		theMessage.m_strServerID		= strServerID;
+		theMessage.m_strAcctID			= strFromAcct;
+		theMessage.m_ascPayload			= ascLedger;
+		
+		// (2) Sign the Message 
+		theMessage.SignContract(*pNym);		
+		
+		// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+		theMessage.SaveContract();
+		
+		// (Send it)
+#if defined(OT_XMLRPC_MODE)
+		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+		m_pClient->ProcessMessageOut(theMessage);	
+	} // thePlan.LoadContractFromString()
+	else 
+	{
+		OTLog::Output(0, "Unable to load payment plan from string, or verify it. Sorry.\n");
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+// ----------------------------------------------------------------
+// ISSUE MARKET OFFER
+//
+//
+void OT_API::issueMarketOffer(const OTIdentifier	& SERVER_ID,
+							  const OTIdentifier	& USER_ID,
+							  // -------------------------------------------
+							  const OTIdentifier	& ASSET_TYPE_ID,
+							  const OTIdentifier	& ASSET_ACCT_ID,
+							  // -------------------------------------------
+							  const OTIdentifier	& CURRENCY_TYPE_ID,
+							  const OTIdentifier	& CURRENCY_ACCT_ID,
+							  // -------------------------------------------
+							  const long			& MARKET_SCALE,	// Defaults to minimum of 1. Market granularity.
+							  const long			& MINIMUM_INCREMENT, // This will be multiplied by the Scale. Min 1.
+							  const long			& TOTAL_ASSETS_ON_OFFER, // Total assets available for sale or purchase. Will be multiplied by minimum increment.
+							  const long			& PRICE_LIMIT, // Per Minimum Increment...
+							  const bool			bBuyingOrSelling) //  BUYING == false, SELLING == true.
+{
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	
+	OTServerContract * pServer = pWallet->GetServerContract(SERVER_ID);
+	
+	if (!pServer)
+	{
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
+		
+		return;
+	}
+	
+	// By this point, pServer is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			return;
+		}
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+
+	
+	OTMessage	theMessage;
+	
+	long lRequestNumber = 0;
+	
+	const OTString strServerID(SERVER_ID), strNymID(USER_ID);
+
+	
+	long lStoredTransactionNumber=0;
+	bool bGotTransNum = pNym->GetNextTransactionNum(*pNym, strServerID, lStoredTransactionNumber);
+	
+	if (!bGotTransNum)
+	{
+		OTLog::Output(0, "No Transaction Numbers were available. Try requesting the server for a new one.\n");
+	}
+	else
+	{
+		// -------------------------------------------------------------------
+		
+		long	lTotalAssetsOnOffer = 1, 
+				lMinimumIncrement = 1, 
+				lPriceLimit = 1,
+				lMarketScale = 1;
+		
+		// -------------------------------------------------------------------
+		
+		if (MARKET_SCALE > 0)
+			lMarketScale = MARKET_SCALE; // otherwise, defaults to 1.
+		
+		if (MINIMUM_INCREMENT > 0)
+			lMinimumIncrement = MINIMUM_INCREMENT; // otherwise, defaults to 1.
+		
+		lMinimumIncrement *= lMarketScale; // minimum increment is PER SCALE.
+				
+		// -------------------------------------------------------------------
+		
+		if (TOTAL_ASSETS_ON_OFFER > 0)
+			lTotalAssetsOnOffer = TOTAL_ASSETS_ON_OFFER; // otherwise, defaults to 1.
+		
+		lTotalAssetsOnOffer *= lMinimumIncrement;
+		
+		// -------------------------------------------------------------------
+		
+		if (PRICE_LIMIT > 0) // your price limit, per scale of assets.
+			lPriceLimit = PRICE_LIMIT; // otherwise, defaults to 1.
+		
+		// -------------------------------------------------------------------
+				
+		
+		OTOffer theOffer(SERVER_ID, ASSET_TYPE_ID, CURRENCY_TYPE_ID, lMarketScale);
+		
+		OTTrade theTrade(SERVER_ID, 
+						 ASSET_TYPE_ID, ASSET_ACCT_ID, 
+						 USER_ID, 
+						 CURRENCY_TYPE_ID, CURRENCY_ACCT_ID);
+		
+		// MAKE OFFER...
+		
+		bool bCreateOffer = theOffer.MakeOffer(bBuyingOrSelling,	// True == SELLING, False == BUYING
+											   lPriceLimit,			// Per Minimum Increment...
+											   lTotalAssetsOnOffer,	// Total assets available for sale or purchase.
+											   lMinimumIncrement,	// The minimum increment that must be bought or sold for each transaction
+											   lStoredTransactionNumber); // Transaction number matches on transaction, item, offer, and trade.
+		
+		// -------------------------------------------------------------------
+
+		// ISSUE TRADE.
+		
+		bool bIssueTrade = false;
+		
+		if (bCreateOffer)
+		{
+			bCreateOffer = 	theOffer.SignContract(*pNym);
+			
+			if (bCreateOffer)
+			{
+				bCreateOffer = theOffer.SaveContract();
+			
+				if (bCreateOffer)
+				{
+					bIssueTrade = theTrade.IssueTrade(theOffer); // <==== ISSUE TRADE <=====
+					
+					if (bIssueTrade)
+					{
+						bIssueTrade = 	theTrade.SignContract(*pNym);
+						
+						if (bIssueTrade)
+							bIssueTrade = theTrade.SaveContract();
+					} // if ( bIssueTrade )
+				}
+			}
+		} // if ( bCreateOffer )
+		
+		// -------------------------------------------------------------------
+
+		if (bCreateOffer && bIssueTrade)
+		{
+			OTString str_ASSET_ACCT_ID(ASSET_ACCT_ID);
+			
+			// Create a transaction
+			OTTransaction * pTransaction = OTTransaction::GenerateTransaction (USER_ID, ASSET_ACCT_ID, SERVER_ID, 
+																			   OTTransaction::marketOffer, lStoredTransactionNumber); 
+			
+			// set up the transaction item (each transaction may have multiple items...)
+			OTItem * pItem		= OTItem::CreateItemFromTransaction(*pTransaction, OTItem::marketOffer, 
+																	(OTIdentifier *)(&CURRENCY_ACCT_ID)); 
+			// the "To" account (normally used for a TRANSFER transaction) is used here 
+			// storing the Currency Acct ID. The Server will expect the Trade object bundled 
+			// within this item to have an Asset Acct ID and "Currency" Acct ID that match
+			// those on this Item. Otherwise it will reject the offer.
+			
+			OT_ASSERT(NULL != pItem);
+			
+			OTString strTrade;
+			theTrade.SaveContract(strTrade);
+			
+			// Add the trade string as the attachment on the transaction item.
+			pItem->SetAttachment(strTrade); // The trade is contained in the attachment string. (The offer is within the trade.)
+			
+			// sign the item
+			pItem->SignContract(*pNym);
+			pItem->SaveContract();
+			
+			// the Transaction "owns" the item now and will handle cleaning it up.
+			pTransaction->AddItem(*pItem); // the Transaction's destructor will cleanup the item. It "owns" it now.
+			
+			// sign the transaction
+			pTransaction->SignContract(*pNym);
+			pTransaction->SaveContract();
+			
+			// set up the ledger
+			OTLedger theLedger(USER_ID, ASSET_ACCT_ID, SERVER_ID);
+			theLedger.GenerateLedger(ASSET_ACCT_ID, SERVER_ID, OTLedger::message); // bGenerateLedger defaults to false, which is correct.
+			theLedger.AddTransaction(*pTransaction); // now the ledger "owns" and will handle cleaning up the transaction.
+			
+			// sign the ledger
+			theLedger.SignContract(*pNym);
+			theLedger.SaveContract();
+			
+			// extract the ledger in ascii-armored form... encoding...
+			OTString		strLedger(theLedger);
+			OTASCIIArmor	ascLedger(strLedger);
+			
+			// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+			pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
+			theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+			pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
+			
+			// (1) Set up member variables 
+			theMessage.m_strCommand			= "notarizeTransactions";
+			theMessage.m_strNymID			= strNymID;
+			theMessage.m_strServerID		= strServerID;
+			theMessage.m_strAcctID			= str_ASSET_ACCT_ID;
+			theMessage.m_ascPayload			= ascLedger;
+			
+			// (2) Sign the Message 
+			theMessage.SignContract(*pNym);		
+			
+			// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+			theMessage.SaveContract();
+			
+			// (Send it)
+#if defined(OT_XMLRPC_MODE)
+			m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+			m_pClient->ProcessMessageOut(theMessage);	
+		} // if (bCreateOffer && bIssueTrade)
+		else 
+		{
+			OTLog::Output(0, "Unable to create offer or issue trade. Sorry.\n");
+		}							
+	} // got transaction number.
+}
+
+
 
 
 
@@ -1953,6 +3654,8 @@ void OT_API::notarizeTransfer(OTIdentifier	& SERVER_ID,
 							  OTString		& AMOUNT,
 							  OTString		& NOTE)
 {
+	OT_ASSERT(NULL != m_pWallet);
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -1965,18 +3668,25 @@ void OT_API::notarizeTransfer(OTIdentifier	& SERVER_ID,
 	}
 	
 	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
 	
 	OTAccount * pAccount = m_pWallet->GetAccount(ACCT_FROM);
 	
@@ -2083,6 +3793,8 @@ void OT_API::getInbox(OTIdentifier & SERVER_ID,
 					  OTIdentifier & USER_ID,
 					  OTIdentifier & ACCT_ID)
 {
+	OT_ASSERT(NULL != m_pWallet);
+
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -2095,18 +3807,25 @@ void OT_API::getInbox(OTIdentifier & SERVER_ID,
 	}
 	
 	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
 	
 	OTAccount * pAccount = m_pWallet->GetAccount(ACCT_ID);
 	
@@ -2157,6 +3876,8 @@ void OT_API::processInbox(OTIdentifier	& SERVER_ID,
 						  OTIdentifier	& ACCT_ID,
 						  OTString		& ACCT_LEDGER)
 {
+	OT_ASSERT(NULL != m_pWallet);
+
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -2169,18 +3890,25 @@ void OT_API::processInbox(OTIdentifier	& SERVER_ID,
 	}
 	
 	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
 	
 	OTAccount * pAccount = m_pWallet->GetAccount(ACCT_ID);
 	
@@ -2228,74 +3956,12 @@ void OT_API::processInbox(OTIdentifier	& SERVER_ID,
 
 
 
-
-void OT_API::issueBasket(OTIdentifier	& SERVER_ID,
-						 OTIdentifier	& USER_ID,
-						 OTString		& BASKET_INFO)
-{
-	// -----------------------------------------------------------------
-	
-	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
-	
-	if (!pServer)
-	{
-		// todo error message
-		
-		return;
-	}
-	
-	
-	// -----------------------------------------------------------------
-	
-	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
-	
-	if (!pNym)
-	{
-		// todo error message
-		
-		return;
-	}
-	
-	// -----------------------------------------------------------------
-	
-	// AT SOME POINT, BASKET_INFO has been populated with the relevant data. (see test client for example.)
-	
-	OTString strServerID(SERVER_ID), strNymID(USER_ID);
-
-	OTMessage theMessage;
-	long lRequestNumber = 0;
-	
-	// (0) Set up the REQUEST NUMBER and then INCREMENT IT
-	pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
-	theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
-	pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
-	
-	// (1) Set up member variables 
-	theMessage.m_strCommand			= "issueBasket";
-	theMessage.m_strNymID			= strNymID;
-	theMessage.m_strServerID		= strServerID;
-	
-	theMessage.m_ascPayload.SetString(BASKET_INFO);
-	
-	// (2) Sign the Message 
-	theMessage.SignContract(*pNym);		
-	
-	// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
-	theMessage.SaveContract();
-	
-	// (Send it)
-#if defined(OT_XMLRPC_MODE)
-	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
-#endif	
-	m_pClient->ProcessMessageOut(theMessage);
-}
-
-
-
 void OT_API::issueAssetType(OTIdentifier	&	SERVER_ID,
 							OTIdentifier	&	USER_ID,
 							OTString		&	THE_CONTRACT)
 {
+	OT_ASSERT(NULL != m_pWallet);
+
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -2308,19 +3974,26 @@ void OT_API::issueAssetType(OTIdentifier	&	SERVER_ID,
 	}
 	
 	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
-		
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
 	OTAssetContract theAssetContract;
 	
 	if (theAssetContract.LoadContractFromString(THE_CONTRACT))
@@ -2368,6 +4041,8 @@ void OT_API::getContract(OTIdentifier & SERVER_ID,
 						 OTIdentifier & USER_ID,
 						 OTIdentifier & ASSET_ID)
 {
+	OT_ASSERT(NULL != m_pWallet);
+
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -2380,18 +4055,25 @@ void OT_API::getContract(OTIdentifier & SERVER_ID,
 	}
 	
 	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
 	
 	OTAssetContract * pAssetContract = m_pWallet->GetAssetContract(ASSET_ID);
 	
@@ -2442,6 +4124,8 @@ void OT_API::getMint(OTIdentifier & SERVER_ID,
 					 OTIdentifier & USER_ID,
 					 OTIdentifier & ASSET_ID)
 {
+	OT_ASSERT(NULL != m_pWallet);
+
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -2454,18 +4138,25 @@ void OT_API::getMint(OTIdentifier & SERVER_ID,
 	}
 	
 	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
 	
 	OTAssetContract * pAssetContract = m_pWallet->GetAssetContract(ASSET_ID);
 	
@@ -2515,6 +4206,8 @@ void OT_API::createAssetAccount(OTIdentifier & SERVER_ID,
 								OTIdentifier & USER_ID,
 								OTIdentifier & ASSET_ID)
 {	
+	OT_ASSERT(NULL != m_pWallet);
+
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -2527,18 +4220,25 @@ void OT_API::createAssetAccount(OTIdentifier & SERVER_ID,
 	}
 	
 	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
 	
 	OTAssetContract * pAssetContract = m_pWallet->GetAssetContract(ASSET_ID);
 	
@@ -2588,6 +4288,8 @@ void OT_API::getAccount(OTIdentifier	& SERVER_ID,
 						OTIdentifier	& USER_ID,
 						OTIdentifier	& ACCT_ID)
 {	
+	OT_ASSERT(NULL != m_pWallet);
+
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -2600,18 +4302,25 @@ void OT_API::getAccount(OTIdentifier	& SERVER_ID,
 	}
 	
 	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
 	
 	OTAccount * pAccount = m_pWallet->GetAccount(ACCT_ID);
 	
@@ -2657,6 +4366,8 @@ void OT_API::getAccount(OTIdentifier	& SERVER_ID,
 void OT_API::getRequest(OTIdentifier	& SERVER_ID,
 						OTIdentifier	& USER_ID)
 {	
+	OT_ASSERT(NULL != m_pWallet);
+
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -2668,19 +4379,25 @@ void OT_API::getRequest(OTIdentifier	& SERVER_ID,
 		return;
 	}
 	
-	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
 	
 	OTMessage theMessage;
 	
@@ -2703,18 +4420,27 @@ void OT_API::checkUser(OTIdentifier & SERVER_ID,
 					   OTIdentifier & USER_ID,
 					   OTIdentifier & USER_ID_CHECK)
 {	
-	// -----------------------------------------------------------------
+	OT_ASSERT(NULL != m_pWallet);
+	
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
 	
 	OTMessage theMessage;
 	long lRequestNumber = 0;
@@ -2760,6 +4486,8 @@ void OT_API::checkUser(OTIdentifier & SERVER_ID,
 void OT_API::createUserAccount(OTIdentifier	& SERVER_ID,
 							   OTIdentifier	& USER_ID)
 {	
+	OT_ASSERT(NULL != m_pWallet);
+
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -2772,18 +4500,25 @@ void OT_API::createUserAccount(OTIdentifier	& SERVER_ID,
 	}
 	
 	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
 	
 	OTMessage theMessage;
 	
@@ -2805,6 +4540,8 @@ void OT_API::createUserAccount(OTIdentifier	& SERVER_ID,
 void OT_API::checkServerID(OTIdentifier	& SERVER_ID,
 						   OTIdentifier	& USER_ID)
 {	
+	OT_ASSERT(NULL != m_pWallet);
+
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -2817,18 +4554,25 @@ void OT_API::checkServerID(OTIdentifier	& SERVER_ID,
 	}
 	
 	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
 	
-	if (!pNym)
+	if (NULL == pNym) // Wasn't already in the wallet.
 	{
-		// todo error message
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
 		
-		return;
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
 	}
 	
-	// -----------------------------------------------------------------
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
 	
 	OTMessage theMessage;
 	

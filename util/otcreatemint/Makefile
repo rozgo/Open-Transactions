@@ -117,8 +117,8 @@ endif
 
 
 ifeq ($(DSP), 1)
-PLATFORM_INCLUDEDIRS += -I../../openssl-1.0.0b/include
-PLATFORM_LIBDIRS += -L../../openssl-1.0.0b
+PLATFORM_INCLUDEDIRS += -I../../openssl/include
+PLATFORM_LIBDIRS += -L../../openssl
 else
 PLATFORM_INCLUDEDIRS += $(SSL_INCLUDEDIRS)
 PLATFORM_LIBDIRS += $(SSL_LIBDIRS)

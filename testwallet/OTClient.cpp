@@ -683,6 +683,14 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 // Perhaps we just tried to create an account -- this could be
 // our new account! Let's make sure we receive it and save it
 // to disk somewhere.
+//
+// PS... The Client TAKES OWNERSHIP of this message (adding it
+// to a message buffer) and will store it until the buffer is
+// flushed, or until the messages are popped back off later for
+// processing by the client API.
+// THEREFORE -- theReply MUST be allocated on the heap, and is
+// only passed in as a reference here in order to make sure it's real.
+//
 bool OTClient::ProcessServerReply(OTMessage & theReply)
 {
 	OTServerConnection & theConnection = (*m_pConnection);
@@ -702,8 +710,18 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 	if (!theReply.VerifySignature(*pServerNym)) 
 	{
 		OTLog::Error("Error: Server reply signature failed to verify in OTClient::ProcessServerReply\n");
+		
+		OTMessage * pMessage = &theReply; // I'm responsible to cleanup this object.
+		
+		delete pMessage;
+		pMessage = NULL;
+		
 		return false;
 	}
+	
+	// Here, the Client takes ownership of the message (so make sure it's heap-allocated.)
+	m_MessageBuffer.AddToList(theReply);
+
 	
 	// Once that process is done, everything below that line, in this function,
 	// will be able to assume there is a verified Nym available, and a Server Contract,
@@ -1324,7 +1342,9 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 							   OTLog::PathSeparator(), str_BASKET_CONTRACT_ID.Get());
 		OTAssetContract * pContract = new OTAssetContract(str_BASKET_CONTRACT_ID, strContractPath, str_BASKET_CONTRACT_ID);
 		
-		if (pContract && pContract->LoadContract() && pContract->VerifyContract()) 
+		OT_ASSERT(NULL != pContract);
+
+		if (pContract->LoadContract() && pContract->VerifyContract()) 
 		{
 			// Next load the OTBasket object out of that contract.
 			OTBasket theBasket;
@@ -1437,7 +1457,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		OTLog::Output(0, "How many different asset types will compose this new basket? [2]: ");
 		strTemp.OTfgets(std::cin);
 		int nBasketCount = atoi(strTemp.Get());
-		if (0 == nBasketCount)
+		if (0 >= nBasketCount)
 			nBasketCount = 2;
 		
 		// Collect the MINIMUM TRANSFER AMOUNT for the basket. Default 100.

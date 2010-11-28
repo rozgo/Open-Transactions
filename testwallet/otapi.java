@@ -88,8 +88,16 @@ public class otapi {
     return otapiJNI.OT_API_WriteCheque(SERVER_ID, CHEQUE_AMOUNT, VALID_FROM, VALID_TO, SENDER_ACCT_ID, SENDER_USER_ID, CHEQUE_MEMO, RECIPIENT_USER_ID);
   }
 
+  public static String OT_API_WritePaymentPlan(String SERVER_ID, String VALID_FROM, String VALID_TO, String SENDER_ACCT_ID, String SENDER_USER_ID, String PLAN_CONSIDERATION, String RECIPIENT_ACCT_ID, String RECIPIENT_USER_ID, String INITIAL_PAYMENT_AMOUNT, String INITIAL_PAYMENT_DELAY, String PAYMENT_PLAN_AMOUNT, String PAYMENT_PLAN_DELAY, String PAYMENT_PLAN_PERIOD, String PAYMENT_PLAN_LENGTH, String PAYMENT_PLAN_MAX_PAYMENTS) {
+    return otapiJNI.OT_API_WritePaymentPlan(SERVER_ID, VALID_FROM, VALID_TO, SENDER_ACCT_ID, SENDER_USER_ID, PLAN_CONSIDERATION, RECIPIENT_ACCT_ID, RECIPIENT_USER_ID, INITIAL_PAYMENT_AMOUNT, INITIAL_PAYMENT_DELAY, PAYMENT_PLAN_AMOUNT, PAYMENT_PLAN_DELAY, PAYMENT_PLAN_PERIOD, PAYMENT_PLAN_LENGTH, PAYMENT_PLAN_MAX_PAYMENTS);
+  }
+
   public static String OT_API_LoadUserPubkey(String USER_ID) {
     return otapiJNI.OT_API_LoadUserPubkey(USER_ID);
+  }
+
+  public static String OT_API_LoadPubkey(String USER_ID) {
+    return otapiJNI.OT_API_LoadPubkey(USER_ID);
   }
 
   public static int OT_API_VerifyUserPrivateKey(String USER_ID) {
@@ -106,6 +114,26 @@ public class otapi {
 
   public static String OT_API_LoadAssetContract(String ASSET_TYPE_ID) {
     return otapiJNI.OT_API_LoadAssetContract(ASSET_TYPE_ID);
+  }
+
+  public static int OT_API_IsBasketCurrency(String ASSET_TYPE_ID) {
+    return otapiJNI.OT_API_IsBasketCurrency(ASSET_TYPE_ID);
+  }
+
+  public static int OT_API_Basket_GetMemberCount(String BASKET_ASSET_TYPE_ID) {
+    return otapiJNI.OT_API_Basket_GetMemberCount(BASKET_ASSET_TYPE_ID);
+  }
+
+  public static String OT_API_Basket_GetMemberType(String BASKET_ASSET_TYPE_ID, int nIndex) {
+    return otapiJNI.OT_API_Basket_GetMemberType(BASKET_ASSET_TYPE_ID, nIndex);
+  }
+
+  public static String OT_API_Basket_GetMinimumTransferAmount(String BASKET_ASSET_TYPE_ID) {
+    return otapiJNI.OT_API_Basket_GetMinimumTransferAmount(BASKET_ASSET_TYPE_ID);
+  }
+
+  public static String OT_API_Basket_GetMemberMinimumTransferAmount(String BASKET_ASSET_TYPE_ID, int nIndex) {
+    return otapiJNI.OT_API_Basket_GetMemberMinimumTransferAmount(BASKET_ASSET_TYPE_ID, nIndex);
   }
 
   public static String OT_API_LoadAssetAccount(String SERVER_ID, String USER_ID, String ACCOUNT_ID) {
@@ -152,6 +180,10 @@ public class otapi {
     return otapiJNI.OT_API_Transaction_GetType(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
   }
 
+  public static String OT_API_Purse_GetTotalValue(String SERVER_ID, String ASSET_TYPE_ID, String THE_PURSE) {
+    return otapiJNI.OT_API_Purse_GetTotalValue(SERVER_ID, ASSET_TYPE_ID, THE_PURSE);
+  }
+
   public static void OT_API_checkServerID(String SERVER_ID, String USER_ID) {
     otapiJNI.OT_API_checkServerID(SERVER_ID, USER_ID);
   }
@@ -192,12 +224,28 @@ public class otapi {
     otapiJNI.OT_API_getAccount(SERVER_ID, USER_ID, ACCT_ID);
   }
 
-  public static void OT_API_issueBasket(String SERVER_ID, String USER_ID, String BASKET_INFO) {
-    otapiJNI.OT_API_issueBasket(SERVER_ID, USER_ID, BASKET_INFO);
+  public static String OT_API_GenerateBasketCreation(String USER_ID, String MINIMUM_TRANSFER) {
+    return otapiJNI.OT_API_GenerateBasketCreation(USER_ID, MINIMUM_TRANSFER);
   }
 
-  public static void OT_API_exchangeBasket(String SERVER_ID, String USER_ID, String BASKET_ASSET_ID, String BASKET_INFO) {
-    otapiJNI.OT_API_exchangeBasket(SERVER_ID, USER_ID, BASKET_ASSET_ID, BASKET_INFO);
+  public static String OT_API_AddBasketCreationItem(String USER_ID, String THE_BASKET, String ASSET_TYPE_ID, String MINIMUM_TRANSFER) {
+    return otapiJNI.OT_API_AddBasketCreationItem(USER_ID, THE_BASKET, ASSET_TYPE_ID, MINIMUM_TRANSFER);
+  }
+
+  public static void OT_API_issueBasket(String SERVER_ID, String USER_ID, String THE_BASKET) {
+    otapiJNI.OT_API_issueBasket(SERVER_ID, USER_ID, THE_BASKET);
+  }
+
+  public static String OT_API_GenerateBasketExchange(String SERVER_ID, String USER_ID, String BASKET_ASSET_TYPE_ID, String BASKET_ASSET_ACCT_ID, int TRANSFER_MULTIPLE) {
+    return otapiJNI.OT_API_GenerateBasketExchange(SERVER_ID, USER_ID, BASKET_ASSET_TYPE_ID, BASKET_ASSET_ACCT_ID, TRANSFER_MULTIPLE);
+  }
+
+  public static String OT_API_AddBasketExchangeItem(String SERVER_ID, String USER_ID, String THE_BASKET, String ASSET_TYPE_ID, String ASSET_ACCT_ID) {
+    return otapiJNI.OT_API_AddBasketExchangeItem(SERVER_ID, USER_ID, THE_BASKET, ASSET_TYPE_ID, ASSET_ACCT_ID);
+  }
+
+  public static void OT_API_exchangeBasket(String SERVER_ID, String USER_ID, String BASKET_ASSET_ID, String THE_BASKET, int BOOL_EXCHANGE_IN_OR_OUT) {
+    otapiJNI.OT_API_exchangeBasket(SERVER_ID, USER_ID, BASKET_ASSET_ID, THE_BASKET, BOOL_EXCHANGE_IN_OR_OUT);
   }
 
   public static void OT_API_notarizeWithdrawal(String SERVER_ID, String USER_ID, String ACCT_ID, String AMOUNT) {
@@ -226,6 +274,30 @@ public class otapi {
 
   public static void OT_API_depositCheque(String SERVER_ID, String USER_ID, String ACCT_ID, String THE_CHEQUE) {
     otapiJNI.OT_API_depositCheque(SERVER_ID, USER_ID, ACCT_ID, THE_CHEQUE);
+  }
+
+  public static void OT_API_depositPaymentPlan(String SERVER_ID, String USER_ID, String THE_PAYMENT_PLAN) {
+    otapiJNI.OT_API_depositPaymentPlan(SERVER_ID, USER_ID, THE_PAYMENT_PLAN);
+  }
+
+  public static void OT_API_issueMarketOffer(String SERVER_ID, String USER_ID, String ASSET_TYPE_ID, String ASSET_ACCT_ID, String CURRENCY_TYPE_ID, String CURRENCY_ACCT_ID, String MARKET_SCALE, String MINIMUM_INCREMENT, String TOTAL_ASSETS_ON_OFFER, String PRICE_LIMIT, int bBuyingOrSelling) {
+    otapiJNI.OT_API_issueMarketOffer(SERVER_ID, USER_ID, ASSET_TYPE_ID, ASSET_ACCT_ID, CURRENCY_TYPE_ID, CURRENCY_ACCT_ID, MARKET_SCALE, MINIMUM_INCREMENT, TOTAL_ASSETS_ON_OFFER, PRICE_LIMIT, bBuyingOrSelling);
+  }
+
+  public static String OT_API_PopMessageBuffer() {
+    return otapiJNI.OT_API_PopMessageBuffer();
+  }
+
+  public static void OT_API_FlushMessageBuffer() {
+    otapiJNI.OT_API_FlushMessageBuffer();
+  }
+
+  public static String OT_API_Message_GetCommand(String THE_MESSAGE) {
+    return otapiJNI.OT_API_Message_GetCommand(THE_MESSAGE);
+  }
+
+  public static int OT_API_Message_GetSuccess(String THE_MESSAGE) {
+    return otapiJNI.OT_API_Message_GetSuccess(THE_MESSAGE);
   }
 
 }

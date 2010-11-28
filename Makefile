@@ -124,8 +124,8 @@ endif
 
 
 ifeq ($(DSP), 1)
-SSL_INCLUDEDIRS = -I../openssl-1.0.0b/include
-SSL_LIBDIRS = -L../openssl-1.0.0b
+SSL_INCLUDEDIRS = -I../openssl/include
+SSL_LIBDIRS = -L../openssl
 endif
 
 # -------------------------------------

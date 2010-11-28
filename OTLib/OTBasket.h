@@ -152,7 +152,8 @@ public:
 	// For generating a real basket.  The user does this part, and the server creates Account ID later
 	// (That's why you don't see the account ID being passed in to the method.)
 	void AddSubContract(const OTIdentifier & SUB_CONTRACT_ID, long lMinimumTransferAmount);
-
+	inline void IncrementSubCount() { m_nSubCount++; } // Used to abstract away this detail in the API.
+	
 	// For generating a user request to exchange in/out of a basket.
 	// Assumes that SetTransferMultiple has already been called.
 	void AddRequestSubContract(const OTIdentifier & SUB_CONTRACT_ID, const OTIdentifier & SUB_ACCOUNT_ID);

@@ -148,11 +148,14 @@ OTPurse::~OTPurse()
 void OTPurse::InitPurse()
 {
 	m_strContractType.Set("PURSE");
+	
+	m_lTotalValue = 0;
 }
 
 
 void OTPurse::Release()
 {
+	// This sets m_lTotalValue to 0.
 	ReleaseTokens();
 	
 	OTContract::Release();
@@ -164,18 +167,24 @@ int OTPurse::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 {
 	if (!strcmp("purse", xml->getNodeName()))
 	{	
-		OTString strServerID, strUserID, strAssetID;
+		OTString strServerID, strUserID, strAssetID, strTotalValue;
 		
 				
 		m_strVersion	= xml->getAttributeValue("version"); 
 		strUserID		= xml->getAttributeValue("userID");
 		strServerID		= xml->getAttributeValue("serverID");
 		strAssetID		= xml->getAttributeValue("assetTypeID");
+		strTotalValue	= xml->getAttributeValue("totalValue");
 		
 		m_AssetID.SetString(strAssetID);
 		m_UserID.SetString(strUserID);
 		m_ServerID.SetString(strServerID);
 		
+		m_lTotalValue = 0;
+		
+		if (strTotalValue.Exists() && (atol(strTotalValue.Get()) > 0))
+			m_lTotalValue = atol(strTotalValue.Get());
+			
 		OTLog::vOutput(0, "Loaded purse...\n ServerID:\n%s\n UserID: %s\n Asset ID: %s\n----------\n", strServerID.Get(),
 				strUserID.Get(), strAssetID.Get());
 		
@@ -231,8 +240,14 @@ void OTPurse::UpdateContents() // Before transmission or serialization, this is 
 	
 	m_xmlUnsigned.Concatenate("<?xml version=\"%s\"?>\n\n", "1.0");		
 	
-	m_xmlUnsigned.Concatenate("<purse version=\"%s\"\n userID=\"%s\"\n assetTypeID=\"%s\"\n serverID=\"%s\">\n\n", // UserID is optional
-							  m_strVersion.Get(), USER_ID.Get(), ASSET_TYPE_ID.Get(), SERVER_ID.Get());		
+	m_xmlUnsigned.Concatenate("<purse version=\"%s\"\n"
+							  " totalValue=\"%ld\"\n" // Total of all the tokens within.
+							  " userID=\"%s\"\n" // UserID is optional.
+							  " assetTypeID=\"%s\"\n serverID=\"%s\">\n\n",
+							  m_strVersion.Get(), 
+							  m_lTotalValue,
+							  USER_ID.Get(), 
+							  ASSET_TYPE_ID.Get(), SERVER_ID.Get());		
 	
 	for (int i = 0; i < Count(); i++)
 	{
@@ -276,6 +291,9 @@ OTToken * OTPurse::Pop(const OTPseudonym & theOwner)
 
 	// Create a new token with the same server and asset IDs as this purse.
 	OTToken * pToken =  new OTToken(*this);
+	
+	OT_ASSERT(NULL != pToken);
+	
 	// Load the token from the string we got out of the envelope.
 	pToken->LoadContractFromString(strToken);
 	
@@ -287,7 +305,12 @@ OTToken * OTPurse::Pop(const OTPseudonym & theOwner)
 		
 		OTLog::Error("ERROR: Token with wrong asset type in OTPurse::Pop\n");
 	}
-	
+	else 
+	{
+		// We keep track of the purse's total value.
+		m_lTotalValue -= pToken->GetDenomination();
+	}
+
 	// CALLER is responsible to delete this token.
 	return pToken;
 }
@@ -314,6 +337,9 @@ bool OTPurse::Push(const OTPseudonym & theOwner, const OTToken & theToken)
 
 		m_dequeTokens.push_front(pArmor);
 		
+		// We keep track of the purse's total value.
+		m_lTotalValue += theToken.GetDenomination();
+		
 		return true;
 	}
 	else {
@@ -323,7 +349,6 @@ bool OTPurse::Push(const OTPseudonym & theOwner, const OTToken & theToken)
 		
 		return false;
 	}
-
 }
 
 int OTPurse::Count() const
@@ -345,5 +370,7 @@ void OTPurse::ReleaseTokens()
 		m_dequeTokens.pop_front();
 		delete pArmor;
 	}
+	
+	m_lTotalValue = 0;
 }
 

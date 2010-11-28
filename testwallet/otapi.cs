@@ -111,8 +111,18 @@ public class otapi {
     return ret;
   }
 
+  public static string OT_API_WritePaymentPlan(string SERVER_ID, string VALID_FROM, string VALID_TO, string SENDER_ACCT_ID, string SENDER_USER_ID, string PLAN_CONSIDERATION, string RECIPIENT_ACCT_ID, string RECIPIENT_USER_ID, string INITIAL_PAYMENT_AMOUNT, string INITIAL_PAYMENT_DELAY, string PAYMENT_PLAN_AMOUNT, string PAYMENT_PLAN_DELAY, string PAYMENT_PLAN_PERIOD, string PAYMENT_PLAN_LENGTH, string PAYMENT_PLAN_MAX_PAYMENTS) {
+    string ret = otapiPINVOKE.OT_API_WritePaymentPlan(SERVER_ID, VALID_FROM, VALID_TO, SENDER_ACCT_ID, SENDER_USER_ID, PLAN_CONSIDERATION, RECIPIENT_ACCT_ID, RECIPIENT_USER_ID, INITIAL_PAYMENT_AMOUNT, INITIAL_PAYMENT_DELAY, PAYMENT_PLAN_AMOUNT, PAYMENT_PLAN_DELAY, PAYMENT_PLAN_PERIOD, PAYMENT_PLAN_LENGTH, PAYMENT_PLAN_MAX_PAYMENTS);
+    return ret;
+  }
+
   public static string OT_API_LoadUserPubkey(string USER_ID) {
     string ret = otapiPINVOKE.OT_API_LoadUserPubkey(USER_ID);
+    return ret;
+  }
+
+  public static string OT_API_LoadPubkey(string USER_ID) {
+    string ret = otapiPINVOKE.OT_API_LoadPubkey(USER_ID);
     return ret;
   }
 
@@ -133,6 +143,31 @@ public class otapi {
 
   public static string OT_API_LoadAssetContract(string ASSET_TYPE_ID) {
     string ret = otapiPINVOKE.OT_API_LoadAssetContract(ASSET_TYPE_ID);
+    return ret;
+  }
+
+  public static int OT_API_IsBasketCurrency(string ASSET_TYPE_ID) {
+    int ret = otapiPINVOKE.OT_API_IsBasketCurrency(ASSET_TYPE_ID);
+    return ret;
+  }
+
+  public static int OT_API_Basket_GetMemberCount(string BASKET_ASSET_TYPE_ID) {
+    int ret = otapiPINVOKE.OT_API_Basket_GetMemberCount(BASKET_ASSET_TYPE_ID);
+    return ret;
+  }
+
+  public static string OT_API_Basket_GetMemberType(string BASKET_ASSET_TYPE_ID, int nIndex) {
+    string ret = otapiPINVOKE.OT_API_Basket_GetMemberType(BASKET_ASSET_TYPE_ID, nIndex);
+    return ret;
+  }
+
+  public static string OT_API_Basket_GetMinimumTransferAmount(string BASKET_ASSET_TYPE_ID) {
+    string ret = otapiPINVOKE.OT_API_Basket_GetMinimumTransferAmount(BASKET_ASSET_TYPE_ID);
+    return ret;
+  }
+
+  public static string OT_API_Basket_GetMemberMinimumTransferAmount(string BASKET_ASSET_TYPE_ID, int nIndex) {
+    string ret = otapiPINVOKE.OT_API_Basket_GetMemberMinimumTransferAmount(BASKET_ASSET_TYPE_ID, nIndex);
     return ret;
   }
 
@@ -191,6 +226,11 @@ public class otapi {
     return ret;
   }
 
+  public static string OT_API_Purse_GetTotalValue(string SERVER_ID, string ASSET_TYPE_ID, string THE_PURSE) {
+    string ret = otapiPINVOKE.OT_API_Purse_GetTotalValue(SERVER_ID, ASSET_TYPE_ID, THE_PURSE);
+    return ret;
+  }
+
   public static void OT_API_checkServerID(string SERVER_ID, string USER_ID) {
     otapiPINVOKE.OT_API_checkServerID(SERVER_ID, USER_ID);
   }
@@ -231,12 +271,32 @@ public class otapi {
     otapiPINVOKE.OT_API_getAccount(SERVER_ID, USER_ID, ACCT_ID);
   }
 
-  public static void OT_API_issueBasket(string SERVER_ID, string USER_ID, string BASKET_INFO) {
-    otapiPINVOKE.OT_API_issueBasket(SERVER_ID, USER_ID, BASKET_INFO);
+  public static string OT_API_GenerateBasketCreation(string USER_ID, string MINIMUM_TRANSFER) {
+    string ret = otapiPINVOKE.OT_API_GenerateBasketCreation(USER_ID, MINIMUM_TRANSFER);
+    return ret;
   }
 
-  public static void OT_API_exchangeBasket(string SERVER_ID, string USER_ID, string BASKET_ASSET_ID, string BASKET_INFO) {
-    otapiPINVOKE.OT_API_exchangeBasket(SERVER_ID, USER_ID, BASKET_ASSET_ID, BASKET_INFO);
+  public static string OT_API_AddBasketCreationItem(string USER_ID, string THE_BASKET, string ASSET_TYPE_ID, string MINIMUM_TRANSFER) {
+    string ret = otapiPINVOKE.OT_API_AddBasketCreationItem(USER_ID, THE_BASKET, ASSET_TYPE_ID, MINIMUM_TRANSFER);
+    return ret;
+  }
+
+  public static void OT_API_issueBasket(string SERVER_ID, string USER_ID, string THE_BASKET) {
+    otapiPINVOKE.OT_API_issueBasket(SERVER_ID, USER_ID, THE_BASKET);
+  }
+
+  public static string OT_API_GenerateBasketExchange(string SERVER_ID, string USER_ID, string BASKET_ASSET_TYPE_ID, string BASKET_ASSET_ACCT_ID, int TRANSFER_MULTIPLE) {
+    string ret = otapiPINVOKE.OT_API_GenerateBasketExchange(SERVER_ID, USER_ID, BASKET_ASSET_TYPE_ID, BASKET_ASSET_ACCT_ID, TRANSFER_MULTIPLE);
+    return ret;
+  }
+
+  public static string OT_API_AddBasketExchangeItem(string SERVER_ID, string USER_ID, string THE_BASKET, string ASSET_TYPE_ID, string ASSET_ACCT_ID) {
+    string ret = otapiPINVOKE.OT_API_AddBasketExchangeItem(SERVER_ID, USER_ID, THE_BASKET, ASSET_TYPE_ID, ASSET_ACCT_ID);
+    return ret;
+  }
+
+  public static void OT_API_exchangeBasket(string SERVER_ID, string USER_ID, string BASKET_ASSET_ID, string THE_BASKET, int BOOL_EXCHANGE_IN_OR_OUT) {
+    otapiPINVOKE.OT_API_exchangeBasket(SERVER_ID, USER_ID, BASKET_ASSET_ID, THE_BASKET, BOOL_EXCHANGE_IN_OR_OUT);
   }
 
   public static void OT_API_notarizeWithdrawal(string SERVER_ID, string USER_ID, string ACCT_ID, string AMOUNT) {
@@ -265,6 +325,33 @@ public class otapi {
 
   public static void OT_API_depositCheque(string SERVER_ID, string USER_ID, string ACCT_ID, string THE_CHEQUE) {
     otapiPINVOKE.OT_API_depositCheque(SERVER_ID, USER_ID, ACCT_ID, THE_CHEQUE);
+  }
+
+  public static void OT_API_depositPaymentPlan(string SERVER_ID, string USER_ID, string THE_PAYMENT_PLAN) {
+    otapiPINVOKE.OT_API_depositPaymentPlan(SERVER_ID, USER_ID, THE_PAYMENT_PLAN);
+  }
+
+  public static void OT_API_issueMarketOffer(string SERVER_ID, string USER_ID, string ASSET_TYPE_ID, string ASSET_ACCT_ID, string CURRENCY_TYPE_ID, string CURRENCY_ACCT_ID, string MARKET_SCALE, string MINIMUM_INCREMENT, string TOTAL_ASSETS_ON_OFFER, string PRICE_LIMIT, int bBuyingOrSelling) {
+    otapiPINVOKE.OT_API_issueMarketOffer(SERVER_ID, USER_ID, ASSET_TYPE_ID, ASSET_ACCT_ID, CURRENCY_TYPE_ID, CURRENCY_ACCT_ID, MARKET_SCALE, MINIMUM_INCREMENT, TOTAL_ASSETS_ON_OFFER, PRICE_LIMIT, bBuyingOrSelling);
+  }
+
+  public static string OT_API_PopMessageBuffer() {
+    string ret = otapiPINVOKE.OT_API_PopMessageBuffer();
+    return ret;
+  }
+
+  public static void OT_API_FlushMessageBuffer() {
+    otapiPINVOKE.OT_API_FlushMessageBuffer();
+  }
+
+  public static string OT_API_Message_GetCommand(string THE_MESSAGE) {
+    string ret = otapiPINVOKE.OT_API_Message_GetCommand(THE_MESSAGE);
+    return ret;
+  }
+
+  public static int OT_API_Message_GetSuccess(string THE_MESSAGE) {
+    int ret = otapiPINVOKE.OT_API_Message_GetSuccess(THE_MESSAGE);
+    return ret;
   }
 
 }

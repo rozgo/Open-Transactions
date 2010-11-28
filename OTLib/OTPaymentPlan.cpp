@@ -103,18 +103,6 @@ using namespace io;
 #include "OTLog.h"
 
 
-#ifndef LENGTH_OF_DAY_IN_SECONDS
-
-#define LENGTH_OF_DAY_IN_SECONDS	86400
-#define LENGTH_OF_HOUR_IN_SECONDS	3600
-#define LENGTH_OF_MINUTE_IN_SECONDS	60
-#define TEST_LENGTH_IN_SECONDS		10
-
-//#define PLAN_PROCESS_INTERVAL		LENGTH_OF_HOUR_IN_SECONDS // todo put this back.
-#define PLAN_PROCESS_INTERVAL		TEST_LENGTH_IN_SECONDS
-
-#endif
-
 
 // return -1 if error, 0 if nothing, and 1 if the node was processed.
 int OTPaymentPlan::ProcessXMLNode(irr::io::IrrXMLReader*& xml)

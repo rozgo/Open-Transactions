@@ -1368,15 +1368,19 @@ int main(int argc, char* argv[])
 					OTString	strServerReply;				// Maybe should use g_OT_API.GetClient()->GetNym or some such...
 					bool bOpened = theServerEnvelope.Open(*g_pTemporaryNym, strServerReply);
 					
-					OTMessage theServerReply;
+					OTMessage * pServerReply = new OTMessage;
 					
-					if (bOpened && strServerReply.Exists() && theServerReply.LoadContractFromString(strServerReply))
+					OT_ASSERT(NULL != pServerReply);
+					
+					if (bOpened && strServerReply.Exists() && pServerReply->LoadContractFromString(strServerReply))
 					{
 						// Now the fully-loaded message object (from the server, this time) can be processed by the OT library...
-						g_OT_API.GetClient()->ProcessServerReply(theServerReply); 
+						g_OT_API.GetClient()->ProcessServerReply(*pServerReply); // Client takes ownership and will handle cleanup.
 					}
 					else
 					{
+						delete pServerReply;
+						pServerReply = NULL;
 						OTLog::Error("Error loading server reply from string after call to 'OT_XML_RPC'\n");
 					}
 				}
