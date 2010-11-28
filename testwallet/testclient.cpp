@@ -811,11 +811,13 @@ int main (int argc, char **argv)
 		//	  then process and handle them all.
 		do 
 		{
-			OTMessage theMsg;
+			OTMessage * pMsg = new OTMessage;
+			
+			OT_ASSERT(NULL != pMsg);
 			
 			// If this returns true, that means a Message was
 			// received and processed into an OTMessage object (theMsg)
-			bFoundMessage = g_OT_API.GetClient()->ProcessInBuffer(theMsg);
+			bFoundMessage = g_OT_API.GetClient()->ProcessInBuffer(*pMsg);
 			
 			if (true == bFoundMessage)
 			{
@@ -823,8 +825,14 @@ int main (int argc, char **argv)
 //				theMsg.SaveContract(strReply);
 //				OTLog::vOutput(0, "\n\n**********************************************\n"
 //						"Successfully in-processed server response.\n\n%s\n", strReply.Get());
-				g_OT_API.GetClient()->ProcessServerReply(theMsg);
+				g_OT_API.GetClient()->ProcessServerReply(*pMsg); // the Client takes ownership and will handle cleanup.
 			}
+			else 
+			{
+				delete pMsg;
+				pMsg = NULL;
+			}
+
 		
 		} while (true == bFoundMessage);
 	} // for

@@ -94,6 +94,7 @@
 	
 
 
+
 // --------------------------------------------------------------------
 /*
  INITIALIZE the OTAPI
@@ -110,6 +111,8 @@ int OT_API_Init(const char * szClientPath); // actually returns BOOL
 
 
 
+
+
 // --------------------------------------------------------------------
 /* 
  LOAD WALLET
@@ -121,6 +124,8 @@ int OT_API_Init(const char * szClientPath); // actually returns BOOL
   
  */
 int OT_API_LoadWallet(const char * szPath); // actually returns BOOL
+
+
 
 
 
@@ -166,12 +171,19 @@ const char * OT_API_GetAssetType_Name(const char * ASSET_TYPE_ID); // Returns as
 
 // You already have accounts in your wallet (without any server communications)
 // and these functions allow you to query the data members of those accounts.
-//
+// Thus, "AccountWallet" denotes that you are examining copies of your accounts that
+// are sitting in your wallet. Originally the purpose was to eliminate confusion with
+// a different set of similarly-named functions.
 const char * OT_API_GetAccountWallet_ID(int nIndex);	 // returns a string containing the account ID, based on index.
 const char * OT_API_GetAccountWallet_Name(const char * ACCOUNT_ID);	 // returns the account name, based on account ID.
 const char * OT_API_GetAccountWallet_Balance(const char * ACCOUNT_ID);	 // returns the account balance, based on account ID.
 const char * OT_API_GetAccountWallet_Type(const char * ACCOUNT_ID);	 // returns the account type (simple, issuer, etc)
 const char * OT_API_GetAccountWallet_AssetTypeID(const char * ACCOUNT_ID);	 // returns asset type of the account
+
+
+
+
+
 
 
 /*
@@ -214,12 +226,119 @@ const char * OT_API_WriteCheque(const char * SERVER_ID,
 
 
 
+
+/*
+ // ----------------------------------------------------------------------
+ 
+ WRITE A PAYMENT PLAN  --- (Returns the payment plan in string form.)
+ 
+*/
+// PARAMETER NOTES:
+// -- Payment Plan Delay, and Payment Plan Period, both default to 30 days (if you pass 0.)
+//
+// -- Payment Plan Length, and Payment Plan Max Payments, both default to 0, which means
+//    no maximum length and no maximum number of payments.
+//
+// -----------------------------------------------------------------
+// FYI, the payment plan creation process (currently) is:
+//
+// 1) Payment Plan is written by the sender (this function.)
+// 2) This is necessary because the transaction number must be on
+//    the sender's nym when he submits it to the server.
+// 3) Also, the sender must be the one to submit it.
+// 4) Recipient must sign it beforehand, so it must be sent to
+//    recipient and then sent BACK to sender for submittal.
+// 
+// THAT SUCKS!   Here's what it should do:
+// 
+// 1) Payment plan is written, and signed, by the recipient. 
+// 2) He sends it to the sender, who signs it and submits it.
+// 3) The server loads the recipient nym to verify the transaction
+//    number. The sender also had to burn a transaction number (to
+//    submit it) so now, both have verified trns#s in this way.
+//
+// ==> Unfortunately, the current OT behavior is described by the first
+// process above, not the second one. However, I think the API will be
+// the same either way -- just need to change the server to support
+// EITHER sender OR recipient being able to submit (it should simply
+// check BOTH of them for the transaction number instead of sender only.) 
+// We'll get there eventually...
+//
+// ----------------------------------
+//
+// FYI, here are all the OT library calls that are performed by this single API call:
+//
+//OTPaymentPlan * pPlan = new OTPaymentPlan(pAccount->GetRealServerID(), 
+//										  pAccount->GetAssetTypeID(),
+//										  pAccount->GetRealAccountID(),	pAccount->GetUserID(),
+//										  RECIPIENT_ACCT_ID, RECIPIENT_USER_ID);
+//
+// From OTAgreement:  (This must be called first, before the other two methods below can be called.)	
+//
+//	bool		OTAgreement::SetAgreement(	const long & lTransactionNum,	const OTString & strConsideration,
+//											const time_t & VALID_FROM=0,	const time_t & VALID_TO=0);
+//
+// (Optional initial payment):
+//bool		OTPaymentPlan::SetInitialPayment(const long & lAmount, time_t tTimeUntilInitialPayment=0); // default: now.
+//
+//		These two (above and below) can be called independent of each other. You can 
+//		have an initial payment, AND/OR a payment plan.
+//
+// (Optional regular payments):
+//bool		OTPaymentPlan::SetPaymentPlan(const long & lPaymentAmount, 
+//						   time_t tTimeUntilPlanStart=LENGTH_OF_MONTH_IN_SECONDS, // Default: 1st payment in 30 days
+//						   time_t tBetweenPayments=LENGTH_OF_MONTH_IN_SECONDS, // Default: 30 days.
+//						   time_t tPlanLength=0, int nMaxPayments=0);
+
+const char * OT_API_WritePaymentPlan(const char * SERVER_ID,
+									 // ----------------------------------------
+									 const char * VALID_FROM,	// Default (0 or NULL) == NOW
+									 const char * VALID_TO,		// Default (0 or NULL) == no expiry / cancel anytime
+									 // ----------------------------------------
+									 const char * SENDER_ACCT_ID,	// Mandatory parameters.
+									 const char * SENDER_USER_ID,	// Both sender and recipient must sign before submitting.
+									 // ----------------------------------------
+									 const char * PLAN_CONSIDERATION,	// Like a memo.
+									 // ----------------------------------------
+									 const char * RECIPIENT_ACCT_ID,	// NOT optional.
+									 const char * RECIPIENT_USER_ID,	// Both sender and recipient must sign before submitting.
+									 // -------------------------------	
+									 const char * INITIAL_PAYMENT_AMOUNT,	// zero or NULL == no initial payment.
+									 const char * INITIAL_PAYMENT_DELAY,	// seconds from creation date. Default is zero or NULL.
+									 // ---------------------------------------- .
+									 const char * PAYMENT_PLAN_AMOUNT,		// zero or NULL == no regular payments.
+									 const char * PAYMENT_PLAN_DELAY,		// No. of seconds from creation date. Default is zero or NULL.
+									 const char * PAYMENT_PLAN_PERIOD,		// No. of seconds between payments. Default is zero or NULL.
+									 // --------------------------------------- 
+									 const char * PAYMENT_PLAN_LENGTH,		// In seconds. Defaults to 0 or NULL (no maximum length.)
+									 const char * PAYMENT_PLAN_MAX_PAYMENTS	// Integer. Defaults to 0 or NULL (no maximum payments.)
+									 );									
+
+
+
+
+
+// -----------------------------------------------------------------
+// LOAD USER PUBLIC KEY  -- from local storage
+//
+// (returns as STRING)
+//
+// MEANT TO BE USED in cases where a private key is also available.
+//
+const char * OT_API_LoadUserPubkey(const char * USER_ID); // returns NULL, or a public key.
+
+
+
 // -----------------------------------------------------------------
 // LOAD PUBLIC KEY  -- from local storage
 //
 // (returns as STRING)
 //
-const char * OT_API_LoadUserPubkey(const char * USER_ID); // returns NULL, or a public key.
+// MEANT TO BE USED in cases where a private key is NOT available.
+//
+const char * OT_API_LoadPubkey(const char * USER_ID); // returns NULL, or a public key.
+
+
 
 
 
@@ -232,6 +351,11 @@ const char * OT_API_LoadUserPubkey(const char * USER_ID); // returns NULL, or a 
 // Loads the user's private key, verifies, then returns OT_TRUE or OT_FALSE.
 //
 int OT_API_VerifyUserPrivateKey(const char * USER_ID); // returns OT_BOOL
+
+
+
+
+
 
 
 
@@ -250,6 +374,82 @@ const char * OT_API_LoadMint(const char * SERVER_ID,
 const char * OT_API_LoadAssetContract(const char * ASSET_TYPE_ID); // returns NULL, or an asset contract.
 
 
+
+
+
+
+
+
+
+
+// --------------------------------------------------------------
+// IS BASKET CURRENCY ?
+//
+// Tells you whether or not a given asset type is actually a basket currency.
+//
+int OT_API_IsBasketCurrency(const char * ASSET_TYPE_ID); // returns OT_BOOL (OT_TRUE or OT_FALSE aka 1 or 0.)
+
+
+// --------------------------------------------------------------------
+// Get Basket Count (of backing asset types.)
+//
+// Returns the number of asset types that make up this basket.
+// (Or zero.)
+//
+int OT_API_Basket_GetMemberCount(const char * BASKET_ASSET_TYPE_ID);
+
+
+// --------------------------------------------------------------------
+// Get Asset Type of a basket's member currency, by index.
+//
+// (Returns a string containing Asset Type ID, or NULL).
+//
+const char * OT_API_Basket_GetMemberType(const char * BASKET_ASSET_TYPE_ID,
+										 const int nIndex);
+
+// ----------------------------------------------------
+// GET BASKET MINIMUM TRANSFER AMOUNT
+//
+// Returns a long (as string) containing the minimum transfer
+// amount for the entire basket.
+//
+// FOR EXAMPLE: 
+// If the basket is defined as 10 Rands == 2 Silver, 5 Gold, 8 Euro,
+// then the minimum transfer amount for the basket is 10. This function
+// would return a string containing "10", in that example.
+//
+const char * OT_API_Basket_GetMinimumTransferAmount(const char * BASKET_ASSET_TYPE_ID);
+
+
+
+// ----------------------------------------------------
+// GET BASKET MEMBER's MINIMUM TRANSFER AMOUNT
+//
+// Returns a long (as string) containing the minimum transfer
+// amount for one of the member currencies in the basket.
+//
+// FOR EXAMPLE: 
+// If the basket is defined as 10 Rands == 2 Silver, 5 Gold, 8 Euro,
+// then the minimum transfer amount for the member currency at index
+// 0 is 2, the minimum transfer amount for the member currency at
+// index 1 is 5, and the minimum transfer amount for the member 
+// currency at index 2 is 8.
+//
+const char * OT_API_Basket_GetMemberMinimumTransferAmount(const char * BASKET_ASSET_TYPE_ID,
+														  const int nIndex);
+
+
+
+
+
+
+
+
+
+
+
+
+
 // --------------------------------------------------------------
 // LOAD ACCOUNT / INBOX / OUTBOX   --  (from local storage)
 //
@@ -265,6 +465,9 @@ const char * OT_API_LoadInbox(const char * SERVER_ID,
 const char * OT_API_LoadOutbox(const char * SERVER_ID,
 							   const char * USER_ID,
 							   const char * ACCOUNT_ID); // returns NULL, or an outbox.
+
+
+
 
 
 // --------------------------------------------------------------
@@ -300,6 +503,7 @@ int OT_API_Ledger_GetCount(const char * SERVER_ID,
 						   const char * USER_ID,
 						   const char * ACCOUNT_ID,
 						   const char * THE_LEDGER); // Returns number of transactions within.
+
 
 
 // -----------------------------------------------------------------------
@@ -362,6 +566,7 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 
 
 
+// --------------------------------------------------------------------
 // Get Transaction Type  (internally uses GetTransactionTypeString().)
 const char * OT_API_Transaction_GetType(const char * SERVER_ID,
 										const char * USER_ID,
@@ -374,7 +579,20 @@ const char * OT_API_Transaction_GetType(const char * SERVER_ID,
 
 
 // --------------------------------------------------------------------
+// Get Purse Total Value  (internally uses GetTotalValue().)
+//
+// Returns the purported sum of all the tokens within.
+//
+const char * OT_API_Purse_GetTotalValue(const char * SERVER_ID,
+										const char * ASSET_TYPE_ID,
+										const char * THE_PURSE);
 
+
+
+
+
+
+// --------------------------------------------------------------------
 
 
 
@@ -541,7 +759,7 @@ void OT_API_issueAssetType(const char *	SERVER_ID,
 
 
 // --------------------------------------------------------------------
-// GET CONTRACT -- Get server’s copy of any asset contract, by asset type ID.
+// GET CONTRACT -- Get server's copy of any asset contract, by asset type ID.
 //
 void OT_API_getContract(const char * SERVER_ID,
 						const char * USER_ID,
@@ -551,7 +769,7 @@ void OT_API_getContract(const char * SERVER_ID,
 
 
 // --------------------------------------------------------------------------
-// Get server’s copy of public Mint file (which contains the public minting
+// Get server's copy of public Mint file (which contains the public minting
 // keys for each asset type. Withdrawal requests will not work for any given
 // asset type until you have downloaded the mint for that asset type.)
 //
@@ -583,6 +801,43 @@ void OT_API_getAccount(const char * SERVER_ID,
 
 
 
+
+
+
+
+
+
+
+
+// ----------------------------------------------------
+// GENERATE BASKET CREATION REQUEST
+//
+// (returns the basket in string form.)
+//
+// Call OT_API_AddBasketCreationItem multiple times to add
+// the various currencies to the basket, and then call 
+// OT_API_issueBasket to send the request to the server.
+//
+const char * OT_API_GenerateBasketCreation(const char * USER_ID,
+										   const char * MINIMUM_TRANSFER); // If basket is X=2,3,4, then this is X.
+
+
+// ----------------------------------------------------
+// ADD BASKET CREATION ITEM
+//
+// (returns the updated basket in string form.)
+//
+// Call OT_API_GenerateBasketCreation first (above), then
+// call this function multiple times to add the various
+// currencies to the basket, and then call OT_API_issueBasket 
+// to send the request to the server.
+//
+const char * OT_API_AddBasketCreationItem(const char * USER_ID, // for signature.
+										  const char * THE_BASKET, // created in above call.
+										  const char * ASSET_TYPE_ID, // Adding an asset type to the new basket.
+										  const char * MINIMUM_TRANSFER); // If basket is 5=X,X,X then this is an X.
+
+
 // --------------------------------------------------------------------------
 // ISSUE BASKET CURRENCY
 //
@@ -599,7 +854,51 @@ void OT_API_getAccount(const char * SERVER_ID,
 //
 void OT_API_issueBasket(const char * SERVER_ID,
 						const char * USER_ID,
-						const char * BASKET_INFO);
+						const char * THE_BASKET);
+
+
+
+
+
+
+
+
+
+
+// ----------------------------------------------------
+// GENERATE BASKET EXCHANGE REQUEST
+//
+// (Returns the new basket exchange request in string form.)
+//
+// Call this function first. Then call OT_API_AddBasketExchangeItem
+// multiple times, and then finally call OT_API_exchangeBasket to
+// send the request to the server.
+//
+const char * OT_API_GenerateBasketExchange(const char * SERVER_ID,
+										   const char * USER_ID,
+										   const char * BASKET_ASSET_TYPE_ID,
+										   const char * BASKET_ASSET_ACCT_ID,
+										   // -------------------------------------
+										   const int TRANSFER_MULTIPLE);
+										// 1			2			 3
+										// 5=2,3,4  OR  10=4,6,8  OR 15=6,9,12 Etc. (The MULTIPLE.)
+
+
+// ----------------------------------------------------
+// ADD BASKET EXCHANGE ITEM
+//
+// Returns the updated basket exchange request in string form.
+// (Or NULL.)
+//
+// Call the above function first. Then call this one multiple
+// times, and then finally call OT_API_exchangeBasket to send
+// the request to the server.
+//
+const char * OT_API_AddBasketExchangeItem(const char * SERVER_ID,
+										  const char * USER_ID,
+										  const char * THE_BASKET, 
+										  const char * ASSET_TYPE_ID,
+										  const char * ASSET_ACCT_ID);
 
 // --------------------------------------------------------------------------
 // EXCHANGE BASKET
@@ -622,7 +921,16 @@ void OT_API_issueBasket(const char * SERVER_ID,
 void OT_API_exchangeBasket(const char * SERVER_ID,
 						   const char * USER_ID,
 						   const char * BASKET_ASSET_ID,
-						   const char * BASKET_INFO);
+						   const char * THE_BASKET,
+						   const int BOOL_EXCHANGE_IN_OR_OUT); // exchanging in == OT_TRUE, out == OT_FALSE.
+
+
+
+
+
+
+
+
 
 
 // --------------------------------------------------------------------------
@@ -666,7 +974,7 @@ void OT_API_notarizeDeposit(const char * SERVER_ID,
 // TRANSFER FROM ONE ASSET ACCOUNT TO ANOTHER
 //
 // Send a request to the server to initiate a transfer from my account to
-// another account’s inbox. (With "transfer pending" notice in my outbox).
+// another account's inbox. (With "transfer pending" notice in my outbox).
 // Until the recipient accepts the transfer, I have the option to cancel
 // it while it is still sitting in my outbox. But once he accepts it, it 
 // cannot be reversed.
@@ -744,6 +1052,8 @@ void OT_API_withdrawVoucher(const char * SERVER_ID,
 							const char * CHEQUE_MEMO,
 							const char * AMOUNT);
 
+
+
 // --------------------------------------------------------------------------
 // DEPOSIT A CHEQUE (or VOUCHER) INTO AN ASSET ACCOUNT.
 //
@@ -762,12 +1072,84 @@ void OT_API_depositCheque(const char * SERVER_ID,
 
 
 // --------------------------------------------------
-
-
-// COMING SOON:  The Library already supports Markets and Payment Plans 
-// (And so do the Server and test client) but I haven't yet added those
-// to the API. (Coming soon.)
+// DEPOSIT (ACTIVATE) PAYMENT PLAN
 //
+// See OT_API_WritePaymentPlan as well.
+//
+void OT_API_depositPaymentPlan(const char * SERVER_ID,
+							   const char * USER_ID,
+							   const char * THE_PAYMENT_PLAN);
+
+
+
+// --------------------------------------------------
+// ISSUE MARKET OFFER
+//
+void OT_API_issueMarketOffer(const char * SERVER_ID,
+							 const char * USER_ID,
+							 // -------------------------------------------
+							 const char * ASSET_TYPE_ID, // Perhaps this is the
+							 const char * ASSET_ACCT_ID, // wheat market.
+							 // -------------------------------------------
+							 const char * CURRENCY_TYPE_ID, // Perhaps I'm buying the
+							 const char * CURRENCY_ACCT_ID, // wheat with rubles.
+							 // -------------------------------------------
+							 const char * MARKET_SCALE,				// Defaults to minimum of 1. Market granularity.
+							 const char * MINIMUM_INCREMENT,		// This will be multiplied by the Scale. Min 1.
+							 const char * TOTAL_ASSETS_ON_OFFER,	// Total assets available for sale or purchase. Will be multiplied by minimum increment.
+							 const char * PRICE_LIMIT,				// Per Minimum Increment...
+							 int	bBuyingOrSelling); // Actually OT_BOOL. SELLING == OT_TRUE, BUYING == OT_FALSE.
+
+// --------------------------------------------------
+
+
+
+
+
+
+
+// -----------------------------------------------------------
+// POP MESSAGE BUFFER
+// 
+// If there are any replies from the server, they are stored in
+// the message buffer. This function will return those messages
+// (and remove them from the list) one-by-one, newest first.
+//
+// Returns the message as a string.
+//
+const char * OT_API_PopMessageBuffer(void);
+
+void OT_API_FlushMessageBuffer(void);
+
+
+// -----------------------------------------------------------
+// GET MESSAGE COMMAND TYPE
+//
+// This way you can discover what kind of command it was.
+// All server replies are pre-pended with the @ sign. For example, if
+// you send a "getAccount" message, the server reply is "@getAccount",
+// and if you send "getMint" the reply is "@getMint", and so on.
+//
+const char * OT_API_Message_GetCommand(const char * THE_MESSAGE);
+
+
+
+// -----------------------------------------------------------
+// GET MESSAGE SUCCESS (True or False)
+//
+// Returns OT_TRUE (1) for Success and OT_FALSE (0) for Failure.
+// Also returns OT_FALSE for error.
+//
+int OT_API_Message_GetSuccess(const char * THE_MESSAGE);
+
+
+
+
+
+
+
+
+
 // I am actively supporting developers on the API and will be responsive...
 // So feel free to ask for what you need on the API, and I'll add it for you.
 //

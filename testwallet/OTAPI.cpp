@@ -95,11 +95,14 @@
 #include "OTAssetContract.h"
 #include "OTServerContract.h"
 #include "OTCheque.h"
+#include "OTPaymentPlan.h"
 #include "OTMint.h"
 #include "OTLedger.h"
 #include "OTAccount.h"
 #include "OTWallet.h"
 #include "OTPurse.h"
+#include "OTBasket.h"
+#include "OTMessage.h"
 
 
 // A C++ class, high-level interface to OT. The class-based API.
@@ -617,19 +620,240 @@ const char * OT_API_WriteCheque(const char * SERVER_ID,
 }
 
 
+
+
 // -----------------------------------------------------------------
-// LOAD PUBLIC KEY  -- from local storage
+// WRITE PAYMENT PLAN
+//
+// (Return as STRING)
+// 
+// PARAMETER NOTES:
+// -- Payment Plan Delay, and Payment Plan Period, both default to 30 days (if you pass 0.)
+//
+// -- Payment Plan Length, and Payment Plan Max Payments, both default to 0, which means
+//    no maximum length and no maximum number of payments.
+//
+// -----------------------------------------------------------------
+// FYI, the payment plan creation process (currently) is:
+//
+// 1) Payment Plan is written by the sender (this function.)
+// 2) This is necessary because the transaction number must be on
+//    the sender's nym when he submits it to the server.
+// 3) Also, the sender must be the one to submit it.
+// 4) Recipient must sign it beforehand, so it must be sent to
+//    recipient and then sent BACK to sender for submittal.
+// 
+// THAT SUCKS!   Here's what it should do:
+// 
+// 1) Payment plan is written, and signed, by the recipient. 
+// 2) He sends it to the sender, who signs it and submits it.
+// 3) The server loads the recipient nym to verify the transaction
+//    number. The sender also had to burn a transaction number (to
+//    submit it) so now, both have verified trns#s in this way.
+//
+// ==> Unfortunately, the current OT behavior is described by the first
+// process above, not the second one. However, I think the API will be
+// the same either way -- just need to change the server to support
+// EITHER sender OR recipient being able to submit (it should simply
+// check BOTH of them for the transaction number instead of sender only.) 
+// We'll get there eventually...
+//
+const char * OT_API_WritePaymentPlan(const char * SERVER_ID,
+									// ----------------------------------------
+									const char * VALID_FROM,	// Default (0 or NULL) == NOW
+									const char * VALID_TO,		// Default (0 or NULL) == no expiry / cancel anytime
+									// ----------------------------------------
+									const char * SENDER_ACCT_ID,	// Mandatory parameters.
+									const char * SENDER_USER_ID,	// Both sender and recipient must sign before submitting.
+									// ----------------------------------------
+									const char * PLAN_CONSIDERATION,	// Like a memo.
+									// ----------------------------------------
+									const char * RECIPIENT_ACCT_ID,		// NOT optional.
+									const char * RECIPIENT_USER_ID,		// Both sender and recipient must sign before submitting.
+									// -------------------------------	
+									const char * INITIAL_PAYMENT_AMOUNT,	// zero or NULL == no initial payment.
+									const char * INITIAL_PAYMENT_DELAY,		// seconds from creation date. Default is zero or NULL.
+									// ---------------------------------------- .
+									const char * PAYMENT_PLAN_AMOUNT,		// zero or NULL == no regular payments.
+									const char * PAYMENT_PLAN_DELAY,		// No. of seconds from creation date. Default is zero or NULL.
+									const char * PAYMENT_PLAN_PERIOD,		// No. of seconds between payments. Default is zero or NULL.
+									// --------------------------------------- 
+									const char * PAYMENT_PLAN_LENGTH,		// In seconds. Defaults to 0 or NULL (no maximum length.)
+									const char * PAYMENT_PLAN_MAX_PAYMENTS	// Integer. Defaults to 0 or NULL (no maximum payments.)
+									)										
+{																			
+	OT_ASSERT(NULL != SERVER_ID);
+	OT_ASSERT(NULL != SENDER_ACCT_ID);
+	OT_ASSERT(NULL != SENDER_USER_ID);
+	OT_ASSERT(NULL != RECIPIENT_ACCT_ID);
+	OT_ASSERT(NULL != RECIPIENT_USER_ID);
+	
+	const OTIdentifier theServerID(SERVER_ID);
+	const OTIdentifier theSenderAcctID(SENDER_ACCT_ID);
+	const OTIdentifier theSenderUserID(SENDER_USER_ID);
+	const OTIdentifier theRecipientAcctID(RECIPIENT_ACCT_ID);
+	const OTIdentifier theRecipientUserID(RECIPIENT_USER_ID);
+	
+	// --------------------------------------
+
+	time_t tValidFrom = 0;
+	
+	if ((NULL != VALID_FROM) && (atoi(VALID_FROM) > 0))
+	{
+		tValidFrom = atoi(VALID_FROM);
+	}
+
+	// --------------------------------------
+
+	time_t tValidTo = 0;
+	
+	if ((NULL != VALID_TO) && (atoi(VALID_TO) > 0))
+	{
+		tValidTo = atoi(VALID_TO);
+	}
+
+	// --------------------------------------
+
+	OTString strConsideration("(Consideration for the agreement between the parties is meant to be recorded here.)");
+	
+	if (NULL != PLAN_CONSIDERATION)
+		strConsideration.Set(PLAN_CONSIDERATION);
+	
+	// --------------------------------------
+	
+	long lInitialPaymentAmount = 0;
+	
+	if ((NULL != INITIAL_PAYMENT_AMOUNT) && (atol(INITIAL_PAYMENT_AMOUNT) > 0))
+	{
+		lInitialPaymentAmount = atol(INITIAL_PAYMENT_AMOUNT);
+	}
+	
+	// --------------------------------------
+	
+	time_t tInitialPaymentDelay = 0;
+	
+	if ((NULL != INITIAL_PAYMENT_DELAY) && (atoi(INITIAL_PAYMENT_DELAY) > 0))
+	{
+		tInitialPaymentDelay = atoi(INITIAL_PAYMENT_DELAY);
+	}
+	
+	// --------------------------------------
+	
+	long lPaymentPlanAmount = 0;
+	
+	if ((NULL != PAYMENT_PLAN_AMOUNT) && (atol(PAYMENT_PLAN_AMOUNT) > 0))
+	{
+		lPaymentPlanAmount = atol(PAYMENT_PLAN_AMOUNT);
+	}
+	
+	// --------------------------------------
+	
+	time_t tPaymentPlanDelay = 0;
+	
+	if ((NULL != PAYMENT_PLAN_DELAY) && (atoi(PAYMENT_PLAN_DELAY) > 0))
+	{
+		tPaymentPlanDelay = atoi(PAYMENT_PLAN_DELAY);
+	}
+	
+	// --------------------------------------
+	
+	time_t tPaymentPlanPeriod = 0;
+	
+	if ((NULL != PAYMENT_PLAN_PERIOD) && (atoi(PAYMENT_PLAN_PERIOD) > 0))
+	{
+		tPaymentPlanPeriod = atoi(PAYMENT_PLAN_PERIOD);
+	}
+	
+	// --------------------------------------
+	
+	time_t tPaymentPlanLength = 0;
+	
+	if ((NULL != PAYMENT_PLAN_LENGTH) && (atoi(PAYMENT_PLAN_LENGTH) > 0))
+	{
+		tPaymentPlanLength = atoi(PAYMENT_PLAN_LENGTH);
+	}
+	
+	// --------------------------------------
+	
+	int nPaymentPlanMaxPayments = 0;
+	
+	if ((NULL != PAYMENT_PLAN_MAX_PAYMENTS) && (atoi(PAYMENT_PLAN_MAX_PAYMENTS) > 0))
+	{
+		nPaymentPlanMaxPayments = atoi(PAYMENT_PLAN_MAX_PAYMENTS);
+	}
+	
+	// --------------------------------------
+	
+	
+	OTPaymentPlan * pPlan = g_OT_API.WritePaymentPlan(theServerID,
+													  // ----------------------------------------
+													  tValidFrom,	// Default (0) == NOW
+													  tValidTo,		// Default (0) == no expiry / cancel anytime
+													  // ----------------------------------------
+													  theSenderAcctID,
+													  theSenderUserID,
+													  // ----------------------------------------
+													  strConsideration, // Like a memo.
+													  // ----------------------------------------
+													  theRecipientAcctID,
+													  theRecipientUserID,
+													  // ----------------------------------------  
+													  lInitialPaymentAmount, 
+													  tInitialPaymentDelay,  
+													  // ---------------------------------------- 
+													  lPaymentPlanAmount,
+													  tPaymentPlanDelay,
+													  tPaymentPlanPeriod,	
+													  // ----------------------------------------
+													  tPaymentPlanLength,	
+													  nPaymentPlanMaxPayments);
+	
+	OTCleanup<OTPaymentPlan> theAngel(pPlan); // Handles cleanup. (If necessary.)
+	
+	if (NULL == pPlan)
+	{
+		OTLog::Error("OT_API::WritePaymentPlan failed in OT_API_WritePaymentPlan.\n");
+		return NULL;
+	}
+	
+	// At this point, I know pPlan is good (and will be cleaned up automatically.)
+	
+	OTString strOutput(*pPlan); // Extract the payment plan to string form.
+	
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;	
+}
+
+
+
+
+
+
+// -----------------------------------------------------------------
+// LOAD PUBLIC KEY (of other users, where no private key is available) 
+//
+// -- from local storage
 //
 // (return as STRING)
 //
-const char * OT_API_LoadUserPubkey(const char * USER_ID) // returns NULL, or a public key.
+// Users will most likely store public keys of OTHER users, and they will need
+// to load those from time to time, especially to verify signatures, etc.
+//
+const char * OT_API_LoadPubkey(const char * USER_ID) // returns NULL, or a public key.
 {
 	OT_ASSERT(NULL != USER_ID);
-
+	
 	OTString strPubkey; // For the output
-
+	
 	OTIdentifier	NYM_ID(USER_ID);
-
+	
 	// There is an OT_ASSERT in here for memory failure,
 	// but it still might return NULL if various verification fails.
 	OTPseudonym *	pNym = g_OT_API.LoadPublicNym(NYM_ID); 
@@ -641,13 +865,13 @@ const char * OT_API_LoadUserPubkey(const char * USER_ID) // returns NULL, or a p
 	{
 		OTString strNymID(NYM_ID);
 		OTLog::vOutput(0, "Failure calling OT_API::LoadPublicNym in OT_API_LoadUserPubkey: %s\n", 
-					  strNymID.Get());
+					   strNymID.Get());
 	}
 	else if (false == pNym->GetPublicKey().GetPublicKey(strPubkey))
 	{
 		OTString strNymID(NYM_ID);
 		OTLog::vOutput(0, "Failure retrieving pubkey from Nym in OT_API_LoadUserPubkey: %s\n", 
-					  strNymID.Get());
+					   strNymID.Get());
 	}
 	else // success 
 	{
@@ -661,7 +885,58 @@ const char * OT_API_LoadUserPubkey(const char * USER_ID) // returns NULL, or a p
 		
 		return g_tempBuf;
 	}
+	
+	return NULL;
+}
 
+
+
+
+// -----------------------------------------------------------------
+// LOAD USER PUBLIC KEY  -- from local storage
+//
+// (return as STRING)
+//
+const char * OT_API_LoadUserPubkey(const char * USER_ID) // returns NULL, or a public key.
+{
+	OT_ASSERT(NULL != USER_ID);
+	
+	OTString strPubkey; // For the output
+	
+	OTIdentifier	NYM_ID(USER_ID);
+	
+	// There is an OT_ASSERT in here for memory failure,
+	// but it still might return NULL if various verification fails.
+	OTPseudonym *	pNym = g_OT_API.LoadPrivateNym(NYM_ID); 
+	
+	// Make sure it gets cleaned up when this goes out of scope.
+	OTCleanup<OTPseudonym>	theNymAngel(pNym); // I pass the pointer, in case it's NULL.
+	
+	if (NULL == pNym)
+	{
+		OTString strNymID(NYM_ID);
+		OTLog::vOutput(0, "Failure calling OT_API::LoadPrivateNym in OT_API_LoadUserPubkey: %s\n", 
+					   strNymID.Get());
+	}
+	else if (false == pNym->GetPublicKey().GetPublicKey(strPubkey))
+	{
+		OTString strNymID(NYM_ID);
+		OTLog::vOutput(0, "Failure retrieving pubkey from Nym in OT_API_LoadUserPubkey: %s\n", 
+					   strNymID.Get());
+	}
+	else // success 
+	{
+		const char * pBuf = strPubkey.Get(); 
+		
+#ifdef _WIN32
+		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+		strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+		
+		return g_tempBuf;
+	}
+	
 	return NULL;
 }
 
@@ -1758,9 +2033,235 @@ const char * OT_API_Transaction_GetType(const char * SERVER_ID,
 
 
 
+
+
+// --------------------------------------------------------------------
+// Get Purse Total Value  (internally uses GetTotalValue().)
+//
+// Returns the purported sum of all the tokens within.
+//
+const char * OT_API_Purse_GetTotalValue(const char * SERVER_ID,
+										const char * ASSET_TYPE_ID,
+										const char * THE_PURSE)
+{
+	OT_ASSERT(NULL != SERVER_ID);
+	OT_ASSERT(NULL != ASSET_TYPE_ID);
+	OT_ASSERT(NULL != THE_PURSE);
+	
+	const OTIdentifier theServerID(SERVER_ID), theAssetTypeID(ASSET_TYPE_ID);
+	
+	OTString strPurse(THE_PURSE);
+	
+	// -----------------------------------------------------
+	
+	OTPurse thePurse(theServerID, theAssetTypeID);
+	
+	if (false == thePurse.LoadContractFromString(strPurse))
+	{
+		OTString strAssetTypeID(theAssetTypeID);
+		OTLog::vError("Error loading purse from string in OT_API_Purse_GetTotalValue. Asset Type ID:\n%s\n",
+					  strAssetTypeID.Get());
+		return NULL;
+	}
+	
+	// -----------------------------------------------------
+	
+	long lTotalValue = 0;
+	
+	if (thePurse.GetTotalValue() > 0)
+		lTotalValue = thePurse.GetTotalValue();
+	
+	OTString strOutput;
+	strOutput.Format("%ld", lTotalValue);
+	
+	const char * pBuf = strOutput.Get();
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;			
+}
+
 // --------------------------------------------------
 
 
+
+
+
+
+// --------------------------------------------------------------
+// IS BASKET CURRENCY ?
+//
+// Tells you whether or not a given asset type is actually a basket currency.
+//
+// returns OT_BOOL (OT_TRUE or OT_FALSE aka 1 or 0.)
+//
+OT_BOOL OT_API_IsBasketCurrency(const char * ASSET_TYPE_ID)
+{
+	OT_ASSERT(NULL != ASSET_TYPE_ID);
+	
+	const OTIdentifier theAssetTypeID(ASSET_TYPE_ID);
+	
+	if (g_OT_API.IsBasketCurrency(theAssetTypeID))
+		return OT_TRUE;
+	else
+		return OT_FALSE;
+}
+ 
+
+
+// --------------------------------------------------------------------
+// Get Basket Count (of backing asset types.)
+//
+// Returns the number of asset types that make up this basket.
+// (Or zero.)
+//
+int OT_API_Basket_GetMemberCount(const char * ASSET_TYPE_ID)
+{
+	OT_ASSERT(NULL != ASSET_TYPE_ID);
+
+	const OTIdentifier theAssetTypeID(ASSET_TYPE_ID);
+	
+	return g_OT_API.GetBasketMemberCount(theAssetTypeID);
+}
+
+
+
+// --------------------------------------------------------------------
+// Get Asset Type of a basket's member currency, by index.
+//
+// (Returns a string containing Asset Type ID, or NULL).
+//
+const char * OT_API_Basket_GetMemberType(const char * BASKET_ASSET_TYPE_ID,
+										 const int nIndex)
+{
+	OT_ASSERT(NULL != BASKET_ASSET_TYPE_ID);
+	
+	const OTIdentifier theAssetTypeID(BASKET_ASSET_TYPE_ID);
+	
+	OTIdentifier theOutputMemberType;
+	
+	
+	bool bGotType = g_OT_API.GetBasketMemberType(theAssetTypeID,
+												 nIndex,
+												 theOutputMemberType);
+	if (false == bGotType)
+		return NULL;
+	
+	
+	OTString strOutput(theOutputMemberType);
+	
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;	
+}
+
+
+
+
+// ----------------------------------------------------
+// GET BASKET MINIMUM TRANSFER AMOUNT
+//
+// Returns a long (as string) containing the minimum transfer
+// amount for the entire basket.
+//
+// FOR EXAMPLE: 
+// If the basket is defined as 10 Rands == 2 Silver, 5 Gold, 8 Euro,
+// then the minimum transfer amount for the basket is 10. This function
+// would return a string containing "10", in that example.
+//
+const char * OT_API_Basket_GetMinimumTransferAmount(const char * BASKET_ASSET_TYPE_ID)
+{
+	OT_ASSERT(NULL != BASKET_ASSET_TYPE_ID);
+	
+	const OTIdentifier theAssetTypeID(BASKET_ASSET_TYPE_ID);
+
+	long lMinTransAmount = g_OT_API.GetBasketMinimumTransferAmount(theAssetTypeID);
+	
+	if (0 == lMinTransAmount)
+		return NULL;
+	
+	
+	OTString strOutput;
+	strOutput.Format("%ld", lMinTransAmount);
+	
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;	
+}
+
+
+
+// ----------------------------------------------------
+// GET BASKET MEMBER's MINIMUM TRANSFER AMOUNT
+//
+// Returns a long (as string) containing the minimum transfer
+// amount for one of the member currencies in the basket.
+//
+// FOR EXAMPLE: 
+// If the basket is defined as 10 Rands == 2 Silver, 5 Gold, 8 Euro,
+// then the minimum transfer amount for the member currency at index
+// 0 is 2, the minimum transfer amount for the member currency at
+// index 1 is 5, and the minimum transfer amount for the member 
+// currency at index 2 is 8.
+//
+const char * OT_API_Basket_GetMemberMinimumTransferAmount(const char * BASKET_ASSET_TYPE_ID,
+														  const int nIndex)
+{
+	OT_ASSERT(NULL != BASKET_ASSET_TYPE_ID);
+	
+	const OTIdentifier theAssetTypeID(BASKET_ASSET_TYPE_ID);
+
+	long lMinTransAmount = g_OT_API.GetBasketMemberMinimumTransferAmount(theAssetTypeID, nIndex);
+
+	if (0 == lMinTransAmount)
+		return NULL;
+	
+	
+	OTString strOutput;
+	strOutput.Format("%ld", lMinTransAmount);
+	
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;	
+}
+
+
+
+// ----------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+// --------------------------------------------------
 
 // MESSAGES BEING SENT TO THE SERVER:
 
@@ -1892,38 +2393,341 @@ void OT_API_getAccount(const char * SERVER_ID,
 }
 
 	
+
+
+// ----------------------------------------------------
+// GENERATE BASKET CREATION REQUEST
+//
+// (returns the basket in string form.)
+//
+// Call OT_API_AddBasketCreationItem multiple times to add
+// the various currencies to the basket, and then call 
+// OT_API_issueBasket to send the request to the server.
+//
+const char * OT_API_GenerateBasketCreation(const char * USER_ID,
+										   const char * MINIMUM_TRANSFER)
+{
+	OT_ASSERT(USER_ID);
+	OT_ASSERT(MINIMUM_TRANSFER);
+
+	const OTIdentifier theUserID(USER_ID);
+	
+	// ----------------------------------------------
+	
+	long lMinimumTransfer = 10; // Just a default value.
+	
+	if ((NULL != MINIMUM_TRANSFER) && (atol(MINIMUM_TRANSFER) > 0))
+		lMinimumTransfer = atol(MINIMUM_TRANSFER);
+		
+	// ----------------------------------------------
+	
+	OTBasket * pBasket = g_OT_API.GenerateBasketCreation(theUserID, lMinimumTransfer); // Must be above zero. If <= 0, defaults to 10.
+
+	OTCleanup<OTBasket> theAngel(pBasket);
+	
+	if (NULL == pBasket)
+		return NULL;
+	
+	// At this point, I know pBasket is good (and will be cleaned up automatically.)
+	// ----------------------------------------------
+	
+	
+	OTString strOutput(*pBasket);
+//	pBasket->SaveContract(strOutput); // Extract the basket to string form.
+	
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;	
+}
+
+
+
+
+// ----------------------------------------------------
+// ADD BASKET CREATION ITEM
+//
+// (returns the updated basket in string form.)
+//
+// Call OT_API_GenerateBasketCreation first (above), then
+// call this function multiple times to add the various
+// currencies to the basket, and then call OT_API_issueBasket 
+// to send the request to the server.
+//
+const char * OT_API_AddBasketCreationItem(const char * USER_ID, // for signature.
+										  const char * THE_BASKET, // created in above call.
+										  const char * ASSET_TYPE_ID, // Adding an asset type to the new basket.
+										  const char * MINIMUM_TRANSFER)
+{
+	OT_ASSERT(USER_ID);
+	OT_ASSERT(THE_BASKET);
+	OT_ASSERT(ASSET_TYPE_ID);
+	OT_ASSERT(MINIMUM_TRANSFER);
+	
+	OTString strBasket(THE_BASKET);
+	
+	// ----------------------------------------------------
+
+	const OTIdentifier theUserID(USER_ID), theAssetTypeID(ASSET_TYPE_ID);
+	
+	// ----------------------------------------------
+	
+	long lMinimumTransfer = 10; // Just a default value.
+	
+	if ((NULL != MINIMUM_TRANSFER) && (atol(MINIMUM_TRANSFER) > 0))
+		lMinimumTransfer = atol(MINIMUM_TRANSFER);
+	
+	// ----------------------------------------------
+
+	OTBasket theBasket;
+	
+	bool bAdded = false;
+	
+	// todo perhaps verify the basket here, even though I already verified the asset contract itself...
+	// Can't never be too sure.
+	if (theBasket.LoadContractFromString(strBasket))
+	{
+		bAdded = g_OT_API.AddBasketCreationItem(theUserID, // for signature.
+												theBasket, // created in above call.
+												theAssetTypeID, // Adding an asset type to the new basket.
+												lMinimumTransfer); // The amount of the asset type that is in the basket (per).
+	}
+
+	if (false == bAdded)
+		return NULL;
+	
+	
+	OTString strOutput(theBasket); // Extract the updated basket to string form.
+	
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;		
+}
+
+
+
+// --------------------------------------------------------------------------
+// ISSUE BASKET CURRENCY
+//
+// Issue a new asset type based on a BASKET of other asset types!
+// You cannot call this function until you first set up the BASKET_INFO object.
+// I will provide functions for setting up that object, so that you can then
+// call this function to actually message the server with your request.
+//
+// ANYONE can issue a new basket type, but they will have no control over the
+// issuer account. Normally when issuing a currency, you therefore control the
+// issuer account. But with baskets, that is managed internally by the server.
+// This means anyone can define a basket, and all may use it -- but no one
+// controls it except the server.
+//
 void OT_API_issueBasket(const char * SERVER_ID,
 						const char * USER_ID,
-						const char * BASKET_INFO)
+						const char * THE_BASKET)
 {
 	OT_ASSERT(NULL != SERVER_ID);
 	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != BASKET_INFO);
+	OT_ASSERT(NULL != THE_BASKET);
 	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID);
 	
-	OTString strBasketInfo(BASKET_INFO);
+	OTString strBasketInfo(THE_BASKET);
 
 	g_OT_API.issueBasket(theServerID, theUserID, strBasketInfo);
 }
 
 	
+
+
+
+
+
+// ----------------------------------------------------
+// GENERATE BASKET EXCHANGE REQUEST
+//
+// (Returns the new basket exchange request in string form.)
+//
+// Call this function first. Then call OT_API_AddBasketExchangeItem
+// multiple times, and then finally call OT_API_exchangeBasket to
+// send the request to the server.
+//
+const char * OT_API_GenerateBasketExchange(const char * SERVER_ID,
+										   const char * USER_ID,
+										   const char * BASKET_ASSET_TYPE_ID,
+										   const char * BASKET_ASSET_ACCT_ID,
+										   // -------------------------------------
+										   const int TRANSFER_MULTIPLE)	// 1			2			 3
+																		// 5=2,3,4  OR  10=4,6,8  OR 15=6,9,12
+{
+	OT_ASSERT(SERVER_ID);
+	OT_ASSERT(USER_ID);
+	OT_ASSERT(BASKET_ASSET_TYPE_ID);
+	OT_ASSERT(BASKET_ASSET_ACCT_ID);
+	
+	const OTIdentifier	theUserID(USER_ID), theServerID(SERVER_ID),
+						theBasketAssetTypeID(BASKET_ASSET_TYPE_ID), 
+						theBasketAssetAcctID(BASKET_ASSET_ACCT_ID);
+	
+	// ----------------------------------------------
+	
+	int nTransferMultiple = 1; // Just a default value.
+	
+	if (TRANSFER_MULTIPLE > 0)
+		nTransferMultiple = TRANSFER_MULTIPLE;
+	
+	// ----------------------------------------------
+	
+	OTBasket * pBasket = g_OT_API.GenerateBasketExchange(theServerID,
+														 theUserID,
+														 theBasketAssetTypeID,
+														 theBasketAssetAcctID,
+														 nTransferMultiple);	// 1			2			 3
+																				// 5=2,3,4  OR  10=4,6,8  OR 15=6,9,12
+	OTCleanup<OTBasket> theAngel(pBasket);
+	
+	if (NULL == pBasket)
+		return NULL;
+	
+	// At this point, I know pBasket is good (and will be cleaned up automatically.)
+	// ----------------------------------------------
+	
+	
+	OTString strOutput(*pBasket); // Extract the basket to string form.
+	
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;	
+}
+
+// ----------------------------------------------------
+// ADD BASKET EXCHANGE ITEM
+//
+// Returns the updated basket exchange request in string form.
+// (Or NULL.)
+//
+// Call the above function first. Then call this one multiple
+// times, and then finally call OT_API_exchangeBasket to send
+// the request to the server.
+//
+const char * OT_API_AddBasketExchangeItem(const char * SERVER_ID,
+										  const char * USER_ID,
+										  const char * THE_BASKET, 
+										  const char * ASSET_TYPE_ID,
+										  const char * ASSET_ACCT_ID)
+{
+	OT_ASSERT(SERVER_ID);
+	OT_ASSERT(USER_ID);
+	OT_ASSERT(THE_BASKET);
+	OT_ASSERT(ASSET_TYPE_ID);
+	OT_ASSERT(ASSET_ACCT_ID);
+	
+	OTString strBasket(THE_BASKET);
+	
+	// ----------------------------------------------------
+	
+	const OTIdentifier	theServerID(SERVER_ID), theUserID(USER_ID), 
+						theAssetTypeID(ASSET_TYPE_ID),
+						theAssetAcctID(ASSET_ACCT_ID);
+	
+	// ----------------------------------------------
+	
+	OTBasket theBasket;
+	
+	bool bAdded = false;
+	
+	// todo perhaps verify the basket here, even though I already verified the asset contract itself...
+	// Can't never be too sure.
+	if (theBasket.LoadContractFromString(strBasket))
+	{
+		bAdded = g_OT_API.AddBasketExchangeItem(theServerID,
+												theUserID,
+												theBasket, 
+												theAssetTypeID,
+												theAssetAcctID);
+	}
+	
+	if (false == bAdded)
+		return NULL;
+	
+	
+	OTString strOutput(theBasket); // Extract the updated basket to string form.
+	
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;		
+}
+
+
+// --------------------------------------------------------------------------
+// EXCHANGE BASKET
+//
+// Send a request to the server asking to exchange in or out of a basket
+// currency.
+// 
+// For example, maybe you have 3 gold, 2 silver, and 5 dollars, and those are
+// the ingredients of the "Rand" basket currency. This message allows you to
+// ask the server to convert from your gold, silver, and dollar accounts into
+// your Rand account. (Or convert from your Rand account back into your gold,
+// silver, and dollar accounts.)
+//
+// Other than this conversion process, (with the reserves stored internally by
+// the server) basket accounts are identical to normal asset accounts -- they
+// are merely another asset type ID, and you can use them the same as you would
+// use any other asset type (open accounts, write cheques, withdraw cash, trade
+// on markets, etc.)
+//
 void OT_API_exchangeBasket(const char * SERVER_ID,
 						   const char * USER_ID,
 						   const char * BASKET_ASSET_ID,
-						   const char * BASKET_INFO)
+						   const char * THE_BASKET,
+						   const OT_BOOL BOOL_EXCHANGE_IN_OR_OUT) // exchanging in == OT_TRUE (1), out == OT_FALSE (0).
 {
 	OT_ASSERT(NULL != SERVER_ID);
 	OT_ASSERT(NULL != USER_ID);
 	OT_ASSERT(NULL != BASKET_ASSET_ID);
-	OT_ASSERT(NULL != BASKET_INFO);
+	OT_ASSERT(NULL != THE_BASKET);
 
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theBasketAssetID(BASKET_ASSET_ID);
 
-	OTString strBasketInfo(BASKET_INFO);
+	OTString strBasketInfo(THE_BASKET);
 
-	g_OT_API.exchangeBasket(theServerID, theUserID, theBasketAssetID, strBasketInfo);
+	// exchanging in == true, out == false.
+	const bool bExchangeInOrOut = ((OT_TRUE == BOOL_EXCHANGE_IN_OR_OUT) ? true : false);
+	
+	g_OT_API.exchangeBasket(theServerID, theUserID, theBasketAssetID, strBasketInfo, bExchangeInOrOut);
 }
+
+// ----------------------------------------------------
+
+
+
+
+
+
+
+
 
 	
 void OT_API_getTransactionNumber(const char * SERVER_ID,
@@ -2071,9 +2875,187 @@ void OT_API_depositCheque(const char * SERVER_ID,
 	
 
 
+// --------------------------------------------------
+// DEPOSIT PAYMENT PLAN
+//
+// See OT_API_WritePaymentPlan as well.
+//
+void OT_API_depositPaymentPlan(const char * SERVER_ID,
+							   const char * USER_ID,
+							   const char * THE_PAYMENT_PLAN)
+{
+	OT_ASSERT(NULL != SERVER_ID);
+	OT_ASSERT(NULL != USER_ID);
+	OT_ASSERT(NULL != THE_PAYMENT_PLAN);
+	
+	const OTIdentifier	theServerID(SERVER_ID), theUserID(USER_ID);
+	const OTString		strPlan(THE_PAYMENT_PLAN);
+	
+	g_OT_API.depositPaymentPlan(theServerID, theUserID, strPlan);	
+}
+
+
+// --------------------------------------------------
+// ISSUE MARKET OFFER
+//
+void OT_API_issueMarketOffer(const char * SERVER_ID,
+							 const char * USER_ID,
+							 // -------------------------------------------
+							 const char * ASSET_TYPE_ID, // Perhaps this is the
+							 const char * ASSET_ACCT_ID, // wheat market.
+							 // -------------------------------------------
+							 const char * CURRENCY_TYPE_ID, // Perhaps I'm buying the
+							 const char * CURRENCY_ACCT_ID, // wheat with rubles.
+							 // -------------------------------------------
+							 const char * MARKET_SCALE,				// Defaults to minimum of 1. Market granularity.
+							 const char * MINIMUM_INCREMENT,		// This will be multiplied by the Scale. Min 1.
+							 const char * TOTAL_ASSETS_ON_OFFER,	// Total assets available for sale or purchase. Will be multiplied by minimum increment.
+							 const char * PRICE_LIMIT,				// Per Minimum Increment...
+							 OT_BOOL	  bBuyingOrSelling)	// SELLING == OT_TRUE, BUYING == OT_FALSE.
+{
+	OT_ASSERT(NULL != SERVER_ID);
+	OT_ASSERT(NULL != USER_ID);
+	OT_ASSERT(NULL != ASSET_TYPE_ID);
+	OT_ASSERT(NULL != ASSET_ACCT_ID);
+	OT_ASSERT(NULL != CURRENCY_TYPE_ID);
+	OT_ASSERT(NULL != CURRENCY_ACCT_ID);
+	
+	const OTIdentifier	theServerID(SERVER_ID), theUserID(USER_ID),
+						theAssetTypeID(ASSET_TYPE_ID), theAssetAcctID(ASSET_ACCT_ID),
+						theCurrencyTypeID(CURRENCY_TYPE_ID), theCurrencyAcctID(CURRENCY_ACCT_ID);
+
+	long lMarketScale = 1, lMinIncrement = 1, lTotalAssetsOnOffer = 1, lPriceLimit = 1;
+	
+	
+	if ((NULL != MARKET_SCALE) && (atol(MARKET_SCALE) > 0))
+		lMarketScale = atol(MARKET_SCALE);
+	
+	if ((NULL != MINIMUM_INCREMENT) && (atol(MINIMUM_INCREMENT) > 0))
+		lMinIncrement = atol(MINIMUM_INCREMENT);
+	
+	if ((NULL != TOTAL_ASSETS_ON_OFFER) && (atol(TOTAL_ASSETS_ON_OFFER) > 0))
+		lTotalAssetsOnOffer = atol(TOTAL_ASSETS_ON_OFFER);
+	
+	if ((NULL != PRICE_LIMIT) && (atol(PRICE_LIMIT) > 0))
+		lPriceLimit = atol(PRICE_LIMIT);
+	
+	// -------------------------------------------
+	
+	g_OT_API.issueMarketOffer(theServerID, theUserID,
+							  // -------------------------------------------
+							  theAssetTypeID, theAssetAcctID, theCurrencyTypeID, theCurrencyAcctID,
+							  // -------------------------------------------
+							  lMarketScale, lMinIncrement, lTotalAssetsOnOffer, lPriceLimit,
+							  (bBuyingOrSelling == OT_FALSE) ? false : true);		
+}
 
 
 
+
+
+// -----------------------------------------------------------
+// POP MESSAGE BUFFER
+// 
+// If there are any replies from the server, they are stored in
+// the message buffer. This function will return those messages
+// (and remove them from the list) one-by-one, newest first.
+//
+// Returns the message as a string.
+//
+const char * OT_API_PopMessageBuffer(void)
+{	
+	OTMessage * pMsg = g_OT_API.PopMessageBuffer();
+
+	OTCleanup<OTMessage> theAngel(pMsg); // Just making sure it gets cleaned up.
+	
+	if (NULL == pMsg) // The buffer was empty.
+		return NULL;
+	
+	OTString strOutput(*pMsg);
+	
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;		
+}
+
+
+
+// Just flat-out empties the thing.
+void OT_API_FlushMessageBuffer(void)
+{
+	g_OT_API.FlushMessageBuffer();
+}
+
+
+
+// -----------------------------------------------------------
+// GET MESSAGE COMMAND TYPE
+//
+// This way you can discover what kind of command it was.
+// All server replies are pre-pended with the @ sign. For example, if
+// you send a "getAccount" message, the server reply is "@getAccount",
+// and if you send "getMint" the reply is "@getMint", and so on.
+//
+const char * OT_API_Message_GetCommand(const char * THE_MESSAGE)
+{
+	OT_ASSERT(NULL != THE_MESSAGE);
+
+	OTString strMessage(THE_MESSAGE);
+	
+	OTMessage theMessage;
+
+	if (!strMessage.Exists() || !theMessage.LoadContractFromString(strMessage))
+		return NULL;
+	
+	OTString strOutput(theMessage.m_strCommand);
+	
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;			
+}
+
+// -----------------------------------------------------------
+// GET MESSAGE SUCCESS (True or False)
+//
+// Returns OT_TRUE (1) for Success and OT_FALSE (0) for Failure.
+// Also returns OT_FALSE for error.
+//
+OT_BOOL OT_API_Message_GetSuccess(const char * THE_MESSAGE)
+{
+	OT_ASSERT(NULL != THE_MESSAGE);
+	
+	OTString strMessage(THE_MESSAGE);
+	
+	OTMessage theMessage;
+	
+	if (!strMessage.Exists() || !theMessage.LoadContractFromString(strMessage))
+		return OT_FALSE;
+	
+	if (true == theMessage.m_bSuccess)
+		return OT_TRUE;
+	else
+		return OT_FALSE;
+}
+
+
+
+
+
+
+
+// -----------------------------------------------------------
 // NOT necessary in XmlRpc->HTTP mode (the preferred way.)
 // Only TCP/SSL mode maintains a connection to the server, and was for testing.
 OT_BOOL OT_API_ConnectServer(const char * SERVER_ID,

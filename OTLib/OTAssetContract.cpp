@@ -311,7 +311,9 @@ int OTAssetContract::ProcessXMLNode(IrrXMLReader*& xml)
 	}
 	else if (!strcmp("currency", xml->getNodeName())) 
 	{
-		m_strCurrencyName = xml->getAttributeValue("name");
+		m_strName			= xml->getAttributeValue("name");
+		m_strCurrencyName	= xml->getAttributeValue("name");
+		
 		m_strCurrencyTLA = xml->getAttributeValue("tla");
 		m_strCurrencySymbol = xml->getAttributeValue("symbol");
 		m_strCurrencyType = xml->getAttributeValue("type");

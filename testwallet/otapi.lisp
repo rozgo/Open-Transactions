@@ -114,7 +114,27 @@
   (CHEQUE_MEMO :string)
   (RECIPIENT_USER_ID :string))
 
+(cffi:defcfun ("OT_API_WritePaymentPlan" OT_API_WritePaymentPlan) :string
+  (SERVER_ID :string)
+  (VALID_FROM :string)
+  (VALID_TO :string)
+  (SENDER_ACCT_ID :string)
+  (SENDER_USER_ID :string)
+  (PLAN_CONSIDERATION :string)
+  (RECIPIENT_ACCT_ID :string)
+  (RECIPIENT_USER_ID :string)
+  (INITIAL_PAYMENT_AMOUNT :string)
+  (INITIAL_PAYMENT_DELAY :string)
+  (PAYMENT_PLAN_AMOUNT :string)
+  (PAYMENT_PLAN_DELAY :string)
+  (PAYMENT_PLAN_PERIOD :string)
+  (PAYMENT_PLAN_LENGTH :string)
+  (PAYMENT_PLAN_MAX_PAYMENTS :string))
+
 (cffi:defcfun ("OT_API_LoadUserPubkey" OT_API_LoadUserPubkey) :string
+  (USER_ID :string))
+
+(cffi:defcfun ("OT_API_LoadPubkey" OT_API_LoadPubkey) :string
   (USER_ID :string))
 
 (cffi:defcfun ("OT_API_VerifyUserPrivateKey" OT_API_VerifyUserPrivateKey) :int
@@ -130,6 +150,23 @@
 
 (cffi:defcfun ("OT_API_LoadAssetContract" OT_API_LoadAssetContract) :string
   (ASSET_TYPE_ID :string))
+
+(cffi:defcfun ("OT_API_IsBasketCurrency" OT_API_IsBasketCurrency) :int
+  (ASSET_TYPE_ID :string))
+
+(cffi:defcfun ("OT_API_Basket_GetMemberCount" OT_API_Basket_GetMemberCount) :int
+  (BASKET_ASSET_TYPE_ID :string))
+
+(cffi:defcfun ("OT_API_Basket_GetMemberType" OT_API_Basket_GetMemberType) :string
+  (BASKET_ASSET_TYPE_ID :string)
+  (nIndex :int))
+
+(cffi:defcfun ("OT_API_Basket_GetMinimumTransferAmount" OT_API_Basket_GetMinimumTransferAmount) :string
+  (BASKET_ASSET_TYPE_ID :string))
+
+(cffi:defcfun ("OT_API_Basket_GetMemberMinimumTransferAmount" OT_API_Basket_GetMemberMinimumTransferAmount) :string
+  (BASKET_ASSET_TYPE_ID :string)
+  (nIndex :int))
 
 (cffi:defcfun ("OT_API_LoadAssetAccount" OT_API_LoadAssetAccount) :string
   (SERVER_ID :string)
@@ -200,6 +237,11 @@
   (ACCOUNT_ID :string)
   (THE_TRANSACTION :string))
 
+(cffi:defcfun ("OT_API_Purse_GetTotalValue" OT_API_Purse_GetTotalValue) :string
+  (SERVER_ID :string)
+  (ASSET_TYPE_ID :string)
+  (THE_PURSE :string))
+
 (cffi:defcfun ("OT_API_checkServerID" OT_API_checkServerID) :void
   (SERVER_ID :string)
   (USER_ID :string))
@@ -246,16 +288,41 @@
   (USER_ID :string)
   (ACCT_ID :string))
 
+(cffi:defcfun ("OT_API_GenerateBasketCreation" OT_API_GenerateBasketCreation) :string
+  (USER_ID :string)
+  (MINIMUM_TRANSFER :string))
+
+(cffi:defcfun ("OT_API_AddBasketCreationItem" OT_API_AddBasketCreationItem) :string
+  (USER_ID :string)
+  (THE_BASKET :string)
+  (ASSET_TYPE_ID :string)
+  (MINIMUM_TRANSFER :string))
+
 (cffi:defcfun ("OT_API_issueBasket" OT_API_issueBasket) :void
   (SERVER_ID :string)
   (USER_ID :string)
-  (BASKET_INFO :string))
+  (THE_BASKET :string))
+
+(cffi:defcfun ("OT_API_GenerateBasketExchange" OT_API_GenerateBasketExchange) :string
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (BASKET_ASSET_TYPE_ID :string)
+  (BASKET_ASSET_ACCT_ID :string)
+  (TRANSFER_MULTIPLE :int))
+
+(cffi:defcfun ("OT_API_AddBasketExchangeItem" OT_API_AddBasketExchangeItem) :string
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (THE_BASKET :string)
+  (ASSET_TYPE_ID :string)
+  (ASSET_ACCT_ID :string))
 
 (cffi:defcfun ("OT_API_exchangeBasket" OT_API_exchangeBasket) :void
   (SERVER_ID :string)
   (USER_ID :string)
   (BASKET_ASSET_ID :string)
-  (BASKET_INFO :string))
+  (THE_BASKET :string)
+  (BOOL_EXCHANGE_IN_OR_OUT :int))
 
 (cffi:defcfun ("OT_API_notarizeWithdrawal" OT_API_notarizeWithdrawal) :void
   (SERVER_ID :string)
@@ -301,5 +368,33 @@
   (USER_ID :string)
   (ACCT_ID :string)
   (THE_CHEQUE :string))
+
+(cffi:defcfun ("OT_API_depositPaymentPlan" OT_API_depositPaymentPlan) :void
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (THE_PAYMENT_PLAN :string))
+
+(cffi:defcfun ("OT_API_issueMarketOffer" OT_API_issueMarketOffer) :void
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (ASSET_TYPE_ID :string)
+  (ASSET_ACCT_ID :string)
+  (CURRENCY_TYPE_ID :string)
+  (CURRENCY_ACCT_ID :string)
+  (MARKET_SCALE :string)
+  (MINIMUM_INCREMENT :string)
+  (TOTAL_ASSETS_ON_OFFER :string)
+  (PRICE_LIMIT :string)
+  (bBuyingOrSelling :int))
+
+(cffi:defcfun ("OT_API_PopMessageBuffer" OT_API_PopMessageBuffer) :string)
+
+(cffi:defcfun ("OT_API_FlushMessageBuffer" OT_API_FlushMessageBuffer) :void)
+
+(cffi:defcfun ("OT_API_Message_GetCommand" OT_API_Message_GetCommand) :string
+  (THE_MESSAGE :string))
+
+(cffi:defcfun ("OT_API_Message_GetSuccess" OT_API_Message_GetSuccess) :int
+  (THE_MESSAGE :string))
 
 

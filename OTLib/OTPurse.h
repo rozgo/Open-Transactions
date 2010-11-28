@@ -119,6 +119,8 @@ protected:
 	OTIdentifier	m_ServerID;	// Mandatory
 	OTIdentifier	m_AssetID;	// Mandatory
 	
+	long	m_lTotalValue; // Push increments this by denomination, and Pop decrements it by denomination.
+	
 public:
 	virtual int ProcessXMLNode(irr::io::IrrXMLReader*& xml);
 	
@@ -128,6 +130,8 @@ public:
 	bool		Push(const OTPseudonym & theOwner, const OTToken & theToken);	
 	int			Count() const;
 	bool		IsEmpty() const;
+	
+	inline long	GetTotalValue() const { return m_lTotalValue; }
 	
 	OTPurse(const OTPurse & thePurse); // just for copy another purse's Server and Asset ID
 	OTPurse(const OTIdentifier & SERVER_ID, const OTIdentifier & ASSET_ID); // similar thing

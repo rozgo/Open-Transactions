@@ -3291,6 +3291,199 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_OT_API_WritePaymentPlan(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
+  char *arg6 = (char *) 0 ;
+  char *arg7 = (char *) 0 ;
+  char *arg8 = (char *) 0 ;
+  char *arg9 = (char *) 0 ;
+  char *arg10 = (char *) 0 ;
+  char *arg11 = (char *) 0 ;
+  char *arg12 = (char *) 0 ;
+  char *arg13 = (char *) 0 ;
+  char *arg14 = (char *) 0 ;
+  char *arg15 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
+  int res6 ;
+  char *buf6 = 0 ;
+  int alloc6 = 0 ;
+  int res7 ;
+  char *buf7 = 0 ;
+  int alloc7 = 0 ;
+  int res8 ;
+  char *buf8 = 0 ;
+  int alloc8 = 0 ;
+  int res9 ;
+  char *buf9 = 0 ;
+  int alloc9 = 0 ;
+  int res10 ;
+  char *buf10 = 0 ;
+  int alloc10 = 0 ;
+  int res11 ;
+  char *buf11 = 0 ;
+  int alloc11 = 0 ;
+  int res12 ;
+  char *buf12 = 0 ;
+  int alloc12 = 0 ;
+  int res13 ;
+  char *buf13 = 0 ;
+  int alloc13 = 0 ;
+  int res14 ;
+  char *buf14 = 0 ;
+  int alloc14 = 0 ;
+  int res15 ;
+  char *buf15 = 0 ;
+  int alloc15 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
+  PyObject * obj8 = 0 ;
+  PyObject * obj9 = 0 ;
+  PyObject * obj10 = 0 ;
+  PyObject * obj11 = 0 ;
+  PyObject * obj12 = 0 ;
+  PyObject * obj13 = 0 ;
+  PyObject * obj14 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOOOOO:OT_API_WritePaymentPlan",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11,&obj12,&obj13,&obj14)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_WritePaymentPlan" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_WritePaymentPlan" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_WritePaymentPlan" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(obj3, &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_WritePaymentPlan" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  res5 = SWIG_AsCharPtrAndSize(obj4, &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "OT_API_WritePaymentPlan" "', argument " "5"" of type '" "char const *""'");
+  }
+  arg5 = (char *)(buf5);
+  res6 = SWIG_AsCharPtrAndSize(obj5, &buf6, NULL, &alloc6);
+  if (!SWIG_IsOK(res6)) {
+    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "OT_API_WritePaymentPlan" "', argument " "6"" of type '" "char const *""'");
+  }
+  arg6 = (char *)(buf6);
+  res7 = SWIG_AsCharPtrAndSize(obj6, &buf7, NULL, &alloc7);
+  if (!SWIG_IsOK(res7)) {
+    SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "OT_API_WritePaymentPlan" "', argument " "7"" of type '" "char const *""'");
+  }
+  arg7 = (char *)(buf7);
+  res8 = SWIG_AsCharPtrAndSize(obj7, &buf8, NULL, &alloc8);
+  if (!SWIG_IsOK(res8)) {
+    SWIG_exception_fail(SWIG_ArgError(res8), "in method '" "OT_API_WritePaymentPlan" "', argument " "8"" of type '" "char const *""'");
+  }
+  arg8 = (char *)(buf8);
+  res9 = SWIG_AsCharPtrAndSize(obj8, &buf9, NULL, &alloc9);
+  if (!SWIG_IsOK(res9)) {
+    SWIG_exception_fail(SWIG_ArgError(res9), "in method '" "OT_API_WritePaymentPlan" "', argument " "9"" of type '" "char const *""'");
+  }
+  arg9 = (char *)(buf9);
+  res10 = SWIG_AsCharPtrAndSize(obj9, &buf10, NULL, &alloc10);
+  if (!SWIG_IsOK(res10)) {
+    SWIG_exception_fail(SWIG_ArgError(res10), "in method '" "OT_API_WritePaymentPlan" "', argument " "10"" of type '" "char const *""'");
+  }
+  arg10 = (char *)(buf10);
+  res11 = SWIG_AsCharPtrAndSize(obj10, &buf11, NULL, &alloc11);
+  if (!SWIG_IsOK(res11)) {
+    SWIG_exception_fail(SWIG_ArgError(res11), "in method '" "OT_API_WritePaymentPlan" "', argument " "11"" of type '" "char const *""'");
+  }
+  arg11 = (char *)(buf11);
+  res12 = SWIG_AsCharPtrAndSize(obj11, &buf12, NULL, &alloc12);
+  if (!SWIG_IsOK(res12)) {
+    SWIG_exception_fail(SWIG_ArgError(res12), "in method '" "OT_API_WritePaymentPlan" "', argument " "12"" of type '" "char const *""'");
+  }
+  arg12 = (char *)(buf12);
+  res13 = SWIG_AsCharPtrAndSize(obj12, &buf13, NULL, &alloc13);
+  if (!SWIG_IsOK(res13)) {
+    SWIG_exception_fail(SWIG_ArgError(res13), "in method '" "OT_API_WritePaymentPlan" "', argument " "13"" of type '" "char const *""'");
+  }
+  arg13 = (char *)(buf13);
+  res14 = SWIG_AsCharPtrAndSize(obj13, &buf14, NULL, &alloc14);
+  if (!SWIG_IsOK(res14)) {
+    SWIG_exception_fail(SWIG_ArgError(res14), "in method '" "OT_API_WritePaymentPlan" "', argument " "14"" of type '" "char const *""'");
+  }
+  arg14 = (char *)(buf14);
+  res15 = SWIG_AsCharPtrAndSize(obj14, &buf15, NULL, &alloc15);
+  if (!SWIG_IsOK(res15)) {
+    SWIG_exception_fail(SWIG_ArgError(res15), "in method '" "OT_API_WritePaymentPlan" "', argument " "15"" of type '" "char const *""'");
+  }
+  arg15 = (char *)(buf15);
+  result = (char *)OT_API_WritePaymentPlan((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5,(char const *)arg6,(char const *)arg7,(char const *)arg8,(char const *)arg9,(char const *)arg10,(char const *)arg11,(char const *)arg12,(char const *)arg13,(char const *)arg14,(char const *)arg15);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
+  if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
+  if (alloc8 == SWIG_NEWOBJ) free((char*)buf8);
+  if (alloc9 == SWIG_NEWOBJ) free((char*)buf9);
+  if (alloc10 == SWIG_NEWOBJ) free((char*)buf10);
+  if (alloc11 == SWIG_NEWOBJ) free((char*)buf11);
+  if (alloc12 == SWIG_NEWOBJ) free((char*)buf12);
+  if (alloc13 == SWIG_NEWOBJ) free((char*)buf13);
+  if (alloc14 == SWIG_NEWOBJ) free((char*)buf14);
+  if (alloc15 == SWIG_NEWOBJ) free((char*)buf15);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
+  if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
+  if (alloc8 == SWIG_NEWOBJ) free((char*)buf8);
+  if (alloc9 == SWIG_NEWOBJ) free((char*)buf9);
+  if (alloc10 == SWIG_NEWOBJ) free((char*)buf10);
+  if (alloc11 == SWIG_NEWOBJ) free((char*)buf11);
+  if (alloc12 == SWIG_NEWOBJ) free((char*)buf12);
+  if (alloc13 == SWIG_NEWOBJ) free((char*)buf13);
+  if (alloc14 == SWIG_NEWOBJ) free((char*)buf14);
+  if (alloc15 == SWIG_NEWOBJ) free((char*)buf15);
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_OT_API_LoadUserPubkey(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   char *arg1 = (char *) 0 ;
@@ -3307,6 +3500,31 @@ SWIGINTERN PyObject *_wrap_OT_API_LoadUserPubkey(PyObject *SWIGUNUSEDPARM(self),
   }
   arg1 = (char *)(buf1);
   result = (char *)OT_API_LoadUserPubkey((char const *)arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_LoadPubkey(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:OT_API_LoadPubkey",&obj0)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_LoadPubkey" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_LoadPubkey((char const *)arg1);
   resultobj = SWIG_FromCharPtr((const char *)result);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return resultobj;
@@ -3431,6 +3649,149 @@ SWIGINTERN PyObject *_wrap_OT_API_LoadAssetContract(PyObject *SWIGUNUSEDPARM(sel
   }
   arg1 = (char *)(buf1);
   result = (char *)OT_API_LoadAssetContract((char const *)arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_IsBasketCurrency(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:OT_API_IsBasketCurrency",&obj0)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_IsBasketCurrency" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (int)OT_API_IsBasketCurrency((char const *)arg1);
+  resultobj = SWIG_From_int((int)(result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_Basket_GetMemberCount(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:OT_API_Basket_GetMemberCount",&obj0)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Basket_GetMemberCount" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (int)OT_API_Basket_GetMemberCount((char const *)arg1);
+  resultobj = SWIG_From_int((int)(result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_Basket_GetMemberType(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:OT_API_Basket_GetMemberType",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Basket_GetMemberType" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "OT_API_Basket_GetMemberType" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  result = (char *)OT_API_Basket_GetMemberType((char const *)arg1,arg2);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_Basket_GetMinimumTransferAmount(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:OT_API_Basket_GetMinimumTransferAmount",&obj0)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Basket_GetMinimumTransferAmount" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_Basket_GetMinimumTransferAmount((char const *)arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_Basket_GetMemberMinimumTransferAmount(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:OT_API_Basket_GetMemberMinimumTransferAmount",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Basket_GetMemberMinimumTransferAmount" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "OT_API_Basket_GetMemberMinimumTransferAmount" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  result = (char *)OT_API_Basket_GetMemberMinimumTransferAmount((char const *)arg1,arg2);
   resultobj = SWIG_FromCharPtr((const char *)result);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return resultobj;
@@ -4138,6 +4499,55 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_OT_API_Purse_GetTotalValue(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:OT_API_Purse_GetTotalValue",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Purse_GetTotalValue" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_Purse_GetTotalValue" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_Purse_GetTotalValue" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  result = (char *)OT_API_Purse_GetTotalValue((char const *)arg1,(char const *)arg2,(char const *)arg3);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_OT_API_checkServerID(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   char *arg1 = (char *) 0 ;
@@ -4570,6 +4980,104 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_OT_API_GenerateBasketCreation(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:OT_API_GenerateBasketCreation",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GenerateBasketCreation" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_GenerateBasketCreation" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  result = (char *)OT_API_GenerateBasketCreation((char const *)arg1,(char const *)arg2);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_AddBasketCreationItem(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:OT_API_AddBasketCreationItem",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_AddBasketCreationItem" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_AddBasketCreationItem" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_AddBasketCreationItem" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(obj3, &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_AddBasketCreationItem" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  result = (char *)OT_API_AddBasketCreationItem((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_OT_API_issueBasket(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   char *arg1 = (char *) 0 ;
@@ -4618,12 +5126,14 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_OT_API_exchangeBasket(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_OT_API_GenerateBasketExchange(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
   char *arg4 = (char *) 0 ;
+  int arg5 ;
+  char *result = 0 ;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
@@ -4636,12 +5146,157 @@ SWIGINTERN PyObject *_wrap_OT_API_exchangeBasket(PyObject *SWIGUNUSEDPARM(self),
   int res4 ;
   char *buf4 = 0 ;
   int alloc4 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:OT_API_exchangeBasket",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:OT_API_GenerateBasketExchange",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GenerateBasketExchange" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_GenerateBasketExchange" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_GenerateBasketExchange" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(obj3, &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_GenerateBasketExchange" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  ecode5 = SWIG_AsVal_int(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "OT_API_GenerateBasketExchange" "', argument " "5"" of type '" "int""'");
+  } 
+  arg5 = (int)(val5);
+  result = (char *)OT_API_GenerateBasketExchange((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_AddBasketExchangeItem(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:OT_API_AddBasketExchangeItem",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_AddBasketExchangeItem" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_AddBasketExchangeItem" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_AddBasketExchangeItem" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(obj3, &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_AddBasketExchangeItem" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  res5 = SWIG_AsCharPtrAndSize(obj4, &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "OT_API_AddBasketExchangeItem" "', argument " "5"" of type '" "char const *""'");
+  }
+  arg5 = (char *)(buf5);
+  result = (char *)OT_API_AddBasketExchangeItem((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_exchangeBasket(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  int arg5 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:OT_API_exchangeBasket",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_exchangeBasket" "', argument " "1"" of type '" "char const *""'");
@@ -4662,7 +5317,12 @@ SWIGINTERN PyObject *_wrap_OT_API_exchangeBasket(PyObject *SWIGUNUSEDPARM(self),
     SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_exchangeBasket" "', argument " "4"" of type '" "char const *""'");
   }
   arg4 = (char *)(buf4);
-  OT_API_exchangeBasket((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  ecode5 = SWIG_AsVal_int(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "OT_API_exchangeBasket" "', argument " "5"" of type '" "int""'");
+  } 
+  arg5 = (int)(val5);
+  OT_API_exchangeBasket((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5);
   resultobj = SWIG_Py_Void();
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
@@ -5134,6 +5794,270 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_OT_API_depositPaymentPlan(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:OT_API_depositPaymentPlan",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_depositPaymentPlan" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_depositPaymentPlan" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_depositPaymentPlan" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  OT_API_depositPaymentPlan((char const *)arg1,(char const *)arg2,(char const *)arg3);
+  resultobj = SWIG_Py_Void();
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_issueMarketOffer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
+  char *arg6 = (char *) 0 ;
+  char *arg7 = (char *) 0 ;
+  char *arg8 = (char *) 0 ;
+  char *arg9 = (char *) 0 ;
+  char *arg10 = (char *) 0 ;
+  int arg11 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
+  int res6 ;
+  char *buf6 = 0 ;
+  int alloc6 = 0 ;
+  int res7 ;
+  char *buf7 = 0 ;
+  int alloc7 = 0 ;
+  int res8 ;
+  char *buf8 = 0 ;
+  int alloc8 = 0 ;
+  int res9 ;
+  char *buf9 = 0 ;
+  int alloc9 = 0 ;
+  int res10 ;
+  char *buf10 = 0 ;
+  int alloc10 = 0 ;
+  int val11 ;
+  int ecode11 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
+  PyObject * obj8 = 0 ;
+  PyObject * obj9 = 0 ;
+  PyObject * obj10 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOO:OT_API_issueMarketOffer",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_issueMarketOffer" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_issueMarketOffer" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_issueMarketOffer" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(obj3, &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_issueMarketOffer" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  res5 = SWIG_AsCharPtrAndSize(obj4, &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "OT_API_issueMarketOffer" "', argument " "5"" of type '" "char const *""'");
+  }
+  arg5 = (char *)(buf5);
+  res6 = SWIG_AsCharPtrAndSize(obj5, &buf6, NULL, &alloc6);
+  if (!SWIG_IsOK(res6)) {
+    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "OT_API_issueMarketOffer" "', argument " "6"" of type '" "char const *""'");
+  }
+  arg6 = (char *)(buf6);
+  res7 = SWIG_AsCharPtrAndSize(obj6, &buf7, NULL, &alloc7);
+  if (!SWIG_IsOK(res7)) {
+    SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "OT_API_issueMarketOffer" "', argument " "7"" of type '" "char const *""'");
+  }
+  arg7 = (char *)(buf7);
+  res8 = SWIG_AsCharPtrAndSize(obj7, &buf8, NULL, &alloc8);
+  if (!SWIG_IsOK(res8)) {
+    SWIG_exception_fail(SWIG_ArgError(res8), "in method '" "OT_API_issueMarketOffer" "', argument " "8"" of type '" "char const *""'");
+  }
+  arg8 = (char *)(buf8);
+  res9 = SWIG_AsCharPtrAndSize(obj8, &buf9, NULL, &alloc9);
+  if (!SWIG_IsOK(res9)) {
+    SWIG_exception_fail(SWIG_ArgError(res9), "in method '" "OT_API_issueMarketOffer" "', argument " "9"" of type '" "char const *""'");
+  }
+  arg9 = (char *)(buf9);
+  res10 = SWIG_AsCharPtrAndSize(obj9, &buf10, NULL, &alloc10);
+  if (!SWIG_IsOK(res10)) {
+    SWIG_exception_fail(SWIG_ArgError(res10), "in method '" "OT_API_issueMarketOffer" "', argument " "10"" of type '" "char const *""'");
+  }
+  arg10 = (char *)(buf10);
+  ecode11 = SWIG_AsVal_int(obj10, &val11);
+  if (!SWIG_IsOK(ecode11)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "OT_API_issueMarketOffer" "', argument " "11"" of type '" "int""'");
+  } 
+  arg11 = (int)(val11);
+  OT_API_issueMarketOffer((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5,(char const *)arg6,(char const *)arg7,(char const *)arg8,(char const *)arg9,(char const *)arg10,arg11);
+  resultobj = SWIG_Py_Void();
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
+  if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
+  if (alloc8 == SWIG_NEWOBJ) free((char*)buf8);
+  if (alloc9 == SWIG_NEWOBJ) free((char*)buf9);
+  if (alloc10 == SWIG_NEWOBJ) free((char*)buf10);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
+  if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
+  if (alloc8 == SWIG_NEWOBJ) free((char*)buf8);
+  if (alloc9 == SWIG_NEWOBJ) free((char*)buf9);
+  if (alloc10 == SWIG_NEWOBJ) free((char*)buf10);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_PopMessageBuffer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":OT_API_PopMessageBuffer")) SWIG_fail;
+  result = (char *)OT_API_PopMessageBuffer();
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_FlushMessageBuffer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  
+  if (!PyArg_ParseTuple(args,(char *)":OT_API_FlushMessageBuffer")) SWIG_fail;
+  OT_API_FlushMessageBuffer();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_Message_GetCommand(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:OT_API_Message_GetCommand",&obj0)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Message_GetCommand" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_Message_GetCommand((char const *)arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_Message_GetSuccess(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:OT_API_Message_GetSuccess",&obj0)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Message_GetSuccess" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (int)OT_API_Message_GetSuccess((char const *)arg1);
+  resultobj = SWIG_From_int((int)(result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"OT_API_Init", _wrap_OT_API_Init, METH_VARARGS, NULL},
 	 { (char *)"OT_API_LoadWallet", _wrap_OT_API_LoadWallet, METH_VARARGS, NULL},
@@ -5155,11 +6079,18 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"OT_API_GetAccountWallet_Type", _wrap_OT_API_GetAccountWallet_Type, METH_VARARGS, NULL},
 	 { (char *)"OT_API_GetAccountWallet_AssetTypeID", _wrap_OT_API_GetAccountWallet_AssetTypeID, METH_VARARGS, NULL},
 	 { (char *)"OT_API_WriteCheque", _wrap_OT_API_WriteCheque, METH_VARARGS, NULL},
+	 { (char *)"OT_API_WritePaymentPlan", _wrap_OT_API_WritePaymentPlan, METH_VARARGS, NULL},
 	 { (char *)"OT_API_LoadUserPubkey", _wrap_OT_API_LoadUserPubkey, METH_VARARGS, NULL},
+	 { (char *)"OT_API_LoadPubkey", _wrap_OT_API_LoadPubkey, METH_VARARGS, NULL},
 	 { (char *)"OT_API_VerifyUserPrivateKey", _wrap_OT_API_VerifyUserPrivateKey, METH_VARARGS, NULL},
 	 { (char *)"OT_API_LoadPurse", _wrap_OT_API_LoadPurse, METH_VARARGS, NULL},
 	 { (char *)"OT_API_LoadMint", _wrap_OT_API_LoadMint, METH_VARARGS, NULL},
 	 { (char *)"OT_API_LoadAssetContract", _wrap_OT_API_LoadAssetContract, METH_VARARGS, NULL},
+	 { (char *)"OT_API_IsBasketCurrency", _wrap_OT_API_IsBasketCurrency, METH_VARARGS, NULL},
+	 { (char *)"OT_API_Basket_GetMemberCount", _wrap_OT_API_Basket_GetMemberCount, METH_VARARGS, NULL},
+	 { (char *)"OT_API_Basket_GetMemberType", _wrap_OT_API_Basket_GetMemberType, METH_VARARGS, NULL},
+	 { (char *)"OT_API_Basket_GetMinimumTransferAmount", _wrap_OT_API_Basket_GetMinimumTransferAmount, METH_VARARGS, NULL},
+	 { (char *)"OT_API_Basket_GetMemberMinimumTransferAmount", _wrap_OT_API_Basket_GetMemberMinimumTransferAmount, METH_VARARGS, NULL},
 	 { (char *)"OT_API_LoadAssetAccount", _wrap_OT_API_LoadAssetAccount, METH_VARARGS, NULL},
 	 { (char *)"OT_API_LoadInbox", _wrap_OT_API_LoadInbox, METH_VARARGS, NULL},
 	 { (char *)"OT_API_LoadOutbox", _wrap_OT_API_LoadOutbox, METH_VARARGS, NULL},
@@ -5171,6 +6102,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"OT_API_Ledger_AddTransaction", _wrap_OT_API_Ledger_AddTransaction, METH_VARARGS, NULL},
 	 { (char *)"OT_API_Transaction_CreateResponse", _wrap_OT_API_Transaction_CreateResponse, METH_VARARGS, NULL},
 	 { (char *)"OT_API_Transaction_GetType", _wrap_OT_API_Transaction_GetType, METH_VARARGS, NULL},
+	 { (char *)"OT_API_Purse_GetTotalValue", _wrap_OT_API_Purse_GetTotalValue, METH_VARARGS, NULL},
 	 { (char *)"OT_API_checkServerID", _wrap_OT_API_checkServerID, METH_VARARGS, NULL},
 	 { (char *)"OT_API_createUserAccount", _wrap_OT_API_createUserAccount, METH_VARARGS, NULL},
 	 { (char *)"OT_API_checkUser", _wrap_OT_API_checkUser, METH_VARARGS, NULL},
@@ -5181,7 +6113,11 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"OT_API_getMint", _wrap_OT_API_getMint, METH_VARARGS, NULL},
 	 { (char *)"OT_API_createAssetAccount", _wrap_OT_API_createAssetAccount, METH_VARARGS, NULL},
 	 { (char *)"OT_API_getAccount", _wrap_OT_API_getAccount, METH_VARARGS, NULL},
+	 { (char *)"OT_API_GenerateBasketCreation", _wrap_OT_API_GenerateBasketCreation, METH_VARARGS, NULL},
+	 { (char *)"OT_API_AddBasketCreationItem", _wrap_OT_API_AddBasketCreationItem, METH_VARARGS, NULL},
 	 { (char *)"OT_API_issueBasket", _wrap_OT_API_issueBasket, METH_VARARGS, NULL},
+	 { (char *)"OT_API_GenerateBasketExchange", _wrap_OT_API_GenerateBasketExchange, METH_VARARGS, NULL},
+	 { (char *)"OT_API_AddBasketExchangeItem", _wrap_OT_API_AddBasketExchangeItem, METH_VARARGS, NULL},
 	 { (char *)"OT_API_exchangeBasket", _wrap_OT_API_exchangeBasket, METH_VARARGS, NULL},
 	 { (char *)"OT_API_notarizeWithdrawal", _wrap_OT_API_notarizeWithdrawal, METH_VARARGS, NULL},
 	 { (char *)"OT_API_notarizeDeposit", _wrap_OT_API_notarizeDeposit, METH_VARARGS, NULL},
@@ -5190,6 +6126,12 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"OT_API_processInbox", _wrap_OT_API_processInbox, METH_VARARGS, NULL},
 	 { (char *)"OT_API_withdrawVoucher", _wrap_OT_API_withdrawVoucher, METH_VARARGS, NULL},
 	 { (char *)"OT_API_depositCheque", _wrap_OT_API_depositCheque, METH_VARARGS, NULL},
+	 { (char *)"OT_API_depositPaymentPlan", _wrap_OT_API_depositPaymentPlan, METH_VARARGS, NULL},
+	 { (char *)"OT_API_issueMarketOffer", _wrap_OT_API_issueMarketOffer, METH_VARARGS, NULL},
+	 { (char *)"OT_API_PopMessageBuffer", _wrap_OT_API_PopMessageBuffer, METH_VARARGS, NULL},
+	 { (char *)"OT_API_FlushMessageBuffer", _wrap_OT_API_FlushMessageBuffer, METH_VARARGS, NULL},
+	 { (char *)"OT_API_Message_GetCommand", _wrap_OT_API_Message_GetCommand, METH_VARARGS, NULL},
+	 { (char *)"OT_API_Message_GetSuccess", _wrap_OT_API_Message_GetSuccess, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 

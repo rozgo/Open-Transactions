@@ -98,7 +98,9 @@ class OTAssetContract;
 class OTServerContract;
 class OTPurse;
 class OTCheque;
+class OTPaymentPlan;
 class OTMint;
+class OTMessage;
 class OTLedger;
 
 
@@ -186,6 +188,43 @@ public:
 	
 	// ----------------------------------------------------
 	
+	// WRITE PAYMENT PLAN
+	//
+	// Returns an OTPaymentPlan pointer, or NULL. 
+	// (Caller responsible to delete.)
+	//
+	// Payment Plan Delay, and Payment Plan Period, both default to 30 days (if you pass 0),
+	// measured in seconds.
+	//
+	// Payment Plan Length, and Payment Plan Max Payments, both default to 0, which means
+	// no maximum length and no maximum number of payments.
+	//
+	OTPaymentPlan * WritePaymentPlan(const OTIdentifier & SERVER_ID,
+									// ----------------------------------------
+									 const time_t		& VALID_FROM, 
+									 const time_t		& VALID_TO,
+									 // ----------------------------------------
+									 const OTIdentifier & SENDER_ACCT_ID,
+									 const OTIdentifier & SENDER_USER_ID,
+									 // ----------------------------------------
+									 const OTString		& PLAN_CONSIDERATION, // like a memo.
+									 // ----------------------------------------
+									 const OTIdentifier & RECIPIENT_ACCT_ID,
+									 const OTIdentifier & RECIPIENT_USER_ID,
+									 // ----------------------------------------  // If it's above zero, the initial
+									 const long			& INITIAL_PAYMENT_AMOUNT, // amount will be processed after
+									 const time_t		& INITIAL_PAYMENT_DELAY,  // delay (seconds from now.) 
+									 // ----------------------------------------  // AND SEPARATELY FROM THIS...
+									 const long			& PAYMENT_PLAN_AMOUNT,	// The regular amount charged,
+									 const time_t		& PAYMENT_PLAN_DELAY,	// which begins occuring after delay
+									 const time_t		& PAYMENT_PLAN_PERIOD,	// (seconds from now) and happens
+									 // ----------------------------------------// every period, ad infinitum, until
+									 time_t	  PAYMENT_PLAN_LENGTH		= 0,	// after the length (in seconds)
+									 int	  PAYMENT_PLAN_MAX_PAYMENTS	= 0		// expires, or after the maximum
+									 );											// number of payments. These last 
+																				// two arguments are optional.
+	// ----------------------------------------------------
+
 	OTPurse * LoadPurse(const OTIdentifier & SERVER_ID,
 						const OTIdentifier & ASSET_ID);
 	
@@ -194,6 +233,21 @@ public:
 	
 	OTAssetContract * LoadAssetContract(const OTIdentifier & ASSET_ID);
 	
+	// ----------------------------------------------------
+
+	bool IsBasketCurrency(const OTIdentifier & BASKET_ASSET_TYPE_ID);
+
+	long GetBasketMinimumTransferAmount(const OTIdentifier & BASKET_ASSET_TYPE_ID);
+
+	int GetBasketMemberCount(const OTIdentifier & BASKET_ASSET_TYPE_ID);
+
+	bool GetBasketMemberType(const OTIdentifier & BASKET_ASSET_TYPE_ID,
+							 const int nIndex,
+							 OTIdentifier & theOutputMemberType);
+	
+	long GetBasketMemberMinimumTransferAmount(const OTIdentifier & BASKET_ASSET_TYPE_ID,
+											  const int nIndex);
+
 	// ----------------------------------------------------
 
 	OTAccount * LoadAssetAccount(const OTIdentifier & SERVER_ID,
@@ -207,6 +261,17 @@ public:
 	OTLedger * LoadOutbox(const OTIdentifier & SERVER_ID,
 						  const OTIdentifier & USER_ID,
 						  const OTIdentifier & ACCOUNT_ID);
+	
+	// ------------------------------------------------------
+		
+	
+	// YOU are responsible to delete the OTMessage object, once
+	// you receive the pointer that comes back from this function.
+	// (It also might return NULL, if there are none there.)
+	//
+	OTMessage *	PopMessageBuffer();
+	
+	void		FlushMessageBuffer();
 	
 	// ****************************************************
 	
@@ -246,15 +311,43 @@ public:
 					OTIdentifier & USER_ID,
 					OTIdentifier & ACCT_ID);
 	
+	// ----------------------------------------------------
+	
+	OTBasket * GenerateBasketCreation(const OTIdentifier & USER_ID,
+									  const long MINIMUM_TRANSFER); // Must be above zero. If <= 0, defaults to 10.
+	
+	bool AddBasketCreationItem(const OTIdentifier & USER_ID, // for signature.
+							   OTBasket & theBasket, // created in above call.
+							   const OTIdentifier & ASSET_TYPE_ID, // Adding an asset type to the new basket.
+							   const long MINIMUM_TRANSFER); // The amount of the asset type that is in the basket.
+	
 	void issueBasket(OTIdentifier	& SERVER_ID,
 					 OTIdentifier	& USER_ID,
 					 OTString		& BASKET_INFO);
 	
+	// ----------------------------------------------------
+
+	OTBasket * GenerateBasketExchange(const OTIdentifier & SERVER_ID,
+									  const OTIdentifier & USER_ID,
+									  const OTIdentifier & BASKET_ASSET_TYPE_ID,
+									  const OTIdentifier & BASKET_ASSET_ACCT_ID,
+									  const int TRANSFER_MULTIPLE);	// 1			2			 3
+																	// 5=2,3,4  OR  10=4,6,8  OR 15=6,9,12
+	
+	bool AddBasketExchangeItem(const OTIdentifier & SERVER_ID,
+							   const OTIdentifier & USER_ID,
+							   OTBasket & theBasket, 
+							   const OTIdentifier & ASSET_TYPE_ID,
+							   const OTIdentifier & ASSET_ACCT_ID);
+	
 	void exchangeBasket(OTIdentifier	& SERVER_ID,
 						OTIdentifier	& USER_ID,
 						OTIdentifier	& BASKET_ASSET_ID,
-						OTString		& BASKET_INFO);
+						OTString		& BASKET_INFO,
+						const bool bExchangeInOrOut);
 	
+	// ----------------------------------------------------
+
 	void getTransactionNumber(OTIdentifier & SERVER_ID,
 							  OTIdentifier & USER_ID);
 	
@@ -293,8 +386,28 @@ public:
 	
 	void depositCheque(OTIdentifier	& SERVER_ID,
 					   OTIdentifier	& USER_ID,
-					   OTIdentifier	& ACCT_FROM_ID,
+					   OTIdentifier	& ACCT_ID,
 					   OTString		& THE_CHEQUE);
+	
+	void depositPaymentPlan(const OTIdentifier	& SERVER_ID,
+							const OTIdentifier	& USER_ID,
+							const OTString		& THE_PAYMENT_PLAN);
+	
+	void issueMarketOffer(const OTIdentifier	& SERVER_ID,
+						  const OTIdentifier	& USER_ID,
+						  // -------------------------------------------
+						  const OTIdentifier	& ASSET_TYPE_ID,
+						  const OTIdentifier	& ASSET_ACCT_ID,
+						  // -------------------------------------------
+						  const OTIdentifier	& CURRENCY_TYPE_ID,
+						  const OTIdentifier	& CURRENCY_ACCT_ID,
+						  // -------------------------------------------
+						  const long			& MARKET_SCALE,	// Defaults to minimum of 1. Market granularity.
+						  const long			& MINIMUM_INCREMENT,	// This will be multiplied by the Scale. Min 1.
+						  const long			& TOTAL_ASSETS_ON_OFFER, // Total assets available for sale or purchase. Will be multiplied by minimum increment.
+						  const long			& PRICE_LIMIT,		// Per Minimum Increment...
+						  const bool			bBuyingOrSelling);	//  BUYING == false, SELLING == true.
+	
 };
 		
 

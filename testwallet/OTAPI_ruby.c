@@ -2294,6 +2294,187 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_OT_API_WritePaymentPlan(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
+  char *arg6 = (char *) 0 ;
+  char *arg7 = (char *) 0 ;
+  char *arg8 = (char *) 0 ;
+  char *arg9 = (char *) 0 ;
+  char *arg10 = (char *) 0 ;
+  char *arg11 = (char *) 0 ;
+  char *arg12 = (char *) 0 ;
+  char *arg13 = (char *) 0 ;
+  char *arg14 = (char *) 0 ;
+  char *arg15 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
+  int res6 ;
+  char *buf6 = 0 ;
+  int alloc6 = 0 ;
+  int res7 ;
+  char *buf7 = 0 ;
+  int alloc7 = 0 ;
+  int res8 ;
+  char *buf8 = 0 ;
+  int alloc8 = 0 ;
+  int res9 ;
+  char *buf9 = 0 ;
+  int alloc9 = 0 ;
+  int res10 ;
+  char *buf10 = 0 ;
+  int alloc10 = 0 ;
+  int res11 ;
+  char *buf11 = 0 ;
+  int alloc11 = 0 ;
+  int res12 ;
+  char *buf12 = 0 ;
+  int alloc12 = 0 ;
+  int res13 ;
+  char *buf13 = 0 ;
+  int alloc13 = 0 ;
+  int res14 ;
+  char *buf14 = 0 ;
+  int alloc14 = 0 ;
+  int res15 ;
+  char *buf15 = 0 ;
+  int alloc15 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 15) || (argc > 15)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 15)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_WritePaymentPlan" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_WritePaymentPlan" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_WritePaymentPlan" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_WritePaymentPlan" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  res5 = SWIG_AsCharPtrAndSize(argv[4], &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "OT_API_WritePaymentPlan" "', argument " "5"" of type '" "char const *""'");
+  }
+  arg5 = (char *)(buf5);
+  res6 = SWIG_AsCharPtrAndSize(argv[5], &buf6, NULL, &alloc6);
+  if (!SWIG_IsOK(res6)) {
+    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "OT_API_WritePaymentPlan" "', argument " "6"" of type '" "char const *""'");
+  }
+  arg6 = (char *)(buf6);
+  res7 = SWIG_AsCharPtrAndSize(argv[6], &buf7, NULL, &alloc7);
+  if (!SWIG_IsOK(res7)) {
+    SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "OT_API_WritePaymentPlan" "', argument " "7"" of type '" "char const *""'");
+  }
+  arg7 = (char *)(buf7);
+  res8 = SWIG_AsCharPtrAndSize(argv[7], &buf8, NULL, &alloc8);
+  if (!SWIG_IsOK(res8)) {
+    SWIG_exception_fail(SWIG_ArgError(res8), "in method '" "OT_API_WritePaymentPlan" "', argument " "8"" of type '" "char const *""'");
+  }
+  arg8 = (char *)(buf8);
+  res9 = SWIG_AsCharPtrAndSize(argv[8], &buf9, NULL, &alloc9);
+  if (!SWIG_IsOK(res9)) {
+    SWIG_exception_fail(SWIG_ArgError(res9), "in method '" "OT_API_WritePaymentPlan" "', argument " "9"" of type '" "char const *""'");
+  }
+  arg9 = (char *)(buf9);
+  res10 = SWIG_AsCharPtrAndSize(argv[9], &buf10, NULL, &alloc10);
+  if (!SWIG_IsOK(res10)) {
+    SWIG_exception_fail(SWIG_ArgError(res10), "in method '" "OT_API_WritePaymentPlan" "', argument " "10"" of type '" "char const *""'");
+  }
+  arg10 = (char *)(buf10);
+  res11 = SWIG_AsCharPtrAndSize(argv[10], &buf11, NULL, &alloc11);
+  if (!SWIG_IsOK(res11)) {
+    SWIG_exception_fail(SWIG_ArgError(res11), "in method '" "OT_API_WritePaymentPlan" "', argument " "11"" of type '" "char const *""'");
+  }
+  arg11 = (char *)(buf11);
+  res12 = SWIG_AsCharPtrAndSize(argv[11], &buf12, NULL, &alloc12);
+  if (!SWIG_IsOK(res12)) {
+    SWIG_exception_fail(SWIG_ArgError(res12), "in method '" "OT_API_WritePaymentPlan" "', argument " "12"" of type '" "char const *""'");
+  }
+  arg12 = (char *)(buf12);
+  res13 = SWIG_AsCharPtrAndSize(argv[12], &buf13, NULL, &alloc13);
+  if (!SWIG_IsOK(res13)) {
+    SWIG_exception_fail(SWIG_ArgError(res13), "in method '" "OT_API_WritePaymentPlan" "', argument " "13"" of type '" "char const *""'");
+  }
+  arg13 = (char *)(buf13);
+  res14 = SWIG_AsCharPtrAndSize(argv[13], &buf14, NULL, &alloc14);
+  if (!SWIG_IsOK(res14)) {
+    SWIG_exception_fail(SWIG_ArgError(res14), "in method '" "OT_API_WritePaymentPlan" "', argument " "14"" of type '" "char const *""'");
+  }
+  arg14 = (char *)(buf14);
+  res15 = SWIG_AsCharPtrAndSize(argv[14], &buf15, NULL, &alloc15);
+  if (!SWIG_IsOK(res15)) {
+    SWIG_exception_fail(SWIG_ArgError(res15), "in method '" "OT_API_WritePaymentPlan" "', argument " "15"" of type '" "char const *""'");
+  }
+  arg15 = (char *)(buf15);
+  result = (char *)OT_API_WritePaymentPlan((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5,(char const *)arg6,(char const *)arg7,(char const *)arg8,(char const *)arg9,(char const *)arg10,(char const *)arg11,(char const *)arg12,(char const *)arg13,(char const *)arg14,(char const *)arg15);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
+  if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
+  if (alloc8 == SWIG_NEWOBJ) free((char*)buf8);
+  if (alloc9 == SWIG_NEWOBJ) free((char*)buf9);
+  if (alloc10 == SWIG_NEWOBJ) free((char*)buf10);
+  if (alloc11 == SWIG_NEWOBJ) free((char*)buf11);
+  if (alloc12 == SWIG_NEWOBJ) free((char*)buf12);
+  if (alloc13 == SWIG_NEWOBJ) free((char*)buf13);
+  if (alloc14 == SWIG_NEWOBJ) free((char*)buf14);
+  if (alloc15 == SWIG_NEWOBJ) free((char*)buf15);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
+  if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
+  if (alloc8 == SWIG_NEWOBJ) free((char*)buf8);
+  if (alloc9 == SWIG_NEWOBJ) free((char*)buf9);
+  if (alloc10 == SWIG_NEWOBJ) free((char*)buf10);
+  if (alloc11 == SWIG_NEWOBJ) free((char*)buf11);
+  if (alloc12 == SWIG_NEWOBJ) free((char*)buf12);
+  if (alloc13 == SWIG_NEWOBJ) free((char*)buf13);
+  if (alloc14 == SWIG_NEWOBJ) free((char*)buf14);
+  if (alloc15 == SWIG_NEWOBJ) free((char*)buf15);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_OT_API_LoadUserPubkey(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *result = 0 ;
@@ -2311,6 +2492,33 @@ _wrap_OT_API_LoadUserPubkey(int argc, VALUE *argv, VALUE self) {
   }
   arg1 = (char *)(buf1);
   result = (char *)OT_API_LoadUserPubkey((char const *)arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_LoadPubkey(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_LoadPubkey" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_LoadPubkey((char const *)arg1);
   vresult = SWIG_FromCharPtr((const char *)result);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return vresult;
@@ -2441,6 +2649,157 @@ _wrap_OT_API_LoadAssetContract(int argc, VALUE *argv, VALUE self) {
   }
   arg1 = (char *)(buf1);
   result = (char *)OT_API_LoadAssetContract((char const *)arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_IsBasketCurrency(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_IsBasketCurrency" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (int)OT_API_IsBasketCurrency((char const *)arg1);
+  vresult = SWIG_From_int((int)(result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_Basket_GetMemberCount(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Basket_GetMemberCount" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (int)OT_API_Basket_GetMemberCount((char const *)arg1);
+  vresult = SWIG_From_int((int)(result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_Basket_GetMemberType(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Basket_GetMemberType" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  ecode2 = SWIG_AsVal_int(argv[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "OT_API_Basket_GetMemberType" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  result = (char *)OT_API_Basket_GetMemberType((char const *)arg1,arg2);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_Basket_GetMinimumTransferAmount(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Basket_GetMinimumTransferAmount" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_Basket_GetMinimumTransferAmount((char const *)arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_Basket_GetMemberMinimumTransferAmount(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Basket_GetMemberMinimumTransferAmount" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  ecode2 = SWIG_AsVal_int(argv[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "OT_API_Basket_GetMemberMinimumTransferAmount" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  result = (char *)OT_API_Basket_GetMemberMinimumTransferAmount((char const *)arg1,arg2);
   vresult = SWIG_FromCharPtr((const char *)result);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return vresult;
@@ -3135,6 +3494,55 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_OT_API_Purse_GetTotalValue(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 3) || (argc > 3)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Purse_GetTotalValue" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_Purse_GetTotalValue" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_Purse_GetTotalValue" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  result = (char *)OT_API_Purse_GetTotalValue((char const *)arg1,(char const *)arg2,(char const *)arg3);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_OT_API_checkServerID(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -3551,6 +3959,104 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_OT_API_GenerateBasketCreation(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GenerateBasketCreation" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_GenerateBasketCreation" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  result = (char *)OT_API_GenerateBasketCreation((char const *)arg1,(char const *)arg2);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_AddBasketCreationItem(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 4) || (argc > 4)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_AddBasketCreationItem" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_AddBasketCreationItem" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_AddBasketCreationItem" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_AddBasketCreationItem" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  result = (char *)OT_API_AddBasketCreationItem((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_OT_API_issueBasket(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -3597,11 +4103,13 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_OT_API_exchangeBasket(int argc, VALUE *argv, VALUE self) {
+_wrap_OT_API_GenerateBasketExchange(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
   char *arg4 = (char *) 0 ;
+  int arg5 ;
+  char *result = 0 ;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
@@ -3614,9 +4122,149 @@ _wrap_OT_API_exchangeBasket(int argc, VALUE *argv, VALUE self) {
   int res4 ;
   char *buf4 = 0 ;
   int alloc4 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
+  VALUE vresult = Qnil;
   
-  if ((argc < 4) || (argc > 4)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
+  if ((argc < 5) || (argc > 5)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 5)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GenerateBasketExchange" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_GenerateBasketExchange" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_GenerateBasketExchange" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_GenerateBasketExchange" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  ecode5 = SWIG_AsVal_int(argv[4], &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "OT_API_GenerateBasketExchange" "', argument " "5"" of type '" "int""'");
+  } 
+  arg5 = (int)(val5);
+  result = (char *)OT_API_GenerateBasketExchange((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_AddBasketExchangeItem(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 5) || (argc > 5)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 5)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_AddBasketExchangeItem" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_AddBasketExchangeItem" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_AddBasketExchangeItem" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_AddBasketExchangeItem" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  res5 = SWIG_AsCharPtrAndSize(argv[4], &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "OT_API_AddBasketExchangeItem" "', argument " "5"" of type '" "char const *""'");
+  }
+  arg5 = (char *)(buf5);
+  result = (char *)OT_API_AddBasketExchangeItem((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_exchangeBasket(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  int arg5 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
+  
+  if ((argc < 5) || (argc > 5)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 5)",argc); SWIG_fail;
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
@@ -3638,7 +4286,12 @@ _wrap_OT_API_exchangeBasket(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_exchangeBasket" "', argument " "4"" of type '" "char const *""'");
   }
   arg4 = (char *)(buf4);
-  OT_API_exchangeBasket((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  ecode5 = SWIG_AsVal_int(argv[4], &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "OT_API_exchangeBasket" "', argument " "5"" of type '" "int""'");
+  } 
+  arg5 = (int)(val5);
+  OT_API_exchangeBasket((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
@@ -4085,6 +4738,265 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_OT_API_depositPaymentPlan(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  
+  if ((argc < 3) || (argc > 3)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_depositPaymentPlan" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_depositPaymentPlan" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_depositPaymentPlan" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  OT_API_depositPaymentPlan((char const *)arg1,(char const *)arg2,(char const *)arg3);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_issueMarketOffer(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
+  char *arg6 = (char *) 0 ;
+  char *arg7 = (char *) 0 ;
+  char *arg8 = (char *) 0 ;
+  char *arg9 = (char *) 0 ;
+  char *arg10 = (char *) 0 ;
+  int arg11 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
+  int res6 ;
+  char *buf6 = 0 ;
+  int alloc6 = 0 ;
+  int res7 ;
+  char *buf7 = 0 ;
+  int alloc7 = 0 ;
+  int res8 ;
+  char *buf8 = 0 ;
+  int alloc8 = 0 ;
+  int res9 ;
+  char *buf9 = 0 ;
+  int alloc9 = 0 ;
+  int res10 ;
+  char *buf10 = 0 ;
+  int alloc10 = 0 ;
+  int val11 ;
+  int ecode11 = 0 ;
+  
+  if ((argc < 11) || (argc > 11)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 11)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_issueMarketOffer" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_issueMarketOffer" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_issueMarketOffer" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_issueMarketOffer" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  res5 = SWIG_AsCharPtrAndSize(argv[4], &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "OT_API_issueMarketOffer" "', argument " "5"" of type '" "char const *""'");
+  }
+  arg5 = (char *)(buf5);
+  res6 = SWIG_AsCharPtrAndSize(argv[5], &buf6, NULL, &alloc6);
+  if (!SWIG_IsOK(res6)) {
+    SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "OT_API_issueMarketOffer" "', argument " "6"" of type '" "char const *""'");
+  }
+  arg6 = (char *)(buf6);
+  res7 = SWIG_AsCharPtrAndSize(argv[6], &buf7, NULL, &alloc7);
+  if (!SWIG_IsOK(res7)) {
+    SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "OT_API_issueMarketOffer" "', argument " "7"" of type '" "char const *""'");
+  }
+  arg7 = (char *)(buf7);
+  res8 = SWIG_AsCharPtrAndSize(argv[7], &buf8, NULL, &alloc8);
+  if (!SWIG_IsOK(res8)) {
+    SWIG_exception_fail(SWIG_ArgError(res8), "in method '" "OT_API_issueMarketOffer" "', argument " "8"" of type '" "char const *""'");
+  }
+  arg8 = (char *)(buf8);
+  res9 = SWIG_AsCharPtrAndSize(argv[8], &buf9, NULL, &alloc9);
+  if (!SWIG_IsOK(res9)) {
+    SWIG_exception_fail(SWIG_ArgError(res9), "in method '" "OT_API_issueMarketOffer" "', argument " "9"" of type '" "char const *""'");
+  }
+  arg9 = (char *)(buf9);
+  res10 = SWIG_AsCharPtrAndSize(argv[9], &buf10, NULL, &alloc10);
+  if (!SWIG_IsOK(res10)) {
+    SWIG_exception_fail(SWIG_ArgError(res10), "in method '" "OT_API_issueMarketOffer" "', argument " "10"" of type '" "char const *""'");
+  }
+  arg10 = (char *)(buf10);
+  ecode11 = SWIG_AsVal_int(argv[10], &val11);
+  if (!SWIG_IsOK(ecode11)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "OT_API_issueMarketOffer" "', argument " "11"" of type '" "int""'");
+  } 
+  arg11 = (int)(val11);
+  OT_API_issueMarketOffer((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5,(char const *)arg6,(char const *)arg7,(char const *)arg8,(char const *)arg9,(char const *)arg10,arg11);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
+  if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
+  if (alloc8 == SWIG_NEWOBJ) free((char*)buf8);
+  if (alloc9 == SWIG_NEWOBJ) free((char*)buf9);
+  if (alloc10 == SWIG_NEWOBJ) free((char*)buf10);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
+  if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
+  if (alloc8 == SWIG_NEWOBJ) free((char*)buf8);
+  if (alloc9 == SWIG_NEWOBJ) free((char*)buf9);
+  if (alloc10 == SWIG_NEWOBJ) free((char*)buf10);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_PopMessageBuffer(int argc, VALUE *argv, VALUE self) {
+  char *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (char *)OT_API_PopMessageBuffer();
+  vresult = SWIG_FromCharPtr((const char *)result);
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_FlushMessageBuffer(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  OT_API_FlushMessageBuffer();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_Message_GetCommand(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Message_GetCommand" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_Message_GetCommand((char const *)arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_Message_GetSuccess(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Message_GetSuccess" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (int)OT_API_Message_GetSuccess((char const *)arg1);
+  vresult = SWIG_From_int((int)(result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -4367,11 +5279,18 @@ SWIGEXPORT void Init_otapi(void) {
   rb_define_module_function(mOtapi, "OT_API_GetAccountWallet_Type", _wrap_OT_API_GetAccountWallet_Type, -1);
   rb_define_module_function(mOtapi, "OT_API_GetAccountWallet_AssetTypeID", _wrap_OT_API_GetAccountWallet_AssetTypeID, -1);
   rb_define_module_function(mOtapi, "OT_API_WriteCheque", _wrap_OT_API_WriteCheque, -1);
+  rb_define_module_function(mOtapi, "OT_API_WritePaymentPlan", _wrap_OT_API_WritePaymentPlan, -1);
   rb_define_module_function(mOtapi, "OT_API_LoadUserPubkey", _wrap_OT_API_LoadUserPubkey, -1);
+  rb_define_module_function(mOtapi, "OT_API_LoadPubkey", _wrap_OT_API_LoadPubkey, -1);
   rb_define_module_function(mOtapi, "OT_API_VerifyUserPrivateKey", _wrap_OT_API_VerifyUserPrivateKey, -1);
   rb_define_module_function(mOtapi, "OT_API_LoadPurse", _wrap_OT_API_LoadPurse, -1);
   rb_define_module_function(mOtapi, "OT_API_LoadMint", _wrap_OT_API_LoadMint, -1);
   rb_define_module_function(mOtapi, "OT_API_LoadAssetContract", _wrap_OT_API_LoadAssetContract, -1);
+  rb_define_module_function(mOtapi, "OT_API_IsBasketCurrency", _wrap_OT_API_IsBasketCurrency, -1);
+  rb_define_module_function(mOtapi, "OT_API_Basket_GetMemberCount", _wrap_OT_API_Basket_GetMemberCount, -1);
+  rb_define_module_function(mOtapi, "OT_API_Basket_GetMemberType", _wrap_OT_API_Basket_GetMemberType, -1);
+  rb_define_module_function(mOtapi, "OT_API_Basket_GetMinimumTransferAmount", _wrap_OT_API_Basket_GetMinimumTransferAmount, -1);
+  rb_define_module_function(mOtapi, "OT_API_Basket_GetMemberMinimumTransferAmount", _wrap_OT_API_Basket_GetMemberMinimumTransferAmount, -1);
   rb_define_module_function(mOtapi, "OT_API_LoadAssetAccount", _wrap_OT_API_LoadAssetAccount, -1);
   rb_define_module_function(mOtapi, "OT_API_LoadInbox", _wrap_OT_API_LoadInbox, -1);
   rb_define_module_function(mOtapi, "OT_API_LoadOutbox", _wrap_OT_API_LoadOutbox, -1);
@@ -4383,6 +5302,7 @@ SWIGEXPORT void Init_otapi(void) {
   rb_define_module_function(mOtapi, "OT_API_Ledger_AddTransaction", _wrap_OT_API_Ledger_AddTransaction, -1);
   rb_define_module_function(mOtapi, "OT_API_Transaction_CreateResponse", _wrap_OT_API_Transaction_CreateResponse, -1);
   rb_define_module_function(mOtapi, "OT_API_Transaction_GetType", _wrap_OT_API_Transaction_GetType, -1);
+  rb_define_module_function(mOtapi, "OT_API_Purse_GetTotalValue", _wrap_OT_API_Purse_GetTotalValue, -1);
   rb_define_module_function(mOtapi, "OT_API_checkServerID", _wrap_OT_API_checkServerID, -1);
   rb_define_module_function(mOtapi, "OT_API_createUserAccount", _wrap_OT_API_createUserAccount, -1);
   rb_define_module_function(mOtapi, "OT_API_checkUser", _wrap_OT_API_checkUser, -1);
@@ -4393,7 +5313,11 @@ SWIGEXPORT void Init_otapi(void) {
   rb_define_module_function(mOtapi, "OT_API_getMint", _wrap_OT_API_getMint, -1);
   rb_define_module_function(mOtapi, "OT_API_createAssetAccount", _wrap_OT_API_createAssetAccount, -1);
   rb_define_module_function(mOtapi, "OT_API_getAccount", _wrap_OT_API_getAccount, -1);
+  rb_define_module_function(mOtapi, "OT_API_GenerateBasketCreation", _wrap_OT_API_GenerateBasketCreation, -1);
+  rb_define_module_function(mOtapi, "OT_API_AddBasketCreationItem", _wrap_OT_API_AddBasketCreationItem, -1);
   rb_define_module_function(mOtapi, "OT_API_issueBasket", _wrap_OT_API_issueBasket, -1);
+  rb_define_module_function(mOtapi, "OT_API_GenerateBasketExchange", _wrap_OT_API_GenerateBasketExchange, -1);
+  rb_define_module_function(mOtapi, "OT_API_AddBasketExchangeItem", _wrap_OT_API_AddBasketExchangeItem, -1);
   rb_define_module_function(mOtapi, "OT_API_exchangeBasket", _wrap_OT_API_exchangeBasket, -1);
   rb_define_module_function(mOtapi, "OT_API_notarizeWithdrawal", _wrap_OT_API_notarizeWithdrawal, -1);
   rb_define_module_function(mOtapi, "OT_API_notarizeDeposit", _wrap_OT_API_notarizeDeposit, -1);
@@ -4402,5 +5326,11 @@ SWIGEXPORT void Init_otapi(void) {
   rb_define_module_function(mOtapi, "OT_API_processInbox", _wrap_OT_API_processInbox, -1);
   rb_define_module_function(mOtapi, "OT_API_withdrawVoucher", _wrap_OT_API_withdrawVoucher, -1);
   rb_define_module_function(mOtapi, "OT_API_depositCheque", _wrap_OT_API_depositCheque, -1);
+  rb_define_module_function(mOtapi, "OT_API_depositPaymentPlan", _wrap_OT_API_depositPaymentPlan, -1);
+  rb_define_module_function(mOtapi, "OT_API_issueMarketOffer", _wrap_OT_API_issueMarketOffer, -1);
+  rb_define_module_function(mOtapi, "OT_API_PopMessageBuffer", _wrap_OT_API_PopMessageBuffer, -1);
+  rb_define_module_function(mOtapi, "OT_API_FlushMessageBuffer", _wrap_OT_API_FlushMessageBuffer, -1);
+  rb_define_module_function(mOtapi, "OT_API_Message_GetCommand", _wrap_OT_API_Message_GetCommand, -1);
+  rb_define_module_function(mOtapi, "OT_API_Message_GetSuccess", _wrap_OT_API_Message_GetSuccess, -1);
 }
 
