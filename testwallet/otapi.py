@@ -91,6 +91,7 @@ OT_API_Ledger_GetTransactionIDByIndex = _otapi.OT_API_Ledger_GetTransactionIDByI
 OT_API_Ledger_AddTransaction = _otapi.OT_API_Ledger_AddTransaction
 OT_API_Transaction_CreateResponse = _otapi.OT_API_Transaction_CreateResponse
 OT_API_Transaction_GetType = _otapi.OT_API_Transaction_GetType
+OT_API_Transaction_GetSuccess = _otapi.OT_API_Transaction_GetSuccess
 OT_API_Purse_GetTotalValue = _otapi.OT_API_Purse_GetTotalValue
 OT_API_checkServerID = _otapi.OT_API_checkServerID
 OT_API_createUserAccount = _otapi.OT_API_createUserAccount
@@ -121,5 +122,6 @@ OT_API_PopMessageBuffer = _otapi.OT_API_PopMessageBuffer
 OT_API_FlushMessageBuffer = _otapi.OT_API_FlushMessageBuffer
 OT_API_Message_GetCommand = _otapi.OT_API_Message_GetCommand
 OT_API_Message_GetSuccess = _otapi.OT_API_Message_GetSuccess
+OT_API_Message_GetLedger = _otapi.OT_API_Message_GetLedger
 
 

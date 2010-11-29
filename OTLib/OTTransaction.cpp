@@ -285,20 +285,64 @@ void OTTransaction::AddItem(OTItem & theItem)
 // While processing a transaction, you may wish to query it for items of a certain type.
 OTItem * OTTransaction::GetItem(const OTItem::itemType theType) 
 {
-	// loop through the items that make up this transaction and print them out here, base64-encoded, of course.
 	OTItem * pItem = NULL;
 
 	for (listOfItems::iterator ii = m_listItems.begin(); ii != m_listItems.end(); ++ii)
 	{
-		if ((pItem = *ii)) // if pointer not null
-		{
-			if (theType == pItem->m_Type)
-				return pItem;
-		}
+		pItem = *ii;
+		
+		OT_ASSERT(NULL != pItem);
+		
+		if (theType == pItem->m_Type)
+			return pItem;
 	}
 	
 	return NULL;
 }
+
+
+// Tries to determine, based on items within, whether it was a success or fail.
+bool OTTransaction::GetSuccess()
+{
+	OTItem * pItem = NULL;
+	
+	bool bReturnVal = false;
+	
+	for (listOfItems::iterator ii = m_listItems.begin(); ii != m_listItems.end(); ++ii)
+	{
+		pItem = *ii;
+		
+		OT_ASSERT(NULL != pItem);
+		
+		switch (pItem->GetType()) 
+		{
+			case OTItem::atTransfer:
+			case OTItem::atAccept:
+			case OTItem::atReject:
+			case OTItem::atWithdrawal:
+			case OTItem::atDeposit:
+			case OTItem::atWithdrawVoucher:
+			case OTItem::atDepositCheque:
+			case OTItem::atMarketOffer:
+			case OTItem::atPaymentPlan:
+				if (OTItem::acknowledgement == pItem->GetStatus())
+				{
+					return true;
+				}
+				else if (OTItem::rejection == pItem->GetStatus())
+				{
+					return false;
+				}
+				break;
+			default:
+				break;
+		}
+	}
+	
+	return false;
+}
+
+
 
 
 // return -1 if error, 0 if nothing, and 1 if the node was processed.

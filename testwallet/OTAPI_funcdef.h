@@ -539,7 +539,6 @@ const char * OT_API_Ledger_GetTransactionIDByIndex(const char * SERVER_ID,
 												   const char * THE_LEDGER,
 												   int nIndex); // returns transaction number by index.
 
-
 // --------------------------------------------------------------
 // Add a transaction to a ledger.
 //
@@ -574,6 +573,18 @@ const char * OT_API_Transaction_GetType(const char * SERVER_ID,
 										const char * THE_TRANSACTION);
 
 
+
+
+// --------------------------------------------------
+//
+// Get Transaction Success   OT_TRUE  (1) == acknowledgment
+//                           OT_FALSE (0) == rejection 
+// Returns OT_BOOL.
+//
+int OT_API_Transaction_GetSuccess(const char * SERVER_ID,
+									  const char * USER_ID,
+									  const char * ACCOUNT_ID,
+									  const char * THE_TRANSACTION); 
 
 
 
@@ -1141,6 +1152,17 @@ const char * OT_API_Message_GetCommand(const char * THE_MESSAGE);
 // Also returns OT_FALSE for error.
 //
 int OT_API_Message_GetSuccess(const char * THE_MESSAGE);
+
+
+
+// -----------------------------------------------------------
+// GET MESSAGE LEDGER 
+//
+// If you just received a server response to a transaction, and
+// you want to actually iterate through the response ledger for
+// that transaction, this function will retrieve it for you.
+//
+const char * OT_API_Message_GetLedger(const char * THE_MESSAGE);
 
 
 

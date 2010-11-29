@@ -1955,8 +1955,9 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 
 
 // --------------------------------------------------
-
+//
 // Get Transaction Type  (internally uses GetTransactionTypeString().)
+//
 const char * OT_API_Transaction_GetType(const char * SERVER_ID,
 										const char * USER_ID,
 										const char * ACCOUNT_ID,
@@ -1984,7 +1985,7 @@ const char * OT_API_Transaction_GetType(const char * SERVER_ID,
 	// By this point, pWallet is a good pointer.  (No need to cleanup.)
 	
 	// -----------------------------------------------------------------
-		
+	
 	OTPseudonym * pNym = pWallet->GetNymByID(theUserID);
 	
 	if (NULL == pNym) // Wasn't already in the wallet.
@@ -2014,9 +2015,9 @@ const char * OT_API_Transaction_GetType(const char * SERVER_ID,
 					  strAcctID.Get());
 		return NULL;
 	}
-
+	
 	// -----------------------------------------------------
-
+	
 	
 	const char * pBuf = theTransaction.GetTypeString(); 
 	
@@ -2027,6 +2028,80 @@ const char * OT_API_Transaction_GetType(const char * SERVER_ID,
 #endif
 	
 	return g_tempBuf;		
+}
+
+
+// --------------------------------------------------
+//
+// Get Transaction Success   OT_TRUE  (1) == acknowledgment
+//                           OT_FALSE (0) == rejection 
+//
+OT_BOOL OT_API_Transaction_GetSuccess(const char * SERVER_ID,
+										const char * USER_ID,
+										const char * ACCOUNT_ID,
+										const char * THE_TRANSACTION)
+{
+	OT_ASSERT(NULL != SERVER_ID);
+	OT_ASSERT(NULL != USER_ID);
+	OT_ASSERT(NULL != ACCOUNT_ID);
+	OT_ASSERT(NULL != THE_TRANSACTION);
+	
+	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
+	
+	OTString strTransaction(THE_TRANSACTION);
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = g_OT_API.GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return OT_FALSE;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(theUserID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = g_OT_API.LoadPrivateNym(theUserID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			return OT_FALSE;
+		}
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	OTTransaction theTransaction(theUserID, theAccountID, theServerID);
+	
+	if (false == theTransaction.LoadContractFromString(strTransaction))
+	{
+		OTString strAcctID(theAccountID);
+		OTLog::vError("Error loading transaction from string in OT_API_Transaction_GetType. Acct ID:\n%s\n",
+					  strAcctID.Get());
+		return OT_FALSE;
+	}
+	
+	// -----------------------------------------------------
+	
+	bool bSuccess = theTransaction.GetSuccess();
+	
+	if (bSuccess)
+		return OT_TRUE;
+	
+	return OT_FALSE;
 }
 
 
@@ -3025,6 +3100,54 @@ const char * OT_API_Message_GetCommand(const char * THE_MESSAGE)
 	
 	return g_tempBuf;			
 }
+
+
+// -----------------------------------------------------------
+// GET MESSAGE LEDGER 
+//
+// If you just received a server response to a transaction, and
+// you want to actually iterate through the transactions in the
+// response ledger for that transaction, this function will retrieve
+// that ledger for you.
+//
+const char * OT_API_Message_GetLedger(const char * THE_MESSAGE)
+{
+	OT_ASSERT(NULL != THE_MESSAGE);
+	
+	OTString strMessage(THE_MESSAGE);
+	
+	OTMessage theMessage;
+	
+	if (!strMessage.Exists() || !theMessage.LoadContractFromString(strMessage))
+		return NULL;
+	
+	// It's not a transaction request or response, so the Payload wouldn't
+	// contain a ledger. (Don't want to pass back whatever it DOES contain
+	// in that case, now do I?)
+	//
+	if ((false == theMessage.m_strCommand.Compare("notarizeTransactions")) &&
+		(false == theMessage.m_strCommand.Compare("@notarizeTransactions")))
+		return NULL;
+	
+	OTString strOutput;
+	// The ledger is stored in the Payload, we'll grab it into the String.
+	theMessage.m_ascPayload.GetString(strOutput); 
+
+	if (!strOutput.Exists())
+		return NULL;
+		
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;				
+}
+
+
 
 // -----------------------------------------------------------
 // GET MESSAGE SUCCESS (True or False)

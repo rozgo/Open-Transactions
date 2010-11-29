@@ -180,6 +180,10 @@ public class otapi {
     return otapiJNI.OT_API_Transaction_GetType(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
   }
 
+  public static int OT_API_Transaction_GetSuccess(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
+    return otapiJNI.OT_API_Transaction_GetSuccess(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  }
+
   public static String OT_API_Purse_GetTotalValue(String SERVER_ID, String ASSET_TYPE_ID, String THE_PURSE) {
     return otapiJNI.OT_API_Purse_GetTotalValue(SERVER_ID, ASSET_TYPE_ID, THE_PURSE);
   }
@@ -298,6 +302,10 @@ public class otapi {
 
   public static int OT_API_Message_GetSuccess(String THE_MESSAGE) {
     return otapiJNI.OT_API_Message_GetSuccess(THE_MESSAGE);
+  }
+
+  public static String OT_API_Message_GetLedger(String THE_MESSAGE) {
+    return otapiJNI.OT_API_Message_GetLedger(THE_MESSAGE);
   }
 
 }

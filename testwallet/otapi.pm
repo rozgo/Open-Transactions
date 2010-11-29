@@ -92,6 +92,7 @@ package otapi;
 *OT_API_Ledger_AddTransaction = *otapic::OT_API_Ledger_AddTransaction;
 *OT_API_Transaction_CreateResponse = *otapic::OT_API_Transaction_CreateResponse;
 *OT_API_Transaction_GetType = *otapic::OT_API_Transaction_GetType;
+*OT_API_Transaction_GetSuccess = *otapic::OT_API_Transaction_GetSuccess;
 *OT_API_Purse_GetTotalValue = *otapic::OT_API_Purse_GetTotalValue;
 *OT_API_checkServerID = *otapic::OT_API_checkServerID;
 *OT_API_createUserAccount = *otapic::OT_API_createUserAccount;
@@ -122,6 +123,7 @@ package otapi;
 *OT_API_FlushMessageBuffer = *otapic::OT_API_FlushMessageBuffer;
 *OT_API_Message_GetCommand = *otapic::OT_API_Message_GetCommand;
 *OT_API_Message_GetSuccess = *otapic::OT_API_Message_GetSuccess;
+*OT_API_Message_GetLedger = *otapic::OT_API_Message_GetLedger;
 
 # ------- VARIABLE STUBS --------
 

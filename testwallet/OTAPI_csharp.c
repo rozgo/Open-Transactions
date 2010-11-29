@@ -885,6 +885,24 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Transaction_GetType(char * jarg1, ch
 }
 
 
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_Transaction_GetSuccess(char * jarg1, char * jarg2, char * jarg3, char * jarg4) {
+  int jresult ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  int result;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (char *)jarg2; 
+  arg3 = (char *)jarg3; 
+  arg4 = (char *)jarg4; 
+  result = (int)OT_API_Transaction_GetSuccess((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
 SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Purse_GetTotalValue(char * jarg1, char * jarg2, char * jarg3) {
   char * jresult ;
   char *arg1 = (char *) 0 ;
@@ -1292,6 +1310,18 @@ SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_Message_GetSuccess(char * jarg1) {
   arg1 = (char *)jarg1; 
   result = (int)OT_API_Message_GetSuccess((char const *)arg1);
   jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Message_GetLedger(char * jarg1) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  result = (char *)OT_API_Message_GetLedger((char const *)arg1);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
   return jresult;
 }
 

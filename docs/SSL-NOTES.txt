@@ -273,5 +273,21 @@ openssl x509 -inform PEM  -text -in my-ca.crt
 
 openssl verify -CAfile my-ca.crt my-cert.crt
 
+--------------------------------------
+
+Some more notes, on converting PGP keys to OpenSSL format:
+
+Gpgsm utility can exports keys and certificate in PCSC12:
+
+gpgsm -o  secret-gpg-key.p12 --export-secret-key-p12 0xXXXXXXXX
+
+You have to extract Key and Certificates separately:
+
+openssl pkcs12 -in secret-gpg-key.p12 -nocerts -out gpg-key.pem
+openssl pkcs12 -in secret-gpg-key.p12 -nokeys -out gpg-certs.pem
+
+there you go
+
+
 
 

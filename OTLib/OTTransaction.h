@@ -208,6 +208,8 @@ protected:
 	
 public:
 	
+	bool GetSuccess(); // Tries to determine, based on items within, whether it was a success or fail.
+	
 	OTTransaction(const OTLedger & theOwner);
 	OTTransaction(const OTIdentifier & theUserID, const OTIdentifier & theAccountID, const OTIdentifier & theServerID);
 	OTTransaction(const OTIdentifier & theUserID, const OTIdentifier & theAccountID, const OTIdentifier & theServerID, long lTransactionNum);
