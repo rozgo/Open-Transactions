@@ -93,6 +93,7 @@ ZEND_NAMED_FUNCTION(_wrap_OT_API_Ledger_GetTransactionIDByIndex);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_Ledger_AddTransaction);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_Transaction_CreateResponse);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_Transaction_GetType);
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Transaction_GetSuccess);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_Purse_GetTotalValue);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_checkServerID);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_createUserAccount);
@@ -123,4 +124,5 @@ ZEND_NAMED_FUNCTION(_wrap_OT_API_PopMessageBuffer);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_FlushMessageBuffer);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_Message_GetCommand);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_Message_GetSuccess);
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Message_GetLedger);
 #endif /* PHP_OTAPI_H */

@@ -237,6 +237,12 @@
   (ACCOUNT_ID :string)
   (THE_TRANSACTION :string))
 
+(cffi:defcfun ("OT_API_Transaction_GetSuccess" OT_API_Transaction_GetSuccess) :int
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (ACCOUNT_ID :string)
+  (THE_TRANSACTION :string))
+
 (cffi:defcfun ("OT_API_Purse_GetTotalValue" OT_API_Purse_GetTotalValue) :string
   (SERVER_ID :string)
   (ASSET_TYPE_ID :string)
@@ -395,6 +401,9 @@
   (THE_MESSAGE :string))
 
 (cffi:defcfun ("OT_API_Message_GetSuccess" OT_API_Message_GetSuccess) :int
+  (THE_MESSAGE :string))
+
+(cffi:defcfun ("OT_API_Message_GetLedger" OT_API_Message_GetLedger) :string
   (THE_MESSAGE :string))
 
 

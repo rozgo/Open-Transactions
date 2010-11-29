@@ -51,6 +51,7 @@ class otapiJNI {
   public final static native String OT_API_Ledger_AddTransaction(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5);
   public final static native String OT_API_Transaction_CreateResponse(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5, int jarg6);
   public final static native String OT_API_Transaction_GetType(String jarg1, String jarg2, String jarg3, String jarg4);
+  public final static native int OT_API_Transaction_GetSuccess(String jarg1, String jarg2, String jarg3, String jarg4);
   public final static native String OT_API_Purse_GetTotalValue(String jarg1, String jarg2, String jarg3);
   public final static native void OT_API_checkServerID(String jarg1, String jarg2);
   public final static native void OT_API_createUserAccount(String jarg1, String jarg2);
@@ -81,4 +82,5 @@ class otapiJNI {
   public final static native void OT_API_FlushMessageBuffer();
   public final static native String OT_API_Message_GetCommand(String jarg1);
   public final static native int OT_API_Message_GetSuccess(String jarg1);
+  public final static native String OT_API_Message_GetLedger(String jarg1);
 }

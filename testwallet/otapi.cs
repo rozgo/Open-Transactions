@@ -226,6 +226,11 @@ public class otapi {
     return ret;
   }
 
+  public static int OT_API_Transaction_GetSuccess(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
+    int ret = otapiPINVOKE.OT_API_Transaction_GetSuccess(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+    return ret;
+  }
+
   public static string OT_API_Purse_GetTotalValue(string SERVER_ID, string ASSET_TYPE_ID, string THE_PURSE) {
     string ret = otapiPINVOKE.OT_API_Purse_GetTotalValue(SERVER_ID, ASSET_TYPE_ID, THE_PURSE);
     return ret;
@@ -351,6 +356,11 @@ public class otapi {
 
   public static int OT_API_Message_GetSuccess(string THE_MESSAGE) {
     int ret = otapiPINVOKE.OT_API_Message_GetSuccess(THE_MESSAGE);
+    return ret;
+  }
+
+  public static string OT_API_Message_GetLedger(string THE_MESSAGE) {
+    string ret = otapiPINVOKE.OT_API_Message_GetLedger(THE_MESSAGE);
     return ret;
   }
 
