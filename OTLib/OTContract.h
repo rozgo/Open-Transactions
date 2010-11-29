@@ -259,7 +259,8 @@ public:
 	// Saves the entire contract to a file that's already open (like a wallet).
 //	virtual bool SaveContractWallet(FILE * fl) = 0;
 	virtual bool SaveContractWallet(std::ofstream & ofs) = 0;
-	
+	virtual bool SaveContractWallet(OTString & strContents) const;
+
 	// Save m_xmlUnsigned to a string that's passed in
 	virtual bool SaveContents(OTString & strContents) const;
 		

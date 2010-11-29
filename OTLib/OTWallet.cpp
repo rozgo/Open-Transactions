@@ -341,6 +341,7 @@ bool OTWallet::GetAccount(const int iIndex, OTIdentifier & THE_ID, OTString & TH
 
 void OTWallet::DisplayStatistics(OTString & strOutput)
 {
+	strOutput.Concatenate("\n-------------------------------------------------\n");
 	strOutput.Concatenate("WALLET STATISTICS:\n");
 	
 	OTPseudonym * pNym = NULL;
@@ -357,7 +358,9 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 	
 	// ---------------------------------------------------------------
 	
-	/*
+	strOutput.Concatenate("\n-------------------------------------------------\n");
+	strOutput.Concatenate("ASSET CONTRACTS:\n\n");
+
 	OTContract * pContract = NULL;
 	
 	for (mapOfContracts::iterator ii = m_mapContracts.begin(); ii != m_mapContracts.end(); ++ii)
@@ -366,11 +369,14 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 	 
 		OT_ASSERT_MSG(NULL != pContract, "NULL contract pointer in OTWallet::m_mapContracts, OTWallet::SaveWallet");
 	 
-		pContract->SaveContractWallet(fl);
+		pContract->SaveContractWallet(strOutput);
 	}
 	
 	// ---------------------------------------------------------------
 	
+	strOutput.Concatenate("\n-------------------------------------------------\n");
+	strOutput.Concatenate("SERVER CONTRACTS:\n\n");
+
 	OTContract * pServer = NULL;
 	
 	for (mapOfServers::iterator ii = m_mapServers.begin(); ii != m_mapServers.end(); ++ii)
@@ -379,11 +385,11 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 	 
 		OT_ASSERT_MSG(NULL != pServer, "NULL server pointer in OTWallet::m_mapServers, OTWallet::SaveWallet");
 	 
-			pServer->SaveContractWallet(fl);
+		pServer->SaveContractWallet(strOutput);
 	}
 	
 	// ---------------------------------------------------------------
-	 */
+
 
 	strOutput.Concatenate("\n-------------------------------------------------\n");
 	strOutput.Concatenate("ACCOUNTS:\n\n");

@@ -1,0 +1,2 @@
+This is where the various data files are stored for the markets.
+See OTMarket, OTTrade, OTCron, OTOffer, and OTCronItem.

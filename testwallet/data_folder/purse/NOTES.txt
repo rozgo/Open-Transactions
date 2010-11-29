@@ -9,4 +9,3 @@ will go into the same purse with the asset type as its name.
 How to handle these purses, and how to auto-back-them-up so IMPORTANT CASH DATA
 is not lost, is an issue to be discussed when a NICE PRETTY CLIENT GUI is being
 developed. *prod*
-

@@ -129,6 +129,7 @@ public:
 	virtual bool CreateContract(OTString & strContract, OTPseudonym & theSigner);
 	
 //	virtual bool SaveContractWallet(FILE * fl);
+	virtual bool SaveContractWallet(OTString & strContents) const;
 	virtual bool SaveContractWallet(std::ofstream & ofs);
 };
 

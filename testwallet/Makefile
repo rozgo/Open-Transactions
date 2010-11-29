@@ -39,12 +39,6 @@ endif
 
 # ---------------------------------------------------------------------
 
-# The code will automatically accept the entire inbox, if compiled
-# in test client mode.  But if it's compiled in API mode, then you
-# have to manually go through the inbox items and allow your user
-# the opportunity to accept or reject them.
-#
-TEST_CLIENT := 1
 
 # I allow the user the option to force-override the build platform.
 # Using make PLATFORM=darwin, for example, you will build in darwin mode
@@ -237,7 +231,13 @@ CXXSOURCES = \
 
 CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
 COBJECTS   = $(CSOURCES:.c=.o)
-CFLAGS     = $(INCLUDEDIRS) $(API_CFLAGS) $(FT_FLAGS) -c 
+
+# The code will automatically accept the entire inbox, if compiled
+# in TEST_CLIENT mode.  But if it's compiled in API mode, then you
+# have to manually go through the inbox items and allow your user
+# the opportunity to accept or reject them.
+#
+CFLAGS     = $(INCLUDEDIRS) $(API_CFLAGS) $(FT_FLAGS) -DTEST_CLIENT -c 
 DEBUG_FLAGS = -g
 CXX = g++
 CC = $(C_COMPILER)

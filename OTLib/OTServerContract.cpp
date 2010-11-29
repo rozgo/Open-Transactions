@@ -130,15 +130,30 @@ bool OTServerContract::GetConnectInfo(OTString & strHostname, int & nPort)
 }
 
 
-bool OTServerContract::SaveContractWallet(std::ofstream & ofs)
+bool OTServerContract::SaveContractWallet(OTString & strContents) const
 {
 	OTString strID(m_ID);
 
-	ofs <<	"<notaryProvider name=\""	<< m_strName.Get()	<< 
-			"\"\n serverID=\""			<< strID.Get()		<< 
-			"\" /> \n\n";
+	strContents.Concatenate("<notaryProvider name=\"%s\"\n"
+							" serverID=\"%s\" />\n\n",
+							m_strName.Get(),
+							strID.Get());
 	
 	return true;
+}
+
+
+bool OTServerContract::SaveContractWallet(std::ofstream & ofs)
+{
+	OTString strOutput;
+	
+	if (SaveContractWallet(strOutput))
+	{
+		ofs << strOutput.Get();
+		return true;
+	}
+		
+	return false;
 }
 
 

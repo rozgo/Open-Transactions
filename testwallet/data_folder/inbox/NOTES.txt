@@ -1,0 +1,2 @@
+The inboxes here are named based on account number. (There is
+one inbox for each asset acocunt.)

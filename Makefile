@@ -156,16 +156,16 @@ EXTRA_CLEAN_TARGETS2 += cd util/signcontract && $(OT_MAKE_PLATFORM_INC_LIBS)  cl
 all:
 	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS)   
 	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS) 
-	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=c
 	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS) 
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=c
 	$(EXTRA_TARGETS1)
 	$(EXTRA_TARGETS2)
 
 debug:
 	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS)  debug
 	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  debug
-	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=c debug
 	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)  debug
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=c debug
 	$(EXTRA_DEBUG_TARGETS1)
 	$(EXTRA_DEBUG_TARGETS2)
 
@@ -214,8 +214,8 @@ rpc:
 	cd xmlrpcpp && $(OT_MAKE)
 	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) 
 	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
-	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c
 	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c
 	$(EXTRA_RPC_TARGETS1)
 	$(EXTRA_RPC_TARGETS2)
 
@@ -223,8 +223,8 @@ debugrpc:
 	cd xmlrpcpp && $(OT_MAKE)
 	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS)  debug
 	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc debug
-	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c debug
 	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)   TRANSPORT=XmlRpc debug
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c debug
 	$(EXTRA_DEBUGRPC_TARGETS1)
 	$(EXTRA_DEBUGRPC_TARGETS2)
 
@@ -234,6 +234,10 @@ clean:
 	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  clean
 	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc clean
 	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=c clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=ruby clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=python clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=perl5 clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=php5 clean
 	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)  clean
 	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc clean
 	$(EXTRA_CLEAN_TARGETS1)
