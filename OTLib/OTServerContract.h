@@ -110,6 +110,7 @@ public:
 	virtual ~OTServerContract();
 
 //	virtual bool SaveContractWallet(FILE * fl);
+	virtual bool SaveContractWallet(OTString & strContents) const;
 	virtual bool SaveContractWallet(std::ofstream & ofs);
 };
 

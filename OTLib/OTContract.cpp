@@ -1138,22 +1138,22 @@ bool OTContract::VerifySignature(const char * szFilename, const OTSignature & th
 }
 
 
+
+
+bool OTContract::SaveContractWallet(OTString & strContents) const
+{
+	// Subclasses may use this.
+	
+	return false;
+}
+
+
 bool OTContract::SaveContents(std::ofstream & ofs) const
 {	
 	ofs << m_xmlUnsigned.Get();
 	
 	return true;
 }
-
-/*
- bool OTContract::SaveContents(FILE * fl) const
-{
-	if (fl)
-		fprintf(fl, "%s", m_xmlUnsigned.Get());
-	
-	return true;
-}
-*/
 
 // Saves the unsigned XML contents to a string
 bool OTContract::SaveContents(OTString & strContents) const
@@ -1162,6 +1162,19 @@ bool OTContract::SaveContents(OTString & strContents) const
 
 	return true;
 }
+
+
+/*
+ bool OTContract::SaveContents(FILE * fl) const
+ {
+ if (fl)
+ fprintf(fl, "%s", m_xmlUnsigned.Get());
+ 
+ return true;
+ }
+ */
+
+
 
 // Save the contract member variables into the m_strRawFile variable
 

@@ -208,17 +208,34 @@ bool OTAssetContract::CreateBasket(OTBasket & theBasket, OTPseudonym & theSigner
 	
 
 
-
-bool OTAssetContract::SaveContractWallet(std::ofstream & ofs)
+bool OTAssetContract::SaveContractWallet(OTString & strContents) const
 {
 	OTString strID(m_ID);
 	
-	ofs << "<assetType name=\"" << m_strName.Get()		<<
-	"\"\n assetTypeID=\""		<< strID.Get()			<<
-	"\" /> \n\n";	
+	strContents.Concatenate("<assetType name=\"%s\"\n"
+							" assetTypeID=\"%s\" />\n\n",
+							m_strName.Get(),
+							strID.Get());
 	
 	return true;
 }
+
+
+bool OTAssetContract::SaveContractWallet(std::ofstream & ofs)
+{
+	OTString strOutput;
+	
+	if (SaveContractWallet(strOutput))
+	{
+		ofs << strOutput.Get();
+		return true;
+	}
+	
+	return false;
+}
+
+
+
 /*
 bool OTAssetContract::SaveContractWallet(FILE * fl)
 {

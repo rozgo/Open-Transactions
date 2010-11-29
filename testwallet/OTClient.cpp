@@ -815,6 +815,11 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 			AcceptEntireInbox(theInbox, theConnection);// Perhaps just Verify Contract so it verifies signature too, and ServerID too if I override it and add that...
 #endif
 		}
+		else 
+		{
+			OTLog::vError("Error loading or verifying inbox:\n\n%s\n", strInbox.Get());
+		}
+
 		
 		return true;
 	}
