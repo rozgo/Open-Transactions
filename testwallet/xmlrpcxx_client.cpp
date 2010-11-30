@@ -105,6 +105,7 @@
 
 #include <cstring>
 #include <cstdio>
+#include <cstdlib>
 
 // ---------------------------------------------------------------------------
 
@@ -768,6 +769,15 @@ int main(int argc, char* argv[])
 			continue;
 		}
 		
+		else if (strLine.compare(0,4,"help") == 0)
+		{
+			OTLog::Output(0, "User has instructed to display the help file...\n");
+			
+			system("more ../docs/CLIENT-COMMANDS.txt");
+						
+			continue;
+		}
+		
 		else if (strLine.compare(0,4,"quit") == 0)
 		{
 			OTLog::Output(0, "User has instructed to exit the wallet...\n");
@@ -944,7 +954,7 @@ int main(int argc, char* argv[])
 					bSendCommand = true;
 				}
 				else
-					OTLog::vError("Error processing issueAssetType command in ProcessMessage: %c\n", buf[0]);
+					OTLog::vError("Error processing issueAssetType command in ProcessMessage: %s\n", buf);
 				// ------------------------------------------------------------------------
 			}
 			
@@ -963,7 +973,7 @@ int main(int argc, char* argv[])
 					bSendCommand = true;
 				}
 				else
-					OTLog::vError("Error processing issueBasket command in ProcessMessage: %c\n", buf[0]);
+					OTLog::vError("Error processing issueBasket command in ProcessMessage: %s\n", buf);
 				// ------------------------------------------------------------------------
 			}
 			
@@ -982,7 +992,7 @@ int main(int argc, char* argv[])
 					bSendCommand = true;
 				}
 				else
-					OTLog::vError("Error processing exchangeBasket command in ProcessMessage: %c\n", buf[0]);
+					OTLog::vError("Error processing exchangeBasket command in ProcessMessage: %s\n", buf);
 				// ------------------------------------------------------------------------
 			}
 			
@@ -1001,7 +1011,42 @@ int main(int argc, char* argv[])
 					bSendCommand = true;
 				}
 				else
-					OTLog::vError("Error processing marketOffer command in ProcessMessage: %c\n", buf[0]);
+					OTLog::vError("Error processing marketOffer command in ProcessMessage: %s\n", buf);
+				// ------------------------------------------------------------------------
+			}
+			
+			// Set a Nym's client-side name (merely a label.) 
+			else if (!strcmp(buf, "setnymname\n"))
+			{
+				OTLog::Output(0, "(User wants to set a Nym's client-side name...)\n");
+				
+				// ------------------------------------------------------------------------------			
+				// if successful setting up the command payload...
+				
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::setNymName, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
+				{
+					//					bSendCommand = true; // No message needed. Local data only.
+				}
+				// ------------------------------------------------------------------------
+			}
+			
+			// Set an Asset Account's client-side name (merely a label.) 
+			else if (!strcmp(buf, "setaccountname\n"))
+			{
+				OTLog::Output(0, "(User wants to set an Asset Account's client-side name...)\n");
+				
+				// ------------------------------------------------------------------------------			
+				// if successful setting up the command payload...
+				
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::setAccountName, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
+				{
+					//					bSendCommand = true; // No message needed. Local data only.
+				}
+
 				// ------------------------------------------------------------------------
 			}
 			

@@ -145,7 +145,8 @@ public:
 	
 	// ------------------------------------------------
 	
-	inline OTString & GetNymName() { return m_strName; }
+	inline OTString &	GetNymName() { return m_strName; }
+	inline void			SetNymName(const OTString & strName) { m_strName = strName; }
 	
 	OTPseudonym();
 	OTPseudonym(const OTIdentifier & nymID);
@@ -209,6 +210,8 @@ public:
 	bool GetCurrentRequestNum(const OTString & strServerID, long &lReqNum); // get the current request number for the serverID
 
 	inline mapOfTransNums & GetMapTransNum() { return m_mapTransNum; }
+
+	int GetTransactionNumCount(const OTIdentifier & theServerID);
 	bool AddTransactionNum(const OTString & strServerID, long lTransNum);
 	bool AddTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long lTransNum, bool bSave); // We have received a new trans num from server. Store it.
 	bool GetNextTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long &lTransNum); // Get the next available transaction number for the serverID

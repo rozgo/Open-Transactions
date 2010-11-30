@@ -167,6 +167,20 @@ public:
 	
 	// ----------------------------------------------------
 	
+	// The name is basically just a client-side label.
+	// This function lets you change it.
+	bool SetNym_Name(const OTIdentifier	&	NYM_ID, 
+					 const OTIdentifier	&	SIGNER_NYM_ID,
+					 const OTString		&	NYM_NEW_NAME);
+	
+	// The name is basically just a client-side label.
+	// This function lets you change it.
+	bool SetAccount_Name(const OTIdentifier &	ACCT_ID, 
+						 const OTIdentifier &	SIGNER_NYM_ID,
+						 const OTString		&	ACCT_NEW_NAME);
+	
+	// ----------------------------------------------------
+	
 	// Accessing local storage...
 	// (Caller responsible to delete.)
 	//

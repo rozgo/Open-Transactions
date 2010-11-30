@@ -196,9 +196,6 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_ProcessSockets")]
   public static extern int OT_API_ProcessSockets();
 
-  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNymCount")]
-  public static extern int OT_API_GetNymCount();
-
   [DllImport("otapi", EntryPoint="CSharp_OT_API_GetServerCount")]
   public static extern int OT_API_GetServerCount();
 
@@ -208,11 +205,8 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_GetAccountCount")]
   public static extern int OT_API_GetAccountCount();
 
-  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_ID")]
-  public static extern string OT_API_GetNym_ID(int jarg1);
-
-  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_Name")]
-  public static extern string OT_API_GetNym_Name(string jarg1);
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNymCount")]
+  public static extern int OT_API_GetNymCount();
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_GetServer_ID")]
   public static extern string OT_API_GetServer_ID(int jarg1);
@@ -240,6 +234,21 @@ class otapiPINVOKE {
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_GetAccountWallet_AssetTypeID")]
   public static extern string OT_API_GetAccountWallet_AssetTypeID(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_SetAccountWallet_Name")]
+  public static extern int OT_API_SetAccountWallet_Name(string jarg1, string jarg2, string jarg3);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_TransactionNumCount")]
+  public static extern int OT_API_GetNym_TransactionNumCount(string jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_ID")]
+  public static extern string OT_API_GetNym_ID(int jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_Name")]
+  public static extern string OT_API_GetNym_Name(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_SetNym_Name")]
+  public static extern int OT_API_SetNym_Name(string jarg1, string jarg2, string jarg3);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_WriteCheque")]
   public static extern string OT_API_WriteCheque(string jarg1, string jarg2, string jarg3, string jarg4, string jarg5, string jarg6, string jarg7, string jarg8);

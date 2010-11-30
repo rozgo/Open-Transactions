@@ -158,7 +158,7 @@ public:
 	inline OTPurse * GetPendingWithdrawal() const { return m_pWithdrawalPurse; }
 	
 	bool LoadWallet(const char * szFilename);
-	int SaveWallet(const char * szFilename);
+	bool SaveWallet(const char * szFilename=NULL);
 	
 	bool SignContractWithFirstNymOnList(OTContract & theContract);
 };

@@ -1826,19 +1826,6 @@ fail:
 
 
 SWIGINTERN int
-_wrap_OT_API_GetNymCount(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  int result;
-  
-  if (SWIG_GetArgs(interp, objc, objv,":OT_API_GetNymCount ") == TCL_ERROR) SWIG_fail;
-  result = (int)OT_API_GetNymCount();
-  Tcl_SetObjResult(interp,SWIG_From_int((int)(result)));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
 _wrap_OT_API_GetServerCount(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   int result;
   
@@ -1878,46 +1865,14 @@ fail:
 
 
 SWIGINTERN int
-_wrap_OT_API_GetNym_ID(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  int arg1 ;
-  char *result = 0 ;
-  int val1 ;
-  int ecode1 = 0 ;
+_wrap_OT_API_GetNymCount(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  int result;
   
-  if (SWIG_GetArgs(interp, objc, objv,"o:OT_API_GetNym_ID nIndex ",(void *)0) == TCL_ERROR) SWIG_fail;
-  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
-  if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_GetNym_ID" "', argument " "1"" of type '" "int""'");
-  } 
-  arg1 = (int)(val1);
-  result = (char *)OT_API_GetNym_ID(arg1);
-  Tcl_SetObjResult(interp,SWIG_FromCharPtr((const char *)result));
+  if (SWIG_GetArgs(interp, objc, objv,":OT_API_GetNymCount ") == TCL_ERROR) SWIG_fail;
+  result = (int)OT_API_GetNymCount();
+  Tcl_SetObjResult(interp,SWIG_From_int((int)(result)));
   return TCL_OK;
 fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_OT_API_GetNym_Name(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  char *arg1 = (char *) 0 ;
-  char *result = 0 ;
-  int res1 ;
-  char *buf1 = 0 ;
-  int alloc1 = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:OT_API_GetNym_Name NYM_ID ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_AsCharPtrAndSize(objv[1], &buf1, NULL, &alloc1);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetNym_Name" "', argument " "1"" of type '" "char const *""'");
-  }
-  arg1 = (char *)(buf1);
-  result = (char *)OT_API_GetNym_Name((char const *)arg1);
-  Tcl_SetObjResult(interp,SWIG_FromCharPtr((const char *)result));
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  return TCL_OK;
-fail:
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return TCL_ERROR;
 }
 
@@ -2125,6 +2080,178 @@ _wrap_OT_API_GetAccountWallet_AssetTypeID(ClientData clientData SWIGUNUSED, Tcl_
   return TCL_OK;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OT_API_SetAccountWallet_Name(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"ooo:OT_API_SetAccountWallet_Name ACCT_ID SIGNER_NYM_ID ACCT_NEW_NAME ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(objv[1], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_SetAccountWallet_Name" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(objv[2], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_SetAccountWallet_Name" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(objv[3], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_SetAccountWallet_Name" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  result = (int)OT_API_SetAccountWallet_Name((char const *)arg1,(char const *)arg2,(char const *)arg3);
+  Tcl_SetObjResult(interp,SWIG_From_int((int)(result)));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return TCL_OK;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OT_API_GetNym_TransactionNumCount(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:OT_API_GetNym_TransactionNumCount SERVER_ID NYM_ID ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(objv[1], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetNym_TransactionNumCount" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(objv[2], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_GetNym_TransactionNumCount" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  result = (int)OT_API_GetNym_TransactionNumCount((char const *)arg1,(char const *)arg2);
+  Tcl_SetObjResult(interp,SWIG_From_int((int)(result)));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return TCL_OK;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OT_API_GetNym_ID(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  int arg1 ;
+  char *result = 0 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:OT_API_GetNym_ID nIndex ",(void *)0) == TCL_ERROR) SWIG_fail;
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "OT_API_GetNym_ID" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  result = (char *)OT_API_GetNym_ID(arg1);
+  Tcl_SetObjResult(interp,SWIG_FromCharPtr((const char *)result));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OT_API_GetNym_Name(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:OT_API_GetNym_Name NYM_ID ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(objv[1], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetNym_Name" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_GetNym_Name((char const *)arg1);
+  Tcl_SetObjResult(interp,SWIG_FromCharPtr((const char *)result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return TCL_OK;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OT_API_SetNym_Name(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"ooo:OT_API_SetNym_Name NYM_ID SIGNER_NYM_ID NYM_NEW_NAME ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(objv[1], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_SetNym_Name" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(objv[2], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_SetNym_Name" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(objv[3], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_SetNym_Name" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  result = (int)OT_API_SetNym_Name((char const *)arg1,(char const *)arg2,(char const *)arg3);
+  Tcl_SetObjResult(interp,SWIG_From_int((int)(result)));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return TCL_OK;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return TCL_ERROR;
 }
 
@@ -4906,12 +5033,10 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "OT_API_LoadWallet", (swig_wrapper_func) _wrap_OT_API_LoadWallet, NULL},
     { SWIG_prefix "OT_API_ConnectServer", (swig_wrapper_func) _wrap_OT_API_ConnectServer, NULL},
     { SWIG_prefix "OT_API_ProcessSockets", (swig_wrapper_func) _wrap_OT_API_ProcessSockets, NULL},
-    { SWIG_prefix "OT_API_GetNymCount", (swig_wrapper_func) _wrap_OT_API_GetNymCount, NULL},
     { SWIG_prefix "OT_API_GetServerCount", (swig_wrapper_func) _wrap_OT_API_GetServerCount, NULL},
     { SWIG_prefix "OT_API_GetAssetTypeCount", (swig_wrapper_func) _wrap_OT_API_GetAssetTypeCount, NULL},
     { SWIG_prefix "OT_API_GetAccountCount", (swig_wrapper_func) _wrap_OT_API_GetAccountCount, NULL},
-    { SWIG_prefix "OT_API_GetNym_ID", (swig_wrapper_func) _wrap_OT_API_GetNym_ID, NULL},
-    { SWIG_prefix "OT_API_GetNym_Name", (swig_wrapper_func) _wrap_OT_API_GetNym_Name, NULL},
+    { SWIG_prefix "OT_API_GetNymCount", (swig_wrapper_func) _wrap_OT_API_GetNymCount, NULL},
     { SWIG_prefix "OT_API_GetServer_ID", (swig_wrapper_func) _wrap_OT_API_GetServer_ID, NULL},
     { SWIG_prefix "OT_API_GetServer_Name", (swig_wrapper_func) _wrap_OT_API_GetServer_Name, NULL},
     { SWIG_prefix "OT_API_GetAssetType_ID", (swig_wrapper_func) _wrap_OT_API_GetAssetType_ID, NULL},
@@ -4921,6 +5046,11 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "OT_API_GetAccountWallet_Balance", (swig_wrapper_func) _wrap_OT_API_GetAccountWallet_Balance, NULL},
     { SWIG_prefix "OT_API_GetAccountWallet_Type", (swig_wrapper_func) _wrap_OT_API_GetAccountWallet_Type, NULL},
     { SWIG_prefix "OT_API_GetAccountWallet_AssetTypeID", (swig_wrapper_func) _wrap_OT_API_GetAccountWallet_AssetTypeID, NULL},
+    { SWIG_prefix "OT_API_SetAccountWallet_Name", (swig_wrapper_func) _wrap_OT_API_SetAccountWallet_Name, NULL},
+    { SWIG_prefix "OT_API_GetNym_TransactionNumCount", (swig_wrapper_func) _wrap_OT_API_GetNym_TransactionNumCount, NULL},
+    { SWIG_prefix "OT_API_GetNym_ID", (swig_wrapper_func) _wrap_OT_API_GetNym_ID, NULL},
+    { SWIG_prefix "OT_API_GetNym_Name", (swig_wrapper_func) _wrap_OT_API_GetNym_Name, NULL},
+    { SWIG_prefix "OT_API_SetNym_Name", (swig_wrapper_func) _wrap_OT_API_SetNym_Name, NULL},
     { SWIG_prefix "OT_API_WriteCheque", (swig_wrapper_func) _wrap_OT_API_WriteCheque, NULL},
     { SWIG_prefix "OT_API_WritePaymentPlan", (swig_wrapper_func) _wrap_OT_API_WritePaymentPlan, NULL},
     { SWIG_prefix "OT_API_LoadUserPubkey", (swig_wrapper_func) _wrap_OT_API_LoadUserPubkey, NULL},

@@ -161,9 +161,9 @@ void OT_XmlRpcCallback(OTServerContract & theServerContract, OTEnvelope & theEnv
 	int			nServerPort = 0;
 	OTString	strServerHostname;
 	
-	OT_ASSERT((NULL != g_OT_API.GetClient()) && 
+	OT_ASSERT_MSG((NULL != g_OT_API.GetClient()) && 
 			  (NULL != g_OT_API.GetClient()->m_pConnection) && 
-			  (NULL != g_OT_API.GetClient()->m_pConnection->GetNym()));
+			  (NULL != g_OT_API.GetClient()->m_pConnection->GetNym()), "OT_XmlRpcCallback: Important things are NULL that shouldn't be.");
 	
 	if (false == theServerContract.GetConnectInfo(strServerHostname, nServerPort))
 	{
@@ -199,7 +199,7 @@ void OT_XmlRpcCallback(OTServerContract & theServerContract, OTEnvelope & theEnv
 			
 			OTMessage * pServerReply = new OTMessage;
 			
-			OT_ASSERT(NULL != pServerReply);
+			OT_ASSERT_MSG(NULL != pServerReply, "Error allocating memory in the OT API.");
 			
 			if (bOpened && strServerReply.Exists() && pServerReply->LoadContractFromString(strServerReply))
 			{
@@ -261,15 +261,17 @@ bool OT_API::Init(OTString & strClientPath)
 	//       folders away from OTLog and move it all over. Ugh.
 	// OR!! Maybe just code a mechanism so OTLog tracks the instances of OT_API.
 	
-	OT_ASSERT(strClientPath.Exists());
+	OT_ASSERT_MSG(strClientPath.Exists(), "Empty path passed to OT_API::Init");
+	
+	OT_ASSERT_MSG(false == m_bInitialized, "OTAPI was already initialized, please do not call it twice.");
 	
 	OTLog::SetMainPath(strClientPath.Get()); // This currently does NOT support multiple instances of OT_API.  :-(
 	
 	m_pWallet = new OTWallet;
 	m_pClient = new OTClient;
 	
-	OT_ASSERT(NULL != m_pWallet);
-	OT_ASSERT(NULL != m_pClient);
+	OT_ASSERT_MSG(NULL != m_pWallet, "Error allocating memory for m_pWallet in OT_API::Init");
+	OT_ASSERT_MSG(NULL != m_pClient, "Error allocating memory for m_pClient in OT_API::Init");
 	
 	m_bInitialized = m_pClient->InitClient(*m_pWallet);
 	
@@ -277,6 +279,12 @@ bool OT_API::Init(OTString & strClientPath)
 }
 
 // Call this once per run of the software. Static.
+// TODO: add a boolean variable to enforce this, and then
+// just call it from the above function.  Currently this only
+// even works because the below function is empty, and there
+// may be Windows problems in the TCP version for the API builds.
+// (No big deal -- none of them will use TCP anyway...)
+//
 bool OT_API::InitOTAPI()
 {
 #ifdef _WIN32
@@ -295,53 +303,73 @@ bool OT_API::InitOTAPI()
 // "wallet.xml" (path set above.)
 bool OT_API::LoadWallet(OTString & strPath)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+		
 	return m_pWallet->LoadWallet(strPath.Get());
 }
 
 
 int OT_API::GetNymCount()
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	return m_pWallet->GetNymCount();
 }
 
 int OT_API::GetServerCount()
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	return m_pWallet->GetServerCount();
 }
 
 int OT_API::GetAssetTypeCount()
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	return m_pWallet->GetAssetTypeCount();
 }
 
 int OT_API::GetAccountCount()
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	return m_pWallet->GetAccountCount();
 }
 
 bool OT_API::GetNym(int iIndex, OTIdentifier & NYM_ID, OTString & NYM_NAME)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	return m_pWallet->GetNym(iIndex, NYM_ID, NYM_NAME);
 }
 
 bool OT_API::GetServer(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	return m_pWallet->GetServer(iIndex, THE_ID, THE_NAME);
 }
 
 bool OT_API::GetAssetType(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	return m_pWallet->GetAssetType(iIndex, THE_ID, THE_NAME);
 }
 
 bool OT_API::GetAccount(int iIndex, OTIdentifier & THE_ID, OTString & THE_NAME)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	return m_pWallet->GetAccount(iIndex, THE_ID, THE_NAME);
 }
 
 
 OTPseudonym * OT_API::GetNym(const OTIdentifier & NYM_ID)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	OTWallet * pWallet = GetWallet();
 	
 	if (NULL != pWallet)
@@ -352,6 +380,8 @@ OTPseudonym * OT_API::GetNym(const OTIdentifier & NYM_ID)
 
 OTServerContract * OT_API::GetServer(const OTIdentifier & THE_ID)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	OTWallet * pWallet = GetWallet();
 	
 	if (NULL != pWallet)
@@ -362,6 +392,8 @@ OTServerContract * OT_API::GetServer(const OTIdentifier & THE_ID)
 
 OTAssetContract * OT_API::GetAssetType(const OTIdentifier & THE_ID)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	OTWallet * pWallet = GetWallet();
 	
 	if (NULL != pWallet)
@@ -372,6 +404,8 @@ OTAssetContract * OT_API::GetAssetType(const OTIdentifier & THE_ID)
 
 OTAccount * OT_API::GetAccount(const OTIdentifier & THE_ID)	
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	OTWallet * pWallet = GetWallet();
 	
 	if (NULL != pWallet)	
@@ -382,13 +416,130 @@ OTAccount * OT_API::GetAccount(const OTIdentifier & THE_ID)
 
 
 
+
+
+// The Nym's Name is basically just a client-side label.
+// This function lets you change it.
+//
+// Returns success, true or false.
+//
+bool OT_API::SetNym_Name(const OTIdentifier	&	NYM_ID, 
+						 const OTIdentifier	&	SIGNER_NYM_ID,
+						 const OTString		&	NYM_NEW_NAME)
+{
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	OTPseudonym *	pNym		= GetNym(NYM_ID);
+	OTPseudonym *	pSignerNym	= GetNym(SIGNER_NYM_ID);
+	OTWallet *		pWallet		= GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "No wallet loaded.\n");
+	}
+	else if (NULL == pNym)
+	{
+		OTString strOutput(NYM_ID);
+		OTLog::vOutput(0, "No user found with Nym ID: %s\n", strOutput.Get());
+	}
+	else if (NULL == pSignerNym)
+	{
+		OTString strOutput(SIGNER_NYM_ID);
+		OTLog::vOutput(0, "No user found with Signer Nym ID: %s\n", 
+					   strOutput.Get());
+	}
+	// Might want to put some more data validation on the name?
+	else if (!NYM_NEW_NAME.Exists())
+	{
+		OTLog::vOutput(0, "Bad name: %s\n", NYM_NEW_NAME.Get());
+	}
+	else
+	{
+		OTString strOldName(pNym->GetNymName()); // just in case.
+		
+		pNym->SetNymName(NYM_NEW_NAME);
+				
+		if (pNym->SaveSignedNymfile(*pSignerNym))
+		{
+			return pWallet->SaveWallet(); // Only cause the nym's name is stored here, too.
+		}
+		else
+			pNym->SetNymName(strOldName);
+	}
+	
+	return false;
+}
+
+
+// The Assert Account's Name is basically just a client-side label.
+// This function lets you change it.
+//
+// Returns success, true or false.
+//
+bool OT_API::SetAccount_Name(const OTIdentifier &	ACCT_ID, 
+							 const OTIdentifier &	SIGNER_NYM_ID,
+							 const OTString &		ACCT_NEW_NAME)
+{		
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	OTAccount *		pAccount	= GetAccount(ACCT_ID);
+	OTPseudonym *	pSignerNym	= GetNym(SIGNER_NYM_ID);
+	OTWallet *		pWallet		= GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "No wallet loaded.\n");
+	}	
+	else if (NULL == pAccount)
+	{
+		OTString strOutput(ACCT_ID);
+		OTLog::vOutput(0, "No asset account found with ID: %s\n", strOutput.Get());
+	}
+	else if (NULL == pSignerNym)
+	{
+		OTString strOutput(SIGNER_NYM_ID);
+		OTLog::vOutput(0, "No user found with Signer Nym ID: %s\n", strOutput.Get());
+	}
+	else if (!pAccount->VerifyAccount(*pSignerNym))
+	{
+		OTString strOutput1(SIGNER_NYM_ID);
+		OTString strOutput2(ACCT_ID);
+		OTLog::vOutput(0, "The signing nym fails to verify on the account.\n"
+					   " Nym: %s\n Account: %s\n", strOutput1.Get(), strOutput2.Get());
+	}
+	else if (!ACCT_NEW_NAME.Exists()) // Any other validation to do on the name?
+	{
+		OTLog::vOutput(0, "Bad name attempted change.(asset account): %s\n", ACCT_NEW_NAME.Get());
+	}
+	else
+	{
+		OTLog::Output(0, "Saving updated account file to disk...\n");
+		
+		pAccount->SetName(ACCT_NEW_NAME);
+		pAccount->ReleaseSignatures();
+		
+		if (pAccount->SignContract(*pSignerNym))
+		{
+			if (pAccount->SaveAccount())
+				return pWallet->SaveWallet(); // Only cause the account's name is stored here, too.
+		}
+	}
+	
+	return false;	
+}
+
+
+
+
 // CALLER is responsible to delete this Nym!
 //
 OTPseudonym * OT_API::LoadPublicNym(const OTIdentifier & NYM_ID)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	OTPseudonym * pNym = new OTPseudonym(NYM_ID);
 	
-	OT_ASSERT(NULL != pNym);
+	OT_ASSERT_MSG(NULL != pNym, "Error allocating memory in the OT API.");
 	
 	// First load the public key
 	if (false == pNym->LoadPublicKey())
@@ -425,9 +576,11 @@ OTPseudonym * OT_API::LoadPublicNym(const OTIdentifier & NYM_ID)
 //
 OTPseudonym * OT_API::LoadPrivateNym(const OTIdentifier & NYM_ID)
 {	
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	OTPseudonym * pNym = new OTPseudonym(NYM_ID);
 	
-	OT_ASSERT(NULL != pNym);
+	OT_ASSERT_MSG(NULL != pNym, "Error allocating memory in the OT API.");
 	
 	if (pNym->Loadx509CertAndPrivateKey())
 	{
@@ -481,6 +634,8 @@ OTCheque * OT_API::WriteCheque(const OTIdentifier & SERVER_ID,
 							   const OTString &		CHEQUE_MEMO, 
 							   const OTIdentifier * pRECIPIENT_USER_ID/*=NULL*/)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	OTWallet * pWallet = GetWallet();
 	
 	if (NULL == pWallet)
@@ -608,7 +763,7 @@ OTCheque * OT_API::WriteCheque(const OTIdentifier & SERVER_ID,
 	OTCheque * pCheque = new OTCheque(pAccount->GetRealServerID(), 
 									  pAccount->GetAssetTypeID());
 	
-	OT_ASSERT(NULL != pCheque);
+	OT_ASSERT_MSG(NULL != pCheque, "Error allocating memory in the OT API.");
 	
 	// At this point, I know that pCheque is a good pointer that I either
 	// have to delete, or return to the caller.
@@ -629,6 +784,9 @@ OTCheque * OT_API::WriteCheque(const OTIdentifier & SERVER_ID,
 		delete pCheque; pCheque = NULL;
 		return NULL;			
 	}
+	
+	pCheque->SignContract(*pNym);
+	pCheque->SaveContract();
 	
 	return pCheque;
 }
@@ -696,6 +854,8 @@ OTPaymentPlan * OT_API::WritePaymentPlan(const OTIdentifier & SERVER_ID,
 										 )											// number of payments. These last 
 {																					// two arguments are optional.
 	// -----------------------------------------------------
+	
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 	
 	OTWallet * pWallet = GetWallet();
 	
@@ -806,7 +966,7 @@ OTPaymentPlan * OT_API::WritePaymentPlan(const OTIdentifier & SERVER_ID,
 											  pAccount->GetRealAccountID(),	pAccount->GetUserID(),
 											  RECIPIENT_ACCT_ID, RECIPIENT_USER_ID);
 	
-	OT_ASSERT(NULL != pPlan);
+	OT_ASSERT_MSG(NULL != pPlan, "Error allocating memory in the OT API.");
 	
 	// At this point, I know that pPlan is a good pointer that I either
 	// have to delete, or return to the caller. CLEANUP WARNING!
@@ -919,6 +1079,8 @@ OTPaymentPlan * OT_API::WritePaymentPlan(const OTIdentifier & SERVER_ID,
 OTPurse * OT_API::LoadPurse(const OTIdentifier & SERVER_ID,
 							const OTIdentifier & ASSET_ID)
 {	
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	const OTString strAssetTypeID(ASSET_ID);
 	
 	// -----------------------------------------------------------------
@@ -961,7 +1123,7 @@ OTPurse * OT_API::LoadPurse(const OTIdentifier & SERVER_ID,
 	
 	OTPurse * pPurse = new OTPurse(SERVER_ID, ASSET_ID);
 	
-	OT_ASSERT(NULL != pPurse); // responsible to delete or return pPurse below this point.
+	OT_ASSERT_MSG(NULL != pPurse, "Error allocating memory in the OT API."); // responsible to delete or return pPurse below this point.
 	
 	if (pPurse->LoadContract(strPursePath.Get()))
 		return pPurse;
@@ -983,6 +1145,8 @@ OTPurse * OT_API::LoadPurse(const OTIdentifier & SERVER_ID,
 OTMint * OT_API::LoadMint(const OTIdentifier & SERVER_ID,
 						  const OTIdentifier & ASSET_ID)
 {	
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	const OTString strAssetTypeID(ASSET_ID);
 	
 	// -----------------------------------------------------------------
@@ -1025,7 +1189,7 @@ OTMint * OT_API::LoadMint(const OTIdentifier & SERVER_ID,
 	
 	OTMint * pMint = new OTMint(strAssetTypeID, strMintPath, strAssetTypeID);
 	
-	OT_ASSERT(NULL != pMint); // responsible to delete or return pMint below this point.
+	OT_ASSERT_MSG(NULL != pMint, "Error allocating memory in the OT API"); // responsible to delete or return pMint below this point.
 	
 	if (false == pMint->LoadContract())
 	{
@@ -1048,6 +1212,8 @@ OTMint * OT_API::LoadMint(const OTIdentifier & SERVER_ID,
 //
 OTAssetContract * OT_API::LoadAssetContract(const OTIdentifier & ASSET_ID)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	OTString strAssetTypeID(ASSET_ID);
 	
 	// -----------------------------------------------------------------
@@ -1096,6 +1262,8 @@ OTAccount * OT_API::LoadAssetAccount(const OTIdentifier & SERVER_ID,
 									 const OTIdentifier & USER_ID,
 									 const OTIdentifier & ACCOUNT_ID)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	OTWallet * pWallet = GetWallet();
 	
 	if (NULL == pWallet)
@@ -1177,6 +1345,8 @@ OTLedger * OT_API::LoadInbox(const OTIdentifier & SERVER_ID,
 							 const OTIdentifier & USER_ID,
 							 const OTIdentifier & ACCOUNT_ID)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------
 
 	OTWallet * pWallet = GetWallet();
@@ -1213,7 +1383,7 @@ OTLedger * OT_API::LoadInbox(const OTIdentifier & SERVER_ID,
 	
 	OTLedger * pLedger = new OTLedger(USER_ID, ACCOUNT_ID, SERVER_ID);
 	
-	OT_ASSERT(NULL != pLedger);
+	OT_ASSERT_MSG(NULL != pLedger, "Error allocating memory in the OT API.");
 	
 	// Beyond this point, I know that pLedger will need to be deleted or returned.
 	// ------------------------------------------------------
@@ -1243,6 +1413,8 @@ OTLedger * OT_API::LoadOutbox(const OTIdentifier & SERVER_ID,
 							 const OTIdentifier & USER_ID,
 							 const OTIdentifier & ACCOUNT_ID)
 {	
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------------------
 
 	OTWallet * pWallet = GetWallet();
@@ -1279,7 +1451,7 @@ OTLedger * OT_API::LoadOutbox(const OTIdentifier & SERVER_ID,
 	
 	OTLedger * pLedger = new OTLedger(USER_ID, ACCOUNT_ID, SERVER_ID);
 	
-	OT_ASSERT(NULL != pLedger);
+	OT_ASSERT_MSG(NULL != pLedger, "Error allocating memory in the OT API.");
 	
 	// Beyond this point, I know that pLedger is loaded and will need to be deleted or returned.
 	// ------------------------------------------------------
@@ -1311,14 +1483,14 @@ OTLedger * OT_API::LoadOutbox(const OTIdentifier & SERVER_ID,
 //
 OTMessage * OT_API::PopMessageBuffer()
 {
-	OT_ASSERT(NULL != m_pClient);
-	
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+		
 	return m_pClient->GetMessageBuffer().GetNextMessage();
 }
 
 void OT_API::FlushMessageBuffer()
 {
-	OT_ASSERT(NULL != m_pClient);
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 	
 	OTMessage * pMsg = m_pClient->GetMessageBuffer().GetNextMessage();
 	
@@ -1355,8 +1527,10 @@ void OT_API::FlushMessageBuffer()
 bool OT_API::ConnectServer(OTIdentifier & SERVER_ID, OTIdentifier	& USER_ID,
 						   OTString & strCA_FILE, OTString & strKEY_FILE, OTString & strKEY_PASSWORD)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 #if defined(OT_XMLRPC_MODE)
-	return false;
+	OT_ASSERT_MSG(m_bInitialized, "OT_API::ConnectServer not necessary in XmlRpc mode.");
 #endif
 	
 	// Wallet, after loading, should contain a list of server
@@ -1398,8 +1572,10 @@ bool OT_API::ConnectServer(OTIdentifier & SERVER_ID, OTIdentifier	& USER_ID,
 //
 bool OT_API::ProcessSockets()
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+
 #if defined(OT_XMLRPC_MODE)
-	return false;
+	OT_ASSERT_MSG(m_bInitialized, "OT_API::ProcessSockets not necessary in XmlRpc mode.");
 #endif
 	
 	bool bFoundMessage = false, bSuccess = false;
@@ -1408,7 +1584,7 @@ bool OT_API::ProcessSockets()
 	{
 		OTMessage * pMsg = new OTMessage;
 		
-		OT_ASSERT(NULL != pMsg);
+		OT_ASSERT_MSG(NULL != pMsg, "Error allocating memory in the OT API");
 		
 		// If this returns true, that means a Message was
 		// received and processed into an OTMessage object (theMsg)
@@ -1452,9 +1628,11 @@ bool OT_API::ProcessSockets()
 //
 bool OT_API::IsBasketCurrency(const OTIdentifier & BASKET_ASSET_TYPE_ID) // returns true or false.
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+
 	// -----------------------------------------------------
 	
-	// There is an OT_ASSERT in here for memory failure,
+	// There is an OT_ASSERT_MSG in here for memory failure,
 	// but it still might return NULL if various verification fails.
 	OTAssetContract * pContract = this->GetAssetType(BASKET_ASSET_TYPE_ID); 
 	
@@ -1492,9 +1670,11 @@ bool OT_API::IsBasketCurrency(const OTIdentifier & BASKET_ASSET_TYPE_ID) // retu
 //
 int OT_API::GetBasketMemberCount(const OTIdentifier & BASKET_ASSET_TYPE_ID)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+
 	// -----------------------------------------------------
 	
-	// There is an OT_ASSERT in here for memory failure,
+	// There is an OT_ASSERT_MSG in here for memory failure,
 	// but it still might return NULL if various verification fails.
 	OTAssetContract * pContract = this->GetAssetType(BASKET_ASSET_TYPE_ID); 
 	
@@ -1534,9 +1714,11 @@ bool OT_API::GetBasketMemberType(const OTIdentifier & BASKET_ASSET_TYPE_ID,
 								 const int nIndex,
 								 OTIdentifier & theOutputMemberType)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------
 	
-	// There is an OT_ASSERT in here for memory failure,
+	// There is an OT_ASSERT_MSG in here for memory failure,
 	// but it still might return NULL if various verification fails.
 	OTAssetContract * pContract = this->GetAssetType(BASKET_ASSET_TYPE_ID); 
 	
@@ -1565,7 +1747,7 @@ bool OT_API::GetBasketMemberType(const OTIdentifier & BASKET_ASSET_TYPE_ID,
 		
 		BasketItem * pItem = theBasket.At(nIndex);
 		
-		OT_ASSERT(NULL != pItem);
+		OT_ASSERT_MSG(NULL != pItem, "Bad index in OT_API::GetBasketMemberType");
 		
 		theOutputMemberType = pItem->SUB_CONTRACT_ID;
 		
@@ -1588,9 +1770,11 @@ bool OT_API::GetBasketMemberType(const OTIdentifier & BASKET_ASSET_TYPE_ID,
 long OT_API::GetBasketMemberMinimumTransferAmount(const OTIdentifier & BASKET_ASSET_TYPE_ID,
 												  const int nIndex)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------
 	
-	// There is an OT_ASSERT in here for memory failure,
+	// There is an OT_ASSERT_MSG in here for memory failure,
 	// but it still might return NULL if various verification fails.
 	OTAssetContract * pContract = this->GetAssetType(BASKET_ASSET_TYPE_ID); 
 	
@@ -1619,7 +1803,7 @@ long OT_API::GetBasketMemberMinimumTransferAmount(const OTIdentifier & BASKET_AS
 		
 		BasketItem * pItem = theBasket.At(nIndex);
 		
-		OT_ASSERT(NULL != pItem);
+		OT_ASSERT_MSG(NULL != pItem, "Bad index in OT_API::GetBasketMemberMinimumTransferAmount.");
 		
 		return pItem->lMinimumTransferAmount;;
 	}
@@ -1637,9 +1821,11 @@ long OT_API::GetBasketMemberMinimumTransferAmount(const OTIdentifier & BASKET_AS
 //
 long OT_API::GetBasketMinimumTransferAmount(const OTIdentifier & BASKET_ASSET_TYPE_ID)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------
 	
-	// There is an OT_ASSERT in here for memory failure,
+	// There is an OT_ASSERT_MSG in here for memory failure,
 	// but it still might return NULL if various verification fails.
 	OTAssetContract * pContract = this->GetAssetType(BASKET_ASSET_TYPE_ID); 
 	
@@ -1682,6 +1868,8 @@ long OT_API::GetBasketMinimumTransferAmount(const OTIdentifier & BASKET_ASSET_TY
 OTBasket * OT_API::GenerateBasketCreation(const OTIdentifier & USER_ID,
 										  const long MINIMUM_TRANSFER) // Must be above zero. If <= 0, defaults to 10.
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	long lMinimumTransferAmount = 10;
 	
 	if (MINIMUM_TRANSFER > 0)
@@ -1721,7 +1909,7 @@ OTBasket * OT_API::GenerateBasketCreation(const OTIdentifier & USER_ID,
 
 	OTBasket * pBasket = new OTBasket(0, lMinimumTransferAmount);
 	
-	OT_ASSERT(NULL != pBasket);
+	OT_ASSERT_MSG(NULL != pBasket, "Error allocating memory in the OT API");
 	
 	pBasket->SignContract(*pNym);
 	pBasket->SaveContract();
@@ -1739,6 +1927,8 @@ bool OT_API::AddBasketCreationItem(const OTIdentifier & USER_ID, // for signatur
 								   const OTIdentifier & ASSET_TYPE_ID, 
 								   const long MINIMUM_TRANSFER)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------
 	
 	OTWallet * pWallet = GetWallet();
@@ -1771,7 +1961,7 @@ bool OT_API::AddBasketCreationItem(const OTIdentifier & USER_ID, // for signatur
 	//  (No need to cleanup.)
 	// -----------------------------------------------------
 
-	// There is an OT_ASSERT in here for memory failure,
+	// There is an OT_ASSERT_MSG in here for memory failure,
 	// but it still might return NULL if various verification fails.
 	OTAssetContract * pContract = this->GetAssetType(ASSET_TYPE_ID); 
 	
@@ -1814,6 +2004,8 @@ OTBasket * OT_API::GenerateBasketExchange(const OTIdentifier & SERVER_ID,
 										  const OTIdentifier & BASKET_ASSET_ACCT_ID,
 										  const int TRANSFER_MULTIPLE)	// 1			2			 3
 {																		// 5=2,3,4  OR  10=4,6,8  OR 15=6,9,12
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------
 	
 	OTWallet * pWallet = GetWallet();
@@ -1853,7 +2045,7 @@ OTBasket * OT_API::GenerateBasketExchange(const OTIdentifier & SERVER_ID,
 	
 	// -----------------------------------------------------------------
 	
-	// There is an OT_ASSERT in here for memory failure,
+	// There is an OT_ASSERT_MSG in here for memory failure,
 	// but it still might return NULL if various verification fails.
 	OTAssetContract * pContract = this->GetAssetType(BASKET_ASSET_TYPE_ID); 
 
@@ -1961,7 +2153,7 @@ OTBasket * OT_API::GenerateBasketExchange(const OTIdentifier & SERVER_ID,
 	{
 		pRequestBasket = new OTBasket(theBasket.Count(), theBasket.GetMinimumTransfer());
 		
-		OT_ASSERT(NULL != pRequestBasket);
+		OT_ASSERT_MSG(NULL != pRequestBasket, "Error allocating memory in the OT API");
 
 		pRequestBasket->SetTransferMultiple(nTransferMultiple);
 	
@@ -1998,6 +2190,8 @@ bool OT_API::AddBasketExchangeItem(const OTIdentifier & SERVER_ID,
 								   const OTIdentifier & ASSET_TYPE_ID,
 								   const OTIdentifier & ASSET_ACCT_ID)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------
 	
 	OTWallet * pWallet = GetWallet();
@@ -2030,7 +2224,7 @@ bool OT_API::AddBasketExchangeItem(const OTIdentifier & SERVER_ID,
 	//  (No need to cleanup.)
 	// -----------------------------------------------------------------
 	
-	// There is an OT_ASSERT in here for memory failure,
+	// There is an OT_ASSERT_MSG in here for memory failure,
 	// but it still might return NULL if various verification fails.
 	OTAssetContract * pContract = this->GetAssetType(ASSET_TYPE_ID); 
 	
@@ -2157,6 +2351,8 @@ void OT_API::issueBasket(OTIdentifier	& SERVER_ID,
 						 OTIdentifier	& USER_ID,
 						 OTString		& BASKET_INFO)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -2236,6 +2432,8 @@ void OT_API::exchangeBasket(OTIdentifier	& SERVER_ID,
 							// ----------------------------------------
 							)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -2268,7 +2466,7 @@ void OT_API::exchangeBasket(OTIdentifier	& SERVER_ID,
 	//  (No need to cleanup.)
 	// -----------------------------------------------------------------
 	
-	// There is an OT_ASSERT in here for memory failure,
+	// There is an OT_ASSERT_MSG in here for memory failure,
 	// but it still might return NULL if various verification fails.
 	OTAssetContract * pContract = this->GetAssetType(BASKET_ASSET_ID); 
 	
@@ -2321,7 +2519,7 @@ void OT_API::exchangeBasket(OTIdentifier	& SERVER_ID,
 void OT_API::getTransactionNumber(OTIdentifier & SERVER_ID,
 								  OTIdentifier & USER_ID)
 {
-	OT_ASSERT(NULL != m_pWallet);
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 	
 	// -----------------------------------------------------------------
 	
@@ -2379,7 +2577,7 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 								OTIdentifier	& ACCT_ID,
 								OTString		& AMOUNT)
 {
-	OT_ASSERT(NULL != m_pWallet);
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 	
 	// -----------------------------------------------------------------
 	
@@ -2629,7 +2827,7 @@ void OT_API::notarizeDeposit(OTIdentifier	& SERVER_ID,
 							 OTIdentifier	& ACCT_ID,
 							 OTString		& THE_PURSE)
 {
-	OT_ASSERT(NULL != m_pWallet);
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 	
 	// -----------------------------------------------------------------
 	
@@ -2836,8 +3034,8 @@ void OT_API::withdrawVoucher(OTIdentifier	& SERVER_ID,
 							 OTString		& CHEQUE_MEMO,
 							 OTString		& AMOUNT)
 {
-	OT_ASSERT(NULL != m_pWallet);
-	
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -3028,7 +3226,7 @@ void OT_API::depositCheque(OTIdentifier	& SERVER_ID,
 						   OTIdentifier	& ACCT_ID,
 						   OTString		& THE_CHEQUE)
 {
-	OT_ASSERT(NULL != m_pWallet);
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 	
 	// -----------------------------------------------------------------
 	
@@ -3185,6 +3383,8 @@ void OT_API::depositPaymentPlan(const OTIdentifier	& SERVER_ID,
 								const OTIdentifier	& USER_ID,
 								const OTString		& THE_PAYMENT_PLAN)
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------
 	
 	OTWallet * pWallet = GetWallet();
@@ -3417,6 +3617,8 @@ void OT_API::issueMarketOffer(const OTIdentifier	& SERVER_ID,
 							  const long			& PRICE_LIMIT, // Per Minimum Increment...
 							  const bool			bBuyingOrSelling) //  BUYING == false, SELLING == true.
 {
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------
 	
 	OTWallet * pWallet = GetWallet();
@@ -3576,7 +3778,7 @@ void OT_API::issueMarketOffer(const OTIdentifier	& SERVER_ID,
 			// within this item to have an Asset Acct ID and "Currency" Acct ID that match
 			// those on this Item. Otherwise it will reject the offer.
 			
-			OT_ASSERT(NULL != pItem);
+			OT_ASSERT_MSG(NULL != pItem, "Error allocating memory in the OT API");
 			
 			OTString strTrade;
 			theTrade.SaveContract(strTrade);
@@ -3654,7 +3856,7 @@ void OT_API::notarizeTransfer(OTIdentifier	& SERVER_ID,
 							  OTString		& AMOUNT,
 							  OTString		& NOTE)
 {
-	OT_ASSERT(NULL != m_pWallet);
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 	
 	// -----------------------------------------------------------------
 	
@@ -3793,8 +3995,8 @@ void OT_API::getInbox(OTIdentifier & SERVER_ID,
 					  OTIdentifier & USER_ID,
 					  OTIdentifier & ACCT_ID)
 {
-	OT_ASSERT(NULL != m_pWallet);
-
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -3876,8 +4078,8 @@ void OT_API::processInbox(OTIdentifier	& SERVER_ID,
 						  OTIdentifier	& ACCT_ID,
 						  OTString		& ACCT_LEDGER)
 {
-	OT_ASSERT(NULL != m_pWallet);
-
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -3960,7 +4162,7 @@ void OT_API::issueAssetType(OTIdentifier	&	SERVER_ID,
 							OTIdentifier	&	USER_ID,
 							OTString		&	THE_CONTRACT)
 {
-	OT_ASSERT(NULL != m_pWallet);
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 
 	// -----------------------------------------------------------------
 	
@@ -4041,8 +4243,8 @@ void OT_API::getContract(OTIdentifier & SERVER_ID,
 						 OTIdentifier & USER_ID,
 						 OTIdentifier & ASSET_ID)
 {
-	OT_ASSERT(NULL != m_pWallet);
-
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -4124,8 +4326,8 @@ void OT_API::getMint(OTIdentifier & SERVER_ID,
 					 OTIdentifier & USER_ID,
 					 OTIdentifier & ASSET_ID)
 {
-	OT_ASSERT(NULL != m_pWallet);
-
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -4206,8 +4408,8 @@ void OT_API::createAssetAccount(OTIdentifier & SERVER_ID,
 								OTIdentifier & USER_ID,
 								OTIdentifier & ASSET_ID)
 {	
-	OT_ASSERT(NULL != m_pWallet);
-
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -4288,8 +4490,8 @@ void OT_API::getAccount(OTIdentifier	& SERVER_ID,
 						OTIdentifier	& USER_ID,
 						OTIdentifier	& ACCT_ID)
 {	
-	OT_ASSERT(NULL != m_pWallet);
-
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -4366,8 +4568,8 @@ void OT_API::getAccount(OTIdentifier	& SERVER_ID,
 void OT_API::getRequest(OTIdentifier	& SERVER_ID,
 						OTIdentifier	& USER_ID)
 {	
-	OT_ASSERT(NULL != m_pWallet);
-
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -4420,7 +4622,7 @@ void OT_API::checkUser(OTIdentifier & SERVER_ID,
 					   OTIdentifier & USER_ID,
 					   OTIdentifier & USER_ID_CHECK)
 {	
-	OT_ASSERT(NULL != m_pWallet);
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 	
 	// -----------------------------------------------------
 	
@@ -4486,8 +4688,8 @@ void OT_API::checkUser(OTIdentifier & SERVER_ID,
 void OT_API::createUserAccount(OTIdentifier	& SERVER_ID,
 							   OTIdentifier	& USER_ID)
 {	
-	OT_ASSERT(NULL != m_pWallet);
-
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -4540,8 +4742,8 @@ void OT_API::createUserAccount(OTIdentifier	& SERVER_ID,
 void OT_API::checkServerID(OTIdentifier	& SERVER_ID,
 						   OTIdentifier	& USER_ID)
 {	
-	OT_ASSERT(NULL != m_pWallet);
-
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);

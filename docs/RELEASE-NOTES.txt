@@ -3,6 +3,8 @@ NOTES on the Version:
 
 // ---------------------------------------------------------------------
 
+   0.39 --- Continually updating the API based on developer feedback.
+
    0.38 --- Added Payment Plans, Markets, and Baskets to the API. Also
             added message buffer access to the API, so you can read all
             the server replies if you want to (or flush them...)

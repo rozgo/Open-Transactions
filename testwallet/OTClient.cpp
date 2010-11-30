@@ -1684,6 +1684,85 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	
 	// ------------------------------------------------------------------------
 	
+	else if (OTClient::setNymName == requestedCommand) // SET NYM NAME
+	{	
+		OT_ASSERT(NULL != m_pWallet);
+		
+		OTLog::Output(0, "Please enter a Nym ID: ");
+		// User input.
+		// I need an account
+		OTString strNymID;
+		strNymID.OTfgets(std::cin);
+		
+		const OTIdentifier theTargetNymID(strNymID);
+		
+		OTPseudonym * pTargetNym = m_pWallet->GetNymByID(theTargetNymID);
+		
+		if (NULL != pTargetNym)
+		{
+			OTLog::Output(0, "Enter the new client-side \"name\" label for that Nym: ");
+			// User input.
+			// I need a name
+			OTString strNewName;
+			strNewName.OTfgets(std::cin);
+			
+			OTString strOldName(pTargetNym->GetNymName()); // just in case.
+			
+			pTargetNym->SetNymName(strNewName);
+			
+			if (pTargetNym->SaveSignedNymfile(theNym)) // theNym is signer on this file.
+			{
+				m_pWallet->SaveWallet(); // Only 'cause the nym's name is stored here, too.
+			}
+			else
+				pTargetNym->SetNymName(strOldName);
+		}
+		else 
+		{
+			OTLog::Output(0, "No Nym found with that ID. Try 'load'.\n");
+		}
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	else if (OTClient::setAccountName == requestedCommand) // SET ACCOUNT NAME
+	{	
+		OT_ASSERT(NULL != m_pWallet);
+		
+		OTLog::Output(0, "Please enter an asset account ID: ");
+		// User input.
+		// I need an account
+		OTString strAcctID;
+		strAcctID.OTfgets(std::cin);
+		
+		const OTIdentifier theAccountID(strAcctID);
+		
+		OTAccount * pAccount = m_pWallet->GetAccount(theAccountID);
+		
+		if (NULL != pAccount)
+		{
+			OTLog::Output(0, "Enter the new client-side \"name\" label for that Account: ");
+			// User input.
+			// I need a name
+			OTString strNewName;
+			strNewName.OTfgets(std::cin);
+			
+			pAccount->SetName(strNewName);
+			pAccount->ReleaseSignatures();
+			
+			pAccount->SignContract(theNym);
+			pAccount->SaveAccount();
+			
+			m_pWallet->SaveWallet();
+		}
+		else 
+		{
+			OTLog::Output(0, "No account found with that ID. Try 'load'.\n");
+		}
+	}
+	
+	// ------------------------------------------------------------------------
+	
 	else if (OTClient::getInbox == requestedCommand) // GET INBOX
 	{	
 		OTLog::Output(0, "Please enter an account number: ");

@@ -534,6 +534,25 @@ long OTAccount::GetBalance()
 }
 
 
+void TranslateAccountTypeToString(OTAccount::AccountType theType, OTString & strAcctType)
+{
+	switch (theType) 
+	{
+		case OTAccount::simple:
+			strAcctType.Set("simple");
+			break;
+		case OTAccount::issuer:
+			strAcctType.Set("issuer");
+			break;
+		case OTAccount::basket:
+			strAcctType.Set("basket");
+			break;
+		default:
+			strAcctType.Set("err_acct");
+			break;
+	}	
+}
+
 // Most contracts do not override this function...
 // But OTAccount does, because IF THE SIGNER has chosen to SIGN the account based on 
 // the current balances, then we need to update the m_xmlUnsigned member with the
@@ -551,23 +570,8 @@ void OTAccount::UpdateContents()
 	OTString ACCOUNT_ID(GetPurportedAccountID()), SERVER_ID(GetPurportedServerID()), USER_ID(GetUserID());
 	
 	OTString strAcctType;
-	switch (m_AcctType) {
-		case OTAccount::simple:
-			strAcctType.Set("simple");
-			break;
-		case OTAccount::issuer:
-			strAcctType.Set("issuer");
-			break;
-		case OTAccount::basket:
-			strAcctType.Set("basket");
-			break;
-		default:
-			strAcctType.Set("err_acct");
-			break;
-	}
-	
+	TranslateAccountTypeToString(m_AcctType, strAcctType);
 
-	
 	// I release this because I'm about to repopulate it.
 	m_xmlUnsigned.Release();
 	
@@ -587,21 +591,42 @@ void OTAccount::UpdateContents()
 
 
 
+bool OTAccount::SaveContractWallet(OTString & strContents) const
+{
+	const OTString	strAccountID(GetPurportedAccountID()), strServerID(GetPurportedServerID()), 
+					strUserID(GetUserID()), strAssetTypeID(m_AcctAssetTypeID);
+	
+	OTString strAcctType;
+	TranslateAccountTypeToString(m_AcctType, strAcctType);
+		
+	strContents.Concatenate("<!-- %s --><assetAccount name=\"%s\"\n" // Client-side only label.
+							" accountID=\"%s\"\n" 
+							" userID=\"%s\"\n"
+							" serverID=\"%s\"\n"
+							" assetTypeID=\"%s\" />\n\n", // Unnecessary in wallet FILE, but convenient for OTWallet::DisplayStatistics().
+							strAcctType.Get(), m_strName.Get(),
+							strAccountID.Get(),
+							strUserID.Get(),
+							strServerID.Get(),
+							strAssetTypeID.Get());
+	
+	return true;
+}
+
 
 bool OTAccount::SaveContractWallet(std::ofstream & ofs)
 {
-	OTString strAccountID(GetPurportedAccountID()), strServerID(GetPurportedServerID()), strUserID(GetUserID());
+	OTString strOutput;
 	
-	ofs << "<assetAccount name=\""	<< m_strName.Get()		<< 
-//	"\"\n file=\""					<< m_strFilename.Get()	<<
-	"\"\n userID=\""				<< strUserID.Get()		<<
-	"\"\n serverID=\""				<< strServerID.Get()	<<
-	"\"\n accountID=\""				<< strAccountID.Get()	<<
-	"\"  /> \n\n";
-
-	return true;
+	if (SaveContractWallet(strOutput))
+	{
+		ofs << strOutput.Get();
+		return true;
+	}
 	
+	return false;
 }
+
 
 /*
 bool OTAccount::SaveContractWallet(FILE * fl)

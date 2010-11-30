@@ -2,7 +2,7 @@
 
 /*************************************************************************
  *    
- * Open Transactions 0.38 -- Library, API, Protocol, Server, Test Client
+ * Open Transactions 0.39 -- Library, API, Protocol, Server, Test Client
  *    
  *    			-- Anonymous Numbered Accounts...
  *    			-- Untraceable Digital Cash...
@@ -75,9 +75,12 @@
  *        token algorithms in Open Transactions (yet), the other functionality will
  *        continue to operate.
  *    
- *    OpenSSL WAIVER:
+ *    OpenSSL / Lucre / Etc. WAIVER:
  *        This program is released under the AGPL with the additional exemption 
- *    	  that compiling, linking, and/or using OpenSSL is allowed.
+ *    	  that compiling, linking, and/or using OpenSSL is allowed. The same is
+ *        true for any other open source libraries included in this project: 
+ *        complete waiver from the AGPL is hereby granted to compile, link, and/or
+ *        use them with Open Transactions, according to their own terms.
  *    
  *    DISCLAIMER:
  *        This program is distributed in the hope that it will be useful,
@@ -93,7 +96,7 @@ Public key for "FellowTraveler", author:
 
 
 -----BEGIN PGP PUBLIC KEY BLOCK-----
- Version: PGP Desktop 10.0.1 - not licensed for commercial use: www.pgp.com
+ Version: PGP Desktop 10.0.1
  
  mQINBExGapYBEACm9Qjd1rl6UoXFx/1ccUZ54LJwpBLJC55sZC7owl3yTKVtklxX
  YPt5mydOxO0G1p4iq+ctgevQxvZv42zDI2QlBrSDJBgX54ufnekLvkzPr+PAVDcW

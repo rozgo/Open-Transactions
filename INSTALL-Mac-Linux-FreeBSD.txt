@@ -21,7 +21,7 @@ OpenTransactions for Mac OS X, Linux, and FreeBSD
 
 PRE-BUILD:
 
---- Make sure OpenSSL 1.0.0a is installed, since earlier versions don't
+--- Make sure OpenSSL 1.0.0b is installed, since earlier versions don't
     have WHIRLPOOL and the software won't work without it.
 
     To check current version:  openssl version
@@ -73,7 +73,6 @@ sudo rm /usr/lib/libssl.dylib
 sudo ln -s /opt/local/lib/libssl.1.0.0.dylib /usr/lib/libssl.dylib
 
 Now you should be good to go with XCode!
-
 ------------------------------------------------------------------------
 
 
@@ -83,30 +82,32 @@ NOW YOU ARE READY TO COMPILE THE CODE:
 
 To build everything, use this command:
 
-      make
-
-Or:   make PLATFORM=[darwin|linux|freebsd]
-
-
-(It WILL try to auto-detect your operating system.)
-
-If you prefer to build in XmlRpc mode (preferred) then use this instead:
-   
       make rpc
 Or:   make rpc PLATFORM=[darwin|linux|freebsd]
+
+(Optional since it WILL try to auto-detect your operating system.)
+
+If you prefer to use SSL/TCP transport mode (not recommended)
+then use this instead:
+   
+      make
+Or:   make PLATFORM=[darwin|linux|freebsd]
 
 
 Other build targets are debug, debugrpc, and clean.
 
+You can also build the API for several languages (python, ruby,
+perl5, and php5) at the top level. For other languages, see the
+below notes, as well as the testwallet/API-README.txt file.
 
 
 *For FreeBSD, make sure you have gmake installed, since the Makefiles won't
 work with the default version of make. Once you install it, you can build
 using these commands, depending on which options you prefer:
-      gmake
-      gmake PLATFORM=[darwin|linux|freebsd]
       gmake rpc
       gmake rpc PLATFORM=[darwin|linux|freebsd]
+      gmake
+      gmake PLATFORM=[darwin|linux|freebsd]
 
 
 
@@ -144,7 +145,7 @@ With the above steps, the library, server, and test client are now built and rea
 --- OPTIONAL: Native APIs available for C, C++, C#, Obj-C, Java, Ruby, Python, Perl, Php, Lisp, etc.
 
 
-cd Open-Transactions/testwallet;
+cd Open-Transactions/testwallet; make clean;
 make -f Makefile.API [TRANSPORT=XmlRpc] PLATFORM=[darwin|linux|freebsd] LANGUAGE=[c|csharp|java|ruby|python|perl|php|tcl|lisp]
 
 
