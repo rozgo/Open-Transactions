@@ -306,8 +306,6 @@ bool OTTransaction::GetSuccess()
 {
 	OTItem * pItem = NULL;
 	
-	bool bReturnVal = false;
-	
 	for (listOfItems::iterator ii = m_listItems.begin(); ii != m_listItems.end(); ++ii)
 	{
 		pItem = *ii;

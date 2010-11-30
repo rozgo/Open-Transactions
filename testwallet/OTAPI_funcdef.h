@@ -1034,7 +1034,7 @@ void OT_API_getInbox(const char * SERVER_ID,
  need to use some other function call first to set up that ledger with
  the various requests (accept transfer, accept receipt, etc) before you 
  can then use THIS function call to actually send those requests to
- the server. Coming soon.
+ the server. (See all the Ledger functions.)
  
  (Try the 'i' command in the test client, if you want to empty out the
  inbox and automatically accept all of the transactions within.)
