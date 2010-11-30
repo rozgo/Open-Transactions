@@ -31,11 +31,6 @@ public class otapi {
     return ret;
   }
 
-  public static int OT_API_GetNymCount() {
-    int ret = otapiPINVOKE.OT_API_GetNymCount();
-    return ret;
-  }
-
   public static int OT_API_GetServerCount() {
     int ret = otapiPINVOKE.OT_API_GetServerCount();
     return ret;
@@ -51,13 +46,8 @@ public class otapi {
     return ret;
   }
 
-  public static string OT_API_GetNym_ID(int nIndex) {
-    string ret = otapiPINVOKE.OT_API_GetNym_ID(nIndex);
-    return ret;
-  }
-
-  public static string OT_API_GetNym_Name(string NYM_ID) {
-    string ret = otapiPINVOKE.OT_API_GetNym_Name(NYM_ID);
+  public static int OT_API_GetNymCount() {
+    int ret = otapiPINVOKE.OT_API_GetNymCount();
     return ret;
   }
 
@@ -103,6 +93,31 @@ public class otapi {
 
   public static string OT_API_GetAccountWallet_AssetTypeID(string ACCOUNT_ID) {
     string ret = otapiPINVOKE.OT_API_GetAccountWallet_AssetTypeID(ACCOUNT_ID);
+    return ret;
+  }
+
+  public static int OT_API_SetAccountWallet_Name(string ACCT_ID, string SIGNER_NYM_ID, string ACCT_NEW_NAME) {
+    int ret = otapiPINVOKE.OT_API_SetAccountWallet_Name(ACCT_ID, SIGNER_NYM_ID, ACCT_NEW_NAME);
+    return ret;
+  }
+
+  public static int OT_API_GetNym_TransactionNumCount(string SERVER_ID, string NYM_ID) {
+    int ret = otapiPINVOKE.OT_API_GetNym_TransactionNumCount(SERVER_ID, NYM_ID);
+    return ret;
+  }
+
+  public static string OT_API_GetNym_ID(int nIndex) {
+    string ret = otapiPINVOKE.OT_API_GetNym_ID(nIndex);
+    return ret;
+  }
+
+  public static string OT_API_GetNym_Name(string NYM_ID) {
+    string ret = otapiPINVOKE.OT_API_GetNym_Name(NYM_ID);
+    return ret;
+  }
+
+  public static int OT_API_SetNym_Name(string NYM_ID, string SIGNER_NYM_ID, string NYM_NEW_NAME) {
+    int ret = otapiPINVOKE.OT_API_SetNym_Name(NYM_ID, SIGNER_NYM_ID, NYM_NEW_NAME);
     return ret;
   }
 

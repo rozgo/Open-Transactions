@@ -155,19 +155,21 @@ int OT_API_ProcessSockets(void);	// Probably not necessary in HTTP mode.
 // These functions allow you to re-load that data so your GUI can reflect
 // the updates to those files.
 
-int OT_API_GetNymCount(void);
 int OT_API_GetServerCount(void);
 int OT_API_GetAssetTypeCount(void);
 int OT_API_GetAccountCount(void);
+int OT_API_GetNymCount(void);
 
-const char * OT_API_GetNym_ID(int nIndex); // based on Index (above 4 functions) this returns the Nym's ID
-const char * OT_API_GetNym_Name(const char * NYM_ID); // Returns Nym Name (based on NymID)
+
 
 const char * OT_API_GetServer_ID(int nIndex); // based on Index (above 4 functions) this returns the Server's ID
 const char * OT_API_GetServer_Name(const char * SERVER_ID); // Return's Server's name (based on server ID)
 
+
+
 const char * OT_API_GetAssetType_ID(int nIndex); // returns Asset Type ID (based on index from GetAssetTypeCount)
 const char * OT_API_GetAssetType_Name(const char * ASSET_TYPE_ID); // Returns asset type name based on Asset Type ID
+
 
 // You already have accounts in your wallet (without any server communications)
 // and these functions allow you to query the data members of those accounts.
@@ -179,6 +181,56 @@ const char * OT_API_GetAccountWallet_Name(const char * ACCOUNT_ID);	 // returns 
 const char * OT_API_GetAccountWallet_Balance(const char * ACCOUNT_ID);	 // returns the account balance, based on account ID.
 const char * OT_API_GetAccountWallet_Type(const char * ACCOUNT_ID);	 // returns the account type (simple, issuer, etc)
 const char * OT_API_GetAccountWallet_AssetTypeID(const char * ACCOUNT_ID);	 // returns asset type of the account
+
+// Returns OT_TRUE (1) or OT_FALSE (0)
+// The asset account's name is merely a client-side label.
+int OT_API_SetAccountWallet_Name(const char * ACCT_ID, 
+								 const char * SIGNER_NYM_ID, 
+								 const char * ACCT_NEW_NAME);
+
+
+//----------------------------------------------------------
+// GET NYM TRANSACTION NUM COUNT
+// How many transaction numbers does the Nym have (for a given server?)
+//
+// This function returns the count of numbers available. If 0, then no
+// transactions will work until you call OT_API_getTransactionNumber()
+// to replenish your Nym's supply for that ServerID...
+//
+// Returns a count (0 through N numbers available), 
+// or -1 for error (no nym found.)
+//
+int OT_API_GetNym_TransactionNumCount(const char * SERVER_ID, const char * NYM_ID);
+
+const char * OT_API_GetNym_ID(int nIndex); // based on Index (above 4 functions) this returns the Nym's ID
+const char * OT_API_GetNym_Name(const char * NYM_ID); // Returns Nym Name (based on NymID)
+
+
+// -----------------------------------
+// SET NYM NAME
+//
+// You might have 40 of your friends' public nyms in
+// your wallet. You might have labels on each of them.
+// But whenever you change a label (and thus re-sign the
+// file for that Nym when you save it), you only SIGN
+// using one of your OWN nyms, for which you have a private
+// key available for signing.
+//
+// Signer Nym?
+// When testing, there is only one nym, so you just pass it
+// twice.  But in real production, a user will have a default
+// signing nym, the same way that he might have a default 
+// signing key in PGP, and that must be passed in whenever
+// he changes the name on any of the other nyms in his wallet.
+// (In order to properly sign and save the change.)
+//
+// Returns OT_TRUE (1) or OT_FALSE (0)
+//
+int OT_API_SetNym_Name(const char * NYM_ID, 
+					   const char * SIGNER_NYM_ID, 
+					   const char * NYM_NEW_NAME); // actually returns OT_BOOL.
+
+
 
 
 
@@ -483,7 +535,7 @@ const char * OT_API_LoadOutbox(const char * SERVER_ID,
  accept or reject.)
  
  -- Then call OT_API_Ledger_CreateResponse in order to create a
- 'response' ledger for that inbox, which will be send to the server.
+ 'response' ledger for that inbox, which will be sent to the server.
  
  -- Then call OT_API_Ledger_GetCount (pass it the inbox) to find out how many 
  transactions are inside of it.  Use that count to LOOP through them...

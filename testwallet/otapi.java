@@ -24,10 +24,6 @@ public class otapi {
     return otapiJNI.OT_API_ProcessSockets();
   }
 
-  public static int OT_API_GetNymCount() {
-    return otapiJNI.OT_API_GetNymCount();
-  }
-
   public static int OT_API_GetServerCount() {
     return otapiJNI.OT_API_GetServerCount();
   }
@@ -40,12 +36,8 @@ public class otapi {
     return otapiJNI.OT_API_GetAccountCount();
   }
 
-  public static String OT_API_GetNym_ID(int nIndex) {
-    return otapiJNI.OT_API_GetNym_ID(nIndex);
-  }
-
-  public static String OT_API_GetNym_Name(String NYM_ID) {
-    return otapiJNI.OT_API_GetNym_Name(NYM_ID);
+  public static int OT_API_GetNymCount() {
+    return otapiJNI.OT_API_GetNymCount();
   }
 
   public static String OT_API_GetServer_ID(int nIndex) {
@@ -82,6 +74,26 @@ public class otapi {
 
   public static String OT_API_GetAccountWallet_AssetTypeID(String ACCOUNT_ID) {
     return otapiJNI.OT_API_GetAccountWallet_AssetTypeID(ACCOUNT_ID);
+  }
+
+  public static int OT_API_SetAccountWallet_Name(String ACCT_ID, String SIGNER_NYM_ID, String ACCT_NEW_NAME) {
+    return otapiJNI.OT_API_SetAccountWallet_Name(ACCT_ID, SIGNER_NYM_ID, ACCT_NEW_NAME);
+  }
+
+  public static int OT_API_GetNym_TransactionNumCount(String SERVER_ID, String NYM_ID) {
+    return otapiJNI.OT_API_GetNym_TransactionNumCount(SERVER_ID, NYM_ID);
+  }
+
+  public static String OT_API_GetNym_ID(int nIndex) {
+    return otapiJNI.OT_API_GetNym_ID(nIndex);
+  }
+
+  public static String OT_API_GetNym_Name(String NYM_ID) {
+    return otapiJNI.OT_API_GetNym_Name(NYM_ID);
+  }
+
+  public static int OT_API_SetNym_Name(String NYM_ID, String SIGNER_NYM_ID, String NYM_NEW_NAME) {
+    return otapiJNI.OT_API_SetNym_Name(NYM_ID, SIGNER_NYM_ID, NYM_NEW_NAME);
   }
 
   public static String OT_API_WriteCheque(String SERVER_ID, String CHEQUE_AMOUNT, String VALID_FROM, String VALID_TO, String SENDER_ACCT_ID, String SENDER_USER_ID, String CHEQUE_MEMO, String RECIPIENT_USER_ID) {

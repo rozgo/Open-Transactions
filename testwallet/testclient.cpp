@@ -84,6 +84,7 @@
 
 #include <cstring>
 #include <cstdio>
+#include <cstdlib>
 
 
 extern "C" 
@@ -753,6 +754,15 @@ int main (int argc, char **argv)
 			OTString strStat;
 			g_OT_API.GetWallet()->DisplayStatistics(strStat);
 			OTLog::vOutput(0, "%s\n", strStat.Get());
+			
+			continue;
+		}
+		
+		else if (strLine.compare(0,4,"help") == 0)
+		{
+			OTLog::Output(0, "User has instructed to display the help file...\n");
+			
+			system("more ../docs/CLIENT-COMMANDS.txt");
 			
 			continue;
 		}

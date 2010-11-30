@@ -1005,6 +1005,42 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 			// ------------------------------------------------------------------------
 		}
 		
+		// set nym name
+		else if (!strcmp(buf, "setnymname\n"))
+		{
+			OTLog::Output(0, "(User has instructed to set a Nym's client-side name...)\n");
+			
+			// ------------------------------------------------------------------------------			
+			// if successful setting up the command payload...
+			
+			if (m_pClient->ProcessUserCommand(OTClient::setNymName, theMessage, 
+											  *m_pNym, *m_pServerContract,
+											  NULL)) // NULL pAccount on this command.
+			{
+				//				bSendCommand = true; // No message sent.
+				//				bSendPayload = true; 
+			}
+			// ------------------------------------------------------------------------
+		}
+		
+		// set account name
+		else if (!strcmp(buf, "setaccountname\n"))
+		{
+			OTLog::Output(0, "(User wants to set an Asset Account's client-side name...)\n");
+			
+			// ------------------------------------------------------------------------------			
+			// if successful setting up the command payload...
+			
+			if (m_pClient->ProcessUserCommand(OTClient::setAccountName, theMessage, 
+											  *m_pNym, *m_pServerContract,
+											  NULL)) // NULL pAccount on this command.
+			{
+				//				bSendCommand = true; // No message sent.
+				//				bSendPayload = true; 
+			}
+			// ------------------------------------------------------------------------
+		}
+		
 		// get inbox 
 		else if (buf[0] == 'i')
 		{

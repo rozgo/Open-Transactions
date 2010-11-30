@@ -402,10 +402,8 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 		
 		OT_ASSERT_MSG(NULL != pAccount, "NULL account pointer in OTWallet::m_mapAccounts, OTWallet::DisplayStatistics");
 		
-		OTString strContents;
-		pAccount->SaveContents(strContents);
+		pAccount->SaveContractWallet(strOutput);
 		
-		strOutput.Concatenate(strContents);
 		strOutput.Concatenate("-------------------------------------------------\n");
 	}
 	
@@ -415,31 +413,40 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 }
 
 
-int OTWallet::SaveWallet(const char * szFilename)
+
+
+bool OTWallet::SaveWallet(const char * szFilename/*=NULL*/)
 {	
-	OT_ASSERT_MSG(NULL != szFilename, "Null filename sent to OTWallet::SaveWallet\n");
+	char * szFilenameToUse = NULL;
+	
+	if (NULL != szFilename)
+		m_strFilename.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), szFilename);
+	
+	szFilenameToUse = (char *)m_strFilename.Get();
+	
+	OT_ASSERT_MSG(NULL != szFilenameToUse, "Null filename in OTWallet::SaveWallet\n");
 
 	/*
 #ifdef _WIN32
 	FILE * fl = NULL;
-	errno_t err = fopen_s(&fl, szFilename, "wb");
+	errno_t err = fopen_s(&fl, szFilenameToUse, "wb");
 #else
-	FILE * fl = fopen(szFilename, "w");
+	FILE * fl = fopen(szFilenameToUse, "w");
 #endif
 
 	if (NULL == fl)
 	{
-		OTLog::vOutput(0, "Failed opening file in OTWallet::SaveWallet: %s\n", szFilename);
-		return 0;
+		OTLog::vOutput(0, "Failed opening file in OTWallet::SaveWallet: %s\n", szFilenameToUse);
+		return false;
 	}
 	*/
 	
-	std::ofstream ofs(szFilename, std::ios::binary);
+	std::ofstream ofs(szFilenameToUse, std::ios::binary);
 	
 	if (ofs.fail())
 	{
-		OTLog::vOutput(0, "Failed opening file in OTWallet::SaveWallet: %s\n", szFilename);
-		return 0;
+		OTLog::vOutput(0, "Failed opening file in OTWallet::SaveWallet: %s\n", szFilenameToUse);
+		return false;
 	}
 
 	ofs.clear();
@@ -576,7 +583,7 @@ int OTWallet::SaveWallet(const char * szFilename)
 
 	ofs.close();
 	
-	return 1;
+	return true;
 }
 
 
@@ -947,6 +954,7 @@ bool OTWallet::LoadWallet(const char * szFilename)
 					
 					if (pAccount)
 					{
+						pAccount->SetName(AcctName);
 						this->AddAccount(*pAccount);
 						// -----------------------------------------------------
 					}

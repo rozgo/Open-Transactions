@@ -1,5 +1,12 @@
+These instructions cover: BUILDING the API.
 
-To build the test client (it runs on the command-line):   
+If you were looking for instructions for USING the API,
+here they are:
+https://github.com/FellowTraveler/Open-Transactions/wiki/API
+
+
+
+First, to build the test client (it runs on the command-line):   
 
 MAC OR LINUX:  make
 FREEBSD:       gmake
@@ -9,6 +16,11 @@ You probably prefer to build in XmlRpc mode:
 
                make TRANSPORT=XmlRpc
                gmake TRANSPORT=XmlRpc
+
+
+
+
+-----------------------------------------
 
 WINDOWS: inside the Open-Transactions\testwallet\testwallet folder
 is an MS Visual C++ 2010 Express project that will build this project
@@ -25,7 +37,7 @@ be in a Debug or Release folder.
 
 
 
-USING THE OTAPI (Makefile.API)
+BUILDING THE OTAPI (Makefile.API)
 
 Open Transactions now supports native interfaces to the
 following languages:
@@ -35,6 +47,8 @@ C, Obj-C, C++, C#, Java, Ruby, Python, Perl, Php, Tcl, Lisp
 (Instructions for each language are below.)
 
 You likely wish to add TRANSPORT=XmlRpc to the below commands, as well.
+And: MAKE SURE you do a make clean when switching languages, since they
+can interfere with each other. 
 
 ----------------
 LINUX WARNING: On Linux, you must rebuild OTLib with the proper flags,

@@ -141,7 +141,9 @@ bool OTPseudonym::VerifyTransactionNum(const OTString & strServerID, const long 
 		{
 			dequeOfTransNums * pDeque = (ii->second);
 			
-			if (pDeque && !(pDeque->empty())) // there are some numbers for that server ID
+			OT_ASSERT(NULL != pDeque);
+			
+			if (!(pDeque->empty())) // there are some numbers for that server ID
 			{
 				// Let's loop through them and see if the culprit is there
 				for (unsigned i = 0; i < pDeque->size(); i++)
@@ -180,7 +182,9 @@ bool OTPseudonym::RemoveTransactionNum(OTPseudonym & SIGNER_NYM, const OTString 
 		{
 			dequeOfTransNums * pDeque = (ii->second);
 			
-			if (pDeque && !(pDeque->empty())) // there are some numbers for that server ID
+			OT_ASSERT(NULL != pDeque);
+			
+			if (!(pDeque->empty())) // there are some numbers for that server ID
 			{
 				// Let's loop through them and see if the culprit is there
 				for (unsigned i = 0; i < pDeque->size(); i++)
@@ -207,6 +211,46 @@ bool OTPseudonym::RemoveTransactionNum(OTPseudonym & SIGNER_NYM, const OTString 
 }
 
 
+// Returns count of transaction numbers available for a given server.
+//
+int OTPseudonym::GetTransactionNumCount(const OTIdentifier & theServerID) 
+{
+	int nReturnValue = 0;
+	
+	const OTString strServerID(theServerID);
+	std::string strID	= strServerID.Get();
+	
+	dequeOfTransNums * pDeque = NULL;
+	
+	// The Pseudonym has a deque of transaction numbers for each server.
+	// These deques are mapped by Server ID.
+	// 
+	// So let's loop through all the deques I have, and if the server ID on the map
+	// matches the Server ID that was passed in, then we found the right server.
+	for (mapOfTransNums::iterator ii = m_mapTransNum.begin();  ii != m_mapTransNum.end(); ++ii)
+	{
+		// if the ServerID passed in matches the serverID for the current deque
+		if ( strID == ii->first )
+		{
+			pDeque = (ii->second);
+			
+			OT_ASSERT(NULL != pDeque);
+
+			break;			
+		}
+	}
+	
+	// We found the right server, so let's count the transaction numbers
+	// that this nym has already stored for it.
+	if (NULL != pDeque)
+	{		
+		nReturnValue = pDeque->size();
+	}
+	
+	return nReturnValue;	
+}
+
+
 // No signer needed for this one, and save is false.
 // This version is ONLY for cases where we're not saving inside this function.
 bool OTPseudonym::AddTransactionNum(const OTString & strServerID, long lTransNum) 
@@ -218,7 +262,7 @@ bool OTPseudonym::AddTransactionNum(const OTString & strServerID, long lTransNum
 	// These deques are mapped by Server ID.
 	// 
 	// So let's loop through all the deques I have, and if the server ID on the map
-	// matches the Server ID that was passed in, then send out the transaction  number.
+	// matches the Server ID that was passed in, then add the transaction number.
 	for (mapOfTransNums::iterator ii = m_mapTransNum.begin();  ii != m_mapTransNum.end(); ++ii)
 	{
 		// if the ServerID passed in matches the serverID for the current deque
@@ -226,11 +270,11 @@ bool OTPseudonym::AddTransactionNum(const OTString & strServerID, long lTransNum
 		{
 			dequeOfTransNums * pDeque = (ii->second);
 			
-			if (pDeque)
-			{
-				pDeque->push_front(lTransNum);
-				bSuccess = true;
-			}
+			OT_ASSERT(NULL != pDeque);
+			
+			pDeque->push_front(lTransNum);
+			bSuccess = true;
+
 			bSuccessFindingServerID = true;
 			break;			
 		}
@@ -242,14 +286,13 @@ bool OTPseudonym::AddTransactionNum(const OTString & strServerID, long lTransNum
 	{
 		dequeOfTransNums * pDeque = new dequeOfTransNums;
 		
-		if (pDeque)
-		{
-			m_mapTransNum[strID] = pDeque;
-			pDeque->push_front(lTransNum);
-			bSuccess = true;
-		}
+		OT_ASSERT(NULL != pDeque);
+		
+		m_mapTransNum[strID] = pDeque;
+		pDeque->push_front(lTransNum);
+		bSuccess = true;
 	}
-
+	
 	return bSuccess;	
 }
 
@@ -289,7 +332,9 @@ bool OTPseudonym::GetNextTransactionNum(OTPseudonym & SIGNER_NYM, const OTString
 		{
 			dequeOfTransNums * pDeque = (ii->second);
 			
-			if (pDeque && !(pDeque->empty()))
+			OT_ASSERT(NULL != pDeque);
+			
+			if (!(pDeque->empty()))
 			{
 				lTransNum = pDeque->front();
 				
@@ -318,6 +363,9 @@ void OTPseudonym::ReleaseTransactionNumbers()
 	while (!m_mapTransNum.empty())
 	{		
 		dequeOfTransNums * pDeque = m_mapTransNum.begin()->second;
+
+		OT_ASSERT(NULL != pDeque);
+		
 		m_mapTransNum.erase(m_mapTransNum.begin());
 		delete pDeque;
 		pDeque = NULL;
@@ -457,7 +505,9 @@ void OTPseudonym::DisplayStatistics(OTString & strOutput)
 		std::string strServerID		= (*iii).first;
 		dequeOfTransNums * pDeque	= (iii->second);
 		
-		if (pDeque && !(pDeque->empty()))
+		OT_ASSERT(NULL != pDeque);
+		
+		if (!(pDeque->empty()))
 		{
 			for (unsigned i = 0; i < pDeque->size(); i++)
 			{
@@ -1004,7 +1054,9 @@ bool OTPseudonym::SavePseudonym(OTString & strNym)
 		strServerID					= (*iii).first;
 		dequeOfTransNums * pDeque	= (iii->second);
 		
-		if (pDeque && !(pDeque->empty()))
+		OT_ASSERT(NULL != pDeque);
+		
+		if (!(pDeque->empty()))
 		{
 			for (unsigned i = 0; i < pDeque->size(); i++)
 			{
@@ -1042,7 +1094,9 @@ void OTPseudonym::HarvestTransactionNumbers(OTPseudonym & SIGNER_NYM, OTPseudony
 		
 		OTString OTstrServerID = strServerID.c_str();
 
-		if (pDeque && !(pDeque->empty()))
+		OT_ASSERT(NULL != pDeque);
+		
+		if (!(pDeque->empty()))
 		{
 			for (unsigned i = 0; i < pDeque->size(); i++)
 			{

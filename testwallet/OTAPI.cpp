@@ -146,7 +146,7 @@ OT_API g_OT_API;
 // Ruby, Python, Perl, PHP, etc.)
 OT_BOOL OT_API_Init(const char * szClientPath)
 {
-	OT_ASSERT(NULL != szClientPath);
+	OT_ASSERT_MSG(NULL != szClientPath, "Null path passed to OT_API_Init");
 	
 	static bool bAlreadyInitialized = false;
 	
@@ -171,7 +171,7 @@ OT_BOOL OT_API_Init(const char * szClientPath)
 
 OT_BOOL OT_API_LoadWallet(const char * szPath)
 {
-	OT_ASSERT(NULL != szPath);
+	OT_ASSERT_MSG(NULL != szPath, "Null filename passed to OT_API_LoadWallet");
 
 	OTString strPath(szPath);
 	
@@ -217,7 +217,7 @@ static char g_tempBuf[MAX_STRING_LENGTH];
 // based on Index (above 4 functions) this returns the Nym's ID
 const char * OT_API_GetNym_ID(int nIndex)
 {
-	OT_ASSERT(nIndex >= 0);
+	OT_ASSERT_MSG(nIndex >= 0, "Invalid index less than zero in OT_API_GetNym_ID");
 	
 	OTIdentifier	theNymID;
 	OTString		strName;
@@ -245,7 +245,7 @@ const char * OT_API_GetNym_ID(int nIndex)
 // Returns Nym Name (based on NymID)
 const char * OT_API_GetNym_Name(const char * NYM_ID)
 {
-	OT_ASSERT(NULL != NYM_ID);
+	OT_ASSERT_MSG(NULL != NYM_ID, "Null NYM_ID passed to OT_API_GetNym_Name");
 	
 	OTIdentifier	theNymID(NYM_ID);
 	
@@ -268,10 +268,88 @@ const char * OT_API_GetNym_Name(const char * NYM_ID)
 	return NULL;
 }
 
+
+// -----------------------------------
+// SET NYM NAME
+//
+// You might have 40 of your friends' public nyms in
+// your wallet. You might have labels on each of them.
+// But whenever you change a label (and thus re-sign the
+// file for that Nym when you save it), you only SIGN
+// using one of your OWN nyms, for which you have a private
+// key available for signing.
+//
+// When testing, there is only one nym, so you just pass it
+// twice.  But in real production, a user will have a default
+// signing nym, the same way that he might have a default 
+// signing key in PGP, and that must be passed in whenever
+// he changes the name on any of the other nyms in his wallet.
+// (In order to properly sign and save the change.)
+//
+// Returns OT_TRUE (1) or OT_FALSE (0)
+//
+OT_BOOL OT_API_SetNym_Name(const char * NYM_ID, const char * SIGNER_NYM_ID, const char * NYM_NEW_NAME)
+{
+	OT_ASSERT_MSG(NULL != NYM_ID, "Null NYM_ID passed in.");
+	OT_ASSERT_MSG(NULL != SIGNER_NYM_ID, "Null SIGNER_NYM_ID passed in.");
+	OT_ASSERT_MSG(NULL != NYM_NEW_NAME, "Null NYM_NEW_NAME passed in.");
+
+	const OTIdentifier	theNymID(NYM_ID), 
+						theSignerNymID(SIGNER_NYM_ID);
+	const OTString		strNymName(NYM_NEW_NAME);
+	
+	bool bSuccess = g_OT_API.SetNym_Name(theNymID, theSignerNymID, strNymName);
+	
+	if (true == bSuccess)
+		return OT_TRUE;
+
+	return OT_FALSE;
+}
+
+
+
+
+//----------------------------------------------------------
+// GET NYM TRANSACTION NUM COUNT
+// How many transaction numbers does the Nym have (for a given server?)
+//
+// This function returns the count of numbers available. If 0, then no
+// transactions will work until you call OT_API_getTransactionNumber()
+// to replenish your Nym's supply for that ServerID...
+//
+// Returns a count (0 through N numbers available), 
+// or -1 for error (no nym found.)
+//
+int OT_API_GetNym_TransactionNumCount(const char * SERVER_ID, const char * NYM_ID)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != NYM_ID, "Null NYM_ID passed in.");
+	
+	OTIdentifier	theServerID(SERVER_ID);
+	OTIdentifier	theNymID(NYM_ID);
+	
+	int nReturnValue = 0;
+	
+	OTPseudonym * pNym = g_OT_API.GetNym(theNymID);
+	
+	if (NULL != pNym)
+	{
+		nReturnValue = pNym->GetTransactionNumCount(theServerID);
+	}
+	else 
+	{
+		nReturnValue = -1;
+	}
+
+	return nReturnValue;
+}
+
+
+
 // based on Index (above 4 functions) this returns the Server's ID
 const char * OT_API_GetServer_ID(int nIndex)
 {
-	OT_ASSERT(nIndex >= 0);
+	OT_ASSERT_MSG(nIndex >= 0, "Index out of bounds (it's in the negative).");
 	
 	OTIdentifier	theID;
 	OTString		strName;
@@ -299,7 +377,7 @@ const char * OT_API_GetServer_ID(int nIndex)
 // Return's Server's name (based on server ID)
 const char * OT_API_GetServer_Name(const char * THE_ID)
 {
-	OT_ASSERT(NULL != THE_ID);
+	OT_ASSERT_MSG(NULL != THE_ID, "Null THE_ID passed in.");
 	
 	OTIdentifier	theID(THE_ID);
 	
@@ -326,7 +404,7 @@ const char * OT_API_GetServer_Name(const char * THE_ID)
 // returns Asset Type ID (based on index from GetAssetTypeCount)
 const char * OT_API_GetAssetType_ID(int nIndex)
 {
-	OT_ASSERT(nIndex >= 0);
+	OT_ASSERT_MSG(nIndex >= 0, "Index out of bounds (it's in the negative).");
 	
 	OTIdentifier	theID;
 	OTString		strName;
@@ -353,7 +431,7 @@ const char * OT_API_GetAssetType_ID(int nIndex)
 // Returns asset type Name based on Asset Type ID
 const char * OT_API_GetAssetType_Name(const char * THE_ID)
 {
-	OT_ASSERT(NULL != THE_ID);
+	OT_ASSERT_MSG(NULL != THE_ID, "Null THE_ID passed in.");
 	
 	OTIdentifier	theID(THE_ID);
 	
@@ -382,7 +460,7 @@ const char * OT_API_GetAssetType_Name(const char * THE_ID)
 // returns a string containing the account ID, based on index.
 const char * OT_API_GetAccountWallet_ID(int nIndex)
 {
-	OT_ASSERT(nIndex >= 0);
+	OT_ASSERT_MSG(nIndex >= 0, "Index out of bounds (it's in the negative).");
 	
 	OTIdentifier	theID;
 	OTString		strName;
@@ -410,7 +488,7 @@ const char * OT_API_GetAccountWallet_ID(int nIndex)
 // returns the account name, based on account ID.
 const char * OT_API_GetAccountWallet_Name(const char * THE_ID)
 {
-	OT_ASSERT(NULL != THE_ID);
+	OT_ASSERT_MSG(NULL != THE_ID, "Null THE_ID passed in.");
 	
 	OTIdentifier	theID(THE_ID);
 	
@@ -435,10 +513,36 @@ const char * OT_API_GetAccountWallet_Name(const char * THE_ID)
 }
 
 
+
+// -------------------------------------------------------
+// SET ACCOUNT NAME (client side only. Server cares not about such labels.)
+//
+// Returns OT_TRUE (1) or OT_FALSE (0)
+//
+OT_BOOL OT_API_SetAccountWallet_Name(const char * ACCT_ID, const char * SIGNER_NYM_ID, const char * ACCT_NEW_NAME)
+{
+	OT_ASSERT_MSG(NULL != ACCT_ID, "Null ACCT_ID passed in.");
+	OT_ASSERT_MSG(NULL != SIGNER_NYM_ID, "Null SIGNER_NYM_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCT_NEW_NAME, "NULL ACCT_NEW_NAME passed in.");
+	
+	OTIdentifier	theAcctID(ACCT_ID),
+					theSignerNymID(SIGNER_NYM_ID);
+	OTString		strAcctNewName(ACCT_NEW_NAME);
+	
+	bool bSuccess = g_OT_API.SetAccount_Name(theAcctID, theSignerNymID, strAcctNewName);
+	
+	if (true == bSuccess)
+		return OT_TRUE;
+		
+	return OT_FALSE;
+}
+
+
+
 // returns the account balance, based on account ID.
 const char * OT_API_GetAccountWallet_Balance(const char * THE_ID)
 {
-	OT_ASSERT(NULL != THE_ID);
+	OT_ASSERT_MSG(NULL != THE_ID, "Null THE_ID passed in.");
 	
 	OTIdentifier	theID(THE_ID);
 	
@@ -471,7 +575,7 @@ const char * OT_API_GetAccountWallet_Balance(const char * THE_ID)
 // returns an account's "account type", (simple, issuer, etc.)
 const char * OT_API_GetAccountWallet_Type(const char * THE_ID)
 {
-	OT_ASSERT(NULL != THE_ID);
+	OT_ASSERT_MSG(NULL != THE_ID, "Null THE_ID passed in.");
 	
 	OTIdentifier	theID(THE_ID);
 	
@@ -499,7 +603,7 @@ const char * OT_API_GetAccountWallet_Type(const char * THE_ID)
 // (Which is a hash of the contract used to issue the asset type.)
 const char * OT_API_GetAccountWallet_AssetTypeID(const char * THE_ID)
 {
-	OT_ASSERT(NULL != THE_ID);
+	OT_ASSERT_MSG(NULL != THE_ID, "Null THE_ID passed in.");
 	
 	OTIdentifier	theID(THE_ID);
 	
@@ -565,12 +669,12 @@ const char * OT_API_WriteCheque(const char * SERVER_ID,
 								const char * CHEQUE_MEMO, 
 								const char * RECIPIENT_USER_ID)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != CHEQUE_AMOUNT);
-	OT_ASSERT(NULL != VALID_FROM);
-	OT_ASSERT(NULL != VALID_TO);
-	OT_ASSERT(NULL != SENDER_ACCT_ID);
-	OT_ASSERT(NULL != SENDER_USER_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != CHEQUE_AMOUNT, "Null CHEQUE_AMOUNT passed in.");
+	OT_ASSERT_MSG(NULL != VALID_FROM, "Null VALID_FROM passed in.");
+	OT_ASSERT_MSG(NULL != VALID_TO, "Null VALID_TO passed in.");
+	OT_ASSERT_MSG(NULL != SENDER_ACCT_ID, "Null SENDER_ACCT_ID passed in.");
+	OT_ASSERT_MSG(NULL != SENDER_USER_ID, "Null SENDER_USER_ID passed in.");
 	
 	const long lAmount = atol(CHEQUE_AMOUNT);
 	
@@ -682,11 +786,11 @@ const char * OT_API_WritePaymentPlan(const char * SERVER_ID,
 									const char * PAYMENT_PLAN_MAX_PAYMENTS	// Integer. Defaults to 0 or NULL (no maximum payments.)
 									)										
 {																			
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != SENDER_ACCT_ID);
-	OT_ASSERT(NULL != SENDER_USER_ID);
-	OT_ASSERT(NULL != RECIPIENT_ACCT_ID);
-	OT_ASSERT(NULL != RECIPIENT_USER_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != SENDER_ACCT_ID, "Null SENDER_ACCT_ID passed in.");
+	OT_ASSERT_MSG(NULL != SENDER_USER_ID, "Null SENDER_USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != RECIPIENT_ACCT_ID, "Null RECIPIENT_ACCT_ID passed in.");
+	OT_ASSERT_MSG(NULL != RECIPIENT_USER_ID, "Null RECIPIENT_USER_ID passed in.");
 	
 	const OTIdentifier theServerID(SERVER_ID);
 	const OTIdentifier theSenderAcctID(SENDER_ACCT_ID);
@@ -848,7 +952,7 @@ const char * OT_API_WritePaymentPlan(const char * SERVER_ID,
 //
 const char * OT_API_LoadPubkey(const char * USER_ID) // returns NULL, or a public key.
 {
-	OT_ASSERT(NULL != USER_ID);
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
 	
 	OTString strPubkey; // For the output
 	
@@ -899,7 +1003,7 @@ const char * OT_API_LoadPubkey(const char * USER_ID) // returns NULL, or a publi
 //
 const char * OT_API_LoadUserPubkey(const char * USER_ID) // returns NULL, or a public key.
 {
-	OT_ASSERT(NULL != USER_ID);
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
 	
 	OTString strPubkey; // For the output
 	
@@ -950,7 +1054,7 @@ const char * OT_API_LoadUserPubkey(const char * USER_ID) // returns NULL, or a p
 //
 OT_BOOL OT_API_VerifyUserPrivateKey(const char * USER_ID) // returns OT_BOOL
 {
-	OT_ASSERT(NULL != USER_ID);
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
 	
 	// Get the string into usable form.
 	OTIdentifier	NYM_ID(USER_ID);
@@ -987,8 +1091,8 @@ OT_BOOL OT_API_VerifyUserPrivateKey(const char * USER_ID) // returns OT_BOOL
 const char * OT_API_LoadPurse(const char * SERVER_ID,
 							  const char * ASSET_TYPE_ID) // returns NULL, or a purse.
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != ASSET_TYPE_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ASSET_TYPE_ID, "Null ASSET_TYPE_ID passed in.");
 			
 	const OTIdentifier theServerID(SERVER_ID);
 	const OTIdentifier theAssetID(ASSET_TYPE_ID);
@@ -1027,8 +1131,8 @@ const char * OT_API_LoadPurse(const char * SERVER_ID,
 const char * OT_API_LoadMint(const char * SERVER_ID,
 							 const char * ASSET_TYPE_ID) // returns NULL, or a mint
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != ASSET_TYPE_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ASSET_TYPE_ID, "Null ASSET_TYPE_ID passed in.");
 	
 	const OTIdentifier theServerID(SERVER_ID);
 	const OTIdentifier theAssetID(ASSET_TYPE_ID);
@@ -1066,7 +1170,7 @@ const char * OT_API_LoadMint(const char * SERVER_ID,
 
 const char * OT_API_LoadAssetContract(const char * ASSET_TYPE_ID) // returns NULL, or an asset contract
 {
-	OT_ASSERT(NULL != ASSET_TYPE_ID);
+	OT_ASSERT_MSG(NULL != ASSET_TYPE_ID, "Null ASSET_TYPE_ID passed in.");
 	
 	const OTIdentifier theAssetID(ASSET_TYPE_ID);
 	
@@ -1111,9 +1215,9 @@ const char * OT_API_LoadAssetAccount(const char * SERVER_ID,
 									 const char * USER_ID,
 									 const char * ACCOUNT_ID) // Returns NULL, or an account.
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCOUNT_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
 	
 	const OTIdentifier theServerID(SERVER_ID);
 	const OTIdentifier theUserID(USER_ID);
@@ -1153,9 +1257,9 @@ const char * OT_API_LoadInbox(const char * SERVER_ID,
 							  const char * USER_ID,
 							  const char * ACCOUNT_ID) // Returns NULL, or an inbox.
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCOUNT_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
 	
 	const OTIdentifier theServerID(SERVER_ID);
 	const OTIdentifier theUserID(USER_ID);
@@ -1195,9 +1299,9 @@ const char * OT_API_LoadOutbox(const char * SERVER_ID,
 							   const char * USER_ID,
 							   const char * ACCOUNT_ID)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCOUNT_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
 	
 	const OTIdentifier theServerID(SERVER_ID);
 	const OTIdentifier theUserID(USER_ID);
@@ -1272,10 +1376,10 @@ int OT_API_Ledger_GetCount(const char * SERVER_ID,
 						   const char * ACCOUNT_ID,
 						   const char * THE_LEDGER) 
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCOUNT_ID);
-	OT_ASSERT(NULL != THE_LEDGER);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_LEDGER, "NULL THE_LEDGER passed in.");
 	
 	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
 
@@ -1309,10 +1413,10 @@ const char * OT_API_Ledger_CreateResponse(const char * SERVER_ID,
 										  const char * ACCOUNT_ID,
 										  const char * ORIGINAL_LEDGER)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCOUNT_ID);
-	OT_ASSERT(NULL != ORIGINAL_LEDGER);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != ORIGINAL_LEDGER, "Null ORIGINAL_LEDGER passed in.");
 	
 	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
 
@@ -1424,11 +1528,11 @@ const char * OT_API_Ledger_GetTransactionByIndex(const char * SERVER_ID,
 												 const char * THE_LEDGER,
 												 int nIndex) // returns transaction by index (from ledger)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCOUNT_ID);
-	OT_ASSERT(NULL != THE_LEDGER);
-	OT_ASSERT(nIndex >= 0);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_LEDGER, "NULL THE_LEDGER passed in.");
+	OT_ASSERT_MSG(nIndex >= 0, "Index out of bounds (it's in the negative).");
 	
 	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
 	
@@ -1451,7 +1555,7 @@ const char * OT_API_Ledger_GetTransactionByIndex(const char * SERVER_ID,
 	if (nIndex >= theLedger.GetTransactionCount())
 	{
 		OTLog::vError("OT_API_Ledger_GetTransactionByIndex out of bounds: %d\n", nIndex);
-		return NULL; // out of bounds. I'm saving from an OT_ASSERT() happening here. (Maybe I shouldn't.)
+		return NULL; // out of bounds. I'm saving from an OT_ASSERT_MSG() happening here. (Maybe I shouldn't.)
 	}
 	
 	OTTransaction * pTransaction = theLedger.GetTransactionByIndex(nIndex);
@@ -1488,14 +1592,14 @@ const char * OT_API_Ledger_GetTransactionByID(const char * SERVER_ID,
 											  const char * THE_LEDGER,
 											  const char * TRANSACTION_NUMBER) 
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCOUNT_ID);
-	OT_ASSERT(NULL != THE_LEDGER);
-	OT_ASSERT(NULL != TRANSACTION_NUMBER);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_LEDGER, "NULL THE_LEDGER passed in.");
+	OT_ASSERT_MSG(NULL != TRANSACTION_NUMBER, "NULL TRANSACTION_NUMBER passed in.");
 	
 	long lTransactionNumber = atol(TRANSACTION_NUMBER);
-	OT_ASSERT(lTransactionNumber >= 0);
+	OT_ASSERT_MSG(lTransactionNumber >= 0, "Bad transaction number passed in (negative value).");
 	
 	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
 	
@@ -1549,11 +1653,11 @@ const char * OT_API_Ledger_GetTransactionIDByIndex(const char * SERVER_ID,
 												   const char * THE_LEDGER,
 												   int nIndex) // returns transaction number by index.
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCOUNT_ID);
-	OT_ASSERT(NULL != THE_LEDGER);
-	OT_ASSERT(nIndex >= 0);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_LEDGER, "NULL THE_LEDGER passed in.");
+	OT_ASSERT_MSG(nIndex >= 0, "Index out of bounds (it's in the negative).");
 	
 	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
 	
@@ -1580,7 +1684,7 @@ const char * OT_API_Ledger_GetTransactionIDByIndex(const char * SERVER_ID,
 	else if (nIndex >= theLedger.GetTransactionCount())
 	{
 		OTLog::vError("OT_API_Ledger_GetTransactionIDByIndex out of bounds: %d\n", nIndex);
-		// out of bounds. I'm saving from an OT_ASSERT() happening here. (Maybe I shouldn't.)
+		// out of bounds. I'm saving from an OT_ASSERT_MSG() happening here. (Maybe I shouldn't.)
 	}
 	
 	else if (NULL == (pTransaction = theLedger.GetTransactionByIndex(nIndex)))
@@ -1624,11 +1728,11 @@ const char * OT_API_Ledger_AddTransaction(const char * SERVER_ID,
 										  const char * THE_LEDGER,
 										  const char * THE_TRANSACTION)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCOUNT_ID);
-	OT_ASSERT(NULL != THE_LEDGER);
-	OT_ASSERT(NULL != THE_TRANSACTION);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_LEDGER, "NULL THE_LEDGER passed in.");
+	OT_ASSERT_MSG(NULL != THE_TRANSACTION, "NULL THE_TRANSACTION passed in.");
 	
 	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
 	
@@ -1691,7 +1795,7 @@ const char * OT_API_Ledger_AddTransaction(const char * SERVER_ID,
 	
 	OTTransaction * pTransaction = new OTTransaction(theUserID, theAccountID, theServerID);
 		
-	OT_ASSERT(NULL != pTransaction);
+	OT_ASSERT_MSG(NULL != pTransaction, "Error allocating memory in the OTAPI.");
 	
 	if (false == pTransaction->LoadContractFromString(strTransaction))
 	{
@@ -1755,11 +1859,11 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 											   const char * THE_TRANSACTION, // Responding to...?
 											   OT_BOOL BOOL_DO_I_ACCEPT)   // 0 or 1  (OT_TRUE or OT_FALSE.)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCOUNT_ID);
-	OT_ASSERT(NULL != THE_LEDGER);
-	OT_ASSERT(NULL != THE_TRANSACTION);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_LEDGER, "NULL THE_LEDGER passed in.");
+	OT_ASSERT_MSG(NULL != THE_TRANSACTION, "NULL THE_TRANSACTION passed in.");
 	
 	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
 	
@@ -1963,10 +2067,10 @@ const char * OT_API_Transaction_GetType(const char * SERVER_ID,
 										const char * ACCOUNT_ID,
 										const char * THE_TRANSACTION)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCOUNT_ID);
-	OT_ASSERT(NULL != THE_TRANSACTION);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_TRANSACTION, "NULL THE_TRANSACTION passed in.");
 	
 	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
 	
@@ -2041,10 +2145,10 @@ OT_BOOL OT_API_Transaction_GetSuccess(const char * SERVER_ID,
 										const char * ACCOUNT_ID,
 										const char * THE_TRANSACTION)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCOUNT_ID);
-	OT_ASSERT(NULL != THE_TRANSACTION);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_TRANSACTION, "NULL THE_TRANSACTION passed in.");
 	
 	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
 	
@@ -2119,9 +2223,9 @@ const char * OT_API_Purse_GetTotalValue(const char * SERVER_ID,
 										const char * ASSET_TYPE_ID,
 										const char * THE_PURSE)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != ASSET_TYPE_ID);
-	OT_ASSERT(NULL != THE_PURSE);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ASSET_TYPE_ID, "Null ASSET_TYPE_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_PURSE, "Null THE_PURSE passed in.");
 	
 	const OTIdentifier theServerID(SERVER_ID), theAssetTypeID(ASSET_TYPE_ID);
 	
@@ -2176,7 +2280,7 @@ const char * OT_API_Purse_GetTotalValue(const char * SERVER_ID,
 //
 OT_BOOL OT_API_IsBasketCurrency(const char * ASSET_TYPE_ID)
 {
-	OT_ASSERT(NULL != ASSET_TYPE_ID);
+	OT_ASSERT_MSG(NULL != ASSET_TYPE_ID, "Null ASSET_TYPE_ID passed in.");
 	
 	const OTIdentifier theAssetTypeID(ASSET_TYPE_ID);
 	
@@ -2196,7 +2300,7 @@ OT_BOOL OT_API_IsBasketCurrency(const char * ASSET_TYPE_ID)
 //
 int OT_API_Basket_GetMemberCount(const char * ASSET_TYPE_ID)
 {
-	OT_ASSERT(NULL != ASSET_TYPE_ID);
+	OT_ASSERT_MSG(NULL != ASSET_TYPE_ID, "Null ASSET_TYPE_ID passed in.");
 
 	const OTIdentifier theAssetTypeID(ASSET_TYPE_ID);
 	
@@ -2213,7 +2317,7 @@ int OT_API_Basket_GetMemberCount(const char * ASSET_TYPE_ID)
 const char * OT_API_Basket_GetMemberType(const char * BASKET_ASSET_TYPE_ID,
 										 const int nIndex)
 {
-	OT_ASSERT(NULL != BASKET_ASSET_TYPE_ID);
+	OT_ASSERT_MSG(NULL != BASKET_ASSET_TYPE_ID, "Null BASKET_ASSET_TYPE_ID passed in.");
 	
 	const OTIdentifier theAssetTypeID(BASKET_ASSET_TYPE_ID);
 	
@@ -2256,7 +2360,7 @@ const char * OT_API_Basket_GetMemberType(const char * BASKET_ASSET_TYPE_ID,
 //
 const char * OT_API_Basket_GetMinimumTransferAmount(const char * BASKET_ASSET_TYPE_ID)
 {
-	OT_ASSERT(NULL != BASKET_ASSET_TYPE_ID);
+	OT_ASSERT_MSG(NULL != BASKET_ASSET_TYPE_ID, "Null BASKET_ASSET_TYPE_ID passed in.");
 	
 	const OTIdentifier theAssetTypeID(BASKET_ASSET_TYPE_ID);
 
@@ -2298,7 +2402,7 @@ const char * OT_API_Basket_GetMinimumTransferAmount(const char * BASKET_ASSET_TY
 const char * OT_API_Basket_GetMemberMinimumTransferAmount(const char * BASKET_ASSET_TYPE_ID,
 														  const int nIndex)
 {
-	OT_ASSERT(NULL != BASKET_ASSET_TYPE_ID);
+	OT_ASSERT_MSG(NULL != BASKET_ASSET_TYPE_ID, "Null BASKET_ASSET_TYPE_ID passed in.");
 	
 	const OTIdentifier theAssetTypeID(BASKET_ASSET_TYPE_ID);
 
@@ -2346,8 +2450,8 @@ const char * OT_API_Basket_GetMemberMinimumTransferAmount(const char * BASKET_AS
 void OT_API_checkServerID(const char * SERVER_ID,
 						  const char * USER_ID)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
 	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID);
 
@@ -2358,8 +2462,8 @@ void OT_API_checkServerID(const char * SERVER_ID,
 void OT_API_createUserAccount(const char * SERVER_ID,
 							  const char * USER_ID)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
 	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID);
 
@@ -2371,9 +2475,9 @@ void OT_API_checkUser(const char * SERVER_ID,
 					  const char * USER_ID,
 					  const char * USER_ID_CHECK)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != USER_ID_CHECK);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID_CHECK, "Null USER_ID_CHECK passed in.");
 	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theOtherUserID(USER_ID_CHECK);
 	
@@ -2384,8 +2488,8 @@ void OT_API_checkUser(const char * SERVER_ID,
 void OT_API_getRequest(const char * SERVER_ID,
 					   const char * USER_ID)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
 	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID);
 
@@ -2398,9 +2502,9 @@ void OT_API_issueAssetType(const char *	SERVER_ID,
 						   const char *	USER_ID,
 						   const char *	THE_CONTRACT)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != THE_CONTRACT);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_CONTRACT, "NULL THE_CONTRACT passed in.");
 	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID);
 	
@@ -2414,9 +2518,9 @@ void OT_API_getContract(const char * SERVER_ID,
 						const char * USER_ID,
 						const char * ASSET_ID)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ASSET_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ASSET_ID, "Null ASSET_ID passed in.");
 
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAssetID(ASSET_ID);
 	
@@ -2428,9 +2532,9 @@ void OT_API_getMint(const char * SERVER_ID,
 					const char * USER_ID,
 					const char * ASSET_ID)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ASSET_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ASSET_ID, "Null ASSET_ID passed in.");
 
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAssetID(ASSET_ID);
 
@@ -2442,9 +2546,9 @@ void OT_API_createAssetAccount(const char * SERVER_ID,
 							   const char * USER_ID,
 							   const char * ASSET_ID)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ASSET_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ASSET_ID, "Null ASSET_ID passed in.");
 
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAssetID(ASSET_ID);
 	
@@ -2458,9 +2562,9 @@ void OT_API_getAccount(const char * SERVER_ID,
 					   const char * USER_ID,
 					   const char * ACCT_ID)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCT_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCT_ID, "Null ACCT_ID passed in.");
 	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAcctID(ACCT_ID);
 
@@ -2482,8 +2586,8 @@ void OT_API_getAccount(const char * SERVER_ID,
 const char * OT_API_GenerateBasketCreation(const char * USER_ID,
 										   const char * MINIMUM_TRANSFER)
 {
-	OT_ASSERT(USER_ID);
-	OT_ASSERT(MINIMUM_TRANSFER);
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != MINIMUM_TRANSFER, "Null MINIMUM_TRANSFER passed in.");
 
 	const OTIdentifier theUserID(USER_ID);
 	
@@ -2539,10 +2643,10 @@ const char * OT_API_AddBasketCreationItem(const char * USER_ID, // for signature
 										  const char * ASSET_TYPE_ID, // Adding an asset type to the new basket.
 										  const char * MINIMUM_TRANSFER)
 {
-	OT_ASSERT(USER_ID);
-	OT_ASSERT(THE_BASKET);
-	OT_ASSERT(ASSET_TYPE_ID);
-	OT_ASSERT(MINIMUM_TRANSFER);
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_BASKET, "Null THE_BASKET passed in.");
+	OT_ASSERT_MSG(NULL != ASSET_TYPE_ID, "Null ASSET_TYPE_ID passed in.");
+	OT_ASSERT_MSG(NULL != MINIMUM_TRANSFER, "Null MINIMUM_TRANSFER passed in.");
 	
 	OTString strBasket(THE_BASKET);
 	
@@ -2610,9 +2714,9 @@ void OT_API_issueBasket(const char * SERVER_ID,
 						const char * USER_ID,
 						const char * THE_BASKET)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != THE_BASKET);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_BASKET, "Null THE_BASKET passed in.");
 	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID);
 	
@@ -2644,10 +2748,10 @@ const char * OT_API_GenerateBasketExchange(const char * SERVER_ID,
 										   const int TRANSFER_MULTIPLE)	// 1			2			 3
 																		// 5=2,3,4  OR  10=4,6,8  OR 15=6,9,12
 {
-	OT_ASSERT(SERVER_ID);
-	OT_ASSERT(USER_ID);
-	OT_ASSERT(BASKET_ASSET_TYPE_ID);
-	OT_ASSERT(BASKET_ASSET_ACCT_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != BASKET_ASSET_TYPE_ID, "Null BASKET_ASSET_TYPE_ID passed in.");
+	OT_ASSERT_MSG(NULL != BASKET_ASSET_ACCT_ID, "Null BASKET_ASSET_ACCT_ID passed in.");
 	
 	const OTIdentifier	theUserID(USER_ID), theServerID(SERVER_ID),
 						theBasketAssetTypeID(BASKET_ASSET_TYPE_ID), 
@@ -2706,11 +2810,11 @@ const char * OT_API_AddBasketExchangeItem(const char * SERVER_ID,
 										  const char * ASSET_TYPE_ID,
 										  const char * ASSET_ACCT_ID)
 {
-	OT_ASSERT(SERVER_ID);
-	OT_ASSERT(USER_ID);
-	OT_ASSERT(THE_BASKET);
-	OT_ASSERT(ASSET_TYPE_ID);
-	OT_ASSERT(ASSET_ACCT_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_BASKET, "Null THE_BASKET passed in.");
+	OT_ASSERT_MSG(NULL != ASSET_TYPE_ID, "Null ASSET_TYPE_ID passed in.");
+	OT_ASSERT_MSG(NULL != ASSET_ACCT_ID, "Null ASSET_ACCT_ID passed in.");
 	
 	OTString strBasket(THE_BASKET);
 	
@@ -2779,10 +2883,10 @@ void OT_API_exchangeBasket(const char * SERVER_ID,
 						   const char * THE_BASKET,
 						   const OT_BOOL BOOL_EXCHANGE_IN_OR_OUT) // exchanging in == OT_TRUE (1), out == OT_FALSE (0).
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != BASKET_ASSET_ID);
-	OT_ASSERT(NULL != THE_BASKET);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != BASKET_ASSET_ID, "Null BASKET_ASSET_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_BASKET, "Null THE_BASKET passed in.");
 
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theBasketAssetID(BASKET_ASSET_ID);
 
@@ -2808,8 +2912,8 @@ void OT_API_exchangeBasket(const char * SERVER_ID,
 void OT_API_getTransactionNumber(const char * SERVER_ID,
 								 const char * USER_ID)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
 	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID);
 
@@ -2823,10 +2927,10 @@ void OT_API_notarizeWithdrawal(const char * SERVER_ID,
 							   const char * ACCT_ID,
 							   const char * AMOUNT)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCT_ID);
-	OT_ASSERT(NULL != AMOUNT);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCT_ID, "Null ACCT_ID passed in.");
+	OT_ASSERT_MSG(NULL != AMOUNT, "Null AMOUNT passed in.");
 
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAcctID(ACCT_ID);
 
@@ -2841,10 +2945,10 @@ void OT_API_notarizeDeposit(const char * SERVER_ID,
 							const char * ACCT_ID,
 							const char * THE_PURSE)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCT_ID);
-	OT_ASSERT(NULL != THE_PURSE);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCT_ID, "Null ACCT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_PURSE, "Null THE_PURSE passed in.");
 
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAcctID(ACCT_ID);
 	OTString strPurse(THE_PURSE);
@@ -2860,12 +2964,12 @@ void OT_API_notarizeTransfer(const char * SERVER_ID,
 							 const char * AMOUNT,
 							 const char * NOTE)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCT_FROM);
-	OT_ASSERT(NULL != ACCT_TO);
-	OT_ASSERT(NULL != AMOUNT);
-	OT_ASSERT(NULL != NOTE);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCT_FROM, "Null ACCT_FROM passed in.");
+	OT_ASSERT_MSG(NULL != ACCT_TO, "Null ACCT_TO passed in.");
+	OT_ASSERT_MSG(NULL != AMOUNT, "Null AMOUNT passed in.");
+	OT_ASSERT_MSG(NULL != NOTE, "Null NOTE passed in.");
 	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID);
 	OTIdentifier theFromAcct(ACCT_FROM), theToAcct(ACCT_TO);
@@ -2880,9 +2984,9 @@ void OT_API_getInbox(const char * SERVER_ID,
 					 const char * USER_ID,
 					 const char * ACCT_ID)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCT_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCT_ID, "Null ACCT_ID passed in.");
 	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAcctID(ACCT_ID);
 
@@ -2895,10 +2999,10 @@ void OT_API_processInbox(const char * SERVER_ID,
 						 const char * ACCT_ID,
 						 const char * ACCT_LEDGER)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCT_ID);
-	OT_ASSERT(NULL != ACCT_LEDGER);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCT_ID, "Null ACCT_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCT_LEDGER, "NULL ACCT_LEDGER passed in.");
 
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAcctID(ACCT_ID);
 	OTString strLedger(ACCT_LEDGER);
@@ -2914,12 +3018,12 @@ void OT_API_withdrawVoucher(const char * SERVER_ID,
 							const char * CHEQUE_MEMO,
 							const char * AMOUNT)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCT_ID);
-	OT_ASSERT(NULL != RECIPIENT_USER_ID);
-	OT_ASSERT(NULL != CHEQUE_MEMO);
-	OT_ASSERT(NULL != AMOUNT);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCT_ID, "Null ACCT_ID passed in.");
+	OT_ASSERT_MSG(NULL != RECIPIENT_USER_ID, "Null RECIPIENT_USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != CHEQUE_MEMO, "Null CHEQUE_MEMO passed in.");
+	OT_ASSERT_MSG(NULL != AMOUNT, "Null AMOUNT passed in.");
 	
 	OTIdentifier	theServerID(SERVER_ID),	theUserID(USER_ID), 
 						theAcctID(ACCT_ID),		theRecipientUserID(RECIPIENT_USER_ID);
@@ -2936,10 +3040,10 @@ void OT_API_depositCheque(const char * SERVER_ID,
 						  const char * ACCT_ID,
 						  const char * THE_CHEQUE)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ACCT_ID);
-	OT_ASSERT(NULL != THE_CHEQUE);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCT_ID, "Null ACCT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_CHEQUE, "Null THE_CHEQUE passed in.");
 	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAcctID(ACCT_ID);
 	OTString strCheque(THE_CHEQUE);
@@ -2959,9 +3063,9 @@ void OT_API_depositPaymentPlan(const char * SERVER_ID,
 							   const char * USER_ID,
 							   const char * THE_PAYMENT_PLAN)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != THE_PAYMENT_PLAN);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_PAYMENT_PLAN, "Null THE_PAYMENT_PLAN passed in.");
 	
 	const OTIdentifier	theServerID(SERVER_ID), theUserID(USER_ID);
 	const OTString		strPlan(THE_PAYMENT_PLAN);
@@ -2988,12 +3092,12 @@ void OT_API_issueMarketOffer(const char * SERVER_ID,
 							 const char * PRICE_LIMIT,				// Per Minimum Increment...
 							 OT_BOOL	  bBuyingOrSelling)	// SELLING == OT_TRUE, BUYING == OT_FALSE.
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != ASSET_TYPE_ID);
-	OT_ASSERT(NULL != ASSET_ACCT_ID);
-	OT_ASSERT(NULL != CURRENCY_TYPE_ID);
-	OT_ASSERT(NULL != CURRENCY_ACCT_ID);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ASSET_TYPE_ID, "Null ASSET_TYPE_ID passed in.");
+	OT_ASSERT_MSG(NULL != ASSET_ACCT_ID, "Null ASSET_ACCT_ID passed in.");
+	OT_ASSERT_MSG(NULL != CURRENCY_TYPE_ID, "Null CURRENCY_TYPE_ID passed in.");
+	OT_ASSERT_MSG(NULL != CURRENCY_ACCT_ID, "Null CURRENCY_ACCT_ID passed in.");
 	
 	const OTIdentifier	theServerID(SERVER_ID), theUserID(USER_ID),
 						theAssetTypeID(ASSET_TYPE_ID), theAssetAcctID(ASSET_ACCT_ID),
@@ -3079,7 +3183,7 @@ void OT_API_FlushMessageBuffer(void)
 //
 const char * OT_API_Message_GetCommand(const char * THE_MESSAGE)
 {
-	OT_ASSERT(NULL != THE_MESSAGE);
+	OT_ASSERT_MSG(NULL != THE_MESSAGE, "Null THE_MESSAGE passed in.");
 
 	OTString strMessage(THE_MESSAGE);
 	
@@ -3112,7 +3216,7 @@ const char * OT_API_Message_GetCommand(const char * THE_MESSAGE)
 //
 const char * OT_API_Message_GetLedger(const char * THE_MESSAGE)
 {
-	OT_ASSERT(NULL != THE_MESSAGE);
+	OT_ASSERT_MSG(NULL != THE_MESSAGE, "Null THE_MESSAGE passed in.");
 	
 	OTString strMessage(THE_MESSAGE);
 	
@@ -3157,7 +3261,7 @@ const char * OT_API_Message_GetLedger(const char * THE_MESSAGE)
 //
 OT_BOOL OT_API_Message_GetSuccess(const char * THE_MESSAGE)
 {
-	OT_ASSERT(NULL != THE_MESSAGE);
+	OT_ASSERT_MSG(NULL != THE_MESSAGE, "Null THE_MESSAGE passed in.");
 	
 	OTString strMessage(THE_MESSAGE);
 	
@@ -3187,11 +3291,11 @@ OT_BOOL OT_API_ConnectServer(const char * SERVER_ID,
 							 const char * szKEY_FILE, 
 							 const char * szKEY_PASSWORD)
 {
-	OT_ASSERT(NULL != SERVER_ID);
-	OT_ASSERT(NULL != USER_ID);
-	OT_ASSERT(NULL != szCA_FILE);
-	OT_ASSERT(NULL != szKEY_FILE);
-	OT_ASSERT(NULL != szKEY_PASSWORD);
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != szCA_FILE, "Null szCA_FILE passed in.");
+	OT_ASSERT_MSG(NULL != szKEY_FILE, "Null szKEY_FILE passed in.");
+	OT_ASSERT_MSG(NULL != szKEY_PASSWORD, "Null szKEY_PASSWORD passed in.");
 	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID);
 	

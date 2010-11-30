@@ -303,16 +303,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_ProcessSockets() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_GetNymCount() {
-  int jresult ;
-  int result;
-  
-  result = (int)OT_API_GetNymCount();
-  jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_GetServerCount() {
   int jresult ;
   int result;
@@ -343,26 +333,12 @@ SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_GetAccountCount() {
 }
 
 
-SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetNym_ID(int jarg1) {
-  char * jresult ;
-  int arg1 ;
-  char *result = 0 ;
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_GetNymCount() {
+  int jresult ;
+  int result;
   
-  arg1 = (int)jarg1; 
-  result = (char *)OT_API_GetNym_ID(arg1);
-  jresult = SWIG_csharp_string_callback((const char *)result); 
-  return jresult;
-}
-
-
-SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetNym_Name(char * jarg1) {
-  char * jresult ;
-  char *arg1 = (char *) 0 ;
-  char *result = 0 ;
-  
-  arg1 = (char *)jarg1; 
-  result = (char *)OT_API_GetNym_Name((char const *)arg1);
-  jresult = SWIG_csharp_string_callback((const char *)result); 
+  result = (int)OT_API_GetNymCount();
+  jresult = result; 
   return jresult;
 }
 
@@ -471,6 +447,76 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetAccountWallet_AssetTypeID(char * 
   arg1 = (char *)jarg1; 
   result = (char *)OT_API_GetAccountWallet_AssetTypeID((char const *)arg1);
   jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_SetAccountWallet_Name(char * jarg1, char * jarg2, char * jarg3) {
+  int jresult ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  int result;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (char *)jarg2; 
+  arg3 = (char *)jarg3; 
+  result = (int)OT_API_SetAccountWallet_Name((char const *)arg1,(char const *)arg2,(char const *)arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_GetNym_TransactionNumCount(char * jarg1, char * jarg2) {
+  int jresult ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int result;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (char *)jarg2; 
+  result = (int)OT_API_GetNym_TransactionNumCount((char const *)arg1,(char const *)arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetNym_ID(int jarg1) {
+  char * jresult ;
+  int arg1 ;
+  char *result = 0 ;
+  
+  arg1 = (int)jarg1; 
+  result = (char *)OT_API_GetNym_ID(arg1);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetNym_Name(char * jarg1) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  result = (char *)OT_API_GetNym_Name((char const *)arg1);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_SetNym_Name(char * jarg1, char * jarg2, char * jarg3) {
+  int jresult ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  int result;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (char *)jarg2; 
+  arg3 = (char *)jarg3; 
+  result = (int)OT_API_SetNym_Name((char const *)arg1,(char const *)arg2,(char const *)arg3);
+  jresult = result; 
   return jresult;
 }
 
