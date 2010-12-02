@@ -1745,87 +1745,6 @@ fail:
 
 
 SWIGINTERN int
-_wrap_OT_API_ConnectServer(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  char *arg1 = (char *) 0 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  char *arg4 = (char *) 0 ;
-  char *arg5 = (char *) 0 ;
-  int result;
-  int res1 ;
-  char *buf1 = 0 ;
-  int alloc1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
-  int res3 ;
-  char *buf3 = 0 ;
-  int alloc3 = 0 ;
-  int res4 ;
-  char *buf4 = 0 ;
-  int alloc4 = 0 ;
-  int res5 ;
-  char *buf5 = 0 ;
-  int alloc5 = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"ooooo:OT_API_ConnectServer SERVER_ID USER_ID szCA_FILE szKEY_FILE szKEY_PASSWORD ",(void *)0,(void *)0,(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_AsCharPtrAndSize(objv[1], &buf1, NULL, &alloc1);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_ConnectServer" "', argument " "1"" of type '" "char const *""'");
-  }
-  arg1 = (char *)(buf1);
-  res2 = SWIG_AsCharPtrAndSize(objv[2], &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_ConnectServer" "', argument " "2"" of type '" "char const *""'");
-  }
-  arg2 = (char *)(buf2);
-  res3 = SWIG_AsCharPtrAndSize(objv[3], &buf3, NULL, &alloc3);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_ConnectServer" "', argument " "3"" of type '" "char const *""'");
-  }
-  arg3 = (char *)(buf3);
-  res4 = SWIG_AsCharPtrAndSize(objv[4], &buf4, NULL, &alloc4);
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_ConnectServer" "', argument " "4"" of type '" "char const *""'");
-  }
-  arg4 = (char *)(buf4);
-  res5 = SWIG_AsCharPtrAndSize(objv[5], &buf5, NULL, &alloc5);
-  if (!SWIG_IsOK(res5)) {
-    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "OT_API_ConnectServer" "', argument " "5"" of type '" "char const *""'");
-  }
-  arg5 = (char *)(buf5);
-  result = (int)OT_API_ConnectServer((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
-  Tcl_SetObjResult(interp,SWIG_From_int((int)(result)));
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
-  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
-  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
-  return TCL_OK;
-fail:
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
-  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
-  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_OT_API_ProcessSockets(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  int result;
-  
-  if (SWIG_GetArgs(interp, objc, objv,":OT_API_ProcessSockets ") == TCL_ERROR) SWIG_fail;
-  result = (int)OT_API_ProcessSockets();
-  Tcl_SetObjResult(interp,SWIG_From_int((int)(result)));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
 _wrap_OT_API_GetServerCount(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   int result;
   
@@ -2252,6 +2171,41 @@ fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OT_API_VerifyAndRetrieveXMLContents(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:OT_API_VerifyAndRetrieveXMLContents THE_CONTRACT USER_ID ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(objv[1], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_VerifyAndRetrieveXMLContents" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(objv[2], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_VerifyAndRetrieveXMLContents" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  result = (char *)OT_API_VerifyAndRetrieveXMLContents((char const *)arg1,(char const *)arg2);
+  Tcl_SetObjResult(interp,SWIG_FromCharPtr((const char *)result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return TCL_OK;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return TCL_ERROR;
 }
 
@@ -3473,6 +3427,63 @@ _wrap_OT_API_Transaction_GetType(ClientData clientData SWIGUNUSED, Tcl_Interp *i
   }
   arg4 = (char *)(buf4);
   result = (char *)OT_API_Transaction_GetType((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  Tcl_SetObjResult(interp,SWIG_FromCharPtr((const char *)result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return TCL_OK;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OT_API_Transaction_GetVoucher(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oooo:OT_API_Transaction_GetVoucher SERVER_ID USER_ID ACCOUNT_ID THE_TRANSACTION ",(void *)0,(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(objv[1], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Transaction_GetVoucher" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(objv[2], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_Transaction_GetVoucher" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(objv[3], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_Transaction_GetVoucher" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(objv[4], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_Transaction_GetVoucher" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  result = (char *)OT_API_Transaction_GetVoucher((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   Tcl_SetObjResult(interp,SWIG_FromCharPtr((const char *)result));
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
@@ -5027,12 +5038,91 @@ fail:
 }
 
 
+SWIGINTERN int
+_wrap_OT_API_ConnectServer(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"ooooo:OT_API_ConnectServer SERVER_ID USER_ID szCA_FILE szKEY_FILE szKEY_PASSWORD ",(void *)0,(void *)0,(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(objv[1], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_ConnectServer" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(objv[2], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_ConnectServer" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(objv[3], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_ConnectServer" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(objv[4], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_ConnectServer" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  res5 = SWIG_AsCharPtrAndSize(objv[5], &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "OT_API_ConnectServer" "', argument " "5"" of type '" "char const *""'");
+  }
+  arg5 = (char *)(buf5);
+  result = (int)OT_API_ConnectServer((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
+  Tcl_SetObjResult(interp,SWIG_From_int((int)(result)));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  return TCL_OK;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OT_API_ProcessSockets(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  int result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,":OT_API_ProcessSockets ") == TCL_ERROR) SWIG_fail;
+  result = (int)OT_API_ProcessSockets();
+  Tcl_SetObjResult(interp,SWIG_From_int((int)(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
 
 static swig_command_info swig_commands[] = {
     { SWIG_prefix "OT_API_Init", (swig_wrapper_func) _wrap_OT_API_Init, NULL},
     { SWIG_prefix "OT_API_LoadWallet", (swig_wrapper_func) _wrap_OT_API_LoadWallet, NULL},
-    { SWIG_prefix "OT_API_ConnectServer", (swig_wrapper_func) _wrap_OT_API_ConnectServer, NULL},
-    { SWIG_prefix "OT_API_ProcessSockets", (swig_wrapper_func) _wrap_OT_API_ProcessSockets, NULL},
     { SWIG_prefix "OT_API_GetServerCount", (swig_wrapper_func) _wrap_OT_API_GetServerCount, NULL},
     { SWIG_prefix "OT_API_GetAssetTypeCount", (swig_wrapper_func) _wrap_OT_API_GetAssetTypeCount, NULL},
     { SWIG_prefix "OT_API_GetAccountCount", (swig_wrapper_func) _wrap_OT_API_GetAccountCount, NULL},
@@ -5051,6 +5141,7 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "OT_API_GetNym_ID", (swig_wrapper_func) _wrap_OT_API_GetNym_ID, NULL},
     { SWIG_prefix "OT_API_GetNym_Name", (swig_wrapper_func) _wrap_OT_API_GetNym_Name, NULL},
     { SWIG_prefix "OT_API_SetNym_Name", (swig_wrapper_func) _wrap_OT_API_SetNym_Name, NULL},
+    { SWIG_prefix "OT_API_VerifyAndRetrieveXMLContents", (swig_wrapper_func) _wrap_OT_API_VerifyAndRetrieveXMLContents, NULL},
     { SWIG_prefix "OT_API_WriteCheque", (swig_wrapper_func) _wrap_OT_API_WriteCheque, NULL},
     { SWIG_prefix "OT_API_WritePaymentPlan", (swig_wrapper_func) _wrap_OT_API_WritePaymentPlan, NULL},
     { SWIG_prefix "OT_API_LoadUserPubkey", (swig_wrapper_func) _wrap_OT_API_LoadUserPubkey, NULL},
@@ -5075,6 +5166,7 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "OT_API_Ledger_AddTransaction", (swig_wrapper_func) _wrap_OT_API_Ledger_AddTransaction, NULL},
     { SWIG_prefix "OT_API_Transaction_CreateResponse", (swig_wrapper_func) _wrap_OT_API_Transaction_CreateResponse, NULL},
     { SWIG_prefix "OT_API_Transaction_GetType", (swig_wrapper_func) _wrap_OT_API_Transaction_GetType, NULL},
+    { SWIG_prefix "OT_API_Transaction_GetVoucher", (swig_wrapper_func) _wrap_OT_API_Transaction_GetVoucher, NULL},
     { SWIG_prefix "OT_API_Transaction_GetSuccess", (swig_wrapper_func) _wrap_OT_API_Transaction_GetSuccess, NULL},
     { SWIG_prefix "OT_API_Purse_GetTotalValue", (swig_wrapper_func) _wrap_OT_API_Purse_GetTotalValue, NULL},
     { SWIG_prefix "OT_API_checkServerID", (swig_wrapper_func) _wrap_OT_API_checkServerID, NULL},
@@ -5107,6 +5199,8 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "OT_API_Message_GetCommand", (swig_wrapper_func) _wrap_OT_API_Message_GetCommand, NULL},
     { SWIG_prefix "OT_API_Message_GetSuccess", (swig_wrapper_func) _wrap_OT_API_Message_GetSuccess, NULL},
     { SWIG_prefix "OT_API_Message_GetLedger", (swig_wrapper_func) _wrap_OT_API_Message_GetLedger, NULL},
+    { SWIG_prefix "OT_API_ConnectServer", (swig_wrapper_func) _wrap_OT_API_ConnectServer, NULL},
+    { SWIG_prefix "OT_API_ProcessSockets", (swig_wrapper_func) _wrap_OT_API_ProcessSockets, NULL},
     {0, 0, 0}
 };
 

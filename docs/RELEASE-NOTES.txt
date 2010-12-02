@@ -3,6 +3,8 @@ NOTES on the Version:
 
 // ---------------------------------------------------------------------
 
+   0.40 --- More additions to the API, plus many under-the-hood fixes.
+
    0.39 --- Continually updating the API based on developer feedback.
 
    0.38 --- Added Payment Plans, Markets, and Baskets to the API. Also

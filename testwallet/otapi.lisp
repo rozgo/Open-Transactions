@@ -54,15 +54,6 @@
 (cffi:defcfun ("OT_API_LoadWallet" OT_API_LoadWallet) :int
   (szPath :string))
 
-(cffi:defcfun ("OT_API_ConnectServer" OT_API_ConnectServer) :int
-  (SERVER_ID :string)
-  (USER_ID :string)
-  (szCA_FILE :string)
-  (szKEY_FILE :string)
-  (szKEY_PASSWORD :string))
-
-(cffi:defcfun ("OT_API_ProcessSockets" OT_API_ProcessSockets) :int)
-
 (cffi:defcfun ("OT_API_GetServerCount" OT_API_GetServerCount) :int)
 
 (cffi:defcfun ("OT_API_GetAssetTypeCount" OT_API_GetAssetTypeCount) :int)
@@ -117,6 +108,10 @@
   (NYM_ID :string)
   (SIGNER_NYM_ID :string)
   (NYM_NEW_NAME :string))
+
+(cffi:defcfun ("OT_API_VerifyAndRetrieveXMLContents" OT_API_VerifyAndRetrieveXMLContents) :string
+  (THE_CONTRACT :string)
+  (USER_ID :string))
 
 (cffi:defcfun ("OT_API_WriteCheque" OT_API_WriteCheque) :string
   (SERVER_ID :string)
@@ -246,6 +241,12 @@
   (BOOL_DO_I_ACCEPT :int))
 
 (cffi:defcfun ("OT_API_Transaction_GetType" OT_API_Transaction_GetType) :string
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (ACCOUNT_ID :string)
+  (THE_TRANSACTION :string))
+
+(cffi:defcfun ("OT_API_Transaction_GetVoucher" OT_API_Transaction_GetVoucher) :string
   (SERVER_ID :string)
   (USER_ID :string)
   (ACCOUNT_ID :string)
@@ -419,5 +420,14 @@
 
 (cffi:defcfun ("OT_API_Message_GetLedger" OT_API_Message_GetLedger) :string
   (THE_MESSAGE :string))
+
+(cffi:defcfun ("OT_API_ConnectServer" OT_API_ConnectServer) :int
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (szCA_FILE :string)
+  (szKEY_FILE :string)
+  (szKEY_PASSWORD :string))
+
+(cffi:defcfun ("OT_API_ProcessSockets" OT_API_ProcessSockets) :int)
 
 

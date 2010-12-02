@@ -273,36 +273,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_LoadWallet(char * jarg1) {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_ConnectServer(char * jarg1, char * jarg2, char * jarg3, char * jarg4, char * jarg5) {
-  int jresult ;
-  char *arg1 = (char *) 0 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  char *arg4 = (char *) 0 ;
-  char *arg5 = (char *) 0 ;
-  int result;
-  
-  arg1 = (char *)jarg1; 
-  arg2 = (char *)jarg2; 
-  arg3 = (char *)jarg3; 
-  arg4 = (char *)jarg4; 
-  arg5 = (char *)jarg5; 
-  result = (int)OT_API_ConnectServer((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_ProcessSockets() {
-  int jresult ;
-  int result;
-  
-  result = (int)OT_API_ProcessSockets();
-  jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_GetServerCount() {
   int jresult ;
   int result;
@@ -517,6 +487,20 @@ SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_SetNym_Name(char * jarg1, char * jarg2,
   arg3 = (char *)jarg3; 
   result = (int)OT_API_SetNym_Name((char const *)arg1,(char const *)arg2,(char const *)arg3);
   jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_VerifyAndRetrieveXMLContents(char * jarg1, char * jarg2) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (char *)jarg2; 
+  result = (char *)OT_API_VerifyAndRetrieveXMLContents((char const *)arg1,(char const *)arg2);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
   return jresult;
 }
 
@@ -926,6 +910,24 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Transaction_GetType(char * jarg1, ch
   arg3 = (char *)jarg3; 
   arg4 = (char *)jarg4; 
   result = (char *)OT_API_Transaction_GetType((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Transaction_GetVoucher(char * jarg1, char * jarg2, char * jarg3, char * jarg4) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (char *)jarg2; 
+  arg3 = (char *)jarg3; 
+  arg4 = (char *)jarg4; 
+  result = (char *)OT_API_Transaction_GetVoucher((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   jresult = SWIG_csharp_string_callback((const char *)result); 
   return jresult;
 }
@@ -1368,6 +1370,36 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Message_GetLedger(char * jarg1) {
   arg1 = (char *)jarg1; 
   result = (char *)OT_API_Message_GetLedger((char const *)arg1);
   jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_ConnectServer(char * jarg1, char * jarg2, char * jarg3, char * jarg4, char * jarg5) {
+  int jresult ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
+  int result;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (char *)jarg2; 
+  arg3 = (char *)jarg3; 
+  arg4 = (char *)jarg4; 
+  arg5 = (char *)jarg5; 
+  result = (int)OT_API_ConnectServer((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_ProcessSockets() {
+  int jresult ;
+  int result;
+  
+  result = (int)OT_API_ProcessSockets();
+  jresult = result; 
   return jresult;
 }
 

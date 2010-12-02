@@ -201,7 +201,8 @@ bool OTAccount::SaveAccount()
 // Debit a certain amount from the account (presumably the same amount is being credited somewhere else)
 bool OTAccount::Debit(const long & lAmount)
 {
-	/* // TODO: Decide whether or not to allow negative Debits and negative Credits. (Currrently allowed.)
+	/* // TODO: Decide whether or not to allow negative Debits and negative Credits. 
+	  // (Currrently allowed -- a negative cheque is the same thing as an invoice.)
 	if (lAmount < 0)
 		return false;
 	 */
@@ -218,6 +219,10 @@ bool OTAccount::Debit(const long & lAmount)
 	else										// and it means that we now allow <0 debits on normal accounts,
 	{											// AS LONG AS the result is a HIGHER BALANCE  :-)
 		m_BalanceAmount.Format("%ld", lNewBalance);
+		
+		const time_t tDate = time(NULL); // Today, now.
+		m_BalanceDate.Format("%d", tDate);
+		
 		return true;	
 	}
 }
@@ -251,6 +256,10 @@ bool OTAccount::Credit(const long & lAmount)
 	else										// and it means that we now allow <0 debits on normal accounts,
 	{											// AS LONG AS the result is a HIGHER BALANCE  :-)
 		m_BalanceAmount.Format("%ld", lNewBalance);
+
+		const time_t tDate = time(NULL); // Today, now.
+		m_BalanceDate.Format("%d", tDate);
+		
 		return true;
 	}
 }
@@ -499,9 +508,10 @@ bool OTAccount::GenerateNewAccount(const OTPseudonym & theServer, const OTMessag
 	OTIdentifier SERVER_ID(theMessage.m_strServerID);	
 	SetRealServerID(SERVER_ID);			// todo this assumes the serverID on the message is correct. It's vetted, but still...
 	SetPurportedServerID(SERVER_ID);
-	
-//	char datebuffer[200];
-//	m_BalanceDate.Set(myGetTimeOfDay(datebuffer, 198));
+
+	const time_t tDate = time(NULL); // Today, now.
+	m_BalanceDate.Format("%d", tDate);
+		
 	m_BalanceAmount.Set("0");
 	
 		
@@ -581,9 +591,9 @@ void OTAccount::UpdateContents()
 							  " serverID=\"%s\"\n assetTypeID=\"%s\" >\n\n", m_strVersion.Get(), strAcctType.Get(),
 							  ACCOUNT_ID.Get(), USER_ID.Get(), SERVER_ID.Get(), strAssetTYPEID.Get());		
 	
-	m_xmlUnsigned.Concatenate("<balance amount=\"%s\"/>\n\n", m_BalanceAmount.Get());
-//	m_xmlUnsigned.Concatenate("<balance date=\"%s\" amount=\"%s\"/>\n\n", m_BalanceDate.Get(),
-//							  m_BalanceAmount.Get());
+//	m_xmlUnsigned.Concatenate("<balance amount=\"%s\"/>\n\n", m_BalanceAmount.Get());
+	m_xmlUnsigned.Concatenate("<balance date=\"%s\" amount=\"%s\"/>\n\n", m_BalanceDate.Get(),
+							  m_BalanceAmount.Get());
 	
 	m_xmlUnsigned.Concatenate("</assetAccount>\n");			
 }
@@ -591,7 +601,7 @@ void OTAccount::UpdateContents()
 
 
 
-bool OTAccount::SaveContractWallet(OTString & strContents) const
+bool OTAccount::DisplayStatistics(OTString & strContents) const
 {
 	const OTString	strAccountID(GetPurportedAccountID()), strServerID(GetPurportedServerID()), 
 					strUserID(GetUserID()), strAssetTypeID(m_AcctAssetTypeID);
@@ -599,12 +609,18 @@ bool OTAccount::SaveContractWallet(OTString & strContents) const
 	OTString strAcctType;
 	TranslateAccountTypeToString(m_AcctType, strAcctType);
 		
-	strContents.Concatenate("<!-- %s --><assetAccount name=\"%s\"\n" // Client-side only label.
-							" accountID=\"%s\"\n" 
-							" userID=\"%s\"\n"
-							" serverID=\"%s\"\n"
-							" assetTypeID=\"%s\" />\n\n", // Unnecessary in wallet FILE, but convenient for OTWallet::DisplayStatistics().
-							strAcctType.Get(), m_strName.Get(),
+	strContents.Concatenate(
+							" Asset Account (%s) Name: %s\n"
+							" Last retrieved Balance: %s  on date: %s\n"
+							" accountID: %s\n"
+							" userID: %s\n"
+							" serverID: %s\n"
+							" assetTypeID: %s\n"
+							"\n",
+							strAcctType.Get(),
+							m_strName.Get(),
+							m_BalanceAmount.Get(), 
+							m_BalanceDate.Get(), 
 							strAccountID.Get(),
 							strUserID.Get(),
 							strServerID.Get(),
@@ -612,6 +628,44 @@ bool OTAccount::SaveContractWallet(OTString & strContents) const
 	
 	return true;
 }
+
+
+
+bool OTAccount::SaveContractWallet(OTString & strContents) const
+{
+	const OTString	strAccountID(GetPurportedAccountID()), 
+					strServerID(GetPurportedServerID()), 
+					strUserID(GetUserID()), 
+					strAssetTypeID(m_AcctAssetTypeID);
+	
+	OTString strAcctType;
+	TranslateAccountTypeToString(m_AcctType, strAcctType);
+	
+	OTASCIIArmor ascName;
+	
+	if (m_strName.Exists()) // name is in the clear in memory, and base64 in storage.
+	{
+		ascName.SetString(m_strName, false); // linebreaks == false
+	}
+	
+	strContents.Concatenate("<!-- Last retrieved balance: %s on date: %s -->\n"
+							"<!-- Account type: %s --><assetAccount name=\"%s\"\n"
+							" accountID=\"%s\"\n" 
+							" userID=\"%s\"\n"
+							" serverID=\"%s\" />\n"
+							"<!-- assetTypeID: %s -->\n\n",
+							m_BalanceAmount.Get(), 
+							m_BalanceDate.Get(), 
+							strAcctType.Get(), 
+							m_strName.Exists() ? ascName.Get() : "",
+							strAccountID.Get(),
+							strUserID.Get(),
+							strServerID.Get(),
+							strAssetTypeID.Get());
+	return true;
+}
+
+
 
 
 bool OTAccount::SaveContractWallet(std::ofstream & ofs)
@@ -702,13 +756,22 @@ int OTAccount::ProcessXMLNode(IrrXMLReader*& xml)
 	
 	else if (!strcmp("balance", xml->getNodeName())) 
 	{
-//		m_BalanceDate		= xml->getAttributeValue("date");
+		m_BalanceDate	= xml->getAttributeValue("date");
 		m_BalanceAmount	= xml->getAttributeValue("amount");
 		
-		OTLog::vOutput(1, "\nBALANCE  --  %s\n",
-					   m_BalanceAmount.Get());
-//		OTLog::vOutput(1, "\nBALANCE  --  %s\nDATE     --  %s\n",
-//					   m_BalanceAmount.Get(), m_BalanceDate.Get());
+		// I convert to integer / long and back to string.
+		// (Just an easy way to keep the data clean.)
+		
+		int nDate		= atoi(m_BalanceDate.Get());
+		long lAmount	= atol(m_BalanceAmount.Get());
+		
+		m_BalanceDate.Format("%d", nDate);
+		m_BalanceAmount.Format("%ld", lAmount);
+		
+//		OTLog::vOutput(1, "\nBALANCE  --  %s\n",
+//					   m_BalanceAmount.Get());
+		OTLog::vOutput(1, "\nBALANCE  --  %s\nDATE     --  %s\n",
+					   m_BalanceAmount.Get(), m_BalanceDate.Get());
 		
 		nReturnVal = 1;
 	}

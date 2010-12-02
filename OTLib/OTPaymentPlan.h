@@ -168,8 +168,8 @@ public:
 	// These two can be called independent of each other. You can 
 	// have an initial payment, AND/OR a payment plan.
 	
-	bool		SetPaymentPlan(const long & lPaymentAmount, time_t tTimeUntilPlanStart=2592000, // Default: 1st payment in 30 days
-							   time_t tBetweenPayments=2592000, // Default: 30 days.
+	bool		SetPaymentPlan(const long & lPaymentAmount, time_t tTimeUntilPlanStart=LENGTH_OF_MONTH_IN_SECONDS,
+							   time_t tBetweenPayments=LENGTH_OF_MONTH_IN_SECONDS, // Default: 30 days.
 							   time_t tPlanLength=0, int nMaxPayments=0);
 	
 	

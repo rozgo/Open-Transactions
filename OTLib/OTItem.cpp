@@ -308,14 +308,23 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			m_Type = OTItem::transfer;
 		else if (strType.Compare("atTransfer"))
 			m_Type = OTItem::atTransfer;
-		else if (strType.Compare("accept"))
-			m_Type = OTItem::accept;
-		else if (strType.Compare("atAccept"))
-			m_Type = OTItem::atAccept;
-		else if (strType.Compare("reject"))
-			m_Type = OTItem::reject;
-		else if (strType.Compare("atReject"))
-			m_Type = OTItem::atReject;
+		else if (strType.Compare("acceptPending"))
+			m_Type = OTItem::acceptPending;
+		else if (strType.Compare("atAcceptPending"))
+			m_Type = OTItem::atAcceptPending;
+		else if (strType.Compare("rejectPending"))
+			m_Type = OTItem::rejectPending;
+		else if (strType.Compare("atRejectPending"))
+			m_Type = OTItem::atRejectPending;
+		// --------------------------------------------------------------
+		else if (strType.Compare("acceptReceipt"))
+			m_Type = OTItem::acceptReceipt;
+		else if (strType.Compare("atAcceptReceipt"))
+			m_Type = OTItem::atAcceptReceipt;
+		else if (strType.Compare("disputeReceipt"))
+			m_Type = OTItem::disputeReceipt;
+		else if (strType.Compare("atDisputeReceipt"))
+			m_Type = OTItem::atDisputeReceipt;
 		// --------------------------------------------------------------
 		else if (strType.Compare("serverfee"))
 			m_Type = OTItem::serverfee;
@@ -352,7 +361,7 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			m_Type = OTItem::depositCheque;
 		else if (strType.Compare("atDepositCheque"))
 			m_Type = OTItem::atDepositCheque;
-// --------------------------------------------------------------
+		// --------------------------------------------------------------
 		else if (strType.Compare("marketOffer"))
 			m_Type = OTItem::marketOffer;
 		else if (strType.Compare("atMarketOffer"))
@@ -362,6 +371,13 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			m_Type = OTItem::paymentPlan;
 		else if (strType.Compare("atPaymentPlan"))
 			m_Type = OTItem::atPaymentPlan;
+		// --------------------------------------------------------------
+//		else if (strType.Compare("chequeReceipt"))
+//			m_Type = OTItem::chequeReceipt;
+		else if (strType.Compare("marketReceipt"))
+			m_Type = OTItem::marketReceipt;
+		else if (strType.Compare("paymentReceipt"))
+			m_Type = OTItem::paymentReceipt;
 		// --------------------------------------------------------------
 		else
 			m_Type = OTItem::error_state;
@@ -457,6 +473,10 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 
 
 
+
+
+
+
 void OTItem::UpdateContents() // Before transmission or serialization, this is where the ledger saves its contents 
 {
 	OTString strFromAcctID(GetPurportedAccountID()), strToAcctID(GetDestinationAcctID()), strServerID(GetPurportedServerID()), 
@@ -469,11 +489,17 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 		case OTItem::transfer:
 			strType.Set("transfer");
 			break;
-		case OTItem::accept:
-			strType.Set("accept");
+		case OTItem::acceptPending:
+			strType.Set("acceptPending");
 			break;
-		case OTItem::reject:
-			strType.Set("reject");
+		case OTItem::rejectPending:
+			strType.Set("rejectPending");
+			break;
+		case OTItem::acceptReceipt:
+			strType.Set("acceptReceipt");
+			break;
+		case OTItem::disputeReceipt:
+			strType.Set("disputeReceipt");
 			break;
 		case OTItem::serverfee:
 			strType.Set("serverfee");
@@ -506,17 +532,33 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 			strType.Set("paymentPlan");
 			break;
 			
+//		case OTItem::chequeReceipt:
+//			strType.Set("chequeReceipt");
+//			break;
+		case OTItem::marketReceipt:
+			strType.Set("marketReceipt");
+			break;
+		case OTItem::paymentReceipt:
+			strType.Set("paymentReceipt");
+			break;
+			
 		case OTItem::atTransaction:
 			strType.Set("atTransaction");
 			break;
 		case OTItem::atTransfer:
 			strType.Set("atTransfer");
 			break;
-		case OTItem::atAccept:
-			strType.Set("atAccept");
+		case OTItem::atAcceptPending:
+			strType.Set("atAcceptPending");
 			break;
-		case OTItem::atReject:
-			strType.Set("atReject");
+		case OTItem::atRejectPending:
+			strType.Set("atRejectPending");
+			break;
+		case OTItem::atAcceptReceipt:
+			strType.Set("atAcceptReceipt");
+			break;
+		case OTItem::atDisputeReceipt:
+			strType.Set("atDisputeReceipt");
 			break;
 		case OTItem::atServerfee:
 			strType.Set("atServerfee");

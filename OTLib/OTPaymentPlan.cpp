@@ -875,10 +875,10 @@ bool OTPaymentPlan::ProcessPayment(const long & lAmount)
 			}
 			
 			OTTransaction * pTransSend		= OTTransaction::GenerateTransaction(theSenderInbox, 
-																			 OTTransaction::pending, lNewTransactionNumber);
+																			 OTTransaction::paymentReceipt, lNewTransactionNumber);
 			
 			OTTransaction * pTransRecip		= OTTransaction::GenerateTransaction(theRecipientInbox, 
-																			 OTTransaction::pending, lNewTransactionNumber);
+																			 OTTransaction::paymentReceipt, lNewTransactionNumber);
 			
 			// (No need to OT_ASSERT on the above transactions since it occurs in GenerateTransaction().)
 			
@@ -888,8 +888,8 @@ bool OTPaymentPlan::ProcessPayment(const long & lAmount)
 			// (with user's signature).
 			
 			// set up the transaction items (each transaction may have multiple items... but not in this case.)
-			OTItem * pItemSend		= OTItem::CreateItemFromTransaction(*pTransSend, OTItem::atPaymentPlan);
-			OTItem * pItemRecip		= OTItem::CreateItemFromTransaction(*pTransRecip, OTItem::atPaymentPlan);
+			OTItem * pItemSend		= OTItem::CreateItemFromTransaction(*pTransSend, OTItem::paymentReceipt);
+			OTItem * pItemRecip		= OTItem::CreateItemFromTransaction(*pTransRecip, OTItem::paymentReceipt);
 			
 			// these may be unnecessary, I'll have to check CreateItemFromTransaction. I'll leave em.
 			OT_ASSERT(NULL != pItemSend);	

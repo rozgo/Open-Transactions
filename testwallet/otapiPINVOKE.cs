@@ -190,12 +190,6 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_LoadWallet")]
   public static extern int OT_API_LoadWallet(string jarg1);
 
-  [DllImport("otapi", EntryPoint="CSharp_OT_API_ConnectServer")]
-  public static extern int OT_API_ConnectServer(string jarg1, string jarg2, string jarg3, string jarg4, string jarg5);
-
-  [DllImport("otapi", EntryPoint="CSharp_OT_API_ProcessSockets")]
-  public static extern int OT_API_ProcessSockets();
-
   [DllImport("otapi", EntryPoint="CSharp_OT_API_GetServerCount")]
   public static extern int OT_API_GetServerCount();
 
@@ -249,6 +243,9 @@ class otapiPINVOKE {
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_SetNym_Name")]
   public static extern int OT_API_SetNym_Name(string jarg1, string jarg2, string jarg3);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_VerifyAndRetrieveXMLContents")]
+  public static extern string OT_API_VerifyAndRetrieveXMLContents(string jarg1, string jarg2);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_WriteCheque")]
   public static extern string OT_API_WriteCheque(string jarg1, string jarg2, string jarg3, string jarg4, string jarg5, string jarg6, string jarg7, string jarg8);
@@ -321,6 +318,9 @@ class otapiPINVOKE {
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Transaction_GetType")]
   public static extern string OT_API_Transaction_GetType(string jarg1, string jarg2, string jarg3, string jarg4);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Transaction_GetVoucher")]
+  public static extern string OT_API_Transaction_GetVoucher(string jarg1, string jarg2, string jarg3, string jarg4);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Transaction_GetSuccess")]
   public static extern int OT_API_Transaction_GetSuccess(string jarg1, string jarg2, string jarg3, string jarg4);
@@ -417,4 +417,10 @@ class otapiPINVOKE {
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Message_GetLedger")]
   public static extern string OT_API_Message_GetLedger(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_ConnectServer")]
+  public static extern int OT_API_ConnectServer(string jarg1, string jarg2, string jarg3, string jarg4, string jarg5);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_ProcessSockets")]
+  public static extern int OT_API_ProcessSockets();
 }

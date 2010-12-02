@@ -489,10 +489,10 @@ OTTransaction * OTLedger::GetTransactionByIndex(int nIndex)
 		
 // If you TRANSFER REQUEST to me (transaction #1), then the server will create a 
 // PENDING transaction in my inbox (transaction #41) and a PENDING transaction in 
-// your outbox (transaction #58) which both contain a copy of transaction#1 in their
+// your outbox (also transaction #41) which both contain a copy of transaction#1 in their
 // "In Reference To" ascii-armored field.
 //
-// The above function would look up #41 in my inbox, or #58 in your outbox, but
+// The above function would look up #41 in my inbox, or #41 in your outbox, but
 // you could NOT pass #1 to that function and get a pointer back. You'd get NULL.
 // But the below function specifically returns the pointer of a transaction ONLY
 // IF THE "IN REFERENCE TO" Transaction ID matches the one passed in (such as #1

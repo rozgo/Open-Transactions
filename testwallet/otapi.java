@@ -16,14 +16,6 @@ public class otapi {
     return otapiJNI.OT_API_LoadWallet(szPath);
   }
 
-  public static int OT_API_ConnectServer(String SERVER_ID, String USER_ID, String szCA_FILE, String szKEY_FILE, String szKEY_PASSWORD) {
-    return otapiJNI.OT_API_ConnectServer(SERVER_ID, USER_ID, szCA_FILE, szKEY_FILE, szKEY_PASSWORD);
-  }
-
-  public static int OT_API_ProcessSockets() {
-    return otapiJNI.OT_API_ProcessSockets();
-  }
-
   public static int OT_API_GetServerCount() {
     return otapiJNI.OT_API_GetServerCount();
   }
@@ -94,6 +86,10 @@ public class otapi {
 
   public static int OT_API_SetNym_Name(String NYM_ID, String SIGNER_NYM_ID, String NYM_NEW_NAME) {
     return otapiJNI.OT_API_SetNym_Name(NYM_ID, SIGNER_NYM_ID, NYM_NEW_NAME);
+  }
+
+  public static String OT_API_VerifyAndRetrieveXMLContents(String THE_CONTRACT, String USER_ID) {
+    return otapiJNI.OT_API_VerifyAndRetrieveXMLContents(THE_CONTRACT, USER_ID);
   }
 
   public static String OT_API_WriteCheque(String SERVER_ID, String CHEQUE_AMOUNT, String VALID_FROM, String VALID_TO, String SENDER_ACCT_ID, String SENDER_USER_ID, String CHEQUE_MEMO, String RECIPIENT_USER_ID) {
@@ -190,6 +186,10 @@ public class otapi {
 
   public static String OT_API_Transaction_GetType(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
     return otapiJNI.OT_API_Transaction_GetType(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  }
+
+  public static String OT_API_Transaction_GetVoucher(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
+    return otapiJNI.OT_API_Transaction_GetVoucher(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
   }
 
   public static int OT_API_Transaction_GetSuccess(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
@@ -318,6 +318,14 @@ public class otapi {
 
   public static String OT_API_Message_GetLedger(String THE_MESSAGE) {
     return otapiJNI.OT_API_Message_GetLedger(THE_MESSAGE);
+  }
+
+  public static int OT_API_ConnectServer(String SERVER_ID, String USER_ID, String szCA_FILE, String szKEY_FILE, String szKEY_PASSWORD) {
+    return otapiJNI.OT_API_ConnectServer(SERVER_ID, USER_ID, szCA_FILE, szKEY_FILE, szKEY_PASSWORD);
+  }
+
+  public static int OT_API_ProcessSockets() {
+    return otapiJNI.OT_API_ProcessSockets();
   }
 
 }

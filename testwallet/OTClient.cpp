@@ -200,56 +200,107 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 			OTString strRespTo;
 			pTransaction->GetReferenceString(strRespTo);
 //			OTLog::vError("TRANSACTION \"IN REFERENCE TO\" CONTENTS:\n%s\n", strRespTo.Get());	
-			
-			OTItem * pOriginalItem = OTItem::CreateItemFromString(strRespTo, theServerID, pTransaction->GetReferenceToNum());
-			
-			// This item was attached as the "in reference to" item. Perhaps Bob sent it to me.
-			// Since that item was initiated by him, HIS would be the account ID on it, not mine.
-			// So I DON'T want to create it with my account ID on it.
-			if (pOriginalItem)
-			{
-				if ((OTItem::request == pOriginalItem->m_Status) &&
-					
-					// In a real client, the user would pick and choose which items he wanted
-					// to accept or reject. We, on the other hand, are blindly accepting all of
-					// these types:
-					(OTItem::transfer		== pOriginalItem->m_Type  || // I'm accepting a transfer that was sent to me.
-					 OTItem::accept			== pOriginalItem->m_Type  || // I'm accepting a notice that someone accepted my transfer.
-					 OTItem::reject			== pOriginalItem->m_Type  || // I'm accepting a notice that someone rejected my transfer.
-					 OTItem::depositCheque	== pOriginalItem->m_Type)	 // I'm accepting a notice that someone cashed a cheque I wrote.
-					)
-				{
-					OTItem * pAcceptItem = OTItem::CreateItemFromTransaction(*pAcceptTransaction, OTItem::accept);
-					// the transaction will handle cleaning up the transaction item.
-					pAcceptTransaction->AddItem(*pAcceptItem);
 
-					// Set up the "accept" transaction item to be sent to the server 
-					// (this item references and accepts another item by its transaction number--
-					//  one that is already there in my inbox)
-					OTString strNote("Thanks for that money!"); // this message is from when only transfer worked.
-					pAcceptItem->SetNote(strNote);
-					pAcceptItem->SetReferenceToNum(pOriginalItem->GetTransactionNum()); // This is critical. Server needs this to look up the original.
-					// Don't need to set transaction num on item since the constructor already got it off the owner transaction.
-					 
-					// I don't attach the original item here because I already reference it by transaction num,
-					// and because the server already has it and sent it to me. SO I just need to give the server
-					// enough info to look it up again.
-					
-					// sign the item
-					pAcceptItem->SignContract(*(theConnection.GetNym()));
-					pAcceptItem->SaveContract();
-				}
-				else {
-					OTLog::Error( "Unrecognized item type while processing inbox.\n"
-							"(Only transfers, cheques, and accepts are operational inbox items at this time.)\n");
-				}
-				delete pOriginalItem; // make sure we clean this up...
-				pOriginalItem = NULL;
+			// Sometimes strRespTo contains an OTPaymentPlan or an OTTrade.
+			// The rest of the time, it contains an OTItem.
+			//
+			// The reason is because in most cases I have the original item
+			// right there, so I attach it. But with payment plans and trades,
+			// the original payment plan itself, or trade itself, is being loaded
+			// by Cron (as a cron receipt) for reference reasons, and thus it is
+			// the most appropriate object to attach in that case, and also, the
+			// OTItem is not available in that context, since we aren't even processing
+			// a message, but rather, we are in Cron, processing a trade or some
+			// other sort of cron item.
+			//
+			if ((OTTransaction::paymentReceipt	== pTransaction->GetType()) ||
+				(OTTransaction::marketReceipt	== pTransaction->GetType()))
+			{				
+				OTItem * pAcceptItem = OTItem::CreateItemFromTransaction(*pAcceptTransaction, OTItem::acceptReceipt);
+
+				// the transaction will handle cleaning up the transaction item.
+				pAcceptTransaction->AddItem(*pAcceptItem);
+				
+				// Set up the "accept" transaction item to be sent to the server, by referencing
+				// the transaction number of the receipt. Normally, when accepting a pending
+				// transaction, I set the "in reference to" to the transaction number of the
+				// original transfer that I am accepting.
+				//
+				// But I cannot do this with a market receipt, or a payment plan receipt,
+				// since there may be MULTIPLE RECEIPTS REFERENCING THE SAME NUMBER (they will
+				// all reference the original payment plan / offer.) Thus, in the case of receipts,
+				// I accept by setting the "in reference to" to the RECEIPT's transaction number,
+				// since each receipt represents a distinct transaction anyway, and I must
+				// accept them individually, and that is the number that identifies them uniquely.
+				
+				pAcceptItem->SetReferenceToNum(pTransaction->GetTransactionNum()); // This is critical. Server needs this to look up the receipt in my inbox.
+				// Don't need to set transaction num on item since the constructor already got it off the owner transaction.
+				
+				// I don't attach the original payment plan or trade here, 
+				// because I already reference it by transaction num of the receipt,
+				// and the server can look it up in my inbox from there.
+				
+				// sign the item
+				pAcceptItem->SignContract(*(theConnection.GetNym()));
+				pAcceptItem->SaveContract();
 			}
-			else 
+			else // all others. (Below original items come from transaction requests sent to the server.)
 			{
-				OTLog::vError("Error loading transaction item from string in OTClient::AcceptEntireInbox\n");
-			}
+				OTItem * pOriginalItem = OTItem::CreateItemFromString(strRespTo, theServerID, pTransaction->GetReferenceToNum());
+				OTCleanup<OTItem> theAngel(pOriginalItem);
+				
+				// This item was attached as the "in reference to" item. Perhaps Bob sent it to me.
+				// Since that item was initiated by him, HIS would be the account ID on it, not mine.
+				// So I DON'T want to create it with my account ID on it.
+				if (pOriginalItem)
+				{
+					if ((OTItem::request == pOriginalItem->m_Status) &&
+						
+						// In a real client, the user would pick and choose which items he wanted
+						// to accept or reject. We, on the other hand, are blindly accepting all of
+						// these types:
+						(OTItem::transfer		== pOriginalItem->m_Type  || // I'm accepting a transfer that was sent to me.
+						 OTItem::acceptPending	== pOriginalItem->m_Type  || // I'm accepting a notice that someone accepted my transfer.
+						 OTItem::rejectPending	== pOriginalItem->m_Type  || // I'm accepting a notice that someone rejected my transfer.
+						 OTItem::depositCheque	== pOriginalItem->m_Type)	 // I'm accepting a notice that someone cashed a cheque I wrote.
+						)
+					{
+						OTItem * pAcceptItem = OTItem::CreateItemFromTransaction(*pAcceptTransaction, OTItem::acceptPending);
+						// the transaction will handle cleaning up the transaction item.
+						pAcceptTransaction->AddItem(*pAcceptItem);
+						
+						// Set up the "accept" transaction item to be sent to the server 
+						// (this item references and accepts another item by its transaction number--
+						// But on the server side, it doesn't look for the inbox item with that number.
+						// Rather, it looks for the inbox item that is "in reference to" that number. Notice
+						// therefore, my own accept item is below ALSO set to be "in reference to" the number
+						// of the original item.  The server uses this info to find the pending transaction.
+						OTString strNote("Thanks for that money!"); // this message is from when only transfer worked.
+						pAcceptItem->SetNote(strNote);
+						pAcceptItem->SetReferenceToNum(pOriginalItem->GetTransactionNum()); // This is critical. Server needs this to look up the original.
+						// Don't need to set transaction num on item since the constructor already got it off the owner transaction.
+						
+						// I don't attach the original item here because I already reference it by transaction num,
+						// and because the server already has it and sent it to me. SO I just need to give the server
+						// enough info to look it up again.
+						
+						// sign the item
+						pAcceptItem->SignContract(*(theConnection.GetNym()));
+						pAcceptItem->SaveContract();
+					}
+					else 
+					{
+						const int nOriginalType = pOriginalItem->m_Type;
+						OTLog::vError( "Unrecognized item type (%d) while processing inbox.\n"
+									 "(Only pending transfers, payment receipts, market trades, cheques, and accepts are "
+									 "operational inbox items at this time.)\n", nOriginalType);
+					}
+				}
+				else 
+				{
+					OTLog::vError("Error loading transaction item from string in OTClient::AcceptEntireInbox\n");
+				}				
+			} // else // all others.
 		} // if pTransaction
 		if (pTransaction)
 		{
@@ -257,6 +308,9 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 		}
 	}
 	
+	// If the above processing resulted in us actually accepting certain specific items,
+	// then let's process the message out to the server.
+	//
 	if (pAcceptTransaction->GetItemCount())
 	{
 		OTMessage theMessage;
@@ -873,7 +927,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 				pWallet->AddAssetContract(*pContract);
 				pContract = NULL; // Success. The wallet "owns" it now, no need to clean it up.
 
-				m_pWallet->SaveWallet(m_pWallet->m_strFilename.Get());
+				m_pWallet->SaveWallet();
 			}
 		}
 		// cleanup
@@ -980,7 +1034,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 				
 				m_pWallet->AddAccount(*pAccount);
 				
-				m_pWallet->SaveWallet(m_pWallet->m_strFilename.Get());
+				m_pWallet->SaveWallet();
 				
 				return true;
 			}
@@ -1071,7 +1125,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 				
 				m_pWallet->AddAccount(*pAccount);
 				
-				m_pWallet->SaveWallet(m_pWallet->m_strFilename.Get());
+				m_pWallet->SaveWallet();
 				
 				return true;
 			}

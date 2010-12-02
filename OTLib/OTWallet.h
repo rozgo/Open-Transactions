@@ -96,6 +96,7 @@
 
 class OTMessage;
 class OTPurse;
+class OTString;
 
 //typedef std::map<std::string, OTPseudonym *>		mapOfNyms; // in OTContract.h now.
 typedef std::map<std::string, OTServerContract *>	mapOfServers;
@@ -118,6 +119,7 @@ public:
 	
 	OTWallet();
 	virtual ~OTWallet();
+	void Release();
 	
 	//------------------------------------------------------------
 

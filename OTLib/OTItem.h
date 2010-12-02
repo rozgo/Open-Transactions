@@ -116,10 +116,17 @@ public:
 		// TRANSFER
 		transfer,	// this item is an outgoing transfer, probably part of an outoing transaction.
 		atTransfer,
-		accept,		// this item is a client-side acceptance of a pending transaction
-		atAccept,	
-		reject,		// this item is a client-side rejection of a pending transaction	
-		atReject,
+// ------------------------------------------------------------------------------
+		acceptPending,		// this item is a client-side acceptance of a pending transaction
+		atAcceptPending,	
+		rejectPending,		// this item is a client-side rejection of a pending transaction	
+		atRejectPending,
+// ------------------------------------------------------------------------------
+		// RECEIPT ACKNOWLEDGMENT / DISPUTE
+		acceptReceipt,		// this item is a client-side acceptance of a cron receipt in his inbox.
+		atAcceptReceipt,	// this item is a server reply to that acceptance.
+		disputeReceipt,		// this item is a client dispute of a receipt in his inbox.
+		atDisputeReceipt,	// Server reply to dispute message.
 // ------------------------------------------------------------------------------
 		// FEEs
 		serverfee,	// this item is a fee from the transaction server (per contract)
@@ -143,7 +150,7 @@ public:
 		withdrawVoucher,// this item is a request to purchase a voucher (a cashier's cheque)
 		atWithdrawVoucher,
 		depositCheque,	// this item is a request to deposit a cheque
-		atDepositCheque,
+		atDepositCheque,// this item is a server response to that request.
 // ------------------------------------------------------------------------------
 		// TRADING ON MARKETS
 		marketOffer,	// this item is an offer to be put on a market.
@@ -152,6 +159,11 @@ public:
 		// PAYMENT PLANS
 		paymentPlan,	// this item is a new payment plan
 		atPaymentPlan,	// server reply or updated notification regarding a payment plan.
+// ------------------------------------------------------------------------------
+//		chequeReceipt,	// this item is a a cheque receipt dropped into your inbox by
+//						// the server after someone cashed a cheque you previously wrote.
+		marketReceipt,	// server receipt dropped into inbox as result of market trading.
+		paymentReceipt,	// server receipt dropped into an inbox as result of payment occuring.
 // ------------------------------------------------------------------------------
 		error_state // error state versus error status
 	};

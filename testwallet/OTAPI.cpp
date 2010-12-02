@@ -629,6 +629,109 @@ const char * OT_API_GetAccountWallet_AssetTypeID(const char * THE_ID)
 
 
 // --------------------------------------------------
+// Verify and Retrieve XML Contents.
+//
+// Pass in a contract and a user ID, and this function will:
+// -- Load the contract up and verify it.
+// -- Verify the user's signature on it.
+// -- Remove the PGP-style bookends (the signatures, etc)
+//    and return the XML contents of the contract in string form.
+//
+const char * OT_API_VerifyAndRetrieveXMLContents(const char * THE_CONTRACT,
+												 const char * USER_ID)
+{
+	OT_ASSERT_MSG(NULL != THE_CONTRACT, "NULL THE_CONTRACT passed to OT_API_VerifyAndRetrieveXMLContents.");
+	OT_ASSERT_MSG(NULL != USER_ID, "NULL USER_ID passed to OT_API_VerifyAndRetrieveXMLContents.");
+	
+	const OTIdentifier theUserID(USER_ID);
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = g_OT_API.GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(theUserID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = g_OT_API.LoadPublicNym(theUserID);
+		
+		if (NULL == pNym) // LoadPublicNym has plenty of error logging already.	
+		{
+			return NULL;
+		}
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+
+	OTString strContract(THE_CONTRACT);
+	
+	if (!strContract.Exists())
+	{
+		OTLog::Output(0, "Empty contract passed to OT_API_VerifyAndRetrieveXMLContents\n");
+		return NULL;
+	}
+	
+	// -----------------------------------------------------
+
+	OTContract * pContract = OTContract::InstantiateContract(strContract);
+	OTCleanup<OTContract> theAngel(pContract);
+	
+	if (NULL == pContract)
+	{
+		OTLog::Output(0, "Unable to instantiate contract passed to OT_API_VerifyAndRetrieveXMLContents\n");
+		return NULL;
+	}
+	
+	// -----------------------------------------------------
+	
+	if (false == pContract->VerifyContract())
+	{
+		OTLog::Output(0, "Unable to verify contract passed to OT_API_VerifyAndRetrieveXMLContents\n");
+		return NULL;
+	}
+	
+	// -----------------------------------------------------
+	
+	if (false == pContract->VerifySignature(*pNym))
+	{
+		OTLog::Output(0, "Unable to verify signature on contract using Nym passed in to OT_API_VerifyAndRetrieveXMLContents\n");
+		return NULL;
+	}
+	
+	// -----------------------------------------------------
+	
+	OTString strOutput;
+	
+	pContract->SaveContents(strOutput);
+		
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;	
+}
+
+
 
 
 
@@ -1353,7 +1456,7 @@ const char * OT_API_LoadOutbox(const char * SERVER_ID,
  accept or reject.)
  
  -- Then call OT_API_Ledger_CreateResponse in order to create a
- 'response' ledger for that inbox, (which will be send to the server.)
+ 'response' ledger for that inbox, (which will be sent to the server.)
  
  -- Then call OT_API_Ledger_GetCount (pass it the inbox) to find out how many 
  transactions are inside of it.  Use that count to LOOP through them...
@@ -1997,7 +2100,8 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 		}
 		
 		pTransaction = OTTransaction::GenerateTransaction(theUserID, theAccountID, theServerID, 
-														  OTTransaction::processInbox, lTransactionNumber);
+														  OTTransaction::processInbox, 
+														  lTransactionNumber);
 		if (NULL == pTransaction)
 		{
 			OTString strAcctID(theAccountID);
@@ -2015,9 +2119,30 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 	// Next let's create a new item that response to theTransaction, and add that 
 	// item to pTransaction. Then we'll return the updated ledger.
 	
+	OTItem::itemType theAcceptItemType = OTItem::error_state;
+	OTItem::itemType theRejectItemType = OTItem::error_state;
+	
+	switch (theTransaction.GetType()) 
+	{
+		case OTTransaction::pending:
+		case OTTransaction::chequeReceipt:
+			theAcceptItemType = OTItem::acceptPending;
+			theRejectItemType = OTItem::rejectPending;
+			break;
+		case OTTransaction::marketReceipt:
+		case OTTransaction::paymentReceipt:
+			theAcceptItemType = OTItem::acceptReceipt;
+			theRejectItemType = OTItem::disputeReceipt;
+			break;
+		default:
+			theAcceptItemType = OTItem::error_state;
+			theRejectItemType = OTItem::error_state;
+			break;
+	}
+	
 	OTItem * pAcceptItem = OTItem::CreateItemFromTransaction(theTransaction, 
 															 (OT_TRUE == BOOL_DO_I_ACCEPT) ?
-															 OTItem::accept : OTItem::reject);
+															 theAcceptItemType : theRejectItemType);
 	
 	// Set up the "accept" transaction item to be sent to the server 
 	// (this item references and accepts another item by its transaction number--
@@ -2056,6 +2181,156 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 	
 	return g_tempBuf;	
 }
+
+
+
+
+
+// --------------------------------------------------------------------
+// Retrieve Voucher from Transaction
+//
+// If you withdrew into a voucher instead of cash, this function allows
+// you to retrieve the actual voucher cheque from the reply transaction.
+// (A voucher is a cheque drawn on an internal server account instead
+// of a user's asset account, so the voucher cannot ever bounce due to 
+// insufficient funds. We are accustomed to this functionality already
+// in our daily lives, via "money orders" and "cashier's cheques".)
+//
+// How would you use this in full?
+//
+// First, call OT_API_withdrawVoucher() in order to send the request
+// to the server. (You may optionally call OT_API_FlushMessageBuffer()
+// before doing this.)
+//
+// Then, call OT_API_PopMessageBuffer() to retrieve any server reply.
+//
+// If there is a message from the server in reply, then call 
+// OT_API_Message_GetCommand to verify that it's a reply to the message
+// that you sent, and call OT_API_Message_GetSuccess to verify whether
+// the message was a success.
+//
+// If it was a success, next call OT_API_Message_GetLedger to retrieve
+// the actual "reply ledger" from the server.
+//
+// Penultimately, call OT_API_Ledger_GetTransactionByID() and then,
+// finally, call OT_API_Transaction_GetVoucher() (below) in order to
+// retrieve the voucher cheque itself from the transaction.
+//
+const char * OT_API_Transaction_GetVoucher(const char * SERVER_ID,
+										   const char * USER_ID,
+										   const char * ACCOUNT_ID,
+										   const char * THE_TRANSACTION)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_TRANSACTION, "NULL THE_TRANSACTION passed in.");
+	
+	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
+	
+	OTString strTransaction(THE_TRANSACTION);
+	
+	OTString strOutput;
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = g_OT_API.GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(theUserID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = g_OT_API.LoadPrivateNym(theUserID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			return NULL;
+		}
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	OTTransaction theTransaction(theUserID, theAccountID, theServerID);
+	
+	if (false == theTransaction.LoadContractFromString(strTransaction))
+	{
+		OTString strAcctID(theAccountID);
+		OTLog::vError("Error loading transaction from string in OT_API_Transaction_GetVoucher. Acct ID:\n%s\n",
+					  strAcctID.Get());
+		return NULL;
+	}
+	
+	// -----------------------------------------------------
+	
+	if (OTTransaction::atWithdrawal != theTransaction.GetType())
+	{
+		OTLog::Error("Error: tried to retrieve voucher from wrong transaction (not atWithdrawal).\n");
+		return NULL;		
+	}
+	
+	// -----------------------------------------------------
+	
+	// loop through the ALL items that make up this transaction and check to see if a response to withdrawal.
+	OTItem * pItem = NULL;
+	
+	// if pointer not null, and it's a withdrawal, and it's an acknowledgement (not a rejection or error)
+	for (listOfItems::iterator ii = theTransaction.GetItemList().begin(); ii != theTransaction.GetItemList().end(); ++ii)
+	{
+		pItem = *ii;
+		
+		OT_ASSERT_MSG(NULL != pItem, "Null pItem in transaction list.");
+		
+		if ((OTItem::atWithdrawVoucher	== pItem->GetType()) &&
+			(OTItem::acknowledgement	== pItem->GetStatus()))
+		{ 
+			OTString	strVoucher;
+			pItem->GetAttachment(strVoucher);
+			
+			OTCheque	theVoucher;
+			if (theVoucher.LoadContractFromString(strVoucher)) // Todo additional verification here on the cheque.
+			{
+				theVoucher.SaveContract(strOutput);
+				break;			
+			}
+		}
+
+	}
+
+	// -----------------------------------------------------
+	
+	// Didn't find one.
+	if (!strOutput.Exists())
+		return NULL;
+	
+	// We found a voucher -- let's return it!
+	//
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;	
+}
+
 
 
 // --------------------------------------------------
