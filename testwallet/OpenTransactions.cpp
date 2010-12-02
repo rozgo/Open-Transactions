@@ -2359,7 +2359,7 @@ void OT_API::issueBasket(OTIdentifier	& SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
@@ -2440,7 +2440,7 @@ void OT_API::exchangeBasket(OTIdentifier	& SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
@@ -2527,7 +2527,7 @@ void OT_API::getTransactionNumber(OTIdentifier & SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
@@ -2585,7 +2585,7 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
@@ -2615,13 +2615,14 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 	
 	OTAccount * pAccount = m_pWallet->GetAccount(ACCT_ID);
 	
-	if (!pAccount)
+	if (NULL == pAccount)
 	{
-		// todo error message
+		OTLog::Output(0, "There is no account in the wallet with that ID.\n");
 		
 		return;
 	}
-	else {
+	else 
+	{
 		CONTRACT_ID = pAccount->GetAssetTypeID();
 		CONTRACT_ID.GetString(strContractID);
 	}
@@ -2835,7 +2836,7 @@ void OT_API::notarizeDeposit(OTIdentifier	& SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
@@ -2866,9 +2867,9 @@ void OT_API::notarizeDeposit(OTIdentifier	& SERVER_ID,
 	
 	OTAccount * pAccount = m_pWallet->GetAccount(ACCT_ID);
 	
-	if (!pAccount)
+	if (NULL == pAccount)
 	{
-		// todo error message
+		OTLog::Output(0, "There is no account in the wallet with that ID.\n");
 		
 		return;
 	}
@@ -3042,7 +3043,7 @@ void OT_API::withdrawVoucher(OTIdentifier	& SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
@@ -3073,9 +3074,9 @@ void OT_API::withdrawVoucher(OTIdentifier	& SERVER_ID,
 	
 	OTAccount * pAccount = m_pWallet->GetAccount(ACCT_ID);
 	
-	if (!pAccount)
+	if (NULL == pAccount)
 	{
-		// todo error message
+		OTLog::Output(0, "There is no account in the wallet with that ID.\n");
 		
 		return;
 	}
@@ -3234,7 +3235,7 @@ void OT_API::depositCheque(OTIdentifier	& SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
@@ -3265,9 +3266,9 @@ void OT_API::depositCheque(OTIdentifier	& SERVER_ID,
 	
 	OTAccount * pAccount = m_pWallet->GetAccount(ACCT_ID);
 	
-	if (!pAccount)
+	if (NULL == pAccount)
 	{
-		// todo error message
+		OTLog::Output(0, "There is no account in the wallet with that ID.\n");
 		
 		return;
 	}
@@ -3864,7 +3865,7 @@ void OT_API::notarizeTransfer(OTIdentifier	& SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
@@ -3892,9 +3893,9 @@ void OT_API::notarizeTransfer(OTIdentifier	& SERVER_ID,
 	
 	OTAccount * pAccount = m_pWallet->GetAccount(ACCT_FROM);
 	
-	if (!pAccount)
+	if (NULL == pAccount)
 	{
-		// todo error message
+		OTLog::Output(0, "There is no account in the wallet with that ID.\n");
 		
 		return;
 	}
@@ -4003,7 +4004,7 @@ void OT_API::getInbox(OTIdentifier & SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
@@ -4031,9 +4032,9 @@ void OT_API::getInbox(OTIdentifier & SERVER_ID,
 	
 	OTAccount * pAccount = m_pWallet->GetAccount(ACCT_ID);
 	
-	if (!pAccount)
+	if (NULL == pAccount)
 	{
-		// todo error message
+		OTLog::Output(0, "There is no account in the wallet with that ID.\n");
 		
 		return;
 	}
@@ -4086,7 +4087,7 @@ void OT_API::processInbox(OTIdentifier	& SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
@@ -4114,9 +4115,9 @@ void OT_API::processInbox(OTIdentifier	& SERVER_ID,
 	
 	OTAccount * pAccount = m_pWallet->GetAccount(ACCT_ID);
 	
-	if (!pAccount)
+	if (NULL == pAccount)
 	{
-		// todo error message
+		OTLog::Output(0, "There is no account in the wallet with that ID.\n");
 		
 		return;
 	}
@@ -4170,7 +4171,7 @@ void OT_API::issueAssetType(OTIdentifier	&	SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
@@ -4251,7 +4252,7 @@ void OT_API::getContract(OTIdentifier & SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
@@ -4334,7 +4335,7 @@ void OT_API::getMint(OTIdentifier & SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
@@ -4364,7 +4365,7 @@ void OT_API::getMint(OTIdentifier & SERVER_ID,
 	
 	if (!pAssetContract)
 	{
-		// todo error message
+		OTLog::Output(0, "There's no Asset Contract already loaded with that ID.\n");
 		
 		return;
 	}
@@ -4410,21 +4411,35 @@ void OT_API::createAssetAccount(OTIdentifier & SERVER_ID,
 {	
 	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 	
-	// -----------------------------------------------------------------
+	// -----------------------------------------------------
 	
-	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	
+	OTServerContract * pServer = pWallet->GetServerContract(SERVER_ID);
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
 	
+	// By this point, pServer is a good pointer.  (No need to cleanup.)
 	
-	// -----------------------------------------------------
+	// -----------------------------------------------------------------
 	
-	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
 	
 	if (NULL == pNym) // Wasn't already in the wallet.
 	{
@@ -4433,20 +4448,22 @@ void OT_API::createAssetAccount(OTIdentifier & SERVER_ID,
 		pNym = this->LoadPrivateNym(USER_ID);
 		
 		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+		{
 			return;
+		}
 		
-		m_pWallet->AddNym(*pNym);
+		pWallet->AddNym(*pNym);
 	}
 	
 	// By this point, pNym is a good pointer, and is on the wallet.
 	//  (No need to cleanup.)
 	// -----------------------------------------------------
 	
-	OTAssetContract * pAssetContract = m_pWallet->GetAssetContract(ASSET_ID);
+	OTAssetContract * pAssetContract = pWallet->GetAssetContract(ASSET_ID);
 	
 	if (!pAssetContract)
 	{
-		// todo error message
+		OTLog::Output(0, "There's no Asset Contract already loaded with that ID.\n");
 		
 		return;
 	}
@@ -4498,11 +4515,10 @@ void OT_API::getAccount(OTIdentifier	& SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
-	
 	
 	// -----------------------------------------------------
 	
@@ -4526,9 +4542,9 @@ void OT_API::getAccount(OTIdentifier	& SERVER_ID,
 	
 	OTAccount * pAccount = m_pWallet->GetAccount(ACCT_ID);
 	
-	if (!pAccount)
+	if (NULL == pAccount)
 	{
-		// todo error message
+		OTLog::Output(0, "There is no account in the wallet with that ID.\n");
 		
 		return;
 	}
@@ -4576,7 +4592,7 @@ void OT_API::getRequest(OTIdentifier	& SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
@@ -4674,7 +4690,7 @@ void OT_API::checkUser(OTIdentifier & SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
@@ -4696,7 +4712,7 @@ void OT_API::createUserAccount(OTIdentifier	& SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}
@@ -4750,7 +4766,7 @@ void OT_API::checkServerID(OTIdentifier	& SERVER_ID,
 	
 	if (!pServer)
 	{
-		// todo error message
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
 		
 		return;
 	}

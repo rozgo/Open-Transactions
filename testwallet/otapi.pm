@@ -51,8 +51,6 @@ package otapi;
 
 *OT_API_Init = *otapic::OT_API_Init;
 *OT_API_LoadWallet = *otapic::OT_API_LoadWallet;
-*OT_API_ConnectServer = *otapic::OT_API_ConnectServer;
-*OT_API_ProcessSockets = *otapic::OT_API_ProcessSockets;
 *OT_API_GetServerCount = *otapic::OT_API_GetServerCount;
 *OT_API_GetAssetTypeCount = *otapic::OT_API_GetAssetTypeCount;
 *OT_API_GetAccountCount = *otapic::OT_API_GetAccountCount;
@@ -71,6 +69,7 @@ package otapi;
 *OT_API_GetNym_ID = *otapic::OT_API_GetNym_ID;
 *OT_API_GetNym_Name = *otapic::OT_API_GetNym_Name;
 *OT_API_SetNym_Name = *otapic::OT_API_SetNym_Name;
+*OT_API_VerifyAndRetrieveXMLContents = *otapic::OT_API_VerifyAndRetrieveXMLContents;
 *OT_API_WriteCheque = *otapic::OT_API_WriteCheque;
 *OT_API_WritePaymentPlan = *otapic::OT_API_WritePaymentPlan;
 *OT_API_LoadUserPubkey = *otapic::OT_API_LoadUserPubkey;
@@ -95,6 +94,7 @@ package otapi;
 *OT_API_Ledger_AddTransaction = *otapic::OT_API_Ledger_AddTransaction;
 *OT_API_Transaction_CreateResponse = *otapic::OT_API_Transaction_CreateResponse;
 *OT_API_Transaction_GetType = *otapic::OT_API_Transaction_GetType;
+*OT_API_Transaction_GetVoucher = *otapic::OT_API_Transaction_GetVoucher;
 *OT_API_Transaction_GetSuccess = *otapic::OT_API_Transaction_GetSuccess;
 *OT_API_Purse_GetTotalValue = *otapic::OT_API_Purse_GetTotalValue;
 *OT_API_checkServerID = *otapic::OT_API_checkServerID;
@@ -127,6 +127,8 @@ package otapi;
 *OT_API_Message_GetCommand = *otapic::OT_API_Message_GetCommand;
 *OT_API_Message_GetSuccess = *otapic::OT_API_Message_GetSuccess;
 *OT_API_Message_GetLedger = *otapic::OT_API_Message_GetLedger;
+*OT_API_ConnectServer = *otapic::OT_API_ConnectServer;
+*OT_API_ProcessSockets = *otapic::OT_API_ProcessSockets;
 
 # ------- VARIABLE STUBS --------
 

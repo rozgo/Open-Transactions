@@ -117,16 +117,64 @@ OTWallet::OTWallet()
 }
 
 OTWallet::~OTWallet()
-{
-	//TODO:
-	//1) Go through the map of Nyms and delete them. (They were dynamically allocated.)
-	//2) Go through the map of Contracts and delete them. (They were dynamically allocated.)
-	//3) Go through the map of Servers and delete them. (They were dynamically allocated.)
-	//4) Go through the map of Accounts and delete them. (They were dynamically allocated.)
-	
-	// (Usually this object dies only when the app dies anyway.)
+{	
+	Release();
 }
 
+void OTWallet::Release()
+{	
+	//1) Go through the map of Nyms and delete them. (They were dynamically allocated.)
+	while (!m_mapNyms.empty())
+	{		
+		OTPseudonym * pNym = m_mapNyms.begin()->second;
+		
+		OT_ASSERT(NULL != pNym);
+		
+		delete pNym;
+		pNym = NULL;
+		
+		m_mapNyms.erase(m_mapNyms.begin());
+	}	
+	
+	//2) Go through the map of Contracts and delete them. (They were dynamically allocated.)
+	while (!m_mapContracts.empty())
+	{		
+		OTAssetContract * pContract = m_mapContracts.begin()->second;
+		
+		OT_ASSERT(NULL != pContract);
+		
+		delete pContract;
+		pContract = NULL;
+		
+		m_mapContracts.erase(m_mapContracts.begin());
+	}	
+	
+	//3) Go through the map of Servers and delete them. (They were dynamically allocated.)
+	while (!m_mapServers.empty())
+	{		
+		OTServerContract * pContract = m_mapServers.begin()->second;
+		
+		OT_ASSERT(NULL != pContract);
+		
+		delete pContract;
+		pContract = NULL;
+		
+		m_mapServers.erase(m_mapServers.begin());
+	}	
+	
+	//4) Go through the map of Accounts and delete them. (They were dynamically allocated.)
+	while (!m_mapAccounts.empty())
+	{		
+		OTAccount * pAccount = m_mapAccounts.begin()->second;
+		
+		OT_ASSERT(NULL != pAccount);
+		
+		delete pAccount;
+		pAccount = NULL;
+		
+		m_mapAccounts.erase(m_mapAccounts.begin());
+	}	
+}
 
 
 // While waiting on server response to a withdrawal, we keep the private coin
@@ -338,7 +386,6 @@ bool OTWallet::GetAccount(const int iIndex, OTIdentifier & THE_ID, OTString & TH
 }
 
 
-
 void OTWallet::DisplayStatistics(OTString & strOutput)
 {
 	strOutput.Concatenate("\n-------------------------------------------------\n");
@@ -346,7 +393,8 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 	
 	OTPseudonym * pNym = NULL;
 	
-	
+	strOutput.Concatenate("\nPSEUDONYM(s):\n\n");
+
 	for (mapOfNyms::iterator ii = m_mapNyms.begin(); ii != m_mapNyms.end(); ++ii)
 	{		
 		pNym = (*ii).second;
@@ -367,14 +415,14 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 	{
 		pContract = (*ii).second;
 	 
-		OT_ASSERT_MSG(NULL != pContract, "NULL contract pointer in OTWallet::m_mapContracts, OTWallet::SaveWallet");
+		OT_ASSERT_MSG(NULL != pContract, "NULL contract pointer in OTWallet::m_mapContracts, OTWallet::DisplayStatistics");
 	 
 		pContract->SaveContractWallet(strOutput);
 	}
 	
 	// ---------------------------------------------------------------
 	
-	strOutput.Concatenate("\n-------------------------------------------------\n");
+	strOutput.Concatenate("-------------------------------------------------\n");
 	strOutput.Concatenate("SERVER CONTRACTS:\n\n");
 
 	OTContract * pServer = NULL;
@@ -383,7 +431,7 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 	{
 		pServer = (*ii).second;
 	 
-		OT_ASSERT_MSG(NULL != pServer, "NULL server pointer in OTWallet::m_mapServers, OTWallet::SaveWallet");
+		OT_ASSERT_MSG(NULL != pServer, "NULL server pointer in OTWallet::m_mapServers, OTWallet::DisplayStatistics");
 	 
 		pServer->SaveContractWallet(strOutput);
 	}
@@ -391,10 +439,10 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 	// ---------------------------------------------------------------
 
 
-	strOutput.Concatenate("\n-------------------------------------------------\n");
+	strOutput.Concatenate("-------------------------------------------------\n");
 	strOutput.Concatenate("ACCOUNTS:\n\n");
 	
-	OTContract * pAccount = NULL;
+	OTAccount * pAccount = NULL;
 	
 	for (mapOfAccounts::iterator ii = m_mapAccounts.begin(); ii != m_mapAccounts.end(); ++ii)
 	{
@@ -402,9 +450,9 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 		
 		OT_ASSERT_MSG(NULL != pAccount, "NULL account pointer in OTWallet::m_mapAccounts, OTWallet::DisplayStatistics");
 		
-		pAccount->SaveContractWallet(strOutput);
+		pAccount->DisplayStatistics(strOutput);
 		
-		strOutput.Concatenate("-------------------------------------------------\n");
+		strOutput.Concatenate("-------------------------------------------------\n\n");
 	}
 	
 	// ---------------------------------------------------------------
@@ -414,7 +462,10 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 
 
 
-
+// Pass in the name only, NOT the full path.
+// If you pass NULL, it remembers full path from last time.
+// (Better to do that.)
+//
 bool OTWallet::SaveWallet(const char * szFilename/*=NULL*/)
 {	
 	char * szFilenameToUse = NULL;
@@ -453,7 +504,15 @@ bool OTWallet::SaveWallet(const char * szFilename/*=NULL*/)
 	
 	// ---------------------------------------------------------------
 	
-	ofs << "<?xml version=\"1.0\"?>\n<wallet name=\"" << m_strName.Get() <<
+	OTASCIIArmor ascName;
+	
+	if (m_strName.Exists()) // name is in the clear in memory, and base64 in storage.
+	{
+		ascName.SetString(m_strName, false); // linebreaks == false
+	}
+	
+	
+	ofs << "<?xml version=\"1.0\"?>\n<wallet name=\"" << ascName.Get() <<
 	"\" version=\"" << m_strVersion.Get() <<
 	"\">\n\n";
 	
@@ -736,6 +795,8 @@ bool OTWallet::LoadWallet(const char * szFilename)
 {
 	OT_ASSERT_MSG(NULL != szFilename, "NULL filename in OTWallet::LoadWallet.\n");
 			
+	Release();
+	
 	// Save this for later... (the full path to this file.)
 	m_strFilename.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), szFilename);
 	
@@ -813,17 +874,27 @@ bool OTWallet::LoadWallet(const char * szFilename)
 				break;
 			case EXN_ELEMENT:
 			{
-				if (!strcmp("wallet", xml->getNodeName()))
+				if (!strcmp("wallet", xml->getNodeName()))	// -------------------------------------------------------------
 				{
-					m_strName			= xml->getAttributeValue("name");					
+					OTASCIIArmor ascWalletName = xml->getAttributeValue("name");
+					
+					if (ascWalletName.Exists())
+						ascWalletName.GetString(m_strName, false); // linebreaks == false
+
+//					m_strName			= xml->getAttributeValue("name");					
 //					OTLog::OTPath		= xml->getAttributeValue("path");					
 					m_strVersion		= xml->getAttributeValue("version");					
 					
 					OTLog::vOutput(0, "\nLoading wallet: %s, version: %s\n", m_strName.Get(), m_strVersion.Get());
 				}
-				else if (!strcmp("pseudonym", xml->getNodeName()))
+				else if (!strcmp("pseudonym", xml->getNodeName()))  // -------------------------------------------------------------
 				{
-					NymName = xml->getAttributeValue("name");// user-assigned name for GUI usage				
+					OTASCIIArmor ascNymName = xml->getAttributeValue("name");
+					
+					if (ascNymName.Exists())
+						ascNymName.GetString(NymName, false); // linebreaks == false
+
+//					NymName = xml->getAttributeValue("name");// user-assigned name for GUI usage				
 					NymID = xml->getAttributeValue("nymID"); // message digest from hash of x.509 cert
 					
 					OTLog::vOutput(0, "\n\n** Pseudonym ** (wallet listing): %s\nID: %s\n",
@@ -843,8 +914,6 @@ bool OTWallet::LoadWallet(const char * szFilename)
 	   // pNym->SaveSignedNymfile(*pNym); // Uncomment this if you want to generate a new nym by hand. NORMALLY LEAVE IT COMMENTED OUT!!!! IT'S DANGEROUS!!!
 								
 								this->AddNym(*pNym); // Nym loaded. Insert to wallet's list of Nyms.
-								
-								// ------------------------------------------------------------
 							}
 							else 
 							{
@@ -860,7 +929,7 @@ bool OTWallet::LoadWallet(const char * szFilename)
 						OTLog::Output(0, "Error loading x509 file for Pseudonym in OTWallet::LoadWallet\n");
 					}
 				}
-				else if (!strcmp("assetType", xml->getNodeName()))
+				else if (!strcmp("assetType", xml->getNodeName()))	// -------------------------------------------------------------
 				{
 					// From Server:
 					AssetName		= xml->getAttributeValue("name");			
@@ -898,7 +967,7 @@ bool OTWallet::LoadWallet(const char * szFilename)
 					}
 
 				}
-				else if (!strcmp("notaryProvider", xml->getNodeName())) 
+				else if (!strcmp("notaryProvider", xml->getNodeName()))	// -------------------------------------------------------------
 				{
 					ServerName = xml->getAttributeValue("name");					
 					ServerID = xml->getAttributeValue("serverID"); // hash of contract
@@ -937,9 +1006,13 @@ bool OTWallet::LoadWallet(const char * szFilename)
 						OTLog::Error("Error reading file for Transaction Server in OTWallet::LoadWallet\n");
 					}
 				}
-				else if (!strcmp("assetAccount", xml->getNodeName())) 
+				else if (!strcmp("assetAccount", xml->getNodeName()))	// -------------------------------------------------------------
 				{
-					AcctName = xml->getAttributeValue("name");					
+					OTASCIIArmor ascAcctName = xml->getAttributeValue("name");	
+					
+					if (ascAcctName.Exists())
+						ascAcctName.GetString(AcctName, false); // linebreaks == false
+					
 					AcctID	 = xml->getAttributeValue("accountID");
 					ServerID = xml->getAttributeValue("serverID");
 										
@@ -948,7 +1021,7 @@ bool OTWallet::LoadWallet(const char * szFilename)
 							"name: %s\n AccountID: %s\n ServerID: %s\n", 
 							AcctName.Get(), AcctID.Get(), ServerID.Get());
 					
-					OTIdentifier ACCOUNT_ID(AcctID), SERVER_ID(ServerID);
+					const OTIdentifier ACCOUNT_ID(AcctID), SERVER_ID(ServerID);
 					
 					OTAccount * pAccount =  OTAccount::LoadExistingAccount(ACCOUNT_ID, SERVER_ID);
 					
@@ -956,7 +1029,6 @@ bool OTWallet::LoadWallet(const char * szFilename)
 					{
 						pAccount->SetName(AcctName);
 						this->AddAccount(*pAccount);
-						// -----------------------------------------------------
 					}
 					else 
 					{

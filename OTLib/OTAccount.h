@@ -155,6 +155,8 @@ public:
 //	virtual bool SaveContractWallet(FILE * fl);
 	virtual bool SaveContractWallet(std::ofstream & ofs);
 	virtual bool SaveContractWallet(OTString & strContents) const;
+	
+	bool DisplayStatistics(OTString & strContents) const;
 
 
 	// --------------------------------------------------------------

@@ -164,19 +164,19 @@ public:
 	// or pending (in the inbox/outbox)
 	// or it can be a "process inbox" transaction
 	enum transactionType {
-		blank,			// freshly issued, not used yet  // comes from server, sits in inbox
-		pending,		// in the inbox/outbox           // comes from server, sits in inbox
+		blank,			// freshly issued, not used yet  // comes from server, stored on Nym.
+		pending,		// Pending transfer, in the inbox/outbox.
 // --------------------------------------------------------------------------------------
 		processInbox,	// process inbox transaction	 // comes from client
 		atProcessInbox,	// process inbox reply			 // comes from server
 // --------------------------------------------------------------------------------------
-		transfer,		// or "spend". This transaction is a transfer from one account to another
+		transfer,		// or "spend". This transaction is a request to transfer from one account to another
 		atTransfer,		// reply from the server regarding a transfer request
 // --------------------------------------------------------------------------------------
-		deposit,		// this transaction is a deposit of bearer tokens (from client)
+		deposit,		// this transaction is a deposit (cash or cheque)
 		atDeposit,		// reply from the server regarding a deposit request
 // --------------------------------------------------------------------------------------
-		withdrawal,		// this transaction is a withdrawal of bearer tokens
+		withdrawal,		// this transaction is a withdrawal (cash or voucher)
 		atWithdrawal,	// reply from the server regarding a withdrawal request
 // --------------------------------------------------------------------------------------
 		marketOffer,	// this transaction is a market offer
@@ -184,6 +184,10 @@ public:
 // --------------------------------------------------------------------------------------
 		paymentPlan,	// this transaction is a payment plan
 		atPaymentPlan,	// reply from the server regarding a payment plan
+// --------------------------------------------------------------------------------------
+		chequeReceipt,	// the server drops this into your inbox, when someone cashes your cheque.
+		marketReceipt,	// server periodically drops this into your inbox if an offer is live.
+		paymentReceipt,	// the server drops this into people's inboxes, every time a payment processes.
 // --------------------------------------------------------------------------------------
 		error_state
 	}; // If you add any types to this list, update the list of strings at the top of the .CPP file.

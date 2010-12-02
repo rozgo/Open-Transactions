@@ -231,6 +231,14 @@ public:
 	
 	void GetFilename(OTString & strFilename);
 	
+	
+	// If you have a contract in string form, and you don't know what subclass it is,
+	// but you still want to instantiate it, and load it up properly, then call this
+	// class method.
+	//
+	static OTContract * InstantiateContract(OTString & strInputContract);
+
+	
 	// assumes m_strFilename is already set. Then it reads that file into a string.
 	// Then it parses that string into the object.	
 	virtual bool LoadContract();

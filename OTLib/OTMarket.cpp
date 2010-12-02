@@ -1043,16 +1043,16 @@ void OTMarket::ProcessTrade(OTTrade & theTrade, OTOffer & theOffer, OTOffer & th
 			// Start generating the receipts (for all four inboxes.)
 			
 			OTTransaction * pTrans1		= OTTransaction::GenerateTransaction(theFirstAssetInbox, 
-															OTTransaction::pending, lNewTransactionNumber);
+															OTTransaction::marketReceipt, lNewTransactionNumber);
 			
 			OTTransaction * pTrans2		= OTTransaction::GenerateTransaction(theFirstCurrencyInbox, 
-															OTTransaction::pending, lNewTransactionNumber);
+															OTTransaction::marketReceipt, lNewTransactionNumber);
 			
 			OTTransaction * pTrans3		= OTTransaction::GenerateTransaction(theOtherAssetInbox, 
-															OTTransaction::pending, lNewTransactionNumber);
+															OTTransaction::marketReceipt, lNewTransactionNumber);
 			
 			OTTransaction * pTrans4		= OTTransaction::GenerateTransaction(theOtherCurrencyInbox, 
-															OTTransaction::pending, lNewTransactionNumber);
+															OTTransaction::marketReceipt, lNewTransactionNumber);
 			
 			// (No need to OT_ASSERT on the above transactions since it occurs in GenerateTransaction().)
 			
@@ -1067,10 +1067,10 @@ void OTMarket::ProcessTrade(OTTrade & theTrade, OTOffer & theOffer, OTOffer & th
 			
 			
 			// set up the transaction items (each transaction may have multiple items... but not in this case.)
-			OTItem * pItem1		= OTItem::CreateItemFromTransaction(*pTrans1, OTItem::atMarketOffer);
-			OTItem * pItem2		= OTItem::CreateItemFromTransaction(*pTrans2, OTItem::atMarketOffer);
-			OTItem * pItem3		= OTItem::CreateItemFromTransaction(*pTrans3, OTItem::atMarketOffer);
-			OTItem * pItem4		= OTItem::CreateItemFromTransaction(*pTrans4, OTItem::atMarketOffer);
+			OTItem * pItem1		= OTItem::CreateItemFromTransaction(*pTrans1, OTItem::marketReceipt);
+			OTItem * pItem2		= OTItem::CreateItemFromTransaction(*pTrans2, OTItem::marketReceipt);
+			OTItem * pItem3		= OTItem::CreateItemFromTransaction(*pTrans3, OTItem::marketReceipt);
+			OTItem * pItem4		= OTItem::CreateItemFromTransaction(*pTrans4, OTItem::marketReceipt);
 			
 			// these may be unnecessary, I'll have to check CreateItemFromTransaction. I'll leave em.
 			OT_ASSERT(NULL != pItem1);	OT_ASSERT(NULL != pItem2);

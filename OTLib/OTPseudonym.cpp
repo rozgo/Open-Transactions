@@ -474,53 +474,10 @@ void OTPseudonym::IncrementRequestNum(OTPseudonym & SIGNER_NYM, const OTString &
 	}
 }
 
-void OTPseudonym::DisplayStatistics(OTString & strOutput)
-{
-	OTString strTemp;
-	
-	strOutput.Concatenate("\nPSEUDONYM(s):\n\n");
-	
-	strTemp.Format("Name: %s\n", m_strName.Get());			strOutput.Concatenate(strTemp);
-	strTemp.Format("Version: %s\n\n", m_strVersion.Get());	strOutput.Concatenate(strTemp);
-	
-	OTString theStringID;
-	GetIdentifier(theStringID);
-	strTemp.Format("ID: %s\n", theStringID.Get());			strOutput.Concatenate(strTemp);
-	strTemp.Format("Nymfile: %s\n", m_strNymfile.Get());	strOutput.Concatenate(strTemp);	
-	strTemp.Format("Certfile: %s\n\n", m_strCertfile.Get());	strOutput.Concatenate(strTemp);
-	
-	for (mapOfRequestNums::iterator ii = m_mapRequestNum.begin();  ii != m_mapRequestNum.end(); ++ii)
-	{
-		std::string strServerID	= ii->first;
-		long lRequestNumber		= ii->second;
-		
-		// Now we can log BOTH, before and after...
-		strTemp.Format("Request Number is %ld for server ID: %s\n", 
-				lRequestNumber, strServerID.c_str());
-		strOutput.Concatenate(strTemp);
-	}
-	
-	for (mapOfTransNums::iterator iii = m_mapTransNum.begin(); iii != m_mapTransNum.end(); ++iii)
-	{	
-		std::string strServerID		= (*iii).first;
-		dequeOfTransNums * pDeque	= (iii->second);
-		
-		OT_ASSERT(NULL != pDeque);
-		
-		if (!(pDeque->empty()))
-		{
-			for (unsigned i = 0; i < pDeque->size(); i++)
-			{
-				long lTransactionNumber = pDeque->at(i);
-				
-				strTemp.Format("Transaction Number available (%ld) for server ID: %s\n", 
-							   lTransactionNumber, strServerID.c_str());
-				strOutput.Concatenate(strTemp);
-			}
-		}
-	} // for
-	
-}
+
+
+
+
 
 // if the server sends us a @getRequest
 void OTPseudonym::OnUpdateRequestNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long lNewRequestNumber)
@@ -749,18 +706,84 @@ bool OTPseudonym::VerifyPseudonym() const
 
 
 
-bool OTPseudonym::SavePseudonymWallet(std::ofstream & ofs) const
+
+
+void OTPseudonym::DisplayStatistics(OTString & strOutput)
+{	
+	strOutput.Concatenate("==> Name: %s\n", m_strName.Get());
+	strOutput.Concatenate(" Version: %s\n", m_strVersion.Get());
+	
+	OTString theStringID;
+	GetIdentifier(theStringID);
+	strOutput.Concatenate("Nym (aka User) ID: %s\n", theStringID.Get());
+	
+	for (mapOfRequestNums::iterator ii = m_mapRequestNum.begin();  ii != m_mapRequestNum.end(); ++ii)
+	{
+		std::string strServerID	= ii->first;
+		long lRequestNumber		= ii->second;
+		
+		// Now we can log BOTH, before and after...
+		strOutput.Concatenate("Request Number is %ld for server ID: %s\n", 
+					   lRequestNumber, strServerID.c_str());
+	}
+	
+	for (mapOfTransNums::iterator iii = m_mapTransNum.begin(); iii != m_mapTransNum.end(); ++iii)
+	{	
+		std::string strServerID		= (*iii).first;
+		dequeOfTransNums * pDeque	= (iii->second);
+		
+		OT_ASSERT(NULL != pDeque);
+		
+		if (!(pDeque->empty()))
+		{
+			for (unsigned i = 0; i < pDeque->size(); i++)
+			{
+				long lTransactionNumber = pDeque->at(i);
+				
+				strOutput.Concatenate("Transaction Number available (%ld) for server ID: %s\n", 
+							   lTransactionNumber, strServerID.c_str());
+			}
+		}
+	} // for
+}
+
+
+
+
+bool OTPseudonym::SavePseudonymWallet(OTString & strOutput) const
 {
 	OTString nymID;
 	GetIdentifier(nymID);
 	
-	ofs << "<pseudonym name=\"" << m_strName.Get() << "\"\n"
-			" nymID=\"" << nymID.Get() << "\""
-//			" file=\"" << m_strNymfile.Get() << "\"" // not necessary anymore.
-			"/>\n\n";
+	OTASCIIArmor ascName;
+	
+	if (m_strName.Exists()) // name is in the clear in memory, and base64 in storage.
+	{
+		ascName.SetString(m_strName, false); // linebreaks == false
+	}
+
+	strOutput.Concatenate("<pseudonym name=\"%s\"\n"
+			" nymID=\"%s\" />\n\n",
+			ascName.Get(),
+			nymID.Get());
 	
 	return true;
 }
+
+
+bool OTPseudonym::SavePseudonymWallet(std::ofstream & ofs) const
+{
+	OTString strOutput;
+	
+	if (SavePseudonymWallet(strOutput))
+		ofs << strOutput.Get();
+	else
+		return false;
+	
+	return true;
+}
+
+
 
 /*
 bool OTPseudonym::SavePseudonymWallet(FILE * fl) const

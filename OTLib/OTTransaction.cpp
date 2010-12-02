@@ -112,8 +112,8 @@ using namespace io;
 
 const char * OTTransaction::_TypeStrings[] = 
 {
-	"blank",			// freshly issued, not used yet  // comes from server, sits in inbox
-	"pending",			// in the inbox/outbox           // comes from server, sits in inbox
+	"blank",			// freshly issued, not used yet  // comes from server, stored on Nym.
+	"pending",			// Pending transfer, in the inbox/outbox.
 	// --------------------------------------------------------------------------------------
 	"processInbox",		// process inbox transaction	 // comes from client
 	"atProcessInbox",	// process inbox reply			 // comes from server
@@ -132,6 +132,10 @@ const char * OTTransaction::_TypeStrings[] =
 	// --------------------------------------------------------------------------------------
 	"paymentPlan",		// this transaction is a payment plan
 	"atPaymentPlan",	// reply from the server regarding a payment plan
+	// --------------------------------------------------------------------------------------
+	"chequeReceipt",	// the server drops this into your inbox, when someone cashes your cheque.
+	"marketReceipt",	// server drops this into inbox periodically, if you an offer on market.
+	"paymentReceipt",	// the server drops this into people's inboxes, periodically.
 	// --------------------------------------------------------------------------------------
 	"error_state"	
 };
@@ -314,15 +318,27 @@ bool OTTransaction::GetSuccess()
 		
 		switch (pItem->GetType()) 
 		{
+			case OTItem::atTransaction:
 			case OTItem::atTransfer:
-			case OTItem::atAccept:
-			case OTItem::atReject:
+			case OTItem::atAcceptPending:
+			case OTItem::atRejectPending:
+			case OTItem::atAcceptReceipt:
+			case OTItem::atDisputeReceipt:
+			case OTItem::atServerfee:
+			case OTItem::atIssuerfee:
+			case OTItem::atBalance:
+			case OTItem::atOutboxhash:
 			case OTItem::atWithdrawal:
 			case OTItem::atDeposit:
 			case OTItem::atWithdrawVoucher:
 			case OTItem::atDepositCheque:
 			case OTItem::atMarketOffer:
 			case OTItem::atPaymentPlan:
+				
+//			case OTItem::chequeReceipt:
+			case OTItem::marketReceipt:
+			case OTItem::paymentReceipt:
+				
 				if (OTItem::acknowledgement == pItem->GetStatus())
 				{
 					return true;
@@ -333,6 +349,7 @@ bool OTTransaction::GetSuccess()
 				}
 				break;
 			default:
+				OTLog::Error("Wrong transaction type passed to OTTransaction::GetSuccess()\n");
 				break;
 		}
 	}
@@ -380,6 +397,13 @@ int OTTransaction::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			m_Type = OTTransaction::paymentPlan;
 		else if (strType.Compare("atPaymentPlan"))
 			m_Type = OTTransaction::atPaymentPlan;
+		
+		else if (strType.Compare("chequeReceipt"))
+			m_Type = OTTransaction::chequeReceipt;
+		else if (strType.Compare("marketReceipt"))
+			m_Type = OTTransaction::marketReceipt;
+		else if (strType.Compare("paymentReceipt"))
+			m_Type = OTTransaction::paymentReceipt;
 		else
 			m_Type = OTTransaction::error_state;
 		
@@ -513,6 +537,16 @@ void OTTransaction::UpdateContents()
 			break;
 		case OTTransaction::atPaymentPlan:
 			strType.Set("atPaymentPlan");
+			break;
+
+		case OTTransaction::chequeReceipt:
+			strType.Set("chequeReceipt");
+			break;
+		case OTTransaction::marketReceipt:
+			strType.Set("marketReceipt");
+			break;
+		case OTTransaction::paymentReceipt:
+			strType.Set("paymentReceipt");
 			break;
 		default:
 			strType.Set("error-unknown");

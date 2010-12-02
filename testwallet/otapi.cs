@@ -21,16 +21,6 @@ public class otapi {
     return ret;
   }
 
-  public static int OT_API_ConnectServer(string SERVER_ID, string USER_ID, string szCA_FILE, string szKEY_FILE, string szKEY_PASSWORD) {
-    int ret = otapiPINVOKE.OT_API_ConnectServer(SERVER_ID, USER_ID, szCA_FILE, szKEY_FILE, szKEY_PASSWORD);
-    return ret;
-  }
-
-  public static int OT_API_ProcessSockets() {
-    int ret = otapiPINVOKE.OT_API_ProcessSockets();
-    return ret;
-  }
-
   public static int OT_API_GetServerCount() {
     int ret = otapiPINVOKE.OT_API_GetServerCount();
     return ret;
@@ -118,6 +108,11 @@ public class otapi {
 
   public static int OT_API_SetNym_Name(string NYM_ID, string SIGNER_NYM_ID, string NYM_NEW_NAME) {
     int ret = otapiPINVOKE.OT_API_SetNym_Name(NYM_ID, SIGNER_NYM_ID, NYM_NEW_NAME);
+    return ret;
+  }
+
+  public static string OT_API_VerifyAndRetrieveXMLContents(string THE_CONTRACT, string USER_ID) {
+    string ret = otapiPINVOKE.OT_API_VerifyAndRetrieveXMLContents(THE_CONTRACT, USER_ID);
     return ret;
   }
 
@@ -238,6 +233,11 @@ public class otapi {
 
   public static string OT_API_Transaction_GetType(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
     string ret = otapiPINVOKE.OT_API_Transaction_GetType(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+    return ret;
+  }
+
+  public static string OT_API_Transaction_GetVoucher(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
+    string ret = otapiPINVOKE.OT_API_Transaction_GetVoucher(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
     return ret;
   }
 
@@ -376,6 +376,16 @@ public class otapi {
 
   public static string OT_API_Message_GetLedger(string THE_MESSAGE) {
     string ret = otapiPINVOKE.OT_API_Message_GetLedger(THE_MESSAGE);
+    return ret;
+  }
+
+  public static int OT_API_ConnectServer(string SERVER_ID, string USER_ID, string szCA_FILE, string szKEY_FILE, string szKEY_PASSWORD) {
+    int ret = otapiPINVOKE.OT_API_ConnectServer(SERVER_ID, USER_ID, szCA_FILE, szKEY_FILE, szKEY_PASSWORD);
+    return ret;
+  }
+
+  public static int OT_API_ProcessSockets() {
+    int ret = otapiPINVOKE.OT_API_ProcessSockets();
     return ret;
   }
 

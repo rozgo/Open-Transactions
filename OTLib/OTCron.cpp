@@ -353,7 +353,7 @@ int OTCron::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			}
 		}
 		else {
-			OTLog::Error("Error in OTPaymentPlan::ProcessXMLNode: consideration field without value.\n");
+			OTLog::Error("Error in OTCron::ProcessXMLNode: consideration field without value.\n");
 			return (-1); // error condition
 		}
 		

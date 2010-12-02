@@ -129,22 +129,6 @@ int OT_API_LoadWallet(const char * szPath); // actually returns BOOL
 
 
 
-// --------------------------------------------------------------------
-// CONNECT TO SERVER, and PROCESS SOCKETS
-//
-// NOTE: These two functions are NOT NECESSARY in XmlRpc mode!
-// They are only useful in TCP/SSL mode. --Otherwise IGNORE THEM.--
-//
-// actually returns BOOL  // Not necessary in HTTP mode.
-int OT_API_ConnectServer(const char * SERVER_ID, const char * USER_ID, 
-						 const char * szCA_FILE, const char * szKEY_FILE, 
-						 const char * szKEY_PASSWORD);
-int OT_API_ProcessSockets(void);	// Probably not necessary in HTTP mode.
-// --------------------------------------------------------------------
-
-
-
-
 
 // --------------------------------------------------
 
@@ -234,6 +218,21 @@ int OT_API_SetNym_Name(const char * NYM_ID,
 
 
 
+
+
+
+// --------------------------------------------------
+// Verify and Retrieve XML Contents.
+//
+// Pass in a contract and a user ID, and this function will:
+// -- Load the contract up and verify it. (Most classes in OT
+//    are derived in some way from OTContract.)
+// -- Verify the user's signature on it.
+// -- Remove the PGP-style bookends (the signatures, etc)
+//    and return the XML contents of the contract in string form. <==
+//
+const char * OT_API_VerifyAndRetrieveXMLContents(const char * THE_CONTRACT,
+												 const char * USER_ID);
 
 
 
@@ -626,6 +625,42 @@ const char * OT_API_Transaction_GetType(const char * SERVER_ID,
 
 
 
+// --------------------------------------------------------------------
+// Retrieve Voucher from Transaction
+//
+// If you withdrew into a voucher instead of cash, this function allows
+// you to retrieve the actual voucher cheque from the reply transaction.
+// (A voucher is a cheque drawn on an internal server account instead
+// of a user's asset account, so the voucher cannot ever bounce due to 
+// insufficient funds. We are accustomed to this functionality already
+// in our daily lives, via "money orders" and "cashier's cheques".)
+//
+// How would you use this in full?
+//
+// First, call OT_API_withdrawVoucher() in order to send the request
+// to the server. (You may optionally call OT_API_FlushMessageBuffer()
+// before doing this.)
+//
+// Then, call OT_API_PopMessageBuffer() to retrieve any server reply.
+//
+// If there is a message from the server in reply, then call 
+// OT_API_Message_GetCommand to verify that it's a reply to the message
+// that you sent, and call OT_API_Message_GetSuccess to verify whether
+// the message was a success.
+//
+// If it was a success, next call OT_API_Message_GetLedger to retrieve
+// the actual "reply ledger" from the server.
+//
+// Penultimately, call OT_API_Ledger_GetTransactionByID() and then,
+// finally, call OT_API_Transaction_GetVoucher() (below) in order to
+// retrieve the voucher cheque itself from the transaction.
+//
+const char * OT_API_Transaction_GetVoucher(const char * SERVER_ID,
+										   const char * USER_ID,
+										   const char * ACCOUNT_ID,
+										   const char * THE_TRANSACTION);
+
+
 
 // --------------------------------------------------
 //
@@ -634,9 +669,9 @@ const char * OT_API_Transaction_GetType(const char * SERVER_ID,
 // Returns OT_BOOL.
 //
 int OT_API_Transaction_GetSuccess(const char * SERVER_ID,
-									  const char * USER_ID,
-									  const char * ACCOUNT_ID,
-									  const char * THE_TRANSACTION); 
+								  const char * USER_ID,
+								  const char * ACCOUNT_ID,
+								  const char * THE_TRANSACTION); 
 
 
 
@@ -1223,10 +1258,39 @@ const char * OT_API_Message_GetLedger(const char * THE_MESSAGE);
 
 
 
+// --------------------------------------------------------------------
+// CONNECT TO SERVER, and PROCESS SOCKETS
+//
+// NOTE: These two functions are NOT NECESSARY in XmlRpc mode!
+// They are only useful in TCP/SSL mode. --Otherwise IGNORE THEM.--
+//
+// actually returns BOOL  // Not necessary in HTTP mode.
+int OT_API_ConnectServer(const char * SERVER_ID, const char * USER_ID, 
+						 const char * szCA_FILE, const char * szKEY_FILE, 
+						 const char * szKEY_PASSWORD);
+int OT_API_ProcessSockets(void);	// Probably not necessary in HTTP mode.
+// --------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// =======>
 
 // I am actively supporting developers on the API and will be responsive...
 // So feel free to ask for what you need on the API, and I'll add it for you.
 //
+
+
 
 
 

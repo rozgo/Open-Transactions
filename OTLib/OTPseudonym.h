@@ -185,6 +185,7 @@ public:
 	bool Loadx509CertAndPrivateKey();
 	
 //	bool SavePseudonymWallet(FILE * fl) const;
+	bool SavePseudonymWallet(OTString & strOutput) const;
 	bool SavePseudonymWallet(std::ofstream & ofs) const;
 
 	bool SavePublicKey(const OTString & strPath) const;

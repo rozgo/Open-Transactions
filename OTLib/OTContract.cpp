@@ -116,6 +116,148 @@ using namespace io;
 #include "OTContract.h"
 #include "OTLog.h"
 
+#include "OTAgreement.h"
+#include "OTPaymentPlan.h"
+#include "OTTrade.h"
+#include "OTOffer.h"
+#include "OTAccount.h"
+#include "OTCheque.h"
+#include "OTMessage.h"
+#include "OTLedger.h"
+#include "OTTransaction.h"
+#include "OTItem.h"
+#include "OTMint.h"
+#include "OTPurse.h"
+#include "OTSignedFile.h"
+#include "OTToken.h"
+#include "OTServerContract.h"
+#include "OTAssetContract.h"
+
+
+// Factory (though rarely used; was just added recently for the API.)
+//
+// If you want to instantiate a contract that you already have in string form,
+// this function will figure out what kind of contract it is, and instantiate the
+// right subclass, then load it up and return it.
+//
+// CALLER IS RESPONSIBLE to cleanup!
+//
+OTContract * OTContract::InstantiateContract(OTString & strInputContract)
+{
+	static char		buf[45] = "";
+	
+	if (!strInputContract.Exists())
+		return NULL;
+		
+	buf[0] = 0; // probably unnecessary.
+	strInputContract.reset(); // for sgets
+	bool bGotLine = strInputContract.sgets(buf, 40);
+	
+	if (!bGotLine)
+		return NULL;
+	
+	OTString strFirstLine(buf);
+	strInputContract.reset(); // set the "file" pointer within this string back to index 0.
+	
+	// Now I feel pretty safe -- the string I'm examining is within
+	// the first 45 characters of the beginning of the contract, and
+	// it will NOT contain the escape "- " sequence. From there, if
+	// it contains the proper sequence, I will instantiate that type.
+	if (!strFirstLine.Exists() || strFirstLine.Contains("- -"))
+		return NULL;
+	
+	// -----------------------------------------------------------
+	
+	OTContract * pContract = NULL;
+	
+	if (strFirstLine.Contains("-----BEGIN SIGNED AGREEMENT-----"))  // this string is 32 chars long.
+	{	pContract = new OTAgreement();		OT_ASSERT(NULL != pContract); }
+	
+	else if (strFirstLine.Contains("-----BEGIN SIGNED PAYMENT PLAN-----"))  // this string is 35 chars long.
+	{	pContract = new OTPaymentPlan();	OT_ASSERT(NULL != pContract); }
+	
+	else if (strFirstLine.Contains("-----BEGIN SIGNED TRADE-----"))  // this string is 28 chars long.
+	{	pContract = new OTTrade();			OT_ASSERT(NULL != pContract); }
+	
+	else if (strFirstLine.Contains("-----BEGIN SIGNED OFFER-----")) 
+	{	pContract = new OTOffer();			OT_ASSERT(NULL != pContract); }
+	
+	
+	else if (strFirstLine.Contains("-----BEGIN SIGNED INVOICE-----")) 
+	{	pContract = new OTCheque();			OT_ASSERT(NULL != pContract); }
+	
+	else if (strFirstLine.Contains("-----BEGIN SIGNED VOUCHER-----")) 
+	{	pContract = new OTCheque();			OT_ASSERT(NULL != pContract); }
+	
+	else if (strFirstLine.Contains("-----BEGIN SIGNED CHEQUE-----")) 
+	{	pContract = new OTCheque();			OT_ASSERT(NULL != pContract); }
+	
+	else if (strFirstLine.Contains("-----BEGIN SIGNED MESSAGE-----")) 
+	{	pContract = new OTMessage();		OT_ASSERT(NULL != pContract); }
+	
+	else if (strFirstLine.Contains("-----BEGIN SIGNED MINT-----")) 
+	{	pContract = new OTMint();			OT_ASSERT(NULL != pContract); }
+	
+	else if (strFirstLine.Contains("-----BEGIN SIGNED FILE-----")) 
+	{	pContract = new OTSignedFile();		OT_ASSERT(NULL != pContract); }
+	
+	else if (strFirstLine.Contains("-----BEGIN SIGNED CASH-----")) 
+	{	pContract = new OTToken();			OT_ASSERT(NULL != pContract); }
+
+	
+	// The Purse object requires the asset type ID in order to be instantiated.
+	// I may remove this requirement (if possible) or not.
+//	
+//	else if (strFirstLine.Contains("-----BEGIN SIGNED PURSE-----")) 
+//	{	pContract = new OTPurse();			OT_ASSERT(NULL != pContract); }
+	
+	
+	// THESE OBJECTS REQUIRE YOU TO KNOW THE SERVER ID, USER ID, AND ACCT ID,
+	// IN ORDER TO GENERATE A NEW INSTANCE, OR TO LOAD AN EXISTING ONE.
+	// THUS, I AM REMOVING THEM FROM HERE FOR NOW.
+	// TODO: ADD A OTTransactionType class factory (like I did for CronItem)
+	// and then create these in there instead.
+	//
+//	else if (strFirstLine.Contains("-----BEGIN SIGNED ACCOUNT-----")) 
+//	{	pContract = new OTAccount();		OT_ASSERT(NULL != pContract); }	
+//	else if (strFirstLine.Contains("-----BEGIN SIGNED LEDGER-----")) 
+//	{	pContract = new OTLedger();			OT_ASSERT(NULL != pContract); }
+//	
+//	else if (strFirstLine.Contains("-----BEGIN SIGNED TRANSACTION-----")) 
+//	{	pContract = new OTTransaction();	OT_ASSERT(NULL != pContract); }
+//	
+//	else if (strFirstLine.Contains("-----BEGIN SIGNED TRANSACTION ITEM-----")) 
+//	{	pContract = new OTItem();			OT_ASSERT(NULL != pContract); }
+//	
+
+	
+	// TODO: Might want to clarify in Asset and Server Contracts,
+	// so I don't have to do this crap... The ones above are cleaner.
+	//
+	else if (strFirstLine.Contains("-----BEGIN SIGNED CONTRACT-----"))
+	{
+		if (strInputContract.Contains("<notaryProviderContract version=\"1.0\">")) 
+		{	pContract = new OTServerContract();		OT_ASSERT(NULL != pContract); }
+		else if (strInputContract.Contains("<digitalAssetContract version=\"1.0\">")) 
+		{	pContract = new OTAssetContract();		OT_ASSERT(NULL != pContract); }
+	}
+	
+	
+	// The string didn't match any of the options in the factory.
+	if (NULL == pContract)
+		OTLog::vOutput(0, "Object type not yet supported by class factory: %s\n", strFirstLine.Get());
+	// Does the contract successfully load from the string passed in?
+	else if (false == pContract->LoadContractFromString(strInputContract))
+	{
+		OTLog::vOutput(0, "Failed loading contract from string (first line): %s\n", strFirstLine.Get());
+		delete pContract;
+		pContract = NULL;
+	}
+	else
+		return pContract;
+	
+	return NULL;	
+}
 
 
 OTContract::OTContract()

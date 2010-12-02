@@ -50,8 +50,6 @@ del types
 
 OT_API_Init = _otapi.OT_API_Init
 OT_API_LoadWallet = _otapi.OT_API_LoadWallet
-OT_API_ConnectServer = _otapi.OT_API_ConnectServer
-OT_API_ProcessSockets = _otapi.OT_API_ProcessSockets
 OT_API_GetServerCount = _otapi.OT_API_GetServerCount
 OT_API_GetAssetTypeCount = _otapi.OT_API_GetAssetTypeCount
 OT_API_GetAccountCount = _otapi.OT_API_GetAccountCount
@@ -70,6 +68,7 @@ OT_API_GetNym_TransactionNumCount = _otapi.OT_API_GetNym_TransactionNumCount
 OT_API_GetNym_ID = _otapi.OT_API_GetNym_ID
 OT_API_GetNym_Name = _otapi.OT_API_GetNym_Name
 OT_API_SetNym_Name = _otapi.OT_API_SetNym_Name
+OT_API_VerifyAndRetrieveXMLContents = _otapi.OT_API_VerifyAndRetrieveXMLContents
 OT_API_WriteCheque = _otapi.OT_API_WriteCheque
 OT_API_WritePaymentPlan = _otapi.OT_API_WritePaymentPlan
 OT_API_LoadUserPubkey = _otapi.OT_API_LoadUserPubkey
@@ -94,6 +93,7 @@ OT_API_Ledger_GetTransactionIDByIndex = _otapi.OT_API_Ledger_GetTransactionIDByI
 OT_API_Ledger_AddTransaction = _otapi.OT_API_Ledger_AddTransaction
 OT_API_Transaction_CreateResponse = _otapi.OT_API_Transaction_CreateResponse
 OT_API_Transaction_GetType = _otapi.OT_API_Transaction_GetType
+OT_API_Transaction_GetVoucher = _otapi.OT_API_Transaction_GetVoucher
 OT_API_Transaction_GetSuccess = _otapi.OT_API_Transaction_GetSuccess
 OT_API_Purse_GetTotalValue = _otapi.OT_API_Purse_GetTotalValue
 OT_API_checkServerID = _otapi.OT_API_checkServerID
@@ -126,5 +126,7 @@ OT_API_FlushMessageBuffer = _otapi.OT_API_FlushMessageBuffer
 OT_API_Message_GetCommand = _otapi.OT_API_Message_GetCommand
 OT_API_Message_GetSuccess = _otapi.OT_API_Message_GetSuccess
 OT_API_Message_GetLedger = _otapi.OT_API_Message_GetLedger
+OT_API_ConnectServer = _otapi.OT_API_ConnectServer
+OT_API_ProcessSockets = _otapi.OT_API_ProcessSockets
 
 
