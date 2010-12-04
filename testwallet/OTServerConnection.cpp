@@ -273,7 +273,7 @@ void OTServerConnection::OnServerResponseToGetRequestNumber(long lNewRequestNumb
 {
 	if (m_pNym && m_pServerContract)
 	{
-		OTLog::vOutput(1,  "Received new request number from the server: %ld. Updating Nym records...\n", 
+		OTLog::vOutput(0,  "Received new request number from the server: %ld. Updating Nym records...\n", 
 				lNewRequestNumber);
 		
 		OTString strServerID;

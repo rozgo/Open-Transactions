@@ -130,7 +130,7 @@ void OTCheque::UpdateContents()
 							  SENDER_ACCT_ID.Get(),
 							  SENDER_USER_ID.Get(),
 							  (m_bHasRecipient ? "true" : "false"),
-							  RECIPIENT_USER_ID.Get(),
+							  (m_bHasRecipient ? RECIPIENT_USER_ID.Get() : ""),
 							  lFrom, lTo );		
 	
 	if (m_strMemo.Exists())
@@ -194,7 +194,8 @@ int OTCheque::ProcessXMLNode(IrrXMLReader*& xml)
 		{
 			m_RECIPIENT_USER_ID.SetString(strRecipientUserID);	
 		}
-		else {
+		else 
+		{
 			m_RECIPIENT_USER_ID.Release();
 		}
 
@@ -278,7 +279,12 @@ bool OTCheque::IssueCheque(const long & lAmount, const long & lTransactionNum,
 	SetSenderAcctID(SENDER_ACCT_ID);
 	SetSenderUserID(SENDER_USER_ID);
 	
-	if (pRECIPIENT_USER_ID)
+	if (NULL == pRECIPIENT_USER_ID)
+	{
+		m_bHasRecipient		= false;
+		m_RECIPIENT_USER_ID.Release();
+	}
+	else 
 	{
 		m_bHasRecipient		= true;
 		m_RECIPIENT_USER_ID	= *pRECIPIENT_USER_ID;

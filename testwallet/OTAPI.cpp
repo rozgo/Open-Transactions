@@ -778,30 +778,36 @@ const char * OT_API_WriteCheque(const char * SERVER_ID,
 	OT_ASSERT_MSG(NULL != VALID_TO, "Null VALID_TO passed in.");
 	OT_ASSERT_MSG(NULL != SENDER_ACCT_ID, "Null SENDER_ACCT_ID passed in.");
 	OT_ASSERT_MSG(NULL != SENDER_USER_ID, "Null SENDER_USER_ID passed in.");
-	
+		
 	const long lAmount = atol(CHEQUE_AMOUNT);
 	
 	const time_t time_From = (time_t)atoi(VALID_FROM), time_To = (time_t)atoi(VALID_TO);
-	
-	const OTString strMemo(CHEQUE_MEMO);
-	
+		
 	const OTIdentifier theServerID(SERVER_ID);
 	const OTIdentifier theSenderAcctID(SENDER_ACCT_ID);
 	const OTIdentifier theSenderUserID(SENDER_USER_ID);
 
 	OTIdentifier theRecipientUserID;
 	
-	if ((NULL != RECIPIENT_USER_ID) &&
-		(strlen(RECIPIENT_USER_ID) > 2))
+	bool bHasRecipient = ((NULL != RECIPIENT_USER_ID) && (strlen(RECIPIENT_USER_ID) > 2));
+	
+	if (bHasRecipient)
 		theRecipientUserID.SetString(RECIPIENT_USER_ID);
 	
+	// ----------------------------------------------------
+	
+	OTString strMemo;
+
+	if (NULL != CHEQUE_MEMO)
+		strMemo.Set(CHEQUE_MEMO);
+
 	OTCheque * pCheque = g_OT_API.WriteCheque(theServerID,
 								 lAmount, 
 								 time_From, time_To,
 								 theSenderAcctID,
 								 theSenderUserID,
 								 strMemo, 
-								 (NULL != RECIPIENT_USER_ID) ? &(theRecipientUserID) : NULL);
+								 bHasRecipient ? &(theRecipientUserID) : NULL);
 	
 	OTCleanup<OTCheque> theChequeAngel(pCheque); // Handles cleanup. (If necessary.)
 	

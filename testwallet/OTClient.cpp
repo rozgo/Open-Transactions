@@ -815,6 +815,9 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 	}
 	else if (theReply.m_bSuccess && theReply.m_strCommand.Compare("@getTransactionNum"))
 	{
+		OTLog::Output(0, "Received server response to Get Transaction Num message.");
+//		OTLog::vOutput(0, "Received server response to Get Transaction Num message:\n%s\n", strReply.Get());
+
 		OTString strMessageNym(theReply.m_ascPayload);
 		
 		OTPseudonym theMessageNym;
@@ -826,16 +829,19 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 	}
 	else if (theReply.m_bSuccess && theReply.m_strCommand.Compare("@notarizeTransactions"))
 	{
+		OTLog::Output(0, "Received server response to notarize Transactions message.");
+//		OTLog::vOutput(0, "Received server response to notarize Transactions message:\n%s\n", strReply.Get());
+
 		ProcessIncomingTransactions(theConnection, theReply);
 		
 		return true;
 	}
 	else if (theReply.m_bSuccess && theReply.m_strCommand.Compare("@getInbox"))
 	{
-		OTString strReply(theReply), strAck;
-		strAck.Format("Received server acknowledgment of Get Inbox command:\n%s\n", strReply.Get());
+		OTString strReply(theReply);
 		
-		OTLog::vOutput(0, "%s", strAck.Get());
+		OTLog::Output(0, "Received server response to Get Inbox message.\n");
+//		OTLog::vOutput(0, "Received server response to Get Inbox message:\n%s\n", strReply.Get());
 		
 		// base64-Decode the server reply's payload into strInbox
 		OTString strInbox(theReply.m_ascPayload);

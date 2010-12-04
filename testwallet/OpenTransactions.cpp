@@ -1,4 +1,4 @@
-/************************************************************************************
+  /************************************************************************************
  *    
  *  OpenTransactions.cpp  (a high-level API)
  *  
@@ -2873,7 +2873,8 @@ void OT_API::notarizeDeposit(OTIdentifier	& SERVER_ID,
 		
 		return;
 	}
-	else {
+	else 
+	{
 		CONTRACT_ID = pAccount->GetAssetTypeID();
 		CONTRACT_ID.GetString(strContractID);
 	}
@@ -3272,7 +3273,8 @@ void OT_API::depositCheque(OTIdentifier	& SERVER_ID,
 		
 		return;
 	}
-	else {
+	else 
+	{
 		CONTRACT_ID = pAccount->GetAssetTypeID();
 		CONTRACT_ID.GetString(strContractID);
 	}
