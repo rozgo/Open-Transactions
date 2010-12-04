@@ -208,6 +208,10 @@ public:
 				//
 				if (strEnvelopeContents.Exists() && theMsg.LoadContractFromString(strEnvelopeContents))
 				{
+					
+					// In case you want to see all the incoming messages...
+//					OTLog::vOutput(0, "%s\n\n", strEnvelopeContents.Get());
+					
 					// By constructing this without a socket, I put it in XmlRpc/http mode, instead of tcp/ssl.
 					OTClientConnection theClient(*g_pServer); 
 

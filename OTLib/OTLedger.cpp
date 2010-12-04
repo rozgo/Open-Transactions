@@ -126,10 +126,15 @@ bool OTLedger::LoadInbox()
 						 OTLog::InboxFolder(),
 						 OTLog::PathSeparator(), strID.Get());
 	
-	// Try to load the ledger from disk.
-	if (false == LoadContract())
+	if (false == OTLog::ConfirmExactPath(m_strFilename.Get()))
 	{
-		OTLog::vOutput(1, "Failed loading inbox in OTLedger::LoadInbox:\n%s\n", m_strFilename.Get());
+		OTLog::vOutput(1, "Inbox does not exist in OTLedger::LoadInbox:\n%s\n", m_strFilename.Get());
+		return false;
+	}
+	// Try to load the ledger from disk.
+	else if (false == LoadContract())
+	{
+		OTLog::vError("Failed loading inbox in OTLedger::LoadInbox:\n%s\n", m_strFilename.Get());
 		return false;
 	}
 	else 
@@ -156,9 +161,14 @@ bool OTLedger::LoadOutbox()
 						 OTLog::OutboxFolder(),
 						 OTLog::PathSeparator(), strID.Get());
 	
-	if (false == LoadContract())
+	if (false == OTLog::ConfirmExactPath(m_strFilename.Get()))
 	{
-		OTLog::vOutput(1, "Failed loading outbox in OTLedger::LoadOutbox:\n%s\n", m_strFilename.Get());
+		OTLog::vOutput(1, "Outbox does not exist in OTLedger::LoadOutbox:\n%s\n", m_strFilename.Get());
+		return false;
+	}
+	else if (false == LoadContract())
+	{
+		OTLog::vError("Failed loading outbox in OTLedger::LoadOutbox:\n%s\n", m_strFilename.Get());
 		return false;
 	}
 	else 
@@ -166,7 +176,6 @@ bool OTLedger::LoadOutbox()
 		OTLog::vOutput(2, "Successfully loaded outbox in OTLedger::LoadOutbox:\n%s\n", m_strFilename.Get());
 	}
 
-	
 	return true;	
 }
 
