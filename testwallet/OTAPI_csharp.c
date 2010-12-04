@@ -1374,6 +1374,18 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Message_GetLedger(char * jarg1) {
 }
 
 
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Message_GetNewAssetTypeID(char * jarg1) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  result = (char *)OT_API_Message_GetNewAssetTypeID((char const *)arg1);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
 SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_ConnectServer(char * jarg1, char * jarg2, char * jarg3, char * jarg4, char * jarg5) {
   int jresult ;
   char *arg1 = (char *) 0 ;

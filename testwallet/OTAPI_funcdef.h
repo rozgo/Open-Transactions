@@ -1254,6 +1254,18 @@ const char * OT_API_Message_GetLedger(const char * THE_MESSAGE);
 
 
 
+// -----------------------------------------------------------
+// GET NEW ASSET TYPE ID 
+//
+// If you just issued a new asset type, you'l want to read the
+// server reply and get the new asset type ID out of it.
+// Otherwise how will you ever open accounts in that new type?
+//
+const char * OT_API_Message_GetNewAssetTypeID(const char * THE_MESSAGE);
+
+
+
+
 
 
 

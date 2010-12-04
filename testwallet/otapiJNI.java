@@ -86,6 +86,7 @@ class otapiJNI {
   public final static native String OT_API_Message_GetCommand(String jarg1);
   public final static native int OT_API_Message_GetSuccess(String jarg1);
   public final static native String OT_API_Message_GetLedger(String jarg1);
+  public final static native String OT_API_Message_GetNewAssetTypeID(String jarg1);
   public final static native int OT_API_ConnectServer(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5);
   public final static native int OT_API_ProcessSockets();
 }

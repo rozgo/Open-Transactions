@@ -6291,6 +6291,31 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_OT_API_Message_GetNewAssetTypeID(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:OT_API_Message_GetNewAssetTypeID",&obj0)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Message_GetNewAssetTypeID" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_Message_GetNewAssetTypeID((char const *)arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_OT_API_ConnectServer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   char *arg1 = (char *) 0 ;
@@ -6456,6 +6481,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"OT_API_Message_GetCommand", _wrap_OT_API_Message_GetCommand, METH_VARARGS, NULL},
 	 { (char *)"OT_API_Message_GetSuccess", _wrap_OT_API_Message_GetSuccess, METH_VARARGS, NULL},
 	 { (char *)"OT_API_Message_GetLedger", _wrap_OT_API_Message_GetLedger, METH_VARARGS, NULL},
+	 { (char *)"OT_API_Message_GetNewAssetTypeID", _wrap_OT_API_Message_GetNewAssetTypeID, METH_VARARGS, NULL},
 	 { (char *)"OT_API_ConnectServer", _wrap_OT_API_ConnectServer, METH_VARARGS, NULL},
 	 { (char *)"OT_API_ProcessSockets", _wrap_OT_API_ProcessSockets, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }

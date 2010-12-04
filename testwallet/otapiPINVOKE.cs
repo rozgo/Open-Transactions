@@ -418,6 +418,9 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Message_GetLedger")]
   public static extern string OT_API_Message_GetLedger(string jarg1);
 
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Message_GetNewAssetTypeID")]
+  public static extern string OT_API_Message_GetNewAssetTypeID(string jarg1);
+
   [DllImport("otapi", EntryPoint="CSharp_OT_API_ConnectServer")]
   public static extern int OT_API_ConnectServer(string jarg1, string jarg2, string jarg3, string jarg4, string jarg5);
 

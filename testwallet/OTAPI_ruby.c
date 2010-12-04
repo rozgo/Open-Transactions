@@ -5232,6 +5232,33 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_OT_API_Message_GetNewAssetTypeID(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Message_GetNewAssetTypeID" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_Message_GetNewAssetTypeID((char const *)arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_OT_API_ConnectServer(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -5658,6 +5685,7 @@ SWIGEXPORT void Init_otapi(void) {
   rb_define_module_function(mOtapi, "OT_API_Message_GetCommand", _wrap_OT_API_Message_GetCommand, -1);
   rb_define_module_function(mOtapi, "OT_API_Message_GetSuccess", _wrap_OT_API_Message_GetSuccess, -1);
   rb_define_module_function(mOtapi, "OT_API_Message_GetLedger", _wrap_OT_API_Message_GetLedger, -1);
+  rb_define_module_function(mOtapi, "OT_API_Message_GetNewAssetTypeID", _wrap_OT_API_Message_GetNewAssetTypeID, -1);
   rb_define_module_function(mOtapi, "OT_API_ConnectServer", _wrap_OT_API_ConnectServer, -1);
   rb_define_module_function(mOtapi, "OT_API_ProcessSockets", _wrap_OT_API_ProcessSockets, -1);
 }

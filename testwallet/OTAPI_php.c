@@ -4054,6 +4054,36 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Message_GetNewAssetTypeID) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  result = (char *)OT_API_Message_GetNewAssetTypeID((char const *)arg1);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value,result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_OT_API_ConnectServer) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -4211,6 +4241,7 @@ static function_entry otapi_functions[] = {
  ZEND_NAMED_FE(ot_api_message_getcommand,_wrap_OT_API_Message_GetCommand,NULL)
  ZEND_NAMED_FE(ot_api_message_getsuccess,_wrap_OT_API_Message_GetSuccess,NULL)
  ZEND_NAMED_FE(ot_api_message_getledger,_wrap_OT_API_Message_GetLedger,NULL)
+ ZEND_NAMED_FE(ot_api_message_getnewassettypeid,_wrap_OT_API_Message_GetNewAssetTypeID,NULL)
  ZEND_NAMED_FE(ot_api_connectserver,_wrap_OT_API_ConnectServer,NULL)
  ZEND_NAMED_FE(ot_api_processsockets,_wrap_OT_API_ProcessSockets,NULL)
 {NULL, NULL, NULL}

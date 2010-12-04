@@ -127,6 +127,7 @@ package otapi;
 *OT_API_Message_GetCommand = *otapic::OT_API_Message_GetCommand;
 *OT_API_Message_GetSuccess = *otapic::OT_API_Message_GetSuccess;
 *OT_API_Message_GetLedger = *otapic::OT_API_Message_GetLedger;
+*OT_API_Message_GetNewAssetTypeID = *otapic::OT_API_Message_GetNewAssetTypeID;
 *OT_API_ConnectServer = *otapic::OT_API_ConnectServer;
 *OT_API_ProcessSockets = *otapic::OT_API_ProcessSockets;
 

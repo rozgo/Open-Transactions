@@ -5039,6 +5039,30 @@ fail:
 
 
 SWIGINTERN int
+_wrap_OT_API_Message_GetNewAssetTypeID(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:OT_API_Message_GetNewAssetTypeID THE_MESSAGE ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(objv[1], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Message_GetNewAssetTypeID" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_Message_GetNewAssetTypeID((char const *)arg1);
+  Tcl_SetObjResult(interp,SWIG_FromCharPtr((const char *)result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return TCL_OK;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
 _wrap_OT_API_ConnectServer(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -5199,6 +5223,7 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "OT_API_Message_GetCommand", (swig_wrapper_func) _wrap_OT_API_Message_GetCommand, NULL},
     { SWIG_prefix "OT_API_Message_GetSuccess", (swig_wrapper_func) _wrap_OT_API_Message_GetSuccess, NULL},
     { SWIG_prefix "OT_API_Message_GetLedger", (swig_wrapper_func) _wrap_OT_API_Message_GetLedger, NULL},
+    { SWIG_prefix "OT_API_Message_GetNewAssetTypeID", (swig_wrapper_func) _wrap_OT_API_Message_GetNewAssetTypeID, NULL},
     { SWIG_prefix "OT_API_ConnectServer", (swig_wrapper_func) _wrap_OT_API_ConnectServer, NULL},
     { SWIG_prefix "OT_API_ProcessSockets", (swig_wrapper_func) _wrap_OT_API_ProcessSockets, NULL},
     {0, 0, 0}
