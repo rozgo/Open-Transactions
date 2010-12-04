@@ -3081,7 +3081,8 @@ void OT_API::withdrawVoucher(OTIdentifier	& SERVER_ID,
 		
 		return;
 	}
-	else {
+	else 
+	{
 		CONTRACT_ID = pAccount->GetAssetTypeID();
 		CONTRACT_ID.GetString(strContractID);
 	}

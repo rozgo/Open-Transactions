@@ -3307,7 +3307,7 @@ void OT_API_withdrawVoucher(const char * SERVER_ID,
 	OT_ASSERT_MSG(NULL != AMOUNT, "Null AMOUNT passed in.");
 	
 	OTIdentifier	theServerID(SERVER_ID),	theUserID(USER_ID), 
-						theAcctID(ACCT_ID),		theRecipientUserID(RECIPIENT_USER_ID);
+					theAcctID(ACCT_ID),		theRecipientUserID(RECIPIENT_USER_ID);
 
 	OTString strMemo(CHEQUE_MEMO), strAmount(AMOUNT);
 
@@ -3504,7 +3504,10 @@ const char * OT_API_Message_GetLedger(const char * THE_MESSAGE)
 	OTMessage theMessage;
 	
 	if (!strMessage.Exists() || !theMessage.LoadContractFromString(strMessage))
+	{
+		OTLog::Output(0, "OT_API_Message_GetLedger: Unable to load message.\n");
 		return NULL;
+	}
 	
 	// It's not a transaction request or response, so the Payload wouldn't
 	// contain a ledger. (Don't want to pass back whatever it DOES contain
@@ -3512,15 +3515,21 @@ const char * OT_API_Message_GetLedger(const char * THE_MESSAGE)
 	//
 	if ((false == theMessage.m_strCommand.Compare("notarizeTransactions")) &&
 		(false == theMessage.m_strCommand.Compare("@notarizeTransactions")))
+	{
+		OTLog::vOutput(0, "OT_API_Message_GetLedger: Wrong message type: %s\n", theMessage.m_strCommand.Get());
 		return NULL;
+	}
 	
 	OTString strOutput;
 	// The ledger is stored in the Payload, we'll grab it into the String.
 	theMessage.m_ascPayload.GetString(strOutput); 
 
 	if (!strOutput.Exists())
+	{
+		OTLog::Output(0, "OT_API_Message_GetLedger: No ledger found on message.\n");
 		return NULL;
-		
+	}
+	
 	const char * pBuf = strOutput.Get(); 
 	
 #ifdef _WIN32
@@ -3531,6 +3540,60 @@ const char * OT_API_Message_GetLedger(const char * THE_MESSAGE)
 	
 	return g_tempBuf;				
 }
+
+
+
+// -----------------------------------------------------------
+// GET NEW ASSET TYPE ID 
+//
+// If you just issued a new asset type, you'l want to read the
+// server reply and get the new asset type ID out of it.
+// Otherwise how will you ever open accounts in that new type?
+//
+const char * OT_API_Message_GetNewAssetTypeID(const char * THE_MESSAGE)
+{
+	OT_ASSERT_MSG(NULL != THE_MESSAGE, "Null THE_MESSAGE passed in.");
+	
+	OTString strMessage(THE_MESSAGE);
+	
+	OTMessage theMessage;
+	
+	if (!strMessage.Exists() || !theMessage.LoadContractFromString(strMessage))
+	{
+		OTLog::Output(0, "OT_API_Message_GetNewAssetTypeID: Unable to load message.\n");
+		return NULL;
+	}
+	
+	// It's not a transaction request or response, so the Payload wouldn't
+	// contain a ledger. (Don't want to pass back whatever it DOES contain
+	// in that case, now do I?)
+	//
+	if (false == theMessage.m_strCommand.Compare("@issueAssetType"))
+	{
+		OTLog::vOutput(0, "OT_API_Message_GetNewAssetTypeID: Wrong message type: %s\n", 
+					   theMessage.m_strCommand.Get());
+		return NULL;
+	}
+	
+	OTString strOutput(theMessage.m_strAcctID);
+	
+	if (!strOutput.Exists())
+	{
+		OTLog::Output(0, "OT_API_Message_GetNewAssetTypeID: No issuer account ID found on message.\n");
+		return NULL;
+	}
+	
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;
+}
+
 
 
 

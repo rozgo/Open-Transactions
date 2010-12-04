@@ -379,6 +379,11 @@ public class otapi {
     return ret;
   }
 
+  public static string OT_API_Message_GetNewAssetTypeID(string THE_MESSAGE) {
+    string ret = otapiPINVOKE.OT_API_Message_GetNewAssetTypeID(THE_MESSAGE);
+    return ret;
+  }
+
   public static int OT_API_ConnectServer(string SERVER_ID, string USER_ID, string szCA_FILE, string szKEY_FILE, string szKEY_PASSWORD) {
     int ret = otapiPINVOKE.OT_API_ConnectServer(SERVER_ID, USER_ID, szCA_FILE, szKEY_FILE, szKEY_PASSWORD);
     return ret;

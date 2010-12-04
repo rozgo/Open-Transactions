@@ -2485,6 +2485,25 @@ SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Message_1GetLedger(JNIEnv *jen
 }
 
 
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Message_1GetNewAssetTypeID(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+  jstring jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
+  }
+  result = (char *)OT_API_Message_GetNewAssetTypeID((char const *)arg1);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
+  return jresult;
+}
+
+
 SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1ConnectServer(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
   jint jresult = 0 ;
   char *arg1 = (char *) 0 ;

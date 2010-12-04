@@ -128,6 +128,7 @@ ZEND_NAMED_FUNCTION(_wrap_OT_API_FlushMessageBuffer);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_Message_GetCommand);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_Message_GetSuccess);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_Message_GetLedger);
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Message_GetNewAssetTypeID);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_ConnectServer);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_ProcessSockets);
 #endif /* PHP_OTAPI_H */

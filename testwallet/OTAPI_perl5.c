@@ -5444,6 +5444,35 @@ XS(_wrap_OT_API_Message_GetLedger) {
 }
 
 
+XS(_wrap_OT_API_Message_GetNewAssetTypeID) {
+  {
+    char *arg1 = (char *) 0 ;
+    char *result = 0 ;
+    int res1 ;
+    char *buf1 = 0 ;
+    int alloc1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OT_API_Message_GetNewAssetTypeID(THE_MESSAGE);");
+    }
+    res1 = SWIG_AsCharPtrAndSize(ST(0), &buf1, NULL, &alloc1);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Message_GetNewAssetTypeID" "', argument " "1"" of type '" "char const *""'");
+    }
+    arg1 = (char *)(buf1);
+    result = (char *)OT_API_Message_GetNewAssetTypeID((char const *)arg1);
+    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    XSRETURN(argvi);
+  fail:
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    SWIG_croak_null();
+  }
+}
+
+
 XS(_wrap_OT_API_ConnectServer) {
   {
     char *arg1 = (char *) 0 ;
@@ -5641,6 +5670,7 @@ static swig_command_info swig_commands[] = {
 {"otapic::OT_API_Message_GetCommand", _wrap_OT_API_Message_GetCommand},
 {"otapic::OT_API_Message_GetSuccess", _wrap_OT_API_Message_GetSuccess},
 {"otapic::OT_API_Message_GetLedger", _wrap_OT_API_Message_GetLedger},
+{"otapic::OT_API_Message_GetNewAssetTypeID", _wrap_OT_API_Message_GetNewAssetTypeID},
 {"otapic::OT_API_ConnectServer", _wrap_OT_API_ConnectServer},
 {"otapic::OT_API_ProcessSockets", _wrap_OT_API_ProcessSockets},
 {0,0}

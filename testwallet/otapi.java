@@ -320,6 +320,10 @@ public class otapi {
     return otapiJNI.OT_API_Message_GetLedger(THE_MESSAGE);
   }
 
+  public static String OT_API_Message_GetNewAssetTypeID(String THE_MESSAGE) {
+    return otapiJNI.OT_API_Message_GetNewAssetTypeID(THE_MESSAGE);
+  }
+
   public static int OT_API_ConnectServer(String SERVER_ID, String USER_ID, String szCA_FILE, String szKEY_FILE, String szKEY_PASSWORD) {
     return otapiJNI.OT_API_ConnectServer(SERVER_ID, USER_ID, szCA_FILE, szKEY_FILE, szKEY_PASSWORD);
   }

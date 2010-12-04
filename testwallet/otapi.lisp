@@ -421,6 +421,9 @@
 (cffi:defcfun ("OT_API_Message_GetLedger" OT_API_Message_GetLedger) :string
   (THE_MESSAGE :string))
 
+(cffi:defcfun ("OT_API_Message_GetNewAssetTypeID" OT_API_Message_GetNewAssetTypeID) :string
+  (THE_MESSAGE :string))
+
 (cffi:defcfun ("OT_API_ConnectServer" OT_API_ConnectServer) :int
   (SERVER_ID :string)
   (USER_ID :string)

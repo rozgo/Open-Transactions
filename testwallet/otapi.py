@@ -126,6 +126,7 @@ OT_API_FlushMessageBuffer = _otapi.OT_API_FlushMessageBuffer
 OT_API_Message_GetCommand = _otapi.OT_API_Message_GetCommand
 OT_API_Message_GetSuccess = _otapi.OT_API_Message_GetSuccess
 OT_API_Message_GetLedger = _otapi.OT_API_Message_GetLedger
+OT_API_Message_GetNewAssetTypeID = _otapi.OT_API_Message_GetNewAssetTypeID
 OT_API_ConnectServer = _otapi.OT_API_ConnectServer
 OT_API_ProcessSockets = _otapi.OT_API_ProcessSockets
 
