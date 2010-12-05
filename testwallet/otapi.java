@@ -196,6 +196,26 @@ public class otapi {
     return otapiJNI.OT_API_Transaction_GetSuccess(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
   }
 
+  public static String OT_API_Pending_GetFromUserID(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
+    return otapiJNI.OT_API_Pending_GetFromUserID(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  }
+
+  public static String OT_API_Pending_GetFromAcctID(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
+    return otapiJNI.OT_API_Pending_GetFromAcctID(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  }
+
+  public static String OT_API_Pending_GetNote(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
+    return otapiJNI.OT_API_Pending_GetNote(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  }
+
+  public static String OT_API_Pending_GetAmount(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
+    return otapiJNI.OT_API_Pending_GetAmount(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  }
+
+  public static String OT_API_Pending_GetReferenceToNum(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
+    return otapiJNI.OT_API_Pending_GetReferenceToNum(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  }
+
   public static String OT_API_Purse_GetTotalValue(String SERVER_ID, String ASSET_TYPE_ID, String THE_PURSE) {
     return otapiJNI.OT_API_Purse_GetTotalValue(SERVER_ID, ASSET_TYPE_ID, THE_PURSE);
   }
@@ -280,6 +300,10 @@ public class otapi {
     otapiJNI.OT_API_getInbox(SERVER_ID, USER_ID, ACCT_ID);
   }
 
+  public static void OT_API_getOutbox(String SERVER_ID, String USER_ID, String ACCT_ID) {
+    otapiJNI.OT_API_getOutbox(SERVER_ID, USER_ID, ACCT_ID);
+  }
+
   public static void OT_API_processInbox(String SERVER_ID, String USER_ID, String ACCT_ID, String ACCT_LEDGER) {
     otapiJNI.OT_API_processInbox(SERVER_ID, USER_ID, ACCT_ID, ACCT_LEDGER);
   }
@@ -322,6 +346,10 @@ public class otapi {
 
   public static String OT_API_Message_GetNewAssetTypeID(String THE_MESSAGE) {
     return otapiJNI.OT_API_Message_GetNewAssetTypeID(THE_MESSAGE);
+  }
+
+  public static String OT_API_Message_GetNewIssuerAcctID(String THE_MESSAGE) {
+    return otapiJNI.OT_API_Message_GetNewIssuerAcctID(THE_MESSAGE);
   }
 
   public static int OT_API_ConnectServer(String SERVER_ID, String USER_ID, String szCA_FILE, String szKEY_FILE, String szKEY_PASSWORD) {
