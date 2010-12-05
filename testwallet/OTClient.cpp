@@ -841,12 +841,12 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		OTString strReply(theReply);
 		
 		OTLog::Output(0, "Received server response to Get Inbox message.\n");
-//		OTLog::vOutput(0, "Received server response to Get Inbox message:\n%s\n", strReply.Get());
+		//		OTLog::vOutput(0, "Received server response to Get Inbox message:\n%s\n", strReply.Get());
 		
 		// base64-Decode the server reply's payload into strInbox
 		OTString strInbox(theReply.m_ascPayload);
 		
-//		OTLog::vError("INBOX CONTENTS:\n%s\n", strInbox.Get());
+		//		OTLog::vError("INBOX CONTENTS:\n%s\n", strInbox.Get());
 		
 		// Load the ledger object from that string.				
 		OTLedger theInbox(USER_ID, ACCOUNT_ID, SERVER_ID);	
@@ -879,7 +879,42 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		{
 			OTLog::vError("Error loading or verifying inbox:\n\n%s\n", strInbox.Get());
 		}
-
+		
+		
+		return true;
+	}
+	else if (theReply.m_bSuccess && theReply.m_strCommand.Compare("@getOutbox"))
+	{
+		OTString strReply(theReply);
+		
+		OTLog::Output(0, "Received server response to Get Outbox message.\n");
+		//		OTLog::vOutput(0, "Received server response to Get Outbox message:\n%s\n", strReply.Get());
+		
+		// base64-Decode the server reply's payload into strOutbox
+		OTString strOutbox(theReply.m_ascPayload);
+		
+		//		OTLog::vError("OUTBOX CONTENTS:\n%s\n", strOutbox.Get());
+		
+		// Load the ledger object from that string.				
+		OTLedger theOutbox(USER_ID, ACCOUNT_ID, SERVER_ID);	
+		
+		
+		// I receive the outbox, verify the server's signature, then RE-SIGN IT WITH MY OWN
+		// SIGNATURE, then SAVE it to local storage.  So any FUTURE checks of this outbox
+		// would require MY signature, not the server's, to verify. But in this one spot, 
+		// just before saving, I need to verify the server's first.
+		if (theOutbox.LoadContractFromString(strOutbox) && theOutbox.VerifyAccount(*pServerNym))
+		{
+			theOutbox.ReleaseSignatures();
+			theOutbox.SignContract(*pNym);
+			theOutbox.SaveContract();
+			theOutbox.SaveOutbox();
+		}
+		else 
+		{
+			OTLog::vError("Error loading or verifying outbox:\n\n%s\n", strOutbox.Get());
+		}
+		
 		
 		return true;
 	}
@@ -1839,6 +1874,37 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		
 		// (1) Set up member variables 
 		theMessage.m_strCommand			= "getInbox";
+		theMessage.m_strNymID			= strNymID;
+		theMessage.m_strServerID		= strServerID;
+		theMessage.m_strAcctID			= strAcctID;
+		
+		// (2) Sign the Message 
+		theMessage.SignContract(theNym);		
+		
+		// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+		theMessage.SaveContract();
+		
+		bSendCommand = true;
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	else if (OTClient::getOutbox == requestedCommand) // GET OUTBOX
+	{	
+		OTLog::Output(0, "Please enter an account number: ");
+		// User input.
+		// I need an account
+		OTString strAcctID;
+		strAcctID.OTfgets(std::cin);
+		
+		
+		// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+		theNym.GetCurrentRequestNum(strServerID, lRequestNumber);
+		theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+		theNym.IncrementRequestNum(theNym, strServerID); // since I used it for a server request, I have to increment it
+		
+		// (1) Set up member variables 
+		theMessage.m_strCommand			= "getOutbox";
 		theMessage.m_strNymID			= strNymID;
 		theMessage.m_strServerID		= strServerID;
 		theMessage.m_strAcctID			= strAcctID;

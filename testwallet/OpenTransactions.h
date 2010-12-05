@@ -386,6 +386,10 @@ public:
 				  OTIdentifier & USER_ID,
 				  OTIdentifier & ACCT_ID);
 	
+	void getOutbox(OTIdentifier & SERVER_ID,
+				   OTIdentifier & USER_ID,
+				   OTIdentifier & ACCT_ID);
+	
 	void processInbox(OTIdentifier	& SERVER_ID,
 					  OTIdentifier	& USER_ID,
 					  OTIdentifier	& ACCT_ID,

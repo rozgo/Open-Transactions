@@ -641,6 +641,60 @@ void OTMessage::UpdateContents()
 	
 	
 	
+	// ------------------------------------------------------------------------
+	
+	// the Payload contains an ascii-armored OTLedger object.
+	if (m_strCommand.Compare("getOutbox"))
+	{		
+		m_xmlUnsigned.Concatenate("<%s\n" // Command
+								  " nymID=\"%s\"\n"
+								  " serverID=\"%s\"\n"
+								  " accountID=\"%s\"\n"
+								  " requestNum=\"%s\""
+								  " >\n\n",
+								  m_strCommand.Get(),
+								  m_strNymID.Get(),
+								  m_strServerID.Get(),
+								  m_strAcctID.Get(),
+								  m_strRequestNum.Get()
+								  );
+		
+		m_xmlUnsigned.Concatenate("</%s>\n\n", m_strCommand.Get());
+	} // ------------------------------------------------------------------------
+	
+	
+	
+	// ------------------------------------------------------------------------
+	
+	// the Payload contains an ascii-armored OTLedger object.
+	if (m_strCommand.Compare("@getOutbox"))
+	{		
+		m_xmlUnsigned.Concatenate("<%s\n" // Command
+								  " success=\"%s\"\n"
+								  " nymID=\"%s\"\n"
+								  " serverID=\"%s\"\n"
+								  " accountID=\"%s\""
+								  " >\n\n",
+								  m_strCommand.Get(),
+								  (m_bSuccess ? "true" : "false"),
+								  m_strNymID.Get(),
+								  m_strServerID.Get(), 
+								  m_strAcctID.Get()
+								  );
+		
+		if (!m_bSuccess && m_ascInReferenceTo.GetLength())
+			m_xmlUnsigned.Concatenate("<inReferenceTo>\n%s</inReferenceTo>\n\n", m_ascInReferenceTo.Get());
+		
+		// I would check if this was empty, but it should never be empty...
+		// famous last words.
+		if (m_bSuccess && m_ascPayload.GetLength())
+			m_xmlUnsigned.Concatenate("<outboxLedger>\n%s</outboxLedger>\n\n", m_ascPayload.Get());
+		
+		m_xmlUnsigned.Concatenate("</%s>\n\n", m_strCommand.Get());
+	} // ------------------------------------------------------------------------
+	
+	
+	
 	
 	// ------------------------------------------------------------------------
 	
@@ -2035,7 +2089,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strRequestNum = xml->getAttributeValue("requestNum");
 		
 		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nServerID: %s\nAccountID:    %s\nRequest #: %s\n", 
-				m_strCommand.Get(), m_strNymID.Get(), m_strServerID.Get(), m_strAcctID.Get(), m_strRequestNum.Get());
+					   m_strCommand.Get(), m_strNymID.Get(), m_strServerID.Get(), m_strAcctID.Get(), m_strRequestNum.Get());
 		
 		nReturnVal = 1;
 	}
@@ -2083,30 +2137,121 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				else
 				{
 					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-							"Expected %s text field in @getInbox response\n", 
-							pElementExpected);
+								  "Expected %s text field in @getInbox response\n", 
+								  pElementExpected);
 					return (-1); // error condition
 				}				
 			}
 			else 
 			{
 				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-						"@getInbox without %s element.\n", pElementExpected);
+							  "@getInbox without %s element.\n", pElementExpected);
 				return (-1); // error condition
 			}
 		}
 		else
 		{
 			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-					"Expected %s element with text field in @getInbox response\n", 
-					pElementExpected);
+						  "Expected %s element with text field in @getInbox response\n", 
+						  pElementExpected);
 			return (-1); // error condition
 		}
 		
 		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nAccountID:    %s\n"
-				"ServerID: %s\n\n", 
-				m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"),
-				m_strNymID.Get(), m_strAcctID.Get(), m_strServerID.Get());
+					   "ServerID: %s\n\n", 
+					   m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"),
+					   m_strNymID.Get(), m_strAcctID.Get(), m_strServerID.Get());
+		
+		nReturnVal = 1;
+	}
+	
+	// -------------------------------------------------------------------------------------------
+	
+	
+	
+	// -------------------------------------------------------------------------------------------
+	
+	else if (!strcmp("getOutbox", xml->getNodeName())) 
+	{		
+		m_strCommand	= xml->getNodeName();  // Command
+		m_strNymID		= xml->getAttributeValue("nymID");
+		m_strServerID	= xml->getAttributeValue("serverID");
+		m_strAcctID		= xml->getAttributeValue("accountID");
+		m_strRequestNum = xml->getAttributeValue("requestNum");
+		
+		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nServerID: %s\nAccountID:    %s\nRequest #: %s\n", 
+					   m_strCommand.Get(), m_strNymID.Get(), m_strServerID.Get(), m_strAcctID.Get(), m_strRequestNum.Get());
+		
+		nReturnVal = 1;
+	}
+	
+	
+	// -------------------------------------------------------------------------------------------
+	
+	
+	else if (!strcmp("@getOutbox", xml->getNodeName())) 
+	{		
+		OTString strSuccess;
+		strSuccess		= xml->getAttributeValue("success");
+		if (strSuccess.Compare("true"))
+			m_bSuccess = true;
+		else
+			m_bSuccess = false;
+		
+		m_strCommand	= xml->getNodeName();  // Command
+		m_strNymID		= xml->getAttributeValue("nymID");
+		m_strServerID	= xml->getAttributeValue("serverID");
+		m_strAcctID		= xml->getAttributeValue("accountID");
+		
+		// move to the next node which SHOULD be the outboxLedger element field
+		xml->read();
+		
+		const char * pElementExpected;
+		if (m_bSuccess)
+			pElementExpected = "outboxLedger";
+		else
+			pElementExpected = "inReferenceTo";
+		
+		if (EXN_ELEMENT == xml->getNodeType())  
+		{
+			if (!strcmp(pElementExpected, xml->getNodeName()))
+			{
+				xml->read();
+				
+				if (EXN_TEXT == xml->getNodeType()) 
+				{
+					if (m_bSuccess)
+						m_ascPayload.Set(xml->getNodeData());
+					else
+						m_ascInReferenceTo.Set(xml->getNodeData());				
+				}
+				else
+				{
+					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
+								  "Expected %s text field in @getOutbox response\n", 
+								  pElementExpected);
+					return (-1); // error condition
+				}				
+			}
+			else 
+			{
+				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
+							  "@getOutbox without %s element.\n", pElementExpected);
+				return (-1); // error condition
+			}
+		}
+		else
+		{
+			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
+						  "Expected %s element with text field in @getOutbox response\n", 
+						  pElementExpected);
+			return (-1); // error condition
+		}
+		
+		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nAccountID:    %s\n"
+					   "ServerID: %s\n\n", 
+					   m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"),
+					   m_strNymID.Get(), m_strAcctID.Get(), m_strServerID.Get());
 		
 		nReturnVal = 1;
 	}
@@ -2778,42 +2923,6 @@ OTLog::vError("Loading condition \"%s\": %s----------(END DATA)----------\n", st
  return 1;
  } 
  */
-
-
-/*
- 
- Create user account
- --------------
- 
- Customer sends:
-
- <OTmessage version="1.0">
- 
- <createUserAccount
- nymID = "lksjdflkjsdflkjsdf"
- serverID = "skldsldfjlkjsdf">
- 
-
- 
- </createUserAccount>
- 
- </OTmessage>
- 
- 
- If the id is new, matches the pubkey, the <bankid> is correct, the
- signature is OK, 
- 
- and the customer has enough usage tokens in his
- inbox (spending usage tokens to a new <id> is how the account
- directory is actually created), bank adds a negative spend for the
- registration tokens to customer's inbox, and responds with:
- 
- (<bankid>,@register,(<id>,register,<bankid>,<pubkey>,name=<name>))
- */
-
-
-
-
 
 
 

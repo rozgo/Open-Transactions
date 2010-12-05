@@ -674,6 +674,49 @@ int OT_API_Transaction_GetSuccess(const char * SERVER_ID,
 								  const char * THE_TRANSACTION); 
 
 
+// --------------------------------------------------
+//
+// PENDING TRANSFER (various functions)
+//
+// When someone has sent you a PENDING TRANSFER (a form of transaction
+// that will be sitting in your inbox waiting for you to accept/reject it)
+// then, as you are reading the inbox, you can use these functions in
+// order to get data from each pending transfer. That way your user can
+// then decide whether to accept or reject it (see the ledger functions.)
+//
+const char * OT_API_Pending_GetFromUserID(const char * SERVER_ID,
+										  const char * USER_ID,
+										  const char * ACCOUNT_ID,
+										  const char * THE_TRANSACTION);
+
+const char * OT_API_Pending_GetFromAcctID(const char * SERVER_ID,
+										  const char * USER_ID,
+										  const char * ACCOUNT_ID,
+										  const char * THE_TRANSACTION);
+
+const char * OT_API_Pending_GetNote(const char * SERVER_ID,
+									const char * USER_ID,
+									const char * ACCOUNT_ID,
+									const char * THE_TRANSACTION);
+
+const char * OT_API_Pending_GetAmount(const char * SERVER_ID,
+									  const char * USER_ID,
+									  const char * ACCOUNT_ID,
+									  const char * THE_TRANSACTION);
+
+// The pending notice in the inbox has a transaction number that
+// was issued to the server (so it could put the notice in your inbox.)
+// But it's IN REFERENCE TO a transfer that was initiated by another
+// user. THIS function will retrieve THAT transaction number, because
+// this function queries a pending transaction to see what transaction
+// it is "in reference to."
+//
+const char * OT_API_Pending_GetReferenceToNum(const char * SERVER_ID,
+											  const char * USER_ID,
+											  const char * ACCOUNT_ID,
+											  const char * THE_TRANSACTION);
+
+
 
 
 // --------------------------------------------------------------------
@@ -1107,6 +1150,10 @@ void OT_API_getInbox(const char * SERVER_ID,
 					 const char * USER_ID,
 					 const char * ACCT_ID);
 
+void OT_API_getOutbox(const char * SERVER_ID,
+					  const char * USER_ID,
+					  const char * ACCT_ID);
+
 
 // --------------------------------------------------------------------------
 /*
@@ -1262,6 +1309,15 @@ const char * OT_API_Message_GetLedger(const char * THE_MESSAGE);
 // Otherwise how will you ever open accounts in that new type?
 //
 const char * OT_API_Message_GetNewAssetTypeID(const char * THE_MESSAGE);
+
+// -----------------------------------------------------------
+// GET NEW ISSUER ACCOUNT ID 
+//
+// If you just issued a new asset type, you'l want to read the
+// server reply and get the new issuer acct ID out of it.
+// Otherwise how will you ever issue anything with it?
+//
+const char * OT_API_Message_GetNewIssuerAcctID(const char * THE_MESSAGE);
 
 
 
