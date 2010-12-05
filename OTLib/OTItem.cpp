@@ -128,23 +128,39 @@ void OTItem::SetAttachment(const OTString & theStr)
 
 void OTItem::SetNote(const OTString & theStr)
 {
-	OTString theString(theStr);
-	if (theStr.GetLength() < MINIMUM_CLEARTEXT_SIZE_OTASCIIARMOR)
+	if (theStr.Exists())
 	{
-		OTString strPadding(OTASSCIIARMOR_PADDING_TEXT);
+		OTString theString(theStr);
+		if (theStr.GetLength() < MINIMUM_CLEARTEXT_SIZE_OTASCIIARMOR)
+		{
+			OTString strPadding(OTASSCIIARMOR_PADDING_TEXT);
+			
+			theString.Concatenate(strPadding);
+		}
 		
-		theString.Concatenate(strPadding);
+		m_ascNote.SetString(theString);
 	}
-	
-	m_ascNote.SetString(theString);
+	else 
+	{
+		m_ascNote.Release();
+	}
+
 }
 
 void OTItem::GetNote(OTString & theStr) const
 {
-	m_ascNote.GetString(theStr);
-	
-	if (theStr.Contains(OTASSCIIARMOR_PADDING_TEXT))
-		theStr.Truncate(theStr.GetLength() - MINIMUM_CLEARTEXT_SIZE_OTASCIIARMOR);
+	if (m_ascNote.Exists())
+	{
+		m_ascNote.GetString(theStr);
+		
+		if (theStr.Contains(OTASSCIIARMOR_PADDING_TEXT))
+			theStr.Truncate(theStr.GetLength() - MINIMUM_CLEARTEXT_SIZE_OTASCIIARMOR);
+	}
+	else 
+	{
+		theStr.Release();
+	}
+
 }
 		
 
