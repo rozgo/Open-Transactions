@@ -3373,8 +3373,8 @@ bool OTClient::InitClient(OTWallet & theWallet)
 	
 	OTLog::ConfirmOrCreateFolder(OTLog::NymFolder());
 	OTLog::ConfirmOrCreateFolder(OTLog::AccountFolder());
-//	OTLog::ConfirmOrCreateFolder(OTLog::InboxFolder());  // Will probably store these on client side someday.
-//	OTLog::ConfirmOrCreateFolder(OTLog::OutboxFolder()); 
+	OTLog::ConfirmOrCreateFolder(OTLog::InboxFolder());  // Will probably store these on client side someday.
+	OTLog::ConfirmOrCreateFolder(OTLog::OutboxFolder()); 
 	OTLog::ConfirmOrCreateFolder(OTLog::CertFolder());
 	OTLog::ConfirmOrCreateFolder(OTLog::ContractFolder());
 	OTLog::ConfirmOrCreateFolder(OTLog::MintFolder()); 
