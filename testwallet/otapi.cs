@@ -246,6 +246,31 @@ public class otapi {
     return ret;
   }
 
+  public static string OT_API_Pending_GetFromUserID(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
+    string ret = otapiPINVOKE.OT_API_Pending_GetFromUserID(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+    return ret;
+  }
+
+  public static string OT_API_Pending_GetFromAcctID(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
+    string ret = otapiPINVOKE.OT_API_Pending_GetFromAcctID(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+    return ret;
+  }
+
+  public static string OT_API_Pending_GetNote(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
+    string ret = otapiPINVOKE.OT_API_Pending_GetNote(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+    return ret;
+  }
+
+  public static string OT_API_Pending_GetAmount(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
+    string ret = otapiPINVOKE.OT_API_Pending_GetAmount(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+    return ret;
+  }
+
+  public static string OT_API_Pending_GetReferenceToNum(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
+    string ret = otapiPINVOKE.OT_API_Pending_GetReferenceToNum(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+    return ret;
+  }
+
   public static string OT_API_Purse_GetTotalValue(string SERVER_ID, string ASSET_TYPE_ID, string THE_PURSE) {
     string ret = otapiPINVOKE.OT_API_Purse_GetTotalValue(SERVER_ID, ASSET_TYPE_ID, THE_PURSE);
     return ret;
@@ -335,6 +360,10 @@ public class otapi {
     otapiPINVOKE.OT_API_getInbox(SERVER_ID, USER_ID, ACCT_ID);
   }
 
+  public static void OT_API_getOutbox(string SERVER_ID, string USER_ID, string ACCT_ID) {
+    otapiPINVOKE.OT_API_getOutbox(SERVER_ID, USER_ID, ACCT_ID);
+  }
+
   public static void OT_API_processInbox(string SERVER_ID, string USER_ID, string ACCT_ID, string ACCT_LEDGER) {
     otapiPINVOKE.OT_API_processInbox(SERVER_ID, USER_ID, ACCT_ID, ACCT_LEDGER);
   }
@@ -381,6 +410,11 @@ public class otapi {
 
   public static string OT_API_Message_GetNewAssetTypeID(string THE_MESSAGE) {
     string ret = otapiPINVOKE.OT_API_Message_GetNewAssetTypeID(THE_MESSAGE);
+    return ret;
+  }
+
+  public static string OT_API_Message_GetNewIssuerAcctID(string THE_MESSAGE) {
+    string ret = otapiPINVOKE.OT_API_Message_GetNewIssuerAcctID(THE_MESSAGE);
     return ret;
   }
 

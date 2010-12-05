@@ -55,6 +55,11 @@ class otapiJNI {
   public final static native String OT_API_Transaction_GetType(String jarg1, String jarg2, String jarg3, String jarg4);
   public final static native String OT_API_Transaction_GetVoucher(String jarg1, String jarg2, String jarg3, String jarg4);
   public final static native int OT_API_Transaction_GetSuccess(String jarg1, String jarg2, String jarg3, String jarg4);
+  public final static native String OT_API_Pending_GetFromUserID(String jarg1, String jarg2, String jarg3, String jarg4);
+  public final static native String OT_API_Pending_GetFromAcctID(String jarg1, String jarg2, String jarg3, String jarg4);
+  public final static native String OT_API_Pending_GetNote(String jarg1, String jarg2, String jarg3, String jarg4);
+  public final static native String OT_API_Pending_GetAmount(String jarg1, String jarg2, String jarg3, String jarg4);
+  public final static native String OT_API_Pending_GetReferenceToNum(String jarg1, String jarg2, String jarg3, String jarg4);
   public final static native String OT_API_Purse_GetTotalValue(String jarg1, String jarg2, String jarg3);
   public final static native void OT_API_checkServerID(String jarg1, String jarg2);
   public final static native void OT_API_createUserAccount(String jarg1, String jarg2);
@@ -76,6 +81,7 @@ class otapiJNI {
   public final static native void OT_API_notarizeDeposit(String jarg1, String jarg2, String jarg3, String jarg4);
   public final static native void OT_API_notarizeTransfer(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5, String jarg6);
   public final static native void OT_API_getInbox(String jarg1, String jarg2, String jarg3);
+  public final static native void OT_API_getOutbox(String jarg1, String jarg2, String jarg3);
   public final static native void OT_API_processInbox(String jarg1, String jarg2, String jarg3, String jarg4);
   public final static native void OT_API_withdrawVoucher(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5, String jarg6);
   public final static native void OT_API_depositCheque(String jarg1, String jarg2, String jarg3, String jarg4);
@@ -87,6 +93,7 @@ class otapiJNI {
   public final static native int OT_API_Message_GetSuccess(String jarg1);
   public final static native String OT_API_Message_GetLedger(String jarg1);
   public final static native String OT_API_Message_GetNewAssetTypeID(String jarg1);
+  public final static native String OT_API_Message_GetNewIssuerAcctID(String jarg1);
   public final static native int OT_API_ConnectServer(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5);
   public final static native int OT_API_ProcessSockets();
 }

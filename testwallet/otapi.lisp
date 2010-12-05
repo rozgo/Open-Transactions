@@ -258,6 +258,36 @@
   (ACCOUNT_ID :string)
   (THE_TRANSACTION :string))
 
+(cffi:defcfun ("OT_API_Pending_GetFromUserID" OT_API_Pending_GetFromUserID) :string
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (ACCOUNT_ID :string)
+  (THE_TRANSACTION :string))
+
+(cffi:defcfun ("OT_API_Pending_GetFromAcctID" OT_API_Pending_GetFromAcctID) :string
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (ACCOUNT_ID :string)
+  (THE_TRANSACTION :string))
+
+(cffi:defcfun ("OT_API_Pending_GetNote" OT_API_Pending_GetNote) :string
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (ACCOUNT_ID :string)
+  (THE_TRANSACTION :string))
+
+(cffi:defcfun ("OT_API_Pending_GetAmount" OT_API_Pending_GetAmount) :string
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (ACCOUNT_ID :string)
+  (THE_TRANSACTION :string))
+
+(cffi:defcfun ("OT_API_Pending_GetReferenceToNum" OT_API_Pending_GetReferenceToNum) :string
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (ACCOUNT_ID :string)
+  (THE_TRANSACTION :string))
+
 (cffi:defcfun ("OT_API_Purse_GetTotalValue" OT_API_Purse_GetTotalValue) :string
   (SERVER_ID :string)
   (ASSET_TYPE_ID :string)
@@ -370,6 +400,11 @@
   (USER_ID :string)
   (ACCT_ID :string))
 
+(cffi:defcfun ("OT_API_getOutbox" OT_API_getOutbox) :void
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (ACCT_ID :string))
+
 (cffi:defcfun ("OT_API_processInbox" OT_API_processInbox) :void
   (SERVER_ID :string)
   (USER_ID :string)
@@ -422,6 +457,9 @@
   (THE_MESSAGE :string))
 
 (cffi:defcfun ("OT_API_Message_GetNewAssetTypeID" OT_API_Message_GetNewAssetTypeID) :string
+  (THE_MESSAGE :string))
+
+(cffi:defcfun ("OT_API_Message_GetNewIssuerAcctID" OT_API_Message_GetNewIssuerAcctID) :string
   (THE_MESSAGE :string))
 
 (cffi:defcfun ("OT_API_ConnectServer" OT_API_ConnectServer) :int

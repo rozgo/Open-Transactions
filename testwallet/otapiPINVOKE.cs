@@ -325,6 +325,21 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Transaction_GetSuccess")]
   public static extern int OT_API_Transaction_GetSuccess(string jarg1, string jarg2, string jarg3, string jarg4);
 
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Pending_GetFromUserID")]
+  public static extern string OT_API_Pending_GetFromUserID(string jarg1, string jarg2, string jarg3, string jarg4);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Pending_GetFromAcctID")]
+  public static extern string OT_API_Pending_GetFromAcctID(string jarg1, string jarg2, string jarg3, string jarg4);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Pending_GetNote")]
+  public static extern string OT_API_Pending_GetNote(string jarg1, string jarg2, string jarg3, string jarg4);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Pending_GetAmount")]
+  public static extern string OT_API_Pending_GetAmount(string jarg1, string jarg2, string jarg3, string jarg4);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Pending_GetReferenceToNum")]
+  public static extern string OT_API_Pending_GetReferenceToNum(string jarg1, string jarg2, string jarg3, string jarg4);
+
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Purse_GetTotalValue")]
   public static extern string OT_API_Purse_GetTotalValue(string jarg1, string jarg2, string jarg3);
 
@@ -388,6 +403,9 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_getInbox")]
   public static extern void OT_API_getInbox(string jarg1, string jarg2, string jarg3);
 
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_getOutbox")]
+  public static extern void OT_API_getOutbox(string jarg1, string jarg2, string jarg3);
+
   [DllImport("otapi", EntryPoint="CSharp_OT_API_processInbox")]
   public static extern void OT_API_processInbox(string jarg1, string jarg2, string jarg3, string jarg4);
 
@@ -420,6 +438,9 @@ class otapiPINVOKE {
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Message_GetNewAssetTypeID")]
   public static extern string OT_API_Message_GetNewAssetTypeID(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Message_GetNewIssuerAcctID")]
+  public static extern string OT_API_Message_GetNewIssuerAcctID(string jarg1);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_ConnectServer")]
   public static extern int OT_API_ConnectServer(string jarg1, string jarg2, string jarg3, string jarg4, string jarg5);
