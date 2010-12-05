@@ -4176,6 +4176,43 @@ void OTServer::UserCmdGetInbox(OTPseudonym & theNym, OTMessage & MsgIn, OTMessag
 
 
 
+void OTServer::UserCmdGetOutbox(OTPseudonym & theNym, OTMessage & MsgIn, OTMessage & msgOut)
+{
+	// (1) set up member variables 
+	msgOut.m_strCommand		= "@getOutbox";	// reply to getOutbox
+	msgOut.m_strNymID		= MsgIn.m_strNymID;	// UserID
+	msgOut.m_strServerID	= m_strServerID;	// ServerID, a hash of the server contract.
+	msgOut.m_strAcctID		= MsgIn.m_strAcctID;	// The Account ID in question
+	
+	const OTIdentifier USER_ID(MsgIn.m_strNymID), ACCOUNT_ID(MsgIn.m_strAcctID), SERVER_ID(MsgIn.m_strServerID);
+	
+	OTLedger theLedger(USER_ID, ACCOUNT_ID, SERVER_ID);
+	
+	if (msgOut.m_bSuccess = theLedger.LoadOutbox())
+	{ 		
+		// extract the ledger in ascii-armored form on the outgoing message
+		OTString strPayload(theLedger); // first grab it in plaintext string form
+		msgOut.m_ascPayload.SetString(strPayload);  // now the outgoing message has the outbox ledger in its payload in base64 form.
+	}
+	// Send the user's command back to him if failure.
+	else
+	{
+		OTString tempInMessage(MsgIn); // Grab the incoming message in plaintext form
+		msgOut.m_ascInReferenceTo.SetString(tempInMessage); // Set it into the base64-encoded object on the outgoing message
+	}
+	
+	// (2) Sign the Message 
+	msgOut.SignContract((const OTPseudonym &)m_nymServer);
+	
+	// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+	//
+	// FYI, SaveContract takes m_xmlUnsigned and wraps it with the signatures and ------- BEGIN  bookends
+	// If you don't pass a string in, then SaveContract saves the new version to its member, m_strRawFile
+	msgOut.SaveContract();
+}
+
+
+
 void OTServer::UserCmdProcessInbox(OTPseudonym & theNym, OTMessage & MsgIn, OTMessage & msgOut)
 {
 	// (1) set up member variables 
@@ -5358,6 +5395,14 @@ bool OTServer::ProcessUserCommand(OTMessage & theMessage, OTMessage & msgOut, OT
 		OTLog::Output(0, "\n==> Received a getInbox message. Processing...\n");
 		
 		UserCmdGetInbox(*pNym, theMessage, msgOut);
+		
+		return true;
+	}
+	else if (theMessage.m_strCommand.Compare("getOutbox"))
+	{
+		OTLog::Output(0, "\n==> Received a getOutbox message. Processing...\n");
+		
+		UserCmdGetOutbox(*pNym, theMessage, msgOut);
 		
 		return true;
 	}

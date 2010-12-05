@@ -4076,6 +4076,87 @@ void OT_API::getInbox(OTIdentifier & SERVER_ID,
 
 
 
+void OT_API::getOutbox(OTIdentifier & SERVER_ID,
+					  OTIdentifier & USER_ID,
+					  OTIdentifier & ACCT_ID)
+{
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	// -----------------------------------------------------------------
+	
+	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
+	
+	if (!pServer)
+	{
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
+		
+		return;
+	}
+	
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	OTAccount * pAccount = m_pWallet->GetAccount(ACCT_ID);
+	
+	if (NULL == pAccount)
+	{
+		OTLog::Output(0, "There is no account in the wallet with that ID.\n");
+		
+		return;
+	}
+	
+	// -----------------------------------------------------------------
+	
+	OTMessage theMessage;
+	long lRequestNumber = 0;
+	
+	OTString strServerID(SERVER_ID), strNymID(USER_ID), strAcctID(ACCT_ID);
+	
+	// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+	pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
+	theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+	pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
+	
+	// (1) set up member variables 
+	theMessage.m_strCommand			= "getOutbox";
+	theMessage.m_strNymID			= strNymID;
+	theMessage.m_strServerID		= strServerID;
+	theMessage.m_strAcctID			= strAcctID;
+	
+	// (2) Sign the Message 
+	theMessage.SignContract(*pNym);		
+	
+	// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+	theMessage.SaveContract();
+	
+	// (Send it)
+#if defined(OT_XMLRPC_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+	m_pClient->ProcessMessageOut(theMessage);	
+}
+
+
+
+
 
 void OT_API::processInbox(OTIdentifier	& SERVER_ID,
 						  OTIdentifier	& USER_ID,

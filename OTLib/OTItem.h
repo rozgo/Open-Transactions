@@ -160,8 +160,7 @@ public:
 		paymentPlan,	// this item is a new payment plan
 		atPaymentPlan,	// server reply or updated notification regarding a payment plan.
 // ------------------------------------------------------------------------------
-//		chequeReceipt,	// this item is a a cheque receipt dropped into your inbox by
-//						// the server after someone cashed a cheque you previously wrote.
+//		chequeReceipt,	// Currently don't create an OTItem for cheque receipt. Not needed.
 		marketReceipt,	// server receipt dropped into inbox as result of market trading.
 		paymentReceipt,	// server receipt dropped into an inbox as result of payment occuring.
 // ------------------------------------------------------------------------------

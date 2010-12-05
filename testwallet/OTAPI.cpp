@@ -2315,9 +2315,9 @@ const char * OT_API_Transaction_GetVoucher(const char * SERVER_ID,
 				break;			
 			}
 		}
-
+		
 	}
-
+	
 	// -----------------------------------------------------
 	
 	// Didn't find one.
@@ -2336,6 +2336,668 @@ const char * OT_API_Transaction_GetVoucher(const char * SERVER_ID,
 	
 	return g_tempBuf;	
 }
+
+
+
+
+
+
+// --------------------------------------------------
+//
+// PENDING TRANSFER (various functions)
+//
+// When someone has sent you a PENDING TRANSFER (a form of transaction
+// that will be sitting in your inbox waiting for you to accept/reject it)
+// then, as you are reading the inbox, you can use these functions in
+// order to get data from the pending transfer.
+//
+
+const char * OT_API_Pending_GetFromUserID(const char * SERVER_ID,
+										  const char * USER_ID,
+										  const char * ACCOUNT_ID,
+										  const char * THE_TRANSACTION)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_TRANSACTION, "NULL THE_TRANSACTION passed in.");
+	
+	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
+	
+	OTString strTransaction(THE_TRANSACTION);
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = g_OT_API.GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(theUserID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = g_OT_API.LoadPrivateNym(theUserID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			return NULL;
+		}
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	OTTransaction theTransaction(theUserID, theAccountID, theServerID);
+	
+	if (false == theTransaction.LoadContractFromString(strTransaction))
+	{
+		OTString strAcctID(theAccountID);
+		OTLog::vError("Error loading transaction from string in OT_API_Pending_GetFromUserID. Acct ID:\n%s\n",
+					  strAcctID.Get());
+		return NULL;
+	}
+	
+	// -----------------------------------------------------
+	
+	if (OTTransaction::pending != theTransaction.GetType())
+	{
+		OTLog::vError("OT_API_Pending_GetFromUserID: wrong transaction type: %s. (Expected \"pending\".)\n", 
+					  theTransaction.GetTypeString());
+		return NULL;		
+	}
+	
+	// -----------------------------------------------------
+	
+	OTString strReference;
+	theTransaction.GetReferenceString(strReference);
+	
+	if (!strReference.Exists())
+	{
+		OTLog::Error("OT_API_Pending_GetFromUserID: No reference string found on transaction.\n");
+		return NULL;				
+	}
+	
+	// -----------------------------------------------------
+	
+	OTItem * pItem = OTItem::CreateItemFromString(strReference, theServerID, theTransaction.GetReferenceToNum());
+	OTCleanup<OTItem> theAngel(pItem);
+	
+	if (NULL == pItem)
+	{
+		OTLog::Error("OT_API_Pending_GetFromUserID: Failed loading transaction item from string.\n");
+		return NULL;				
+	}
+	
+	// pItem will be automatically cleaned up when it goes out of scope.
+	// -----------------------------------------------------
+	
+	
+	if ((OTItem::transfer	!= pItem->GetType()) ||
+		(OTItem::request	!= pItem->GetStatus()))
+	{ 
+		OTLog::Error("OT_API_Pending_GetFromUserID: Wrong item type or status attached as reference on transaction.\n");
+		return NULL;				
+	}
+	
+	
+	// -----------------------------------------------------
+	
+	OTString strOutput(pItem->GetUserID());
+	
+	// -----------------------------------------------------
+	
+	// Didn't find one.
+	if (!strOutput.Exists())
+		return NULL;
+	
+	// We found it -- let's return the user ID
+	//
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;	
+}
+
+
+
+const char * OT_API_Pending_GetFromAcctID(const char * SERVER_ID,
+										  const char * USER_ID,
+										  const char * ACCOUNT_ID,
+										  const char * THE_TRANSACTION)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_TRANSACTION, "NULL THE_TRANSACTION passed in.");
+	
+	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
+	
+	OTString strTransaction(THE_TRANSACTION);
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = g_OT_API.GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(theUserID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = g_OT_API.LoadPrivateNym(theUserID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			return NULL;
+		}
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	OTTransaction theTransaction(theUserID, theAccountID, theServerID);
+	
+	if (false == theTransaction.LoadContractFromString(strTransaction))
+	{
+		OTString strAcctID(theAccountID);
+		OTLog::vError("Error loading transaction from string in OT_API_Pending_GetFromAcctID. Acct ID:\n%s\n",
+					  strAcctID.Get());
+		return NULL;
+	}
+	
+	// -----------------------------------------------------
+	
+	if (OTTransaction::pending != theTransaction.GetType())
+	{
+		OTLog::vError("OT_API_Pending_GetFromAcctID: wrong transaction type: %s. (Expected \"pending\".)\n", 
+					  theTransaction.GetTypeString());
+		return NULL;		
+	}
+	
+	// -----------------------------------------------------
+	
+	OTString strReference;
+	theTransaction.GetReferenceString(strReference);
+	
+	if (!strReference.Exists())
+	{
+		OTLog::Error("OT_API_Pending_GetFromAcctID: No reference string found on transaction.\n");
+		return NULL;				
+	}
+	
+	// -----------------------------------------------------
+	
+	OTItem * pItem = OTItem::CreateItemFromString(strReference, theServerID, theTransaction.GetReferenceToNum());
+	OTCleanup<OTItem> theAngel(pItem);
+	
+	if (NULL == pItem)
+	{
+		OTLog::Error("OT_API_Pending_GetFromAcctID: Failed loading transaction item from string.\n");
+		return NULL;				
+	}
+	
+	// pItem will be automatically cleaned up when it goes out of scope.
+	// -----------------------------------------------------
+	
+	
+	if ((OTItem::transfer	!= pItem->GetType()) ||
+		(OTItem::request	!= pItem->GetStatus()))
+	{ 
+		OTLog::Error("OT_API_Pending_GetFromAcctID: Wrong item type or status attached as reference on transaction.\n");
+		return NULL;				
+	}
+	
+	
+	// -----------------------------------------------------
+	
+	OTString strOutput(pItem->GetRealAccountID());
+	
+	// -----------------------------------------------------
+	
+	// Didn't find one.
+	if (!strOutput.Exists())
+		return NULL;
+	
+	// We found it, let's return the acct ID.
+	//
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;	
+}
+
+
+const char * OT_API_Pending_GetNote(const char * SERVER_ID,
+									const char * USER_ID,
+									const char * ACCOUNT_ID,
+									const char * THE_TRANSACTION)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_TRANSACTION, "NULL THE_TRANSACTION passed in.");
+	
+	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
+	
+	OTString strTransaction(THE_TRANSACTION);
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = g_OT_API.GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(theUserID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = g_OT_API.LoadPrivateNym(theUserID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			return NULL;
+		}
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	OTTransaction theTransaction(theUserID, theAccountID, theServerID);
+	
+	if (false == theTransaction.LoadContractFromString(strTransaction))
+	{
+		OTString strAcctID(theAccountID);
+		OTLog::vError("Error loading transaction from string in OT_API_Pending_GetNote. Acct ID:\n%s\n",
+					  strAcctID.Get());
+		return NULL;
+	}
+	
+	// -----------------------------------------------------
+	
+	if (OTTransaction::pending != theTransaction.GetType())
+	{
+		OTLog::vError("OT_API_Pending_GetNote: wrong transaction type: %s. (Expected \"pending\".)\n", 
+					  theTransaction.GetTypeString());
+		return NULL;		
+	}
+	
+	// -----------------------------------------------------
+	
+	OTString strReference;
+	theTransaction.GetReferenceString(strReference);
+	
+	if (!strReference.Exists())
+	{
+		OTLog::Error("OT_API_Pending_GetNote: No reference string found on transaction.\n");
+		return NULL;				
+	}
+	
+	// -----------------------------------------------------
+	
+	OTItem * pItem = OTItem::CreateItemFromString(strReference, theServerID, theTransaction.GetReferenceToNum());
+	OTCleanup<OTItem> theAngel(pItem);
+	
+	if (NULL == pItem)
+	{
+		OTLog::Error("OT_API_Pending_GetNote: Failed loading transaction item from string.\n");
+		return NULL;				
+	}
+	
+	// pItem will be automatically cleaned up when it goes out of scope.
+	// -----------------------------------------------------
+	
+	
+	if ((OTItem::transfer	!= pItem->GetType()) ||
+		(OTItem::request	!= pItem->GetStatus()))
+	{ 
+		OTLog::Error("OT_API_Pending_GetNote: Wrong item type or status attached as reference on transaction.\n");
+		return NULL;				
+	}
+	
+	
+	// -----------------------------------------------------
+	
+	OTString strOutput;
+	
+	pItem->GetNote(strOutput);
+	
+	// -----------------------------------------------------
+	
+	// Didn't find one.
+	if (!strOutput.Exists())
+		return NULL;
+	
+	// We found a note -- let's return it!
+	//
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;	
+}
+
+
+const char * OT_API_Pending_GetAmount(const char * SERVER_ID,
+									  const char * USER_ID,
+									  const char * ACCOUNT_ID,
+									  const char * THE_TRANSACTION)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_TRANSACTION, "NULL THE_TRANSACTION passed in.");
+	
+	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
+	
+	OTString strTransaction(THE_TRANSACTION);
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = g_OT_API.GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(theUserID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = g_OT_API.LoadPrivateNym(theUserID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			return NULL;
+		}
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	OTTransaction theTransaction(theUserID, theAccountID, theServerID);
+	
+	if (false == theTransaction.LoadContractFromString(strTransaction))
+	{
+		OTString strAcctID(theAccountID);
+		OTLog::vError("Error loading transaction from string in OT_API_Pending_GetAmount. Acct ID:\n%s\n",
+					  strAcctID.Get());
+		return NULL;
+	}
+	
+	// -----------------------------------------------------
+	
+	if (OTTransaction::pending != theTransaction.GetType())
+	{
+		OTLog::vError("OT_API_Pending_GetAmount: wrong transaction type: %s. (Expected \"pending\".)\n", 
+					  theTransaction.GetTypeString());
+		return NULL;		
+	}
+	
+	// -----------------------------------------------------
+	
+	OTString strReference;
+	theTransaction.GetReferenceString(strReference);
+	
+	if (!strReference.Exists())
+	{
+		OTLog::Error("OT_API_Pending_GetAmount: No reference string found on transaction.\n");
+		return NULL;				
+	}
+	
+	// -----------------------------------------------------
+	
+	OTItem * pItem = OTItem::CreateItemFromString(strReference, theServerID, theTransaction.GetReferenceToNum());
+	OTCleanup<OTItem> theAngel(pItem);
+	
+	if (NULL == pItem)
+	{
+		OTLog::Error("OT_API_Pending_GetAmount: Failed loading transaction item from string.\n");
+		return NULL;				
+	}
+	
+	// pItem will be automatically cleaned up when it goes out of scope.
+	// -----------------------------------------------------
+	
+	
+	if ((OTItem::transfer	!= pItem->GetType()) ||
+		(OTItem::request	!= pItem->GetStatus()))
+	{ 
+		OTLog::Error("OT_API_Pending_GetAmount: Wrong item type or status attached as reference on transaction.\n");
+		return NULL;				
+	}
+	
+	
+	// -----------------------------------------------------
+	
+	OTString strOutput;
+	const long lAmount = pItem->GetAmount();
+	
+	strOutput.Format("%ld", lAmount);
+	
+	// -----------------------------------------------------
+	
+	// Didn't find one.
+	if (!strOutput.Exists())
+		return NULL;
+	
+	// We found the pending transaction and got the amount, let's return it.
+	//
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;	
+}
+
+
+// There is a notice in my inbox, from the server, informing me of
+// a pending transfer.
+// Oh? And this notice is in reference to what transaction ID?
+// This function will return the ID of the original transaction
+// that the sender used to send me the transfer in the first place.
+// Since his actual request is attached to the pending transaction,
+// I can use this function to look up the number.
+//
+const char * OT_API_Pending_GetReferenceToNum(const char * SERVER_ID,
+											  const char * USER_ID,
+											  const char * ACCOUNT_ID,
+											  const char * THE_TRANSACTION)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_TRANSACTION, "NULL THE_TRANSACTION passed in.");
+	
+	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
+	
+	OTString strTransaction(THE_TRANSACTION);
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = g_OT_API.GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(theUserID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = g_OT_API.LoadPrivateNym(theUserID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			return NULL;
+		}
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	OTTransaction theTransaction(theUserID, theAccountID, theServerID);
+	
+	if (false == theTransaction.LoadContractFromString(strTransaction))
+	{
+		OTString strAcctID(theAccountID);
+		OTLog::vError("Error loading transaction from string in OT_API_Pending_GetReferenceToNum. Acct ID:\n%s\n",
+					  strAcctID.Get());
+		return NULL;
+	}
+	
+	// -----------------------------------------------------
+	
+	if (OTTransaction::pending != theTransaction.GetType())
+	{
+		OTLog::vError("OT_API_Pending_GetReferenceToNum: wrong transaction type: %s. (Expected \"pending\".)\n", 
+					  theTransaction.GetTypeString());
+		return NULL;		
+	}
+	
+	// -----------------------------------------------------
+	
+	OTString strReference;
+	theTransaction.GetReferenceString(strReference);
+	
+	if (!strReference.Exists())
+	{
+		OTLog::Error("OT_API_Pending_GetReferenceToNum: No reference string found on transaction.\n");
+		return NULL;				
+	}
+	
+	// -----------------------------------------------------
+	
+	OTItem * pItem = OTItem::CreateItemFromString(strReference, theServerID, theTransaction.GetReferenceToNum());
+	OTCleanup<OTItem> theAngel(pItem);
+	
+	if (NULL == pItem)
+	{
+		OTLog::Error("OT_API_Pending_GetReferenceToNum: Failed loading transaction item from string.\n");
+		return NULL;				
+	}
+	
+	// pItem will be automatically cleaned up when it goes out of scope.
+	// -----------------------------------------------------
+	
+	
+	if ((OTItem::transfer	!= pItem->GetType()) ||
+		(OTItem::request	!= pItem->GetStatus()))
+	{ 
+		OTLog::Error("OT_API_Pending_GetReferenceToNum: Wrong item type or status attached as reference on transaction.\n");
+		return NULL;				
+	}
+	
+	// Notice I don't actually use the item below this point.
+	// I was just verifying everything.
+	
+	// -----------------------------------------------------
+	
+	OTString strOutput;
+	strOutput.Format("%ld", theTransaction.GetReferenceToNum());
+	
+	// -----------------------------------------------------
+	
+	// Didn't find one.
+	if (!strOutput.Exists())
+		return NULL;
+	
+	// We found the pending transfer .. 
+	// let's return the transaction number that it refers to.
+	//
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;	
+}
+
+
+
+
+
 
 
 
@@ -3260,7 +3922,7 @@ void OT_API_notarizeTransfer(const char * SERVER_ID,
 	g_OT_API.notarizeTransfer(theServerID, theUserID, theFromAcct, theToAcct, strAmount, strNote);
 }
 
-	
+
 void OT_API_getInbox(const char * SERVER_ID,
 					 const char * USER_ID,
 					 const char * ACCT_ID)
@@ -3270,11 +3932,25 @@ void OT_API_getInbox(const char * SERVER_ID,
 	OT_ASSERT_MSG(NULL != ACCT_ID, "Null ACCT_ID passed in.");
 	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAcctID(ACCT_ID);
-
+	
 	g_OT_API.getInbox(theServerID, theUserID, theAcctID);
 }
 
+
+void OT_API_getOutbox(const char * SERVER_ID,
+					  const char * USER_ID,
+					  const char * ACCT_ID)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCT_ID, "Null ACCT_ID passed in.");
 	
+	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAcctID(ACCT_ID);
+	
+	g_OT_API.getOutbox(theServerID, theUserID, theAcctID);
+}
+
+
 void OT_API_processInbox(const char * SERVER_ID,
 						 const char * USER_ID,
 						 const char * ACCT_ID,
@@ -3575,11 +4251,63 @@ const char * OT_API_Message_GetNewAssetTypeID(const char * THE_MESSAGE)
 		return NULL;
 	}
 	
+	OTString strOutput(theMessage.m_strAssetID);
+	
+	if (!strOutput.Exists())
+	{
+		OTLog::Output(0, "OT_API_Message_GetNewAssetTypeID: No new asset type ID found on message.\n");
+		return NULL;
+	}
+	
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;
+}
+
+
+// -----------------------------------------------------------
+// GET NEW ISSUER ACCOUNT ID 
+//
+// If you just issued a new asset type, you'l want to read the
+// server reply and get the new issuer acct ID out of it.
+// Otherwise how will you ever issue anything with it?
+//
+const char * OT_API_Message_GetNewIssuerAcctID(const char * THE_MESSAGE)
+{
+	OT_ASSERT_MSG(NULL != THE_MESSAGE, "Null THE_MESSAGE passed in.");
+	
+	OTString strMessage(THE_MESSAGE);
+	
+	OTMessage theMessage;
+	
+	if (!strMessage.Exists() || !theMessage.LoadContractFromString(strMessage))
+	{
+		OTLog::Output(0, "OT_API_Message_GetNewIssuerAcctID: Unable to load message.\n");
+		return NULL;
+	}
+	
+	// It's not a transaction request or response, so the Payload wouldn't
+	// contain a ledger. (Don't want to pass back whatever it DOES contain
+	// in that case, now do I?)
+	//
+	if (false == theMessage.m_strCommand.Compare("@issueAssetType"))
+	{
+		OTLog::vOutput(0, "OT_API_Message_GetNewIssuerAcctID: Wrong message type: %s\n", 
+					   theMessage.m_strCommand.Get());
+		return NULL;
+	}
+	
 	OTString strOutput(theMessage.m_strAcctID);
 	
 	if (!strOutput.Exists())
 	{
-		OTLog::Output(0, "OT_API_Message_GetNewAssetTypeID: No issuer account ID found on message.\n");
+		OTLog::Output(0, "OT_API_Message_GetNewIssuerAcctID: No issuer account ID found on message.\n");
 		return NULL;
 	}
 	

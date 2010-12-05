@@ -168,6 +168,8 @@ public:
 		
 		getInbox,			// Grab a copy of my inbox from the server so I can decide what to do with it.
 		
+		getOutbox,			// Grab a copy of my outbox from the server so I can decide what to do with it.
+		
 		processInbox,		// Instruct the server what to do with the various items sitting in my inbox.
 		
 		getAccount,			// Grab the server's copy of my asset account file, in case mine is lost.
