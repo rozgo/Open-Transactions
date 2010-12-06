@@ -611,7 +611,7 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 											   const char * ACCOUNT_ID,
 											   const char * RESPONSE_LEDGER, // To be sent to the server...
 											   const char * ORIGINAL_TRANSACTION, // Responding to...?
-											   int BOOL_DO_I_ACCEPT);   // 0 or 1  (OT_TRUE or OT_FALSE.)
+											   int BOOL_DO_I_ACCEPT);   // 1 or 0  (OT_TRUE or OT_FALSE.)
 
 
 
