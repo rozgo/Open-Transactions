@@ -1974,7 +1974,8 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 	OT_ASSERT_MSG(NULL != THE_LEDGER, "NULL THE_LEDGER passed in.");
 	OT_ASSERT_MSG(NULL != THE_TRANSACTION, "NULL THE_TRANSACTION passed in.");
 	
-	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
+	const OTIdentifier	theServerID(SERVER_ID), 
+						theUserID(USER_ID), theAcctID(ACCOUNT_ID);
 	
 	OTString strLedger(THE_LEDGER);
 	OTString strTransaction(THE_TRANSACTION);
@@ -2035,18 +2036,18 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 	//  (No need to cleanup.)
 	// -----------------------------------------------------
 	
-	OTLedger theLedger(theUserID, theAccountID, theServerID);
+	OTLedger theLedger(theUserID, theAcctID, theServerID);
 	
 	if (false == theLedger.LoadContractFromString(strLedger))
 	{
-		OTString strAcctID(theAccountID);
+		OTString strAcctID(theAcctID);
 		OTLog::vError("Error loading ledger from string in OT_API_Transaction_CreateResponse. Acct ID:\n%s\n",
 					  strAcctID.Get());
 		return NULL;
 	}
 	else if (false == theLedger.VerifyAccount(*pNym))
 	{
-		OTString strAcctID(theAccountID);
+		OTString strAcctID(theAcctID);
 		OTLog::vError("Error verifying ledger in OT_API_Transaction_CreateResponse. Acct ID:\n%s\n",
 					  strAcctID.Get());
 		return NULL;
@@ -2058,11 +2059,11 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 	// generate on his behalf.)
 	// -----------------------------------------------------
 	
-	OTTransaction theTransaction(theUserID, theAccountID, theServerID);
+	OTTransaction theTransaction(theUserID, theAcctID, theServerID);
 		
 	if (false == theTransaction.LoadContractFromString(strTransaction))
 	{
-		OTString strAcctID(theAccountID);
+		OTString strAcctID(theAcctID);
 		OTLog::vError("Error loading transaction from string in OT_API_Transaction_CreateResponse. Acct ID:\n%s\n",
 					  strAcctID.Get());
 		return NULL;
@@ -2074,7 +2075,7 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 	//
 	else if (false == theTransaction.VerifyAccount(*((OTPseudonym *)pServerNym)))
 	{
-		OTString strAcctID(theAccountID);
+		OTString strAcctID(theAcctID);
 		OTLog::vError("Error verifying transaction in OT_API_Transaction_CreateResponse. Acct ID:\n%s\n",
 					  strAcctID.Get());
 		return NULL;
@@ -2082,6 +2083,54 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 	
 	// -----------------------------------------------------
 	
+	if (
+		(OTTransaction::pending	!= theTransaction.GetType()) 
+//		&&	(OTTransaction::chequeReceipt	!= theTransaction.GetType())
+		)
+	{
+		OTLog::vError("OT_API_Transaction_CreateResponse: wrong transaction type: %s.\n", 
+					  theTransaction.GetTypeString());
+		return NULL;		
+	}
+	
+	// -----------------------------------------------------
+	
+	// Here's some code in case you need to load up the item.
+	
+	OTString strReference;
+	theTransaction.GetReferenceString(strReference);
+	
+	if (!strReference.Exists())
+	{
+		OTLog::Error("OT_API_Transaction_CreateResponse: No reference string found on transaction.\n");
+		return NULL;				
+	}
+	
+	// -----------------------------------------------------
+	
+	OTItem * pItem = OTItem::CreateItemFromString(strReference, theServerID, theTransaction.GetReferenceToNum());
+	OTCleanup<OTItem> theAngel(pItem);
+	
+	if (NULL == pItem)
+	{
+		OTLog::Error("OT_API_Transaction_CreateResponse: Failed loading transaction item from string.\n");
+		return NULL;				
+	}
+	
+	// pItem will be automatically cleaned up when it goes out of scope.
+	// -----------------------------------------------------
+	
+	
+	if ((OTItem::transfer	!= pItem->GetType()) ||
+		(OTItem::request	!= pItem->GetStatus()))
+	{ 
+		OTLog::Error("OT_API_Transaction_CreateResponse: Wrong item type or status attached as reference on transaction.\n");
+		return NULL;				
+	}
+	
+	
+	// -----------------------------------------------------
+		
 	// At this point, I know theTransaction loaded and verified successfully.
 	// So let's generate a response item based on it, and add it to a processInbox
 	// transaction to be added to that ledger (if one's not already there...)
@@ -2105,12 +2154,12 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 			return NULL;
 		}
 		
-		pTransaction = OTTransaction::GenerateTransaction(theUserID, theAccountID, theServerID, 
+		pTransaction = OTTransaction::GenerateTransaction(theUserID, theAcctID, theServerID, 
 														  OTTransaction::processInbox, 
 														  lTransactionNumber);
 		if (NULL == pTransaction)
 		{
-			OTString strAcctID(theAccountID);
+			OTString strAcctID(theAcctID);
 			OTLog::vError("Error generating processInbox transaction in \n"
 						 "OT_API_Transaction_CreateResponse for AcctID:\n%s\n", strAcctID.Get());
 			return NULL;
@@ -2153,7 +2202,7 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 	// Set up the "accept" transaction item to be sent to the server 
 	// (this item references and accepts another item by its transaction number--
 	//  one that is already there in my inbox)
-	pAcceptItem->SetReferenceToNum(theTransaction.GetTransactionNum()); // This is critical. Server needs this to look up the original.
+	pAcceptItem->SetReferenceToNum(pItem->GetTransactionNum()); // This is critical. Server needs this to look up the original.
 	// Don't need to set transaction num on item since the constructor already got it off the owner transaction.
 
 	// the transaction will handle cleaning up the transaction item.
