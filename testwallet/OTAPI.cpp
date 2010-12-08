@@ -2084,8 +2084,11 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 	// -----------------------------------------------------
 	
 	if (
-		(OTTransaction::pending	!= theTransaction.GetType()) 
-//		&&	(OTTransaction::chequeReceipt	!= theTransaction.GetType())
+			(OTTransaction::pending			!= theTransaction.GetType()) 
+		&&	(OTTransaction::chequeReceipt	!= theTransaction.GetType())
+		&&	(OTTransaction::transferReceipt	!= theTransaction.GetType())
+		&&	(OTTransaction::marketReceipt	!= theTransaction.GetType())
+		&&	(OTTransaction::paymentReceipt	!= theTransaction.GetType())
 		)
 	{
 		OTLog::vError("OT_API_Transaction_CreateResponse: wrong transaction type: %s.\n", 
@@ -2095,42 +2098,6 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 	
 	// -----------------------------------------------------
 	
-	// Here's some code in case you need to load up the item.
-	
-	OTString strReference;
-	theTransaction.GetReferenceString(strReference);
-	
-	if (!strReference.Exists())
-	{
-		OTLog::Error("OT_API_Transaction_CreateResponse: No reference string found on transaction.\n");
-		return NULL;				
-	}
-	
-	// -----------------------------------------------------
-	
-	OTItem * pItem = OTItem::CreateItemFromString(strReference, theServerID, theTransaction.GetReferenceToNum());
-	OTCleanup<OTItem> theAngel(pItem);
-	
-	if (NULL == pItem)
-	{
-		OTLog::Error("OT_API_Transaction_CreateResponse: Failed loading transaction item from string.\n");
-		return NULL;				
-	}
-	
-	// pItem will be automatically cleaned up when it goes out of scope.
-	// -----------------------------------------------------
-	
-	
-	if ((OTItem::transfer	!= pItem->GetType()) ||
-		(OTItem::request	!= pItem->GetStatus()))
-	{ 
-		OTLog::Error("OT_API_Transaction_CreateResponse: Wrong item type or status attached as reference on transaction.\n");
-		return NULL;				
-	}
-	
-	
-	// -----------------------------------------------------
-		
 	// At this point, I know theTransaction loaded and verified successfully.
 	// So let's generate a response item based on it, and add it to a processInbox
 	// transaction to be added to that ledger (if one's not already there...)
@@ -2171,7 +2138,9 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 	// At this point I know pTransaction is a processInbox transaction, ready to go,
 	// and that theLedger will handle any cleanup issues related to it.
 	
-	// Next let's create a new item that response to theTransaction, and add that 
+	// -----------------------------------------------------
+	
+	// Next let's create a new item that responds to theTransaction, and add that 
 	// item to pTransaction. Then we'll return the updated ledger.
 	
 	OTItem::itemType theAcceptItemType = OTItem::error_state;
@@ -2180,29 +2149,102 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 	switch (theTransaction.GetType()) 
 	{
 		case OTTransaction::pending:
-		case OTTransaction::chequeReceipt:
 			theAcceptItemType = OTItem::acceptPending;
 			theRejectItemType = OTItem::rejectPending;
 			break;
+			
+			
 		case OTTransaction::marketReceipt:
 		case OTTransaction::paymentReceipt:
-			theAcceptItemType = OTItem::acceptReceipt;
-			theRejectItemType = OTItem::disputeReceipt;
+			theAcceptItemType = OTItem::acceptCronReceipt;
+			theRejectItemType = OTItem::disputeCronReceipt;
 			break;
+			
+		case OTTransaction::chequeReceipt:
+		case OTTransaction::transferReceipt:
+			theAcceptItemType = OTItem::acceptItemReceipt;
+			theRejectItemType = OTItem::disputeItemReceipt;
+			break;
+			
 		default:
 			theAcceptItemType = OTItem::error_state;
 			theRejectItemType = OTItem::error_state;
-			break;
+			OTLog::vError("Unexpected transaction type in \n"
+						  "OT_API_Transaction_CreateResponse: %s\n", theTransaction.GetTypeString());
+			return NULL;
 	}
 	
-	OTItem * pAcceptItem = OTItem::CreateItemFromTransaction(theTransaction, 
+	long lReferenceTransactionNum = 0;
+
+	switch (theTransaction.GetType()) 
+	{
+		case OTTransaction::marketReceipt:
+		case OTTransaction::paymentReceipt:
+			lReferenceTransactionNum = theTransaction.GetTransactionNum();			
+			break;
+			
+		case OTTransaction::pending:
+		case OTTransaction::chequeReceipt:
+		case OTTransaction::transferReceipt:
+		{
+			// -----------------------------------------------------
+			// Here's some code in case you need to load up the item.
+			OTString strReference;
+			theTransaction.GetReferenceString(strReference);
+			
+			if (!strReference.Exists())
+			{
+				OTLog::Error("OT_API_Transaction_CreateResponse: No reference string found on transaction.\n");
+				return NULL;				
+			}
+			// -----------------------------------------------------
+			OTItem * pOriginalItem = OTItem::CreateItemFromString(strReference, theServerID, theTransaction.GetReferenceToNum());
+			OTCleanup<OTItem> theAngel(pOriginalItem);
+			
+			if (NULL == pOriginalItem)
+			{
+				OTLog::Error("OT_API_Transaction_CreateResponse: Failed loading transaction item from string.\n");
+				return NULL;				
+			}
+			// pItem will be automatically cleaned up when it goes out of scope.
+			// -----------------------------------------------------
+			
+			if (
+				(OTItem::request != pOriginalItem->GetStatus()) 
+				||
+				(
+				 (OTItem::acceptPending	!= pOriginalItem->GetType())  && // I'm accepting a transfer receipt.
+				 (OTItem::transfer		!= pOriginalItem->GetType())  && // I'm accepting a transfer that was sent to me.
+				 (OTItem::depositCheque	!= pOriginalItem->GetType())	 // I'm accepting a notice that someone cashed a cheque I wrote.
+				 )	
+				)
+			{ 
+				OTLog::Error("OT_API_Transaction_CreateResponse: Wrong item type or "
+							 "status attached as reference on transaction.\n");
+				return NULL;				
+			}
+			
+			lReferenceTransactionNum = pOriginalItem->GetTransactionNum();	// <============	
+		}
+			// -----------------------------------------------------
+			break;
+			
+		default:			
+			OTLog::vError("Unexpected transaction type in \n"
+						  "OT_API_Transaction_CreateResponse: %s\n", theTransaction.GetTypeString());
+			return NULL;
+	}
+	
+	
+	OTItem * pAcceptItem = OTItem::CreateItemFromTransaction(*pTransaction, 
 															 (OT_TRUE == BOOL_DO_I_ACCEPT) ?
-															 theAcceptItemType : theRejectItemType);
+															 theAcceptItemType : theRejectItemType); // set above.
+	
 	
 	// Set up the "accept" transaction item to be sent to the server 
 	// (this item references and accepts another item by its transaction number--
 	//  one that is already there in my inbox)
-	pAcceptItem->SetReferenceToNum(pItem->GetTransactionNum()); // This is critical. Server needs this to look up the original.
+	pAcceptItem->SetReferenceToNum(lReferenceTransactionNum); // This is critical. Server needs this to look up the original.
 	// Don't need to set transaction num on item since the constructor already got it off the owner transaction.
 
 	// the transaction will handle cleaning up the transaction item.

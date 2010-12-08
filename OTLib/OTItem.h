@@ -115,19 +115,33 @@ public:
 // ------------------------------------------------------------------------------
 		// TRANSFER
 		transfer,	// this item is an outgoing transfer, probably part of an outoing transaction.
-		atTransfer,
+		atTransfer,	// Server reply.
 // ------------------------------------------------------------------------------
-		acceptPending,		// this item is a client-side acceptance of a pending transaction
+		
+		// INBOX RESOLUTION
+		
+		acceptPending,		// this item is a client-side acceptance of a pending transfer
 		atAcceptPending,	
-		rejectPending,		// this item is a client-side rejection of a pending transaction	
+		rejectPending,		// this item is a client-side rejection of a pending transfer	
 		atRejectPending,
-// ------------------------------------------------------------------------------
+
 		// RECEIPT ACKNOWLEDGMENT / DISPUTE
-		acceptReceipt,		// this item is a client-side acceptance of a cron receipt in his inbox.
-		atAcceptReceipt,	// this item is a server reply to that acceptance.
-		disputeReceipt,		// this item is a client dispute of a receipt in his inbox.
-		atDisputeReceipt,	// Server reply to dispute message.
+		acceptCronReceipt,		// this item is a client-side acceptance of a cron receipt in his inbox.
+		atAcceptCronReceipt,	// this item is a server reply to that acceptance.
+		acceptItemReceipt,		// this item is a client-side acceptance of an item receipt in his inbox.
+		atAcceptItemReceipt,	// this item is a server reply to that acceptance.
+		
+		disputeCronReceipt,		// this item is a client dispute of a cron receipt in his inbox.
+		atDisputeCronReceipt,	// Server reply to dispute message.
+		disputeItemReceipt,		// this item is a client dispute of an item receipt in his inbox.
+		atDisputeItemReceipt,	// Server reply to dispute message.
+		
+		// Sometimes the attachment will be an OTItem, and sometimes it will be
+		// an OTPaymentPlan or OTTrade.  These different types above help the  
+		// code to differentiate.
+		
 // ------------------------------------------------------------------------------
+		
 		// FEEs
 		serverfee,	// this item is a fee from the transaction server (per contract)
 		atServerfee,
@@ -160,7 +174,10 @@ public:
 		paymentPlan,	// this item is a new payment plan
 		atPaymentPlan,	// server reply or updated notification regarding a payment plan.
 // ------------------------------------------------------------------------------
-//		chequeReceipt,	// Currently don't create an OTItem for cheque receipt. Not needed.
+//		chequeReceipt,	// Currently don't create an OTItem for cheque receipt in inbox. Not needed.
+		// I also don't create one for the transfer receipt, currently.
+		// (Although near the top, I do have item types to go in a processInbox message and
+		// clear those transaction types out of my inbox.)
 		marketReceipt,	// server receipt dropped into inbox as result of market trading.
 		paymentReceipt,	// server receipt dropped into an inbox as result of payment occuring.
 // ------------------------------------------------------------------------------

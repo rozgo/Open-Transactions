@@ -3,6 +3,10 @@ NOTES on the Version:
 
 // ---------------------------------------------------------------------
 
+   0.41 --- Bug fixes in support of API, added various transaction
+            types, receipt types, item types, to get full transfer
+            receipt process working end-to-end.
+
    0.40 --- More additions to the API, plus many under-the-hood fixes.
 
    0.39 --- Continually updating the API based on developer feedback.
