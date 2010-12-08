@@ -185,6 +185,7 @@ public:
 		paymentPlan,	// this transaction is a payment plan
 		atPaymentPlan,	// reply from the server regarding a payment plan
 // --------------------------------------------------------------------------------------
+		transferReceipt,// the server drops this into your inbox, when someone accepts your transfer.
 		chequeReceipt,	// the server drops this into your inbox, when someone cashes your cheque.
 		marketReceipt,	// server periodically drops this into your inbox if an offer is live.
 		paymentReceipt,	// the server drops this into people's inboxes, every time a payment processes.

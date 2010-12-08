@@ -133,6 +133,7 @@ const char * OTTransaction::_TypeStrings[] =
 	"paymentPlan",		// this transaction is a payment plan
 	"atPaymentPlan",	// reply from the server regarding a payment plan
 	// --------------------------------------------------------------------------------------
+	"transferReceipt",	// the server drops this into your inbox, when someone accepts your transfer.
 	"chequeReceipt",	// the server drops this into your inbox, when someone cashes your cheque.
 	"marketReceipt",	// server drops this into inbox periodically, if you an offer on market.
 	"paymentReceipt",	// the server drops this into people's inboxes, periodically.
@@ -320,10 +321,15 @@ bool OTTransaction::GetSuccess()
 		{
 			case OTItem::atTransaction:
 			case OTItem::atTransfer:
+				
 			case OTItem::atAcceptPending:
 			case OTItem::atRejectPending:
-			case OTItem::atAcceptReceipt:
-			case OTItem::atDisputeReceipt:
+				
+			case OTItem::atAcceptCronReceipt:
+			case OTItem::atDisputeCronReceipt:
+			case OTItem::atAcceptItemReceipt:
+			case OTItem::atDisputeItemReceipt:
+				
 			case OTItem::atServerfee:
 			case OTItem::atIssuerfee:
 			case OTItem::atBalance:
@@ -335,7 +341,8 @@ bool OTTransaction::GetSuccess()
 			case OTItem::atMarketOffer:
 			case OTItem::atPaymentPlan:
 				
-//			case OTItem::chequeReceipt:
+//			case OTItem::chequeReceipt: // not needed in OTItem.
+//			case OTItem::chequeReceipt: // not needed in OTItem.
 			case OTItem::marketReceipt:
 			case OTItem::paymentReceipt:
 				
@@ -398,6 +405,8 @@ int OTTransaction::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		else if (strType.Compare("atPaymentPlan"))
 			m_Type = OTTransaction::atPaymentPlan;
 		
+		else if (strType.Compare("transferReceipt"))
+			m_Type = OTTransaction::transferReceipt;
 		else if (strType.Compare("chequeReceipt"))
 			m_Type = OTTransaction::chequeReceipt;
 		else if (strType.Compare("marketReceipt"))
@@ -539,6 +548,9 @@ void OTTransaction::UpdateContents()
 			strType.Set("atPaymentPlan");
 			break;
 
+		case OTTransaction::transferReceipt:
+			strType.Set("transferReceipt");
+			break;
 		case OTTransaction::chequeReceipt:
 			strType.Set("chequeReceipt");
 			break;

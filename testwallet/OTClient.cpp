@@ -216,7 +216,7 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 			if ((OTTransaction::paymentReceipt	== pTransaction->GetType()) ||
 				(OTTransaction::marketReceipt	== pTransaction->GetType()))
 			{				
-				OTItem * pAcceptItem = OTItem::CreateItemFromTransaction(*pAcceptTransaction, OTItem::acceptReceipt);
+				OTItem * pAcceptItem = OTItem::CreateItemFromTransaction(*pAcceptTransaction, OTItem::acceptCronReceipt);
 
 				// the transaction will handle cleaning up the transaction item.
 				pAcceptTransaction->AddItem(*pAcceptItem);
@@ -243,9 +243,11 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 				// sign the item
 				pAcceptItem->SignContract(*(theConnection.GetNym()));
 				pAcceptItem->SaveContract();
-			}
-			else // all others. (Below original items come from transaction requests sent to the server.)
-			{
+			} // if market receipt or payment receipt (cron receipt)
+			else if (
+					 (OTTransaction::pending	== pTransaction->GetType())
+					 )
+			{				
 				OTItem * pOriginalItem = OTItem::CreateItemFromString(strRespTo, theServerID, pTransaction->GetReferenceToNum());
 				OTCleanup<OTItem> theAngel(pOriginalItem);
 				
@@ -254,16 +256,8 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 				// So I DON'T want to create it with my account ID on it.
 				if (pOriginalItem)
 				{
-					if ((OTItem::request == pOriginalItem->m_Status) &&
-						
-						// In a real client, the user would pick and choose which items he wanted
-						// to accept or reject. We, on the other hand, are blindly accepting all of
-						// these types:
-						(OTItem::transfer		== pOriginalItem->m_Type  || // I'm accepting a transfer that was sent to me.
-						 OTItem::acceptPending	== pOriginalItem->m_Type  || // I'm accepting a notice that someone accepted my transfer.
-						 OTItem::rejectPending	== pOriginalItem->m_Type  || // I'm accepting a notice that someone rejected my transfer.
-						 OTItem::depositCheque	== pOriginalItem->m_Type)	 // I'm accepting a notice that someone cashed a cheque I wrote.
-						)
+					if ( (OTItem::request	== pOriginalItem->GetStatus()) &&
+						 (OTItem::transfer	== pOriginalItem->GetType()))  // I'm accepting a transfer that was sent to me.
 					{
 						OTItem * pAcceptItem = OTItem::CreateItemFromTransaction(*pAcceptTransaction, OTItem::acceptPending);
 						// the transaction will handle cleaning up the transaction item.
@@ -292,15 +286,78 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 					{
 						const int nOriginalType = pOriginalItem->m_Type;
 						OTLog::vError( "Unrecognized item type (%d) while processing inbox.\n"
-									 "(Only pending transfers, payment receipts, market trades, cheques, and accepts are "
-									 "operational inbox items at this time.)\n", nOriginalType);
+									 "(Only pending transfers, payment receipts, market receipts, "
+									  "cheque receipts, and transfer receipts are operational inbox items at this time.)\n",
+									  nOriginalType);
+					}
+				}
+				else 
+				{
+					OTLog::vError("Error loading transaction item from string in OTClient::AcceptEntireInbox\n");
+				}
+			} // else if pending
+			
+			else if (
+					 (OTTransaction::transferReceipt	== pTransaction->GetType()) ||
+					 (OTTransaction::chequeReceipt		== pTransaction->GetType())
+					 )
+			{				
+				OTItem * pOriginalItem = OTItem::CreateItemFromString(strRespTo, theServerID, pTransaction->GetReferenceToNum());
+				OTCleanup<OTItem> theAngel(pOriginalItem);
+				
+				// This item was attached as the "in reference to" item. Perhaps Bob sent it to me.
+				// Since that item was initiated by him, HIS would be the account ID on it, not mine.
+				// So I DON'T want to create it with my account ID on it.
+				if (pOriginalItem)
+				{
+					if ((OTItem::request == pOriginalItem->GetStatus())
+						&&
+						 // In a real client, the user would pick and choose which items he wanted
+						 // to accept or reject. We, on the other hand, are blindly accepting all of
+						 // these types:
+						 (
+							(
+								(OTItem::acceptPending			== pOriginalItem->GetType()) // I'm accepting a transfer receipt.
+						   &&	(OTTransaction::transferReceipt	== pTransaction->GetType())
+							 )  
+						  || 
+						  (
+						   (OTItem::depositCheque	== pOriginalItem->GetType())	 // I'm accepting a notice that someone cashed a cheque I wrote.
+						   &&
+						   (OTTransaction::chequeReceipt	== pTransaction->GetType())
+						  )
+						)
+					  )
+					{
+						OTItem * pAcceptItem = OTItem::CreateItemFromTransaction(*pAcceptTransaction, OTItem::acceptItemReceipt);
+						// the transaction will handle cleaning up the transaction item.
+						pAcceptTransaction->AddItem(*pAcceptItem);
+						
+						pAcceptItem->SetReferenceToNum(pOriginalItem->GetTransactionNum()); // This is critical. Server needs this to look up the original.
+						// Don't need to set transaction num on item since the constructor already got it off the owner transaction.
+						
+						// I don't attach the original item here because I already reference it by transaction num,
+						// and because the server already has it and sent it to me. SO I just need to give the server
+						// enough info to look it up again.
+						
+						// sign the item
+						pAcceptItem->SignContract(*(theConnection.GetNym()));
+						pAcceptItem->SaveContract();
+					}
+					else 
+					{
+						const int nOriginalType = pOriginalItem->m_Type;
+						OTLog::vError( "Unrecognized item type (%d) while processing inbox.\n"
+									  "(Only pending transfers, payment receipts, market receipts, cheque "
+									  "receipts, and transfer receipts are operational inbox items at this time.)\n", 
+									  nOriginalType);
 					}
 				}
 				else 
 				{
 					OTLog::vError("Error loading transaction item from string in OTClient::AcceptEntireInbox\n");
 				}				
-			} // else // all others.
+			} // else if transfer receipt or cheque receipt. (item receipt)
 		} // if pTransaction
 		if (pTransaction)
 		{

@@ -333,14 +333,22 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		else if (strType.Compare("atRejectPending"))
 			m_Type = OTItem::atRejectPending;
 		// --------------------------------------------------------------
-		else if (strType.Compare("acceptReceipt"))
-			m_Type = OTItem::acceptReceipt;
-		else if (strType.Compare("atAcceptReceipt"))
-			m_Type = OTItem::atAcceptReceipt;
-		else if (strType.Compare("disputeReceipt"))
-			m_Type = OTItem::disputeReceipt;
-		else if (strType.Compare("atDisputeReceipt"))
-			m_Type = OTItem::atDisputeReceipt;
+		else if (strType.Compare("acceptCronReceipt"))
+			m_Type = OTItem::acceptCronReceipt;
+		else if (strType.Compare("atAcceptCronReceipt"))
+			m_Type = OTItem::atAcceptCronReceipt;
+		else if (strType.Compare("disputeCronReceipt"))
+			m_Type = OTItem::disputeCronReceipt;
+		else if (strType.Compare("atDisputeCronReceipt"))
+			m_Type = OTItem::atDisputeCronReceipt;
+		else if (strType.Compare("acceptItemReceipt"))
+			m_Type = OTItem::acceptItemReceipt;
+		else if (strType.Compare("atAcceptItemReceipt"))
+			m_Type = OTItem::atAcceptItemReceipt;
+		else if (strType.Compare("disputeItemReceipt"))
+			m_Type = OTItem::disputeItemReceipt;
+		else if (strType.Compare("atDisputeItemReceipt"))
+			m_Type = OTItem::atDisputeItemReceipt;
 		// --------------------------------------------------------------
 		else if (strType.Compare("serverfee"))
 			m_Type = OTItem::serverfee;
@@ -511,11 +519,17 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 		case OTItem::rejectPending:
 			strType.Set("rejectPending");
 			break;
-		case OTItem::acceptReceipt:
-			strType.Set("acceptReceipt");
+		case OTItem::acceptCronReceipt:
+			strType.Set("acceptCronReceipt");
 			break;
-		case OTItem::disputeReceipt:
-			strType.Set("disputeReceipt");
+		case OTItem::disputeCronReceipt:
+			strType.Set("disputeCronReceipt");
+			break;
+		case OTItem::acceptItemReceipt:
+			strType.Set("acceptItemReceipt");
+			break;
+		case OTItem::disputeItemReceipt:
+			strType.Set("disputeItemReceipt");
 			break;
 		case OTItem::serverfee:
 			strType.Set("serverfee");
@@ -570,11 +584,17 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 		case OTItem::atRejectPending:
 			strType.Set("atRejectPending");
 			break;
-		case OTItem::atAcceptReceipt:
-			strType.Set("atAcceptReceipt");
+		case OTItem::atAcceptCronReceipt:
+			strType.Set("atAcceptCronReceipt");
 			break;
-		case OTItem::atDisputeReceipt:
-			strType.Set("atDisputeReceipt");
+		case OTItem::atDisputeCronReceipt:
+			strType.Set("atDisputeCronReceipt");
+			break;
+		case OTItem::atAcceptItemReceipt:
+			strType.Set("atAcceptItemReceipt");
+			break;
+		case OTItem::atDisputeItemReceipt:
+			strType.Set("atDisputeItemReceipt");
 			break;
 		case OTItem::atServerfee:
 			strType.Set("atServerfee");

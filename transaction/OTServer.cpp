@@ -4362,11 +4362,18 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 		OT_ASSERT_MSG(NULL != pItem, "Pointer should not have been NULL.");
 		
 		// If the client sent an accept item, (or reject/dispute) then let's process it.
-		if ((OTItem::acceptReceipt	== pItem->m_Type) ||	// Accepting notice of market trade or payment processing. (Original in Cron Receipt.)
-//			(OTItem::disputeReceipt	== pItem->m_Type) ||	// Disputing said notice.  With Cron receipts, original is stored as an OTCronItem...
-			(OTItem::acceptPending	== pItem->m_Type)		// Accepting notice of pending transfer (OR notice of cheque receipt.)
-//			(OTItem::rejectPending	== pItem->m_Type)		// With pending, the Original is stored in OTItem pOriginalItem...
+		if ( 
+			(OTItem::request	== pItem->GetStatus())
+			&&
+			(
+			(OTItem::acceptCronReceipt	== pItem->GetType()) ||	// Accepting notice of market trade or payment processing. (Original in Cron Receipt.)
+//			(OTItem::disputeCronReceipt	== pItem->GetType()) ||	// Disputing said notice.  With Cron receipts, original is stored as an OTCronItem...
+			(OTItem::acceptItemReceipt	== pItem->GetType()) ||	// Accepted item receipt (cheque, transfer)
+//			(OTItem::disputeItemReceipt	== pItem->GetType()) ||	// Disputing said notice. 
+			(OTItem::acceptPending	== pItem->GetType())		// Accepting notice of pending transfer 
+//			(OTItem::rejectPending	== pItem->GetType())		// With pending, the Original is stored in OTItem pOriginalItem...
 			)
+		)
 		{
 			// The response item will contain a copy of the "accept" request.
 			// So I'm just setting aside a copy now for those purposes later.
@@ -4381,11 +4388,17 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 				case OTItem::rejectPending:
 					theReplyItemType = OTItem::atRejectPending;
 					break;						
-				case OTItem::acceptReceipt:
-					theReplyItemType = OTItem::atAcceptReceipt;
+				case OTItem::acceptCronReceipt:
+					theReplyItemType = OTItem::atAcceptCronReceipt;
 					break;
-				case OTItem::disputeReceipt:
-					theReplyItemType = OTItem::atDisputeReceipt;
+				case OTItem::disputeCronReceipt:
+					theReplyItemType = OTItem::atDisputeCronReceipt;
+					break;
+				case OTItem::acceptItemReceipt:
+					theReplyItemType = OTItem::atAcceptItemReceipt;
+					break;
+				case OTItem::disputeItemReceipt:
+					theReplyItemType = OTItem::atDisputeItemReceipt;
 					break;
 				default:
 					theReplyItemType = OTItem::error_state; // should never happen based on above 'if' statement.
@@ -4425,10 +4438,13 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 			// the "in reference to" string will NOT contain an OTItem at all, but an OTPaymentPlan or
 			// an OTTrade!! I handle those two cases first, here:
 			//
-			//		  (OTItem::disputeReceipt== pItem->m_Type) ||  // todo handle this somewhere, somehow.
-			else if ( // This does NOT include chequeReceipts, they are processed as pending. (Because original data is loaded the same way.)
-					 (OTItem::acceptReceipt == pItem->GetType())	// This is checked above, but just keeping this safe.
-					&&												// especially in case this block moves or is used elsewhere.
+			//
+			else if ( 
+					 (
+//					 (OTItem::disputeCronReceipt == pItem->GetType()) ||
+					 (OTItem::acceptCronReceipt == pItem->GetType())// This is checked above, but just keeping this safe.
+					)												// especially in case this block moves or is used elsewhere.
+					 &&												
 					 (NULL != (pServerTransaction = theInbox.GetTransaction(pItem->GetReferenceToNum())))
 					&&							// Notice here I use theInbox.GetTransaction, whereas in the next
 					 (							// section, I use theInbox.GetPendingTransaction instead. That's the 
@@ -4462,15 +4478,18 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 			// that REFERS to the same transaction that the accept item REFERS to. That process, necessary
 			// for pending transactions and cheque receipts, is NOT the case above, with receipts from cron.
 			else if ( (
-					  (OTItem::acceptPending	== pItem->m_Type)	// acceptPending includes checkReceipts. Because they are
-//					  (OTItem::rejectPending	== pItem->m_Type)	// stored/loaded similarly, not like the above Cron Receipts.
+					   (OTItem::acceptItemReceipt	== pItem->GetType())	// acceptItemReceipt includes checkReceipt and transferReceipts.
+//					   (OTItem::rejectItemReceipt	== pItem->GetType())	
+					|| (OTItem::acceptPending	== pItem->GetType())	// acceptPending includes checkReceipts. Because they are
+//					   (OTItem::rejectPending	== pItem->GetType())	// stored/loaded similarly, not like the above Cron Receipts.
 					  ) 
 					 &&
 					  (NULL != (pServerTransaction = theInbox.GetPendingTransaction(pItem->GetReferenceToNum()))) 
 					 &&
 					  (
-					   (OTTransaction::pending		== pServerTransaction->GetType()) ||	// pending transfer.
-					   (OTTransaction::chequeReceipt== pServerTransaction->GetType())		// cheque receipt is down here in the pending section,
+					   (OTTransaction::pending			== pServerTransaction->GetType()) ||	// pending transfer.
+					   (OTTransaction::transferReceipt	== pServerTransaction->GetType()) ||	// transfer receipt.
+					   (OTTransaction::chequeReceipt	== pServerTransaction->GetType())		// cheque receipt is down here in the pending section,
 					  )																		// because this is where an OTItem is loaded up (since it
 					 )																		// originated with a deposit transaction, not a cron receipt.)
 			{																				
@@ -4499,12 +4518,10 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 					//
 					// -- cheque deposit receipts waiting to be accepted (they cannot be rejected.)
 					//
-					// -- an accept (or reject) of my own transfer may be sitting in my inbox.
-					//	  in this last case, I'd have to "accept the accept" to get it out of my inbox.
-					//    I could also "accept the reject". But I cannot reject either of those; only
-					//	  transfers give me the option to reject.
+					// -- transfer receipts waiting to be accepted (they cannot be rejected.)
+
 					//
-					// ONLY in the case of transfers also do I need to mess around with my account,
+					// ONLY in the case of pending transfers also do I need to mess around with my account,
 					// and the sender's inbox and outbox. In the other cases, I merely need to remove
 					// the item from my inbox.
 					// Although when 'accepting the reject', I do need to take the money back into
@@ -4536,9 +4553,23 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 					// those notices in order to get them out of my inbox. So that's the simplest case, and it's
 					// handled by THIS block of code:
 					//
-					if (OTItem::acceptPending	== pOriginalItem->GetType() ||	// In these cases, the original item is just an actionless notice
-						OTItem::depositCheque	== pOriginalItem->GetType())	// sitting in my inbox that I need to acknowledge in order to remove it.
-					{															// (The funds are already paid out...)
+					if (
+						(OTItem::acceptItemReceipt	== pItem->GetType()) 
+						&&
+						 (
+						  (
+							 (OTTransaction::transferReceipt	== pServerTransaction->GetType()) &&
+							 (OTItem::acceptPending				== pOriginalItem->GetType())
+						  )
+						  ||	
+						  (
+							(OTTransaction::chequeReceipt	== pServerTransaction->GetType()) &&
+							(OTItem::depositCheque			== pOriginalItem->GetType())
+						  )
+						)
+						
+					   )	
+					{	// (The funds are already paid out...)
 						// pItem contains the current user's attempt to accept the 
 						// ['depositCheque' OR 'accept'] located in theOriginalItem.
 						// Now we have the user's item and the item he is trying to accept.
@@ -4559,31 +4590,16 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 					// ----------------------------------------------------------------------------------------------
 					
 					// TODO: 'Accept a REJECT' -- NEED TO PERFORM THE TRANSFER OF FUNDS BACK TO THE SENDER'S ACCOUNT WHEN TRANSFER IS REJECTED.
-					
-					else if (OTItem::rejectPending	== pOriginalItem->GetType()) // He rejected me, so I'm accepting that rejection (getting my funds back)
-					{
-						OTLog::Error("Error: OTItem::rejectPending is NOT YET SUPPORTED by notarizeProcessInbox,\n"
-									 "so you may not accept these funds back until the code is updated.\n");
-						
-						// pItem contains the current user's attempt to accept the 'reject' located in theOriginalItem.
-						// Now we have the user's item and the reject item he is trying to accept (which puts the money BACK IN HIS ACCOUNT.)
-						
-						//theInbox.	RemoveTransaction(pServerTransaction->GetTransactionNum());
-						
-						//theInbox.	ReleaseSignatures();
-						//theInbox.	SignContract(m_nymServer);
-						//theInbox.	SaveContract();
-						//theInbox.	SaveInbox();
-						
-						// Now we can set the response item as an acknowledgment instead of the default (rejection)
-						//pResponseItem->m_Status	= OTItem::acknowledgement;
-					}// its type is OTItem::rejectPending
-					
+										
 					// ----------------------------------------------------------------------------------------------
 										
 					// The below block only executes for ACCEPTING a TRANSFER
 					
-					else if (OTItem::transfer == pOriginalItem->GetType())
+					else if (
+							 (OTTransaction::pending == pServerTransaction->GetType())
+							 &&
+							 (OTItem::transfer == pOriginalItem->GetType())
+							 )
 					{
 						// pItem contains the current user's attempt to accept the transfer located in theOriginalItem.
 						// Now we have both items.
@@ -4642,7 +4658,7 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 							IssueNextTransactionNumber(m_nymServer, lNewTransactionNumber, false); // bStoreTheNumber = false
 							
 							// Generate a new transaction... (to notice the sender of acceptance.)
-							OTTransaction * pInboxTransaction	= OTTransaction::GenerateTransaction(theFromInbox, OTTransaction::pending,
+							OTTransaction * pInboxTransaction	= OTTransaction::GenerateTransaction(theFromInbox, OTTransaction::transferReceipt,
 																									 lNewTransactionNumber);
 							
 							// Here we give the sender (by dropping into his inbox) a copy of my acceptance of
