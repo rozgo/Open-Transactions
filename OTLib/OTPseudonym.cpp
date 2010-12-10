@@ -82,14 +82,10 @@
  ************************************************************************************/
 
 
-
-extern "C"
-{
-#include <openssl/sha.h>
-}
-
-#include "cstdio"	
-#include "cstring"	
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cassert>
 
 #include <iostream>
 #include <fstream>
@@ -97,7 +93,26 @@ extern "C"
 #include <sstream>
 #include <map>
 #include <algorithm>
-#include <cassert>
+
+
+extern "C"
+{
+#include <openssl/sha.h>
+
+#include <openssl/pem.h>
+#include <openssl/conf.h>
+#include <openssl/x509v3.h>
+#ifndef OPENSSL_NO_ENGINE
+#include <openssl/engine.h>
+#endif
+	
+int mkcert(X509 **x509p, EVP_PKEY **pkeyp, int bits, int serial, int days);
+int add_ext(X509 *cert, int nid, char *value);
+	
+}
+
+
+
 
 #include "irrxml/irrXML.h"
 
@@ -115,11 +130,260 @@ using namespace io;
 
 #include "OTLog.h"
 
+
+
+// use this to actually generate a new key pair and assorted nym files.
+//
+bool OTPseudonym::GenerateNym()
+{
+	bool bSuccess = false;
+	
+//	BIO			*	bio_err	=	NULL;
+	X509		*	x509	=	NULL;
+	EVP_PKEY	*	pNewKey	=	NULL;
+	
+//	CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON); // memory leak detection. Leaving this for now.
+	
+//	bio_err	=	BIO_new_fp(stderr, BIO_NOCLOSE);
+	
+	
+	mkcert(&x509, &pNewKey, 1024, 0, 3650); // actually generate the things. // TODO THESE PARAMETERS...
+	// Note: 512 bit key CRASHES
+	// 1024 is apparently a minimum requirement, if not an only requirement.
+	// Will need to go over just what sorts of keys are involved here... todo.
+	
+	
+	if (NULL == pNewKey)
+	{
+		OTLog::Error("Failed attempting to generate new private key.\n");
+		
+		if (NULL != x509)
+			X509_free(x509);
+
+		return false;
+	}
+	
+	if (NULL ==  x509)
+	{
+		OTLog::Error("Failed attempting to generate new x509 cert.\n");
+
+		if (NULL != pNewKey)
+			EVP_PKEY_free(pNewKey);
+
+		return false;
+	}
+	
+	
+	// --------COMMENT THIS OUT FOR PRODUCTION --------
+	//                  (Debug only.)
+	RSA_print_fp(stdout, pNewKey->pkey.rsa, 0); // human readable
+	X509_print_fp(stdout, x509); // human readable
+	
+	// write the private key, then the x509, to stdout.
+	PEM_write_PrivateKey(stdout, pNewKey, NULL, NULL, 0, NULL, NULL);
+	PEM_write_X509(stdout, x509);
+	// ------------------------------------------------
+	
+	
+	
+	BIO	*	bio_out_pri  = BIO_new(BIO_s_mem());
+	BIO	*	bio_out_x509 = BIO_new(BIO_s_mem());
+
+	PEM_write_bio_PrivateKey(bio_out_pri, pNewKey,  NULL, NULL, 0, NULL, NULL);
+	PEM_write_bio_X509(bio_out_x509, x509);
+
+	
+	unsigned char buffer_pri[4096] = ""; // todo hardcoded
+	unsigned char buffer_x509[8192] = ""; // todo hardcoded
+	
+	OTString strx509;
+	OTString strPrivateKey;
+
+	int len = 0;
+	
+	 // todo hardcoded 4080 (see array above.)
+	if (0 < (len = BIO_read(bio_out_x509, buffer_x509, 8100))) // returns number of bytes successfully read.
+	{
+		buffer_x509[len] = '\0';
+		
+		strx509.Set((const char*)buffer_x509);
+
+		EVP_PKEY * pPublicKey = X509_get_pubkey(x509); 
+		
+		if (NULL != pPublicKey)
+			m_pkeyPublic->SetKey(pPublicKey);
+		// else?
+				
+		// todo hardcoded 4080 (see array above.)
+		if (0 < (len = BIO_read(bio_out_pri, buffer_pri, 4080))) // returns number of bytes successfully read.
+		{
+			buffer_pri[len] = '\0';
+			
+			strPrivateKey.Set((const char *)buffer_pri); // so I can write this string to file in a sec...
+
+			m_pkeyPrivate->SetKey(pNewKey); // private key itself... might as well keep it loaded for now.
+			
+			bSuccess = true;
+		}
+	}
+	
+	
+	
+	// cleanup
+	X509_free(x509);
+	x509 = NULL;
+	
+	if (false == bSuccess) // if we failed, then free the key.
+	{
+		EVP_PKEY_free(pNewKey);
+	}
+	// if bsuccess is true, we do NOT free the key, since we just  
+	// called SetKey() and thus gave ownership of it to m_keyPrivate.
+
+	pNewKey = NULL;
+	
+	
+	//#ifndef OPENSSL_NO_ENGINE
+	//	ENGINE_cleanup();
+	//#endif
+	//	CRYPTO_cleanup_all_ex_data();
+	//	
+	//	CRYPTO_mem_leaks(bio_err);
+	
+	
+	//	BIO_free(bio_err);
+	
+	
+	BIO_free(bio_out_pri);
+	BIO_free(bio_out_x509);
+
+	
+	
+	
+	// At this point, the Nym's private key is set, and its public key is also set.
+	// So the object in memory is good to go.
+	// Now we just need to create some files, especially where the keys are stored,
+	// since the Nym normally never writes to those files (just reads.)
+	//
+	if (bSuccess)
+	{
+		m_strCertfile.Format((char *)"%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+							 OTLog::CertFolder(),
+							 OTLog::PathSeparator(), "temp.nym");
+		
+		// --------
+		// Here's where the serialization code would be changed to CouchDB or whatever.
+		// In a key/value database, szFilename is the "key" and strFinal.Get() is the "value".
+		std::ofstream ofs(m_strCertfile.Get(), std::ios::binary);
+		
+		if (ofs.fail())
+		{
+			OTLog::vError("Error opening file in OTPseudonym::GenerateNym: %s\n", 
+						  m_strCertfile.Get());
+			return false;
+		}
+		
+		ofs.clear();
+		
+		OTString strFinal;
+		
+		strFinal.Format((char*)"%s%s", 
+						strPrivateKey.Get(), strx509.Get());
+		
+		ofs << strFinal.Get();
+		ofs.close();
+		// --------
+
+		bool bPublic  = false;
+		bool bPrivate = false;
+		
+		bPublic  = m_pkeyPublic->LoadPublicKeyFromCertFile(m_strCertfile);
+		bPrivate = m_pkeyPrivate->LoadPrivateKey(m_strCertfile);
+		
+		if (!bPublic)
+		{
+			OTLog::vError("Although the ascii-armored file (%s) was read, LoadPublicKeyFromCert "
+						  "returned false.\n", m_strCertfile.Get());
+			return false;
+		}
+		else
+		{
+			OTLog::vOutput(2, "Successfully loaded public key from Certfile: %s\n", m_strCertfile.Get());
+		}
+		
+		
+		if (!bPrivate)
+		{
+			OTLog::vError("Although the ascii-armored file (%s) was read, LoadPrivateKey returned false.\n",
+						  m_strCertfile.Get());
+			return false;
+		}
+		else
+		{
+			OTLog::vOutput(2, "Successfully loaded private key from: %s\n", m_strCertfile.Get());
+		}
+
+		
+
+		OTString strPublicKey;
+		bool bGotPublicKey = GetPublicKey().GetPublicKey(strPublicKey);
+		
+		if (!bGotPublicKey)
+		{
+			OTLog::Error("Error getting public key in OTPseudonym::VerifyPseudonym.\n");
+			return false;	
+		}
+		
+		
+		OTIdentifier newID;
+		bool bSuccessCalculateDigest = newID.CalculateDigest(strPublicKey);
+		
+		if (!bSuccessCalculateDigest)
+		{
+			OTLog::Error("Error calculating Certificate digest.\n");
+			return false;	
+		}
+		
+		m_nymID = newID;
+		
+		
+		OTString strID(m_nymID);
+		
+		m_strCertfile.Format((char *)"%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+							 OTLog::CertFolder(),
+							 OTLog::PathSeparator(), strID.Get());
+		
+		
+		// --------
+		// Here's where the serialization code would be changed to CouchDB or whatever.
+		// In a key/value database, szFilename is the "key" and strFinal.Get() is the "value".
+		std::ofstream ofs2(m_strCertfile.Get(), std::ios::binary);
+		
+		if (ofs2.fail())
+		{
+			OTLog::vError("Error opening file in OTPseudonym::GenerateNym: %s\n", 
+						  m_strCertfile.Get());
+			return false;
+		}
+		
+		ofs2.clear();
+		ofs2 << strFinal.Get();
+		ofs2.close();
+		// --------
+		
+		bSuccess = SaveSignedNymfile(*this); // Now we'll generate the NymFile as well!
+	}
+	
+	return bSuccess;
+}
+
+
+
+
 /*
 typedef std::deque<long>							dequeOfTransNums;
 typedef std::map<std::string, dequeOfTransNums *>	mapOfTransNums;	
 */
-
 
 
 // On the server side: A user has submitted a specific transaction number. 

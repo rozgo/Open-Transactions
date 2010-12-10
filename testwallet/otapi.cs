@@ -21,6 +21,11 @@ public class otapi {
     return ret;
   }
 
+  public static string OT_API_CreateNym() {
+    string ret = otapiPINVOKE.OT_API_CreateNym();
+    return ret;
+  }
+
   public static int OT_API_GetServerCount() {
     int ret = otapiPINVOKE.OT_API_GetServerCount();
     return ret;

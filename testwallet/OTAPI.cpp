@@ -141,6 +141,13 @@ OT_API g_OT_API;
 // Note: Must call OT_API::Init() followed by g_OT_API.Init() in the main function, before using OT.
 
 
+static char g_tempBuf[MAX_STRING_LENGTH];
+
+
+
+
+
+
 // To use this extern "C" API, you must call this function first.
 // (Therefore the same is true for all scripting languages that use this file...
 // Ruby, Python, Perl, PHP, etc.)
@@ -185,6 +192,70 @@ OT_BOOL OT_API_LoadWallet(const char * szPath)
 
 
 
+
+// --------------------------------------------------
+// CREATE NYM  -- Create new User
+//
+// Creates a new Nym and adds it to the wallet.
+// (Including PUBLIC and PRIVATE KEYS.)
+//
+// Returns a new User ID (with files already created)
+// or NULL upon failure.
+//
+// Once it exists, use OT_API_createUserAccount() to
+// register your new Nym at any given Server. (Nearly all
+// server requests require this...)
+//
+const char * OT_API_CreateNym(void)
+{
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = g_OT_API.GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = g_OT_API.CreateNym();
+	
+	if (NULL == pNym) // Creation failed.
+	{
+		OTLog::Output(0, "Unable to create Nym.\n");
+		
+		return NULL;		
+	}
+	
+	pWallet->AddNym(*pNym); // Add our new nym to the wallet, who "owns" it hereafter.
+
+	pWallet->SaveWallet(); // Since it just changed
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+		
+	OTString strOutput;
+	pNym->GetIdentifier(strOutput); // We're returning the new Nym ID.
+	
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;	
+}
+
+
+
+
 // --------------------------------------------------
 
 
@@ -211,7 +282,6 @@ int OT_API_GetAccountCount(void)
 }
 
 
-static char g_tempBuf[MAX_STRING_LENGTH];
 
 
 // based on Index (above 4 functions) this returns the Nym's ID

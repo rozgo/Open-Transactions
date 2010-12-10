@@ -187,6 +187,8 @@ public:
 	OTPseudonym *		LoadPublicNym(const OTIdentifier & NYM_ID);
 	OTPseudonym *		LoadPrivateNym(const OTIdentifier & NYM_ID);
 	
+	OTPseudonym *		CreateNym(); // returns a new nym (with key pair) and files created. (Or NULL.)
+
 	// ----------------------------------------------------
 	//
 	// Returns an OTCheque pointer, or NULL. 

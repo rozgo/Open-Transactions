@@ -1511,6 +1511,34 @@ SWIG_From_int  SWIG_PERL_DECL_ARGS_1(int value)
 }
 
 
+SWIGINTERNINLINE SV *
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+{
+  SV *obj = sv_newmortal();
+  if (carray) {
+    if (size && (carray[size - 1] == 0)) {
+      sv_setpv(obj, carray);
+    } else {
+      char *tmp = (char *)malloc((size + 1)*sizeof(char));
+      memcpy(tmp, carray, size);
+      tmp[size] = 0;
+      sv_setpv(obj, tmp);
+      free((char*)tmp);
+    }
+  } else {
+    sv_setsv(obj, &PL_sv_undef);
+  }
+  return obj;
+}
+
+
+SWIGINTERNINLINE SV * 
+SWIG_FromCharPtr(const char *cptr)
+{ 
+  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
+}
+
+
 #include <limits.h>
 #ifndef LLONG_MIN
 # define LLONG_MIN	LONG_LONG_MIN
@@ -1638,34 +1666,6 @@ SWIG_AsVal_int SWIG_PERL_DECL_ARGS_2(SV * obj, int *val)
   return res;
 }
 
-
-SWIGINTERNINLINE SV *
-SWIG_FromCharPtrAndSize(const char* carray, size_t size)
-{
-  SV *obj = sv_newmortal();
-  if (carray) {
-    if (size && (carray[size - 1] == 0)) {
-      sv_setpv(obj, carray);
-    } else {
-      char *tmp = (char *)malloc((size + 1)*sizeof(char));
-      memcpy(tmp, carray, size);
-      tmp[size] = 0;
-      sv_setpv(obj, tmp);
-      free((char*)tmp);
-    }
-  } else {
-    sv_setsv(obj, &PL_sv_undef);
-  }
-  return obj;
-}
-
-
-SWIGINTERNINLINE SV * 
-SWIG_FromCharPtr(const char *cptr)
-{ 
-  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
-}
-
 #ifdef PERL_OBJECT
 #define MAGIC_CLASS _wrap_otapi_var::
 class _wrap_otapi_var : public CPerlObj {
@@ -1740,6 +1740,24 @@ XS(_wrap_OT_API_LoadWallet) {
     XSRETURN(argvi);
   fail:
     if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OT_API_CreateNym) {
+  {
+    char *result = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 0) || (items > 0)) {
+      SWIG_croak("Usage: OT_API_CreateNym();");
+    }
+    result = (char *)OT_API_CreateNym();
+    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
+    XSRETURN(argvi);
+  fail:
     SWIG_croak_null();
   }
 }
@@ -5983,6 +6001,7 @@ static swig_variable_info swig_variables[] = {
 static swig_command_info swig_commands[] = {
 {"otapic::OT_API_Init", _wrap_OT_API_Init},
 {"otapic::OT_API_LoadWallet", _wrap_OT_API_LoadWallet},
+{"otapic::OT_API_CreateNym", _wrap_OT_API_CreateNym},
 {"otapic::OT_API_GetServerCount", _wrap_OT_API_GetServerCount},
 {"otapic::OT_API_GetAssetTypeCount", _wrap_OT_API_GetAssetTypeCount},
 {"otapic::OT_API_GetAccountCount", _wrap_OT_API_GetAccountCount},

@@ -1624,6 +1624,30 @@ SWIG_From_int  (int value)
 }
 
 
+SWIGINTERNINLINE VALUE 
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+{
+  if (carray) {
+    if (size > LONG_MAX) {
+      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+      return pchar_descriptor ? 
+	SWIG_NewPointerObj((char *)(carray), pchar_descriptor, 0) : Qnil;
+    } else {
+      return rb_str_new(carray, (long)(size));
+    }
+  } else {
+    return Qnil;
+  }
+}
+
+
+SWIGINTERNINLINE VALUE 
+SWIG_FromCharPtr(const char *cptr)
+{ 
+  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
+}
+
+
 SWIGINTERN VALUE
 SWIG_ruby_failed(void)
 {
@@ -1673,30 +1697,6 @@ SWIG_AsVal_int (VALUE obj, int *val)
     }
   }  
   return res;
-}
-
-
-SWIGINTERNINLINE VALUE 
-SWIG_FromCharPtrAndSize(const char* carray, size_t size)
-{
-  if (carray) {
-    if (size > LONG_MAX) {
-      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
-      return pchar_descriptor ? 
-	SWIG_NewPointerObj((char *)(carray), pchar_descriptor, 0) : Qnil;
-    } else {
-      return rb_str_new(carray, (long)(size));
-    }
-  } else {
-    return Qnil;
-  }
-}
-
-
-SWIGINTERNINLINE VALUE 
-SWIG_FromCharPtr(const char *cptr)
-{ 
-  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
 }
 
 SWIGINTERN VALUE
@@ -1749,6 +1749,22 @@ _wrap_OT_API_LoadWallet(int argc, VALUE *argv, VALUE self) {
   return vresult;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_CreateNym(int argc, VALUE *argv, VALUE self) {
+  char *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (char *)OT_API_CreateNym();
+  vresult = SWIG_FromCharPtr((const char *)result);
+  return vresult;
+fail:
   return Qnil;
 }
 
@@ -5982,6 +5998,7 @@ SWIGEXPORT void Init_otapi(void) {
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mOtapi, "OT_API_Init", _wrap_OT_API_Init, -1);
   rb_define_module_function(mOtapi, "OT_API_LoadWallet", _wrap_OT_API_LoadWallet, -1);
+  rb_define_module_function(mOtapi, "OT_API_CreateNym", _wrap_OT_API_CreateNym, -1);
   rb_define_module_function(mOtapi, "OT_API_GetServerCount", _wrap_OT_API_GetServerCount, -1);
   rb_define_module_function(mOtapi, "OT_API_GetAssetTypeCount", _wrap_OT_API_GetAssetTypeCount, -1);
   rb_define_module_function(mOtapi, "OT_API_GetAccountCount", _wrap_OT_API_GetAccountCount, -1);

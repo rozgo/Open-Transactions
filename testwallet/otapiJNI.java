@@ -10,6 +10,7 @@
 class otapiJNI {
   public final static native int OT_API_Init(String jarg1);
   public final static native int OT_API_LoadWallet(String jarg1);
+  public final static native String OT_API_CreateNym();
   public final static native int OT_API_GetServerCount();
   public final static native int OT_API_GetAssetTypeCount();
   public final static native int OT_API_GetAccountCount();

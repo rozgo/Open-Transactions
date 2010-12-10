@@ -273,6 +273,16 @@ SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_LoadWallet(char * jarg1) {
 }
 
 
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_CreateNym() {
+  char * jresult ;
+  char *result = 0 ;
+  
+  result = (char *)OT_API_CreateNym();
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
 SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_GetServerCount() {
   int jresult ;
   int result;

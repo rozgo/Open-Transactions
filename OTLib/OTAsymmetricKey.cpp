@@ -127,6 +127,17 @@ typedef struct
 
 
 
+void OTAsymmetricKey::SetKey(EVP_PKEY * pKey) 
+{ 
+	OT_ASSERT(NULL != pKey);
+	
+	Release(); 
+	
+	m_pKey = pKey; 
+}
+
+
+
 
 
 // Get the public key in ASCII-armored format with bookends  - ------- BEGIN PUBLIC KEY --------
@@ -801,80 +812,6 @@ bool OTAsymmetricKey::GetPublicKey(OTASCIIArmor & strKey) const
  }
  */
 
-// Load the public key from a x509 stored in a .pem file
-bool OTAsymmetricKey::LoadPublicKeyFromCertFile(const OTString & strFilename)
-{
-	Release();
-	
-	X509 *	x509	= NULL; 
-
-	
-/*
-	// -------------------------------------------------
-	// Version 1   (works but uses fopen)
-	FILE * fp		= NULL; 
-	
-	// Read public key
-	OTLog::vOutput(3, "\nReading public key from certfile: %s\n", strFilename.Get()); 
-
-#ifdef _WIN32
-	errno_t err = fopen_s(&fp, strFilename.Get(), "rb"); 
-#else
-	fp = fopen (strFilename.Get(), "r"); 
-#endif
-
-	if (fp == NULL) 
-	{ 
-		fprintf (stderr, "Error opening cert file in OTContract::VerifySignatureFromCertFile: %s\n",
-				 strFilename.Get()); 
-		return false; 
-	} 
-	
-	x509 = PEM_read_X509(fp, NULL, NULL, NULL); 
-	
-	fclose (fp); 
-	// -------------------------------------------------
-*/
-	
-	
- // -------------------------------------------------
-	// Version 2
-	BIO *bio = BIO_new( BIO_s_file() );
-	OT_ASSERT(NULL != bio);
-	BIO_read_filename( bio, strFilename.Get() );
-	
-	x509 = PEM_read_bio_X509(bio, NULL, NULL, NULL); 
-
-	BIO_free_all(bio);
-	bio = NULL;
-	// -------------------------------------------------
-
-
-	if (x509 == NULL) 
-	{ 
-		OTLog::vError("Error reading x509 out of cert file: %s\n", strFilename.Get()); 
-		return false; 
-	}
-	
-	m_pKey = X509_get_pubkey(x509); 
-	X509_free(x509);  
-	x509 = NULL;
-	
-	if (m_pKey == NULL) 
-	{ 
-		OTLog::vError("Error reading public key from x509 from certfile: %s\n", 
-					  strFilename.Get()); 
-		return false; 
-	}
-	else
-	{
-		OTLog::vOutput(3, "Successfully loaded public key from x509 from certfile: %s\n", 
-					  strFilename.Get());
-		return true; 
-	}
-}
-
-
 
 
 OTAsymmetricKey::OTAsymmetricKey()
@@ -892,8 +829,9 @@ void OTAsymmetricKey::Release()
 	if (NULL != m_pKey)
 	{
 		EVP_PKEY_free (m_pKey); 
-		m_pKey = NULL;
 	}	
+
+	m_pKey = NULL;
 }
 
 
@@ -1100,6 +1038,84 @@ int pass_cb(char *buf, int size, int rwflag, void *u)
 }
 
 
+
+
+// Load the public key from a x509 stored in a .pem file
+bool OTAsymmetricKey::LoadPublicKeyFromCertFile(const OTString & strFilename)
+{
+	Release();
+	
+	X509 *	x509	= NULL; 
+	
+	
+	/*
+	 // -------------------------------------------------
+	 // Version 1   (works but uses fopen)
+	 FILE * fp		= NULL; 
+	 
+	 // Read public key
+	 OTLog::vOutput(3, "\nReading public key from certfile: %s\n", strFilename.Get()); 
+	 
+	 #ifdef _WIN32
+	 errno_t err = fopen_s(&fp, strFilename.Get(), "rb"); 
+	 #else
+	 fp = fopen (strFilename.Get(), "r"); 
+	 #endif
+	 
+	 if (fp == NULL) 
+	 { 
+	 fprintf (stderr, "Error opening cert file in OTContract::VerifySignatureFromCertFile: %s\n",
+	 strFilename.Get()); 
+	 return false; 
+	 } 
+	 
+	 x509 = PEM_read_X509(fp, NULL, NULL, NULL); 
+	 
+	 fclose (fp); 
+	 // -------------------------------------------------
+	 */
+	
+	
+	// -------------------------------------------------
+	// Version 2
+	BIO *bio = BIO_new( BIO_s_file() );
+	OT_ASSERT(NULL != bio);
+	BIO_read_filename( bio, strFilename.Get() );
+	
+	x509 = PEM_read_bio_X509(bio, NULL, NULL, NULL); 
+	
+	BIO_free_all(bio);
+	bio = NULL;
+	// -------------------------------------------------
+	
+	
+	if (x509 == NULL) 
+	{ 
+		OTLog::vError("Error reading x509 out of cert file: %s\n", strFilename.Get()); 
+		return false; 
+	}
+	
+	m_pKey = X509_get_pubkey(x509); 
+	X509_free(x509);  
+	x509 = NULL;
+	
+	if (m_pKey == NULL) 
+	{ 
+		OTLog::vError("Error reading public key from x509 from certfile: %s\n", 
+					  strFilename.Get()); 
+		return false; 
+	}
+	else
+	{
+		OTLog::vOutput(3, "Successfully loaded public key from x509 from certfile: %s\n", 
+					   strFilename.Get());
+		return true; 
+	}
+}
+
+
+
+
 // Load the private key from a .pem file
 bool OTAsymmetricKey::LoadPrivateKey(const OTString & strFilename)
 {
@@ -1167,7 +1183,6 @@ const EVP_PKEY * OTAsymmetricKey::GetKey() const
 {
 	return m_pKey;
 }
-
 
 
 

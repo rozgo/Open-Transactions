@@ -129,6 +129,22 @@ int OT_API_LoadWallet(const char * szPath); // actually returns BOOL
 
 
 
+// --------------------------------------------------
+// CREATE NYM  -- Create new User
+//
+// Creates a new Nym and adds it to the wallet.
+// (Including PUBLIC and PRIVATE KEYS.)
+//
+// Returns a new User ID (with files already created)
+// or NULL upon failure.
+//
+// Once it exists, use OT_API_createUserAccount() to
+// register your new Nym at any given Server. (Nearly all
+// server requests require this...)
+//
+const char * OT_API_CreateNym(void);
+
+
 
 // --------------------------------------------------
 

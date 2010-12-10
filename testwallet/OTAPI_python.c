@@ -2558,6 +2558,30 @@ SWIG_From_int  (int value)
 }
 
 
+SWIGINTERNINLINE PyObject *
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+{
+  if (carray) {
+    if (size > INT_MAX) {
+      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+      return pchar_descriptor ? 
+	SWIG_NewPointerObj((char *)(carray), pchar_descriptor, 0) : SWIG_Py_Void();
+    } else {
+      return PyString_FromStringAndSize(carray, (int)(size));
+    }
+  } else {
+    return SWIG_Py_Void();
+  }
+}
+
+
+SWIGINTERNINLINE PyObject * 
+SWIG_FromCharPtr(const char *cptr)
+{ 
+  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
+}
+
+
 #include <limits.h>
 #ifndef LLONG_MIN
 # define LLONG_MIN	LONG_LONG_MIN
@@ -2704,30 +2728,6 @@ SWIG_AsVal_int (PyObject * obj, int *val)
   return res;
 }
 
-
-SWIGINTERNINLINE PyObject *
-SWIG_FromCharPtrAndSize(const char* carray, size_t size)
-{
-  if (carray) {
-    if (size > INT_MAX) {
-      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
-      return pchar_descriptor ? 
-	SWIG_NewPointerObj((char *)(carray), pchar_descriptor, 0) : SWIG_Py_Void();
-    } else {
-      return PyString_FromStringAndSize(carray, (int)(size));
-    }
-  } else {
-    return SWIG_Py_Void();
-  }
-}
-
-
-SWIGINTERNINLINE PyObject * 
-SWIG_FromCharPtr(const char *cptr)
-{ 
-  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
-}
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -2777,6 +2777,19 @@ SWIGINTERN PyObject *_wrap_OT_API_LoadWallet(PyObject *SWIGUNUSEDPARM(self), PyO
   return resultobj;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_CreateNym(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":OT_API_CreateNym")) SWIG_fail;
+  result = (char *)OT_API_CreateNym();
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
   return NULL;
 }
 
@@ -6783,6 +6796,7 @@ fail:
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"OT_API_Init", _wrap_OT_API_Init, METH_VARARGS, NULL},
 	 { (char *)"OT_API_LoadWallet", _wrap_OT_API_LoadWallet, METH_VARARGS, NULL},
+	 { (char *)"OT_API_CreateNym", _wrap_OT_API_CreateNym, METH_VARARGS, NULL},
 	 { (char *)"OT_API_GetServerCount", _wrap_OT_API_GetServerCount, METH_VARARGS, NULL},
 	 { (char *)"OT_API_GetAssetTypeCount", _wrap_OT_API_GetAssetTypeCount, METH_VARARGS, NULL},
 	 { (char *)"OT_API_GetAccountCount", _wrap_OT_API_GetAccountCount, METH_VARARGS, NULL},

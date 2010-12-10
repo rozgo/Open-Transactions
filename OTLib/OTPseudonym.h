@@ -160,6 +160,11 @@ public:
 	bool VerifyPseudonym() const;
 
 	
+	// use this to actually generate a new key pair and assorted nym files.
+	//
+	bool GenerateNym();
+
+	
 	// This version WILL handle the bookends -----BEGIN PUBLIC KEY------ 
 	bool SetPublicKey(const OTString & strKey, bool bEscaped=true);
 	

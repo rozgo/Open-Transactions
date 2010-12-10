@@ -52,6 +52,7 @@ PHP_MINFO_FUNCTION(otapi);
 
 ZEND_NAMED_FUNCTION(_wrap_OT_API_Init);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_LoadWallet);
+ZEND_NAMED_FUNCTION(_wrap_OT_API_CreateNym);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_GetServerCount);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_GetAssetTypeCount);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_GetAccountCount);

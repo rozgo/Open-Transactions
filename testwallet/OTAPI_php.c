@@ -1014,6 +1014,28 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_OT_API_CreateNym) {
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 0) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  result = (char *)OT_API_CreateNym();
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value,result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_OT_API_GetServerCount) {
   int result;
   
@@ -4487,6 +4509,7 @@ fail:
 static function_entry otapi_functions[] = {
  ZEND_NAMED_FE(ot_api_init,_wrap_OT_API_Init,NULL)
  ZEND_NAMED_FE(ot_api_loadwallet,_wrap_OT_API_LoadWallet,NULL)
+ ZEND_NAMED_FE(ot_api_createnym,_wrap_OT_API_CreateNym,NULL)
  ZEND_NAMED_FE(ot_api_getservercount,_wrap_OT_API_GetServerCount,NULL)
  ZEND_NAMED_FE(ot_api_getassettypecount,_wrap_OT_API_GetAssetTypeCount,NULL)
  ZEND_NAMED_FE(ot_api_getaccountcount,_wrap_OT_API_GetAccountCount,NULL)

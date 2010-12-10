@@ -108,6 +108,8 @@ public:
 	
 	const EVP_PKEY * GetKey() const;
 	
+	void SetKey(EVP_PKEY * pKey);
+	
 	bool LoadPrivateKey(const OTString & strFilename);
 	bool LoadPublicKey(const OTString & strFilename);
 	
