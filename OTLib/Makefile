@@ -145,7 +145,7 @@ LUCRESOURCES = Lucre/bankimp.cpp
 
 IRRXMLSOURCES = irrxml/irrXML.cpp      
 
-CSOURCES = easyzlib.c
+CSOURCES = easyzlib.c mkcert.c
 
 CXXSOURCES = $(LUCRESOURCES) $(IRRXMLSOURCES) \
 			 OTData.cpp \

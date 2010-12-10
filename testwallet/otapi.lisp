@@ -54,6 +54,8 @@
 (cffi:defcfun ("OT_API_LoadWallet" OT_API_LoadWallet) :int
   (szPath :string))
 
+(cffi:defcfun ("OT_API_CreateNym" OT_API_CreateNym) :string)
+
 (cffi:defcfun ("OT_API_GetServerCount" OT_API_GetServerCount) :int)
 
 (cffi:defcfun ("OT_API_GetAssetTypeCount" OT_API_GetAssetTypeCount) :int)

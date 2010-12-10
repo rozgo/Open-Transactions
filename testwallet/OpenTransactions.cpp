@@ -416,6 +416,27 @@ OTAccount * OT_API::GetAccount(const OTIdentifier & THE_ID)
 
 
 
+// returns a new nym (with key pair) and files created. (Or NULL.)
+//
+// CALLER is responsible to delete!
+//
+OTPseudonym * OT_API::CreateNym()
+{
+	OTPseudonym * pNym = new OTPseudonym;
+	
+	OT_ASSERT(NULL != pNym);
+	
+	if (false == pNym->GenerateNym()) 
+	{
+		delete pNym;
+		return NULL;
+	}
+
+	return pNym;
+}
+
+
+
 
 
 // The Nym's Name is basically just a client-side label.

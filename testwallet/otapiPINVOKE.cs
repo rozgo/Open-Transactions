@@ -190,6 +190,9 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_LoadWallet")]
   public static extern int OT_API_LoadWallet(string jarg1);
 
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_CreateNym")]
+  public static extern string OT_API_CreateNym();
+
   [DllImport("otapi", EntryPoint="CSharp_OT_API_GetServerCount")]
   public static extern int OT_API_GetServerCount();
 

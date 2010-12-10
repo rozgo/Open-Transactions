@@ -217,6 +217,18 @@ SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1LoadWallet(JNIEnv *jenv, jclass j
 }
 
 
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1CreateNym(JNIEnv *jenv, jclass jcls) {
+  jstring jresult = 0 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (char *)OT_API_CreateNym();
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
+  return jresult;
+}
+
+
 SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1GetServerCount(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;

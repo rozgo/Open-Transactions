@@ -51,6 +51,7 @@ package otapi;
 
 *OT_API_Init = *otapic::OT_API_Init;
 *OT_API_LoadWallet = *otapic::OT_API_LoadWallet;
+*OT_API_CreateNym = *otapic::OT_API_CreateNym;
 *OT_API_GetServerCount = *otapic::OT_API_GetServerCount;
 *OT_API_GetAssetTypeCount = *otapic::OT_API_GetAssetTypeCount;
 *OT_API_GetAccountCount = *otapic::OT_API_GetAccountCount;

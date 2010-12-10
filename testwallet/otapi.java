@@ -16,6 +16,10 @@ public class otapi {
     return otapiJNI.OT_API_LoadWallet(szPath);
   }
 
+  public static String OT_API_CreateNym() {
+    return otapiJNI.OT_API_CreateNym();
+  }
+
   public static int OT_API_GetServerCount() {
     return otapiJNI.OT_API_GetServerCount();
   }

@@ -1652,6 +1652,20 @@ SWIG_From_int  (int value)
 }
 
 
+SWIGINTERNINLINE Tcl_Obj *
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+{
+  return (size < INT_MAX) ? Tcl_NewStringObj(carray, (int)(size)) : NULL;
+}
+
+
+SWIGINTERNINLINE Tcl_Obj * 
+SWIG_FromCharPtr(const char *cptr)
+{ 
+  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
+}
+
+
 SWIGINTERN int
 SWIG_AsVal_long SWIG_TCL_DECL_ARGS_2(Tcl_Obj *obj, long* val)
 {
@@ -1677,20 +1691,6 @@ SWIG_AsVal_int SWIG_TCL_DECL_ARGS_2(Tcl_Obj * obj, int *val)
     }
   }  
   return res;
-}
-
-
-SWIGINTERNINLINE Tcl_Obj *
-SWIG_FromCharPtrAndSize(const char* carray, size_t size)
-{
-  return (size < INT_MAX) ? Tcl_NewStringObj(carray, (int)(size)) : NULL;
-}
-
-
-SWIGINTERNINLINE Tcl_Obj * 
-SWIG_FromCharPtr(const char *cptr)
-{ 
-  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
 }
 
 #ifdef __cplusplus
@@ -1740,6 +1740,19 @@ _wrap_OT_API_LoadWallet(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, in
   return TCL_OK;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OT_API_CreateNym(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  char *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,":OT_API_CreateNym ") == TCL_ERROR) SWIG_fail;
+  result = (char *)OT_API_CreateNym();
+  Tcl_SetObjResult(interp,SWIG_FromCharPtr((const char *)result));
+  return TCL_OK;
+fail:
   return TCL_ERROR;
 }
 
@@ -5501,6 +5514,7 @@ fail:
 static swig_command_info swig_commands[] = {
     { SWIG_prefix "OT_API_Init", (swig_wrapper_func) _wrap_OT_API_Init, NULL},
     { SWIG_prefix "OT_API_LoadWallet", (swig_wrapper_func) _wrap_OT_API_LoadWallet, NULL},
+    { SWIG_prefix "OT_API_CreateNym", (swig_wrapper_func) _wrap_OT_API_CreateNym, NULL},
     { SWIG_prefix "OT_API_GetServerCount", (swig_wrapper_func) _wrap_OT_API_GetServerCount, NULL},
     { SWIG_prefix "OT_API_GetAssetTypeCount", (swig_wrapper_func) _wrap_OT_API_GetAssetTypeCount, NULL},
     { SWIG_prefix "OT_API_GetAccountCount", (swig_wrapper_func) _wrap_OT_API_GetAccountCount, NULL},

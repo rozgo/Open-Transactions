@@ -50,6 +50,7 @@ del types
 
 OT_API_Init = _otapi.OT_API_Init
 OT_API_LoadWallet = _otapi.OT_API_LoadWallet
+OT_API_CreateNym = _otapi.OT_API_CreateNym
 OT_API_GetServerCount = _otapi.OT_API_GetServerCount
 OT_API_GetAssetTypeCount = _otapi.OT_API_GetAssetTypeCount
 OT_API_GetAccountCount = _otapi.OT_API_GetAccountCount
