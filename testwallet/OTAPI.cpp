@@ -4357,9 +4357,8 @@ const char * OT_API_Message_GetLedger(const char * THE_MESSAGE)
 		return NULL;
 	}
 	
-	OTString strOutput;
 	// The ledger is stored in the Payload, we'll grab it into the String.
-	theMessage.m_ascPayload.GetString(strOutput); 
+	OTString strOutput(theMessage.m_ascPayload);
 
 	if (!strOutput.Exists())
 	{

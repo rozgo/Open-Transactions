@@ -268,7 +268,8 @@ OTString::OTString(const OTIdentifier & theValue)
 {
 	Initialize();
 	
-	theValue.GetString(*this);
+	if (theValue.GetSize() > 0)
+		theValue.GetString(*this);
 }
 
 OTString::OTString(const OTContract & theValue)
@@ -286,7 +287,8 @@ OTString::OTString(const OTASCIIArmor & strValue)
 {
 	Initialize();
 	
-	strValue.GetString(*this);
+	if (strValue.Exists())
+		strValue.GetString(*this);
 }
 
 // This version base64-DECODES the ascii-armored signature that's passed in,
@@ -301,7 +303,8 @@ OTString::OTString(const OTSignature & strValue)
 {
 	Initialize();
 	
-	strValue.GetString(*this);
+	if (strValue.Exists())
+		strValue.GetString(*this);
 }
 
 
@@ -593,11 +596,12 @@ void OTString::Set(const OTString & strBuf)
 {
   Release();
   
-  if (strBuf.Exists()) {
+  if (strBuf.Exists()) 
+  {
 	m_lLength = strBuf.m_lLength;
   
 	m_strBuffer = str_dup2(strBuf.m_strBuffer, m_lLength);
-	}
+  }
 }
 
 void OTString::Format(const char *arg, ...)
