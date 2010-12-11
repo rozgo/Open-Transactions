@@ -3,6 +3,8 @@ NOTES on the Version:
 
 // ---------------------------------------------------------------------
 
+   0.42 --- More bug fixes, plus added OT_API_CreateNym() (finally).
+
    0.41 --- Bug fixes in support of API, added various transaction
             types, receipt types, item types, to get full transfer
             receipt process working end-to-end.

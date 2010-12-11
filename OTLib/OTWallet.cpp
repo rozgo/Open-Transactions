@@ -107,7 +107,7 @@ using namespace io;
 
 
 // TODO remove this pTemporaryNym variable, used for testing only.
-extern OTPseudonym			* g_pTemporaryNym; 
+extern OTPseudonym	* g_pTemporaryNym; 
 
 
 
@@ -657,9 +657,10 @@ bool OTWallet::SaveWallet(const char * szFilename/*=NULL*/)
 //
 void OTWallet::AddNym(const OTPseudonym & theNym)
 {
-	g_pTemporaryNym = (OTPseudonym *)&theNym; // TODO remove this temporary line used for testing only.	
+	// TODO remove this temporary block, used for testing only.	
+	if (NULL == g_pTemporaryNym)
+		g_pTemporaryNym = (OTPseudonym *)&theNym; 
 
-	
 	
 	const OTIdentifier	NYM_ID(theNym);
 
@@ -676,11 +677,14 @@ void OTWallet::AddNym(const OTPseudonym & theNym)
 		
 		if (aNymID == NYM_ID)
 		{
+			OTString strName(pNym->GetNymName());
+			((OTPseudonym &)theNym).SetNymName(strName);
+			
 			m_mapNyms.erase(ii);
 			delete pNym;
 			pNym = NULL;
 			
-			OTLog::Error("Error: Adding Nym to wallet when there was already one there with same ID...\n");
+//			OTLog::Error("Error: Adding Nym to wallet when there was already one there with same ID...\n");
 			
 			break;
 		}
@@ -711,6 +715,12 @@ void OTWallet::AddAccount(const OTAccount & theAcct)
 		
 		if (anAccountID == ACCOUNT_ID)
 		{
+			OTString strName;
+			pAccount->GetName(strName);
+			
+			if (strName.Exists())
+				((OTAccount &)theAcct).SetName(strName);
+						
 			m_mapAccounts.erase(ii);
 			delete pAccount;
 			pAccount = NULL;
