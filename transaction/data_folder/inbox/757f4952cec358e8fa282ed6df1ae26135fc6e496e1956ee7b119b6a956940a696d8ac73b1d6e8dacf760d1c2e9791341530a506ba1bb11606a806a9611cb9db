@@ -9,11 +9,11 @@ serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4
 
 </accountLedger>
 -----BEGIN LEDGER SIGNATURE-----
-Version: Open Transactions 0.40
+Version: Open Transactions 0.42
 Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
 
-YPiPkwgatJkALmx8ODfw4JmbJPaO6Irq+FjPeHiiCT34N5afAvgKBAMVxTrmSbM9
-o4jpC+UTGG/kAQ7hKP1o25u6i2K4aAVAwwp+D12YDW/aUKN7/EISFlOHTL0q6qsz
-Y4rR4gLt4Ron0Tl/XxMC1Pq0ArPHfYAbS4QNzMrwywU=
+Aab9JPsGq8e5GbB9yWIJHmMLixxN51nwq/Suw/ysqIuntlVuZ9pz1n+Oko0M1qmJ
+7uzf8qwFAazHKZZqL1jafhwUeeqLwDy1PQLp4qPkB4HnK1Bh+CssaqJ1guWNk7zy
+N6f2ZBpngr+v2gmDfbYL5Eex1GxAOwUH+RCu3L1Lvyg=
 -----END LEDGER SIGNATURE-----
 

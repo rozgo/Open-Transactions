@@ -190,36 +190,30 @@ int OTPurse::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		
 		return 1;
 	}
-	else if (!strcmp("token", xml->getNodeName()))
-	{
-		// go to the next node and read the text.
-		xml->read();
+	
+	else if (!strcmp("token", xml->getNodeName())) 
+	{		
+		OTASCIIArmor * pArmor = new OTASCIIArmor;
 		
-		if (EXN_TEXT == xml->getNodeType())
+		OT_ASSERT(NULL != pArmor);
+		
+		if (!LoadEncodedTextField(xml, *pArmor) || !pArmor->Exists())
 		{
-			OTString strNodeData = xml->getNodeData();
-			OTASCIIArmor * pArmor = new OTASCIIArmor();
-
-			// Sometimes the XML reads up the data with a prepended newline.
-			// This screws up my own objects which expect a consistent in/out
-			// So I'm checking here for that prepended newline, and removing it.
-			char cNewline;
-			if (strNodeData.At(0, cNewline))
-			{
-				if ('\n' == cNewline)
-					pArmor->Set(strNodeData.Get() + 1); // the +1 puts us past the damned prepended newline 
-				else
-					pArmor->Set(strNodeData);  // else the data was fine so grab it as-is
-			}
-
-			m_dequeTokens.push_front(pArmor);
-			return 1;
-		}
-		else {
-			OTLog::Error("Error in OTPurse::ProcessXMLNode: missing text for token.\n");
+			OTLog::Error("Error in OTPurse::ProcessXMLNode: token field without value.\n");
+			
+			delete pArmor;
+			pArmor = NULL;
+			
 			return (-1); // error condition
 		}
-	}	
+		else 
+		{			
+			m_dequeTokens.push_front(pArmor);
+		}
+		
+		return 1;
+	}
+
 	return 0;
 }
 

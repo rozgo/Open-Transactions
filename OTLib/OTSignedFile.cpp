@@ -149,35 +149,9 @@ int OTSignedFile::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 	}
 	
 	else if (!strcmp("filePayload", xml->getNodeName())) 
-	{
-		// go to the next node and read the text.
-		xml->read();
-		
-		if (EXN_TEXT == xml->getNodeType())
+	{		
+		if (false == LoadEncodedTextField(xml, m_strSignedFilePayload))
 		{
-			OTString strNodeData = xml->getNodeData();
-			
-			// Sometimes the XML reads up the data with a prepended newline.
-			// This screws up my own objects which expect a consistent in/out
-			// So I'm checking here for that prepended newline, and removing it.
-			char cNewline;
-			if (strNodeData.At(0, cNewline))
-			{
-				OTASCIIArmor ascNodeData;
-				
-				if ('\n' == cNewline)
-				{
-					ascNodeData.Set(strNodeData.Get() + 1);
-					ascNodeData.GetString(m_strSignedFilePayload, true); // linebreaks = true
-				}
-				else
-				{
-					ascNodeData.Set(strNodeData.Get());
-					ascNodeData.GetString(m_strSignedFilePayload, true); // linebreaks = true
-				}
-			}
-		}
-		else {
 			OTLog::Error("Error in OTSignedFile::ProcessXMLNode: filePayload field without value.\n");
 			return (-1); // error condition
 		}

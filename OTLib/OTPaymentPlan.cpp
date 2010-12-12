@@ -231,42 +231,16 @@ int OTPaymentPlan::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 	}
 	
 	else if (!strcmp("consideration", xml->getNodeName())) 
-	{
-		// go to the next node and read the text.
-		xml->read();
-		
-		if (EXN_TEXT == xml->getNodeType())
+	{		
+		if (false == LoadEncodedTextField(xml, m_strConsideration))
 		{
-			OTString strNodeData = xml->getNodeData();
-			
-			// Sometimes the XML reads up the data with a prepended newline.
-			// This screws up my own objects which expect a consistent in/out
-			// So I'm checking here for that prepended newline, and removing it.
-			char cNewline;
-			if (strNodeData.At(0, cNewline))
-			{
-				OTASCIIArmor ascNodeData;
-				
-				if ('\n' == cNewline)
-				{
-					ascNodeData.Set(strNodeData.Get() + 1);
-					ascNodeData.GetString(m_strConsideration, true); // linebreaks = true
-				}
-				else
-				{
-					ascNodeData.Set(strNodeData.Get());
-					ascNodeData.GetString(m_strConsideration, true); // linebreaks = true
-				}
-			}
-		}
-		else {
 			OTLog::Error("Error in OTPaymentPlan::ProcessXMLNode: consideration field without value.\n");
 			return (-1); // error condition
 		}
 		
 		nReturnVal = 1;
 	}
-	
+		
 	return nReturnVal;
 }
 

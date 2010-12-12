@@ -7,32 +7,6 @@ Hash: SAMY
  version="1.0"
  serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de" >
 
-<cronItem>
-eJzNVdtSG0kM3ef5ChevFHHfL1RIyix2ArGNNxhIeFN3q/EkvjEeY+DrV4NJMFtb
-+7zz4pmjlnR0pJYPDug57n46HbYuTj8NuyetUef7oDsct0b9zrAxHhSfYTU5bF10
-Bt+L4v3Hh9m0dY/VqlzMj/b4O7b38QPBcFshznBeF2+NRWuFFSGnJ0d7KkaVkmYx
-GLDJR5uYFooh8wmyCJhj4s5LyZPxwGy2KXGOyRlvbEIuos85KZRRJMsSSxaYcJ6j
-cCyLlHlOmWmtpHbGKYJCtkHapIT3kExCIgOrFdbjxyU2fLxxzARltdWJa5eF4Ckk
-75gQOoTgjUZukuLIXRAyUO7AlUXnfHJeCDBOC42Sa+bIjJbyapa8FYZlZwR3MkRg
-LmRP2WV22YAIlMR7LzCBeBZnnrDqxFg3hIhJVl6LiJGKQJdBODppqDZAYbjUORpU
-3iD32iDawLknMenDKwakU3IQrQykILoEMVvDEo8CvfVcKq4lA001Aw/kapgBUgC8
-4TwGn8JvQperbccsOedsNNiMASIACwGClTlRpVKgMYIhvfKsOEUJ1EQJSWvi4XlS
-WUcIWkCMzkZmE3ieQ4rENQFpJZSnUUAWJJiMNhmTTSCdMHilPQ86EaEKY7ksabB+
-icStAkNEUFtwkGNw9EPyM2ApOs0djzwbYaizyXHJSKisg87eUVdN8ii1RMaVwpio
-Q6C8jMhEDs1IKi40xJCIOEYbQ6ZJVJwmNTVVWx9C3uX0P9KprmC+gljTzRuuZ0TJ
-NZcvVggNdAI1knTCc2FoYCWZ7mFapl61mO3g7Bc+XmxRSeNIaKu54uW8rEuYjuBx
-e8/TbkzBm5gwW6znNYHMe/qcr2cBq/PcqWucLevV0V6ToPE7z31Y1S/4K/znYrac
-Yo1pJ65qynjF62qNe612Q2i5ZTKawvxX6hFWL/waEk3YupzhMdYbxPmLhWjIxrIk
-v4saqvqNOMLKF1sf57f1ZEtuBg/Dxas/2+W0a9CcLBnK6Vv4bdmvDJ9TaiHe2nvP
-/v92alt3XMxXJd3S585+KPBs07+4YOvH+NCvRex0jnum86COivftf5wk5Pee/lAc
-vK7+3Z3//D/QGV9+7W63/9V2nR+2zpc4b41fx2zVYu+kL6hnTbzD1qSul4ft9m1Z
-T9bhHcnT7uF0utiQyz1OsWo3AQ52A7Q35c+yKHo34c+zsxu3XExOji9/nH1pP3V4
-d+T2B2mNw00tzqafu3o8vLy/OB9f/hivh9fLzzf8bLaP+49P81VxJ0//cp8Gd7Or
-9OW2rAabRdl+7F5f/0xwfX4zGKgJW2g++fH1cmK/lXqse4+bio9m/X286t7En8WJ
-n7UnN9cDeOp9i33/JB6ezkd3axmf/MOp8naQV+rqjvM7x462unWHJ/+pWvHH38Z8
-L2I=
-</cronItem>
-
 <transactionNum value="831" />
 
 <transactionNum value="832" />
@@ -75,11 +49,11 @@ L2I=
 
 </cron>
 -----BEGIN CRON SIGNATURE-----
-Version: Open Transactions 0.39
+Version: Open Transactions 0.41
 Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
 
-be8V9Pq5TZx24S7/RQyfDop5tRGCTEDOE33Mxy8600V0tIr+Wfe7d6/z71cVEA7+
-T6HYDdEJCoWSIifnteg7kzr6xfZs+hWRVt69WlanzX18T+4n5SMLZ05Msm6Gd0Bz
-3SfsADjGCl1K1OaRmVewqD2x6Zx8HzZ2lVxRovnAjI0=
+gsDHKJUd8Fy6Oj2XHbGHPRWCiumxdVzG5cNKyPjgtuS1Yphi7qLiOn0a45kCkU8X
+8p7Ac09yA4Rk0E4mZ/46MBZ+xaJnYFU5aJUWMm963XVrGs/5ExPBYmDRELWLCBEn
+ovZrkpCbK00cRqo69SaEGZ5L5YibACT1hdWnlIusjfo=
 -----END CRON SIGNATURE-----
 

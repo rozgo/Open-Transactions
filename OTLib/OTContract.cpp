@@ -1848,6 +1848,54 @@ bool OTContract::LoadContractXML()
 }
 
 
+
+
+// Loads it up and also decodes it to a string.
+bool OTContract::LoadEncodedTextField(IrrXMLReader*& xml, OTString & strOutput)
+{
+	OTASCIIArmor ascOutput;
+	
+	if (LoadEncodedTextField(xml, ascOutput) && ascOutput.GetLength() > 2)
+	{
+		return ascOutput.GetString(strOutput, true); // linebreaks = true
+	}
+	
+	return false;
+}
+
+// Loads it up and keeps it encoded in an ascii-armored object.
+bool OTContract::LoadEncodedTextField(IrrXMLReader*& xml, OTASCIIArmor & ascOutput)
+{
+	// go to the next node and read the text.
+	xml->read();
+	
+	if (EXN_TEXT == xml->getNodeType())
+	{
+		OTString strNodeData = xml->getNodeData();
+		
+		// Sometimes the XML reads up the data with a prepended newline.
+		// This screws up my own objects which expect a consistent in/out
+		// So I'm checking here for that prepended newline, and removing it.
+		char cNewline;
+		if (strNodeData.Exists() && strNodeData.GetLength() > 2 && strNodeData.At(0, cNewline))
+		{
+			if ('\n' == cNewline)
+			{
+				ascOutput.Set(strNodeData.Get() + 1);
+			}
+			else
+			{
+				ascOutput.Set(strNodeData.Get());
+			}
+			
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+
 // return -1 if error, 0 if nothing, and 1 if the node was processed.
 int OTContract::ProcessXMLNode(IrrXMLReader*& xml)
 {

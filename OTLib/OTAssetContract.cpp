@@ -288,38 +288,18 @@ int OTAssetContract::ProcessXMLNode(IrrXMLReader*& xml)
 				"Digital Basket Contract: %s\nContract version: %s\n----------\n", m_strName.Get(), m_strVersion.Get());
 		nReturnVal = 1;
 	}
-	else if (!strcmp("basketInfo", xml->getNodeName()))
-	{
-		// go to the next node and read the text.
-		xml->read();
-		
-		if (EXN_TEXT == xml->getNodeType())
+	
+	else if (!strcmp("basketInfo", xml->getNodeName())) 
+	{		
+		if (false == LoadEncodedTextField(xml, m_strBasketInfo))
 		{
-			OTString strNodeData = xml->getNodeData();
-			OTASCIIArmor theBasketArmor;			
-			
-			// Sometimes the XML reads up the data with a prepended newline.
-			// This screws up my own objects which expect a consistent in/out
-			// So I'm checking here for that prepended newline, and removing it.
-			char cNewline;
-			if (strNodeData.At(0, cNewline))
-			{
-				if ('\n' == cNewline)
-					theBasketArmor.Set(strNodeData.Get() + 1); // the +1 puts us past the damned prepended newline 
-				else
-					theBasketArmor.Set(strNodeData);  // else the data was fine so grab it as-is
-			}
-			
-			// Decode the ASCII-armored basket info into a string and store it in a member variable.
-			theBasketArmor.GetString(m_strBasketInfo);
-		}
-		else {
-			OTLog::Error("Error in OTAssetContract::ProcessXMLNode: basketInfo without value.\n");
+			OTLog::Error("Error in OTAssetContract::ProcessXMLNode: basketInfo field without value.\n");
 			return (-1); // error condition
 		}
 		
 		return 1;
 	}
+	
 	else if (!strcmp("issue", xml->getNodeName()))
 	{
 		m_strIssueCompany = xml->getAttributeValue("company");

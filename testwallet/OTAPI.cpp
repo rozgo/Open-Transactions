@@ -4199,13 +4199,15 @@ void OT_API_notarizeTransfer(const char * SERVER_ID,
 	OT_ASSERT_MSG(NULL != ACCT_FROM, "Null ACCT_FROM passed in.");
 	OT_ASSERT_MSG(NULL != ACCT_TO, "Null ACCT_TO passed in.");
 	OT_ASSERT_MSG(NULL != AMOUNT, "Null AMOUNT passed in.");
-	OT_ASSERT_MSG(NULL != NOTE, "Null NOTE passed in.");
 	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID);
 	OTIdentifier theFromAcct(ACCT_FROM), theToAcct(ACCT_TO);
 
-	OTString strAmount(AMOUNT), strNote(NOTE);
+	OTString strAmount(AMOUNT), strNote;
 
+	if (NULL != NOTE)
+		strNote.Set(NOTE);
+	
 	g_OT_API.notarizeTransfer(theServerID, theUserID, theFromAcct, theToAcct, strAmount, strNote);
 }
 
