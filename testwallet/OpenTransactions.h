@@ -179,6 +179,16 @@ public:
 						 const OTIdentifier &	SIGNER_NYM_ID,
 						 const OTString		&	ACCT_NEW_NAME);
 	
+	// The name is basically just a client-side label.
+	// This function lets you change it.
+	bool SetAssetType_Name(const OTIdentifier	&	ASSET_ID, 
+						   const OTString		&	STR_NEW_NAME);
+
+	// The name is basically just a client-side label.
+	// This function lets you change it.
+	bool SetServer_Name(const OTIdentifier	&	SERVER_ID, 
+						const OTString		&	STR_NEW_NAME);
+
 	// ----------------------------------------------------
 	
 	// Accessing local storage...

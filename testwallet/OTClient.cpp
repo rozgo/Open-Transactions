@@ -980,30 +980,12 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		// base64-Decode the server reply's payload into strContract
 		OTString strContract(theReply.m_ascPayload);
 		
-		
-//		OTLog::vError("CONTRACT FROM SERVER:  \n--->%s<---\n", strContract.Get());
-		
-		
-		
-		
-		OTString strFilename;
-		strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+		OTString strFilename;	// In this case the filename isn't actually used, since SaveToContractFolder will
+								// handle setting up the filename and overwrite it anyway. But I still prefer to set it
+								// up correctly, rather than pass a blank. I'm just funny like that.
+		strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
 						   OTLog::ContractFolder(),
 						   OTLog::PathSeparator(), theReply.m_strAssetID.Get());
-
-		bool bFolderExists = OTLog::ConfirmOrCreateFolder(OTLog::ContractFolder()); // <path>/contracts is where all contracts go.
-		
-		if (!bFolderExists)
-		{
-			OTLog::vError("Unable to create or confirm folder \"%s\" in order to get a contract:\n%s\n",
-						  OTLog::ContractFolder(), strFilename.Get());
-			return true;
-		}
-				
-		// Load the contract object from that string, and save it to file.
-//		OTAssetContract TEMP_contract(theReply.m_strAssetID, strFilename, theReply.m_strAssetID);
-//		if (TEMP_contract.LoadContractFromString(strContract))
-//			TEMP_contract.SaveContract(strFilename.Get());
 
 		OTAssetContract * pContract = new OTAssetContract(theReply.m_strAssetID, strFilename, theReply.m_strAssetID);
 		
@@ -1014,9 +996,6 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 //		if (pContract->LoadContract() && pContract->VerifyContract())
 		if (pContract->LoadContractFromString(strContract) && pContract->VerifyContract())
 		{
-			OTLog::Output(0, "Saving asset contract to disk...\n");
-			pContract->SaveContract(strFilename.Get());
-			
 			// Next make sure the wallet has this contract on its list...
 			OTWallet * pWallet;
 			
@@ -1024,8 +1003,6 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 			{
 				pWallet->AddAssetContract(*pContract);
 				pContract = NULL; // Success. The wallet "owns" it now, no need to clean it up.
-
-				m_pWallet->SaveWallet();
 			}
 		}
 		// cleanup
@@ -1836,13 +1813,81 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	
 	// ------------------------------------------------------------------------
 	
-	else if (OTClient::setNymName == requestedCommand) // SET NYM NAME
+	else if (OTClient::setAssetName == requestedCommand) // SET ASSET CONTRACT NAME (wallet label only)
+	{	
+		OT_ASSERT(NULL != m_pWallet);
+		
+		OTLog::Output(0, "Please enter an Asset Type ID: ");
+		// User input.
+		// I need a server ID
+		OTString strContractID;
+		strContractID.OTfgets(std::cin);
+		
+		const OTIdentifier theTargetID(strContractID);
+		
+		OTAssetContract * pTargetContract = m_pWallet->GetAssetContract(theTargetID);
+		
+		if (NULL != pTargetContract)
+		{
+			OTLog::Output(0, "Enter the new client-side \"name\" label for that asset type: ");
+			// User input.
+			// I need a name
+			OTString strNewName;
+			strNewName.OTfgets(std::cin);
+			
+			pTargetContract->SetName(strNewName);
+			
+			m_pWallet->SaveWallet(); // Only 'cause the server's name is stored here.
+		}
+		else 
+		{
+			OTLog::Output(0, "No Asset Contract found with that ID. Try 'load'.\n");
+		}
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	else if (OTClient::setServerName == requestedCommand) // SET SERVER CONTRACT NAME (wallet label only)
+	{	
+		OT_ASSERT(NULL != m_pWallet);
+		
+		OTLog::Output(0, "Please enter a Server ID: ");
+		// User input.
+		// I need a server ID
+		OTString strContractID;
+		strContractID.OTfgets(std::cin);
+		
+		const OTIdentifier theTargetID(strContractID);
+		
+		OTServerContract * pTargetContract = m_pWallet->GetServerContract(theTargetID);
+		
+		if (NULL != pTargetContract)
+		{
+			OTLog::Output(0, "Enter the new client-side \"name\" label for that transaction server: ");
+			// User input.
+			// I need a name
+			OTString strNewName;
+			strNewName.OTfgets(std::cin);
+			
+			pTargetContract->SetName(strNewName);
+			
+			m_pWallet->SaveWallet(); // Only 'cause the server's name is stored here.
+		}
+		else 
+		{
+			OTLog::Output(0, "No Server Contract found with that ID. Try 'load'.\n");
+		}
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	else if (OTClient::setNymName == requestedCommand) // SET NYM NAME (wallet label only)
 	{	
 		OT_ASSERT(NULL != m_pWallet);
 		
 		OTLog::Output(0, "Please enter a Nym ID: ");
 		// User input.
-		// I need an account
+		// I need a nym ID
 		OTString strNymID;
 		strNymID.OTfgets(std::cin);
 		
@@ -1877,7 +1922,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	
 	// ------------------------------------------------------------------------
 	
-	else if (OTClient::setAccountName == requestedCommand) // SET ACCOUNT NAME
+	else if (OTClient::setAccountName == requestedCommand) // SET ACCOUNT NAME (wallet label only)
 	{	
 		OT_ASSERT(NULL != m_pWallet);
 		

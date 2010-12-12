@@ -1005,6 +1005,42 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 			// ------------------------------------------------------------------------
 		}
 		
+		// set asset contract's name
+		else if (!strcmp(buf, "setassetname\n"))
+		{
+			OTLog::Output(0, "(User has instructed to set an Asset Contract's client-side name...)\n");
+			
+			// ------------------------------------------------------------------------------			
+			// if successful setting up the command payload...
+			
+			if (m_pClient->ProcessUserCommand(OTClient::setAssetName, theMessage, 
+											  *m_pNym, *m_pServerContract,
+											  NULL)) // NULL pAccount on this command.
+			{
+				//				bSendCommand = true; // No message sent.
+				//				bSendPayload = true; 
+			}
+			// ------------------------------------------------------------------------
+		}
+		
+		// set server contract's name
+		else if (!strcmp(buf, "setservername\n"))
+		{
+			OTLog::Output(0, "(User has instructed to set a Server Contract's client-side name...)\n");
+			
+			// ------------------------------------------------------------------------------			
+			// if successful setting up the command payload...
+			
+			if (m_pClient->ProcessUserCommand(OTClient::setServerName, theMessage, 
+											  *m_pNym, *m_pServerContract,
+											  NULL)) // NULL pAccount on this command.
+			{
+				//				bSendCommand = true; // No message sent.
+				//				bSendPayload = true; 
+			}
+			// ------------------------------------------------------------------------
+		}
+		
 		// set nym name
 		else if (!strcmp(buf, "setnymname\n"))
 		{

@@ -1015,6 +1015,40 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------
 			}
 			
+			// Set a Server Contract's client-side name (merely a label.) 
+			else if (!strcmp(buf, "setservername\n"))
+			{
+				OTLog::Output(0, "(User wants to set a Server Contract's client-side name...)\n");
+				
+				// ------------------------------------------------------------------------------			
+				// if successful setting up the command payload...
+				
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::setServerName, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
+				{
+					//					bSendCommand = true; // No message needed. Local data only.
+				}
+				// ------------------------------------------------------------------------
+			}
+			
+			// Set an Asset Contract's client-side name (merely a label.) 
+			else if (!strcmp(buf, "setassetname\n"))
+			{
+				OTLog::Output(0, "(User wants to set an Asset Contract's client-side name...)\n");
+				
+				// ------------------------------------------------------------------------------			
+				// if successful setting up the command payload...
+				
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::setAssetName, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
+				{
+					//					bSendCommand = true; // No message needed. Local data only.
+				}
+				// ------------------------------------------------------------------------
+			}
+			
 			// Set a Nym's client-side name (merely a label.) 
 			else if (!strcmp(buf, "setnymname\n"))
 			{

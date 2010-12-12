@@ -166,6 +166,8 @@ protected:
 public:
 	inline const char * GetHashType() const { return m_strSigHashType.Get(); }
 	
+	inline void SetIdentifier(const OTIdentifier & theID) { m_ID = theID; }
+	
 	OTContract();
 	OTContract(const OTString & name, const OTString & filename, const OTString & strID);
 	OTContract(const OTString & strID);
@@ -251,6 +253,8 @@ public:
 								// Separating these into two steps allows us to load contracts
 								// from other sources besides files.
 	
+	bool SaveToContractFolder(); // data_folder/contracts/Contract-ID
+
 	bool SaveContract(); // This saves the Contract to its own internal member string, m_strRawFile (and does
 						 // NOT actually save it to a file.)
 	bool SaveContract(OTString & strContract); // Saves the contract to any string you want to pass in.

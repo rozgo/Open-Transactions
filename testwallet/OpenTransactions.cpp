@@ -439,6 +439,85 @@ OTPseudonym * OT_API::CreateNym()
 
 
 
+// The Asset Type's Name is basically just a client-side label.
+// This function lets you change it.
+//
+// Returns success, true or false.
+//
+bool OT_API::SetAssetType_Name(const OTIdentifier	&	ASSET_ID, 
+							   const OTString		&	STR_NEW_NAME)
+{
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	OTAssetContract *	pContract	= GetAssetType(ASSET_ID);
+	OTWallet *			pWallet		= GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "No wallet loaded.\n");
+	}
+	else if (NULL == pContract)
+	{
+		OTString strOutput(ASSET_ID);
+		OTLog::vOutput(0, "No asset contract found with the ID: %s\n", strOutput.Get());
+	}
+	// Might want to put some more data validation on the name?
+	else if (!STR_NEW_NAME.Exists())
+	{
+		OTLog::vOutput(0, "Bad name: %s\n", STR_NEW_NAME.Get());
+	}
+	else
+	{
+		pContract->SetName(STR_NEW_NAME);
+		
+		return pWallet->SaveWallet(); // Only cause the name is actually stored here.
+	}
+	
+	return false;
+}
+
+
+
+// The Server's Name is basically just a client-side label.
+// This function lets you change it.
+//
+// Returns success, true or false.
+//
+bool OT_API::SetServer_Name(const OTIdentifier	&	SERVER_ID, 
+							const OTString		&	STR_NEW_NAME)
+{
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	OTServerContract *	pContract	= GetServer(SERVER_ID);
+	OTWallet *			pWallet		= GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "No wallet loaded.\n");
+	}
+	else if (NULL == pContract)
+	{
+		OTString strOutput(SERVER_ID);
+		OTLog::vOutput(0, "No server contract found with the ID: %s\n", strOutput.Get());
+	}
+	// Might want to put some more data validation on the name?
+	else if (!STR_NEW_NAME.Exists())
+	{
+		OTLog::vOutput(0, "Bad name: %s\n", STR_NEW_NAME.Get());
+	}
+	else
+	{
+		pContract->SetName(STR_NEW_NAME);
+		
+		return pWallet->SaveWallet(); // Only cause the name is actually stored here.
+	}
+	
+	return false;
+}
+
+
+
+
 // The Nym's Name is basically just a client-side label.
 // This function lets you change it.
 //
@@ -479,7 +558,7 @@ bool OT_API::SetNym_Name(const OTIdentifier	&	NYM_ID,
 		OTString strOldName(pNym->GetNymName()); // just in case.
 		
 		pNym->SetNymName(NYM_NEW_NAME);
-				
+		
 		if (pNym->SaveSignedNymfile(*pSignerNym))
 		{
 			return pWallet->SaveWallet(); // Only cause the nym's name is stored here, too.
@@ -492,7 +571,7 @@ bool OT_API::SetNym_Name(const OTIdentifier	&	NYM_ID,
 }
 
 
-// The Assert Account's Name is basically just a client-side label.
+// The Asset Account's Name is basically just a client-side label.
 // This function lets you change it.
 //
 // Returns success, true or false.

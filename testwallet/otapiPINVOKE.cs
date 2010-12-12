@@ -193,6 +193,12 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_CreateNym")]
   public static extern string OT_API_CreateNym();
 
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_AddServerContract")]
+  public static extern int OT_API_AddServerContract(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_AddAssetContract")]
+  public static extern int OT_API_AddAssetContract(string jarg1);
+
   [DllImport("otapi", EntryPoint="CSharp_OT_API_GetServerCount")]
   public static extern int OT_API_GetServerCount();
 
@@ -232,9 +238,6 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_GetAccountWallet_AssetTypeID")]
   public static extern string OT_API_GetAccountWallet_AssetTypeID(string jarg1);
 
-  [DllImport("otapi", EntryPoint="CSharp_OT_API_SetAccountWallet_Name")]
-  public static extern int OT_API_SetAccountWallet_Name(string jarg1, string jarg2, string jarg3);
-
   [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_TransactionNumCount")]
   public static extern int OT_API_GetNym_TransactionNumCount(string jarg1, string jarg2);
 
@@ -246,6 +249,15 @@ class otapiPINVOKE {
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_SetNym_Name")]
   public static extern int OT_API_SetNym_Name(string jarg1, string jarg2, string jarg3);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_SetAccountWallet_Name")]
+  public static extern int OT_API_SetAccountWallet_Name(string jarg1, string jarg2, string jarg3);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_SetAssetType_Name")]
+  public static extern int OT_API_SetAssetType_Name(string jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_SetServer_Name")]
+  public static extern int OT_API_SetServer_Name(string jarg1, string jarg2);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_VerifyAndRetrieveXMLContents")]
   public static extern string OT_API_VerifyAndRetrieveXMLContents(string jarg1, string jarg2);

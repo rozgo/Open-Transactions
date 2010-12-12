@@ -56,6 +56,12 @@
 
 (cffi:defcfun ("OT_API_CreateNym" OT_API_CreateNym) :string)
 
+(cffi:defcfun ("OT_API_AddServerContract" OT_API_AddServerContract) :int
+  (szContract :string))
+
+(cffi:defcfun ("OT_API_AddAssetContract" OT_API_AddAssetContract) :int
+  (szContract :string))
+
 (cffi:defcfun ("OT_API_GetServerCount" OT_API_GetServerCount) :int)
 
 (cffi:defcfun ("OT_API_GetAssetTypeCount" OT_API_GetAssetTypeCount) :int)
@@ -91,11 +97,6 @@
 (cffi:defcfun ("OT_API_GetAccountWallet_AssetTypeID" OT_API_GetAccountWallet_AssetTypeID) :string
   (ACCOUNT_ID :string))
 
-(cffi:defcfun ("OT_API_SetAccountWallet_Name" OT_API_SetAccountWallet_Name) :int
-  (ACCT_ID :string)
-  (SIGNER_NYM_ID :string)
-  (ACCT_NEW_NAME :string))
-
 (cffi:defcfun ("OT_API_GetNym_TransactionNumCount" OT_API_GetNym_TransactionNumCount) :int
   (SERVER_ID :string)
   (NYM_ID :string))
@@ -110,6 +111,19 @@
   (NYM_ID :string)
   (SIGNER_NYM_ID :string)
   (NYM_NEW_NAME :string))
+
+(cffi:defcfun ("OT_API_SetAccountWallet_Name" OT_API_SetAccountWallet_Name) :int
+  (ACCT_ID :string)
+  (SIGNER_NYM_ID :string)
+  (ACCT_NEW_NAME :string))
+
+(cffi:defcfun ("OT_API_SetAssetType_Name" OT_API_SetAssetType_Name) :int
+  (ASSET_ID :string)
+  (STR_NEW_NAME :string))
+
+(cffi:defcfun ("OT_API_SetServer_Name" OT_API_SetServer_Name) :int
+  (SERVER_ID :string)
+  (STR_NEW_NAME :string))
 
 (cffi:defcfun ("OT_API_VerifyAndRetrieveXMLContents" OT_API_VerifyAndRetrieveXMLContents) :string
   (THE_CONTRACT :string)

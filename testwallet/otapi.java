@@ -20,6 +20,14 @@ public class otapi {
     return otapiJNI.OT_API_CreateNym();
   }
 
+  public static int OT_API_AddServerContract(String szContract) {
+    return otapiJNI.OT_API_AddServerContract(szContract);
+  }
+
+  public static int OT_API_AddAssetContract(String szContract) {
+    return otapiJNI.OT_API_AddAssetContract(szContract);
+  }
+
   public static int OT_API_GetServerCount() {
     return otapiJNI.OT_API_GetServerCount();
   }
@@ -72,10 +80,6 @@ public class otapi {
     return otapiJNI.OT_API_GetAccountWallet_AssetTypeID(ACCOUNT_ID);
   }
 
-  public static int OT_API_SetAccountWallet_Name(String ACCT_ID, String SIGNER_NYM_ID, String ACCT_NEW_NAME) {
-    return otapiJNI.OT_API_SetAccountWallet_Name(ACCT_ID, SIGNER_NYM_ID, ACCT_NEW_NAME);
-  }
-
   public static int OT_API_GetNym_TransactionNumCount(String SERVER_ID, String NYM_ID) {
     return otapiJNI.OT_API_GetNym_TransactionNumCount(SERVER_ID, NYM_ID);
   }
@@ -90,6 +94,18 @@ public class otapi {
 
   public static int OT_API_SetNym_Name(String NYM_ID, String SIGNER_NYM_ID, String NYM_NEW_NAME) {
     return otapiJNI.OT_API_SetNym_Name(NYM_ID, SIGNER_NYM_ID, NYM_NEW_NAME);
+  }
+
+  public static int OT_API_SetAccountWallet_Name(String ACCT_ID, String SIGNER_NYM_ID, String ACCT_NEW_NAME) {
+    return otapiJNI.OT_API_SetAccountWallet_Name(ACCT_ID, SIGNER_NYM_ID, ACCT_NEW_NAME);
+  }
+
+  public static int OT_API_SetAssetType_Name(String ASSET_ID, String STR_NEW_NAME) {
+    return otapiJNI.OT_API_SetAssetType_Name(ASSET_ID, STR_NEW_NAME);
+  }
+
+  public static int OT_API_SetServer_Name(String SERVER_ID, String STR_NEW_NAME) {
+    return otapiJNI.OT_API_SetServer_Name(SERVER_ID, STR_NEW_NAME);
   }
 
   public static String OT_API_VerifyAndRetrieveXMLContents(String THE_CONTRACT, String USER_ID) {

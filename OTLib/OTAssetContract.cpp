@@ -207,14 +207,20 @@ bool OTAssetContract::CreateBasket(OTBasket & theBasket, OTPseudonym & theSigner
 
 	
 
-
 bool OTAssetContract::SaveContractWallet(OTString & strContents) const
 {
 	OTString strID(m_ID);
 	
+	OTASCIIArmor ascName;
+	
+	if (m_strName.Exists()) // name is in the clear in memory, and base64 in storage.
+	{
+		ascName.SetString(m_strName, false); // linebreaks == false
+	}
+	
 	strContents.Concatenate("<assetType name=\"%s\"\n"
 							" assetTypeID=\"%s\" />\n\n",
-							m_strName.Get(),
+							m_strName.Exists() ? ascName.Get() : "",
 							strID.Get());
 	
 	return true;

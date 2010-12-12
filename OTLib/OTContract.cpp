@@ -341,6 +341,40 @@ OTContract::~OTContract()
 	Release();
 }
 
+
+
+
+
+bool OTContract::SaveToContractFolder()
+{
+	OTString strID, strFilename;
+	
+	GetIdentifier(strID);
+	
+	strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+					   OTLog::ContractFolder(),
+					   OTLog::PathSeparator(), strID.Get());
+	
+	bool bFolderExists = OTLog::ConfirmOrCreateFolder(OTLog::ContractFolder()); // <path>/contracts is where all contracts go.
+	
+	if (!bFolderExists)
+	{
+		OTLog::vError("Unable to create or confirm folder \"%s\" in SaveToContractFolder:\n%s\n",
+					  OTLog::ContractFolder(), strFilename.Get());
+		return false;
+	}
+	
+	m_strFilename = strFilename;
+	
+	OTLog::Output(2, "OTContract::SaveToContractFolder: Saving asset contract to disk...\n");
+	
+	return SaveContract(strFilename.Get());
+}
+
+
+
+
+
 void OTContract::GetFilename(OTString & strFilename)
 {
 	strFilename = m_strFilename;
@@ -1829,13 +1863,15 @@ int OTContract::ProcessXMLNode(IrrXMLReader*& xml)
 	
 	if (!strcmp("entity", xml->getNodeName()))
 	{					
-		strEntityShortName = xml->getAttributeValue("shortname");	
+//		strEntityShortName = xml->getAttributeValue("shortname");
+		if (!m_strName.Exists()) // only set it if it's not already set, since the wallet may have already had a user label set.
+			m_strName = xml->getAttributeValue("shortname");	// m_strName may later be changed again in OTAssetContract::ProcessXMLNode
 		strEntityLongName = xml->getAttributeValue("longname"); 
 		strEntityEmail = xml->getAttributeValue("email");
 		
 		OTLog::vOutput(1, "Loaded Entity, shortname: %s\nLongname: %s, email: %s\n----------\n", 
 				strEntityShortName.Get(), strEntityLongName.Get(), strEntityEmail.Get());
-		
+
 		return 1;
 	}
 	else if (!strcmp("condition", xml->getNodeName()))
