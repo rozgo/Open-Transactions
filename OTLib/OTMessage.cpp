@@ -1859,36 +1859,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		
 		if (EXN_ELEMENT == xml->getNodeType())  
 		{
-			if (!strcmp("responseNym", xml->getNodeName()))
-			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
+			if (!strcmp("responseNym", xml->getNodeName())) 
+			{		
+				if (false == LoadEncodedTextField(xml, m_ascPayload))
 				{
-					OTString strNodeData = xml->getNodeData();
-					
-					// Sometimes the XML reads up the data with a prepended newline.
-					// This screws up my own objects which expect a consistent in/out
-					// So I'm checking here for that prepended newline, and removing it.
-					char cNewline;
-					if (strNodeData.At(0, cNewline))
-					{
-						if ('\n' == cNewline)
-							m_ascPayload.Set(strNodeData.Get() + 1); // the +1 puts us past the damned prepended newline 
-						else
-							m_ascPayload.Set(strNodeData);  // else the data was fine so grab it as-is
-					}
-
-					xml->read(); // This puts us onto the closing tag
-				}
-				else
-				{
-					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-							"Expected responseNym text field in @getTransactionNum reply\n");
+					OTLog::Error("Error in OTMessage::ProcessXMLNode: Expected responseNym text field in @getTransactionNum.\n");
 					return (-1); // error condition
-				}				
+				}
+				
+				xml->read(); // This puts us onto the closing tag
+
+				return 1;
 			}
-			else {
+			else 
+			{
 				OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
 				return (-1);
 			}

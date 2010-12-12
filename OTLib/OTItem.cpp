@@ -128,7 +128,7 @@ void OTItem::SetAttachment(const OTString & theStr)
 
 void OTItem::SetNote(const OTString & theStr)
 {
-	if (theStr.Exists())
+	if (theStr.Exists() && theStr.GetLength() > 2)
 	{
 		OTString theString(theStr);
 		if (theStr.GetLength() < MINIMUM_CLEARTEXT_SIZE_OTASCIIARMOR)
@@ -425,8 +425,8 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		strServerID			= xml->getAttributeValue("serverID");
 		strUserID			= xml->getAttributeValue("userID");
 		
-		OTIdentifier ACCOUNT_ID(strAcctFromID), SERVER_ID(strServerID), DESTINATION_ACCOUNT(strAcctToID),
-			USER_ID(strUserID);
+		OTIdentifier	ACCOUNT_ID(strAcctFromID), SERVER_ID(strServerID), DESTINATION_ACCOUNT(strAcctToID),
+						USER_ID(strUserID);
 		
 		SetPurportedAccountID(ACCOUNT_ID);		// OTTransactionType::m_AcctID  the PURPORTED Account ID
 		SetPurportedServerID(SERVER_ID);		// OTTransactionType::m_AcctServerID the PURPORTED Server ID
@@ -446,51 +446,37 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		
 		return 1;
 	}
-	else if (!strcmp("note", xml->getNodeName()))
-	{
-		// go to the next node and read the text.
-		xml->read();
-		
-		if (EXN_TEXT == xml->getNodeType())
+	else if (!strcmp("note", xml->getNodeName())) 
+	{		
+		if (false == LoadEncodedTextField(xml, m_ascNote))
 		{
-			m_ascNote.Set(xml->getNodeData());
-			return 1;
-		}
-		else {
-			OTLog::Error("Error in OItem::ProcessXMLNode: missing text for note.\n");
+			OTLog::Error("Error in OTItem::ProcessXMLNode: note field without value.\n");
 			return (-1); // error condition
 		}
-	}	
-	else if (!strcmp("inReferenceTo", xml->getNodeName()))
-	{
-		// go to the next node and read the text.
-		xml->read();
 		
-		if (EXN_TEXT == xml->getNodeType())
+		return 1;
+	}
+	else if (!strcmp("inReferenceTo", xml->getNodeName())) 
+	{		
+		if (false == LoadEncodedTextField(xml, m_ascInReferenceTo))
 		{
-			m_ascInReferenceTo.Set(xml->getNodeData());
-			return 1;
-		}
-		else {
-			OTLog::Error("Error in OItem::ProcessXMLNode: missing text for inReferenceTo.\n");
+			OTLog::Error("Error in OTItem::ProcessXMLNode: inReferenceTo field without value.\n");
 			return (-1); // error condition
 		}
-	}	
-	else if (!strcmp("attachment", xml->getNodeName()))
-	{
-		// go to the next node and read the text.
-		xml->read();
 		
-		if (EXN_TEXT == xml->getNodeType())
+		return 1;
+	}
+	else if (!strcmp("attachment", xml->getNodeName())) 
+	{		
+		if (false == LoadEncodedTextField(xml, m_ascAttachment))
 		{
-			m_ascAttachment.Set(xml->getNodeData());
-			return 1;
-		}
-		else {
-			OTLog::Error("Error in OItem::ProcessXMLNode: missing text for attachment.\n");
+			OTLog::Error("Error in OTItem::ProcessXMLNode: attachment field without value.\n");
 			return (-1); // error condition
 		}
-	}	
+		
+		return 1;
+	}
+	
 	return 0;	
 }
 
@@ -662,17 +648,17 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 							  strUserID.Get(),
 							  strFromAcctID.Get(), strToAcctID.Get(), GetReferenceToNum(), m_lAmount);
 		
-	if (m_ascNote.GetLength())
+	if (m_ascNote.GetLength() > 2)
 	{
 		m_xmlUnsigned.Concatenate("<note>\n%s</note>\n\n", m_ascNote.Get());
 	}
 	
-	if (m_ascInReferenceTo.GetLength())
+	if (m_ascInReferenceTo.GetLength() > 2)
 	{
 		m_xmlUnsigned.Concatenate("<inReferenceTo>\n%s</inReferenceTo>\n\n", m_ascInReferenceTo.Get());
 	}
 	
-	if (m_ascAttachment.GetLength())
+	if (m_ascAttachment.GetLength() > 2)
 	{
 		m_xmlUnsigned.Concatenate("<attachment>\n%s</attachment>\n\n", m_ascAttachment.Get());
 	}

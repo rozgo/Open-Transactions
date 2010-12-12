@@ -158,60 +158,37 @@ int OTMarket::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 	}
 	
 	else if (!strcmp("offer", xml->getNodeName())) 
-	{
-		// go to the next node and read the text.
-		xml->read();
+	{		
+		OTString strData;
 		
-		if (EXN_TEXT == xml->getNodeType())
+		if (!LoadEncodedTextField(xml, strData) || !strData.Exists())
 		{
-			OTString strNodeData = xml->getNodeData();
-			
-			// Sometimes the XML reads up the data with a prepended newline.
-			// This screws up my own objects which expect a consistent in/out
-			// So I'm checking here for that prepended newline, and removing it.
-			char cNewline;
-			if (strNodeData.At(0, cNewline))
-			{
-				OTASCIIArmor	ascNodeData;
-				OTString		strOffer;
-				
-				if ('\n' == cNewline)
-				{
-					ascNodeData.Set(strNodeData.Get() + 1);
-					ascNodeData.GetString(strOffer, true); // linebreaks = true
-				}
-				else
-				{
-					ascNodeData.Set(strNodeData.Get());
-					ascNodeData.GetString(strOffer, true); // linebreaks = true
-				}
-				
-				OTOffer * pOffer = new OTOffer(m_SERVER_ID, m_ASSET_TYPE_ID, m_CURRENCY_TYPE_ID, m_lScale);
-				
-				OT_ASSERT(NULL != pOffer);
-				
-				if (pOffer->LoadContractFromString(strOffer) && 
-					AddOffer(*pOffer, false)) // bSaveMarket = false (Don't SAVE -- we're loading right now!)
-				{
-					OTLog::Output(1, "Successfully loaded offer and added to market.\n");
-				}
-				else 
-				{
-					OTLog::Error("Error adding offer to market while loading market.\n");
-					delete pOffer;
-					pOffer = NULL;
-					return (-1);
-				}
-			}
-		}
-		else {
 			OTLog::Error("Error in OTMarket::ProcessXMLNode: offer field without value.\n");
 			return (-1); // error condition
+		}
+		else 
+		{
+			OTOffer * pOffer = new OTOffer(m_SERVER_ID, m_ASSET_TYPE_ID, m_CURRENCY_TYPE_ID, m_lScale);
+			
+			OT_ASSERT(NULL != pOffer);
+			
+			if (pOffer->LoadContractFromString(strData) && 
+				AddOffer(*pOffer, false)) // bSaveMarket = false (Don't SAVE -- we're loading right now!)
+			{
+				OTLog::Output(1, "Successfully loaded offer and added to market.\n");
+			}
+			else 
+			{
+				OTLog::Error("Error adding offer to market while loading market.\n");
+				delete pOffer;
+				pOffer = NULL;
+				return (-1);
+			}
 		}
 		
 		nReturnVal = 1;
 	}
-	
+		
 	return nReturnVal;		
 }
 

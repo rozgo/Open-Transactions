@@ -981,7 +981,12 @@ bool OTServer::LoadMainFile()
 				// and add them to the internal map.
 				else if (!strcmp("assetType", xml->getNodeName()))
 				{
-					AssetName		= xml->getAttributeValue("name");			
+					OTASCIIArmor ascAssetName = xml->getAttributeValue("name");	
+					
+					if (ascAssetName.Exists())
+						ascAssetName.GetString(AssetName, false); // linebreaks == false
+					
+//					AssetName		= xml->getAttributeValue("name");			
 					AssetID			= xml->getAttributeValue("assetTypeID");	// hash of contract itself
 					
 					OTLog::vOutput(0, "\n\n****Asset Contract**** (server listing) Name: %s\nContract ID:\n%s\n",
@@ -1000,6 +1005,8 @@ bool OTServer::LoadMainFile()
 						if (pContract->VerifyContract())
 						{
 							OTLog::Output(0, "** Asset Contract Verified **\n");
+							
+							pContract->SetName(AssetName);
 							
 							m_mapContracts[AssetID.Get()] = pContract;
 						}

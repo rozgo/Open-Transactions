@@ -298,67 +298,46 @@ int OTCron::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 
 		nReturnVal = 1;
 	}	
+	
 	else if (!strcmp("cronItem", xml->getNodeName())) 
-	{
-		// go to the next node and read the text.
-		xml->read();
+	{		
+		OTString strData;
 		
-		if (EXN_TEXT == xml->getNodeType())
+		if (!LoadEncodedTextField(xml, strData) || !strData.Exists())
 		{
-			OTString strNodeData = xml->getNodeData();
-			
-			// Sometimes the XML reads up the data with a prepended newline.
-			// This screws up my own objects which expect a consistent in/out
-			// So I'm checking here for that prepended newline, and removing it.
-			char cNewline;
-			if (strNodeData.At(0, cNewline))
-			{
-				OTASCIIArmor	ascNodeData;
-				OTString		strCronItem;
-				
-				if ('\n' == cNewline)
-				{
-					ascNodeData.Set(strNodeData.Get() + 1);
-					ascNodeData.GetString(strCronItem, true); // linebreaks = true
-				}
-				else
-				{
-					ascNodeData.Set(strNodeData.Get());
-					ascNodeData.GetString(strCronItem, true); // linebreaks = true
-				}
-				
-				OTCronItem * pItem = OTCronItem::NewCronItem(strCronItem);
-				
-				if (NULL == pItem)
-				{
-					OTLog::Error("Unable to create cron item from data in cron file.\n");
-					return (-1);
-				}
-				
-				if (AddCronItem(*pItem, false))	// bSaveReceipt=false. The receipt is only saved once: When item FIRST added to cron.
-				{								// But here, the item was ALREADY in cron, and is merely being loaded from disk. Thus,
-												// it would be wrong to try to create the "original record" as if it were brand new
-												// and still had the user's signature on it. (Once added to Cron, the signatures are 
-												// released and the SERVER signs it from there. That's why the user's version is saved
-												// as a receipt in the first place -- so we have a record of the user's authorization.)
-					OTLog::Output(2, "Successfully loaded cron item and added to list.\n");
-				}
-				else 
-				{
-					OTLog::Error("Though loaded successfully, unable to add cron item (from cron file) to cron list.\n");
-					delete pItem;
-					pItem = NULL;
-					return (-1);
-				}
-			}
-		}
-		else {
-			OTLog::Error("Error in OTCron::ProcessXMLNode: consideration field without value.\n");
+			OTLog::Error("Error in OTCron::ProcessXMLNode: cronItem field without value.\n");
 			return (-1); // error condition
+		}
+		else 
+		{
+			OTCronItem * pItem = OTCronItem::NewCronItem(strData);
+			
+			if (NULL == pItem)
+			{
+				OTLog::Error("Unable to create cron item from data in cron file.\n");
+				return (-1);
+			}
+			
+			if (AddCronItem(*pItem, false))	// bSaveReceipt=false. The receipt is only saved once: When item FIRST added to cron.
+			{								// But here, the item was ALREADY in cron, and is merely being loaded from disk. Thus,
+				// it would be wrong to try to create the "original record" as if it were brand new
+				// and still had the user's signature on it. (Once added to Cron, the signatures are 
+				// released and the SERVER signs it from there. That's why the user's version is saved
+				// as a receipt in the first place -- so we have a record of the user's authorization.)
+				OTLog::Output(2, "Successfully loaded cron item and added to list.\n");
+			}
+			else 
+			{
+				OTLog::Error("Though loaded successfully, unable to add cron item (from cron file) to cron list.\n");
+				delete pItem;
+				pItem = NULL;
+				return (-1);
+			}
 		}
 		
 		nReturnVal = 1;
 	}
+	
 	else if (!strcmp("market", xml->getNodeName()))
 	{
 		const OTString	strMarketID(xml->getAttributeValue("marketID"));

@@ -437,43 +437,38 @@ int OTTransaction::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		
 		return 1;
 	}
-	else if (!strcmp("inReferenceTo", xml->getNodeName()))
-	{
-		// go to the next node and read the text.
-		xml->read();
-		
-		if (EXN_TEXT == xml->getNodeType())
+	else if (!strcmp("inReferenceTo", xml->getNodeName())) 
+	{		
+		if (false == LoadEncodedTextField(xml, m_ascInReferenceTo))
 		{
-			m_ascInReferenceTo.Set(xml->getNodeData());
-			return 1;
-		}
-		else {
-			OTLog::Error("Error in OTTransaction::ProcessXMLNode: missing text for inReferenceTo.\n");
+			OTLog::Error("Error in OTTransaction::ProcessXMLNode: inReferenceTo field without value.\n");
 			return (-1); // error condition
 		}
-	}
-	else if (!strcmp("item", xml->getNodeName()))
-	{
-		OTString strItem;
-		OTASCIIArmor ascItem;
-
-		// go to the next node and read the text.
-		xml->read();
 		
-		if (EXN_TEXT == xml->getNodeType())
+		return 1;
+	}
+	
+	else if (!strcmp("item", xml->getNodeName())) 
+	{		
+		OTString strData;
+
+		if (!LoadEncodedTextField(xml, strData) || !strData.Exists())
 		{
-			ascItem.Set(xml->getNodeData());
-			ascItem.GetString(strItem);
+			OTLog::Error("Error in OTTransaction::ProcessXMLNode: transaction item field without value.\n");
+			return (-1); // error condition
+		}
+		else 
+		{
 			OTItem * pItem = new OTItem(GetUserID(), *this);
 			
 			OT_ASSERT(NULL != pItem);
 			
 			// If we're able to successfully base64-decode the string and load it up as
 			// a transaction, then add it to the ledger's list of transactions
-			if (pItem->LoadContractFromString(strItem) && pItem->VerifyContractID())
+			if (pItem->LoadContractFromString(strData) && pItem->VerifyContractID())
 			{
 				m_listItems.push_back(pItem);
-//				OTLog::Output(5, "Loaded transaction Item and adding to m_listItems in OTTransaction\n");
+				//				OTLog::Output(5, "Loaded transaction Item and adding to m_listItems in OTTransaction\n");
 			}
 			else 
 			{
@@ -481,16 +476,12 @@ int OTTransaction::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 				delete pItem;
 				pItem = NULL;
 				return (-1);
-			}
+			}			
 		}
-		else {
-			OTLog::Error("Error in OTTransaction::ProcessXMLNode: transaction item without value.\n");
-			return (-1); // error condition
-		}
-		
+
 		return 1;
 	}
-	
+		
 	return 0;
 }
 

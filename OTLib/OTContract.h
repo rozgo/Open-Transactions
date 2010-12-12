@@ -148,6 +148,9 @@ protected:
 	
 	bool LoadContractXML(); // The XML file is in m_xmlUnsigned. Load it from there into members here.
 	
+	bool LoadEncodedTextField(irr::io::IrrXMLReader*& xml, OTString &strOutput);
+	bool LoadEncodedTextField(irr::io::IrrXMLReader*& xml, OTASCIIArmor &ascOutput);
+
 	// return -1 if error, 0 if nothing, and 1 if the node was processed.
 	virtual int ProcessXMLNode(irr::io::IrrXMLReader*& xml);
 	

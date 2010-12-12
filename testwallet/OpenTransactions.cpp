@@ -4031,7 +4031,10 @@ void OT_API::notarizeTransfer(OTIdentifier	& SERVER_ID,
 		pItem->m_lAmount	= atol(AMOUNT.Get());
 		
 		// The user can include a note here for the recipient.
-		pItem->SetNote(NOTE);
+		if (NOTE.Exists() && NOTE.GetLength() > 2) 
+		{
+			pItem->SetNote(NOTE);
+		}
 		
 		// sign the item
 		pItem->SignContract(*pNym);

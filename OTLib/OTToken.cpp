@@ -572,31 +572,10 @@ int OTToken::ProcessXMLNode(IrrXMLReader*& xml)
 		nReturnVal = 1;
 	}
 	
-	
 	else if (!strcmp("tokenID", xml->getNodeName())) 
-	{
-		// go to the next node and read the text.
-		xml->read();
-		
-		if (EXN_TEXT == xml->getNodeType())
+	{		
+		if (false == LoadEncodedTextField(xml, m_ascSpendable))
 		{
-			OTString strNodeData = xml->getNodeData();
-			
-//			OTLog::vError("DEBUGGING Spendable, CONTENTS:  -----------%s------------\n\n", strNodeData.Get());
-			
-			// Sometimes the XML reads up the data with a prepended newline.
-			// This screws up my own objects which expect a consistent in/out
-			// So I'm checking here for that prepended newline, and removing it.
-			char cNewline;
-			if (strNodeData.At(0, cNewline))
-			{
-				if ('\n' == cNewline)
-					m_ascSpendable.Set(strNodeData.Get() + 1); // the +1 puts us past the damned prepended newline 
-				else
-					m_ascSpendable.Set(strNodeData);  // else the data was fine so grab it as-is
-			}
-		}
-		else {
 			OTLog::Error("Error in OTToken::ProcessXMLNode: token ID without value.\n");
 			return (-1); // error condition
 		}
@@ -605,29 +584,9 @@ int OTToken::ProcessXMLNode(IrrXMLReader*& xml)
 	}
 	
 	else if (!strcmp("tokenSignature", xml->getNodeName())) 
-	{
-		// go to the next node and read the text.
-		xml->read();
-		
-		if (EXN_TEXT == xml->getNodeType())
+	{		
+		if (false == LoadEncodedTextField(xml, m_Signature))
 		{
-			OTString strNodeData = xml->getNodeData();
-			
-//			OTLog::vError("DEBUGGING Signature, CONTENTS:  -----------%s------------\n\n", strNodeData.Get());
-			
-			// Sometimes the XML reads up the data with a prepended newline.
-			// This screws up my own objects which expect a consistent in/out
-			// So I'm checking here for that prepended newline, and removing it.
-			char cNewline;
-			if (strNodeData.At(0, cNewline))
-			{
-				if ('\n' == cNewline)
-					m_Signature.Set(strNodeData.Get() + 1); // the +1 puts us past the damned prepended newline 
-				else
-					m_Signature.Set(strNodeData);  // else the data was fine so grab it as-is
-			}
-		}
-		else {
 			OTLog::Error("Error in OTToken::ProcessXMLNode: token Signature without value.\n");
 			return (-1); // error condition
 		}
@@ -647,55 +606,29 @@ int OTToken::ProcessXMLNode(IrrXMLReader*& xml)
 	}
 	
 	else if (!strcmp("prototoken", xml->getNodeName())) 
-	{
-		// go to the next node and read the text portion. (That's all there is.)
-		xml->read();
+	{		
+		OTASCIIArmor * pArmoredPrototoken = new OTASCIIArmor;
 		
-		if (EXN_TEXT == xml->getNodeType())
+		OT_ASSERT(NULL != pArmoredPrototoken);
+		
+		if (!LoadEncodedTextField(xml, *pArmoredPrototoken) || !pArmoredPrototoken->Exists())
 		{
-			OTASCIIArmor * pArmoredPrototoken = new OTASCIIArmor();
+			OTLog::Error("Error in OTToken::ProcessXMLNode: prototoken field without value.\n");
 			
-			if (pArmoredPrototoken)
-			{
-				OTString strNodeData = xml->getNodeData();
-								
-				// Sometimes the XML reads up the data with a prepended newline.
-				// This screws up my own objects which expect a consistent in/out
-				// So I'm checking here for that prepended newline, and removing it.
-				char cNewline;
-				if (strNodeData.At(0, cNewline))
-				{
-					if ('\n' == cNewline)
-						pArmoredPrototoken->Set(strNodeData.Get() + 1); // the +1 puts us past the damned prepended newline 
-					else
-						pArmoredPrototoken->Set(strNodeData);  // else the data was fine so grab it as-is
-				}
-
-//				OTLog::vError("DEBUGGING Prototoken, CONTENTS:  -----------%s------------\n\n", pArmoredPrototoken->Get());
-
-				m_mapPublic[nPublicTokenCount] = pArmoredPrototoken;
-				nPublicTokenCount++;
-//				OTLog::vError("Loaded prototoken and adding to m_mapPublic at index: %d\n", nPublicTokenCount-1);
-			}
-			else {
-				OTLog::Error("ERROR: loading prototoken in OTToken::ProcessXMLNode\n");
-				if (pArmoredPrototoken)
-				{
-					delete pArmoredPrototoken;
-					pArmoredPrototoken = NULL;
-				}
-				return (-1);
-			}
-		}
-		else {
-			OTLog::Error("Error in OTToken::ProcessXMLNode: prototoken without value.\n");
+			delete pArmoredPrototoken;
+			pArmoredPrototoken = NULL;
+			
 			return (-1); // error condition
+		}
+		else 
+		{			
+			m_mapPublic[nPublicTokenCount] = pArmoredPrototoken;
+			nPublicTokenCount++;
 		}
 		
 		return 1;
 	}
-	
-	
+		
 	else if (!strcmp("privateProtopurse", xml->getNodeName())) 
 	{	
 		nPrivateTokenCount = 0;
@@ -704,55 +637,31 @@ int OTToken::ProcessXMLNode(IrrXMLReader*& xml)
 	}
 	
 	else if (!strcmp("privatePrototoken", xml->getNodeName())) 
-	{
-		// go to the next node and read the text portion. (That's all there is.)
-		xml->read();
+	{		
+		OTASCIIArmor * pArmoredPrototoken = new OTASCIIArmor;
 		
-		if (EXN_TEXT == xml->getNodeType())
+		OT_ASSERT(NULL != pArmoredPrototoken);
+		
+		if (!LoadEncodedTextField(xml, *pArmoredPrototoken) || !pArmoredPrototoken->Exists())
 		{
-			OTASCIIArmor * pArmoredPrototoken = new OTASCIIArmor();
+			OTLog::Error("Error in OTToken::ProcessXMLNode: privatePrototoken field without value.\n");
 			
-			if (pArmoredPrototoken)
-			{
-				OTString strNodeData = xml->getNodeData();
-				
-//				OTLog::vError("DEBUGGING Private-prototoken, CONTENTS:  ----------->%s<------------\n\n", strNodeData.Get());
-				
-				// Sometimes the XML reads up the data with a prepended newline.
-				// This screws up my own objects which expect a consistent in/out
-				// So I'm checking here for that prepended newline, and removing it.
-				char cNewline;
-				if (strNodeData.At(0, cNewline))
-				{
-					if ('\n' == cNewline)
-						pArmoredPrototoken->Set(strNodeData.Get() + 1); // the +1 puts us past the damned prepended newline 
-					else
-						pArmoredPrototoken->Set(strNodeData);  // else the data was fine so grab it as-is
-				}
-				
-				
-				m_mapPrivate[nPrivateTokenCount] = pArmoredPrototoken;
-				nPrivateTokenCount++;
-				OTLog::vOutput(4, "Loaded prototoken and adding to m_mapPrivate at index: %d\n", nPrivateTokenCount-1);
-			}
-			else {
-				OTLog::Error("ERROR: loading prototoken in OTToken::ProcessXMLNode\n");
-				if (pArmoredPrototoken)
-				{
-					delete pArmoredPrototoken;
-					pArmoredPrototoken = NULL;
-				}
-				return (-1);
-			}
-		}
-		else {
-			OTLog::Error("Error in OTToken::ProcessXMLNode: privatePrototoken without value.\n");
+			delete pArmoredPrototoken;
+			pArmoredPrototoken = NULL;
+			
 			return (-1); // error condition
+		}
+		else 
+		{			
+			m_mapPrivate[nPrivateTokenCount] = pArmoredPrototoken;
+			nPrivateTokenCount++;
+			
+			OTLog::vOutput(4, "Loaded prototoken and adding to m_mapPrivate at index: %d\n", nPrivateTokenCount-1);
 		}
 		
 		return 1;
 	}
-	
+		
 	return nReturnVal;
 }
 

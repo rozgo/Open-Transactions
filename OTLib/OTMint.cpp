@@ -560,107 +560,73 @@ int OTMint::ProcessXMLNode(IrrXMLReader*& xml)
 	
 	
 	else if (!strcmp("mintPublicKey", xml->getNodeName())) 
-	{
-		// go to the next node and read the text.
-		xml->read();
-		
-		if (EXN_TEXT == xml->getNodeType())
+	{		
+		OTASCIIArmor armorPublicKey;
+
+		if (false == LoadEncodedTextField(xml, armorPublicKey) || !armorPublicKey.Exists())
 		{
-			OTASCIIArmor armorPublicKey;
-			OTString strNodeData = xml->getNodeData();
-			
-			// Sometimes the XML reads up the data with a prepended newline.
-			// This screws up my own objects which expect a consistent in/out
-			// So I'm checking here for that prepended newline, and removing it.
-			char cNewline;
-			if (strNodeData.At(0, cNewline))
-			{
-				if ('\n' == cNewline)
-					armorPublicKey.Set(strNodeData.Get() + 1); // the +1 puts us past the damned prepended newline 
-				else
-					armorPublicKey.Set(strNodeData);  // else the data was fine so grab it as-is
-			}
-						
-			m_keyPublic.SetPublicKey(armorPublicKey); // todo check this for failure.
-		}
-		else {
-			OTLog::Error("Error in OTToken::ProcessXMLNode: mintPublicKey without value.\n");
+			OTLog::Error("Error in OTMint::ProcessXMLNode: mintPublicKey field without value.\n");
 			return (-1); // error condition
+		}
+		else 
+		{
+			m_keyPublic.SetPublicKey(armorPublicKey); // todo check this for failure.
 		}
 		
 		return 1;
 	}
 
 	else if (!strcmp("mintPrivateInfo", xml->getNodeName())) 
-	{
+	{		
 		long lDenomination = atol(xml->getAttributeValue("denomination"));					
-
-		// go to the next node and read the text.
-		xml->read();
 		
-		if (EXN_TEXT == xml->getNodeType())
+		OTASCIIArmor * pArmor = new OTASCIIArmor;
+		
+		OT_ASSERT(NULL != pArmor);
+		
+		if (!LoadEncodedTextField(xml, *pArmor) || !pArmor->Exists())
 		{
-			OTASCIIArmor * pArmor = new OTASCIIArmor();
-			OTString strNodeData = xml->getNodeData();
-
-			// Sometimes the XML reads up the data with a prepended newline.
-			// This screws up my own objects which expect a consistent in/out
-			// So I'm checking here for that prepended newline, and removing it.
-			char cNewline;
-			if (strNodeData.At(0, cNewline))
-			{
-				if ('\n' == cNewline)
-					pArmor->Set(strNodeData.Get() + 1); // the +1 puts us past the damned prepended newline 
-				else
-					pArmor->Set(strNodeData);  // else the data was fine so grab it as-is
-			}
+			OTLog::Error("Error in OTMint::ProcessXMLNode: mintPrivateInfo field without value.\n");
 			
-			m_mapPrivate[lDenomination] = pArmor;
-		}
-		else {
-			OTLog::Error("Error in OTToken::ProcessXMLNode: mintPrivateInfo without value.\n");
+			delete pArmor;
+			pArmor = NULL;
+			
 			return (-1); // error condition
+		}
+		else 
+		{			
+			m_mapPrivate[lDenomination] = pArmor;
 		}
 		
 		return 1;
 	}
 	
 	else if (!strcmp("mintPublicInfo", xml->getNodeName())) 
-	{
+	{		
 		long lDenomination = atol(xml->getAttributeValue("denomination"));					
-
-		// go to the next node and read the text.
-		xml->read();
 		
-		if (EXN_TEXT == xml->getNodeType())
+		OTASCIIArmor * pArmor = new OTASCIIArmor;
+		
+		OT_ASSERT(NULL != pArmor);
+		
+		if (!LoadEncodedTextField(xml, *pArmor) || !pArmor->Exists())
 		{
-			OTASCIIArmor * pArmor = new OTASCIIArmor();
-			OTString strNodeData = xml->getNodeData();
+			OTLog::Error("Error in OTMint::ProcessXMLNode: mintPublicInfo field without value.\n");
 			
-			// Sometimes the XML reads up the data with a prepended newline.
-			// This screws up my own objects which expect a consistent in/out
-			// So I'm checking here for that prepended newline, and removing it.
-			char cNewline;
-			if (strNodeData.At(0, cNewline))
-			{
-				if ('\n' == cNewline)
-					pArmor->Set(strNodeData.Get() + 1); // the +1 puts us past the damned prepended newline 
-				else
-					pArmor->Set(strNodeData);  // else the data was fine so grab it as-is
-			}
+			delete pArmor;
+			pArmor = NULL;
 			
+			return (-1); // error condition
+		}
+		else 
+		{			
 			m_mapPublic[lDenomination] = pArmor;
 			m_nDenominationCount++; // Whether client or server, both sides have public. Each public denomination should increment this count.
-		}
-		else {
-			OTLog::Error("Error in OTToken::ProcessXMLNode: mintPublicInfo without value.\n");
-			return (-1); // error condition
 		}
 		
 		return 1;
 	}
-	
-	
+		
 	return nReturnVal;
 }
 

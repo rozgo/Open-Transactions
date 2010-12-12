@@ -133,7 +133,7 @@ void OTCheque::UpdateContents()
 							  (m_bHasRecipient ? RECIPIENT_USER_ID.Get() : ""),
 							  lFrom, lTo );		
 	
-	if (m_strMemo.Exists())
+	if (m_strMemo.Exists() && m_strMemo.GetLength() > 2)
 	{
 		OTASCIIArmor ascMemo(m_strMemo);		
 		m_xmlUnsigned.Concatenate("<memo>\n%s</memo>\n\n", ascMemo.Get());
@@ -216,42 +216,16 @@ int OTCheque::ProcessXMLNode(IrrXMLReader*& xml)
 	}
 	
 	else if (!strcmp("memo", xml->getNodeName())) 
-	{
-		// go to the next node and read the text.
-		xml->read();
-		
-		if (EXN_TEXT == xml->getNodeType())
+	{		
+		if (false == LoadEncodedTextField(xml, m_strMemo))
 		{
-			OTString strNodeData = xml->getNodeData();
-						
-			// Sometimes the XML reads up the data with a prepended newline.
-			// This screws up my own objects which expect a consistent in/out
-			// So I'm checking here for that prepended newline, and removing it.
-			char cNewline;
-			if (strNodeData.At(0, cNewline))
-			{
-				OTASCIIArmor ascNodeData;
-				
-				if ('\n' == cNewline)
-				{
-					ascNodeData.Set(strNodeData.Get() + 1);
-					ascNodeData.GetString(m_strMemo, true); // linebreaks = true
-				}
-				else
-				{
-					ascNodeData.Set(strNodeData.Get());
-					ascNodeData.GetString(m_strMemo, true); // linebreaks = true
-				}
-			}
-		}
-		else {
 			OTLog::Error("Error in OTCheque::ProcessXMLNode: memo field without value.\n");
 			return (-1); // error condition
 		}
 		
 		return 1;
 	}
-
+	
 	return nReturnVal;
 }
 
