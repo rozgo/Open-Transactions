@@ -144,8 +144,22 @@ int OT_API_LoadWallet(const char * szPath); // actually returns BOOL
 //
 const char * OT_API_CreateNym(void);
 
+// --------------------------------------------------
+// ADD SERVER CONTRACT
+// If you have a server contract that you'd like to add 
+// to your wallet, call this function.
+//
+int OT_API_AddServerContract(const char * szContract); // returns OT_TRUE (1) or OT_FALSE(0)
+
+// --------------------------------------------------
+// ADD ASSET CONTRACT
+// If you have an asset contract that you'd like to add 
+// to your wallet, call this function.
+//
+int OT_API_AddAssetContract(const char * szContract); // returns OT_TRUE (1) or OT_FALSE(0)
 
 
+	
 // --------------------------------------------------
 
 // NOTE:  THE BELOW FUNCTIONS *DO NOT* SEND ANY MESSAGE TO THE SERVER,
@@ -167,8 +181,10 @@ const char * OT_API_GetServer_Name(const char * SERVER_ID); // Return's Server's
 
 
 
+
 const char * OT_API_GetAssetType_ID(int nIndex); // returns Asset Type ID (based on index from GetAssetTypeCount)
 const char * OT_API_GetAssetType_Name(const char * ASSET_TYPE_ID); // Returns asset type name based on Asset Type ID
+
 
 
 // You already have accounts in your wallet (without any server communications)
@@ -182,11 +198,6 @@ const char * OT_API_GetAccountWallet_Balance(const char * ACCOUNT_ID);	 // retur
 const char * OT_API_GetAccountWallet_Type(const char * ACCOUNT_ID);	 // returns the account type (simple, issuer, etc)
 const char * OT_API_GetAccountWallet_AssetTypeID(const char * ACCOUNT_ID);	 // returns asset type of the account
 
-// Returns OT_TRUE (1) or OT_FALSE (0)
-// The asset account's name is merely a client-side label.
-int OT_API_SetAccountWallet_Name(const char * ACCT_ID, 
-								 const char * SIGNER_NYM_ID, 
-								 const char * ACCT_NEW_NAME);
 
 
 //----------------------------------------------------------
@@ -230,10 +241,39 @@ int OT_API_SetNym_Name(const char * NYM_ID,
 					   const char * SIGNER_NYM_ID, 
 					   const char * NYM_NEW_NAME); // actually returns OT_BOOL.
 
+// Returns OT_TRUE (1) or OT_FALSE (0)
+// The asset account's name is merely a client-side label.
+int OT_API_SetAccountWallet_Name(const char * ACCT_ID, 
+								 const char * SIGNER_NYM_ID, 
+								 const char * ACCT_NEW_NAME);
+// actually returns OT_BOOL.
+int OT_API_SetAssetType_Name(const char * ASSET_ID, 
+							 const char * STR_NEW_NAME);
+// actually returns OT_BOOL.
+int OT_API_SetServer_Name(const char * SERVER_ID, 
+						  const char * STR_NEW_NAME); 
 
 
-
-
+// (Above) IMPORTANT: USE the above functions for setting the CLIENT-SIDE
+// display labels that you use in your UI for the Nyms/Servers/AssetTypes/Accounts.
+// These labels are stored SEPARATELY from their own files, in the wallet file.
+//
+// If you just added the contract, it will SET the label for you based on the contract type.
+// like if it's an asset contract, it uses the currency name field from the asset contract.
+// If it's a server contract it uses the entity short name. After that, it's 
+// configurable for the user, and stays on client side, and persists via wallet.
+//
+// EVEN WHEN OT has to re-download one of those files, it will make sure to save
+// the display label properly in the wallet.
+//
+// THIS MEANS *you*, as a client developer:
+// 1) CAN DEPEND on these labels to have the right value.
+// 2) Can expect them to start out with good default values.
+// 3) Can configure them from there.
+// 4) SHOULD DISPLAY THEM as appropriate in your application.
+// 5) Of course, use the ID behind the scenes for making all your
+//    OT calls... just use the name for display purposes.
+//
 
 
 

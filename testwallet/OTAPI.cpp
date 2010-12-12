@@ -254,6 +254,93 @@ const char * OT_API_CreateNym(void)
 }
 
 
+// If you have a server contract that you'd like to add 
+// to your wallet, call this function.
+//
+OT_BOOL OT_API_AddServerContract(const char * szContract)
+{
+	OT_ASSERT(NULL != szContract);
+	OTString strContract(szContract);
+	
+	OTServerContract * pContract = new OTServerContract;
+	OT_ASSERT(NULL != pContract);
+	
+	// Check the server signature on the contract here. (Perhaps the message is good enough?
+	// After all, the message IS signed by the server and contains the Account.
+	//		if (pContract->LoadContract() && pContract->VerifyContract())
+	if (strContract.Exists() && pContract->LoadContractFromString(strContract))
+	{
+		OTIdentifier theContractID;
+		
+		pContract->CalculateContractID(theContractID);
+		
+		pContract->SetIdentifier(theContractID);
+		
+		// Next make sure the wallet has this contract on its list...
+		OTWallet * pWallet;
+		
+		if (pWallet = g_OT_API.GetWallet())
+		{
+			pWallet->AddServerContract(*pContract);
+			pContract = NULL; // Success. The wallet "owns" it now, no need to clean it up.
+		}
+	}
+	// cleanup
+	if (pContract)
+	{
+		delete pContract;
+		pContract = NULL;
+		
+		return OT_FALSE;	
+	}
+	
+	return OT_TRUE;		
+}
+
+
+// If you have an asset contract that you'd like to add 
+// to your wallet, call this function.
+//
+OT_BOOL OT_API_AddAssetContract(const char * szContract)
+{
+	OT_ASSERT(NULL != szContract);
+	OTString strContract(szContract);
+	
+	OTAssetContract * pContract = new OTAssetContract;
+	OT_ASSERT(NULL != pContract);
+	
+	// Check the server signature on the contract here. (Perhaps the message is good enough?
+	// After all, the message IS signed by the server and contains the Account.
+	//		if (pContract->LoadContract() && pContract->VerifyContract())
+	if (strContract.Exists() && pContract->LoadContractFromString(strContract))
+	{
+		OTIdentifier theContractID;
+		
+		pContract->CalculateContractID(theContractID);
+
+		pContract->SetIdentifier(theContractID);
+		
+		// Next make sure the wallet has this contract on its list...
+		OTWallet * pWallet;
+		
+		if (pWallet = g_OT_API.GetWallet())
+		{
+			pWallet->AddAssetContract(*pContract);
+			pContract = NULL; // Success. The wallet "owns" it now, no need to clean it up.
+		}
+	}
+	// cleanup
+	if (pContract)
+	{
+		delete pContract;
+		pContract = NULL;
+		
+		return OT_FALSE;	
+	}
+	
+	return OT_TRUE;	
+}
+
 
 
 // --------------------------------------------------
@@ -374,6 +461,45 @@ OT_BOOL OT_API_SetNym_Name(const char * NYM_ID, const char * SIGNER_NYM_ID, cons
 		return OT_TRUE;
 
 	return OT_FALSE;
+}
+
+
+// Merely a client-side label
+OT_BOOL OT_API_SetServer_Name(const char * SERVER_ID, 
+							  const char * STR_NEW_NAME)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != STR_NEW_NAME, "Null STR_NEW_NAME passed in.");
+	
+	const OTIdentifier	theContractID(SERVER_ID);
+	const OTString		strNewName(STR_NEW_NAME);
+	
+	bool bSuccess = g_OT_API.SetServer_Name(theContractID, strNewName);
+	
+	if (true == bSuccess)
+		return OT_TRUE;
+	
+	return OT_FALSE;	
+}
+
+
+
+// Merely a client-side label
+OT_BOOL OT_API_SetAssetType_Name(const char * ASSET_ID, 
+								 const char * STR_NEW_NAME)
+{
+	OT_ASSERT_MSG(NULL != ASSET_ID, "Null ASSET_ID passed in.");
+	OT_ASSERT_MSG(NULL != STR_NEW_NAME, "Null STR_NEW_NAME passed in.");
+	
+	const OTIdentifier	theContractID(ASSET_ID);
+	const OTString		strNewName(STR_NEW_NAME);
+	
+	bool bSuccess = g_OT_API.SetAssetType_Name(theContractID, strNewName);
+	
+	if (true == bSuccess)
+		return OT_TRUE;
+	
+	return OT_FALSE;		
 }
 
 

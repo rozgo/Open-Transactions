@@ -1036,6 +1036,58 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_OT_API_AddServerContract) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  result = (int)OT_API_AddServerContract((char const *)arg1);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_AddAssetContract) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  result = (int)OT_API_AddAssetContract((char const *)arg1);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_OT_API_GetServerCount) {
   int result;
   
@@ -1378,46 +1430,6 @@ fail:
 }
 
 
-ZEND_NAMED_FUNCTION(_wrap_OT_API_SetAccountWallet_Name) {
-  char *arg1 = (char *) 0 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  int result;
-  zval **args[3];
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    /*@SWIG:CONVERT_STRING_IN@*/
-    convert_to_string_ex(args[0]);
-    arg1 = (char *) Z_STRVAL_PP(args[0]);
-    /*@SWIG@*/;
-  }
-  {
-    /*@SWIG:CONVERT_STRING_IN@*/
-    convert_to_string_ex(args[1]);
-    arg2 = (char *) Z_STRVAL_PP(args[1]);
-    /*@SWIG@*/;
-  }
-  {
-    /*@SWIG:CONVERT_STRING_IN@*/
-    convert_to_string_ex(args[2]);
-    arg3 = (char *) Z_STRVAL_PP(args[2]);
-    /*@SWIG@*/;
-  }
-  result = (int)OT_API_SetAccountWallet_Name((char const *)arg1,(char const *)arg2,(char const *)arg3);
-  {
-    ZVAL_LONG(return_value,result);
-  }
-  return;
-fail:
-  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
-}
-
-
 ZEND_NAMED_FUNCTION(_wrap_OT_API_GetNym_TransactionNumCount) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -1542,6 +1554,112 @@ ZEND_NAMED_FUNCTION(_wrap_OT_API_SetNym_Name) {
     /*@SWIG@*/;
   }
   result = (int)OT_API_SetNym_Name((char const *)arg1,(char const *)arg2,(char const *)arg3);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_SetAccountWallet_Name) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  int result;
+  zval **args[3];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[2]);
+    arg3 = (char *) Z_STRVAL_PP(args[2]);
+    /*@SWIG@*/;
+  }
+  result = (int)OT_API_SetAccountWallet_Name((char const *)arg1,(char const *)arg2,(char const *)arg3);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_SetAssetType_Name) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int result;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  result = (int)OT_API_SetAssetType_Name((char const *)arg1,(char const *)arg2);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_SetServer_Name) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int result;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  result = (int)OT_API_SetServer_Name((char const *)arg1,(char const *)arg2);
   {
     ZVAL_LONG(return_value,result);
   }
@@ -4510,6 +4628,8 @@ static function_entry otapi_functions[] = {
  ZEND_NAMED_FE(ot_api_init,_wrap_OT_API_Init,NULL)
  ZEND_NAMED_FE(ot_api_loadwallet,_wrap_OT_API_LoadWallet,NULL)
  ZEND_NAMED_FE(ot_api_createnym,_wrap_OT_API_CreateNym,NULL)
+ ZEND_NAMED_FE(ot_api_addservercontract,_wrap_OT_API_AddServerContract,NULL)
+ ZEND_NAMED_FE(ot_api_addassetcontract,_wrap_OT_API_AddAssetContract,NULL)
  ZEND_NAMED_FE(ot_api_getservercount,_wrap_OT_API_GetServerCount,NULL)
  ZEND_NAMED_FE(ot_api_getassettypecount,_wrap_OT_API_GetAssetTypeCount,NULL)
  ZEND_NAMED_FE(ot_api_getaccountcount,_wrap_OT_API_GetAccountCount,NULL)
@@ -4523,11 +4643,13 @@ static function_entry otapi_functions[] = {
  ZEND_NAMED_FE(ot_api_getaccountwallet_balance,_wrap_OT_API_GetAccountWallet_Balance,NULL)
  ZEND_NAMED_FE(ot_api_getaccountwallet_type,_wrap_OT_API_GetAccountWallet_Type,NULL)
  ZEND_NAMED_FE(ot_api_getaccountwallet_assettypeid,_wrap_OT_API_GetAccountWallet_AssetTypeID,NULL)
- ZEND_NAMED_FE(ot_api_setaccountwallet_name,_wrap_OT_API_SetAccountWallet_Name,NULL)
  ZEND_NAMED_FE(ot_api_getnym_transactionnumcount,_wrap_OT_API_GetNym_TransactionNumCount,NULL)
  ZEND_NAMED_FE(ot_api_getnym_id,_wrap_OT_API_GetNym_ID,NULL)
  ZEND_NAMED_FE(ot_api_getnym_name,_wrap_OT_API_GetNym_Name,NULL)
  ZEND_NAMED_FE(ot_api_setnym_name,_wrap_OT_API_SetNym_Name,NULL)
+ ZEND_NAMED_FE(ot_api_setaccountwallet_name,_wrap_OT_API_SetAccountWallet_Name,NULL)
+ ZEND_NAMED_FE(ot_api_setassettype_name,_wrap_OT_API_SetAssetType_Name,NULL)
+ ZEND_NAMED_FE(ot_api_setserver_name,_wrap_OT_API_SetServer_Name,NULL)
  ZEND_NAMED_FE(ot_api_verifyandretrievexmlcontents,_wrap_OT_API_VerifyAndRetrieveXMLContents,NULL)
  ZEND_NAMED_FE(ot_api_writecheque,_wrap_OT_API_WriteCheque,NULL)
  ZEND_NAMED_FE(ot_api_writepaymentplan,_wrap_OT_API_WritePaymentPlan,NULL)

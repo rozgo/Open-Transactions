@@ -141,6 +141,7 @@ public:
 	
 	OTPseudonym *		GetNymByID(const OTIdentifier & NYM_ID);
 	
+	void				AddServerContract(const OTServerContract & theContract);
 	OTServerContract *	GetServerContract(const OTIdentifier & SERVER_ID);
 	
 	void				AddNym			(const OTPseudonym & theNym);

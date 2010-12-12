@@ -209,6 +209,10 @@ public:
 		
 		setNymName,			// For setting the client-side label on a Nym.
 		
+		setServerName,		// For setting the client-side label on a server contract.
+		
+		setAssetName,		// For setting the client-side label on an asset contract.
+		
 		// ------------------------------------------------------------------------------
 		
 		badID

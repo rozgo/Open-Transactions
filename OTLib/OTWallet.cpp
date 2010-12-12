@@ -189,7 +189,10 @@ void OTWallet::AddPendingWithdrawal(const OTPurse & thePurse)
 	// TODO notice I don't check the pointer here to see if it's already set, I 
 	// just start using it.. Fix that.
 	m_pWithdrawalPurse = (OTPurse *)&thePurse;
-}
+}	// TODO WARNING: If this data is lost before the transaction is completed,
+	// the user will be unable to unblind his tokens and make them spendable.
+	// So this data MUST be SAVED until the successful withdrawal is verified!
+
 
 void OTWallet::RemovePendingWithdrawal()
 {
@@ -214,28 +217,6 @@ bool OTWallet::SignContractWithFirstNymOnList(OTContract & theContract)
 	return false;
 }
 
-
-
-// Pass in the Server ID and get the pointer back.
-OTServerContract * OTWallet::GetServerContract(const OTIdentifier & SERVER_ID)
-{
-	OTContract * pServer = NULL;
-
-	for (mapOfServers::iterator ii = m_mapServers.begin(); ii != m_mapServers.end(); ++ii)
-	{
-		pServer = (*ii).second;
-		
-		OT_ASSERT_MSG((NULL != pServer), "NULL server pointer in OTWallet::m_mapServers, OTWallet::GetServerContract");
-		
-		OTIdentifier id_CurrentContract;
-		pServer->GetIdentifier(id_CurrentContract);
-		
-		if (id_CurrentContract == SERVER_ID)
-			return (OTServerContract *)pServer;
-	}
-	
-	return NULL;
-}
 
 
 // The wallet presumably has multiple Nyms listed within.
@@ -758,6 +739,58 @@ OTAccount * OTWallet::GetAccount(const OTIdentifier & theAccountID)
 }
 
 
+
+// Pass in the Server ID and get the pointer back.
+OTServerContract * OTWallet::GetServerContract(const OTIdentifier & SERVER_ID)
+{
+	OTContract * pServer = NULL;
+	
+	for (mapOfServers::iterator ii = m_mapServers.begin(); ii != m_mapServers.end(); ++ii)
+	{
+		pServer = (*ii).second;
+		
+		OT_ASSERT_MSG((NULL != pServer), "NULL server pointer in OTWallet::m_mapServers, OTWallet::GetServerContract");
+		
+		OTIdentifier id_CurrentContract;
+		pServer->GetIdentifier(id_CurrentContract);
+		
+		if (id_CurrentContract == SERVER_ID)
+			return (OTServerContract *)pServer;
+	}
+	
+	return NULL;
+}
+
+
+
+// The wallet "owns" theContract and will handle cleaning it up.
+// So make SURE you allocate it on the heap.
+void OTWallet::AddServerContract(const OTServerContract & theContract)
+{
+	OTIdentifier	CONTRACT_ID(theContract);
+	OTString		STR_CONTRACT_ID(CONTRACT_ID);
+	
+	OTServerContract * pContract = GetServerContract(CONTRACT_ID);
+	
+	if (pContract)
+	{
+		OTLog::Error("Error: Attempt to add Server Contract but it is already in the wallet.\n");
+	
+		delete &theContract; // I have to do this, since the return value is void, the caller MUST assume I took ownership.
+	}
+	else 
+	{
+		m_mapServers[STR_CONTRACT_ID.Get()] = &((OTServerContract &)theContract);
+		
+		OTLog::Output(0, "Saving server contract to disk...\n");
+		((OTServerContract &)theContract).SaveToContractFolder();
+		
+		SaveWallet();
+	}	
+}
+
+
+
 // The wallet "owns" theContract and will handle cleaning it up.
 // So make SURE you allocate it on the heap.
 void OTWallet::AddAssetContract(const OTAssetContract & theContract)
@@ -770,9 +803,17 @@ void OTWallet::AddAssetContract(const OTAssetContract & theContract)
 	if (pContract)
 	{
 		OTLog::Error("Error: Attempt to add Asset Contract but it is already in the wallet.\n");
+		
+		delete &theContract; // I have to do this, since the return value is void, the caller MUST assume I took ownership.
 	}
-	else {
+	else 
+	{
 		m_mapContracts[STR_CONTRACT_ID.Get()] = &((OTAssetContract &)theContract);
+
+		OTLog::Output(0, "Saving asset contract to disk...\n");
+		((OTServerContract &)theContract).SaveToContractFolder();
+
+		SaveWallet();
 	}
 }
 
@@ -941,8 +982,12 @@ bool OTWallet::LoadWallet(const char * szFilename)
 				}
 				else if (!strcmp("assetType", xml->getNodeName()))	// -------------------------------------------------------------
 				{
-					// From Server:
-					AssetName		= xml->getAttributeValue("name");			
+					OTASCIIArmor ascAssetName = xml->getAttributeValue("name");	
+					
+					if (ascAssetName.Exists())
+						ascAssetName.GetString(AssetName, false); // linebreaks == false
+
+//					AssetName		= xml->getAttributeValue("name");			
 					AssetID			= xml->getAttributeValue("assetTypeID");	// hash of contract itself
 					
 					OTLog::vOutput(0, "\n\n****Asset Contract**** (server listing) Name: %s\nContract ID:\n%s\n",
@@ -962,6 +1007,8 @@ bool OTWallet::LoadWallet(const char * szFilename)
 						{
 							OTLog::Output(0, "** Asset Contract Verified **\n-----------------------------------------------------------------------------\n\n");
 							
+							pContract->SetName(AssetName);
+							
 							m_mapContracts[AssetID.Get()] = pContract;
 						}
 						else
@@ -979,7 +1026,12 @@ bool OTWallet::LoadWallet(const char * szFilename)
 				}
 				else if (!strcmp("notaryProvider", xml->getNodeName()))	// -------------------------------------------------------------
 				{
-					ServerName = xml->getAttributeValue("name");					
+					OTASCIIArmor ascServerName = xml->getAttributeValue("name");	
+					
+					if (ascServerName.Exists())
+						ascServerName.GetString(ServerName, false); // linebreaks == false
+	
+//					ServerName = xml->getAttributeValue("name");					
 					ServerID = xml->getAttributeValue("serverID"); // hash of contract
 					
 					OTLog::vOutput(0, "\n\n\n****Notary Server (contract)**** (wallet listing): %s\n ServerID:\n%s\n",
@@ -999,6 +1051,8 @@ bool OTWallet::LoadWallet(const char * szFilename)
 					{
 						if (pContract->VerifyContract())
 						{
+							pContract->SetName(ServerName); // This isn't needed, but it's proper.
+							
 							OTLog::Output(0, "** Server Contract Verified **\n-----------------------------------------------------------------------------\n\n");
 							// Uncomment : Move these lines back above the 'if' block to regenerate some newly-signed contracts.
 							// (for testing only.) Otherwise leave here where it belongs.

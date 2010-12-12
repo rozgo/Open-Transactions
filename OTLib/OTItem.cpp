@@ -149,7 +149,7 @@ void OTItem::SetNote(const OTString & theStr)
 
 void OTItem::GetNote(OTString & theStr) const
 {
-	if (m_ascNote.Exists())
+	if (m_ascNote.GetLength() > 2)
 	{
 		m_ascNote.GetString(theStr);
 		

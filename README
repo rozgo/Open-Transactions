@@ -4,6 +4,11 @@ WHAT IS 'Open Transactions' ?
 It's a solid, easy-to-use, FINANCIAL CRYPTO and DIGITAL CASH LIBRARY.
 Including an operational API, SERVER and CLIENT.
 
+Diagrams:  
+Architecture Overview: http://billstclair.com/ot/ot-diagram.jpg
+Fully-Anonymous (cash only): http://billstclair.com/ot/OT-Anon-CashOnly.jpg
+Pseudo-Anonymous (using accounts): http://billstclair.com/ot/OT-Pseudonym-Instruments.jpg
+
 Featuring: 
     -- Untraceable Digital Cash (real blinded tokens). 
     -- Pseudonymous User Accounts ('account' == PGP key). 

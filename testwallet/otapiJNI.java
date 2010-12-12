@@ -11,6 +11,8 @@ class otapiJNI {
   public final static native int OT_API_Init(String jarg1);
   public final static native int OT_API_LoadWallet(String jarg1);
   public final static native String OT_API_CreateNym();
+  public final static native int OT_API_AddServerContract(String jarg1);
+  public final static native int OT_API_AddAssetContract(String jarg1);
   public final static native int OT_API_GetServerCount();
   public final static native int OT_API_GetAssetTypeCount();
   public final static native int OT_API_GetAccountCount();
@@ -24,11 +26,13 @@ class otapiJNI {
   public final static native String OT_API_GetAccountWallet_Balance(String jarg1);
   public final static native String OT_API_GetAccountWallet_Type(String jarg1);
   public final static native String OT_API_GetAccountWallet_AssetTypeID(String jarg1);
-  public final static native int OT_API_SetAccountWallet_Name(String jarg1, String jarg2, String jarg3);
   public final static native int OT_API_GetNym_TransactionNumCount(String jarg1, String jarg2);
   public final static native String OT_API_GetNym_ID(int jarg1);
   public final static native String OT_API_GetNym_Name(String jarg1);
   public final static native int OT_API_SetNym_Name(String jarg1, String jarg2, String jarg3);
+  public final static native int OT_API_SetAccountWallet_Name(String jarg1, String jarg2, String jarg3);
+  public final static native int OT_API_SetAssetType_Name(String jarg1, String jarg2);
+  public final static native int OT_API_SetServer_Name(String jarg1, String jarg2);
   public final static native String OT_API_VerifyAndRetrieveXMLContents(String jarg1, String jarg2);
   public final static native String OT_API_WriteCheque(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5, String jarg6, String jarg7, String jarg8);
   public final static native String OT_API_WritePaymentPlan(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5, String jarg6, String jarg7, String jarg8, String jarg9, String jarg10, String jarg11, String jarg12, String jarg13, String jarg14, String jarg15);
