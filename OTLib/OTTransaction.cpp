@@ -250,6 +250,12 @@ bool OTTransaction::GenerateTransaction(const OTIdentifier & theAccountID, const
 
 
 
+bool OTTransaction::SaveContractWallet(std::ofstream & ofs)
+{
+	return true;
+}
+
+
 
 
 OTTransaction::~OTTransaction()
@@ -271,12 +277,6 @@ void OTTransaction::ReleaseItems()
 	}
 }
 
-
-
-bool OTTransaction::SaveContractWallet(std::ofstream & ofs)
-{
-	return true;
-}
 
 
 // You have to allocate the item on the heap and then pass it in as a reference. 
@@ -487,74 +487,170 @@ int OTTransaction::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 
 
 
+
+// Called by OTLedger::ProduceInboxReport
+// (Used for balance agreement -- transaction numbers must all be accounted for.)
+//
+// This function is for balance agreement -- it only cares about transaction numbers
+// that I HAVEN'T accepted as closed but the balance ALREADY DID CHANGE. 
+// (Cheque receipt, market receipt, payment receipt, currently.)
+// Transfer isn't here because the money already came out, yes, but I already
+// got a balance agreement when it happened. Inbox report is for making sure
+// we get that balance agreement for these other cases too.
+//
+void OTTransaction::ProduceInboxReport(OTString & strOutput) 
+{	
+	switch (m_Type) 
+	{	// These are the types that have an amount (somehow)
+		case OTTransaction::chequeReceipt: // amount is stored on cheque (attached to depositCheque item, attached.)
+		case OTTransaction::marketReceipt: // amount is stored on marketReceipt item
+		case OTTransaction::paymentReceipt:	// amount is stored on paymentReceipt item
+			break;
+		default: // All other types are irrelevant for inbox reports (We only care about 
+			return;
+	}
+	
+	
+	const char * pTypeStr = GetTypeString();
+	
+	OTString	strAcctID(GetPurportedAccountID()), 
+				strServerID(GetPurportedServerID()),
+				strUserID(GetUserID());
+	
+	long lAmount = GetReceiptAmount();
+	
+	strOutput.Concatenate("<transactionReport type=\"%s\"\n"
+						  " adjustment=\"%ld\"\n"
+						  " accountID=\"%s\"\n"
+						  " userID=\"%s\"\n"
+						  " serverID=\"%s\"\n"
+						  " transactionNum=\"%ld\"\n"
+						  " inReferenceTo=\"%ld\" />\n\n", 
+						  (NULL != pTypeStr) ? pTypeStr : "error_state", 
+						  lAmount,
+						  strAcctID.Get(), strUserID.Get(), 
+						  strServerID.Get(), GetTransactionNum(),
+						  GetReferenceToNum());
+}
+
+
+
+
+// A Transaction normally doesn't have an amount. (Only a transaction item does.)
+// But this function will look up the item, when appropriate, and find out the amount.
+//
+// That way we can record it during a balance agreement.
+// NOTE: Not ALL transaction types with an amount are listed here,
+// just the ones necessary for balance agreement.
+//
+long OTTransaction::GetReceiptAmount()
+{
+	long lAmount = 0;
+	
+	OTString strReference;
+	GetReferenceString(strReference);
+	
+	OTItem * pOriginalItem = NULL;
+
+	switch (m_Type) 
+	{	// These are the types that have an amount (somehow)
+		case OTTransaction::chequeReceipt: // amount is stored on cheque (attached to depositCheque item, attached.)
+		case OTTransaction::marketReceipt: // amount is stored on marketReceipt item
+		case OTTransaction::paymentReceipt:	// amount is stored on paymentReceipt item
+			pOriginalItem = OTItem::CreateItemFromString(strReference, GetPurportedServerID(), GetReferenceToNum());
+			break;
+		default: // All other types have no amount -- return 0.
+			return 0;
+	}
+	
+	OTCleanup<OTItem> theItemAngel(pOriginalItem);
+	
+	if (NULL == pOriginalItem)
+		return 0; // Should never happen, since we always expect one based on the transaction type.
+	
+	// -------------------------------------------------
+	
+	OTString strAttachment;
+	
+	OTCheque theCheque; // allocated on the stack :-)
+
+	switch (m_Type) 
+	{	// These are the types that have an amount (somehow)
+		case OTTransaction::chequeReceipt: // amount is stored on cheque (attached to depositCheque item, attached.)
+			
+			if (pOriginalItem->GetType() != OTItem::depositCheque)
+			{
+				OTLog::Error("Wrong item type attached to chequeReceipt\n");
+				return 0;
+			}
+			
+			// Get the cheque from the Item and load it up into a Cheque object.
+			pOriginalItem->GetAttachment(strAttachment);
+			bool bLoadContractFromString = theCheque.LoadContractFromString(strAttachment);
+			
+			if (!bLoadContractFromString)
+			{
+				OTLog::vError("ERROR loading cheque from string in OTTransaction::GetReceiptAmount:\n%s\n",
+							  strCheque.Get());
+			}
+			else 
+			{
+				lAmount = (theCheque.GetAmount()*(-1)); // a cheque reduces my balance, unless it's negative.
+			}											// So -100 means 100 came out, and +100 means 100 went in.
+			break;
+		case OTTransaction::marketReceipt: // amount is stored on marketReceipt item
+			
+			if (pOriginalItem->GetType() != OTItem::marketReceipt)
+			{
+				OTLog::Error("Wrong item type attached to marketReceipt\n");
+			}
+			else
+			{
+				lAmount = pOriginalItem->GetAmount();	// THIS WILL ALSO USE THE POSITIVE / NEGATIVE THING. (Already.)
+			}
+			break;
+		case OTTransaction::paymentReceipt:	// amount is stored on paymentReceipt item
+			
+			if (pOriginalItem->GetType() != OTItem::paymentReceipt)
+			{
+				OTLog::Error("Wrong item type attached to paymentReceipt\n");
+			}
+			else
+			{
+				lAmount = pOriginalItem->GetAmount();	// THIS WILL ALSO USE THE POSITIVE / NEGATIVE THING. (Already.)
+			}
+			
+			break;
+		default: // All other types have no amount -- return 0.
+			return 0;
+	}
+	
+	return lAmount;
+}
+
+
+
+
+
+
 // This is called automatically by SignContract to make sure what's being signed is the most up-to-date
 // Before transmission or serialization, this is where the ledger saves its contents 
 // So let's make sure this transaction has the right contents.
 void OTTransaction::UpdateContents() 
 {	
-	OTString strType, strAcctID(GetPurportedAccountID()), strServerID(GetPurportedServerID()),
-		strUserID(GetUserID());
+	const char * pTypeStr = GetTypeString();
 	
-	switch (m_Type) {
-		case OTTransaction::blank:
-			strType.Set("blank");
-			break;
-		case OTTransaction::pending:
-			strType.Set("pending");
-			break;
-		case OTTransaction::processInbox:
-			strType.Set("processInbox");
-			break;
-		case OTTransaction::atProcessInbox:
-			strType.Set("atProcessInbox");
-			break;
-		case OTTransaction::transfer:
-			strType.Set("transfer");
-			break;
-		case OTTransaction::atTransfer:
-			strType.Set("atTransfer");
-			break;
-		case OTTransaction::deposit:
-			strType.Set("deposit");
-			break;
-		case OTTransaction::atDeposit:
-			strType.Set("atDeposit");
-			break;
-		case OTTransaction::withdrawal:
-			strType.Set("withdrawal");
-			break;
-		case OTTransaction::atWithdrawal:
-			strType.Set("atWithdrawal");
-			break;
-		case OTTransaction::marketOffer:
-			strType.Set("marketOffer");
-			break;
-		case OTTransaction::atMarketOffer:
-			strType.Set("atMarketOffer");
-			break;
-		case OTTransaction::paymentPlan:
-			strType.Set("paymentPlan");
-			break;
-		case OTTransaction::atPaymentPlan:
-			strType.Set("atPaymentPlan");
-			break;
+	
+	OTString	strType, 
+				strAcctID(GetPurportedAccountID()), 
+				strServerID(GetPurportedServerID()),
+				strUserID(GetUserID());
+	
+	if (NULL != pTypeStr)
+		strType.Set(pTypeStr);
+	else
+		strType.Set("error_state"); // todo: internationalization.
 
-		case OTTransaction::transferReceipt:
-			strType.Set("transferReceipt");
-			break;
-		case OTTransaction::chequeReceipt:
-			strType.Set("chequeReceipt");
-			break;
-		case OTTransaction::marketReceipt:
-			strType.Set("marketReceipt");
-			break;
-		case OTTransaction::paymentReceipt:
-			strType.Set("paymentReceipt");
-			break;
-		default:
-			strType.Set("error-unknown");
-			break;
-	}
 	
 	// I release this because I'm about to repopulate it.
 	m_xmlUnsigned.Release();

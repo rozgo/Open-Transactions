@@ -110,6 +110,61 @@ using namespace io;
 
 
 
+
+
+void OTItem::ReleaseItems()
+{
+	OTItem * pItem = NULL;
+	
+	while (!m_listItems.empty())
+	{
+		pItem = m_listItems.front();
+		m_listItems.pop_front();
+		delete pItem;
+		pItem = NULL;
+	}
+}
+
+
+
+// You have to allocate the item on the heap and then pass it in as a reference. 
+// OTTransaction will take care of it from there and will delete it in destructor.
+void OTItem::AddItem(OTItem & theItem) 
+{ 
+	m_listItems.push_back(&theItem);  
+} 
+
+
+// While processing a transaction, you may wish to query it for items of a certain type.
+OTItem * OTItem::GetItem(int nIndex) 
+{
+	OTItem * pItem = NULL;
+	
+	int nTempIndex = (-1);
+	
+	for (listOfItems::iterator ii = m_listItems.begin(); ii != m_listItems.end(); ++ii)
+	{
+		pItem = *ii;
+		
+		OT_ASSERT(NULL != pItem);
+		
+		nTempIndex++; // first iteration this becomes 0 here.
+		
+		if (nTempIndex == nIndex)
+			return pItem;
+	}
+	
+	return NULL;
+}
+
+
+
+
+
+
+
+
+
 void OTItem::GetAttachment(OTString & theStr) const
 {
 	m_ascAttachment.GetString(theStr);
@@ -244,10 +299,18 @@ void OTItem::InitItem()
 
 // From owner we can get acct ID, server ID, and transaction Num
 OTItem::OTItem(const OTIdentifier & theUserID, const OTTransaction & theOwner) 
-		: OTTransactionType(theUserID, theOwner.GetRealAccountID(), theOwner.GetRealServerID(), theOwner.GetTransactionNum())
+: OTTransactionType(theUserID, theOwner.GetRealAccountID(), theOwner.GetRealServerID(), theOwner.GetTransactionNum())
 {
 	InitItem();
+	
+}
 
+// From owner we can get acct ID, server ID, and transaction Num
+OTItem::OTItem(const OTIdentifier & theUserID, const OTItem & theOwner) 
+: OTTransactionType(theUserID, theOwner.GetRealAccountID(), theOwner.GetRealServerID(), theOwner.GetTransactionNum())
+{
+	InitItem();
+	
 }
 
 OTItem::OTItem(const OTIdentifier & theUserID, const OTTransaction & theOwner, OTItem::itemType theType, OTIdentifier * pDestinationAcctID/*=NULL*/)
@@ -299,7 +362,112 @@ OTItem& OTItem::operator=(const OTItem& rhs)
 */
 OTItem::~OTItem()
 {
+	ReleaseItems();
+}
+
+
+
+
+
+
+
+OTItem::itemType GetItemTypeFromString(const OTString & strType)
+{
+	OTItem::itemType theType = 0;
 	
+	if (strType.Compare("transaction"))
+		theType = OTItem::transaction;
+	else if (strType.Compare("atTransaction"))
+		theType = OTItem::atTransaction;
+	// --------------------------------------------------------------
+	else if (strType.Compare("transfer"))
+		theType = OTItem::transfer;
+	else if (strType.Compare("atTransfer"))
+		theType = OTItem::atTransfer;
+	else if (strType.Compare("acceptPending"))
+		theType = OTItem::acceptPending;
+	else if (strType.Compare("atAcceptPending"))
+		theType = OTItem::atAcceptPending;
+	else if (strType.Compare("rejectPending"))
+		theType = OTItem::rejectPending;
+	else if (strType.Compare("atRejectPending"))
+		theType = OTItem::atRejectPending;
+	// --------------------------------------------------------------
+	else if (strType.Compare("acceptCronReceipt"))
+		theType = OTItem::acceptCronReceipt;
+	else if (strType.Compare("atAcceptCronReceipt"))
+		theType = OTItem::atAcceptCronReceipt;
+	else if (strType.Compare("disputeCronReceipt"))
+		theType = OTItem::disputeCronReceipt;
+	else if (strType.Compare("atDisputeCronReceipt"))
+		theType = OTItem::atDisputeCronReceipt;
+	else if (strType.Compare("acceptItemReceipt"))
+		theType = OTItem::acceptItemReceipt;
+	else if (strType.Compare("atAcceptItemReceipt"))
+		theType = OTItem::atAcceptItemReceipt;
+	else if (strType.Compare("disputeItemReceipt"))
+		theType = OTItem::disputeItemReceipt;
+	else if (strType.Compare("atDisputeItemReceipt"))
+		theType = OTItem::atDisputeItemReceipt;
+	// --------------------------------------------------------------
+	else if (strType.Compare("serverfee"))
+		theType = OTItem::serverfee;
+	else if (strType.Compare("atServerfee"))
+		theType = OTItem::atServerfee;
+	else if (strType.Compare("issuerfee"))
+		theType = OTItem::issuerfee;
+	else if (strType.Compare("atIssuerfee"))
+		theType = OTItem::atIssuerfee;
+	// --------------------------------------------------------------
+	else if (strType.Compare("balanceStatement"))
+		theType = OTItem::balanceStatement;
+	else if (strType.Compare("atBalanceStatement"))
+		theType = OTItem::atBalanceStatement;
+	else if (strType.Compare("transactionStatement"))
+		theType = OTItem::transactionStatement;
+	else if (strType.Compare("atTransactionStatement"))
+		theType = OTItem::atTransactionStatement;
+	// --------------------------------------------------------------
+	else if (strType.Compare("withdrawal"))
+		theType = OTItem::withdrawal;
+	else if (strType.Compare("atWithdrawal"))
+		theType = OTItem::atWithdrawal;
+	else if (strType.Compare("deposit"))
+		theType = OTItem::deposit;
+	else if (strType.Compare("atDeposit"))
+		theType = OTItem::atDeposit;
+	// --------------------------------------------------------------
+	else if (strType.Compare("withdrawVoucher"))
+		theType = OTItem::withdrawVoucher;
+	else if (strType.Compare("atWithdrawVoucher"))
+		theType = OTItem::atWithdrawVoucher;
+	else if (strType.Compare("depositCheque"))
+		theType = OTItem::depositCheque;
+	else if (strType.Compare("atDepositCheque"))
+		theType = OTItem::atDepositCheque;
+	// --------------------------------------------------------------
+	else if (strType.Compare("marketOffer"))
+		theType = OTItem::marketOffer;
+	else if (strType.Compare("atMarketOffer"))
+		theType = OTItem::atMarketOffer;
+	// --------------------------------------------------------------
+	else if (strType.Compare("paymentPlan"))
+		theType = OTItem::paymentPlan;
+	else if (strType.Compare("atPaymentPlan"))
+		theType = OTItem::atPaymentPlan;
+	// --------------------------------------------------------------
+	else if (strType.Compare("chequeReceipt"))
+		theType = OTItem::chequeReceipt;
+	else if (strType.Compare("marketReceipt"))
+		theType = OTItem::marketReceipt;
+	else if (strType.Compare("paymentReceipt"))
+		theType = OTItem::paymentReceipt;
+	// --------------------------------------------------------------
+	else
+		theType = OTItem::error_state;
+	// --------------------------------------------------------------
+	
+	return theType;
 }
 
 
@@ -315,99 +483,8 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		strStatus	= xml->getAttributeValue("status");
 		
 		// Type
-		if (strType.Compare("transaction"))
-			m_Type = OTItem::transaction;
-		else if (strType.Compare("atTransaction"))
-			m_Type = OTItem::atTransaction;
-		// --------------------------------------------------------------
-		else if (strType.Compare("transfer"))
-			m_Type = OTItem::transfer;
-		else if (strType.Compare("atTransfer"))
-			m_Type = OTItem::atTransfer;
-		else if (strType.Compare("acceptPending"))
-			m_Type = OTItem::acceptPending;
-		else if (strType.Compare("atAcceptPending"))
-			m_Type = OTItem::atAcceptPending;
-		else if (strType.Compare("rejectPending"))
-			m_Type = OTItem::rejectPending;
-		else if (strType.Compare("atRejectPending"))
-			m_Type = OTItem::atRejectPending;
-		// --------------------------------------------------------------
-		else if (strType.Compare("acceptCronReceipt"))
-			m_Type = OTItem::acceptCronReceipt;
-		else if (strType.Compare("atAcceptCronReceipt"))
-			m_Type = OTItem::atAcceptCronReceipt;
-		else if (strType.Compare("disputeCronReceipt"))
-			m_Type = OTItem::disputeCronReceipt;
-		else if (strType.Compare("atDisputeCronReceipt"))
-			m_Type = OTItem::atDisputeCronReceipt;
-		else if (strType.Compare("acceptItemReceipt"))
-			m_Type = OTItem::acceptItemReceipt;
-		else if (strType.Compare("atAcceptItemReceipt"))
-			m_Type = OTItem::atAcceptItemReceipt;
-		else if (strType.Compare("disputeItemReceipt"))
-			m_Type = OTItem::disputeItemReceipt;
-		else if (strType.Compare("atDisputeItemReceipt"))
-			m_Type = OTItem::atDisputeItemReceipt;
-		// --------------------------------------------------------------
-		else if (strType.Compare("serverfee"))
-			m_Type = OTItem::serverfee;
-		else if (strType.Compare("atServerfee"))
-			m_Type = OTItem::atServerfee;
-		else if (strType.Compare("issuerfee"))
-			m_Type = OTItem::issuerfee;
-		else if (strType.Compare("atIssuerfee"))
-			m_Type = OTItem::atIssuerfee;
-		// --------------------------------------------------------------
-		else if (strType.Compare("balance"))
-			m_Type = OTItem::balance;
-		else if (strType.Compare("atBalance"))
-			m_Type = OTItem::atBalance;
-		else if (strType.Compare("outboxhash"))
-			m_Type = OTItem::outboxhash;
-		else if (strType.Compare("atOutboxhash"))
-			m_Type = OTItem::atOutboxhash;
-		// --------------------------------------------------------------
-		else if (strType.Compare("withdrawal"))
-			m_Type = OTItem::withdrawal;
-		else if (strType.Compare("atWithdrawal"))
-			m_Type = OTItem::atWithdrawal;
-		else if (strType.Compare("deposit"))
-			m_Type = OTItem::deposit;
-		else if (strType.Compare("atDeposit"))
-			m_Type = OTItem::atDeposit;
-		// --------------------------------------------------------------
-		else if (strType.Compare("withdrawVoucher"))
-			m_Type = OTItem::withdrawVoucher;
-		else if (strType.Compare("atWithdrawVoucher"))
-			m_Type = OTItem::atWithdrawVoucher;
-		else if (strType.Compare("depositCheque"))
-			m_Type = OTItem::depositCheque;
-		else if (strType.Compare("atDepositCheque"))
-			m_Type = OTItem::atDepositCheque;
-		// --------------------------------------------------------------
-		else if (strType.Compare("marketOffer"))
-			m_Type = OTItem::marketOffer;
-		else if (strType.Compare("atMarketOffer"))
-			m_Type = OTItem::atMarketOffer;
-		// --------------------------------------------------------------
-		else if (strType.Compare("paymentPlan"))
-			m_Type = OTItem::paymentPlan;
-		else if (strType.Compare("atPaymentPlan"))
-			m_Type = OTItem::atPaymentPlan;
-		// --------------------------------------------------------------
-//		else if (strType.Compare("chequeReceipt"))
-//			m_Type = OTItem::chequeReceipt;
-		else if (strType.Compare("marketReceipt"))
-			m_Type = OTItem::marketReceipt;
-		else if (strType.Compare("paymentReceipt"))
-			m_Type = OTItem::paymentReceipt;
-		// --------------------------------------------------------------
-		else
-			m_Type = OTItem::error_state;
-// --------------------------------------------------------------
-		 
-		
+		m_Type = GetItemTypeFromString(strType); // just above.
+				
 		// Status
 		if (strStatus.Compare("request"))
 			m_Status = OTItem::request;
@@ -476,23 +553,56 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		
 		return 1;
 	}
+	else if (!strcmp("transactionReport", xml->getNodeName())) 
+	{		
+		OTItem * pItem = new OTItem(GetUserID(), *this); // But I've also got ITEM types with the same names...
+														// That way, it will translate the string and set the type correctly.
+		OT_ASSERT(NULL != pItem);						// That way I can use each item to REPRESENT an inbox transaction
+				
+		// Type
+		OTString strType;		
+		strType		= xml->getAttributeValue("type"); // it's reading a TRANSACTION type: chequeReceipt, marketReceipt, or paymentReceipt
+		
+		pItem->SetType(GetItemTypeFromString(strType)); // It's actually translating a transaction type to an item type. (Same names in the case of the 3 receipts that matter for inbox reports for balance agreements.)
+		
+		pItem->SetAmount(atol(xml->getAttributeValue("adjustment")));
+
+		// Status
+		pItem->SetStatus(OTItem::acknowledgement); // I don't need this, but I'd rather it not say error state.
+		
+		OTString strAccountID, strServerID, strUserID;
+		
+		strAccountID		= xml->getAttributeValue("accountID"); 
+		strServerID			= xml->getAttributeValue("serverID");
+		strUserID			= xml->getAttributeValue("userID");
+		
+		OTIdentifier	ACCOUNT_ID(strAccountID), SERVER_ID(strServerID), USER_ID(strUserID);
+		
+		pItem->SetPurportedAccountID(ACCOUNT_ID);		// OTTransactionType::m_AcctID  the PURPORTED Account ID
+		pItem->SetPurportedServerID(SERVER_ID);		// OTTransactionType::m_AcctServerID the PURPORTED Server ID
+		pItem->SetUserID(USER_ID);
+		pItem->SetTransactionNum(atol(xml->getAttributeValue("transactionNum")));
+		pItem->SetReferenceToNum(atol(xml->getAttributeValue("inReferenceTo")));
+				
+		m_listItems.push_back(pItem); // <======= adding to list.
+
+		OTLog::vOutput(1, "Loaded transactionReport Item, transaction num %ld, In Reference To: %ld, type: %s\n",
+					   //				"fromAccountID:\n%s\n UserID:\n%s\n toAccountID:\n%s\n serverID:\n%s\n----------\n", 
+					   pItem->GetTransactionNum(),
+					   pItem->GetReferenceToNum(), strType.Get()
+					   //				strAcctFromID.Get(), strUserID.Get(), strAcctToID.Get(), strServerID.Get()
+					   );
+		return 1;
+	}
 	
 	return 0;	
 }
 
 
 
-
-
-
-
-
-void OTItem::UpdateContents() // Before transmission or serialization, this is where the ledger saves its contents 
+void GetStringFromType(OTItem::itemType theType, OTString & strType)
 {
-	OTString strFromAcctID(GetPurportedAccountID()), strToAcctID(GetDestinationAcctID()), strServerID(GetPurportedServerID()), 
-			 strType, strStatus, strUserID(GetUserID());
-	
-	switch (m_Type) {
+	switch (theType) {
 		case OTItem::transaction:
 			strType.Set("transaction");
 			break;
@@ -547,16 +657,26 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 		case OTItem::paymentPlan:
 			strType.Set("paymentPlan");
 			break;
+		case OTItem::balanceStatement:
+			strType.Set("balanceStatement");
+			break;
+		case OTItem::transactionStatement:
+			strType.Set("transactionStatement");
+			break;
 			
-//		case OTItem::chequeReceipt:
-//			strType.Set("chequeReceipt");
-//			break;
-		case OTItem::marketReceipt:
+			
+			
+		case OTItem::chequeReceipt:			// used for inbox statements in balance agreement.
+			strType.Set("chequeReceipt");
+			break;
+		case OTItem::marketReceipt:			// used as market receipt, and also for inbox statement containing market receipt will use this as well.
 			strType.Set("marketReceipt");
 			break;
-		case OTItem::paymentReceipt:
+		case OTItem::paymentReceipt:		// used as payment receipt, also used in inbox statement as payment receipt.
 			strType.Set("paymentReceipt");
 			break;
+			
+			
 			
 		case OTItem::atTransaction:
 			strType.Set("atTransaction");
@@ -612,11 +732,31 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 		case OTItem::atPaymentPlan:
 			strType.Set("atPaymentPlan");
 			break;
+		case OTItem::atBalanceStatement:
+			strType.Set("atBalanceStatement");
+			break;
+		case OTItem::atTransactionStatement:
+			strType.Set("atTransactionStatement");
+			break;
+			
+			
+			
+			
 			
 		default:
 			strType.Set("error-unknown");
 			break;
 	}
+	
+}
+
+
+void OTItem::UpdateContents() // Before transmission or serialization, this is where the ledger saves its contents 
+{
+	OTString strFromAcctID(GetPurportedAccountID()), strToAcctID(GetDestinationAcctID()), strServerID(GetPurportedServerID()), 
+			 strType, strStatus, strUserID(GetUserID());
+	
+	GetStringFromType(m_Type, strType);
 	
 	switch (m_Status) {
 		case OTItem::request:
@@ -662,6 +802,40 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 	{
 		m_xmlUnsigned.Concatenate("<attachment>\n%s</attachment>\n\n", m_ascAttachment.Get());
 	}
+	
+	
+	// loop through the sub-items (only used for balance agreement.)
+	
+	OTItem * pItem = NULL;
+	
+	for (listOfItems::iterator ii = m_listItems.begin(); ii != m_listItems.end(); ++ii)
+	{
+		pItem = *ii;
+		
+		OT_ASSERT(NULL != pItem);
+		
+		OTString	strAcctID(pItem->GetPurportedAccountID()), 
+					strServerID(pItem->GetPurportedServerID()),
+					strUserID(pItem->GetUserID());
+		
+		OTString strType;
+		GetStringFromType(pItem->GetType(), strType);
+		
+		m_xmlUnsigned.Concatenate("<transactionReport type=\"%s\"\n"
+							  " adjustment=\"%ld\"\n"
+							  " accountID=\"%s\"\n"
+							  " userID=\"%s\"\n"
+							  " serverID=\"%s\"\n"
+							  " transactionNum=\"%ld\"\n"
+							  " inReferenceTo=\"%ld\" />\n\n", 
+							  strType.Exists() ? strType.Get() : "error_state", 
+							  pItem->GetAmount(),
+							  strAcctID.Get(), strUserID.Get(), 
+							  strServerID.Get(), 
+							GetTransactionNum(),
+								  GetReferenceToNum());
+	}	
+
 	
 	m_xmlUnsigned.Concatenate("</item>\n");					
 }

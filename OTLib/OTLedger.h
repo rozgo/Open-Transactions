@@ -128,6 +128,9 @@ public:
 	
 	ledgerType	m_Type;
 		
+	
+	bool ProduceInboxReport(OTString & strOutput);
+	
 	bool AddTransaction(OTTransaction & theTransaction);
 	bool RemoveTransaction(long lTransactionNum); // if false, transaction wasn't found.
 	

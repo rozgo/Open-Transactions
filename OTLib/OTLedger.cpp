@@ -526,6 +526,40 @@ OTTransaction * OTLedger::GetPendingTransaction(long lTransactionNum)
 }
 
 
+// Only if it is an inbox, a ledger will loop through the transactions
+// and produce the XML output for the report that's necessary during
+// a balance agreement. (Any balance agreement for an account must
+// include the list of transactions the nym has issued for use, as
+// well as a listing of the transactions in the inbox for that account.
+// This function does that last part :)
+//
+bool OTLedger::ProduceInboxReport(OTString & strOutput)
+{
+	if (OTLedger::inbox != m_Type)
+	{
+		OTLog::Error("OTLedger::ProduceInboxReport: Wrong ledger type.\n");
+		return false;
+	}
+	
+	// loop through the transactions and print them out here.
+	OTTransaction * pTransaction = NULL;
+	
+	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); 
+		 ii != m_mapTransactions.end(); ++ii)
+	{
+		pTransaction = (*ii).second;
+		
+		OT_ASSERT(NULL != pTransaction);
+		
+		// it only reports receipts where we don't yet have balance agreement.
+		pTransaction->ProduceInboxReport(strOutput);	
+	}
+	
+	return true;
+}
+
+
+
 
 // SignContract will call this function at the right time.
 void OTLedger::UpdateContents() // Before transmission or serialization, this is where the ledger saves its contents 
@@ -566,16 +600,17 @@ void OTLedger::UpdateContents() // Before transmission or serialization, this is
 	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); 
 		 ii != m_mapTransactions.end(); ++ii)
 	{
-		if ((pTransaction = (*ii).second)) // if pointer not null
-		{
-			OTString strTransaction;
-			pTransaction->SaveContract(strTransaction);
-			
-			OTASCIIArmor ascTransaction;
-			ascTransaction.SetString(strTransaction, true); // linebreaks = true
-			
-			m_xmlUnsigned.Concatenate("<transaction>\n%s</transaction>\n\n", ascTransaction.Get());
-		}
+		pTransaction = (*ii).second;
+		
+		OT_ASSERT(NULL != pTransaction);
+		
+		OTString strTransaction;
+		pTransaction->SaveContract(strTransaction);
+		
+		OTASCIIArmor ascTransaction;
+		ascTransaction.SetString(strTransaction, true); // linebreaks = true
+		
+		m_xmlUnsigned.Concatenate("<transaction>\n%s</transaction>\n\n", ascTransaction.Get());
 	}
 	
 	m_xmlUnsigned.Concatenate("</accountLedger>\n");				

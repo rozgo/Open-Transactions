@@ -1191,6 +1191,7 @@ void OTMarket::ProcessTrade(OTTrade & theTrade, OTOffer & theOffer, OTOffer & th
 			bool bSuccess = false;
 			
 			long lOfferFinished = 0, lOtherOfferFinished = 0; // We store these up and then add the totals to the offers at the end (only upon success.)
+			long lTotalPaidOut = 0; // However much is paid for the assets, total.
 			
 			// Continuing the example from above, each round I will trade:
 			//		50 oz lMinIncrementPerRound, in return for $65,000 lPrice.
@@ -1230,6 +1231,8 @@ void OTMarket::ProcessTrade(OTTrade & theTrade, OTOffer & theOffer, OTOffer & th
 				// The while() above checks these values in GetAmountAvailable().
 				lOfferFinished		+= lMinIncrementPerRound;
 				lOtherOfferFinished	+= lMinIncrementPerRound;
+				
+				lTotalPaidOut		+= lPrice;
 			}
 			
 			
@@ -1386,7 +1389,26 @@ void OTMarket::ProcessTrade(OTTrade & theTrade, OTOffer & theOffer, OTOffer & th
 			pItem2->SetAttachment(strOffer);
 			pItem3->SetAttachment(strOtherOffer);
 			pItem4->SetAttachment(strOtherOffer);
-
+			
+			
+			// Inbox receipts need to clearly show the amount moved...
+			// Also need to clearly show negative or positive, since that
+			// is otherwise not obvious just because you have a marketReceipt...
+			if (theOffer.IsAsk()) // I'm selling, he's buying
+			{
+				pItem1->SetAmount(lOfferFinished*(-1));	// first asset
+				pItem2->SetAmount(lTotalPaidOut);		// first currency
+				pItem3->SetAmount(lOtherOfferFinished);	// other asset
+				pItem4->SetAmount(lTotalPaidOut*(-1));	// other currency
+			}
+			else	// I'm buying, he's selling
+			{
+				pItem1->SetAmount(lOfferFinished);	// first asset
+				pItem2->SetAmount(lTotalPaidOut*(-1));		// first currency
+				pItem3->SetAmount(lOtherOfferFinished*(-1));	// other asset
+				pItem4->SetAmount(lTotalPaidOut);	// other currency
+			}
+			
 			// -----------------------------------------------------------------
 			
 			if (true == bSuccess)

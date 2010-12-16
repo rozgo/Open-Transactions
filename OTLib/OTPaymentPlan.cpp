@@ -957,6 +957,10 @@ bool OTPaymentPlan::ProcessPayment(const long & lAmount)
 				pItemSend->m_Status		= OTItem::acknowledgement; // pSourceAcct		
 				pItemRecip->m_Status	= OTItem::acknowledgement; // pRecipientAcct
 								
+				pItemSend->SetAmount(lAmount*(-1));	// "paymentReceipt" is otherwise ambigious about whether you are paying or being paid.
+				pItemRecip->SetAmount(lAmount);		// So, I decided for payment and market receipts, to use negative and positive amounts.
+													// I will probably do the same for cheques, since they can be negative as well (invoices).
+				
 				if (m_bProcessingInitialPayment) // if this is a success for an initial payment
 				{
 					SetInitialPaymentDone();	
@@ -975,6 +979,9 @@ bool OTPaymentPlan::ProcessPayment(const long & lAmount)
 			{
 				pItemSend->m_Status		= OTItem::rejection;// pSourceAcct		// These are already initialized to false.
 				pItemRecip->m_Status	= OTItem::rejection;// pRecipientAcct	// (But just making sure...)
+
+				pItemSend->SetAmount(0);		// No money changed hands. Just being explicit.
+				pItemRecip->SetAmount(0);		// No money changed hands. Just being explicit.		
 
 				if (m_bProcessingInitialPayment)
 				{

@@ -1748,7 +1748,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			
 			// set up the transaction item (each transaction may have multiple items...)
 			OTItem * pItem		= OTItem::CreateItemFromTransaction(*pTransaction, OTItem::transfer, &ACCT_TO_ID);
-			pItem->m_lAmount	= atol(strAmount.Get());
+			pItem->SetAmount(atol(strAmount.Get()));
 			OTString strNote("Just testing the notes...blah blah blah blah blah blah");
 			pItem->SetNote(strNote);
 			
