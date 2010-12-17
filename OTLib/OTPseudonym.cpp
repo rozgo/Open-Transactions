@@ -381,45 +381,6 @@ bool OTPseudonym::GenerateNym()
 
 
 
-// OtherNym is used as container for server to send us new transaction numbers
-void OTPseudonym::HarvestTransactionNumbers(OTPseudonym & SIGNER_NYM, OTPseudonym & theOtherNym)
-{
-	bool bSuccess = false;
-	std::string	strServerID;
-	long lTransactionNumber = 0;
-	
-	for (mapOfTransNums::iterator	iii	 =	theOtherNym.GetMapTransNum().begin(); 
-		 iii !=	theOtherNym.GetMapTransNum().end(); ++iii)
-	{	
-		strServerID					= (*iii).first;
-		dequeOfTransNums * pDeque	= (iii->second);
-		
-		OTString OTstrServerID = strServerID.c_str();
-		
-		OT_ASSERT(NULL != pDeque);
-		
-		if (!(pDeque->empty()))
-		{
-			for (unsigned i = 0; i < pDeque->size(); i++)
-			{
-				lTransactionNumber = pDeque->at(i);
-				
-				AddTransactionNum(SIGNER_NYM, OTstrServerID, lTransactionNumber, false); // bSave = false (but saved below...)
-				
-				bSuccess = true;
-			}
-		}
-	} // for
-	
-	if (bSuccess)
-	{
-		SaveSignedNymfile(SIGNER_NYM);
-	}
-}
-
-
-
-
 /*
 typedef std::deque<long>							dequeOfTransNums;
 typedef std::map<std::string, dequeOfTransNums *>	mapOfTransNums;	
@@ -685,21 +646,6 @@ bool OTPseudonym::AddIssuedNum(const OTString & strServerID, long lTransNum)
 
 
 
-// GET ISSUED NUM BY INDEX
-// So I can iterate through them and see what they are.
-
-// In actual use, I should probably just make an "BALANCE AGREEMENT" function for NYM,
-// Just like I did for Ledger, and then add OUTBOX REPORT to ledger, to complement INBOX REPORT.
-// Then I just need to load the Nym, and load the inbox, and load the outbox, and I can get all
-// the reports I need and put them on the ITEM.
-//
-// SHould be able to GENERATE BALANCE AGREEMENT item in one fell swoop! As a normal part of
-// doing any transaction.
-//
-// RESUME!!!!!!
-//
-long	OTPseudonym::GetIssuedNum(const OTIdentifier & theServerID, int nIndex); // index
-
 
 
 // Client side: We have received a new trans num from server. Store it.
@@ -731,6 +677,85 @@ bool OTPseudonym::AddTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & s
 	
 	return (bSuccess1 && bSuccess2);
 }
+
+
+
+
+// OtherNym is used as container for server to send us new transaction numbers
+void OTPseudonym::HarvestTransactionNumbers(OTPseudonym & SIGNER_NYM, OTPseudonym & theOtherNym, bool bSave/*=true*/)
+{
+	bool bSuccess = false;
+	std::string	strServerID;
+	long lTransactionNumber = 0;
+	
+	for (mapOfTransNums::iterator	iii	 =	theOtherNym.GetMapTransNum().begin(); 
+		 iii !=	theOtherNym.GetMapTransNum().end(); ++iii)
+	{	
+		strServerID					= (*iii).first;
+		dequeOfTransNums * pDeque	= (iii->second);
+		
+		OTString OTstrServerID = strServerID.c_str();
+		
+		OT_ASSERT(NULL != pDeque);
+		
+		if (!(pDeque->empty()))
+		{
+			for (unsigned i = 0; i < pDeque->size(); i++)
+			{
+				lTransactionNumber = pDeque->at(i);
+				
+				AddTransactionNum(SIGNER_NYM, OTstrServerID, lTransactionNumber, false); // bSave = false (but saved below...)
+				
+				bSuccess = true;
+			}
+		}
+	} // for
+	
+	if (bSuccess && bSave)
+	{
+		SaveSignedNymfile(SIGNER_NYM);
+	}
+}
+
+
+
+
+// OtherNym is used as container for us to send server list of issued transaction numbers.
+void OTPseudonym::HarvestIssuedNumbers(OTPseudonym & SIGNER_NYM, OTPseudonym & theOtherNym, bool bSave/*=false*/)
+{
+	bool bSuccess = false;
+	std::string	strServerID;
+	long lTransactionNumber = 0;
+	
+	for (mapOfTransNums::iterator	iii	 =	theOtherNym.GetMapIssuedNum().begin(); 
+		 iii !=	theOtherNym.GetMapIssuedNum().end(); ++iii)
+	{	
+		strServerID					= (*iii).first;
+		dequeOfTransNums * pDeque	= (iii->second);
+		
+		OTString OTstrServerID = strServerID.c_str();
+		
+		OT_ASSERT(NULL != pDeque);
+		
+		if (!(pDeque->empty()))
+		{
+			for (unsigned i = 0; i < pDeque->size(); i++)
+			{
+				lTransactionNumber = pDeque->at(i);
+				
+				AddTransactionNum(SIGNER_NYM, OTstrServerID, lTransactionNumber, false); // bSave = false (but saved below...)
+				
+				bSuccess = true;
+			}
+		}
+	} // for
+	
+	if (bSuccess && bSave)
+	{
+		SaveSignedNymfile(SIGNER_NYM);
+	}
+}
+
 
 
 

@@ -129,7 +129,15 @@ public:
 	ledgerType	m_Type;
 		
 	
-	bool ProduceInboxReport(OTString & strOutput);
+	// This function assumes that this is an INBOX.
+	// If you don't use an INBOX to call this method, then it will return NULL immediately.
+	// If you DO use an inbox, then it will create a balanceStatement item to go onto your
+	// transaction.  (Transactions require balance statements. And when you get the atBalanceStatement
+	// reply from the server, KEEP THAT RECEIPT. Well, OT will do that for you.)
+	// You only have to keep the latest receipt, unlike systems that don't store balance
+	// agreement.  We also store a list of issued transactions, the new balance, and the outbox hash.
+	OTItem * GenerateBalanceStatement(const long lAdjustment, const OTTransaction & theOwner, 
+									  const OTPseudonym & theNym, const OTAccount & theAccount, OTLedger & theOutbox);
 	
 	bool AddTransaction(OTTransaction & theTransaction);
 	bool RemoveTransaction(long lTransactionNum); // if false, transaction wasn't found.

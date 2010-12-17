@@ -913,9 +913,10 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		// SIGNATURE, then SAVE it to local storage.  So any FUTURE checks of this inbox
 		// would require MY signature, not the server's, to verify. But in this one spot, 
 		// just before saving, I need to verify the server's first.
+		// UPDATE: Keeping the server's signature, and just adding my own.
 		if (theInbox.LoadContractFromString(strInbox) && theInbox.VerifyAccount(*pServerNym))
 		{
-			theInbox.ReleaseSignatures();
+//			theInbox.ReleaseSignatures(); // Now I'm keeping the server signature, and just adding my own.
 			theInbox.SignContract(*pNym);
 			theInbox.SaveContract();
 			theInbox.SaveInbox();
@@ -960,9 +961,10 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		// SIGNATURE, then SAVE it to local storage.  So any FUTURE checks of this outbox
 		// would require MY signature, not the server's, to verify. But in this one spot, 
 		// just before saving, I need to verify the server's first.
+		// UPDATE: keeping the server's signature, and just adding my own.
 		if (theOutbox.LoadContractFromString(strOutbox) && theOutbox.VerifyAccount(*pServerNym))
 		{
-			theOutbox.ReleaseSignatures();
+//			theOutbox.ReleaseSignatures();	// UPDATE: keeping the server's signature, and just adding my own.
 			theOutbox.SignContract(*pNym);
 			theOutbox.SaveContract();
 			theOutbox.SaveOutbox();
@@ -1136,7 +1138,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		if (pAccount && pAccount->LoadContractFromString(strAccount) && pAccount->VerifyAccount(*pServerNym))
 		{
 			OTLog::Output(0, "Saving updated account file to disk...\n");
-			pAccount->ReleaseSignatures();	// So I don't get the annoying failure to verify message from the server's signature.
+//			pAccount->ReleaseSignatures();	// So I don't get the annoying failure to verify message from the server's signature.
 											// Will eventually end up keeping the signature, however, just for reasons of proof. todo.
 			pAccount->SignContract(*pNym);
 			pAccount->SaveAccount();
@@ -2299,6 +2301,8 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		
 	else if (OTClient::withdrawVoucher == requestedCommand) // WITHDRAW VOUCHER
 	{		
+		OT_ASSERT(NULL != m_pWallet);
+		
 		OTString		strFromAcct;
 		OTIdentifier	ACCOUNT_ID;
 		
@@ -2366,7 +2370,23 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 															  VALID_FROM, VALID_TO, ACCOUNT_ID, USER_ID, strChequeMemo,
 															  (strRecipientUserID.GetLength() > 2) ? &(RECIPIENT_USER_ID) : NULL);
 			
-			if (bIssueCheque)
+			OTLedger * pInbox	= pAccount->LoadInbox();
+			OTLedger * pOutbox	= pAccount->LoadOutbox();
+			
+			OTCleanup<OTLedger> theInboxAngel(pInbox);
+			OTCleanup<OTLedger> theOutboxAngel(pOutbox);
+			
+			if (NULL == pInbox)
+			{
+				OTLog::Output(0, "Failed loading inbox!\n");
+			}
+			
+			else if (NULL == pOutbox)
+			{
+				OTLog::Output(0, "Failed loading outbox!\n");
+			}
+			
+			else if (bIssueCheque)
 			{
 				// Create a transaction
 				OTTransaction * pTransaction = OTTransaction::GenerateTransaction (USER_ID, ACCOUNT_ID, SERVER_ID, 
@@ -2391,10 +2411,21 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 				
 				pTransaction->AddItem(*pItem); // the Transaction's destructor will cleanup the item. It "owns" it now.
 				
+				// ---------------------------------------------
+				
+				// BALANCE AGREEMENT 
+				
+				// The item is signed and saved within this call as well. No need to do that again.
+				OTItem * pBalanceItem = pInbox->GenerateBalanceStatement(lAmount*(-1), *pTransaction, theNym, *pAccount, *pOutbox);
+
+				if (NULL != pBalanceItem)
+					pTransaction->AddItem(*pBalanceItem); // Better not be NULL... message will fail... But better check anyway.
+								
+				// ---------------------------------------------
+				
 				// sign the transaction
 				pTransaction->SignContract(theNym);
 				pTransaction->SaveContract();
-				
 				
 				// set up the ledger
 				OTLedger theLedger(USER_ID, ACCOUNT_ID, SERVER_ID);

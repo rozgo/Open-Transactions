@@ -148,6 +148,53 @@ const char * OTAccount::_TypeStrings[] =
 
 
 
+// Caller responsible to delete.
+OTLedger * OTAccount::LoadInbox(OTPseudonym & theNym)
+{
+	OTLedger * pBox = new OTLedger(GetUserID(), GetRealAccountID(), GetRealServerID());
+	
+	OT_ASSERT(NULL != pBox);
+	
+	if (pBox->LoadInbox() && pBox->VerifyAccount(theNym))
+	{
+		return pBox;
+	}
+	else
+	{
+		OTString strUserID(GetUserID()), strAcctID(GetRealAccountID());
+		
+		OTLog::vOutput(0, "Unable to load or verify inbox:\n%s\n For user:\n%s\n",
+					   strAcctID.Get(), strUserID.Get());
+	}
+	
+	return NULL;
+}
+
+
+// Caller responsible to delete.
+OTLedger * OTAccount::LoadOutbox(OTPseudonym & theNym)
+{
+	OTLedger * pBox = new OTLedger(GetUserID(), GetRealAccountID(), GetRealServerID());
+	
+	OT_ASSERT(NULL != pBox);
+	
+	if (pBox->LoadOutbox() && pBox->VerifyAccount(theNym))
+	{
+		return pBox;
+	}
+	else
+	{
+		OTString strUserID(GetUserID()), strAcctID(GetRealAccountID());
+		
+		OTLog::vOutput(0, "Unable to load or verify outbox:\n%s\n For user:\n%s\n",
+					   strAcctID.Get(), strUserID.Get());
+	}
+	
+	return NULL;
+}
+ 
+
+
 
 // TODO:  add an override so that OTAccount, when it loads up, it performs the check to
 // see the ServerID, look at the Server Contract and make sure the server hashes match.

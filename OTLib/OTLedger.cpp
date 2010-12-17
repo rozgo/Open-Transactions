@@ -533,15 +533,90 @@ OTTransaction * OTLedger::GetPendingTransaction(long lTransactionNum)
 // well as a listing of the transactions in the inbox for that account.
 // This function does that last part :)
 //
-bool OTLedger::ProduceInboxReport(OTString & strOutput)
+// returns a new balance statement item containing the inbox report
+// CALLER IS RESPONSIBLE TO DELETE.
+OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTransaction & theOwner, 
+											const OTPseudonym & theNym, const OTAccount & theAccount, OTLedger & theOutbox) 
 {
-	if (OTLedger::inbox != m_Type)
+	if (OTLedger::inbox != GetType())
 	{
 		OTLog::Error("OTLedger::ProduceInboxReport: Wrong ledger type.\n");
-		return false;
+		return NULL;
 	}
 	
-	// loop through the transactions and print them out here.
+	const OTIdentifier theNymID(theNym);
+	
+	if (
+		(theAccount.GetPurportedAccountID()	!= GetPurportedAccountID()) ||
+		(theAccount.GetPurportedServerID()	!= GetPurportedServerID()) ||
+		(theAccount.GetUserID()				!= GetUserID()) )
+	{
+		OTLog::Error("Wrong Account passed in to OTLedger::ProduceBalanceStatement.\n");
+		return NULL;
+	}
+	if (
+		(theOutbox.GetPurportedAccountID()	!= GetPurportedAccountID()) ||
+		(theOutbox.GetPurportedServerID()	!= GetPurportedServerID()) ||
+		(theOutbox.GetUserID()				!= GetUserID()) )
+	{
+		OTLog::Error("Wrong Outbox passed in to OTLedger::ProduceBalanceStatement.\n");
+		return NULL;
+	}
+	if (
+		(theNymID							!= GetUserID()))
+	{
+		OTLog::Error("Wrong Nym passed in to OTLedger::ProduceBalanceStatement.\n");
+		return NULL;
+	}
+	// ---------------------------------------------------------
+
+	// theOwner is the withdrawal, or deposit, or whatever, that wants to change
+	// the account balance, and thus that needs a new balance agreement signed.
+	//
+	OTItem * pBalanceItem = OTItem::CreateItemFromTransaction(theOwner, OTItem::balanceStatement);
+
+	// The above has an ASSERT, this this will never actually happen.
+	if (NULL == pBalanceItem)
+		return NULL;
+	
+	
+	// ---------------------------------------------------------
+	
+	// COPY THE ISSUED TRANSACTION NUMBERS FROM THE NYM
+	
+	OTPseudonym theMessageNym;
+	
+	theMessageNym.HarvestIssuedNumbers(theNym /*unused in this case, not saving to disk*/, theNym, false); // bSave = false;
+		
+	OTString	strMessageNym(theMessageNym); // Okay now we have the transaction numbers in this MessageNym string.
+
+	pBalanceItem->SetAttachment(strMessageNym); // <======== This is where the server will read the transaction numbers from.
+	
+	// ---------------------------------------------------------
+		
+	OTString strOutbox;
+	theOutbox.SaveContents(strOutbox);	// I save the contents only, not including the signature.
+										// I have the signature(s), and can prove them when necessary, but
+										// the contents are what's important. PLUS, I want to be able to ADD
+										// signatures WITHOUT CHANGING THE HASH.  Like the Inbox downloads with
+										// the server's signature. I'd like to ADD my signature, WITHOUT altering the hash.
+										// Thus, I save the contents here, instead of the entire raw contract.
+	OTIdentifier theOutboxHash;
+	
+	theOutboxHash.CalculateDigest(strOutbox);
+	
+	pBalanceItem->SetOutboxHash(theOutboxHash); // <====== Here's the outbox hash, which should always be the same on both sides.
+		
+	// ---------------------------------------------------------
+	
+	long lCurrentBalance = theAccount.GetBalance();
+	
+	pBalanceItem->SetAmount(lCurrentBalance + lAdjustment);  // <==== Here's the new (predicted) balance for after the withdrawal is complete.
+	
+	// ---------------------------------------------------------
+	// loop through the transactions, and produce a sub-item onto pBalanceItem for each, which will
+	// be a report on each transaction in this inbox, therefore added to the balance item.
+	// (So the balance item contains a complete report on the receipts in this inbox.)
 	OTTransaction * pTransaction = NULL;
 	
 	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); 
@@ -552,10 +627,13 @@ bool OTLedger::ProduceInboxReport(OTString & strOutput)
 		OT_ASSERT(NULL != pTransaction);
 		
 		// it only reports receipts where we don't yet have balance agreement.
-		pTransaction->ProduceInboxReport(strOutput);	
+		pTransaction->ProduceInboxReportItem(*pBalanceItem);	// <======= This function adds a receipt sub-item to pBalanceItem, where appropriate.
 	}
 	
-	return true;
+	pBalanceItem->SignContract(theNym);
+	pBalanceItem->SaveContract();
+	
+	return pBalanceItem;
 }
 
 

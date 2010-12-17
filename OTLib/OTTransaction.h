@@ -245,6 +245,9 @@ public:
 //	virtual bool SaveContractWallet(FILE * fl);	
 	virtual bool SaveContractWallet(std::ofstream & ofs);
 
+	
+	void ProduceInboxReportItem(OTItem & theBalanceItem);
+
 // --------------------------------------------------------------
 	
 	static const char * _TypeStrings[]; // for translating transaction type into a string.

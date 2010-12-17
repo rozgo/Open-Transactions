@@ -216,18 +216,19 @@ public:
 	void GetIdentifier(OTString & theIdentifier) const;
 	void SetIdentifier(const OTString & theIdentifier);
 
-	void HarvestTransactionNumbers(OTPseudonym & SIGNER_NYM, OTPseudonym & theOtherNym); // OtherNym is used as container for server to send us new transaction numbers
+	void HarvestTransactionNumbers(OTPseudonym & SIGNER_NYM, OTPseudonym & theOtherNym, bool bSave=true); // OtherNym is used as container for server to send us new transaction numbers
+	void HarvestIssuedNumbers(OTPseudonym & SIGNER_NYM, OTPseudonym & theOtherNym, bool bSave=false); // OtherNym is used as container for us to send list of issued numbers to the server (for balance agreement)
 
 	void IncrementRequestNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID); // Increment the counter or create a new one for this serverID starting at 1
 	void OnUpdateRequestNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long lNewRequestNumber); // if the server sends us a @getRequest
 	bool GetCurrentRequestNum(const OTString & strServerID, long &lReqNum); // get the current request number for the serverID
 
 	inline mapOfTransNums & GetMapTransNum() { return m_mapTransNum; }
+	inline mapOfTransNums & GetMapIssuedNum() { return m_mapIssuedNum; }
 
 	// These functions are for transaction numbers that were assigned to me, 
 	// until I accept the receipts or put stop payment onto them.
 	int		GetIssuedNumCount(const OTIdentifier & theServerID); // count
-	long	GetIssuedNum(const OTIdentifier & theServerID, int nIndex); // index
 	bool	AddIssuedNum(const OTString & strServerID, lTransNum);
 	bool	VerifyIssuedNum(const OTString & strServerID, const long & lTransNum);
 	bool	RemoveIssuedNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum);

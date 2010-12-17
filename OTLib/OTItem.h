@@ -223,7 +223,9 @@ protected:
 	
 	listOfItems		m_listItems;	// Sometimes an item needs to have a list of yet more items. Like balance statements have a list of inbox items. (Just the relevant data, not all the attachments and everything.)
 	
-		
+	itemType		m_Type;			// the item type. Could be a transfer, a fee, a balance or client accept/rejecting an item
+	itemStatus		m_Status;		// request, acknowledgment, or rejection.
+
 public:
 	
 	// used for looping through the items in a few places.
@@ -237,18 +239,15 @@ public:
 	void ReleaseItems();
 
 	
-	
-	// TODO: Why are these here again? Make protected.
-	itemType		m_Type;			// the item type. Could be a transfer, a fee, a balance or client accept/rejecting an item
-	itemStatus		m_Status;		// request, acknowledgment, or rejection.
-
-	
 	// the "From" accountID and the ServerID are now in the parent class. (2 of each.)
 	
 	OTIdentifier	m_OutboxHash;		// Used for balance agreement.
 	OTASCIIArmor	m_ascNote;			// a text field for the user. Cron may also store receipt data here. Also inbox reports go here for balance agreement
 	OTASCIIArmor	m_ascAttachment;	// the digital cash token is sent here, signed, and returned here. (or purse of tokens.)
 										// As well as a cheque, or a voucher, or a server update on a market offer, or a nym full of transactions for balance agreement.
+	
+	inline void SetOutboxHash(const OTIdentifier & theHash) { m_OutboxHash = theHash; }
+	inline OTIdentifier & GetOutboxHash() { return m_OutboxHash; }
 	
 	inline OTItem::itemStatus GetStatus() const { return m_Status; }
 	inline void SetStatus(const OTItem::itemStatus & theVal) { m_Status = theVal; }

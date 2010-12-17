@@ -553,45 +553,74 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		
 		return 1;
 	}
+	if (!strcmp("outboxHash", xml->getNodeName()))
+	{	
+		if ((OTItem::balanceStatement	== m_Type) ||
+			(OTItem::atBalanceStatement	== m_Type))
+		{
+			OTString strValue;
+			strValue	= xml->getAttributeValue("value");
+			
+			OTIdentifier theOutboxHash(strValue);
+			SetOutboxHash(theOutboxHash);
+		}
+		else 
+		{
+			OTLog::Error("Outbox hash in item wrong type (expected balanceStatement or atBalanceStatement.\n");
+		}
+		
+		return 1;
+	}
 	else if (!strcmp("transactionReport", xml->getNodeName())) 
 	{		
-		OTItem * pItem = new OTItem(GetUserID(), *this); // But I've also got ITEM types with the same names...
-														// That way, it will translate the string and set the type correctly.
-		OT_ASSERT(NULL != pItem);						// That way I can use each item to REPRESENT an inbox transaction
-				
-		// Type
-		OTString strType;		
-		strType		= xml->getAttributeValue("type"); // it's reading a TRANSACTION type: chequeReceipt, marketReceipt, or paymentReceipt
+		if ((OTItem::balanceStatement	== m_Type) ||
+			(OTItem::atBalanceStatement	== m_Type))
+		{
+			// Notice it initializes with the wrong transaction number, in this case.
+			// That's okay, because I'm setting it below with pItem->SetTransactionNum...
+			OTItem * pItem = new OTItem(GetUserID(), *this); // But I've also got ITEM types with the same names...
+			// That way, it will translate the string and set the type correctly.
+			OT_ASSERT(NULL != pItem);						// That way I can use each item to REPRESENT an inbox transaction
+			
+			// Type
+			OTString strType;		
+			strType		= xml->getAttributeValue("type"); // it's reading a TRANSACTION type: chequeReceipt, marketReceipt, or paymentReceipt. But I also have the same names for item types.
+			
+			pItem->SetType(GetItemTypeFromString(strType)); // It's actually translating a transaction type to an item type. (Same names in the case of the 3 receipts that matter for inbox reports for balance agreements.)
+			
+			pItem->SetAmount(atol(xml->getAttributeValue("adjustment")));
+			
+			// Status
+			pItem->SetStatus(OTItem::acknowledgement); // I don't need this, but I'd rather it not say error state. This way if it changes to error_state later, I know I had a problem.
+			
+			OTString strAccountID, strServerID, strUserID;
+			
+			strAccountID		= xml->getAttributeValue("accountID"); 
+			strServerID			= xml->getAttributeValue("serverID");
+			strUserID			= xml->getAttributeValue("userID");
+			
+			OTIdentifier	ACCOUNT_ID(strAccountID), SERVER_ID(strServerID), USER_ID(strUserID);
+			
+			pItem->SetPurportedAccountID(ACCOUNT_ID);		// OTTransactionType::m_AcctID  the PURPORTED Account ID
+			pItem->SetPurportedServerID(SERVER_ID);		// OTTransactionType::m_AcctServerID the PURPORTED Server ID
+			pItem->SetUserID(USER_ID);
+			pItem->SetTransactionNum(atol(xml->getAttributeValue("transactionNum")));
+			pItem->SetReferenceToNum(atol(xml->getAttributeValue("inReferenceTo")));
+			
+			AddItem(*pItem);	// <======= adding to list.
+			
+			OTLog::vOutput(1, "Loaded transactionReport Item, transaction num %ld, In Reference To: %ld, type: %s\n",
+						   //				"fromAccountID:\n%s\n UserID:\n%s\n toAccountID:\n%s\n serverID:\n%s\n----------\n", 
+						   pItem->GetTransactionNum(),
+						   pItem->GetReferenceToNum(), strType.Get()
+						   //				strAcctFromID.Get(), strUserID.Get(), strAcctToID.Get(), strServerID.Get()
+						   );
+		}
+		else 
+		{
+			OTLog::Error("Outbox hash in item wrong type (expected balanceStatement or atBalanceStatement.\n");
+		}
 		
-		pItem->SetType(GetItemTypeFromString(strType)); // It's actually translating a transaction type to an item type. (Same names in the case of the 3 receipts that matter for inbox reports for balance agreements.)
-		
-		pItem->SetAmount(atol(xml->getAttributeValue("adjustment")));
-
-		// Status
-		pItem->SetStatus(OTItem::acknowledgement); // I don't need this, but I'd rather it not say error state.
-		
-		OTString strAccountID, strServerID, strUserID;
-		
-		strAccountID		= xml->getAttributeValue("accountID"); 
-		strServerID			= xml->getAttributeValue("serverID");
-		strUserID			= xml->getAttributeValue("userID");
-		
-		OTIdentifier	ACCOUNT_ID(strAccountID), SERVER_ID(strServerID), USER_ID(strUserID);
-		
-		pItem->SetPurportedAccountID(ACCOUNT_ID);		// OTTransactionType::m_AcctID  the PURPORTED Account ID
-		pItem->SetPurportedServerID(SERVER_ID);		// OTTransactionType::m_AcctServerID the PURPORTED Server ID
-		pItem->SetUserID(USER_ID);
-		pItem->SetTransactionNum(atol(xml->getAttributeValue("transactionNum")));
-		pItem->SetReferenceToNum(atol(xml->getAttributeValue("inReferenceTo")));
-				
-		m_listItems.push_back(pItem); // <======= adding to list.
-
-		OTLog::vOutput(1, "Loaded transactionReport Item, transaction num %ld, In Reference To: %ld, type: %s\n",
-					   //				"fromAccountID:\n%s\n UserID:\n%s\n toAccountID:\n%s\n serverID:\n%s\n----------\n", 
-					   pItem->GetTransactionNum(),
-					   pItem->GetReferenceToNum(), strType.Get()
-					   //				strAcctFromID.Get(), strUserID.Get(), strAcctToID.Get(), strServerID.Get()
-					   );
 		return 1;
 	}
 	
@@ -751,6 +780,7 @@ void GetStringFromType(OTItem::itemType theType, OTString & strType)
 }
 
 
+
 void OTItem::UpdateContents() // Before transmission or serialization, this is where the ledger saves its contents 
 {
 	OTString strFromAcctID(GetPurportedAccountID()), strToAcctID(GetDestinationAcctID()), strServerID(GetPurportedServerID()), 
@@ -803,39 +833,47 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 		m_xmlUnsigned.Concatenate("<attachment>\n%s</attachment>\n\n", m_ascAttachment.Get());
 	}
 	
-	
-	// loop through the sub-items (only used for balance agreement.)
-	
-	OTItem * pItem = NULL;
-	
-	for (listOfItems::iterator ii = m_listItems.begin(); ii != m_listItems.end(); ++ii)
+	if ((OTItem::balanceStatement	== m_Type) ||
+		(OTItem::atBalanceStatement	== m_Type))
 	{
-		pItem = *ii;
+		OTString strOutboxHash(m_OutboxHash);
 		
-		OT_ASSERT(NULL != pItem);
+		if (strOutboxHash.GetLength() > 2)
+			m_xmlUnsigned.Concatenate("<outboxHash value=\"%s\"/>\n\n", strOutboxHash.Get());
+	
+		// loop through the sub-items (only used for balance agreement.)
 		
-		OTString	strAcctID(pItem->GetPurportedAccountID()), 
-					strServerID(pItem->GetPurportedServerID()),
-					strUserID(pItem->GetUserID());
+		OTItem * pItem = NULL;
 		
-		OTString strType;
-		GetStringFromType(pItem->GetType(), strType);
-		
-		m_xmlUnsigned.Concatenate("<transactionReport type=\"%s\"\n"
-							  " adjustment=\"%ld\"\n"
-							  " accountID=\"%s\"\n"
-							  " userID=\"%s\"\n"
-							  " serverID=\"%s\"\n"
-							  " transactionNum=\"%ld\"\n"
-							  " inReferenceTo=\"%ld\" />\n\n", 
-							  strType.Exists() ? strType.Get() : "error_state", 
-							  pItem->GetAmount(),
-							  strAcctID.Get(), strUserID.Get(), 
-							  strServerID.Get(), 
-							GetTransactionNum(),
-								  GetReferenceToNum());
-	}	
-
+		for (listOfItems::iterator ii = m_listItems.begin(); ii != m_listItems.end(); ++ii)
+		{
+			pItem = *ii;
+			
+			OT_ASSERT(NULL != pItem);
+			
+			OTString	strAcctID(pItem->GetPurportedAccountID()), 
+						strServerID(pItem->GetPurportedServerID()),
+						strUserID(pItem->GetUserID());
+			
+			OTString strReceiptType;
+			GetStringFromType(pItem->GetType(), strReceiptType);
+			
+			m_xmlUnsigned.Concatenate("<transactionReport type=\"%s\"\n"
+									  " adjustment=\"%ld\"\n"
+									  " accountID=\"%s\"\n"
+									  " userID=\"%s\"\n"
+									  " serverID=\"%s\"\n"
+									  " transactionNum=\"%ld\"\n"
+									  " inReferenceTo=\"%ld\" />\n\n", 
+									  strReceiptType.Exists() ? strReceiptType.Get() : "error_state", 
+									  pItem->GetAmount(),
+									  strAcctID.Get(), 
+									  strUserID.Get(), 
+									  strServerID.Get(), 
+									  pItem->GetTransactionNum(),
+									  pItem->GetReferenceToNum());
+		}	
+	}
 	
 	m_xmlUnsigned.Concatenate("</item>\n");					
 }

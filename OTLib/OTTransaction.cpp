@@ -134,6 +134,7 @@ const char * OTTransaction::_TypeStrings[] =
 	"atPaymentPlan",	// reply from the server regarding a payment plan
 	// --------------------------------------------------------------------------------------
 	"transferReceipt",	// the server drops this into your inbox, when someone accepts your transfer.
+	// --------------------------------------------------------------------------------------
 	"chequeReceipt",	// the server drops this into your inbox, when someone cashes your cheque.
 	"marketReceipt",	// server drops this into inbox periodically, if you an offer on market.
 	"paymentReceipt",	// the server drops this into people's inboxes, periodically.
@@ -488,51 +489,47 @@ int OTTransaction::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 
 
 
-// Called by OTLedger::ProduceInboxReport
-// (Used for balance agreement -- transaction numbers must all be accounted for.)
-//
-// This function is for balance agreement -- it only cares about transaction numbers
-// that I HAVEN'T accepted as closed but the balance ALREADY DID CHANGE. 
-// (Cheque receipt, market receipt, payment receipt, currently.)
-// Transfer isn't here because the money already came out, yes, but I already
-// got a balance agreement when it happened. Inbox report is for making sure
-// we get that balance agreement for these other cases too.
-//
-void OTTransaction::ProduceInboxReport(OTString & strOutput) 
+// The ONE case where an Item has SUB-ITEMS is in the case of Balance Agreement.
+// For example, you might have a Withdrawal Transaction (request) that contains
+// 2 items: the withdrawal item itself, and the balance agreement item for that
+// withdrawal.  The balance agreement item contains a LIST OF SUB ITEMS, each of
+// which represents a chequeReceipt, marketReceipt, or paymentReceipt from my 
+// inbox. The Balance Agreement item needs to be able to report on the inbox
+// status, so I gave it a list of sub-items.
+void OTTransaction::ProduceInboxReportItem(OTItem & theBalanceItem) 
 {	
+	OTItem::itemType theItemType = OTItem::error_state;
+	
 	switch (m_Type) 
 	{	// These are the types that have an amount (somehow)
-		case OTTransaction::chequeReceipt: // amount is stored on cheque (attached to depositCheque item, attached.)
-		case OTTransaction::marketReceipt: // amount is stored on marketReceipt item
+		case OTTransaction::chequeReceipt: // the amount is stored on cheque (attached to depositCheque item, attached.)
+			theItemType = OTItem::chequeReceipt;
+			break;
+		case OTTransaction::marketReceipt: // the amount is stored on marketReceipt item
+			theItemType = OTItem::marketReceipt;
+			break;
 		case OTTransaction::paymentReceipt:	// amount is stored on paymentReceipt item
+			theItemType = OTItem::paymentReceipt;
 			break;
 		default: // All other types are irrelevant for inbox reports (We only care about 
 			return;
 	}
 	
-	
-	const char * pTypeStr = GetTypeString();
-	
-	OTString	strAcctID(GetPurportedAccountID()), 
-				strServerID(GetPurportedServerID()),
-				strUserID(GetUserID());
-	
-	long lAmount = GetReceiptAmount();
-	
-	strOutput.Concatenate("<transactionReport type=\"%s\"\n"
-						  " adjustment=\"%ld\"\n"
-						  " accountID=\"%s\"\n"
-						  " userID=\"%s\"\n"
-						  " serverID=\"%s\"\n"
-						  " transactionNum=\"%ld\"\n"
-						  " inReferenceTo=\"%ld\" />\n\n", 
-						  (NULL != pTypeStr) ? pTypeStr : "error_state", 
-						  lAmount,
-						  strAcctID.Get(), strUserID.Get(), 
-						  strServerID.Get(), GetTransactionNum(),
-						  GetReferenceToNum());
-}
+	// the item will represent THIS TRANSACTION, and will be added to theBalanceItem.
 
+	OTItem * pReportItem = OTItem::CreateItemFromTransaction(*this, theItemType);
+
+	if (NULL != pReportItem) // above line will assert if mem allocation fails.
+	{		
+		long lAmount = GetReceiptAmount();
+		pReportItem->SetAmount(lAmount);
+		
+		pReportItem->SetTransactionNum(GetTransactionNum()); // Just making sure these both get set.
+		pReportItem->SetReferenceToNum(SetReferenceToNum()); // Especially this one.
+
+		theBalanceItem.AddItem(*pReportItem); // Now theBalanceItem will handle cleaning it up.
+	}
+}
 
 
 

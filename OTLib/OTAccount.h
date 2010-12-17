@@ -137,6 +137,10 @@ public:
 	// Let's say you don't have or know the UserID, and you just want to load the damn thing up.
 	// Then call this function. It will set userID and server ID for you.
 	static OTAccount * LoadExistingAccount(const OTIdentifier & theAccountID, const OTIdentifier & theServerID);
+
+	
+	OTLedger * LoadInbox(OTPseudonym & theNym); // Caller responsible to delete.
+	OTLedger * LoadOutbox(OTPseudonym & theNym); // Caller responsible to delete.
 	
 	// gives you the asset type ID of this account. (the asset contract hash.)
 	const OTIdentifier & GetAssetTypeID();
