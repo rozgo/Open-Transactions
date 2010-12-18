@@ -561,10 +561,10 @@ bool OTServer::VerifyTransactionNumber(OTPseudonym & theNym, const long &lTransa
 
 
 // Remove a transaction number from the Nym record once it's officially used/spent.
-bool OTServer::RemoveTransactionNumber(OTPseudonym & theNym, const long &lTransactionNumber)
+bool OTServer::RemoveTransactionNumber(OTPseudonym & theNym, const long &lTransactionNumber, bool bSave/*=false*/)
 {
 	OTIdentifier NYM_ID(theNym), SERVER_NYM_ID(m_nymServer);
-
+	
 	// If theNym has the same ID as m_nymServer, then we'll use m_nymServer
 	// instead of theNym.  (Since it's the same nym anyway, we'll stick to the
 	// one we already loaded so any changes don't get overwritten later.)
@@ -574,8 +574,31 @@ bool OTServer::RemoveTransactionNumber(OTPseudonym & theNym, const long &lTransa
 		pNym = &m_nymServer;
 	else
 		pNym = &theNym;
+	
+	bool bRemoved = pNym->RemoveTransactionNum(m_nymServer, m_strServerID, lTransactionNumber, bSave);
+	
+	return bRemoved;
+}
 
-	return pNym->RemoveTransactionNum(m_nymServer, m_strServerID, lTransactionNumber);
+
+// Remove an issued number from the Nym record once that nym accepts the receipt from his inbox.
+bool OTServer::RemoveIssuedNumber(OTPseudonym & theNym, const long &lTransactionNumber, bool bSave/*=false*/)
+{
+	OTIdentifier NYM_ID(theNym), SERVER_NYM_ID(m_nymServer);
+	
+	// If theNym has the same ID as m_nymServer, then we'll use m_nymServer
+	// instead of theNym.  (Since it's the same nym anyway, we'll stick to the
+	// one we already loaded so any changes don't get overwritten later.)
+	OTPseudonym * pNym = NULL;
+	
+	if (NYM_ID == SERVER_NYM_ID)
+		pNym = &m_nymServer;
+	else
+		pNym = &theNym;
+	
+	bool bRemoved = pNym->RemoveIssuedNum(m_nymServer, m_strServerID, lTransactionNumber, bSave);
+	
+	return bRemoved;
 }
 
 
@@ -2627,12 +2650,15 @@ void OTServer::NotarizeDeposit(OTPseudonym & theNym, OTAccount & theAccount, OTT
 	tranOut.SetType(OTTransaction::atDeposit);
 	
 	OTItem * pItem			= NULL;
+	OTItem * pBalanceItem	= NULL;
 	OTItem * pResponseItem	= NULL;
+	OTItem * pResponseBalanceItem	= NULL;
 	
 	// The incoming transaction may be sent to inboxes and outboxes, and it
 	// will probably be bundled in our reply to the user as well. Therefore,
 	// let's grab it as a string.
 	OTString strInReferenceTo;
+	OTString strBalanceItem;
 	
 	// Grab the actual server ID from this object, and use it as the server ID here.
 	const OTIdentifier	SERVER_ID(m_strServerID),		USER_ID(theNym),	ACCOUNT_ID(theAccount),
@@ -2648,21 +2674,29 @@ void OTServer::NotarizeDeposit(OTPseudonym & theNym, OTAccount & theAccount, OTT
 	// DEPOSIT CHEQUE  (Deposit Cash is the bottom half of the function, deposit cheque is the top half.)
 	
 	// Deposit (the transaction) now supports deposit (the item) and depositCheque (the item)
-	if (pItem = tranIn.GetItem(OTItem::depositCheque))
+	if ((pItem			= tranIn.GetItem(OTItem::depositCheque)) &&
+		(pBalanceItem	= tranIn.GetItem(OTItem::balanceStatement))) // must include a balance statement for this transaction.
 	{
 		// The response item, as well as the sender's inbox, will soon contain a copy
 		// of the request item. So I save it into a string here so they can grab a copy of it
 		// into their "in reference to" fields.
 		pItem->SaveContract(strInReferenceTo);
-		
+		pBalanceItem->SaveContract(strBalanceItem);
+				
 		// Server response item being added to server response transaction (tranOut)
 		// They're getting SOME sort of response item.
 		
 		pResponseItem = OTItem::CreateItemFromTransaction(tranOut, OTItem::atDepositCheque);	 
-		pResponseItem->m_Status	= OTItem::rejection; // the default.
+		pResponseItem->SetStatus(OTItem::rejection); // the default.
 		pResponseItem->SetReferenceString(strInReferenceTo); // the response item carries a copy of what it's responding to.
 		pResponseItem->SetReferenceToNum(pItem->GetTransactionNum()); // This response item is IN RESPONSE to pItem and its Owner Transaction.
 		tranOut.AddItem(*pResponseItem); // the Transaction's destructor will cleanup the item. It "owns" it now.		
+		
+		pResponseBalanceItem = OTItem::CreateItemFromTransaction(tranOut, OTItem::atBalanceStatement);	 
+		pResponseBalanceItem->SetStatus(OTItem::rejection); // the default.
+		pResponseBalanceItem->SetReferenceString(strBalanceItem); // the response item carries a copy of what it's responding to.
+		pResponseBalanceItem->SetReferenceToNum(pItem->GetTransactionNum()); // This response item is IN RESPONSE to pItem and its Owner Transaction.
+		tranOut.AddItem(*pResponseBalanceItem); // the Transaction's destructor will cleanup the item. It "owns" it now.		
 		
 		// If the ID on the "from" account that was passed in,
 		// does not match the "Acct From" ID on this transaction item
@@ -2928,10 +2962,41 @@ void OTServer::NotarizeDeposit(OTPseudonym & theNym, OTAccount & theAccount, OTT
 							strSourceAcctID.Get(), strSourceAssetID.Get(),
 							strAccountID.Get(), strRecipientAssetID.Get());
 				}
+
+				
+				// NEED TO VERIFY BALANCE AGREEMENT RIGHT HERE!!!!
+				// TODO RESUME!!
+				
+				// The BALANCE AGREEMENT includes a signed and dated:
+				/*
+				 user ID, server ID, account ID, transaction ID.
+				 
+				 It also includes:
+				 -- A copy of all the transaction numbers that should still be issued to the Nym,
+				    AFTER one is removed from depositing this cheque. (The same one on tranIn and pItem.)
+					NEED TO VERIFY BOTH LISTS ARE THE SAME AFTER REMOVING ONE ON MY SIDE.
+				 -- Account balance.
+				    (NEED TO VERIFY BALANCE WOULD BE THE SAME AFTER PROCESSING TRANSACTION.
+				 -- Inbox and Outbox reports on a single list of sub-items.
+				    (NEED TO VERIFY INBOX AND OUTBOX ITEMS MATCH BY RE-CREATING AND THEN COMPARING.)
+				 */
+				
+				pBalanceItem->VerifyBalanceStatement(const long lActualAdjustment, const OTItem & theItem, // get transaction num from item itself.
+													 const OTIdentifier & SERVER_ID, 
+													 const OTIdentifier & USER_ID, 
+													 const OTIdentifier & ACCOUNT_ID, 
+													 const OTPseudonym & THE_NYM,
+													 const OTLedger & THE_INBOX,
+													 const OTLedger & THE_OUTBOX,
+													 const OTAccount & THE_ACCOUNT);
+				
+				
+				
 				
 				// Debit Source account, Credit Recipient Account, add to Sender's inbox.
 				//
 				// Also clear the transaction number so this cheque can't be deposited again.
+				//
 				else
 				{								
 					// Deduct the amount from the source account, and add it to the recipient account...

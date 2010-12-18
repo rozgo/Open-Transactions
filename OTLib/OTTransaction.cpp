@@ -495,13 +495,16 @@ int OTTransaction::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 // withdrawal.  The balance agreement item contains a LIST OF SUB ITEMS, each of
 // which represents a chequeReceipt, marketReceipt, or paymentReceipt from my 
 // inbox. The Balance Agreement item needs to be able to report on the inbox
-// status, so I gave it a list of sub-items.
+// status, so I give it a list of sub-items.
 void OTTransaction::ProduceInboxReportItem(OTItem & theBalanceItem) 
 {	
 	OTItem::itemType theItemType = OTItem::error_state;
 	
 	switch (m_Type) 
 	{	// These are the types that have an amount (somehow)
+		case OTTransaction::pending: // the amount is stored on the transfer item in my list.
+			theItemType = OTItem::transfer;
+			break;
 		case OTTransaction::chequeReceipt: // the amount is stored on cheque (attached to depositCheque item, attached.)
 			theItemType = OTItem::chequeReceipt;
 			break;
@@ -511,14 +514,14 @@ void OTTransaction::ProduceInboxReportItem(OTItem & theBalanceItem)
 		case OTTransaction::paymentReceipt:	// amount is stored on paymentReceipt item
 			theItemType = OTItem::paymentReceipt;
 			break;
-		default: // All other types are irrelevant for inbox reports (We only care about 
+		default: // All other types are irrelevant for inbox reports 
 			return;
 	}
 	
 	// the item will represent THIS TRANSACTION, and will be added to theBalanceItem.
-
+	
 	OTItem * pReportItem = OTItem::CreateItemFromTransaction(*this, theItemType);
-
+	
 	if (NULL != pReportItem) // above line will assert if mem allocation fails.
 	{		
 		long lAmount = GetReceiptAmount();
@@ -526,8 +529,54 @@ void OTTransaction::ProduceInboxReportItem(OTItem & theBalanceItem)
 		
 		pReportItem->SetTransactionNum(GetTransactionNum()); // Just making sure these both get set.
 		pReportItem->SetReferenceToNum(SetReferenceToNum()); // Especially this one.
-
+		
 		theBalanceItem.AddItem(*pReportItem); // Now theBalanceItem will handle cleaning it up.
+		
+		// No need to sign/save pReportItem, since it is just used for in-memory storage, and is
+		// otherwise saved as part of its owner's data, as part of its owner. (As long as theBalanceItem
+		// is signed and saved, which the caller does, then we're fine.)
+	}
+}
+
+
+// No longer using outbox hash :(
+// Since I would have to add the pending items to the outbox and calculate
+// it myself, and there's no way every single byte would be the same as the server
+// (Well with this implementation there is, actually, but what one of the items
+// in the outbox is SIGNED by me on one side, and by the server on the other? the
+// hashes won't match!)  Therefore I'm sending a real outbox report, the same as
+// I do for the inbox. In fact, it's the same report! Just more items being added.
+//
+void OTTransaction::ProduceOutboxReportItem(OTItem & theBalanceItem) 
+{	
+	OTItem::itemType theItemType = OTItem::error_state;
+	
+	switch (m_Type) 
+	{
+		case OTTransaction::pending:
+			theItemType = OTItem::transfer;
+			break;
+		default: // All other types are irrelevant for outbox reports.
+			return;
+	}
+	
+	// the item will represent THIS TRANSACTION, and will be added to theBalanceItem.
+	
+	OTItem * pReportItem = OTItem::CreateItemFromTransaction(*this, theItemType);
+	
+	if (NULL != pReportItem) // above line will assert if mem allocation fails.
+	{		
+		long lAmount = GetReceiptAmount()*(-1); // in outbox, a transfer is leaving my account. Balance gets smaller.
+		pReportItem->SetAmount(lAmount);
+		
+		pReportItem->SetTransactionNum(GetTransactionNum()); // Just making sure these both get set.
+		pReportItem->SetReferenceToNum(SetReferenceToNum()); // Especially this one.
+		
+		theBalanceItem.AddItem(*pReportItem); // Now theBalanceItem will handle cleaning it up.
+		
+		// No need to sign/save pReportItem, since it is just used for in-memory storage, and is
+		// otherwise saved as part of its owner's data, as part of its owner. (As long as theBalanceItem
+		// is signed and saved, which the caller does, then we're fine.)
 	}
 }
 
@@ -542,7 +591,7 @@ void OTTransaction::ProduceInboxReportItem(OTItem & theBalanceItem)
 //
 long OTTransaction::GetReceiptAmount()
 {
-	long lAmount = 0;
+	long lAdjustment = 0;
 	
 	OTString strReference;
 	GetReferenceString(strReference);
@@ -551,6 +600,7 @@ long OTTransaction::GetReceiptAmount()
 
 	switch (m_Type) 
 	{	// These are the types that have an amount (somehow)
+		case OTTransaction::pending: // amount is stored on the transfer item, on my list of items.
 		case OTTransaction::chequeReceipt: // amount is stored on cheque (attached to depositCheque item, attached.)
 		case OTTransaction::marketReceipt: // amount is stored on marketReceipt item
 		case OTTransaction::paymentReceipt:	// amount is stored on paymentReceipt item
@@ -592,8 +642,21 @@ long OTTransaction::GetReceiptAmount()
 			}
 			else 
 			{
-				lAmount = (theCheque.GetAmount()*(-1)); // a cheque reduces my balance, unless it's negative.
+				lAdjustment = (theCheque.GetAmount()*(-1)); // a cheque reduces my balance, unless it's negative.
 			}											// So -100 means 100 came out, and +100 means 100 went in.
+			break;
+		case OTTransaction::pending: // amount is stored on transfer item
+			
+			if (pOriginalItem->GetType() != OTItem::transfer)
+			{
+				OTLog::Error("Wrong item type attached to pending transfer\n");
+			}
+			else
+			{
+				// Pending transfer adds to my account if this is inbox, and removes if outbox. 
+				// I'll let the caller * by (-1) or not. His choice.
+				lAdjustment = pOriginalItem->GetAmount();	
+			}
 			break;
 		case OTTransaction::marketReceipt: // amount is stored on marketReceipt item
 			
@@ -603,7 +666,7 @@ long OTTransaction::GetReceiptAmount()
 			}
 			else
 			{
-				lAmount = pOriginalItem->GetAmount();	// THIS WILL ALSO USE THE POSITIVE / NEGATIVE THING. (Already.)
+				lAdjustment = pOriginalItem->GetAmount();	// THIS WILL ALSO USE THE POSITIVE / NEGATIVE THING. (Already.)
 			}
 			break;
 		case OTTransaction::paymentReceipt:	// amount is stored on paymentReceipt item
@@ -614,7 +677,7 @@ long OTTransaction::GetReceiptAmount()
 			}
 			else
 			{
-				lAmount = pOriginalItem->GetAmount();	// THIS WILL ALSO USE THE POSITIVE / NEGATIVE THING. (Already.)
+				lAdjustment = pOriginalItem->GetAmount();	// THIS WILL ALSO USE THE POSITIVE / NEGATIVE THING. (Already.)
 			}
 			
 			break;
@@ -622,7 +685,7 @@ long OTTransaction::GetReceiptAmount()
 			return 0;
 	}
 	
-	return lAmount;
+	return lAdjustment;
 }
 
 

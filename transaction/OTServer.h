@@ -224,8 +224,9 @@ public:
 
 	bool IssueNextTransactionNumber(OTPseudonym & theNym, long &lTransactionNumber, bool bStoreTheNumber=true);
 	bool VerifyTransactionNumber(OTPseudonym & theNym, const long &lTransactionNumber);	// Verify a transaction number. passed by reference for speed :P
-	bool RemoveTransactionNumber(OTPseudonym & theNym, const long &lTransactionNumber);	// A nym has just used a transaction number. Remove it from his file.
-	
+	bool RemoveTransactionNumber(OTPseudonym & theNym, const long &lTransactionNumber, bool bSave=false);	// A nym has just used a transaction number. Remove it from his file.
+	bool RemoveIssuedNumber(OTPseudonym & theNym, const long &lTransactionNumber, bool bSave=false); // a nym has just accepted a receipt. remove his responsibility for that number.
+
 	// If the server receives a notarizeTransactions command, it will be accompanied by a payload
 	// containing a ledger to be notarized.  UserCmdNotarizeTransactions will loop through that ledger,
 	// and for each transaction within, it calls THIS method.

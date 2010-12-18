@@ -139,6 +139,8 @@ public:
 	OTItem * GenerateBalanceStatement(const long lAdjustment, const OTTransaction & theOwner, 
 									  const OTPseudonym & theNym, const OTAccount & theAccount, OTLedger & theOutbox);
 	
+	void ProduceOutboxReport(OTItem & theBalanceItem);  
+
 	bool AddTransaction(OTTransaction & theTransaction);
 	bool RemoveTransaction(long lTransactionNum); // if false, transaction wasn't found.
 	
@@ -160,6 +162,8 @@ public:
 	virtual ~OTLedger();
 	
 	virtual void Release();
+	
+	void ReleaseTransactions();
 
 	// ONLY call this if you need to load a ledger where you don't already know the person's UserID
 	// For example, if you need to load someone ELSE's inbox in order to send them a transfer, then

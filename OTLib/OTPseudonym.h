@@ -171,6 +171,8 @@ public:
 	//
 	bool GenerateNym();
 
+	OTItem * GenerateTransactionStatement(const OTTransaction & theOwner); // like balance agreement
+
 	
 	// This version WILL handle the bookends -----BEGIN PUBLIC KEY------ 
 	bool SetPublicKey(const OTString & strKey, bool bEscaped=true);
@@ -229,10 +231,12 @@ public:
 	// These functions are for transaction numbers that were assigned to me, 
 	// until I accept the receipts or put stop payment onto them.
 	int		GetIssuedNumCount(const OTIdentifier & theServerID); // count
+	long	GetIssuedNum(const OTIdentifier & theServerID, int nIndex); // index
 	bool	AddIssuedNum(const OTString & strServerID, lTransNum);
 	bool	VerifyIssuedNum(const OTString & strServerID, const long & lTransNum);
 	bool	RemoveIssuedNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum);
-	
+	bool	RemoveIssuedNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long lTransNum, bool bSave);
+
 	
 	// The "issued" numbers and the "transaction" numbers both use these functions
 	// to do the actual work (just avoiding code duplication.)

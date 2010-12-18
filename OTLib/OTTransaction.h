@@ -247,6 +247,7 @@ public:
 
 	
 	void ProduceInboxReportItem(OTItem & theBalanceItem);
+	void ProduceOutboxReportItem(OTItem & theBalanceItem);
 
 // --------------------------------------------------------------
 	

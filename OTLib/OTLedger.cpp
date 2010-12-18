@@ -573,9 +573,9 @@ OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTran
 	// theOwner is the withdrawal, or deposit, or whatever, that wants to change
 	// the account balance, and thus that needs a new balance agreement signed.
 	//
-	OTItem * pBalanceItem = OTItem::CreateItemFromTransaction(theOwner, OTItem::balanceStatement);
+	OTItem * pBalanceItem = OTItem::CreateItemFromTransaction(theOwner, OTItem::balanceStatement); // <=== balanceStatement type, with user ID, server ID, account ID, transaction ID.
 
-	// The above has an ASSERT, this this will never actually happen.
+	// The above has an ASSERT, so this this will never actually happen.
 	if (NULL == pBalanceItem)
 		return NULL;
 	
@@ -588,33 +588,21 @@ OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTran
 	
 	theMessageNym.HarvestIssuedNumbers(theNym /*unused in this case, not saving to disk*/, theNym, false); // bSave = false;
 		
+	theMessageNym.RemoveIssuedNum(theNym, theOwner.GetRealServerID(), theOwner.GetTransactionNum());  // a transaction number is being used, and REMOVED from my list of responsibility,
+	theMessageNym.RemoveTransactionNum(theNym, theOwner.GetRealServerID(), theOwner.GetTransactionNum()); // so I want the new signed list to reflect that number has been REMOVED.
+
 	OTString	strMessageNym(theMessageNym); // Okay now we have the transaction numbers in this MessageNym string.
 
-	pBalanceItem->SetAttachment(strMessageNym); // <======== This is where the server will read the transaction numbers from.
+	pBalanceItem->SetAttachment(strMessageNym);				// <======== This is where the server will read the transaction numbers from (A nym in item.m_ascAttachment)
 	
 	// ---------------------------------------------------------
-		
-	OTString strOutbox;
-	theOutbox.SaveContents(strOutbox);	// I save the contents only, not including the signature.
-										// I have the signature(s), and can prove them when necessary, but
-										// the contents are what's important. PLUS, I want to be able to ADD
-										// signatures WITHOUT CHANGING THE HASH.  Like the Inbox downloads with
-										// the server's signature. I'd like to ADD my signature, WITHOUT altering the hash.
-										// Thus, I save the contents here, instead of the entire raw contract.
-	OTIdentifier theOutboxHash;
-	
-	theOutboxHash.CalculateDigest(strOutbox);
-	
-	pBalanceItem->SetOutboxHash(theOutboxHash); // <====== Here's the outbox hash, which should always be the same on both sides.
-		
-	// ---------------------------------------------------------
-	
+
 	long lCurrentBalance = theAccount.GetBalance();
 	
-	pBalanceItem->SetAmount(lCurrentBalance + lAdjustment);  // <==== Here's the new (predicted) balance for after the withdrawal is complete.
+	pBalanceItem->SetAmount(lCurrentBalance + lAdjustment);  // <==== Here's the new (predicted) balance for after the withdrawal is complete. (item.GetAmount)
 	
 	// ---------------------------------------------------------
-	// loop through the transactions, and produce a sub-item onto pBalanceItem for each, which will
+	// loop through the INBOX transactions, and produce a sub-item onto pBalanceItem for each, which will
 	// be a report on each transaction in this inbox, therefore added to the balance item.
 	// (So the balance item contains a complete report on the receipts in this inbox.)
 	OTTransaction * pTransaction = NULL;
@@ -627,15 +615,51 @@ OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTran
 		OT_ASSERT(NULL != pTransaction);
 		
 		// it only reports receipts where we don't yet have balance agreement.
-		pTransaction->ProduceInboxReportItem(*pBalanceItem);	// <======= This function adds a receipt sub-item to pBalanceItem, where appropriate.
+		pTransaction->ProduceInboxReportItem(*pBalanceItem);	// <======= This function adds a receipt sub-item to pBalanceItem, where appropriate for INBOX items.
 	}
 	
-	pBalanceItem->SignContract(theNym);
+	// ---------------------------------------------------------
+	
+	theOutbox.ProduceOutboxReport(*pBalanceItem);	// <======= This function adds receipt sub-items to pBalanceItem, where appropriate for the OUTBOX items.
+	
+	// ---------------------------------------------------------
+	
+	pBalanceItem->SignContract(theNym); // <=== Sign, save, and return. OTTransactionType needs to weasel in a "date signed" variable.
 	pBalanceItem->SaveContract();
 	
 	return pBalanceItem;
 }
 
+// Called by the above function.
+// This ledger is an outbox, and it is creating a report of itself, 
+// adding each report item to this balance item.
+// DO NOT call this, it's meant to be used only by above function.
+void OTLedger::ProduceOutboxReport(OTItem & theBalanceItem)  
+{
+	if (OTLedger::outbox != GetType())
+	{
+		OTLog::Error("OTLedger::ProduceOutboxReport: Wrong ledger type.\n");
+		return;
+	}
+	
+	// loop through the OUTBOX transactions, and produce a sub-item onto theBalanceItem for each, which will
+	// be a report on each pending transfer in this outbox, therefore added to the balance item.
+	// (So the balance item contains a complete report on the outoing transfers in this outbox.)
+	OTTransaction * pTransaction = NULL;
+	
+	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); 
+		 ii != m_mapTransactions.end(); ++ii)
+	{
+		pTransaction = (*ii).second;
+		
+		OT_ASSERT(NULL != pTransaction);
+		
+		// it only reports receipts where we don't yet have balance agreement.
+		pTransaction->ProduceOutboxReportItem(theBalanceItem);	// <======= This function adds a pending transfer sub-item to theBalanceItem, where appropriate.
+	}
+	
+	// ---------------------------------------------------------	
+}
 
 
 
@@ -800,7 +824,7 @@ OTLedger::~OTLedger()
 }
 
 
-void OTLedger::Release()
+void OTLedger::ReleaseTransactions()
 {
 	// If there were any dynamically allocated objects, clean them up here.
 	
@@ -810,8 +834,12 @@ void OTLedger::Release()
 		m_mapTransactions.erase(m_mapTransactions.begin());
 		delete pTransaction;
 		pTransaction = NULL;
-	}
-	
+	}	
+}
+
+void OTLedger::Release()
+{
+	ReleaseTransactions();
 	
 	OTTransactionType::Release(); // since I've overridden the base class, I call it now...
 	

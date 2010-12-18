@@ -132,6 +132,65 @@ using namespace io;
 
 
 
+
+
+// Instead of a "balance statement", some messages require a "transaction statement".
+// Whenever the number of transactions changes, you must sign the new list so you
+// aren't responsible for cleared transactions, for example. Or so you server will
+// allow you to take responsibility for a new transaction number (only if you've 
+// signed off on it!)
+//
+// There will have to be another version of this function for when you don't have
+// a transaction (like a processNymbox!) Otherwise you would need a transaction number
+// in order to do a processNymbox. This function therefore is available in that incarnation
+// even when you don't have a transaction number. It'll just attach the balance item to
+// the message directly.
+//
+OTItem * OTPseudonym::GenerateTransactionStatement(const OTTransaction & theOwner)
+{	
+	
+	if ( (theOwner.GetUserID() != m_nymID) )
+	{
+		OTLog::Error("Transaction has wrong owner in OTPseudonym::GenerateTransactionStatement (expected to match nym).\n");
+		return NULL;
+	}
+	
+	// ---------------------------------------------------------
+	
+	// theOwner is the depositPaymentPlan, or marketOffer that triggered the need for this transaction statement.
+	// since it uses up a transaction number, I will be sure to remove that one from my list before signing the list.
+	OTItem * pBalanceItem = OTItem::CreateItemFromTransaction(theOwner, OTItem::transactionStatement); // <=== transactionStatement type, with user ID, server ID, transaction ID.
+	
+	// The above has an ASSERT, so this this will never actually happen.
+	if (NULL == pBalanceItem)
+		return NULL;
+	
+	// ---------------------------------------------------------
+	
+	// COPY THE ISSUED TRANSACTION NUMBERS FROM THE NYM
+	
+	OTPseudonym theMessageNym;
+	
+	theMessageNym.HarvestIssuedNumbers(*this /*unused in this case, not saving to disk*/, *this, false); // bSave = false;
+	
+	theMessageNym.RemoveIssuedNum(*this, theOwner.GetRealServerID(), theOwner.GetTransactionNum());  // a transaction number is being used, and REMOVED from my list of responsibility,
+	theMessageNym.RemoveTransactionNum(*this, theOwner.GetRealServerID(), theOwner.GetTransactionNum()); // so I want the new signed list to reflect that number has been REMOVED.
+
+	OTString	strMessageNym(theMessageNym); // Okay now we have the transaction numbers in this MessageNym string.
+	
+	pBalanceItem->SetAttachment(strMessageNym);				// <======== This is where the server will read the transaction numbers from (A nym in item.m_ascAttachment)
+	
+	// ---------------------------------------------------------
+	
+	pBalanceItem->SignContract(*this); // <=== Sign, save, and return. OTTransactionType needs to weasel in a "date signed" variable.
+	pBalanceItem->SaveContract();
+	
+	return pBalanceItem;	
+}
+
+
+
+
 // use this to actually generate a new key pair and assorted nym files.
 //
 bool OTPseudonym::GenerateNym()
@@ -570,6 +629,46 @@ int OTPseudonym::GetGenericNumCount(mapOfTransNums & THE_MAP, const OTIdentifier
 }
 
 
+// by index.
+long OTPseudonym::GetIssuedNum(const OTIdentifier & theServerID, int nIndex)
+{
+	long lRetVal = 0;
+	std::string strID	= strServerID.Get();
+		
+	// The Pseudonym has a deque of transaction numbers for each servers.
+	// These deques are mapped by Server ID.
+	// 
+	// So let's loop through all the deques I have, and if the server ID on the map
+	// matches the Server ID that was passed in, then find the transaction number on
+	// that list, and then remove it, and return true. Else return false.
+	for (mapOfTransNums::iterator ii = m_mapIssuedNum.begin();  ii != m_mapIssuedNum.end(); ++ii)
+	{
+		// if the ServerID passed in matches the serverID for the current deque
+		if ( strID == ii->first )
+		{
+			dequeOfTransNums * pDeque = (ii->second);
+			
+			OT_ASSERT(NULL != pDeque);
+			
+			if (!(pDeque->empty())) // there are some numbers for that server ID
+			{
+				// Let's loop through them and see if the culprit is there
+				for (unsigned i = 0; i < pDeque->size(); i++)
+				{					
+					// Found it!
+					if ((unsigned)nIndex == i)
+					{
+						lRetVal = pDeque->at(i); // <==== Got the issued number here.
+						break;
+					}
+				}
+			}
+			break;			
+		}
+	}
+	
+	return lRetVal;
+}
 
 
 // *************************************************************************************
@@ -657,13 +756,6 @@ bool OTPseudonym::AddTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & s
 	bool bSuccess2 = AddIssuedNum(strServerID, lTransNum);		// Add to list of numbers that haven't been closed yet.
 	
 	// -----------------------------------
-
-	if (bSuccess1 && bSuccess2 && bSave)
-	{
-		SaveSignedNymfile(SIGNER_NYM);
-	}
-	
-	// -----------------------------------
 	
 	if (bSuccess1 && !bSuccess2)
 	{
@@ -674,8 +766,41 @@ bool OTPseudonym::AddTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & s
 		RemoveGenericNum(m_mapIssuedNum, strServerID, lTransNum);
 	}
 	
+	// -----------------------------------
 	
-	return (bSuccess1 && bSuccess2);
+	if (bSuccess1 && bSuccess2 && bSave)
+	{
+		bSave = SaveSignedNymfile(SIGNER_NYM);
+	}
+	else
+		bSave = true; // so the return at the bottom calculates correctly.
+	
+	return (bSuccess1 && bSuccess2 && bSave);
+}
+
+
+// Client side: We have accepted a certain receipt. Remove the transaction number from my list of issued numbers.
+// The server uses this too, also for keeping track of issued numbers, and removes them around same time as client.
+// (When receipt is accepted.) Also, There is no "RemoveTransactionNum" at this level since GetNextTransactionNum handles that.
+//
+bool OTPseudonym::RemoveIssuedNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long lTransNum, bool bSave) 
+{
+	bool bSuccess = RemoveIssuedNum(strServerID, lTransNum);		// Remove from list of numbers that haven't been closed yet.
+	
+	// -----------------------------------
+	
+	if (bSuccess && bSave)
+	{
+		bSave = SaveSignedNymfile(SIGNER_NYM);
+	}
+	else 
+	{
+		bSave = true; // so the return at the bottom calculates correctly.
+	}
+
+	// -----------------------------------
+	
+	return (bSuccess && bSave);
 }
 
 
