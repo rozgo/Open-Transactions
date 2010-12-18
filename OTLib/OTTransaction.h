@@ -235,6 +235,8 @@ public:
 	inline transactionType GetType() const { return m_Type; }
 	inline void SetType(const transactionType theType) { m_Type = theType; }
 	
+	bool VerifyItems(const OTPseudonym & theNym);
+	
 	// used for looping through the items in a few places.
 	inline listOfItems & GetItemList() { return m_listItems; }
 	

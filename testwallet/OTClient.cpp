@@ -627,7 +627,11 @@ void OTClient::ProcessDepositResponse(OTTransaction & theTransaction, OTServerCo
 	// if pointer not null, and it's a withdrawal, and it's an acknowledgement (not a rejection or error)
 	for (listOfItems::iterator ii = theTransaction.GetItemList().begin(); ii != theTransaction.GetItemList().end(); ++ii)
 	{
-		if ((pItem = *ii) && (OTItem::atDeposit == pItem->GetType()))
+		pItem = *ii;
+		
+		OT_ASSERT(NULL != pItem);
+		
+		if (OTItem::atDeposit == pItem->GetType())
 		{ 
 			if (OTItem::acknowledgement == pItem->GetStatus())
 			{

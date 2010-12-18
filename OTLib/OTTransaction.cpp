@@ -143,6 +143,50 @@ const char * OTTransaction::_TypeStrings[] =
 };
 
 
+
+// When the items are first loaded up, VerifyContractID() is called on them.
+// Therefore, the serverID and account ID have already been verified.
+// Now I want to go deeper, before actually processing a transaction, and 
+// make sure that the items on it also have the right owner, as well as that
+// owner's signature, and a matching transaction number to boot.
+//
+bool OTTransaction::VerifyItems(const OTPseudonym & theNym)
+{
+	// loop through the ALL items that make up this transaction and check to see if a response to deposit.
+	OTItem * pItem = NULL;
+	
+	if (false == VerifyOwner(theNym))
+	{
+		OTLog::Error("Wrong owner passed to OTTransaction::VerifyItems\n");
+		return false;
+	}
+
+	// I'm not checking signature on transaction itself since that is already
+	// checked before this function is called. But I AM calling Verify Owner,
+	// so that when Verify Owner is called in the loop below, it proves the items
+	// and the transaction both have the same owner: Nym.
+	
+	// if pointer not null, and it's a withdrawal, and it's an acknowledgement (not a rejection or error)
+	for (listOfItems::iterator ii = GetItemList().begin(); ii != GetItemList().end(); ++ii)
+	{
+		pItem = *ii;
+		
+		OT_ASSERT(NULL != pItem);
+		
+		if (GetTransactionNum() != pItem->GetTransactionNum())
+			return false;
+		
+		if (false == pItem->VerifyOwner(theNym))
+			return false;
+		
+		if (false == pItem->VerifySignature(theNym)) // NO need to call VerifyAccount since VerifyContractID is ALREADY called and now here's VerifySignature().
+			return false; 
+	}	
+	
+	return true;
+}
+
+
 // all common OTTransaction stuff goes here.
 // (I don't like constructor loops, prefer to use a separate function they all call.)
 void OTTransaction::InitTransaction()

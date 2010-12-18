@@ -246,6 +246,14 @@ public:
 	OTASCIIArmor	m_ascAttachment;	// the digital cash token is sent here, signed, and returned here. (or purse of tokens.)
 										// As well as a cheque, or a voucher, or a server update on a market offer, or a nym full of transactions for balance agreement.
 	
+	// Call this on the server side, on a balanceStatement item, to verify
+	// whether the wallet side set it up correctly (and thus it's okay to sign and return with acknowledgement.)
+	bool VerifyBalanceStatement(const long lActualAdjustment, 
+								const OTPseudonym & THE_NYM,
+								const OTLedger & THE_INBOX,
+								const OTLedger & THE_OUTBOX,
+								const OTAccount & THE_ACCOUNT);
+	
 	inline void SetOutboxHash(const OTIdentifier & theHash) { m_OutboxHash = theHash; }
 	inline OTIdentifier & GetOutboxHash() { return m_OutboxHash; }
 	

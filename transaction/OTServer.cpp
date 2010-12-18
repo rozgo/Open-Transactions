@@ -2675,7 +2675,7 @@ void OTServer::NotarizeDeposit(OTPseudonym & theNym, OTAccount & theAccount, OTT
 	
 	// Deposit (the transaction) now supports deposit (the item) and depositCheque (the item)
 	if ((pItem			= tranIn.GetItem(OTItem::depositCheque)) &&
-		(pBalanceItem	= tranIn.GetItem(OTItem::balanceStatement))) // must include a balance statement for this transaction.
+		(pBalanceItem	= tranIn.GetItem(OTItem::balanceStatement)))  // must have included a balance statement for this transaction.
 	{
 		// The response item, as well as the sender's inbox, will soon contain a copy
 		// of the request item. So I save it into a string here so they can grab a copy of it
@@ -2839,10 +2839,27 @@ void OTServer::NotarizeDeposit(OTPseudonym & theNym, OTAccount & theAccount, OTT
 				else
 					bSuccessLoadingInbox	= theSenderInbox.GenerateLedger(SOURCE_ACCT_ID, SERVER_ID, OTLedger::inbox, true); // bGenerateFile=true
 				
+				// --------------------------------------------------------------------
+
+				OTLedger * pInbox	= theAccount.LoadInbox(); 
+				OTLedger * pOutbox	= theAccount.LoadOutbox(); 
+				
+				OTCleanup<OTLedger> theInboxAngel(pInbox);
+				OTCleanup<OTLedger> theOutboxAngel(pOutbox);
+				
+				if (NULL == pInbox || !pInbox->VerifyAccount(m_nymServer))
+				{
+					OTLog::Error("Error loading or verifying inbox.\n");
+				}
+				
+				else if (NULL == pOutbox || !pOutbox->VerifyAccount(m_nymServer))
+				{
+					OTLog::Error("Error loading or verifying outbox.\n");
+				}
 				
 				// --------------------------------------------------------------------
 				
-				if (false == bSuccessLoadingInbox)
+				else if (false == bSuccessLoadingInbox)
 				{
 					OTLog::vError("ERROR verifying or generating inbox ledger in OTServer::NotarizeDeposit for source acct ID:\n%s\n",
 							strSourceAcctID.Get());
@@ -2963,17 +2980,22 @@ void OTServer::NotarizeDeposit(OTPseudonym & theNym, OTAccount & theAccount, OTT
 							strAccountID.Get(), strRecipientAssetID.Get());
 				}
 
-				
-				// NEED TO VERIFY BALANCE AGREEMENT RIGHT HERE!!!!
-				// TODO RESUME!!
-				
+								
 				// The BALANCE AGREEMENT includes a signed and dated:
 				/*
 				 user ID, server ID, account ID, transaction ID.
 				 
-				 It also includes:
+				 BY THE TIME you are ever inside the procesing for ANY transaction. we know for 
+				 a fact that NotarizeTransaction has ALREADY checked all the items on the transaction
+				 (the ones in its list) to make sure they ALL have the same owner, and signature,
+				 and transaction number, and account ID, and server ID. This happens when the items
+				 first load via VerifyContractID(), and also in NotarizeTransaction() with a call to
+				 VerifyItems(). Therefore I can consider the above variables COVERED for pItem as
+				 well as pBalanceItem.
+				 
+				 Balance Agreement also includes:
 				 -- A copy of all the transaction numbers that should still be issued to the Nym,
-				    AFTER one is removed from depositing this cheque. (The same one on tranIn and pItem.)
+				    AFTER one is removed from depositing this cheque. (The same number on tranIn and pItem.)
 					NEED TO VERIFY BOTH LISTS ARE THE SAME AFTER REMOVING ONE ON MY SIDE.
 				 -- Account balance.
 				    (NEED TO VERIFY BALANCE WOULD BE THE SAME AFTER PROCESSING TRANSACTION.
@@ -2981,17 +3003,15 @@ void OTServer::NotarizeDeposit(OTPseudonym & theNym, OTAccount & theAccount, OTT
 				    (NEED TO VERIFY INBOX AND OUTBOX ITEMS MATCH BY RE-CREATING AND THEN COMPARING.)
 				 */
 				
-				pBalanceItem->VerifyBalanceStatement(const long lActualAdjustment, const OTItem & theItem, // get transaction num from item itself.
-													 const OTIdentifier & SERVER_ID, 
-													 const OTIdentifier & USER_ID, 
-													 const OTIdentifier & ACCOUNT_ID, 
-													 const OTPseudonym & THE_NYM,
-													 const OTLedger & THE_INBOX,
-													 const OTLedger & THE_OUTBOX,
-													 const OTAccount & THE_ACCOUNT);
-				
-				
-				
+				else if (!(pBalanceItem->VerifyBalanceStatement(theCheque.GetAmount(), 
+													 theNym,
+													 *pInbox,
+													 *pOutbox,
+													 theAccount)))
+				{
+					OTLog::vOutput(0, "ERROR verifying balance statement while depositing cheque. Acct ID:\n%s\n",
+								   strAccountID.Get());
+				}
 				
 				// Debit Source account, Credit Recipient Account, add to Sender's inbox.
 				//
@@ -3003,7 +3023,9 @@ void OTServer::NotarizeDeposit(OTPseudonym & theNym, OTAccount & theAccount, OTT
 					if (pSourceAcct->Debit(theCheque.GetAmount()) && 
 						theAccount.Credit(theCheque.GetAmount()) &&
 						
-						// Clear the transaction number.
+						// Clear the transaction number. Sender Nym was responsible for it (and still is,
+						// until he accepts the cheque reecipt). Until then, he HAS used the cheque, so
+						// I'm removing his ability to use that number again.
 						RemoveTransactionNumber(*pSenderNym, theCheque.GetTransactionNum())
 						)
 					{	// need to be able to "roll back" if anything inside this block fails.
@@ -3811,6 +3833,16 @@ void OTServer::NotarizeTransaction(OTPseudonym & theNym, OTTransaction & tranIn,
 		OTLog::Output(0, "Error verifying transaction number on user nym in OTServer::NotarizeTransaction\n");
 	}
 	
+	// The items' acct and server ID were already checked in VerifyContractID() when they were loaded. 
+	// Now this checks a little deeper, to verify ownership, signatures, and transaction number
+	// on each item.  That way those things don't have to be checked for security over and over
+	// again in the subsequent calls.
+	//
+	else if (!tranIn.VerifyItems(theNym)) 
+	{
+		OTLog::Output(0, "Error verifying transaction items OTServer::NotarizeTransaction\n");
+	}
+	
 	// any other security stuff?
 	// Todo do I need to verify the server ID here as well?
 	else
@@ -3900,7 +3932,9 @@ void OTServer::NotarizeTransaction(OTPseudonym & theNym, OTTransaction & tranIn,
 		
 		// This call to IssueNextTransactionNumber will save the new transaction
 		// number to the nym's file on the server side. 
-		if (bSuccess && IssueNextTransactionNumber(theNym, lTransactionNum))
+		if (bSuccess
+			&& IssueNextTransactionNumber(theNym, lTransactionNum)
+			)
 		{
 			// But we still have to bundle it into the message and send it, so
 			// it can also be saved into the same nym's file on the client side.

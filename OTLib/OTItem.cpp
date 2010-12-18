@@ -112,6 +112,17 @@ using namespace io;
 
 
 
+bool OTItem::VerifyBalanceStatement(const long lActualAdjustment, 
+									const OTPseudonym & THE_NYM,
+									const OTLedger & THE_INBOX,
+									const OTLedger & THE_OUTBOX,
+									const OTAccount & THE_ACCOUNT)
+{
+	
+}
+
+
+
 void OTItem::ReleaseItems()
 {
 	OTItem * pItem = NULL;
