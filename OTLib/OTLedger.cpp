@@ -111,38 +111,81 @@ using namespace io;
 #include "OTLog.h"
 
 
+
+
+
+
+const char * OTLedger::_TypeStrings[] = 
+{
+	"message",	// used in OTMessages, to send various lists of transactions back and forth.
+	"inbox",		// each asset account has an inbox, with pending transfers as well as receipts inside.
+	"outbox",		// if you SEND a pending transfer, it sits in your outbox until it's accepted, rejected, or canceled.
+	"nymbox",		// the nymbox is per user account (versus per asset account) and is used to receive new transaction numbers (and messages.)
+	"error_state"
+};
+
+
+
+bool OTLedger::LoadGeneric(OTLedger::ledgerType theType)
+{
+	OTString strID;
+	GetIdentifier(strID);
+	
+	m_Type = theType;
+	
+	char * pszFolder = NULL;
+	char * pszType = GetTypeString();
+	
+	switch (theType) 
+	{
+		case OTLedger::inbox:
+			pszFolder = OTLog::InboxFolder();
+			break;
+		case OTLedger::outbox:
+			pszFolder = OTLog::OutboxFolder();
+			break;
+		case OTLedger::nymbox:
+			pszFolder = OTLog::NymboxFolder();
+			break;
+		default:
+			return false;
+	}
+	
+	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						 pszFolder,
+						 OTLog::PathSeparator(), strID.Get());
+	
+	if (false == OTLog::ConfirmExactPath(m_strFilename.Get()))
+	{
+		OTLog::vOutput(1, "%s does not exist in OTLedger::Load%s:\n%s\n", pszType,
+					  pszType, m_strFilename.Get());
+		return false;
+	}
+	// Try to load the ledger from disk.
+	else if (false == LoadContract())
+	{
+		OTLog::vError("Failed loading %s in OTLedger::Load%s:\n%s\n", 
+					  pszType, pszType, m_strFilename.Get());
+		return false;
+	}
+	else 
+	{
+		OTLog::vOutput(2, "Successfully loaded %s in OTLedger::Load%s:\n%s\n", 
+					   pszType, pszType, m_strFilename.Get());
+	}
+	
+	return true;	
+}
+
+
+
 // the below four functions (load/save in/outbox) assume that the ID is already set
 // properly.
 // Then it uses the ID to form the path for the file that is opened. Easy, right?
 
 bool OTLedger::LoadInbox()
 {
-	OTString strID;
-	GetIdentifier(strID);
-	
-	m_Type = OTLedger::inbox;
-
-	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-						 OTLog::InboxFolder(),
-						 OTLog::PathSeparator(), strID.Get());
-	
-	if (false == OTLog::ConfirmExactPath(m_strFilename.Get()))
-	{
-		OTLog::vOutput(1, "Inbox does not exist in OTLedger::LoadInbox:\n%s\n", m_strFilename.Get());
-		return false;
-	}
-	// Try to load the ledger from disk.
-	else if (false == LoadContract())
-	{
-		OTLog::vError("Failed loading inbox in OTLedger::LoadInbox:\n%s\n", m_strFilename.Get());
-		return false;
-	}
-	else 
-	{
-		OTLog::vOutput(2, "Successfully loaded inbox in OTLedger::LoadInbox:\n%s\n", m_strFilename.Get());
-	}
-	
-	return true;	
+	return LoadGeneric(OTLedger::inbox);	
 }
 
 //TODO really should verify the ServerID after loading the ledger.
@@ -152,92 +195,99 @@ bool OTLedger::LoadInbox()
 
 bool OTLedger::LoadOutbox()
 {
+	return LoadGeneric(OTLedger::outbox);	
+}
+
+bool OTLedger::LoadNymbox()
+{
+	return LoadGeneric(OTLedger::nymbox);		
+}
+
+
+bool OTLedger::SaveGeneric(OTLedger::ledgerType theType)
+{
 	OTString strID;
 	GetIdentifier(strID);
 	
-	m_Type = OTLedger::outbox;
+	char * pszFolder = NULL;
+	char * pszType = GetTypeString();
+	
+	switch (theType) 
+	{
+		case OTLedger::inbox:
+			pszFolder = OTLog::InboxFolder();
+			break;
+		case OTLedger::outbox:
+			pszFolder = OTLog::OutboxFolder();
+			break;
+		case OTLedger::nymbox:
+			pszFolder = OTLog::NymboxFolder();
+			break;
+		default:
+			return false;
+	}
 	
 	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-						 OTLog::OutboxFolder(),
+						 pszFolder,
 						 OTLog::PathSeparator(), strID.Get());
 	
-	if (false == OTLog::ConfirmExactPath(m_strFilename.Get()))
+	OTString strTemp(m_strFilename);
+	
+	if (false == SaveContract((const char*)strTemp.Get()))
 	{
-		OTLog::vOutput(1, "Outbox does not exist in OTLedger::LoadOutbox:\n%s\n", m_strFilename.Get());
-		return false;
-	}
-	else if (false == LoadContract())
-	{
-		OTLog::vError("Failed loading outbox in OTLedger::LoadOutbox:\n%s\n", m_strFilename.Get());
+		OTLog::vError("Error saving %s in OTLedger::Save%s: %s\nFilename: %s\n", 
+					  pszType, pszType, m_strFilename.Get(), strTemp.Get());
 		return false;
 	}
 	else 
 	{
-		OTLog::vOutput(2, "Successfully loaded outbox in OTLedger::LoadOutbox:\n%s\n", m_strFilename.Get());
+		OTLog::vOutput(2, "Successfully saved %s: %s\nFilename: %s\n", pszType, 
+					   m_strFilename.Get(), strTemp.Get());
 	}
-
-	return true;	
+	
+	return true;
 }
 
 
 // If you're going to save this, make sure you sign it first.
 bool OTLedger::SaveInbox()
 {
-	OTString strID;
-	GetIdentifier(strID);
-	
-	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-						 OTLog::InboxFolder(),
-						 OTLog::PathSeparator(), strID.Get());
-	
-	OTString strTemp(m_strFilename);
-
-	if (false == SaveContract((const char*)strTemp.Get()))
+	if (m_Type != OTLedger::inbox)
 	{
-		OTLog::vError("Error saving inbox in OTLedger::SaveInbox: %s\nFilename: %s\n", 
-					  m_strFilename.Get(), strTemp.Get());
+		OTLog::Error("Wrong ledger type passed to OTLedger::SaveInbox.\n");
 		return false;
 	}
-	else 
-	{
-		OTLog::vOutput(2, "Successfully saved inbox: %s\nFilename: %s\n", 
-					   m_strFilename.Get(), strTemp.Get());
-	}
 	
-	return true;
+	return SaveGeneric(m_Type);
 }
 
 
 // If you're going to save this, make sure you sign it first.
 bool OTLedger::SaveOutbox()
 {
-	OTString strID;
-	GetIdentifier(strID);
-	
-	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-						 OTLog::OutboxFolder(),
-						 OTLog::PathSeparator(), strID.Get());
-	
-	OTString strTemp(m_strFilename);
-
-	if (false == SaveContract((const char*)strTemp.Get()))
+	if (m_Type != OTLedger::outbox)
 	{
-		OTLog::vError("Error saving outbox in OTLedger::SaveInbox: %s\nFilename: %s\n", 
-					  m_strFilename.Get(), strTemp.Get());
+		OTLog::Error("Wrong ledger type passed to OTLedger::SaveOutbox.\n");
 		return false;
 	}
-	else 
-	{
-		OTLog::vOutput(2, "Successfully saved outbox: %s\nFilename: %s\n", 
-					   m_strFilename.Get(), strTemp.Get());
-	}
-
 	
-	return true;
+	return SaveGeneric(m_Type);
+}
+
+// If you're going to save this, make sure you sign it first.
+bool OTLedger::SaveNymbox()
+{
+	if (m_Type != OTLedger::nymbox)
+	{
+		OTLog::Error("Wrong ledger type passed to OTLedger::SaveNymbox.\n");
+		return false;
+	}
+	
+	return SaveGeneric(m_Type);
 }
 
 
-OTLedger * OTLedger::GenerateLedger(const OTIdentifier & theUserID, const OTIdentifier & theAcctID, 
+OTLedger * OTLedger::GenerateLedger(const OTIdentifier & theUserID, const OTIdentifier & theAcctID, // AcctID should be "OwnerID" since could be acct OR Nym (with nymbox)
 									const OTIdentifier & theServerID, 
 									const ledgerType theType, bool bCreateFile/*=false*/)
 {
@@ -259,6 +309,11 @@ bool OTLedger::GenerateLedger(const OTIdentifier & theAcctID,
 	OTString strID(theAcctID);
 	
 	switch (theType) {
+		case OTLedger::nymbox:
+			m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+								 OTLog::NymboxFolder(),
+								 OTLog::PathSeparator(), strID.Get());
+			break;
 		case OTLedger::inbox:
 			m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
 								 OTLog::InboxFolder(),
@@ -278,12 +333,14 @@ bool OTLedger::GenerateLedger(const OTIdentifier & theAcctID,
 			m_Type	= theType;
 			return true;
 		default:
-			OT_ASSERT_MSG(false, "ERROR: GenerateLedger is only for message, inbox and outbox ledgers.\n");
+			OT_ASSERT_MSG(false, "ERROR: GenerateLedger is only for message, inbox, outbox, and nymbox ledgers.\n");
 			return false; // this return is unecessary because of the assert. But I like having it anyway.
 	}
 	
-	SetRealAccountID(theAcctID); // set this before calling LoadContract...
-	SetRealServerID(theServerID);
+	m_Type	= theType; // Todo make this Get/Set methods
+
+	SetRealAccountID(theAcctID); // set this before calling LoadContract... (In this case, will just be the Nym ID as well...)
+	SetRealServerID(theServerID); // (Ledgers/transactions/items were originally meant just for account-related functions.)
 
 	if (bCreateFile)
 	{
@@ -292,7 +349,7 @@ bool OTLedger::GenerateLedger(const OTIdentifier & theAcctID,
 		
 		if (bLoaded)
 		{
-			OTLog::vError("ERROR: trying to generate inbox that already exists: %s\n", strID.Get());
+			OTLog::vError("ERROR: trying to generate ledger that already exists: %s\n", strID.Get());
 			return false;
 		}
 	
@@ -300,22 +357,28 @@ bool OTLedger::GenerateLedger(const OTIdentifier & theAcctID,
 		OTLog::vOutput(0, "Generating %s\n", m_strFilename.Get());
 	}
 	
-	// Have to look up the UserID here. No way around it.
-	// Plus it helps verify things.
-	OTAccount * pAccount = OTAccount::LoadExistingAccount(theAcctID, theServerID);
-	OTCleanup<OTAccount> theAccountGuardian(pAccount); // No worries about having to clean it up.
-	
+	if (OTLedger::nymbox != theType)
+	{
+		// Have to look up the UserID here. No way around it.
+		// Plus it helps verify things.
+		OTAccount * pAccount = OTAccount::LoadExistingAccount(theAcctID, theServerID);
+		OTCleanup<OTAccount> theAccountGuardian(pAccount); // No worries about having to clean it up.
+		
+		if (pAccount)
+			SetUserID(pAccount->GetUserID());
+	}
+	else 
+	{
+		SetUserID(theAcctID); // In the case of nymbox, the acct ID IS the user ID. (Should change it to "owner ID" to make it sound right either way.)
+	}
+
+
 	// Notice I still don't actually create the file here.  The programmer still has to call 
 	// "SaveInbox" or "SaveOutbox" to actually save the file. But he cannot do that unless he
 	// generates it first here, and the "bCreateFile" parameter insures that he isn't overwriting
 	// one that is already there (even if we don't actually save the file in this function.)
 	SetPurportedAccountID(theAcctID);
 	SetPurportedServerID(theServerID);
-	
-	m_Type	= theType; // Todo make this Get/Set methods
-	
-	if (pAccount)
-		SetUserID(pAccount->GetUserID());
 	
 	return true;	
 }
@@ -563,7 +626,7 @@ OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTran
 		return NULL;
 	}
 	if (
-		(theNymID							!= GetUserID()))
+		(theNymID	!= GetUserID()))
 	{
 		OTLog::Error("Wrong Nym passed in to OTLedger::ProduceBalanceStatement.\n");
 		return NULL;
@@ -579,7 +642,6 @@ OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTran
 	if (NULL == pBalanceItem)
 		return NULL;
 	
-	
 	// ---------------------------------------------------------
 	
 	// COPY THE ISSUED TRANSACTION NUMBERS FROM THE NYM
@@ -588,9 +650,26 @@ OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTran
 	
 	theMessageNym.HarvestIssuedNumbers(theNym /*unused in this case, not saving to disk*/, theNym, false); // bSave = false;
 		
-	theMessageNym.RemoveIssuedNum(theNym, theOwner.GetRealServerID(), theOwner.GetTransactionNum());  // a transaction number is being used, and REMOVED from my list of responsibility,
-	theMessageNym.RemoveTransactionNum(theNym, theOwner.GetRealServerID(), theOwner.GetTransactionNum()); // so I want the new signed list to reflect that number has been REMOVED.
-
+	
+//	if (theOwner.GetType() != OTTransaction::pending)
+//	{
+		// If this is for a withdrawal, or deposit, the transaction number should be removed instantly, and the
+		// statement needs to reflect its new absence. If it's a transfer, should it be removed from my issued list?
+		// since it has then moved to my outbox, and the balance has changed. Or should I keep it on the list UNTIL
+		// the final transferReceipt is accepted or rejected, THEN remove it? Balance might still change until then, and
+		// a new balance agreement may need signing to accept back a rejected transfer.
+		// Therefore, I will RemoveIssuedNum and RemoveTransactionNum (on the server side it's interpreting for issued num.)
+		// ONLY IF IT'S NOT A pending transfer WILL I REMOVE THE NUMBER BELOW. Transfers can wait for the receipt.
+		//
+		// Change of plans: The client and server side both know for a fact that the number is no longer usable,
+		// since the transfer itself was definitely sent.  Might as well remove it from issued list -- I can't use
+		// it again, and the request is already sent, unlike a cheque that hasn't come in yet. It's definitely burnt,
+		// and the inbox/outbox can track it from there. (With receipt to hit inbox as well, after acceptance.)
+	//
+		theMessageNym.RemoveIssuedNum(theNym, theOwner.GetRealServerID(), theOwner.GetTransactionNum());  // a transaction number is being used, and REMOVED from my list of responsibility,
+		theMessageNym.RemoveTransactionNum(theNym, theOwner.GetRealServerID(), theOwner.GetTransactionNum()); // so I want the new signed list to reflect that number has been REMOVED.
+//	}
+	
 	OTString	strMessageNym(theMessageNym); // Okay now we have the transaction numbers in this MessageNym string.
 
 	pBalanceItem->SetAttachment(strMessageNym);				// <======== This is where the server will read the transaction numbers from (A nym in item.m_ascAttachment)
@@ -629,6 +708,40 @@ OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTran
 	
 	return pBalanceItem;
 }
+
+
+
+
+// for inbox only, allows you to lookup the total value of pending transfers within the inbox.
+// (And it really loads the items to check the amount, but does all this ONLY for pending transfers.)
+//
+long OTLedger::GetTotalPendingValue()
+{
+	long lTotalPendingValue = 0;
+	
+	if (OTLedger::inbox != GetType())
+	{
+		OTLog::Error("OTLedger::GetTotalPendingValue: Wrong ledger type (expected inbox).\n");
+		return 0;
+	}
+	
+	OTTransaction * pTransaction = NULL;
+	
+	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); 
+		 ii != m_mapTransactions.end(); ++ii)
+	{
+		pTransaction = (*ii).second;
+		
+		OT_ASSERT(NULL != pTransaction);
+		
+		if (pTransaction->GetType() == OTTransaction::pending)
+			lTotalPendingValue += pTransaction->GetReceiptAmount(); // this actually loads up the original item and reads the amount.
+	}	
+	
+	return lTotalPendingValue;
+}
+
+
 
 // Called by the above function.
 // This ledger is an outbox, and it is creating a report of itself, 
@@ -669,23 +782,11 @@ void OTLedger::UpdateContents() // Before transmission or serialization, this is
 	// Notice I use the PURPORTED Account ID and Server ID to create the output. That's because
 	// I don't want to inadvertantly substitute the real ID for a bad one and then sign it.
 	// So if there's a bad one in there when I read it, THAT's the one that I write as well!
-	OTString strType, strLedgerAcctID(GetPurportedAccountID()), strLedgerAcctServerID(GetPurportedServerID()),
-		strUserID(GetUserID());
+	OTString	strType(GetTypeString()), 
+				strLedgerAcctID(GetPurportedAccountID()), 
+				strLedgerAcctServerID(GetPurportedServerID()),
+				strUserID(GetUserID());
 	
-	switch (m_Type) {
-		case OTLedger::message:
-			strType.Set("message");
-			break;
-		case OTLedger::inbox:
-			strType.Set("inbox");
-			break;
-		case OTLedger::outbox:
-			strType.Set("outbox");
-			break;
-		default:
-			strType.Set("error-unknown");
-			break;
-	}
 	
 	// I release this because I'm about to repopulate it.
 	m_xmlUnsigned.Release();
@@ -741,6 +842,8 @@ int OTLedger::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			m_Type = OTLedger::inbox;
 		else if (strType.Compare("outbox"))
 			m_Type = OTLedger::outbox;
+		else if (strType.Compare("nymbox"))
+			m_Type = OTLedger::nymbox;
 		else
 			m_Type = OTLedger::error_state;
 	

@@ -119,6 +119,15 @@ public:
 		atTransfer,	// Server reply.
 // ------------------------------------------------------------------------------
 		
+		// NYMBOX RESOLUTION
+		
+		acceptTransaction,		// this item is a client-side acceptance of transaction numbers in my nymbox
+		atAcceptTransaction,	
+		acceptMessage,			// this item is a client-side acceptance of a message in my nymbox
+		atAcceptMessage,	
+		
+// ------------------------------------------------------------------------------
+		
 		// INBOX RESOLUTION
 		
 		acceptPending,		// this item is a client-side acceptance of a pending transfer
@@ -254,8 +263,7 @@ public:
 								const OTLedger & THE_OUTBOX,
 								const OTAccount & THE_ACCOUNT);
 	
-	inline void SetOutboxHash(const OTIdentifier & theHash) { m_OutboxHash = theHash; }
-	inline OTIdentifier & GetOutboxHash() { return m_OutboxHash; }
+	bool VerifyTransactionStatement(const OTPseudonym & THE_NYM);
 	
 	inline OTItem::itemStatus GetStatus() const { return m_Status; }
 	inline void SetStatus(const OTItem::itemStatus & theVal) { m_Status = theVal; }

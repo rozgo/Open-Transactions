@@ -113,6 +113,7 @@ using namespace io;
 const char * OTTransaction::_TypeStrings[] = 
 {
 	"blank",			// freshly issued, not used yet  // comes from server, stored on Nym.
+	"message",			// in nymbox, message from one user to another.
 	"pending",			// Pending transfer, in the inbox/outbox.
 	// --------------------------------------------------------------------------------------
 	"processInbox",		// process inbox transaction	 // comes from client
@@ -367,6 +368,7 @@ bool OTTransaction::GetSuccess()
 			case OTItem::atTransaction:
 			case OTItem::atTransfer:
 				
+			case OTItem::atAcceptTransaction:
 			case OTItem::atAcceptPending:
 			case OTItem::atRejectPending:
 				
@@ -642,7 +644,9 @@ long OTTransaction::GetReceiptAmount()
 	
 	OTItem * pOriginalItem = NULL;
 
-	switch (m_Type) 
+	listOfItems::iterator ii;
+	
+	switch (GetType()) 
 	{	// These are the types that have an amount (somehow)
 		case OTTransaction::pending: // amount is stored on the transfer item, on my list of items.
 		case OTTransaction::chequeReceipt: // amount is stored on cheque (attached to depositCheque item, attached.)

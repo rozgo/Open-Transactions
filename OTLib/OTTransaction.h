@@ -164,7 +164,9 @@ public:
 	// or pending (in the inbox/outbox)
 	// or it can be a "process inbox" transaction
 	enum transactionType {
-		blank,			// freshly issued, not used yet  // comes from server, stored on Nym.
+		blank,			// freshly issued, not used yet / server drops these into the nymbox.
+		message,		// A message from one user to another, in the nymbox
+// --------------------------------------------------------------------------------------
 		pending,		// Pending transfer, in the inbox/outbox.
 // --------------------------------------------------------------------------------------
 		processInbox,	// process inbox transaction	 // comes from client

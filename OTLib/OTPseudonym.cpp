@@ -133,7 +133,6 @@ using namespace io;
 
 
 
-
 // Instead of a "balance statement", some messages require a "transaction statement".
 // Whenever the number of transactions changes, you must sign the new list so you
 // aren't responsible for cleared transactions, for example. Or so you server will
@@ -634,7 +633,7 @@ long OTPseudonym::GetIssuedNum(const OTIdentifier & theServerID, int nIndex)
 {
 	long lRetVal = 0;
 	std::string strID	= strServerID.Get();
-		
+	
 	// The Pseudonym has a deque of transaction numbers for each servers.
 	// These deques are mapped by Server ID.
 	// 
@@ -659,6 +658,47 @@ long OTPseudonym::GetIssuedNum(const OTIdentifier & theServerID, int nIndex)
 					if ((unsigned)nIndex == i)
 					{
 						lRetVal = pDeque->at(i); // <==== Got the issued number here.
+						break;
+					}
+				}
+			}
+			break;			
+		}
+	}
+	
+	return lRetVal;
+}
+
+// by index.
+long OTPseudonym::GetTransactionNum(const OTIdentifier & theServerID, int nIndex)
+{
+	long lRetVal = 0;
+	std::string strID	= strServerID.Get();
+	
+	// The Pseudonym has a deque of transaction numbers for each servers.
+	// These deques are mapped by Server ID.
+	// 
+	// So let's loop through all the deques I have, and if the server ID on the map
+	// matches the Server ID that was passed in, then find the transaction number on
+	// that list, and then remove it, and return true. Else return false.
+	for (mapOfTransNums::iterator ii = m_mapTransNum.begin();  ii != m_mapTransNum.end(); ++ii)
+	{
+		// if the ServerID passed in matches the serverID for the current deque
+		if ( strID == ii->first )
+		{
+			dequeOfTransNums * pDeque = (ii->second);
+			
+			OT_ASSERT(NULL != pDeque);
+			
+			if (!(pDeque->empty())) // there are some numbers for that server ID
+			{
+				// Let's loop through them and see if the culprit is there
+				for (unsigned i = 0; i < pDeque->size(); i++)
+				{					
+					// Found it!
+					if ((unsigned)nIndex == i)
+					{
+						lRetVal = pDeque->at(i); // <==== Got the transaction number here.
 						break;
 					}
 				}

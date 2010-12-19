@@ -171,9 +171,16 @@ public:
 	//
 	bool GenerateNym();
 
+	// ---------------------------------------------
+	
+	// Some messages require "transaction agreement" as opposed to "balance agreement."
+	// That is, cases where only transactions change and not balances.
+	//
+	
 	OTItem * GenerateTransactionStatement(const OTTransaction & theOwner); // like balance agreement
 
-	
+	// ---------------------------------------------
+		
 	// This version WILL handle the bookends -----BEGIN PUBLIC KEY------ 
 	bool SetPublicKey(const OTString & strKey, bool bEscaped=true);
 	
@@ -250,6 +257,7 @@ public:
 	// These functions are for transaction numbers that I still available to use.
 	//
 	int GetTransactionNumCount(const OTIdentifier & theServerID);
+	long GetTransactionNum(const OTIdentifier & theServerID, int nIndex);
 	bool AddTransactionNum(const OTString & strServerID, long lTransNum);
 	bool AddTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long lTransNum, bool bSave); // We have received a new trans num from server. Store it.
 	bool GetNextTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long &lTransNum); // Get the next available transaction number for the serverID passed.
@@ -257,6 +265,8 @@ public:
 	bool VerifyTransactionNum(const OTString & strServerID, const long & lTransNum); // server verifies that nym was issued this TransNum
 	bool RemoveTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum); // server removes spent number from nym file.
 
+	
+	// ---------------------------------------------
 	
 	const OTAsymmetricKey & GetPublicKey() const;
 	const OTAsymmetricKey & GetPrivateKey() const;

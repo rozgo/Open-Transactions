@@ -120,14 +120,20 @@ protected:
 public:
 	
 	enum ledgerType {
-		message,
-		inbox,
-		outbox,
+		message,	// used in OTMessages, to send various lists of transactions back and forth.
+		inbox,		// each asset account has an inbox, with pending transfers as well as receipts inside.
+		outbox,		// if you SEND a pending transfer, it sits in your outbox until it's accepted, rejected, or canceled.
+		nymbox,		// the nymbox is per user account (versus per asset account) and is used to receive new transaction numbers (and messages.)
 		error_state
 	};
 	
 	ledgerType	m_Type;
 		
+protected:
+	bool LoadGeneric(ledgerType theType);
+	bool SaveGeneric(ledgerType theType);
+		
+public:
 	
 	// This function assumes that this is an INBOX.
 	// If you don't use an INBOX to call this method, then it will return NULL immediately.
@@ -151,12 +157,19 @@ public:
 
 	bool SaveInbox();
 	bool LoadInbox();
+	
+	bool SaveNymbox();
+	bool LoadNymbox();
+	
 	bool SaveOutbox();
 	bool LoadOutbox();
 	
 	mapOfTransactions & GetTransactionMap();
 	
 	inline int GetTransactionCount() { return m_mapTransactions.size(); }
+	
+	
+	long GetTotalPendingValue(); // for inbox only, allows you to lookup the total value of pending transfers within.
 	
 	OTLedger(const OTIdentifier & theUserID, const OTIdentifier & theAccountID, const OTIdentifier & theServerID);	
 	virtual ~OTLedger();
@@ -183,6 +196,16 @@ public:
 
 	virtual bool SaveContractWallet(std::ofstream & ofs);
 //	virtual bool SaveContractWallet(FILE * fl);	
+	
+	// --------------------------------------------------------------
+	
+	static const char * _TypeStrings[]; // for translating transaction type into a string.
+	
+	static inline const char * _GetTypeString(ledgerType theType)
+	{ int nType = (int)theType; return OTLedger::_TypeStrings[nType]; }
+	
+	inline const char * GetTypeString() { return OTLedger::_GetTypeString(m_Type); }
+	
 };
 
 #endif //  __OTLEDGER_H__

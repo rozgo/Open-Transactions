@@ -111,14 +111,424 @@ using namespace io;
 
 
 
+// By the time this is called, I know that the item, AND this balance item (this)
+// both have the correct user id, server id, account id, and transaction id, and
+// they have been signed properly by the owner.
+//
+// So what do I need to verify in this function?
+//
+// -- That the transactions on the Nym, minus the current transaction number being processed,
+//    are all still there.
+//
+bool OTItem::VerifyTransactionStatement(const OTPseudonym & THE_NYM)
+{
+	if (GetType() != OTItem::transactionStatement)
+	{
+		OTLog::Output(0, "OTItem::VerifyTransactionStatement: wrong item type.\n");
+		return false;
+	}
+	
+	//
+	// So if the caller was planning to remove a number, or clear a receipt from the inbox, he'll have to do
+	// so first before calling this function, and then ADD IT AGAIN if this function fails.  (Because the new
+	// Balance Agreement is always the user signing WHAT THE NEW VERSION WILL BE AFTER THE TRANSACTION IS PROCESSED.)
+	
+	
+	// -- NEED to verify the transactions on the Nym, versus the transactions stored on this
+	//    (in a message Nym attached to this.)  Check for presence of each, then compare count, like above.
+	
+	
+	OTString SERVER_ID(GetPurportedServerID());
+	
+	bool bIWasFound = THE_NYM.VerifyIssuedNum(SERVER_ID, GetTransactionNum());
+	
+	if (!bIWasFound)
+	{
+		OTLog::Output(0, "OTItem::VerifyTransactionStatement: Transaction has # that doesn't appear on Nym's issued list.\n");
+		return false;
+	}
+	
+	// The client side has already removed from issued list, and has sent us a signed copy to that effect,
+	// so we remove it on our side as well, so that they will match. (Which allows us to ACTUALLY remove it :)
+	// If anything else fails during this verify process, we have to ADD IT AGAIN since we stil don't have
+	// a valid signature on that number. (Besides the last one that includes it.)
+	//
+	THE_NYM.RemoveIssuedNum(SERVER_ID, GetTransactionNum());
+	
+	// ----------------------------------------------------
+	
+	long lTransactionNumber	= 0; // Used in the loop below.
+	
+	int nNumberOfTransactionNumbers1 = 0; // The Nym on this side
+	int nNumberOfTransactionNumbers2 = 0; // The Message Nym.
+	
+	OTString	strMessageNym; 
+	std::string	strServerID;
+	
+	// First, loop through the Nym on my side, and count how many numbers total he has...
+	//
+	for (mapOfTransNums::iterator	iii	 =	THE_NYM.GetMapIssuedNum().begin(); 
+		 iii !=	THE_NYM.GetMapIssuedNum().end(); ++iii)
+	{	
+		strServerID					= (*iii).first;
+		dequeOfTransNums * pDeque	= (iii->second);
+		
+		OTString OTstrServerID = strServerID.c_str();
+		
+		OT_ASSERT(NULL != pDeque);
+		
+		if (!(pDeque->empty()))
+		{
+			nNumberOfTransactionNumbers1 += pDeque->size();
+		}
+	} // for
+	
+	// Next, loop through theMessageNym, and count his numbers as well...
+	// But ALSO verify that each one exists on THE_NYM, so that each individual
+	// number is checked.
+	this->GetAttachment(strMessageNym);
+	OTPseudonym theMessageNym;
+	
+	if ((strMessageNym.GetLength() > 2) && theMessageNym.LoadFromString(strMessageNym))
+	{
+		for (mapOfTransNums::iterator	iii	 =	theMessageNym.GetMapIssuedNum().begin(); 
+			 iii !=	theMessageNym.GetMapIssuedNum().end(); ++iii)
+		{	
+			strServerID					= (*iii).first;
+			dequeOfTransNums * pDeque	= (iii->second);
+			
+			OTString OTstrServerID = strServerID.c_str();
+			
+			OT_ASSERT(NULL != pDeque);
+			
+			if (!(pDeque->empty()))
+			{
+				nNumberOfTransactionNumbers2 += pDeque->size();
+				
+				for (unsigned i = 0; i < pDeque->size(); i++)
+				{
+					lTransactionNumber = pDeque->at(i);
+					
+					if (false == THE_NYM.VerifyTransactionNum(OTstrServerID, lTransactionNumber))
+					{
+						OTLog::Output(0, "OTItem::VerifyTransactionStatement: Issued transaction # %ld from Message Nym not found on this side.\n", 
+									  lTransactionNumber);
+						
+						THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
+						
+						return false;
+					}
+				}
+			}
+		} // for
+	}
+	
+	// Finally, verify that the counts match...
+	if (nNumberOfTransactionNumbers1 != nNumberOfTransactionNumbers2)
+	{
+		OTLog::Output(0, "OTItem::VerifyTransactionStatement: Transaction # Count mismatch: %d and %d\n", 
+					  nNumberOfTransactionNumbers1, nNumberOfTransactionNumbers2);
+		
+		THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
+		
+		return false;
+	}
+	
+	// By this point, I know the local Nym has the same number of transactions as the message nym, and that
+	// EVERY ONE OF THEM was found individually.
+	
+	// Might want to consider saving the Nym here.
+	// Also want to save the latest signed receipt, since it VERIFIES.
+	// Or maybe let caller decide?
+	
+	return true;
+}
 
+
+
+
+
+
+// By the time this is called, I know that the item, AND this balance item (this)
+// both have the correct user id, server id, account id, and transaction id, and
+// they have been signed properly by the owner.
+//
+// So what do I need to verify in this function?
+//
+// 1) That THE_ACCOUNT.GetBalance() + lActualAdjustment equals the amount in this->GetAmount().
+//
+// 2) That the inbox transactions and outbox transactions match up to the list of sub-items
+//    on THIS balance item.
+//
+// 3) That the transactions on the Nym, minus the current transaction number being processed,
+//    are all still there.
+//
 bool OTItem::VerifyBalanceStatement(const long lActualAdjustment, 
 									const OTPseudonym & THE_NYM,
 									const OTLedger & THE_INBOX,
 									const OTLedger & THE_OUTBOX,
 									const OTAccount & THE_ACCOUNT)
 {
+	if (GetType() != OTItem::balanceStatement)
+	{
+		OTLog::Output(0, "OTItem::VerifyBalanceStatement: wrong item type.\n");
+		return false;
+	}
 	
+	// 1) That THE_ACCOUNT.GetBalance() + lActualAdjustment equals the amount in this->GetAmount().
+	
+	if ((THE_ACCOUNT.GetBalance() + lActualAdjustment) != this->GetAmount())
+	{
+		OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Wrong balance %ld (expected %ld).\n",
+					   this->GetAmount(), (THE_ACCOUNT.GetBalance() + lActualAdjustment));
+		return false;
+	}
+	
+	// 2) That the inbox transactions and outbox transactions match up to the list of sub-items
+	//    on THIS balance item.
+	
+	int nInboxItemCount = 0, nOutboxItemCount = 0;
+	
+	const char * szInbox = "Inbox";
+	const char * szOutput = "Outbox";
+	
+	for (int i=0; i < GetItemCount(); i++)
+	{
+		OTItem * pSubItem = GetItem(i);
+		
+		OT_ASSERT(NULL != pSubItem);
+		
+		char * pszLedgerType = NULL;
+		
+		OTLedger * pLedger = NULL;
+		
+		switch (pSubItem->GetType()) 
+		{
+			case OTItem::chequeReceipt: 
+			case OTItem::marketReceipt: 
+			case OTItem::paymentReceipt:
+				nInboxItemCount++;
+				pLedger = &THE_INBOX;
+				pszLedgerType = szInbox;
+			case OTItem::transfer:
+				break;
+			default:
+				continue;
+		}
+		
+		switch (pSubItem->GetType()) 
+		{
+			case OTItem::transfer:
+				if (pSubItem->GetAmount() < 0) // it's an outbox item
+				{
+					nOutboxItemCount++;
+					pLedger = &THE_OUTBOX;
+					pszLedgerType = szOutbox;
+				}
+				else
+				{
+					nInboxItemCount++;
+					pLedger = &THE_INBOX;
+					pszLedgerType = szInbox;
+				}
+			case OTItem::chequeReceipt: 
+			case OTItem::marketReceipt: 
+			case OTItem::paymentReceipt:
+				break;
+			default:
+				continue; // This will never happen, due to the first continue above in the first switch.
+		}
+		
+		OTTransaction * pTransaction = pLedger->GetTransaction(pSubItem->GetTransactionNum());
+		
+		// Make sure that the transaction number of each sub-item is found
+		// on the appropriate ledger (inbox or outbox).
+		if (NULL == pTransaction))
+		{
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Expected %s transaction (%ld) not found on this side.\n",
+						   pszLedgerType, pSubItem->GetTransactionNum());
+			return false;
+		}
+		
+		if (pSubItem->GetReferenceToNum()	!= pTransaction->GetReferenceToNum())
+		{
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) mismatch Reference Num: %ld, expected %ld\n",
+						   pszLedgerType, pSubItem->GetTransactionNum(), pSubItem->GetReferenceToNum(),
+						   pTransaction->GetReferenceToNum());
+			return false;
+		}
+		
+		if (pSubItem->GetAmount()			!= pTransaction->GetReceiptAmount())
+		{
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) amounts don't match: %ld, expected %ld.\n",
+						   pszLedgerType, pSubItem->GetTransactionNum(),
+						   pSubItem->GetAmount(), pTransaction->GetReceiptAmount());
+			return false;
+		}
+		
+		if ((pSubItem->GetType()		== OTItem::transfer) && 
+			(pTransaction->GetType()	!= OTTransaction::pending))
+		{
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) wrong type.\n",
+						   pszLedgerType, pSubItem->GetTransactionNum());
+			return false;
+		}
+		
+		if ((pSubItem->GetType()		== OTItem::chequeReceipt) && 
+			(pTransaction->GetType()	!= OTTransaction::chequeReceipt))
+		{
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) wrong type.\n",
+						   pszLedgerType, pSubItem->GetTransactionNum());
+			return false;
+		}
+		
+		if ((pSubItem->GetType()		== OTItem::marketReceipt) && 
+			(pTransaction->GetType()	!= OTTransaction::marketReceipt))
+		{
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) wrong type.\n",
+						   pszLedgerType, pSubItem->GetTransactionNum());
+			return false;
+		}
+		
+		if ((pSubItem->GetType()		== OTItem::paymentReceipt) && 
+			(pTransaction->GetType()	!= OTTransaction::paymentReceipt))
+		{
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) wrong type.\n",
+						   pszLedgerType, pSubItem->GetTransactionNum());
+			return false;
+		}
+	}
+	
+	// By this point, I have an accurate count of the inbox items, and outbox items, represented
+	// by this. let's compare those counts to the actual inbox and outbox on my side:
+	
+	if ((nInboxItemCount	!= THE_INBOX.GetTransactionCount()) || 
+		(nOutboxItemCount	!= THE_OUTBOX.GetTransactionCount()))
+	{
+		OTLog::Output(0, "OTItem::VerifyBalanceStatement: Inbox or Outbox mismatch in expected transaction count.\n");
+		return false;
+	}
+	
+	// Now I KNOW that the inbox and outbox counts are the same, AND I know that EVERY transaction number
+	// on the balance item (this) was also found in the inbox or outbox, wherever it was expected to be found.
+	// I also know:
+	// the amount was correct, 
+	// the "in reference to" number was correct, 
+	// and the type was correct.
+	//
+	// So if the caller was planning to remove a number, or clear a receipt from the inbox, he'll have to do
+	// so first before calling this function, and then ADDIT AGAIN if this function fails.  (Because the new
+	// Balance Agreement is always the user signing WHAT THE NEW VERSION WILL BE AFTER THE TRANSACTION IS PROCESSED.)
+	
+	
+	// 3) Also need to verify the transactions on the Nym, versus the transactions stored on this
+	//    (in a message Nym attached to this.)  Check for presence of each, then compare count, like above.
+	
+	
+	OTString SERVER_ID(GetPurportedServerID());
+	
+	bool bIWasFound = THE_NYM.VerifyIssuedNum(SERVER_ID, GetTransactionNum());
+	
+	if (!bIWasFound)
+	{
+		OTLog::Output(0, "OTItem::VerifyBalanceStatement: Transaction has # that doesn't appear on Nym's issued list.\n");
+		return false;
+	}
+	
+	// The client side has already removed from issued list, and has sent us a signed copy to that effect,
+	// so we remove it on our side as well, so that they will match. (Which allows us to ACTUALLY remove it :)
+	// If anything else fails during this verify process, we have to ADD IT AGAIN since we stil don't have
+	// a valid signature on that number. (Besides the last one that includes it.)
+	//
+	THE_NYM.RemoveIssuedNum(SERVER_ID, GetTransactionNum());
+	
+	// ----------------------------------------------------
+	
+	long lTransactionNumber	= 0; // Used in the loop below.
+	
+	int nNumberOfTransactionNumbers1 = 0; // The Nym on this side
+	int nNumberOfTransactionNumbers2 = 0; // The Message Nym.
+	
+	OTString	strMessageNym; 
+	std::string	strServerID;
+	
+	// First, loop through the Nym on my side, and count how many numbers total he has...
+	//
+	for (mapOfTransNums::iterator	iii	 =	THE_NYM.GetMapIssuedNum().begin(); 
+		 iii !=	THE_NYM.GetMapIssuedNum().end(); ++iii)
+	{	
+		strServerID					= (*iii).first;
+		dequeOfTransNums * pDeque	= (iii->second);
+		
+		OTString OTstrServerID = strServerID.c_str();
+		
+		OT_ASSERT(NULL != pDeque);
+		
+		if (!(pDeque->empty()))
+		{
+			nNumberOfTransactionNumbers1 += pDeque->size();
+		}
+	} // for
+	
+	// Next, loop through theMessageNym, and count his numbers as well...
+	// But ALSO verify that each one exists on THE_NYM, so that each individual
+	// number is checked.
+	this->GetAttachment(strMessageNym);
+	OTPseudonym theMessageNym;
+	
+	if ((strMessageNym.GetLength() > 2) && theMessageNym.LoadFromString(strMessageNym))
+	{
+		for (mapOfTransNums::iterator	iii	 =	theMessageNym.GetMapIssuedNum().begin(); 
+			 iii !=	theMessageNym.GetMapIssuedNum().end(); ++iii)
+		{	
+			strServerID					= (*iii).first;
+			dequeOfTransNums * pDeque	= (iii->second);
+			
+			OTString OTstrServerID = strServerID.c_str();
+			
+			OT_ASSERT(NULL != pDeque);
+			
+			if (!(pDeque->empty()))
+			{
+				nNumberOfTransactionNumbers2 += pDeque->size();
+				
+				for (unsigned i = 0; i < pDeque->size(); i++)
+				{
+					lTransactionNumber = pDeque->at(i);
+					
+					if (false == THE_NYM.VerifyTransactionNum(OTstrServerID, lTransactionNumber))
+					{
+						OTLog::Output(0, "OTItem::VerifyBalanceStatement: Issued transaction # %ld from Message Nym not found on this side.\n", 
+									  lTransactionNumber);
+						
+						THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
+						
+						return false;
+					}
+				}
+			}
+		} // for
+	}
+	
+	// Finally, verify that the counts match...
+	if (nNumberOfTransactionNumbers1 != nNumberOfTransactionNumbers2)
+	{
+		OTLog::Output(0, "OTItem::VerifyBalanceStatement: Transaction # Count mismatch: %d and %d\n", 
+					  nNumberOfTransactionNumbers1, nNumberOfTransactionNumbers2);
+		
+		THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
+		
+		return false;
+	}
+	
+	// By this point, I know the local Nym has the same number of transactions as the message nym, and that
+	// EVERY ONE OF THEM was found individually.
+	
+	// Might want to consider saving the Nym here.
+	// Also want to save the latest signed receipt, since it VERIFIES.
+	// Or maybe let caller decide?
+	
+	return true;
 }
 
 
@@ -564,24 +974,6 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		
 		return 1;
 	}
-	if (!strcmp("outboxHash", xml->getNodeName()))
-	{	
-		if ((OTItem::balanceStatement	== m_Type) ||
-			(OTItem::atBalanceStatement	== m_Type))
-		{
-			OTString strValue;
-			strValue	= xml->getAttributeValue("value");
-			
-			OTIdentifier theOutboxHash(strValue);
-			SetOutboxHash(theOutboxHash);
-		}
-		else 
-		{
-			OTLog::Error("Outbox hash in item wrong type (expected balanceStatement or atBalanceStatement.\n");
-		}
-		
-		return 1;
-	}
 	else if (!strcmp("transactionReport", xml->getNodeName())) 
 	{		
 		if ((OTItem::balanceStatement	== m_Type) ||
@@ -847,10 +1239,6 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 	if ((OTItem::balanceStatement	== m_Type) ||
 		(OTItem::atBalanceStatement	== m_Type))
 	{
-		OTString strOutboxHash(m_OutboxHash);
-		
-		if (strOutboxHash.GetLength() > 2)
-			m_xmlUnsigned.Concatenate("<outboxHash value=\"%s\"/>\n\n", strOutboxHash.Get());
 	
 		// loop through the sub-items (only used for balance agreement.)
 		

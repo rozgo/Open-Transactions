@@ -590,6 +590,57 @@ void OTMessage::UpdateContents()
 	// ------------------------------------------------------------------------
 	
 	// the Payload contains an ascii-armored OTLedger object.
+	if (m_strCommand.Compare("getNymbox"))
+	{		
+		m_xmlUnsigned.Concatenate("<%s\n" // Command
+								  " nymID=\"%s\"\n"
+								  " serverID=\"%s\"\n"
+								  " requestNum=\"%s\""
+								  " >\n\n",
+								  m_strCommand.Get(),
+								  m_strNymID.Get(),
+								  m_strServerID.Get(),
+								  m_strRequestNum.Get()
+								  );
+		
+		m_xmlUnsigned.Concatenate("</%s>\n\n", m_strCommand.Get());
+	} // ------------------------------------------------------------------------
+	
+	
+	
+	// ------------------------------------------------------------------------
+	
+	// the Payload contains an ascii-armored OTLedger object.
+	if (m_strCommand.Compare("@getNymbox"))
+	{		
+		m_xmlUnsigned.Concatenate("<%s\n" // Command
+								  " success=\"%s\"\n"
+								  " nymID=\"%s\"\n"
+								  " serverID=\"%s\""
+								  " >\n\n",
+								  m_strCommand.Get(),
+								  (m_bSuccess ? "true" : "false"),
+								  m_strNymID.Get(),
+								  m_strServerID.Get()
+								  );
+		
+		if (!m_bSuccess && m_ascInReferenceTo.GetLength())
+			m_xmlUnsigned.Concatenate("<inReferenceTo>\n%s</inReferenceTo>\n\n", m_ascInReferenceTo.Get());
+		
+		// I would check if this was empty, but it should never be empty...
+		// famous last words.
+		if (m_bSuccess && m_ascPayload.GetLength())
+			m_xmlUnsigned.Concatenate("<nymboxLedger>\n%s</nymboxLedger>\n\n", m_ascPayload.Get());
+		
+		m_xmlUnsigned.Concatenate("</%s>\n\n", m_strCommand.Get());
+	} // ------------------------------------------------------------------------
+	
+	
+	
+	
+	// ------------------------------------------------------------------------
+	
+	// the Payload contains an ascii-armored OTLedger object.
 	if (m_strCommand.Compare("getInbox"))
 	{		
 		m_xmlUnsigned.Concatenate("<%s\n" // Command
@@ -2082,6 +2133,23 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 	// -------------------------------------------------------------------------------------------
 	
 	
+	else if (!strcmp("getNymbox", xml->getNodeName())) 
+	{		
+		m_strCommand	= xml->getNodeName();  // Command
+		m_strNymID		= xml->getAttributeValue("nymID");
+		m_strServerID	= xml->getAttributeValue("serverID");
+		m_strRequestNum = xml->getAttributeValue("requestNum");
+		
+		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nServerID: %s\nRequest #: %s\n", 
+					   m_strCommand.Get(), m_strNymID.Get(), m_strServerID.Get(),m_strRequestNum.Get());
+		
+		nReturnVal = 1;
+	}
+	
+	
+	// -------------------------------------------------------------------------------------------
+	
+	
 	else if (!strcmp("@getInbox", xml->getNodeName())) 
 	{		
 		OTString strSuccess;
@@ -2153,7 +2221,75 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 	
 	
 	
+	else if (!strcmp("@getNymbox", xml->getNodeName())) 
+	{		
+		OTString strSuccess;
+		strSuccess		= xml->getAttributeValue("success");
+		if (strSuccess.Compare("true"))
+			m_bSuccess = true;
+		else
+			m_bSuccess = false;
+		
+		m_strCommand	= xml->getNodeName();  // Command
+		m_strNymID		= xml->getAttributeValue("nymID");
+		m_strServerID	= xml->getAttributeValue("serverID");
+		
+		// move to the next node which SHOULD be the inboxLedger element field
+		xml->read();
+		
+		const char * pElementExpected;
+		if (m_bSuccess)
+			pElementExpected = "nymboxLedger";
+		else
+			pElementExpected = "inReferenceTo";
+		
+		if (EXN_ELEMENT == xml->getNodeType())  
+		{
+			if (!strcmp(pElementExpected, xml->getNodeName()))
+			{
+				xml->read();
+				
+				if (EXN_TEXT == xml->getNodeType()) 
+				{
+					if (m_bSuccess)
+						m_ascPayload.Set(xml->getNodeData());
+					else
+						m_ascInReferenceTo.Set(xml->getNodeData());				
+				}
+				else
+				{
+					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
+								  "Expected %s text field in @getNymbox response\n", 
+								  pElementExpected);
+					return (-1); // error condition
+				}				
+			}
+			else 
+			{
+				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
+							  "@getNymbox without %s element.\n", pElementExpected);
+				return (-1); // error condition
+			}
+		}
+		else
+		{
+			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
+						  "Expected %s element with text field in @getNymbox response\n", 
+						  pElementExpected);
+			return (-1); // error condition
+		}
+		
+		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\n"
+					   "ServerID: %s\n\n", 
+					   m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"),
+					   m_strNymID.Get(), m_strServerID.Get());
+		
+		nReturnVal = 1;
+	}
+	
 	// -------------------------------------------------------------------------------------------
+	
+	
 	
 	else if (!strcmp("getOutbox", xml->getNodeName())) 
 	{		
@@ -2645,14 +2781,14 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				else
 				{
 					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-							"Expected processLedger text field in processInbox command\n");
+								 "Expected processLedger text field in processInbox command\n");
 					return (-1); // error condition
 				}				
 			}
 			else 
 			{
 				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-						"processInbox without processLedger element.\n");
+							 "processInbox without processLedger element.\n");
 				return (-1); // error condition
 			}
 			
@@ -2660,15 +2796,71 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		else
 		{
 			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-					"Expected processLedger element with text field in processInbox command\n");
+						 "Expected processLedger element with text field in processInbox command\n");
 			return (-1); // error condition
 		}
 		
 		
 		OTLog::vOutput(1, "\n Command: %s \n NymID:    %s\n AccountID:    %s\n"
-				" ServerID: %s\n Request#: %s\n\n", 
-				m_strCommand.Get(), m_strNymID.Get(), m_strAcctID.Get(),
-				m_strServerID.Get(), m_strRequestNum.Get());
+					   " ServerID: %s\n Request#: %s\n\n", 
+					   m_strCommand.Get(), m_strNymID.Get(), m_strAcctID.Get(),
+					   m_strServerID.Get(), m_strRequestNum.Get());
+		
+		nReturnVal = 1;
+	}
+	
+	
+	// -------------------------------------------------------------------------------------------
+	
+	
+	else if (!strcmp("processNymbox", xml->getNodeName())) 
+	{	
+		m_strCommand	= xml->getNodeName();  // Command
+		m_strNymID		= xml->getAttributeValue("nymID");
+		m_strServerID	= xml->getAttributeValue("serverID");
+		m_strRequestNum	= xml->getAttributeValue("requestNum");
+		
+		
+		// move to the next node which SHOULD be the nymPublicKey element field
+		xml->read();
+		
+		if (EXN_ELEMENT == xml->getNodeType())  
+		{
+			if (!strcmp("processLedger", xml->getNodeName()))
+			{
+				xml->read();
+				
+				if (EXN_TEXT == xml->getNodeType()) 
+				{
+					m_ascPayload.Set(xml->getNodeData());
+				}
+				else
+				{
+					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
+								 "Expected processLedger text field in processNymbox command\n");
+					return (-1); // error condition
+				}				
+			}
+			else 
+			{
+				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
+							 "processNymbox without processLedger element.\n");
+				return (-1); // error condition
+			}
+			
+		}
+		else
+		{
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
+						 "Expected processLedger element with text field in processNymbox command\n");
+			return (-1); // error condition
+		}
+		
+		
+		OTLog::vOutput(1, "\n Command: %s \n NymID:    %s\n"
+					   " ServerID: %s\n Request#: %s\n\n", 
+					   m_strCommand.Get(), m_strNymID.Get(),
+					   m_strServerID.Get(), m_strRequestNum.Get());
 		
 		nReturnVal = 1;
 	}
@@ -2769,6 +2961,100 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 	
 	// -------------------------------------------------------------------------------------------
 	
+	
+	else if (!strcmp("@processNymbox", xml->getNodeName())) 
+	{	
+		OTString strSuccess;
+		strSuccess		= xml->getAttributeValue("success");
+		if (strSuccess.Compare("true"))
+			m_bSuccess = true;
+		else
+			m_bSuccess = false;
+		
+		m_strCommand	= xml->getNodeName();  // Command
+		m_strNymID		= xml->getAttributeValue("nymID");
+		m_strServerID	= xml->getAttributeValue("serverID");
+		
+		// If successful or failure, we need to read 2 more things: 
+		// inReferenceTo and the responseLedger payload.
+		// At this point, we do not send the REASON WHY if it failed.
+		for (int i = 0; i < 2; i++)
+		{
+			// move to the next node 
+			xml->read();
+			
+			if (EXN_ELEMENT == xml->getNodeType())  
+			{
+				if (!strcmp("responseLedger", xml->getNodeName()))
+				{
+					xml->read();
+					
+					if (EXN_TEXT == xml->getNodeType()) 
+					{
+						m_ascPayload.Set(xml->getNodeData());	
+						xml->read(); // This puts us onto the closing tag
+					}
+					else
+					{
+						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
+									 "Expected responseLedger text field in @processNymbox reply\n");
+						return (-1); // error condition
+					}				
+				}
+				else if (!strcmp("inReferenceTo", xml->getNodeName()))
+				{
+					xml->read();
+					
+					if (EXN_TEXT == xml->getNodeType()) 
+					{
+						m_ascInReferenceTo.Set(xml->getNodeData());	
+						xml->read(); // This puts us onto the closing tag
+					}
+					else
+					{
+						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
+									 "Expected inReferenceTo text field in @processNymbox reply\n");
+						return (-1); // error condition
+					}				
+				}
+				else {
+					OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
+					return (-1);
+				}
+				
+			}
+			else
+			{
+				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
+							  "Unexpected text field in @processNymbox reply: %s   %s\n",
+							  xml->getNodeName(), xml->getNodeData());
+				return (-1); // error condition
+			}
+		}
+		
+		// Did we find everything we were looking for?
+		// If the "command responding to" isn't there, or the Payload isn't there, then failure.
+		if (!m_ascInReferenceTo.GetLength() || (!m_ascPayload.GetLength()))
+		{
+			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
+						 "Expected responseLedger and/or inReferenceTo elements with text fields in "
+						 "@processNymbox reply\n");
+			return (-1); // error condition			
+		}
+		
+		OTLog::vOutput(1, "\n Command: %s   %s\n NymID:    %s\n"
+					   " ServerID: %s\n\n",
+					   //	"****New Account****:\n%s\n", 
+					   m_strCommand.Get(), (m_bSuccess?"SUCCESS":"FAILED"), 
+					   m_strNymID.Get(), m_strServerID.Get()
+					   );
+		
+		nReturnVal = 1;
+	}
+	
+	
+	// -------------------------------------------------------------------------------------------
+
 	return nReturnVal;
 }
 
