@@ -116,6 +116,14 @@ const char * OTTransaction::_TypeStrings[] =
 	"message",			// in nymbox, message from one user to another.
 	"pending",			// Pending transfer, in the inbox/outbox.
 	// --------------------------------------------------------------------------------------
+	"transferReceipt",	// the server drops this into your inbox, when someone accepts your transfer.
+	// --------------------------------------------------------------------------------------
+	"chequeReceipt",	// the server drops this into your inbox, when someone cashes your cheque.
+	"marketReceipt",	// server drops this into inbox periodically, if you an offer on market.
+	"paymentReceipt",	// the server drops this into people's inboxes, periodically.
+	// --------------------------------------------------------------------------------------
+	"processNymbox",	// process nymbox transaction	 // comes from client
+	"atProcessNymbox",	// process nymbox reply			 // comes from server
 	"processInbox",		// process inbox transaction	 // comes from client
 	"atProcessInbox",	// process inbox reply			 // comes from server
 	// --------------------------------------------------------------------------------------
@@ -133,12 +141,6 @@ const char * OTTransaction::_TypeStrings[] =
 	// --------------------------------------------------------------------------------------
 	"paymentPlan",		// this transaction is a payment plan
 	"atPaymentPlan",	// reply from the server regarding a payment plan
-	// --------------------------------------------------------------------------------------
-	"transferReceipt",	// the server drops this into your inbox, when someone accepts your transfer.
-	// --------------------------------------------------------------------------------------
-	"chequeReceipt",	// the server drops this into your inbox, when someone cashes your cheque.
-	"marketReceipt",	// server drops this into inbox periodically, if you an offer on market.
-	"paymentReceipt",	// the server drops this into people's inboxes, periodically.
 	// --------------------------------------------------------------------------------------
 	"error_state"	
 };
@@ -369,6 +371,8 @@ bool OTTransaction::GetSuccess()
 			case OTItem::atTransfer:
 				
 			case OTItem::atAcceptTransaction:
+			case OTItem::atAcceptMessage:
+				
 			case OTItem::atAcceptPending:
 			case OTItem::atRejectPending:
 				
@@ -380,7 +384,6 @@ bool OTTransaction::GetSuccess()
 			case OTItem::atServerfee:
 			case OTItem::atIssuerfee:
 			case OTItem::atBalance:
-			case OTItem::atOutboxhash:
 			case OTItem::atWithdrawal:
 			case OTItem::atDeposit:
 			case OTItem::atWithdrawVoucher:
@@ -389,7 +392,7 @@ bool OTTransaction::GetSuccess()
 			case OTItem::atPaymentPlan:
 				
 //			case OTItem::chequeReceipt: // not needed in OTItem.
-//			case OTItem::chequeReceipt: // not needed in OTItem.
+			case OTItem::chequeReceipt: // but it's here anyway for dual use reasons (balance agreement sub-items)
 			case OTItem::marketReceipt:
 			case OTItem::paymentReceipt:
 				
@@ -427,6 +430,12 @@ int OTTransaction::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			m_Type = OTTransaction::blank;
 		else if (strType.Compare("pending"))
 			m_Type = OTTransaction::pending;
+		else if (strType.Compare("message"))
+			m_Type = OTTransaction::message;
+		else if (strType.Compare("processNymbox"))
+			m_Type = OTTransaction::processNymbox;
+		else if (strType.Compare("atProcessNymbox"))
+			m_Type = OTTransaction::atProcessNymbox;
 		else if (strType.Compare("processInbox"))
 			m_Type = OTTransaction::processInbox;
 		else if (strType.Compare("atProcessInbox"))
@@ -562,7 +571,7 @@ void OTTransaction::ProduceInboxReportItem(OTItem & theBalanceItem)
 			break;
 		default: // All other types are irrelevant for inbox reports 
 			return;
-	}
+	}	// why not transfer receipt? presumably because the number was already cleared when you first sent it?
 	
 	// the item will represent THIS TRANSACTION, and will be added to theBalanceItem.
 	

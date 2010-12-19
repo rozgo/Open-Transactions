@@ -163,11 +163,34 @@ public:
 	// a transaction can be blank (issued from server)
 	// or pending (in the inbox/outbox)
 	// or it can be a "process inbox" transaction
-	enum transactionType {
-		blank,			// freshly issued, not used yet / server drops these into the nymbox.
-		message,		// A message from one user to another, in the nymbox
+	// might also be in the nymbox.
+	//
+	enum transactionType 
+	{
+		// ***** INBOX / OUTBOX / NYMBOX
+		
 // --------------------------------------------------------------------------------------
-		pending,		// Pending transfer, in the inbox/outbox.
+		// NYMBOX
+		blank,			// freshly issued transaction number, not used yet 
+						// (the server drops these into the nymbox.)
+		message,		// A message from one user to another, also in the nymbox.
+// --------------------------------------------------------------------------------------
+		
+		// INBOX / pending transfer
+		pending,		// Server puts this in your outbox (when sending) and recipient's inbox.
+
+		// INBOX / receipts
+		transferReceipt,// the server drops this into your inbox, when someone accepts your transfer.
+		
+		chequeReceipt,	// the server drops this into your inbox, when someone cashes your cheque.
+		marketReceipt,	// server periodically drops this into your inbox if an offer is live.
+		paymentReceipt,	// the server drops this into people's inboxes, every time a payment processes.
+// --------------------------------------------------------------------------------------
+
+		// **** MESSAGES ****
+		
+		processNymbox,	// process nymbox transaction	 // comes from client
+		atProcessNymbox,// process nymbox reply			 // comes from server
 // --------------------------------------------------------------------------------------
 		processInbox,	// process inbox transaction	 // comes from client
 		atProcessInbox,	// process inbox reply			 // comes from server
@@ -186,11 +209,6 @@ public:
 // --------------------------------------------------------------------------------------
 		paymentPlan,	// this transaction is a payment plan
 		atPaymentPlan,	// reply from the server regarding a payment plan
-// --------------------------------------------------------------------------------------
-		transferReceipt,// the server drops this into your inbox, when someone accepts your transfer.
-		chequeReceipt,	// the server drops this into your inbox, when someone cashes your cheque.
-		marketReceipt,	// server periodically drops this into your inbox if an offer is live.
-		paymentReceipt,	// the server drops this into people's inboxes, every time a payment processes.
 // --------------------------------------------------------------------------------------
 		error_state
 	}; // If you add any types to this list, update the list of strings at the top of the .CPP file.

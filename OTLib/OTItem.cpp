@@ -805,6 +805,17 @@ OTItem::itemType GetItemTypeFromString(const OTString & strType)
 		theType = OTItem::transfer;
 	else if (strType.Compare("atTransfer"))
 		theType = OTItem::atTransfer;
+	// --------------------------------------------------------------
+	else if (strType.Compare("acceptTransaction"))
+		theType = OTItem::acceptTransaction;
+	else if (strType.Compare("atAcceptTransaction"))
+		theType = OTItem::atAcceptTransaction;
+	// --------------------------------------------------------------
+	else if (strType.Compare("acceptMessage"))
+		theType = OTItem::acceptMessage;
+	else if (strType.Compare("atAcceptMessage"))
+		theType = OTItem::atAcceptMessage;
+	// --------------------------------------------------------------
 	else if (strType.Compare("acceptPending"))
 		theType = OTItem::acceptPending;
 	else if (strType.Compare("atAcceptPending"))
@@ -1034,12 +1045,19 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 
 void GetStringFromType(OTItem::itemType theType, OTString & strType)
 {
-	switch (theType) {
+	switch (theType) 
+	{
 		case OTItem::transaction:
 			strType.Set("transaction");
 			break;
 		case OTItem::transfer:
 			strType.Set("transfer");
+			break;
+		case OTItem::acceptTransaction:
+			strType.Set("acceptTransaction");
+			break;
+		case OTItem::acceptMessage:
+			strType.Set("acceptMessage");
 			break;
 		case OTItem::acceptPending:
 			strType.Set("acceptPending");
@@ -1064,12 +1082,6 @@ void GetStringFromType(OTItem::itemType theType, OTString & strType)
 			break;
 		case OTItem::issuerfee:
 			strType.Set("issuerfee");
-			break;
-		case OTItem::balance:
-			strType.Set("balance");
-			break;
-		case OTItem::outboxhash:
-			strType.Set("outboxhash");
 			break;
 		case OTItem::withdrawal:
 			strType.Set("withdrawal");
@@ -1116,6 +1128,12 @@ void GetStringFromType(OTItem::itemType theType, OTString & strType)
 		case OTItem::atTransfer:
 			strType.Set("atTransfer");
 			break;
+		case OTItem::atAcceptTransaction:
+			strType.Set("atAcceptTransaction");
+			break;
+		case OTItem::atAcceptMessage:
+			strType.Set("atAcceptMessage");
+			break;
 		case OTItem::atAcceptPending:
 			strType.Set("atAcceptPending");
 			break;
@@ -1139,12 +1157,6 @@ void GetStringFromType(OTItem::itemType theType, OTString & strType)
 			break;
 		case OTItem::atIssuerfee:
 			strType.Set("atIssuerfee");
-			break;
-		case OTItem::atBalance:
-			strType.Set("atBalance");
-			break;
-		case OTItem::atOutboxhash:
-			strType.Set("atOutboxhash");
 			break;
 		case OTItem::atWithdrawal:
 			strType.Set("atWithdrawal");
