@@ -130,6 +130,7 @@ using namespace io;
 
 #include "OTIdentifier.h"
 #include "OTAccount.h"
+#include "OTLedger.h"
 #include "OTPayload.h"
 #include "OTMessage.h"
 #include "OTStringXML.h"
@@ -582,7 +583,7 @@ bool OTAccount::GenerateNewAccount(const OTPseudonym & theServer, const OTMessag
 }
 
 
-long OTAccount::GetBalance()
+long OTAccount::GetBalance() const 
 {
 	if (m_BalanceAmount.Exists())
 		return atol(m_BalanceAmount.Get());

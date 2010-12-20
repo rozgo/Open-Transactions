@@ -127,6 +127,8 @@ using namespace io;
 #include "OTASCIIArmor.h"
 #include "OTPseudonym.h"
 #include "OTSignedFile.h"
+#include "OTItem.h"
+#include "OTTransaction.h"
 
 #include "OTLog.h"
 
@@ -632,6 +634,9 @@ int OTPseudonym::GetGenericNumCount(mapOfTransNums & THE_MAP, const OTIdentifier
 long OTPseudonym::GetIssuedNum(const OTIdentifier & theServerID, int nIndex)
 {
 	long lRetVal = 0;
+	
+	const OTString strServerID(theServerID);
+	
 	std::string strID	= strServerID.Get();
 	
 	// The Pseudonym has a deque of transaction numbers for each servers.
@@ -673,6 +678,8 @@ long OTPseudonym::GetIssuedNum(const OTIdentifier & theServerID, int nIndex)
 long OTPseudonym::GetTransactionNum(const OTIdentifier & theServerID, int nIndex)
 {
 	long lRetVal = 0;
+	
+	OTString strServerID(theServerID);
 	std::string strID	= strServerID.Get();
 	
 	// The Pseudonym has a deque of transaction numbers for each servers.
@@ -717,14 +724,14 @@ long OTPseudonym::GetTransactionNum(const OTIdentifier & theServerID, int nIndex
 
 // On the server side: A user has submitted a specific transaction number. 
 // Verify whether he actually has a right to use it.
-bool OTPseudonym::VerifyTransactionNum(const OTString & strServerID, const long & lTransNum)
+bool OTPseudonym::VerifyTransactionNum(const OTString & strServerID, const long & lTransNum) // doesn't save
 {
 	return VerifyGenericNum(m_mapTransNum, strServerID, lTransNum);
 }
 
 // On the server side: A user has submitted a specific transaction number. 
 // Remove it from his file so he can't use it again.
-bool OTPseudonym::RemoveTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum)
+bool OTPseudonym::RemoveTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum)  // saves
 {
 	return RemoveGenericNum(m_mapTransNum, SIGNER_NYM, strServerID, lTransNum);
 }
@@ -732,7 +739,7 @@ bool OTPseudonym::RemoveTransactionNum(OTPseudonym & SIGNER_NYM, const OTString 
 
 // Returns count of transaction numbers available for a given server.
 //
-int OTPseudonym::GetTransactionNumCount(const OTIdentifier & theServerID) 
+int OTPseudonym::GetTransactionNumCount(const OTIdentifier & theServerID)  
 {
 	return GetGenericNumCount(m_mapTransNum, theServerID);
 }
@@ -740,7 +747,7 @@ int OTPseudonym::GetTransactionNumCount(const OTIdentifier & theServerID)
 
 // No signer needed for this one, and save is false.
 // This version is ONLY for cases where we're not saving inside this function.
-bool OTPseudonym::AddTransactionNum(const OTString & strServerID, long lTransNum) 
+bool OTPseudonym::AddTransactionNum(const OTString & strServerID, long lTransNum)  // doesn't save
 {
 	return AddGenericNum(m_mapTransNum, strServerID, lTransNum);
 }
@@ -758,9 +765,14 @@ bool OTPseudonym::VerifyIssuedNum(const OTString & strServerID, const long & lTr
 
 // On the server side: A user has accepted a specific receipt. 
 // Remove it from his file so he's not liable for it anymore.
-bool OTPseudonym::RemoveIssuedNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum)
+bool OTPseudonym::RemoveIssuedNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum) // saves
 {
 	return RemoveGenericNum(m_mapIssuedNum, SIGNER_NYM, strServerID, lTransNum);
+}
+
+bool OTPseudonym::RemoveIssuedNum(const OTString & strServerID, const long & lTransNum) // doesn't save
+{
+	return RemoveGenericNum(m_mapIssuedNum, strServerID, lTransNum);
 }
 
 
@@ -774,7 +786,7 @@ int OTPseudonym::GetIssuedNumCount(const OTIdentifier & theServerID)
 
 // No signer needed for this one, and save is false.
 // This version is ONLY for cases where we're not saving inside this function.
-bool OTPseudonym::AddIssuedNum(const OTString & strServerID, long lTransNum) 
+bool OTPseudonym::AddIssuedNum(const OTString & strServerID, const long & lTransNum)  // doesn't save.
 {
 	return AddGenericNum(m_mapIssuedNum, strServerID, lTransNum);
 }
@@ -784,13 +796,16 @@ bool OTPseudonym::AddIssuedNum(const OTString & strServerID, long lTransNum)
 // ----------------------------------------------------------------------
 
 
-
+bool OTPseudonym::RemoveTransactionNum(const OTString & strServerID, const long & lTransNum) // doesn't save.
+{
+	return RemoveGenericNum(m_mapTransNum, strServerID, lTransNum);
+}
 
 
 // Client side: We have received a new trans num from server. Store it.
 // Now the server uses this too, for storing these numbers so it can verify them later.
 //
-bool OTPseudonym::AddTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long lTransNum, bool bSave) 
+bool OTPseudonym::AddTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long lTransNum, bool bSave) // SAVE OR NOT (your choice) High-Level.
 {
 	bool bSuccess1 = AddTransactionNum(strServerID, lTransNum);	// Add to list of available-to-use, outstanding numbers.
 	bool bSuccess2 = AddIssuedNum(strServerID, lTransNum);		// Add to list of numbers that haven't been closed yet.
@@ -823,7 +838,7 @@ bool OTPseudonym::AddTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & s
 // The server uses this too, also for keeping track of issued numbers, and removes them around same time as client.
 // (When receipt is accepted.) Also, There is no "RemoveTransactionNum" at this level since GetNextTransactionNum handles that.
 //
-bool OTPseudonym::RemoveIssuedNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long lTransNum, bool bSave) 
+bool OTPseudonym::RemoveIssuedNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum, bool bSave) // SAVE OR NOT (your choice) High-Level.
 {
 	bool bSuccess = RemoveIssuedNum(strServerID, lTransNum);		// Remove from list of numbers that haven't been closed yet.
 	
@@ -1357,6 +1372,24 @@ void OTPseudonym::DisplayStatistics(OTString & strOutput)
 					   lRequestNumber, strServerID.c_str());
 	}
 	
+	for (mapOfTransNums::iterator iii = m_mapIssuedNum.begin(); iii != m_mapIssuedNum.end(); ++iii)
+	{	
+		std::string strServerID		= (*iii).first;
+		dequeOfTransNums * pDeque	= (iii->second);
+		
+		OT_ASSERT(NULL != pDeque);
+		
+		if (!(pDeque->empty()))
+		{
+			for (unsigned i = 0; i < pDeque->size(); i++)
+			{
+				long lTransactionNumber = pDeque->at(i);
+				
+				strOutput.Concatenate("Signed for Transaction# %ld for server ID: %s\n", 
+									  lTransactionNumber, strServerID.c_str());
+			}
+		}
+	} // for
 	for (mapOfTransNums::iterator iii = m_mapTransNum.begin(); iii != m_mapTransNum.end(); ++iii)
 	{	
 		std::string strServerID		= (*iii).first;
@@ -1370,8 +1403,8 @@ void OTPseudonym::DisplayStatistics(OTString & strOutput)
 			{
 				long lTransactionNumber = pDeque->at(i);
 				
-				strOutput.Concatenate("Transaction Number available (%ld) for server ID: %s\n", 
-							   lTransactionNumber, strServerID.c_str());
+				strOutput.Concatenate("Transaction# %ld still available for server ID: %s\n", 
+									  lTransactionNumber, strServerID.c_str());
 			}
 		}
 	} // for

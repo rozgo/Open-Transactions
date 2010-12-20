@@ -107,6 +107,9 @@
 
  */
 
+class OTItem;
+class OTTransaction;
+
 typedef std::map<std::string, long>	mapOfRequestNums;
 
 typedef std::deque<long>							dequeOfTransNums;
@@ -235,38 +238,52 @@ public:
 	inline mapOfTransNums & GetMapTransNum() { return m_mapTransNum; }
 	inline mapOfTransNums & GetMapIssuedNum() { return m_mapIssuedNum; }
 
+	
+	// HIGH LEVEL:
+	bool	AddTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long lTransNum, bool bSave); // We have received a new trans num from server. Store it.
+	bool	GetNextTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long &lTransNum); // Get the next available transaction number for the serverID passed. Saves.
+	bool	RemoveIssuedNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum, bool bSave); // SAVE OR NOT (your choice)
+
+	bool	VerifyIssuedNum(const OTString & strServerID, const long & lTransNum); // verify user is still responsible for (signed for) a certain trans# that was previous issued to him. (i.e. it's been used, but not yet accepted receipt through inbox.)
+	bool	VerifyTransactionNum(const OTString & strServerID, const long & lTransNum); // server verifies that nym has this TransNum available for use.
+
+	// -------------------------------------
 	// These functions are for transaction numbers that were assigned to me, 
 	// until I accept the receipts or put stop payment onto them.
 	int		GetIssuedNumCount(const OTIdentifier & theServerID); // count
 	long	GetIssuedNum(const OTIdentifier & theServerID, int nIndex); // index
-	bool	AddIssuedNum(const OTString & strServerID, lTransNum);
-	bool	VerifyIssuedNum(const OTString & strServerID, const long & lTransNum);
-	bool	RemoveIssuedNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum);
-	bool	RemoveIssuedNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long lTransNum, bool bSave);
+	
+	bool	AddIssuedNum(const OTString & strServerID, const long & lTransNum); // doesn't save
+	
+	bool	RemoveIssuedNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum); // saves
+	bool	RemoveIssuedNum(const OTString & strServerID, const long & lTransNum); // doesn't save
 
+	// -------------------------------------
+	// These functions are for transaction numbers that I still have available to use.
+	//
+	int GetTransactionNumCount(const OTIdentifier & theServerID); // count
+	long GetTransactionNum(const OTIdentifier & theServerID, int nIndex); // index
+	
+	bool AddTransactionNum(const OTString & strServerID, long lTransNum); // doesn't save
+		
+	bool RemoveTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum); // server removes spent number from nym file. Saves.
+	bool RemoveTransactionNum(const OTString & strServerID, const long & lTransNum); // doesn't save.
+	
+	// ---------------------------------------------
 	
 	// The "issued" numbers and the "transaction" numbers both use these functions
 	// to do the actual work (just avoiding code duplication.)
 	bool VerifyGenericNum(mapOfTransNums & THE_MAP, const OTString & strServerID, const long & lTransNum);
-	bool RemoveGenericNum(mapOfTransNums & THE_MAP, OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum);
-	bool RemoveGenericNum(mapOfTransNums & THE_MAP, const OTString & strServerID, const long & lTransNum);
-	bool AddGenericNum(mapOfTransNums & THE_MAP, const OTString & strServerID, long lTransNum);
+	
+	bool RemoveGenericNum(mapOfTransNums & THE_MAP, OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum); // saves
+	bool RemoveGenericNum(mapOfTransNums & THE_MAP, const OTString & strServerID, const long & lTransNum); // doesn't save
+	
+	bool AddGenericNum(mapOfTransNums & THE_MAP, const OTString & strServerID, long lTransNum); // doesn't save
+	
 	int  GetGenericNumCount(mapOfTransNums & THE_MAP, const OTIdentifier & theServerID); 
 	
+	// -------------------------------------
 	
-	// These functions are for transaction numbers that I still available to use.
-	//
-	int GetTransactionNumCount(const OTIdentifier & theServerID);
-	long GetTransactionNum(const OTIdentifier & theServerID, int nIndex);
-	bool AddTransactionNum(const OTString & strServerID, long lTransNum);
-	bool AddTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long lTransNum, bool bSave); // We have received a new trans num from server. Store it.
-	bool GetNextTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long &lTransNum); // Get the next available transaction number for the serverID passed.
-
-	bool VerifyTransactionNum(const OTString & strServerID, const long & lTransNum); // server verifies that nym was issued this TransNum
-	bool RemoveTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum); // server removes spent number from nym file.
-
-	
-	// ---------------------------------------------
 	
 	const OTAsymmetricKey & GetPublicKey() const;
 	const OTAsymmetricKey & GetPrivateKey() const;

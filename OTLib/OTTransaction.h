@@ -150,9 +150,6 @@ Ledger is derived from contract because you must be able to save / sign it and l
 
 class OTLedger;
 
-typedef std::list  <OTItem *>	listOfItems;
-
-
 
 class OTTransaction : public OTTransactionType
 {	
@@ -255,7 +252,7 @@ public:
 	inline transactionType GetType() const { return m_Type; }
 	inline void SetType(const transactionType theType) { m_Type = theType; }
 	
-	bool VerifyItems(const OTPseudonym & theNym);
+	bool VerifyItems(OTPseudonym & theNym);
 	
 	// used for looping through the items in a few places.
 	inline listOfItems & GetItemList() { return m_listItems; }

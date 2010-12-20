@@ -91,8 +91,14 @@
 #include "OTString.h"
 
 class OTAccount;
+class OTLedger;
 class OTMessage;
 class OTTransaction;
+class OTItem;
+class OTPseudonym;
+
+
+typedef std::list  <OTItem *>	listOfItems;
 
 
 // Item as in "Transaction Item"
@@ -259,12 +265,12 @@ public:
 	// Call this on the server side, on a balanceStatement item, to verify
 	// whether the wallet side set it up correctly (and thus it's okay to sign and return with acknowledgement.)
 	bool VerifyBalanceStatement(const long lActualAdjustment, 
-								const OTPseudonym & THE_NYM,
-								const OTLedger & THE_INBOX,
-								const OTLedger & THE_OUTBOX,
+								 OTPseudonym & THE_NYM,
+								 OTLedger & THE_INBOX,
+								 OTLedger & THE_OUTBOX,
 								const OTAccount & THE_ACCOUNT);
 	
-	bool VerifyTransactionStatement(const OTPseudonym & THE_NYM);
+	bool VerifyTransactionStatement(OTPseudonym & THE_NYM);
 	
 	inline OTItem::itemStatus GetStatus() const { return m_Status; }
 	inline void SetStatus(const OTItem::itemStatus & theVal) { m_Status = theVal; }
@@ -301,6 +307,8 @@ public:
 //	virtual bool SaveContractWallet(FILE * fl);
 	virtual bool SaveContractWallet(std::ofstream & ofs);
 };
+
+
 
 
 #endif // __OTITEM_H__

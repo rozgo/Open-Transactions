@@ -144,6 +144,8 @@ int OT_API_LoadWallet(const char * szPath); // actually returns BOOL
 //
 const char * OT_API_CreateNym(void);
 
+
+
 // --------------------------------------------------
 // ADD SERVER CONTRACT
 // If you have a server contract that you'd like to add 
@@ -1211,6 +1213,17 @@ void OT_API_getOutbox(const char * SERVER_ID,
 					  const char * ACCT_ID);
 
 
+
+// from server (pop message buf for the response)
+void OT_API_getNymbox(const char * SERVER_ID,
+					 const char * USER_ID);
+
+// from local storage.
+const char * OT_API_LoadNymbox(const char * SERVER_ID,
+							   const char * USER_ID); // Returns NULL, or a Nymbox.
+
+
+
 // --------------------------------------------------------------------------
 /*
  PROCESS INBOX
@@ -1234,6 +1247,12 @@ void OT_API_processInbox(const char * SERVER_ID,
 						 const char * USER_ID,
 						 const char * ACCT_ID,
 						 const char * ACCT_LEDGER);
+
+// I use this automatically to save the API developers the hassle (for now)
+// added here for completeness.
+void OT_API_processNymbox(const char * SERVER_ID,
+						  const char * USER_ID,
+						  const char * ACCT_LEDGER);
 
 
 // --------------------------------------------------------------------------

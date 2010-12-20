@@ -1401,6 +1401,30 @@ SWIGEXPORT void SWIGSTDCALL CSharp_OT_API_getOutbox(char * jarg1, char * jarg2, 
 }
 
 
+SWIGEXPORT void SWIGSTDCALL CSharp_OT_API_getNymbox(char * jarg1, char * jarg2) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (char *)jarg2; 
+  OT_API_getNymbox((char const *)arg1,(char const *)arg2);
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_LoadNymbox(char * jarg1, char * jarg2) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (char *)jarg2; 
+  result = (char *)OT_API_LoadNymbox((char const *)arg1,(char const *)arg2);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_OT_API_processInbox(char * jarg1, char * jarg2, char * jarg3, char * jarg4) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -1412,6 +1436,18 @@ SWIGEXPORT void SWIGSTDCALL CSharp_OT_API_processInbox(char * jarg1, char * jarg
   arg3 = (char *)jarg3; 
   arg4 = (char *)jarg4; 
   OT_API_processInbox((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_OT_API_processNymbox(char * jarg1, char * jarg2, char * jarg3) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (char *)jarg2; 
+  arg3 = (char *)jarg3; 
+  OT_API_processNymbox((char const *)arg1,(char const *)arg2,(char const *)arg3);
 }
 
 

@@ -1053,10 +1053,10 @@ void OTMarket::ProcessTrade(OTTrade & theTrade, OTOffer & theOffer, OTOffer & th
 			OT_ASSERT(NULL != pItem1);	OT_ASSERT(NULL != pItem2);
 			OT_ASSERT(NULL != pItem3);	OT_ASSERT(NULL != pItem4);
 			
-			pItem1->m_Status	= OTItem::rejection; // the default.
-			pItem2->m_Status	= OTItem::rejection; // the default.
-			pItem3->m_Status	= OTItem::rejection; // the default.
-			pItem4->m_Status	= OTItem::rejection; // the default.
+			pItem1->SetStatus(OTItem::rejection); // the default.
+			pItem2->SetStatus(OTItem::rejection); // the default.
+			pItem3->SetStatus(OTItem::rejection); // the default.
+			pItem4->SetStatus(OTItem::rejection); // the default.
 
 			
 			// Calculate the amount and remove / add it to the relevant accounts.
@@ -1248,10 +1248,10 @@ void OTMarket::ProcessTrade(OTTrade & theTrade, OTOffer & theOffer, OTOffer & th
 			if (true == bSuccess)
 			{
 				// ALL of the four accounts involved need to get a receipt of this trade in their inboxes...
-				pItem1->m_Status	= OTItem::acknowledgement; // pFirstAssetAcct		
-				pItem2->m_Status	= OTItem::acknowledgement; // pFirstCurrencyAcct
-				pItem3->m_Status	= OTItem::acknowledgement; // pOtherAssetAcct
-				pItem4->m_Status	= OTItem::acknowledgement; // pOtherCurrencyAcct				
+				pItem1->SetStatus(OTItem::acknowledgement); // pFirstAssetAcct		
+				pItem2->SetStatus(OTItem::acknowledgement); // pFirstCurrencyAcct
+				pItem3->SetStatus(OTItem::acknowledgement); // pOtherAssetAcct
+				pItem4->SetStatus(OTItem::acknowledgement); // pOtherCurrencyAcct				
 
 				
 				// Everytime a trade processes, a receipt is put in the user's inbox.
@@ -1540,7 +1540,7 @@ void OTMarket::ProcessTrade(OTTrade & theTrade, OTOffer & theOffer, OTOffer & th
 						delete pTrans1;	pTrans1	= NULL;
 					}
 					
-					pTempItem->m_Status = OTItem::rejection;
+					pTempItem->SetStatus(OTItem::rejection);
 					pTempItem->SignContract(*pServerNym);					
 					pTempItem->SaveContract();
 					
@@ -1588,7 +1588,7 @@ void OTMarket::ProcessTrade(OTTrade & theTrade, OTOffer & theOffer, OTOffer & th
 						delete pTrans2;	pTrans2	= NULL;
 					}
 					
-					pTempItem->m_Status	= OTItem::rejection;
+					pTempItem->SetStatus(OTItem::rejection);
 					pTempItem->SignContract(*pServerNym);					
 					pTempItem->SaveContract();
 

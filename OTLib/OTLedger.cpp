@@ -133,8 +133,8 @@ bool OTLedger::LoadGeneric(OTLedger::ledgerType theType)
 	
 	m_Type = theType;
 	
-	char * pszFolder = NULL;
-	char * pszType = GetTypeString();
+	const char * pszFolder = NULL;
+	const char * pszType = GetTypeString();
 	
 	switch (theType) 
 	{
@@ -209,8 +209,8 @@ bool OTLedger::SaveGeneric(OTLedger::ledgerType theType)
 	OTString strID;
 	GetIdentifier(strID);
 	
-	char * pszFolder = NULL;
-	char * pszType = GetTypeString();
+	const char * pszFolder = NULL;
+	const char * pszType = GetTypeString();
 	
 	switch (theType) 
 	{
@@ -599,7 +599,7 @@ OTTransaction * OTLedger::GetPendingTransaction(long lTransactionNum)
 // returns a new balance statement item containing the inbox report
 // CALLER IS RESPONSIBLE TO DELETE.
 OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTransaction & theOwner, 
-											const OTPseudonym & theNym, const OTAccount & theAccount, OTLedger & theOutbox) 
+											OTPseudonym & theNym, const OTAccount & theAccount, OTLedger & theOutbox) 
 {
 	if (OTLedger::inbox != GetType())
 	{

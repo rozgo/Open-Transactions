@@ -94,6 +94,9 @@
 class OTPseudonym;
 class OTAccount;
 class OTMessage;
+class OTLedger;
+
+
 
 class OTAccount : public OTTransactionType 
 {
@@ -145,7 +148,7 @@ public:
 	// gives you the asset type ID of this account. (the asset contract hash.)
 	const OTIdentifier & GetAssetTypeID();
 	
-	long GetBalance();
+	long GetBalance() const;
 	
 	bool Debit(const long & lAmount); // Debit a certain amount from the account (presumably the same amount is being added somewhere)
 	bool Credit(const long & lAmount); // Credit a certain amount from the account (presumably the same amount is being subtracted somewhere)

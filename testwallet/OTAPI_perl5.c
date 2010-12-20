@@ -5446,6 +5446,85 @@ XS(_wrap_OT_API_getOutbox) {
 }
 
 
+XS(_wrap_OT_API_getNymbox) {
+  {
+    char *arg1 = (char *) 0 ;
+    char *arg2 = (char *) 0 ;
+    int res1 ;
+    char *buf1 = 0 ;
+    int alloc1 = 0 ;
+    int res2 ;
+    char *buf2 = 0 ;
+    int alloc2 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: OT_API_getNymbox(SERVER_ID,USER_ID);");
+    }
+    res1 = SWIG_AsCharPtrAndSize(ST(0), &buf1, NULL, &alloc1);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_getNymbox" "', argument " "1"" of type '" "char const *""'");
+    }
+    arg1 = (char *)(buf1);
+    res2 = SWIG_AsCharPtrAndSize(ST(1), &buf2, NULL, &alloc2);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_getNymbox" "', argument " "2"" of type '" "char const *""'");
+    }
+    arg2 = (char *)(buf2);
+    OT_API_getNymbox((char const *)arg1,(char const *)arg2);
+    
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+    XSRETURN(argvi);
+  fail:
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OT_API_LoadNymbox) {
+  {
+    char *arg1 = (char *) 0 ;
+    char *arg2 = (char *) 0 ;
+    char *result = 0 ;
+    int res1 ;
+    char *buf1 = 0 ;
+    int alloc1 = 0 ;
+    int res2 ;
+    char *buf2 = 0 ;
+    int alloc2 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: OT_API_LoadNymbox(SERVER_ID,USER_ID);");
+    }
+    res1 = SWIG_AsCharPtrAndSize(ST(0), &buf1, NULL, &alloc1);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_LoadNymbox" "', argument " "1"" of type '" "char const *""'");
+    }
+    arg1 = (char *)(buf1);
+    res2 = SWIG_AsCharPtrAndSize(ST(1), &buf2, NULL, &alloc2);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_LoadNymbox" "', argument " "2"" of type '" "char const *""'");
+    }
+    arg2 = (char *)(buf2);
+    result = (char *)OT_API_LoadNymbox((char const *)arg1,(char const *)arg2);
+    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+    XSRETURN(argvi);
+  fail:
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+    SWIG_croak_null();
+  }
+}
+
+
 XS(_wrap_OT_API_processInbox) {
   {
     char *arg1 = (char *) 0 ;
@@ -5502,6 +5581,56 @@ XS(_wrap_OT_API_processInbox) {
     if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
     if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OT_API_processNymbox) {
+  {
+    char *arg1 = (char *) 0 ;
+    char *arg2 = (char *) 0 ;
+    char *arg3 = (char *) 0 ;
+    int res1 ;
+    char *buf1 = 0 ;
+    int alloc1 = 0 ;
+    int res2 ;
+    char *buf2 = 0 ;
+    int alloc2 = 0 ;
+    int res3 ;
+    char *buf3 = 0 ;
+    int alloc3 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 3) || (items > 3)) {
+      SWIG_croak("Usage: OT_API_processNymbox(SERVER_ID,USER_ID,ACCT_LEDGER);");
+    }
+    res1 = SWIG_AsCharPtrAndSize(ST(0), &buf1, NULL, &alloc1);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_processNymbox" "', argument " "1"" of type '" "char const *""'");
+    }
+    arg1 = (char *)(buf1);
+    res2 = SWIG_AsCharPtrAndSize(ST(1), &buf2, NULL, &alloc2);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_processNymbox" "', argument " "2"" of type '" "char const *""'");
+    }
+    arg2 = (char *)(buf2);
+    res3 = SWIG_AsCharPtrAndSize(ST(2), &buf3, NULL, &alloc3);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_processNymbox" "', argument " "3"" of type '" "char const *""'");
+    }
+    arg3 = (char *)(buf3);
+    OT_API_processNymbox((char const *)arg1,(char const *)arg2,(char const *)arg3);
+    
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+    XSRETURN(argvi);
+  fail:
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     SWIG_croak_null();
   }
 }
@@ -6216,7 +6345,10 @@ static swig_command_info swig_commands[] = {
 {"otapic::OT_API_notarizeTransfer", _wrap_OT_API_notarizeTransfer},
 {"otapic::OT_API_getInbox", _wrap_OT_API_getInbox},
 {"otapic::OT_API_getOutbox", _wrap_OT_API_getOutbox},
+{"otapic::OT_API_getNymbox", _wrap_OT_API_getNymbox},
+{"otapic::OT_API_LoadNymbox", _wrap_OT_API_LoadNymbox},
 {"otapic::OT_API_processInbox", _wrap_OT_API_processInbox},
+{"otapic::OT_API_processNymbox", _wrap_OT_API_processNymbox},
 {"otapic::OT_API_withdrawVoucher", _wrap_OT_API_withdrawVoucher},
 {"otapic::OT_API_depositCheque", _wrap_OT_API_depositCheque},
 {"otapic::OT_API_depositPaymentPlan", _wrap_OT_API_depositPaymentPlan},

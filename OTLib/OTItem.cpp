@@ -99,11 +99,13 @@ using namespace io;
 #include "OTIdentifier.h"
 #include "OTAccount.h"
 #include "OTPayload.h"
+#include "OTPseudonym.h"
 #include "OTMessage.h"
 #include "OTStringXML.h"
 
 #include "OTTransactionType.h"
 #include "OTTransaction.h"
+#include "OTLedger.h"
 #include "OTItem.h"
 #include "OTLog.h"
 
@@ -120,7 +122,7 @@ using namespace io;
 // -- That the transactions on the Nym, minus the current transaction number being processed,
 //    are all still there.
 //
-bool OTItem::VerifyTransactionStatement(const OTPseudonym & THE_NYM)
+bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM)
 {
 	if (GetType() != OTItem::transactionStatement)
 	{
@@ -211,7 +213,7 @@ bool OTItem::VerifyTransactionStatement(const OTPseudonym & THE_NYM)
 					
 					if (false == THE_NYM.VerifyTransactionNum(OTstrServerID, lTransactionNumber))
 					{
-						OTLog::Output(0, "OTItem::VerifyTransactionStatement: Issued transaction # %ld from Message Nym not found on this side.\n", 
+						OTLog::vOutput(0, "OTItem::VerifyTransactionStatement: Issued transaction # %ld from Message Nym not found on this side.\n", 
 									  lTransactionNumber);
 						
 						THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
@@ -226,7 +228,7 @@ bool OTItem::VerifyTransactionStatement(const OTPseudonym & THE_NYM)
 	// Finally, verify that the counts match...
 	if (nNumberOfTransactionNumbers1 != nNumberOfTransactionNumbers2)
 	{
-		OTLog::Output(0, "OTItem::VerifyTransactionStatement: Transaction # Count mismatch: %d and %d\n", 
+		OTLog::vOutput(0, "OTItem::VerifyTransactionStatement: Transaction # Count mismatch: %d and %d\n", 
 					  nNumberOfTransactionNumbers1, nNumberOfTransactionNumbers2);
 		
 		THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
@@ -264,9 +266,9 @@ bool OTItem::VerifyTransactionStatement(const OTPseudonym & THE_NYM)
 //    are all still there.
 //
 bool OTItem::VerifyBalanceStatement(const long lActualAdjustment, 
-									const OTPseudonym & THE_NYM,
-									const OTLedger & THE_INBOX,
-									const OTLedger & THE_OUTBOX,
+									 OTPseudonym & THE_NYM,
+									 OTLedger & THE_INBOX,
+									 OTLedger & THE_OUTBOX,
 									const OTAccount & THE_ACCOUNT)
 {
 	if (GetType() != OTItem::balanceStatement)
@@ -290,15 +292,15 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 	int nInboxItemCount = 0, nOutboxItemCount = 0;
 	
 	const char * szInbox = "Inbox";
-	const char * szOutput = "Outbox";
+	const char * szOutbox = "Outbox";
 	
+	const char * pszLedgerType = NULL;
+
 	for (int i=0; i < GetItemCount(); i++)
 	{
 		OTItem * pSubItem = GetItem(i);
 		
 		OT_ASSERT(NULL != pSubItem);
-		
-		char * pszLedgerType = NULL;
 		
 		OTLedger * pLedger = NULL;
 		
@@ -343,7 +345,7 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 		
 		// Make sure that the transaction number of each sub-item is found
 		// on the appropriate ledger (inbox or outbox).
-		if (NULL == pTransaction))
+		if (NULL == pTransaction)
 		{
 			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Expected %s transaction (%ld) not found on this side.\n",
 						   pszLedgerType, pSubItem->GetTransactionNum());
@@ -498,7 +500,7 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 					
 					if (false == THE_NYM.VerifyTransactionNum(OTstrServerID, lTransactionNumber))
 					{
-						OTLog::Output(0, "OTItem::VerifyBalanceStatement: Issued transaction # %ld from Message Nym not found on this side.\n", 
+						OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Issued transaction # %ld from Message Nym not found on this side.\n", 
 									  lTransactionNumber);
 						
 						THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
@@ -513,7 +515,7 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 	// Finally, verify that the counts match...
 	if (nNumberOfTransactionNumbers1 != nNumberOfTransactionNumbers2)
 	{
-		OTLog::Output(0, "OTItem::VerifyBalanceStatement: Transaction # Count mismatch: %d and %d\n", 
+		OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Transaction # Count mismatch: %d and %d\n", 
 					  nNumberOfTransactionNumbers1, nNumberOfTransactionNumbers2);
 		
 		THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
@@ -794,7 +796,7 @@ OTItem::~OTItem()
 
 OTItem::itemType GetItemTypeFromString(const OTString & strType)
 {
-	OTItem::itemType theType = 0;
+	OTItem::itemType theType = OTItem::error_state;
 	
 	if (strType.Compare("transaction"))
 		theType = OTItem::transaction;

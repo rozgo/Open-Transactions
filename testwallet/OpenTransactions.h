@@ -280,6 +280,9 @@ public:
 								 const OTIdentifier & USER_ID,
 								 const OTIdentifier & ACCOUNT_ID);
 	
+	OTLedger * LoadNymbox(const OTIdentifier & SERVER_ID,
+						  const OTIdentifier & USER_ID);
+	
 	OTLedger * LoadInbox(const OTIdentifier & SERVER_ID,
 						 const OTIdentifier & USER_ID,
 						 const OTIdentifier & ACCOUNT_ID);
@@ -394,6 +397,9 @@ public:
 						  OTString		& AMOUNT,
 						  OTString		& NOTE);
 	
+	void getNymbox(OTIdentifier & SERVER_ID,
+				  OTIdentifier & USER_ID);
+	
 	void getInbox(OTIdentifier & SERVER_ID,
 				  OTIdentifier & USER_ID,
 				  OTIdentifier & ACCT_ID);
@@ -401,6 +407,10 @@ public:
 	void getOutbox(OTIdentifier & SERVER_ID,
 				   OTIdentifier & USER_ID,
 				   OTIdentifier & ACCT_ID);
+	
+	void processNymbox(OTIdentifier	& SERVER_ID,
+					   OTIdentifier	& USER_ID,
+					   OTString		& NYMBOX_LEDGER);
 	
 	void processInbox(OTIdentifier	& SERVER_ID,
 					  OTIdentifier	& USER_ID,

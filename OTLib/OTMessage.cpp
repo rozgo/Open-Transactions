@@ -966,6 +966,62 @@ void OTMessage::UpdateContents()
 	
 	
 	
+	// ------------------------------------------------------------------------
+	
+	// the Payload contains an ascii-armored OTLedger object.
+	if (m_strCommand.Compare("processNymbox"))
+	{		
+		m_xmlUnsigned.Concatenate("<%s\n" // Command
+								  " nymID=\"%s\"\n"
+								  " serverID=\"%s\"\n"
+								  " requestNum=\"%s\""
+								  " >\n\n",
+								  m_strCommand.Get(),
+								  m_strNymID.Get(),
+								  m_strServerID.Get(),
+								  m_strRequestNum.Get()
+								  );
+		
+		// I would check if this was empty, but it should never be empty...
+		// famous last words.
+		if (m_ascPayload.GetLength())
+			m_xmlUnsigned.Concatenate("<processLedger>\n%s</processLedger>\n\n", m_ascPayload.Get());
+		
+		m_xmlUnsigned.Concatenate("</%s>\n\n", m_strCommand.Get());
+	} // ------------------------------------------------------------------------
+	
+	
+	
+	// ------------------------------------------------------------------------
+	
+	// the Payload contains an ascii-armored OTLedger object.
+	if (m_strCommand.Compare("@processNymbox"))
+	{		
+		m_xmlUnsigned.Concatenate("<%s\n" // Command
+								  " success=\"%s\"\n"
+								  " nymID=\"%s\"\n"
+								  " serverID=\"%s\""
+								  " >\n\n",
+								  m_strCommand.Get(),
+								  (m_bSuccess ? "true" : "false"),
+								  m_strNymID.Get(),
+								  m_strServerID.Get()
+								  );
+		
+		if (m_ascInReferenceTo.GetLength())
+			m_xmlUnsigned.Concatenate("<inReferenceTo>\n%s</inReferenceTo>\n\n", m_ascInReferenceTo.Get());
+		
+		// I would check if this was empty, but it should never be empty...
+		// famous last words.
+		if (m_ascPayload.GetLength())
+			m_xmlUnsigned.Concatenate("<responseLedger>\n%s</responseLedger>\n\n", m_ascPayload.Get());
+		
+		m_xmlUnsigned.Concatenate("</%s>\n\n", m_strCommand.Get());
+	} // ------------------------------------------------------------------------
+	
+	
+	
+	
 	
 	m_xmlUnsigned.Concatenate("</OTmessage>\n");
 }

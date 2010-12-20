@@ -134,6 +134,8 @@ protected:
 	bool SaveGeneric(ledgerType theType);
 		
 public:
+	inline ledgerType GetType() const { return m_Type; }
+	
 	
 	// This function assumes that this is an INBOX.
 	// If you don't use an INBOX to call this method, then it will return NULL immediately.
@@ -143,7 +145,7 @@ public:
 	// You only have to keep the latest receipt, unlike systems that don't store balance
 	// agreement.  We also store a list of issued transactions, the new balance, and the outbox hash.
 	OTItem * GenerateBalanceStatement(const long lAdjustment, const OTTransaction & theOwner, 
-									  const OTPseudonym & theNym, const OTAccount & theAccount, OTLedger & theOutbox);
+									   OTPseudonym & theNym, const OTAccount & theAccount, OTLedger & theOutbox);
 	
 	void ProduceOutboxReport(OTItem & theBalanceItem);  
 

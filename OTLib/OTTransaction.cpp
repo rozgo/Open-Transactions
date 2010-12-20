@@ -103,6 +103,7 @@ using namespace io;
 #include "OTMessage.h"
 #include "OTStringXML.h"
 
+#include "OTCheque.h"
 #include "OTItem.h"
 #include "OTLedger.h"
 #include "OTTransactionType.h"
@@ -153,12 +154,14 @@ const char * OTTransaction::_TypeStrings[] =
 // make sure that the items on it also have the right owner, as well as that
 // owner's signature, and a matching transaction number to boot.
 //
-bool OTTransaction::VerifyItems(const OTPseudonym & theNym)
+bool OTTransaction::VerifyItems(OTPseudonym & theNym)
 {
 	// loop through the ALL items that make up this transaction and check to see if a response to deposit.
 	OTItem * pItem = NULL;
 	
-	if (false == VerifyOwner(theNym))
+	const OTIdentifier NYM_ID(theNym);
+	
+	if (NYM_ID != GetUserID())
 	{
 		OTLog::Error("Wrong owner passed to OTTransaction::VerifyItems\n");
 		return false;
@@ -179,7 +182,7 @@ bool OTTransaction::VerifyItems(const OTPseudonym & theNym)
 		if (GetTransactionNum() != pItem->GetTransactionNum())
 			return false;
 		
-		if (false == pItem->VerifyOwner(theNym))
+		if (NYM_ID != pItem->GetUserID())
 			return false;
 		
 		if (false == pItem->VerifySignature(theNym)) // NO need to call VerifyAccount since VerifyContractID is ALREADY called and now here's VerifySignature().
@@ -346,7 +349,7 @@ OTItem * OTTransaction::GetItem(const OTItem::itemType theType)
 		
 		OT_ASSERT(NULL != pItem);
 		
-		if (theType == pItem->m_Type)
+		if (pItem->GetType() == theType)
 			return pItem;
 	}
 	
@@ -383,7 +386,8 @@ bool OTTransaction::GetSuccess()
 				
 			case OTItem::atServerfee:
 			case OTItem::atIssuerfee:
-			case OTItem::atBalance:
+			case OTItem::atBalanceStatement:
+			case OTItem::atTransactionStatement:
 			case OTItem::atWithdrawal:
 			case OTItem::atDeposit:
 			case OTItem::atWithdrawVoucher:
@@ -583,7 +587,7 @@ void OTTransaction::ProduceInboxReportItem(OTItem & theBalanceItem)
 		pReportItem->SetAmount(lAmount);
 		
 		pReportItem->SetTransactionNum(GetTransactionNum()); // Just making sure these both get set.
-		pReportItem->SetReferenceToNum(SetReferenceToNum()); // Especially this one.
+		pReportItem->SetReferenceToNum(GetReferenceToNum()); // Especially this one.
 		
 		theBalanceItem.AddItem(*pReportItem); // Now theBalanceItem will handle cleaning it up.
 		
@@ -625,7 +629,7 @@ void OTTransaction::ProduceOutboxReportItem(OTItem & theBalanceItem)
 		pReportItem->SetAmount(lAmount);
 		
 		pReportItem->SetTransactionNum(GetTransactionNum()); // Just making sure these both get set.
-		pReportItem->SetReferenceToNum(SetReferenceToNum()); // Especially this one.
+		pReportItem->SetReferenceToNum(GetReferenceToNum()); // Especially this one.
 		
 		theBalanceItem.AddItem(*pReportItem); // Now theBalanceItem will handle cleaning it up.
 		
@@ -678,10 +682,11 @@ long OTTransaction::GetReceiptAmount()
 	
 	OTCheque theCheque; // allocated on the stack :-)
 
-	switch (m_Type) 
+	switch (GetType()) 
 	{	// These are the types that have an amount (somehow)
 		case OTTransaction::chequeReceipt: // amount is stored on cheque (attached to depositCheque item, attached.)
 			
+		{
 			if (pOriginalItem->GetType() != OTItem::depositCheque)
 			{
 				OTLog::Error("Wrong item type attached to chequeReceipt\n");
@@ -694,14 +699,18 @@ long OTTransaction::GetReceiptAmount()
 			
 			if (!bLoadContractFromString)
 			{
+				OTString strCheque(theCheque);
+				
 				OTLog::vError("ERROR loading cheque from string in OTTransaction::GetReceiptAmount:\n%s\n",
 							  strCheque.Get());
 			}
 			else 
 			{
 				lAdjustment = (theCheque.GetAmount()*(-1)); // a cheque reduces my balance, unless it's negative.
-			}											// So -100 means 100 came out, and +100 means 100 went in.
+			}												// So -100 means 100 came out, and +100 means 100 went in.
+		}
 			break;
+			
 		case OTTransaction::pending: // amount is stored on transfer item
 			
 			if (pOriginalItem->GetType() != OTItem::transfer)

@@ -421,10 +421,23 @@
   (USER_ID :string)
   (ACCT_ID :string))
 
+(cffi:defcfun ("OT_API_getNymbox" OT_API_getNymbox) :void
+  (SERVER_ID :string)
+  (USER_ID :string))
+
+(cffi:defcfun ("OT_API_LoadNymbox" OT_API_LoadNymbox) :string
+  (SERVER_ID :string)
+  (USER_ID :string))
+
 (cffi:defcfun ("OT_API_processInbox" OT_API_processInbox) :void
   (SERVER_ID :string)
   (USER_ID :string)
   (ACCT_ID :string)
+  (ACCT_LEDGER :string))
+
+(cffi:defcfun ("OT_API_processNymbox" OT_API_processNymbox) :void
+  (SERVER_ID :string)
+  (USER_ID :string)
   (ACCT_LEDGER :string))
 
 (cffi:defcfun ("OT_API_withdrawVoucher" OT_API_withdrawVoucher) :void
