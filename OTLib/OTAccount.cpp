@@ -130,6 +130,7 @@ using namespace io;
 
 #include "OTIdentifier.h"
 #include "OTAccount.h"
+#include "OTLedger.h"
 #include "OTPayload.h"
 #include "OTMessage.h"
 #include "OTStringXML.h"
@@ -146,6 +147,53 @@ const char * OTAccount::_TypeStrings[] =
 	"err_acct"
 };
 
+
+
+// Caller responsible to delete.
+OTLedger * OTAccount::LoadInbox(OTPseudonym & theNym)
+{
+	OTLedger * pBox = new OTLedger(GetUserID(), GetRealAccountID(), GetRealServerID());
+	
+	OT_ASSERT(NULL != pBox);
+	
+	if (pBox->LoadInbox() && pBox->VerifyAccount(theNym))
+	{
+		return pBox;
+	}
+	else
+	{
+		OTString strUserID(GetUserID()), strAcctID(GetRealAccountID());
+		
+		OTLog::vOutput(0, "Unable to load or verify inbox:\n%s\n For user:\n%s\n",
+					   strAcctID.Get(), strUserID.Get());
+	}
+	
+	return NULL;
+}
+
+
+// Caller responsible to delete.
+OTLedger * OTAccount::LoadOutbox(OTPseudonym & theNym)
+{
+	OTLedger * pBox = new OTLedger(GetUserID(), GetRealAccountID(), GetRealServerID());
+	
+	OT_ASSERT(NULL != pBox);
+	
+	if (pBox->LoadOutbox() && pBox->VerifyAccount(theNym))
+	{
+		return pBox;
+	}
+	else
+	{
+		OTString strUserID(GetUserID()), strAcctID(GetRealAccountID());
+		
+		OTLog::vOutput(0, "Unable to load or verify outbox:\n%s\n For user:\n%s\n",
+					   strAcctID.Get(), strUserID.Get());
+	}
+	
+	return NULL;
+}
+ 
 
 
 
@@ -535,7 +583,7 @@ bool OTAccount::GenerateNewAccount(const OTPseudonym & theServer, const OTMessag
 }
 
 
-long OTAccount::GetBalance()
+long OTAccount::GetBalance() const 
 {
 	if (m_BalanceAmount.Exists())
 		return atol(m_BalanceAmount.Get());

@@ -99,13 +99,491 @@ using namespace io;
 #include "OTIdentifier.h"
 #include "OTAccount.h"
 #include "OTPayload.h"
+#include "OTPseudonym.h"
 #include "OTMessage.h"
 #include "OTStringXML.h"
 
 #include "OTTransactionType.h"
 #include "OTTransaction.h"
+#include "OTLedger.h"
 #include "OTItem.h"
 #include "OTLog.h"
+
+
+
+
+
+// By the time this is called, I know that the item, AND this balance item (this)
+// both have the correct user id, server id, account id, and transaction id, and
+// they have been signed properly by the owner.
+//
+// So what do I need to verify in this function?
+//
+// -- That the transactions on the Nym, minus the current transaction number being processed,
+//    are all still there.
+//
+bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM)
+{
+	if (GetType() != OTItem::transactionStatement)
+	{
+		OTLog::Output(0, "OTItem::VerifyTransactionStatement: wrong item type.\n");
+		return false;
+	}
+	
+	//
+	// So if the caller was planning to remove a number, or clear a receipt from the inbox, he'll have to do
+	// so first before calling this function, and then ADD IT AGAIN if this function fails.  (Because the new
+	// Balance Agreement is always the user signing WHAT THE NEW VERSION WILL BE AFTER THE TRANSACTION IS PROCESSED.)
+	
+	
+	// -- NEED to verify the transactions on the Nym, versus the transactions stored on this
+	//    (in a message Nym attached to this.)  Check for presence of each, then compare count, like above.
+	
+	
+	OTString SERVER_ID(GetPurportedServerID());
+	
+	bool bIWasFound = THE_NYM.VerifyIssuedNum(SERVER_ID, GetTransactionNum());
+	
+	if (!bIWasFound)
+	{
+		OTLog::Output(0, "OTItem::VerifyTransactionStatement: Transaction has # that doesn't appear on Nym's issued list.\n");
+		return false;
+	}
+	
+	// The client side has already removed from issued list, and has sent us a signed copy to that effect,
+	// so we remove it on our side as well, so that they will match. (Which allows us to ACTUALLY remove it :)
+	// If anything else fails during this verify process, we have to ADD IT AGAIN since we stil don't have
+	// a valid signature on that number. (Besides the last one that includes it.)
+	//
+	THE_NYM.RemoveIssuedNum(SERVER_ID, GetTransactionNum());
+	
+	// ----------------------------------------------------
+	
+	long lTransactionNumber	= 0; // Used in the loop below.
+	
+	int nNumberOfTransactionNumbers1 = 0; // The Nym on this side
+	int nNumberOfTransactionNumbers2 = 0; // The Message Nym.
+	
+	OTString	strMessageNym; 
+	std::string	strServerID;
+	
+	// First, loop through the Nym on my side, and count how many numbers total he has...
+	//
+	for (mapOfTransNums::iterator	iii	 =	THE_NYM.GetMapIssuedNum().begin(); 
+		 iii !=	THE_NYM.GetMapIssuedNum().end(); ++iii)
+	{	
+		strServerID					= (*iii).first;
+		dequeOfTransNums * pDeque	= (iii->second);
+		
+		OTString OTstrServerID = strServerID.c_str();
+		
+		OT_ASSERT(NULL != pDeque);
+		
+		if (!(pDeque->empty()))
+		{
+			nNumberOfTransactionNumbers1 += pDeque->size();
+		}
+	} // for
+	
+	// Next, loop through theMessageNym, and count his numbers as well...
+	// But ALSO verify that each one exists on THE_NYM, so that each individual
+	// number is checked.
+	this->GetAttachment(strMessageNym);
+	OTPseudonym theMessageNym;
+	
+	if ((strMessageNym.GetLength() > 2) && theMessageNym.LoadFromString(strMessageNym))
+	{
+		for (mapOfTransNums::iterator	iii	 =	theMessageNym.GetMapIssuedNum().begin(); 
+			 iii !=	theMessageNym.GetMapIssuedNum().end(); ++iii)
+		{	
+			strServerID					= (*iii).first;
+			dequeOfTransNums * pDeque	= (iii->second);
+			
+			OTString OTstrServerID = strServerID.c_str();
+			
+			OT_ASSERT(NULL != pDeque);
+			
+			if (!(pDeque->empty()))
+			{
+				nNumberOfTransactionNumbers2 += pDeque->size();
+				
+				for (unsigned i = 0; i < pDeque->size(); i++)
+				{
+					lTransactionNumber = pDeque->at(i);
+					
+					if (false == THE_NYM.VerifyTransactionNum(OTstrServerID, lTransactionNumber))
+					{
+						OTLog::vOutput(0, "OTItem::VerifyTransactionStatement: Issued transaction # %ld from Message Nym not found on this side.\n", 
+									  lTransactionNumber);
+						
+						THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
+						
+						return false;
+					}
+				}
+			}
+		} // for
+	}
+	
+	// Finally, verify that the counts match...
+	if (nNumberOfTransactionNumbers1 != nNumberOfTransactionNumbers2)
+	{
+		OTLog::vOutput(0, "OTItem::VerifyTransactionStatement: Transaction # Count mismatch: %d and %d\n", 
+					  nNumberOfTransactionNumbers1, nNumberOfTransactionNumbers2);
+		
+		THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
+		
+		return false;
+	}
+	
+	// By this point, I know the local Nym has the same number of transactions as the message nym, and that
+	// EVERY ONE OF THEM was found individually.
+	
+	// Might want to consider saving the Nym here.
+	// Also want to save the latest signed receipt, since it VERIFIES.
+	// Or maybe let caller decide?
+	
+	return true;
+}
+
+
+
+
+
+
+// By the time this is called, I know that the item, AND this balance item (this)
+// both have the correct user id, server id, account id, and transaction id, and
+// they have been signed properly by the owner.
+//
+// So what do I need to verify in this function?
+//
+// 1) That THE_ACCOUNT.GetBalance() + lActualAdjustment equals the amount in this->GetAmount().
+//
+// 2) That the inbox transactions and outbox transactions match up to the list of sub-items
+//    on THIS balance item.
+//
+// 3) That the transactions on the Nym, minus the current transaction number being processed,
+//    are all still there.
+//
+bool OTItem::VerifyBalanceStatement(const long lActualAdjustment, 
+									 OTPseudonym & THE_NYM,
+									 OTLedger & THE_INBOX,
+									 OTLedger & THE_OUTBOX,
+									const OTAccount & THE_ACCOUNT)
+{
+	if (GetType() != OTItem::balanceStatement)
+	{
+		OTLog::Output(0, "OTItem::VerifyBalanceStatement: wrong item type.\n");
+		return false;
+	}
+	
+	// 1) That THE_ACCOUNT.GetBalance() + lActualAdjustment equals the amount in this->GetAmount().
+	
+	if ((THE_ACCOUNT.GetBalance() + lActualAdjustment) != this->GetAmount())
+	{
+		OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Wrong balance %ld (expected %ld).\n",
+					   this->GetAmount(), (THE_ACCOUNT.GetBalance() + lActualAdjustment));
+		return false;
+	}
+	
+	// 2) That the inbox transactions and outbox transactions match up to the list of sub-items
+	//    on THIS balance item.
+	
+	int nInboxItemCount = 0, nOutboxItemCount = 0;
+	
+	const char * szInbox = "Inbox";
+	const char * szOutbox = "Outbox";
+	
+	const char * pszLedgerType = NULL;
+
+	for (int i=0; i < GetItemCount(); i++)
+	{
+		OTItem * pSubItem = GetItem(i);
+		
+		OT_ASSERT(NULL != pSubItem);
+		
+		OTLedger * pLedger = NULL;
+		
+		switch (pSubItem->GetType()) 
+		{
+			case OTItem::chequeReceipt: 
+			case OTItem::marketReceipt: 
+			case OTItem::paymentReceipt:
+				nInboxItemCount++;
+				pLedger = &THE_INBOX;
+				pszLedgerType = szInbox;
+			case OTItem::transfer:
+				break;
+			default:
+				continue;
+		}
+		
+		switch (pSubItem->GetType()) 
+		{
+			case OTItem::transfer:
+				if (pSubItem->GetAmount() < 0) // it's an outbox item
+				{
+					nOutboxItemCount++;
+					pLedger = &THE_OUTBOX;
+					pszLedgerType = szOutbox;
+				}
+				else
+				{
+					nInboxItemCount++;
+					pLedger = &THE_INBOX;
+					pszLedgerType = szInbox;
+				}
+			case OTItem::chequeReceipt: 
+			case OTItem::marketReceipt: 
+			case OTItem::paymentReceipt:
+				break;
+			default:
+				continue; // This will never happen, due to the first continue above in the first switch.
+		}
+		
+		OTTransaction * pTransaction = pLedger->GetTransaction(pSubItem->GetTransactionNum());
+		
+		// Make sure that the transaction number of each sub-item is found
+		// on the appropriate ledger (inbox or outbox).
+		if (NULL == pTransaction)
+		{
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Expected %s transaction (%ld) not found on this side.\n",
+						   pszLedgerType, pSubItem->GetTransactionNum());
+			return false;
+		}
+		
+		if (pSubItem->GetReferenceToNum()	!= pTransaction->GetReferenceToNum())
+		{
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) mismatch Reference Num: %ld, expected %ld\n",
+						   pszLedgerType, pSubItem->GetTransactionNum(), pSubItem->GetReferenceToNum(),
+						   pTransaction->GetReferenceToNum());
+			return false;
+		}
+		
+		if (pSubItem->GetAmount()			!= pTransaction->GetReceiptAmount())
+		{
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) amounts don't match: %ld, expected %ld.\n",
+						   pszLedgerType, pSubItem->GetTransactionNum(),
+						   pSubItem->GetAmount(), pTransaction->GetReceiptAmount());
+			return false;
+		}
+		
+		if ((pSubItem->GetType()		== OTItem::transfer) && 
+			(pTransaction->GetType()	!= OTTransaction::pending))
+		{
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) wrong type.\n",
+						   pszLedgerType, pSubItem->GetTransactionNum());
+			return false;
+		}
+		
+		if ((pSubItem->GetType()		== OTItem::chequeReceipt) && 
+			(pTransaction->GetType()	!= OTTransaction::chequeReceipt))
+		{
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) wrong type.\n",
+						   pszLedgerType, pSubItem->GetTransactionNum());
+			return false;
+		}
+		
+		if ((pSubItem->GetType()		== OTItem::marketReceipt) && 
+			(pTransaction->GetType()	!= OTTransaction::marketReceipt))
+		{
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) wrong type.\n",
+						   pszLedgerType, pSubItem->GetTransactionNum());
+			return false;
+		}
+		
+		if ((pSubItem->GetType()		== OTItem::paymentReceipt) && 
+			(pTransaction->GetType()	!= OTTransaction::paymentReceipt))
+		{
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) wrong type.\n",
+						   pszLedgerType, pSubItem->GetTransactionNum());
+			return false;
+		}
+	}
+	
+	// By this point, I have an accurate count of the inbox items, and outbox items, represented
+	// by this. let's compare those counts to the actual inbox and outbox on my side:
+	
+	if ((nInboxItemCount	!= THE_INBOX.GetTransactionCount()) || 
+		(nOutboxItemCount	!= THE_OUTBOX.GetTransactionCount()))
+	{
+		OTLog::Output(0, "OTItem::VerifyBalanceStatement: Inbox or Outbox mismatch in expected transaction count.\n");
+		return false;
+	}
+	
+	// Now I KNOW that the inbox and outbox counts are the same, AND I know that EVERY transaction number
+	// on the balance item (this) was also found in the inbox or outbox, wherever it was expected to be found.
+	// I also know:
+	// the amount was correct, 
+	// the "in reference to" number was correct, 
+	// and the type was correct.
+	//
+	// So if the caller was planning to remove a number, or clear a receipt from the inbox, he'll have to do
+	// so first before calling this function, and then ADDIT AGAIN if this function fails.  (Because the new
+	// Balance Agreement is always the user signing WHAT THE NEW VERSION WILL BE AFTER THE TRANSACTION IS PROCESSED.)
+	
+	
+	// 3) Also need to verify the transactions on the Nym, versus the transactions stored on this
+	//    (in a message Nym attached to this.)  Check for presence of each, then compare count, like above.
+	
+	
+	OTString SERVER_ID(GetPurportedServerID());
+	
+	bool bIWasFound = THE_NYM.VerifyIssuedNum(SERVER_ID, GetTransactionNum());
+	
+	if (!bIWasFound)
+	{
+		OTLog::Output(0, "OTItem::VerifyBalanceStatement: Transaction has # that doesn't appear on Nym's issued list.\n");
+		return false;
+	}
+	
+	// The client side has already removed from issued list, and has sent us a signed copy to that effect,
+	// so we remove it on our side as well, so that they will match. (Which allows us to ACTUALLY remove it :)
+	// If anything else fails during this verify process, we have to ADD IT AGAIN since we stil don't have
+	// a valid signature on that number. (Besides the last one that includes it.)
+	//
+	THE_NYM.RemoveIssuedNum(SERVER_ID, GetTransactionNum());
+	
+	// ----------------------------------------------------
+	
+	long lTransactionNumber	= 0; // Used in the loop below.
+	
+	int nNumberOfTransactionNumbers1 = 0; // The Nym on this side
+	int nNumberOfTransactionNumbers2 = 0; // The Message Nym.
+	
+	OTString	strMessageNym; 
+	std::string	strServerID;
+	
+	// First, loop through the Nym on my side, and count how many numbers total he has...
+	//
+	for (mapOfTransNums::iterator	iii	 =	THE_NYM.GetMapIssuedNum().begin(); 
+		 iii !=	THE_NYM.GetMapIssuedNum().end(); ++iii)
+	{	
+		strServerID					= (*iii).first;
+		dequeOfTransNums * pDeque	= (iii->second);
+		
+		OTString OTstrServerID = strServerID.c_str();
+		
+		OT_ASSERT(NULL != pDeque);
+		
+		if (!(pDeque->empty()))
+		{
+			nNumberOfTransactionNumbers1 += pDeque->size();
+		}
+	} // for
+	
+	// Next, loop through theMessageNym, and count his numbers as well...
+	// But ALSO verify that each one exists on THE_NYM, so that each individual
+	// number is checked.
+	this->GetAttachment(strMessageNym);
+	OTPseudonym theMessageNym;
+	
+	if ((strMessageNym.GetLength() > 2) && theMessageNym.LoadFromString(strMessageNym))
+	{
+		for (mapOfTransNums::iterator	iii	 =	theMessageNym.GetMapIssuedNum().begin(); 
+			 iii !=	theMessageNym.GetMapIssuedNum().end(); ++iii)
+		{	
+			strServerID					= (*iii).first;
+			dequeOfTransNums * pDeque	= (iii->second);
+			
+			OTString OTstrServerID = strServerID.c_str();
+			
+			OT_ASSERT(NULL != pDeque);
+			
+			if (!(pDeque->empty()))
+			{
+				nNumberOfTransactionNumbers2 += pDeque->size();
+				
+				for (unsigned i = 0; i < pDeque->size(); i++)
+				{
+					lTransactionNumber = pDeque->at(i);
+					
+					if (false == THE_NYM.VerifyTransactionNum(OTstrServerID, lTransactionNumber))
+					{
+						OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Issued transaction # %ld from Message Nym not found on this side.\n", 
+									  lTransactionNumber);
+						
+						THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
+						
+						return false;
+					}
+				}
+			}
+		} // for
+	}
+	
+	// Finally, verify that the counts match...
+	if (nNumberOfTransactionNumbers1 != nNumberOfTransactionNumbers2)
+	{
+		OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Transaction # Count mismatch: %d and %d\n", 
+					  nNumberOfTransactionNumbers1, nNumberOfTransactionNumbers2);
+		
+		THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
+		
+		return false;
+	}
+	
+	// By this point, I know the local Nym has the same number of transactions as the message nym, and that
+	// EVERY ONE OF THEM was found individually.
+	
+	// Might want to consider saving the Nym here.
+	// Also want to save the latest signed receipt, since it VERIFIES.
+	// Or maybe let caller decide?
+	
+	return true;
+}
+
+
+
+void OTItem::ReleaseItems()
+{
+	OTItem * pItem = NULL;
+	
+	while (!m_listItems.empty())
+	{
+		pItem = m_listItems.front();
+		m_listItems.pop_front();
+		delete pItem;
+		pItem = NULL;
+	}
+}
+
+
+
+// You have to allocate the item on the heap and then pass it in as a reference. 
+// OTTransaction will take care of it from there and will delete it in destructor.
+void OTItem::AddItem(OTItem & theItem) 
+{ 
+	m_listItems.push_back(&theItem);  
+} 
+
+
+// While processing a transaction, you may wish to query it for items of a certain type.
+OTItem * OTItem::GetItem(int nIndex) 
+{
+	OTItem * pItem = NULL;
+	
+	int nTempIndex = (-1);
+	
+	for (listOfItems::iterator ii = m_listItems.begin(); ii != m_listItems.end(); ++ii)
+	{
+		pItem = *ii;
+		
+		OT_ASSERT(NULL != pItem);
+		
+		nTempIndex++; // first iteration this becomes 0 here.
+		
+		if (nTempIndex == nIndex)
+			return pItem;
+	}
+	
+	return NULL;
+}
+
+
+
+
+
 
 
 
@@ -244,10 +722,18 @@ void OTItem::InitItem()
 
 // From owner we can get acct ID, server ID, and transaction Num
 OTItem::OTItem(const OTIdentifier & theUserID, const OTTransaction & theOwner) 
-		: OTTransactionType(theUserID, theOwner.GetRealAccountID(), theOwner.GetRealServerID(), theOwner.GetTransactionNum())
+: OTTransactionType(theUserID, theOwner.GetRealAccountID(), theOwner.GetRealServerID(), theOwner.GetTransactionNum())
 {
 	InitItem();
+	
+}
 
+// From owner we can get acct ID, server ID, and transaction Num
+OTItem::OTItem(const OTIdentifier & theUserID, const OTItem & theOwner) 
+: OTTransactionType(theUserID, theOwner.GetRealAccountID(), theOwner.GetRealServerID(), theOwner.GetTransactionNum())
+{
+	InitItem();
+	
 }
 
 OTItem::OTItem(const OTIdentifier & theUserID, const OTTransaction & theOwner, OTItem::itemType theType, OTIdentifier * pDestinationAcctID/*=NULL*/)
@@ -299,7 +785,123 @@ OTItem& OTItem::operator=(const OTItem& rhs)
 */
 OTItem::~OTItem()
 {
+	ReleaseItems();
+}
+
+
+
+
+
+
+
+OTItem::itemType GetItemTypeFromString(const OTString & strType)
+{
+	OTItem::itemType theType = OTItem::error_state;
 	
+	if (strType.Compare("transaction"))
+		theType = OTItem::transaction;
+	else if (strType.Compare("atTransaction"))
+		theType = OTItem::atTransaction;
+	// --------------------------------------------------------------
+	else if (strType.Compare("transfer"))
+		theType = OTItem::transfer;
+	else if (strType.Compare("atTransfer"))
+		theType = OTItem::atTransfer;
+	// --------------------------------------------------------------
+	else if (strType.Compare("acceptTransaction"))
+		theType = OTItem::acceptTransaction;
+	else if (strType.Compare("atAcceptTransaction"))
+		theType = OTItem::atAcceptTransaction;
+	// --------------------------------------------------------------
+	else if (strType.Compare("acceptMessage"))
+		theType = OTItem::acceptMessage;
+	else if (strType.Compare("atAcceptMessage"))
+		theType = OTItem::atAcceptMessage;
+	// --------------------------------------------------------------
+	else if (strType.Compare("acceptPending"))
+		theType = OTItem::acceptPending;
+	else if (strType.Compare("atAcceptPending"))
+		theType = OTItem::atAcceptPending;
+	else if (strType.Compare("rejectPending"))
+		theType = OTItem::rejectPending;
+	else if (strType.Compare("atRejectPending"))
+		theType = OTItem::atRejectPending;
+	// --------------------------------------------------------------
+	else if (strType.Compare("acceptCronReceipt"))
+		theType = OTItem::acceptCronReceipt;
+	else if (strType.Compare("atAcceptCronReceipt"))
+		theType = OTItem::atAcceptCronReceipt;
+	else if (strType.Compare("disputeCronReceipt"))
+		theType = OTItem::disputeCronReceipt;
+	else if (strType.Compare("atDisputeCronReceipt"))
+		theType = OTItem::atDisputeCronReceipt;
+	else if (strType.Compare("acceptItemReceipt"))
+		theType = OTItem::acceptItemReceipt;
+	else if (strType.Compare("atAcceptItemReceipt"))
+		theType = OTItem::atAcceptItemReceipt;
+	else if (strType.Compare("disputeItemReceipt"))
+		theType = OTItem::disputeItemReceipt;
+	else if (strType.Compare("atDisputeItemReceipt"))
+		theType = OTItem::atDisputeItemReceipt;
+	// --------------------------------------------------------------
+	else if (strType.Compare("serverfee"))
+		theType = OTItem::serverfee;
+	else if (strType.Compare("atServerfee"))
+		theType = OTItem::atServerfee;
+	else if (strType.Compare("issuerfee"))
+		theType = OTItem::issuerfee;
+	else if (strType.Compare("atIssuerfee"))
+		theType = OTItem::atIssuerfee;
+	// --------------------------------------------------------------
+	else if (strType.Compare("balanceStatement"))
+		theType = OTItem::balanceStatement;
+	else if (strType.Compare("atBalanceStatement"))
+		theType = OTItem::atBalanceStatement;
+	else if (strType.Compare("transactionStatement"))
+		theType = OTItem::transactionStatement;
+	else if (strType.Compare("atTransactionStatement"))
+		theType = OTItem::atTransactionStatement;
+	// --------------------------------------------------------------
+	else if (strType.Compare("withdrawal"))
+		theType = OTItem::withdrawal;
+	else if (strType.Compare("atWithdrawal"))
+		theType = OTItem::atWithdrawal;
+	else if (strType.Compare("deposit"))
+		theType = OTItem::deposit;
+	else if (strType.Compare("atDeposit"))
+		theType = OTItem::atDeposit;
+	// --------------------------------------------------------------
+	else if (strType.Compare("withdrawVoucher"))
+		theType = OTItem::withdrawVoucher;
+	else if (strType.Compare("atWithdrawVoucher"))
+		theType = OTItem::atWithdrawVoucher;
+	else if (strType.Compare("depositCheque"))
+		theType = OTItem::depositCheque;
+	else if (strType.Compare("atDepositCheque"))
+		theType = OTItem::atDepositCheque;
+	// --------------------------------------------------------------
+	else if (strType.Compare("marketOffer"))
+		theType = OTItem::marketOffer;
+	else if (strType.Compare("atMarketOffer"))
+		theType = OTItem::atMarketOffer;
+	// --------------------------------------------------------------
+	else if (strType.Compare("paymentPlan"))
+		theType = OTItem::paymentPlan;
+	else if (strType.Compare("atPaymentPlan"))
+		theType = OTItem::atPaymentPlan;
+	// --------------------------------------------------------------
+	else if (strType.Compare("chequeReceipt"))
+		theType = OTItem::chequeReceipt;
+	else if (strType.Compare("marketReceipt"))
+		theType = OTItem::marketReceipt;
+	else if (strType.Compare("paymentReceipt"))
+		theType = OTItem::paymentReceipt;
+	// --------------------------------------------------------------
+	else
+		theType = OTItem::error_state;
+	// --------------------------------------------------------------
+	
+	return theType;
 }
 
 
@@ -315,99 +917,8 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		strStatus	= xml->getAttributeValue("status");
 		
 		// Type
-		if (strType.Compare("transaction"))
-			m_Type = OTItem::transaction;
-		else if (strType.Compare("atTransaction"))
-			m_Type = OTItem::atTransaction;
-		// --------------------------------------------------------------
-		else if (strType.Compare("transfer"))
-			m_Type = OTItem::transfer;
-		else if (strType.Compare("atTransfer"))
-			m_Type = OTItem::atTransfer;
-		else if (strType.Compare("acceptPending"))
-			m_Type = OTItem::acceptPending;
-		else if (strType.Compare("atAcceptPending"))
-			m_Type = OTItem::atAcceptPending;
-		else if (strType.Compare("rejectPending"))
-			m_Type = OTItem::rejectPending;
-		else if (strType.Compare("atRejectPending"))
-			m_Type = OTItem::atRejectPending;
-		// --------------------------------------------------------------
-		else if (strType.Compare("acceptCronReceipt"))
-			m_Type = OTItem::acceptCronReceipt;
-		else if (strType.Compare("atAcceptCronReceipt"))
-			m_Type = OTItem::atAcceptCronReceipt;
-		else if (strType.Compare("disputeCronReceipt"))
-			m_Type = OTItem::disputeCronReceipt;
-		else if (strType.Compare("atDisputeCronReceipt"))
-			m_Type = OTItem::atDisputeCronReceipt;
-		else if (strType.Compare("acceptItemReceipt"))
-			m_Type = OTItem::acceptItemReceipt;
-		else if (strType.Compare("atAcceptItemReceipt"))
-			m_Type = OTItem::atAcceptItemReceipt;
-		else if (strType.Compare("disputeItemReceipt"))
-			m_Type = OTItem::disputeItemReceipt;
-		else if (strType.Compare("atDisputeItemReceipt"))
-			m_Type = OTItem::atDisputeItemReceipt;
-		// --------------------------------------------------------------
-		else if (strType.Compare("serverfee"))
-			m_Type = OTItem::serverfee;
-		else if (strType.Compare("atServerfee"))
-			m_Type = OTItem::atServerfee;
-		else if (strType.Compare("issuerfee"))
-			m_Type = OTItem::issuerfee;
-		else if (strType.Compare("atIssuerfee"))
-			m_Type = OTItem::atIssuerfee;
-		// --------------------------------------------------------------
-		else if (strType.Compare("balance"))
-			m_Type = OTItem::balance;
-		else if (strType.Compare("atBalance"))
-			m_Type = OTItem::atBalance;
-		else if (strType.Compare("outboxhash"))
-			m_Type = OTItem::outboxhash;
-		else if (strType.Compare("atOutboxhash"))
-			m_Type = OTItem::atOutboxhash;
-		// --------------------------------------------------------------
-		else if (strType.Compare("withdrawal"))
-			m_Type = OTItem::withdrawal;
-		else if (strType.Compare("atWithdrawal"))
-			m_Type = OTItem::atWithdrawal;
-		else if (strType.Compare("deposit"))
-			m_Type = OTItem::deposit;
-		else if (strType.Compare("atDeposit"))
-			m_Type = OTItem::atDeposit;
-		// --------------------------------------------------------------
-		else if (strType.Compare("withdrawVoucher"))
-			m_Type = OTItem::withdrawVoucher;
-		else if (strType.Compare("atWithdrawVoucher"))
-			m_Type = OTItem::atWithdrawVoucher;
-		else if (strType.Compare("depositCheque"))
-			m_Type = OTItem::depositCheque;
-		else if (strType.Compare("atDepositCheque"))
-			m_Type = OTItem::atDepositCheque;
-		// --------------------------------------------------------------
-		else if (strType.Compare("marketOffer"))
-			m_Type = OTItem::marketOffer;
-		else if (strType.Compare("atMarketOffer"))
-			m_Type = OTItem::atMarketOffer;
-		// --------------------------------------------------------------
-		else if (strType.Compare("paymentPlan"))
-			m_Type = OTItem::paymentPlan;
-		else if (strType.Compare("atPaymentPlan"))
-			m_Type = OTItem::atPaymentPlan;
-		// --------------------------------------------------------------
-//		else if (strType.Compare("chequeReceipt"))
-//			m_Type = OTItem::chequeReceipt;
-		else if (strType.Compare("marketReceipt"))
-			m_Type = OTItem::marketReceipt;
-		else if (strType.Compare("paymentReceipt"))
-			m_Type = OTItem::paymentReceipt;
-		// --------------------------------------------------------------
-		else
-			m_Type = OTItem::error_state;
-// --------------------------------------------------------------
-		 
-		
+		m_Type = GetItemTypeFromString(strType); // just above.
+				
 		// Status
 		if (strStatus.Compare("request"))
 			m_Status = OTItem::request;
@@ -476,28 +987,79 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		
 		return 1;
 	}
+	else if (!strcmp("transactionReport", xml->getNodeName())) 
+	{		
+		if ((OTItem::balanceStatement	== m_Type) ||
+			(OTItem::atBalanceStatement	== m_Type))
+		{
+			// Notice it initializes with the wrong transaction number, in this case.
+			// That's okay, because I'm setting it below with pItem->SetTransactionNum...
+			OTItem * pItem = new OTItem(GetUserID(), *this); // But I've also got ITEM types with the same names...
+			// That way, it will translate the string and set the type correctly.
+			OT_ASSERT(NULL != pItem);						// That way I can use each item to REPRESENT an inbox transaction
+			
+			// Type
+			OTString strType;		
+			strType		= xml->getAttributeValue("type"); // it's reading a TRANSACTION type: chequeReceipt, marketReceipt, or paymentReceipt. But I also have the same names for item types.
+			
+			pItem->SetType(GetItemTypeFromString(strType)); // It's actually translating a transaction type to an item type. (Same names in the case of the 3 receipts that matter for inbox reports for balance agreements.)
+			
+			pItem->SetAmount(atol(xml->getAttributeValue("adjustment")));
+			
+			// Status
+			pItem->SetStatus(OTItem::acknowledgement); // I don't need this, but I'd rather it not say error state. This way if it changes to error_state later, I know I had a problem.
+			
+			OTString strAccountID, strServerID, strUserID;
+			
+			strAccountID		= xml->getAttributeValue("accountID"); 
+			strServerID			= xml->getAttributeValue("serverID");
+			strUserID			= xml->getAttributeValue("userID");
+			
+			OTIdentifier	ACCOUNT_ID(strAccountID), SERVER_ID(strServerID), USER_ID(strUserID);
+			
+			pItem->SetPurportedAccountID(ACCOUNT_ID);		// OTTransactionType::m_AcctID  the PURPORTED Account ID
+			pItem->SetPurportedServerID(SERVER_ID);		// OTTransactionType::m_AcctServerID the PURPORTED Server ID
+			pItem->SetUserID(USER_ID);
+			pItem->SetTransactionNum(atol(xml->getAttributeValue("transactionNum")));
+			pItem->SetReferenceToNum(atol(xml->getAttributeValue("inReferenceTo")));
+			
+			AddItem(*pItem);	// <======= adding to list.
+			
+			OTLog::vOutput(1, "Loaded transactionReport Item, transaction num %ld, In Reference To: %ld, type: %s\n",
+						   //				"fromAccountID:\n%s\n UserID:\n%s\n toAccountID:\n%s\n serverID:\n%s\n----------\n", 
+						   pItem->GetTransactionNum(),
+						   pItem->GetReferenceToNum(), strType.Get()
+						   //				strAcctFromID.Get(), strUserID.Get(), strAcctToID.Get(), strServerID.Get()
+						   );
+		}
+		else 
+		{
+			OTLog::Error("Outbox hash in item wrong type (expected balanceStatement or atBalanceStatement.\n");
+		}
+		
+		return 1;
+	}
 	
 	return 0;	
 }
 
 
 
-
-
-
-
-
-void OTItem::UpdateContents() // Before transmission or serialization, this is where the ledger saves its contents 
+void GetStringFromType(OTItem::itemType theType, OTString & strType)
 {
-	OTString strFromAcctID(GetPurportedAccountID()), strToAcctID(GetDestinationAcctID()), strServerID(GetPurportedServerID()), 
-			 strType, strStatus, strUserID(GetUserID());
-	
-	switch (m_Type) {
+	switch (theType) 
+	{
 		case OTItem::transaction:
 			strType.Set("transaction");
 			break;
 		case OTItem::transfer:
 			strType.Set("transfer");
+			break;
+		case OTItem::acceptTransaction:
+			strType.Set("acceptTransaction");
+			break;
+		case OTItem::acceptMessage:
+			strType.Set("acceptMessage");
 			break;
 		case OTItem::acceptPending:
 			strType.Set("acceptPending");
@@ -523,12 +1085,6 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 		case OTItem::issuerfee:
 			strType.Set("issuerfee");
 			break;
-		case OTItem::balance:
-			strType.Set("balance");
-			break;
-		case OTItem::outboxhash:
-			strType.Set("outboxhash");
-			break;
 		case OTItem::withdrawal:
 			strType.Set("withdrawal");
 			break;
@@ -547,22 +1103,38 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 		case OTItem::paymentPlan:
 			strType.Set("paymentPlan");
 			break;
+		case OTItem::balanceStatement:
+			strType.Set("balanceStatement");
+			break;
+		case OTItem::transactionStatement:
+			strType.Set("transactionStatement");
+			break;
 			
-//		case OTItem::chequeReceipt:
-//			strType.Set("chequeReceipt");
-//			break;
-		case OTItem::marketReceipt:
+			
+			
+		case OTItem::chequeReceipt:			// used for inbox statements in balance agreement.
+			strType.Set("chequeReceipt");
+			break;
+		case OTItem::marketReceipt:			// used as market receipt, and also for inbox statement containing market receipt will use this as well.
 			strType.Set("marketReceipt");
 			break;
-		case OTItem::paymentReceipt:
+		case OTItem::paymentReceipt:		// used as payment receipt, also used in inbox statement as payment receipt.
 			strType.Set("paymentReceipt");
 			break;
+			
+			
 			
 		case OTItem::atTransaction:
 			strType.Set("atTransaction");
 			break;
 		case OTItem::atTransfer:
 			strType.Set("atTransfer");
+			break;
+		case OTItem::atAcceptTransaction:
+			strType.Set("atAcceptTransaction");
+			break;
+		case OTItem::atAcceptMessage:
+			strType.Set("atAcceptMessage");
 			break;
 		case OTItem::atAcceptPending:
 			strType.Set("atAcceptPending");
@@ -588,12 +1160,6 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 		case OTItem::atIssuerfee:
 			strType.Set("atIssuerfee");
 			break;
-		case OTItem::atBalance:
-			strType.Set("atBalance");
-			break;
-		case OTItem::atOutboxhash:
-			strType.Set("atOutboxhash");
-			break;
 		case OTItem::atWithdrawal:
 			strType.Set("atWithdrawal");
 			break;
@@ -612,11 +1178,32 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 		case OTItem::atPaymentPlan:
 			strType.Set("atPaymentPlan");
 			break;
+		case OTItem::atBalanceStatement:
+			strType.Set("atBalanceStatement");
+			break;
+		case OTItem::atTransactionStatement:
+			strType.Set("atTransactionStatement");
+			break;
+			
+			
+			
+			
 			
 		default:
 			strType.Set("error-unknown");
 			break;
 	}
+	
+}
+
+
+
+void OTItem::UpdateContents() // Before transmission or serialization, this is where the ledger saves its contents 
+{
+	OTString strFromAcctID(GetPurportedAccountID()), strToAcctID(GetDestinationAcctID()), strServerID(GetPurportedServerID()), 
+			 strType, strStatus, strUserID(GetUserID());
+	
+	GetStringFromType(m_Type, strType);
 	
 	switch (m_Status) {
 		case OTItem::request:
@@ -661,6 +1248,44 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 	if (m_ascAttachment.GetLength() > 2)
 	{
 		m_xmlUnsigned.Concatenate("<attachment>\n%s</attachment>\n\n", m_ascAttachment.Get());
+	}
+	
+	if ((OTItem::balanceStatement	== m_Type) ||
+		(OTItem::atBalanceStatement	== m_Type))
+	{
+	
+		// loop through the sub-items (only used for balance agreement.)
+		
+		OTItem * pItem = NULL;
+		
+		for (listOfItems::iterator ii = m_listItems.begin(); ii != m_listItems.end(); ++ii)
+		{
+			pItem = *ii;
+			
+			OT_ASSERT(NULL != pItem);
+			
+			OTString	strAcctID(pItem->GetPurportedAccountID()), 
+						strServerID(pItem->GetPurportedServerID()),
+						strUserID(pItem->GetUserID());
+			
+			OTString strReceiptType;
+			GetStringFromType(pItem->GetType(), strReceiptType);
+			
+			m_xmlUnsigned.Concatenate("<transactionReport type=\"%s\"\n"
+									  " adjustment=\"%ld\"\n"
+									  " accountID=\"%s\"\n"
+									  " userID=\"%s\"\n"
+									  " serverID=\"%s\"\n"
+									  " transactionNum=\"%ld\"\n"
+									  " inReferenceTo=\"%ld\" />\n\n", 
+									  strReceiptType.Exists() ? strReceiptType.Get() : "error_state", 
+									  pItem->GetAmount(),
+									  strAcctID.Get(), 
+									  strUserID.Get(), 
+									  strServerID.Get(), 
+									  pItem->GetTransactionNum(),
+									  pItem->GetReferenceToNum());
+		}	
 	}
 	
 	m_xmlUnsigned.Concatenate("</item>\n");					

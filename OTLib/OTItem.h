@@ -91,8 +91,14 @@
 #include "OTString.h"
 
 class OTAccount;
+class OTLedger;
 class OTMessage;
 class OTTransaction;
+class OTItem;
+class OTPseudonym;
+
+
+typedef std::list  <OTItem *>	listOfItems;
 
 
 // Item as in "Transaction Item"
@@ -108,14 +114,25 @@ class OTItem : public OTTransactionType
 private:
 
 public:
-	enum itemType {
+	enum itemType 
+	{
 		// TRANSACTION NUMBERS ARE REQUIRED FOR EVERY TRANSACTION
 		transaction,	// this item is request for a transaction number
-		atTransaction,	// this item contains a transaction number (you should store it for later use)
+		atTransaction,	// this item contains a response to a request for a transaction number
+						// (If successful, the actual number(s) will be dropped into the Nymbox for pickup.)
 // ------------------------------------------------------------------------------
 		// TRANSFER
 		transfer,	// this item is an outgoing transfer, probably part of an outoing transaction.
 		atTransfer,	// Server reply.
+// ------------------------------------------------------------------------------
+		
+		// NYMBOX RESOLUTION
+		
+		acceptTransaction,		// this item is a client-side acceptance of a transaction number (a blank) in my Nymbox
+		atAcceptTransaction,	
+		acceptMessage,			// this item is a client-side acceptance of a message in my Nymbox
+		atAcceptMessage,	
+		
 // ------------------------------------------------------------------------------
 		
 		// INBOX RESOLUTION
@@ -148,11 +165,11 @@ public:
 		issuerfee,	// this item is a fee from the issuer (per contract)
 		atIssuerfee,
 // ------------------------------------------------------------------------------
-		// INFO (BALANCE, HASH, etc)
-		balance,	// this item is a statement of balance
-		atBalance,
-		outboxhash,	// this item is a hash of an outbox (unused for now)
-		atOutboxhash,
+		// INFO (BALANCE, HASH, etc) these are still all messages with replies.
+		balanceStatement,	// this item is a statement of balance. (For asset account.)
+		atBalanceStatement,
+		transactionStatement,	// this item is a transaction statement. (For Nym -- which numbers are assigned to him.)
+		atTransactionStatement,
 // ------------------------------------------------------------------------------
 		// CASH WITHDRAWAL / DEPOSIT
 		withdrawal,	// this item is a cash withdrawal (of chaumian blinded tokens)
@@ -174,7 +191,12 @@ public:
 		paymentPlan,	// this item is a new payment plan
 		atPaymentPlan,	// server reply or updated notification regarding a payment plan.
 // ------------------------------------------------------------------------------
-//		chequeReceipt,	// Currently don't create an OTItem for cheque receipt in inbox. Not needed.
+		// Now these three receipts have a dual use:  as the receipts in the inbox, and also
+		// as the representation for transactions in the inbox report (for balance statements.)
+		// Actually chequeReceipt is ONLY used for inbox report, and otherwise is not actually
+		// needed for real cheque receipts.  marketReceipt and paymentReceipt are used as real
+		// receipts, and also in inbox reports to represent transaction items in an inbox.
+		chequeReceipt,	// Currently don't create an OTItem for cheque receipt in inbox. Not needed.
 		// I also don't create one for the transfer receipt, currently.
 		// (Although near the top, I do have item types to go in a processInbox message and
 		// clear those transaction types out of my inbox.)
@@ -212,24 +234,51 @@ protected:
 	
 	OTItem(); // Here for now to see if I can get away with it.
 
+	long			m_lAmount;		// for balance, or fee, etc. Only an item can actually have an amount. (Or a "TO" account.)
+
+	
+	listOfItems		m_listItems;	// Sometimes an item needs to have a list of yet more items. Like balance statements have a list of inbox items. (Just the relevant data, not all the attachments and everything.)
+	
+	itemType		m_Type;			// the item type. Could be a transfer, a fee, a balance or client accept/rejecting an item
+	itemStatus		m_Status;		// request, acknowledgment, or rejection.
+
 public:
-	itemType		m_Type;				// the item type. Could be a transfer, a fee, a balance or client accept/rejecting an item
-	itemStatus		m_Status;			// request, acknowledgment, or rejection.
-	long			m_lAmount;			// for balance, or fee, etc. Only an item can actually have an amount. (Or a "TO" account.)
+	
+	// used for looping through the items in a few places.
+	inline listOfItems & GetItemList() { return m_listItems; }
+	
+	OTItem * GetItem(int nIndex); // While processing an item, you may wish to query it for sub-items of a certain type.
+	inline int	GetItemCount() { return m_listItems.size(); }
+	void AddItem(OTItem & theItem); // You have to allocate the item on the heap and then pass it in as a reference. 
+	// OTItem will take care of it from there and will delete it in destructor.
+
+	void ReleaseItems();
 
 	
 	// the "From" accountID and the ServerID are now in the parent class. (2 of each.)
 	
-	OTIdentifier	m_OutboxHash;		// unused for now
-	OTASCIIArmor	m_ascNote;			// a text field for the user. Cron may also store receipt data here.
+	OTIdentifier	m_OutboxHash;		// Used for balance agreement.
+	OTASCIIArmor	m_ascNote;			// a text field for the user. Cron may also store receipt data here. Also inbox reports go here for balance agreement
 	OTASCIIArmor	m_ascAttachment;	// the digital cash token is sent here, signed, and returned here. (or purse of tokens.)
-										// As well as a cheque, or a voucher, or a server update on a market offer.
+										// As well as a cheque, or a voucher, or a server update on a market offer, or a nym full of transactions for balance agreement.
+	
+	// Call this on the server side, on a balanceStatement item, to verify
+	// whether the wallet side set it up correctly (and thus it's okay to sign and return with acknowledgement.)
+	bool VerifyBalanceStatement(const long lActualAdjustment, 
+								 OTPseudonym & THE_NYM,
+								 OTLedger & THE_INBOX,
+								 OTLedger & THE_OUTBOX,
+								const OTAccount & THE_ACCOUNT);
+	
+	bool VerifyTransactionStatement(OTPseudonym & THE_NYM);
 	
 	inline OTItem::itemStatus GetStatus() const { return m_Status; }
 	inline void SetStatus(const OTItem::itemStatus & theVal) { m_Status = theVal; }
 	inline OTItem::itemType GetType() const { return m_Type; }
+	inline void SetType(OTItem::itemType theType) { m_Type = theType; }
 	
 	inline long GetAmount() const { return m_lAmount; }
+	inline void SetAmount(long lAmount) { m_lAmount = lAmount; }
 	
 	void GetNote(OTString & theStr) const;
 	void SetNote(const OTString & theStr);
@@ -246,6 +295,7 @@ public:
 	static OTItem * CreateItemFromTransaction(const OTTransaction & theOwner, OTItem::itemType theType, OTIdentifier * pDestinationAcctID=NULL);
 	
 	
+	OTItem(const OTIdentifier & theUserID, const OTItem & theOwner);// From owner we can get acct ID, server ID, and transaction Num
 	OTItem(const OTIdentifier & theUserID, const OTTransaction & theOwner);// From owner we can get acct ID, server ID, and transaction Num
 	OTItem(const OTIdentifier & theUserID, const OTTransaction & theOwner, OTItem::itemType theType, OTIdentifier * pDestinationAcctID=NULL);
 	
@@ -257,6 +307,8 @@ public:
 //	virtual bool SaveContractWallet(FILE * fl);
 	virtual bool SaveContractWallet(std::ofstream & ofs);
 };
+
+
 
 
 #endif // __OTITEM_H__

@@ -150,9 +150,6 @@ Ledger is derived from contract because you must be able to save / sign it and l
 
 class OTLedger;
 
-typedef std::list  <OTItem *>	listOfItems;
-
-
 
 class OTTransaction : public OTTransactionType
 {	
@@ -163,9 +160,34 @@ public:
 	// a transaction can be blank (issued from server)
 	// or pending (in the inbox/outbox)
 	// or it can be a "process inbox" transaction
-	enum transactionType {
-		blank,			// freshly issued, not used yet  // comes from server, stored on Nym.
-		pending,		// Pending transfer, in the inbox/outbox.
+	// might also be in the nymbox.
+	//
+	enum transactionType 
+	{
+		// ***** INBOX / OUTBOX / NYMBOX
+		
+// --------------------------------------------------------------------------------------
+		// NYMBOX
+		blank,			// freshly issued transaction number, not used yet 
+						// (the server drops these into the nymbox.)
+		message,		// A message from one user to another, also in the nymbox.
+// --------------------------------------------------------------------------------------
+		
+		// INBOX / pending transfer
+		pending,		// Server puts this in your outbox (when sending) and recipient's inbox.
+
+		// INBOX / receipts
+		transferReceipt,// the server drops this into your inbox, when someone accepts your transfer.
+		
+		chequeReceipt,	// the server drops this into your inbox, when someone cashes your cheque.
+		marketReceipt,	// server periodically drops this into your inbox if an offer is live.
+		paymentReceipt,	// the server drops this into people's inboxes, every time a payment processes.
+// --------------------------------------------------------------------------------------
+
+		// **** MESSAGES ****
+		
+		processNymbox,	// process nymbox transaction	 // comes from client
+		atProcessNymbox,// process nymbox reply			 // comes from server
 // --------------------------------------------------------------------------------------
 		processInbox,	// process inbox transaction	 // comes from client
 		atProcessInbox,	// process inbox reply			 // comes from server
@@ -184,11 +206,6 @@ public:
 // --------------------------------------------------------------------------------------
 		paymentPlan,	// this transaction is a payment plan
 		atPaymentPlan,	// reply from the server regarding a payment plan
-// --------------------------------------------------------------------------------------
-		transferReceipt,// the server drops this into your inbox, when someone accepts your transfer.
-		chequeReceipt,	// the server drops this into your inbox, when someone cashes your cheque.
-		marketReceipt,	// server periodically drops this into your inbox if an offer is live.
-		paymentReceipt,	// the server drops this into people's inboxes, every time a payment processes.
 // --------------------------------------------------------------------------------------
 		error_state
 	}; // If you add any types to this list, update the list of strings at the top of the .CPP file.
@@ -215,6 +232,8 @@ public:
 	
 	bool GetSuccess(); // Tries to determine, based on items within, whether it was a success or fail.
 	
+	long GetReceiptAmount(); // Tries to determine IF there is an amount (depending on type) and return it.
+
 	OTTransaction(const OTLedger & theOwner);
 	OTTransaction(const OTIdentifier & theUserID, const OTIdentifier & theAccountID, const OTIdentifier & theServerID);
 	OTTransaction(const OTIdentifier & theUserID, const OTIdentifier & theAccountID, const OTIdentifier & theServerID, long lTransactionNum);
@@ -233,6 +252,8 @@ public:
 	inline transactionType GetType() const { return m_Type; }
 	inline void SetType(const transactionType theType) { m_Type = theType; }
 	
+	bool VerifyItems(OTPseudonym & theNym);
+	
 	// used for looping through the items in a few places.
 	inline listOfItems & GetItemList() { return m_listItems; }
 	
@@ -242,6 +263,10 @@ public:
 									// OTTransaction will take care of it from there and will delete it in destructor.
 //	virtual bool SaveContractWallet(FILE * fl);	
 	virtual bool SaveContractWallet(std::ofstream & ofs);
+
+	
+	void ProduceInboxReportItem(OTItem & theBalanceItem);
+	void ProduceOutboxReportItem(OTItem & theBalanceItem);
 
 // --------------------------------------------------------------
 	

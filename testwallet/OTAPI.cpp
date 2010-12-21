@@ -1558,6 +1558,44 @@ const char * OT_API_LoadAssetAccount(const char * SERVER_ID,
 	return NULL;				
 }
 
+const char * OT_API_LoadNymbox(const char * SERVER_ID,
+							  const char * USER_ID) // Returns NULL, or an inbox.
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	
+	const OTIdentifier theServerID(SERVER_ID);
+	const OTIdentifier theUserID(USER_ID);
+	
+	// There is an OT_ASSERT in here for memory failure,
+	// but it still might return NULL if various verification fails.
+	OTLedger * pLedger = g_OT_API.LoadNymbox(theServerID, theUserID); 
+	
+	// Make sure it gets cleaned up when this goes out of scope.
+	OTCleanup<OTLedger>	theAngel(pLedger); // I pass the pointer, in case it's NULL.
+	
+	if (NULL == pLedger)
+	{
+		OTLog::Output(0, "Failure calling OT_API::LoadNymbox in OT_API_LoadNymbox.\n");
+	}
+	else // success 
+	{
+		OTString strOutput(*pLedger); // For the output
+		
+		const char * pBuf = strOutput.Get(); 
+		
+#ifdef _WIN32
+		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+		strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+		
+		return g_tempBuf;
+	}
+	
+	return NULL;				
+}
+
 const char * OT_API_LoadInbox(const char * SERVER_ID,
 							  const char * USER_ID,
 							  const char * ACCOUNT_ID) // Returns NULL, or an inbox.
@@ -4226,6 +4264,18 @@ void OT_API_getInbox(const char * SERVER_ID,
 }
 
 
+void OT_API_getNymbox(const char * SERVER_ID,
+					  const char * USER_ID)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	
+	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID);
+	
+	g_OT_API.getNymbox(theServerID, theUserID);
+}
+
+
 void OT_API_getOutbox(const char * SERVER_ID,
 					  const char * USER_ID,
 					  const char * ACCT_ID)
@@ -4249,14 +4299,29 @@ void OT_API_processInbox(const char * SERVER_ID,
 	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
 	OT_ASSERT_MSG(NULL != ACCT_ID, "Null ACCT_ID passed in.");
 	OT_ASSERT_MSG(NULL != ACCT_LEDGER, "NULL ACCT_LEDGER passed in.");
-
+	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAcctID(ACCT_ID);
 	OTString strLedger(ACCT_LEDGER);
-
+	
 	g_OT_API.processInbox(theServerID, theUserID, theAcctID, strLedger);
 }
 
+
+void OT_API_processNymbox(const char * SERVER_ID,
+						  const char * USER_ID,
+						  const char * ACCT_LEDGER)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCT_LEDGER, "NULL ACCT_LEDGER passed in.");
 	
+	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID);
+	OTString strLedger(ACCT_LEDGER);
+	
+	g_OT_API.processNymbox(theServerID, theUserID, strLedger);
+}
+
+
 void OT_API_withdrawVoucher(const char * SERVER_ID,
 							const char * USER_ID,
 							const char * ACCT_ID,

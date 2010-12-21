@@ -120,14 +120,35 @@ protected:
 public:
 	
 	enum ledgerType {
-		message,
-		inbox,
-		outbox,
+		message,	// used in OTMessages, to send various lists of transactions back and forth.
+		inbox,		// each asset account has an inbox, with pending transfers as well as receipts inside.
+		outbox,		// if you SEND a pending transfer, it sits in your outbox until it's accepted, rejected, or canceled.
+		nymbox,		// the nymbox is per user account (versus per asset account) and is used to receive new transaction numbers (and messages.)
 		error_state
 	};
 	
 	ledgerType	m_Type;
 		
+protected:
+	bool LoadGeneric(ledgerType theType);
+	bool SaveGeneric(ledgerType theType);
+		
+public:
+	inline ledgerType GetType() const { return m_Type; }
+	
+	
+	// This function assumes that this is an INBOX.
+	// If you don't use an INBOX to call this method, then it will return NULL immediately.
+	// If you DO use an inbox, then it will create a balanceStatement item to go onto your
+	// transaction.  (Transactions require balance statements. And when you get the atBalanceStatement
+	// reply from the server, KEEP THAT RECEIPT. Well, OT will do that for you.)
+	// You only have to keep the latest receipt, unlike systems that don't store balance
+	// agreement.  We also store a list of issued transactions, the new balance, and the outbox hash.
+	OTItem * GenerateBalanceStatement(const long lAdjustment, const OTTransaction & theOwner, 
+									   OTPseudonym & theNym, const OTAccount & theAccount, OTLedger & theOutbox);
+	
+	void ProduceOutboxReport(OTItem & theBalanceItem);  
+
 	bool AddTransaction(OTTransaction & theTransaction);
 	bool RemoveTransaction(long lTransactionNum); // if false, transaction wasn't found.
 	
@@ -138,6 +159,10 @@ public:
 
 	bool SaveInbox();
 	bool LoadInbox();
+	
+	bool SaveNymbox();
+	bool LoadNymbox();
+	
 	bool SaveOutbox();
 	bool LoadOutbox();
 	
@@ -145,10 +170,15 @@ public:
 	
 	inline int GetTransactionCount() { return m_mapTransactions.size(); }
 	
+	
+	long GetTotalPendingValue(); // for inbox only, allows you to lookup the total value of pending transfers within.
+	
 	OTLedger(const OTIdentifier & theUserID, const OTIdentifier & theAccountID, const OTIdentifier & theServerID);	
 	virtual ~OTLedger();
 	
 	virtual void Release();
+	
+	void ReleaseTransactions();
 
 	// ONLY call this if you need to load a ledger where you don't already know the person's UserID
 	// For example, if you need to load someone ELSE's inbox in order to send them a transfer, then
@@ -168,6 +198,16 @@ public:
 
 	virtual bool SaveContractWallet(std::ofstream & ofs);
 //	virtual bool SaveContractWallet(FILE * fl);	
+	
+	// --------------------------------------------------------------
+	
+	static const char * _TypeStrings[]; // for translating transaction type into a string.
+	
+	static inline const char * _GetTypeString(ledgerType theType)
+	{ int nType = (int)theType; return OTLedger::_TypeStrings[nType]; }
+	
+	inline const char * GetTypeString() { return OTLedger::_GetTypeString(m_Type); }
+	
 };
 
 #endif //  __OTLEDGER_H__

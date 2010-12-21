@@ -1077,6 +1077,26 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 			// ------------------------------------------------------------------------
 		}
 		
+		// get nymbox 
+		else if (buf[0] == 'y')
+		{
+			OTLog::Output(0, "(User has instructed to send a getNymbox command to the server...)\n");
+			
+			// ------------------------------------------------------------------------------			
+			// if successful setting up the command payload...
+			
+			if (m_pClient->ProcessUserCommand(OTClient::getNymbox, theMessage, 
+											  *m_pNym, *m_pServerContract,
+											  NULL)) // NULL pAccount on this command.
+			{
+				bSendCommand = true;
+				bSendPayload = true;				
+			}
+			else
+				OTLog::vError("Error processing getNymbox command in ProcessMessage: %c\n", buf[0]);
+			// ------------------------------------------------------------------------
+		}
+		
 		// get inbox 
 		else if (buf[0] == 'i')
 		{
@@ -1086,8 +1106,8 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 			// if successful setting up the command payload...
 			
 			if (m_pClient->ProcessUserCommand(OTClient::getInbox, theMessage, 
-											*m_pNym, *m_pServerContract,
-											NULL)) // NULL pAccount on this command.
+											  *m_pNym, *m_pServerContract,
+											  NULL)) // NULL pAccount on this command.
 			{
 				bSendCommand = true;
 				bSendPayload = true;				

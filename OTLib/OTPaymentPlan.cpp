@@ -869,8 +869,8 @@ bool OTPaymentPlan::ProcessPayment(const long & lAmount)
 			OT_ASSERT(NULL != pItemSend);	
 			OT_ASSERT(NULL != pItemRecip);
 			
-			pItemSend->m_Status		= OTItem::rejection; // the default.
-			pItemRecip->m_Status	= OTItem::rejection; // the default.
+			pItemSend->SetStatus(OTItem::rejection); // the default.
+			pItemRecip->SetStatus(OTItem::rejection); // the default.
 			
 			
 			// Here I make sure that each receipt (each inbox notice) references the original
@@ -954,9 +954,13 @@ bool OTPaymentPlan::ProcessPayment(const long & lAmount)
 			if (true == bSuccess) // The payment succeeded.
 			{
 				// Both accounts involved need to get a receipt of this trade in their inboxes...
-				pItemSend->m_Status		= OTItem::acknowledgement; // pSourceAcct		
-				pItemRecip->m_Status	= OTItem::acknowledgement; // pRecipientAcct
+				pItemSend->SetStatus(OTItem::acknowledgement); // pSourceAcct		
+				pItemRecip->SetStatus(OTItem::acknowledgement); // pRecipientAcct
 								
+				pItemSend->SetAmount(lAmount*(-1));	// "paymentReceipt" is otherwise ambigious about whether you are paying or being paid.
+				pItemRecip->SetAmount(lAmount);		// So, I decided for payment and market receipts, to use negative and positive amounts.
+													// I will probably do the same for cheques, since they can be negative as well (invoices).
+				
 				if (m_bProcessingInitialPayment) // if this is a success for an initial payment
 				{
 					SetInitialPaymentDone();	
@@ -973,8 +977,11 @@ bool OTPaymentPlan::ProcessPayment(const long & lAmount)
 			}
 			else // bSuccess = false.  The payment failed.
 			{
-				pItemSend->m_Status		= OTItem::rejection;// pSourceAcct		// These are already initialized to false.
-				pItemRecip->m_Status	= OTItem::rejection;// pRecipientAcct	// (But just making sure...)
+				pItemSend->SetStatus(OTItem::rejection);// pSourceAcct		// These are already initialized to false.
+				pItemRecip->SetStatus(OTItem::rejection);// pRecipientAcct	// (But just making sure...)
+
+				pItemSend->SetAmount(0);		// No money changed hands. Just being explicit.
+				pItemRecip->SetAmount(0);		// No money changed hands. Just being explicit.		
 
 				if (m_bProcessingInitialPayment)
 				{

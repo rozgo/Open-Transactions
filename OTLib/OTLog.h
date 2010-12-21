@@ -110,6 +110,8 @@ private:
 	static OTString __OTNymFolder;		// Just the folder name
 	static OTString __OTAccountFolder;	// Just the folder name
 	static OTString __OTUserAcctFolder;	// Just the folder name
+	static OTString __OTReceiptFolder;	// Just the folder name
+	static OTString __OTNymboxFolder;	// Just the folder name
 	static OTString __OTInboxFolder;	// Just the folder name
 	static OTString __OTOutboxFolder;	// Just the folder name
 	static OTString __OTCertFolder;		// Just the folder name
@@ -152,6 +154,12 @@ public:
 	
 	static const char *	NymFolder()				{ return __OTNymFolder.Get(); }
 	static void SetNymFolder(const char * szPath)	{ __OTNymFolder.Set(szPath); }
+	
+	static const char *	ReceiptFolder()				{ return __OTReceiptFolder.Get(); }
+	static void SetReceiptFolder(const char * szPath)	{ __OTReceiptFolder.Set(szPath); }
+	
+	static const char *	NymboxFolder()				{ return __OTNymboxFolder.Get(); }
+	static void SetNymboxFolder(const char * szPath)	{ __OTNymboxFolder.Set(szPath); }
 	
 	static const char *	AccountFolder()				{ return __OTAccountFolder.Get(); }
 	static void SetAccountFolder(const char * szPath){ __OTAccountFolder.Set(szPath); }

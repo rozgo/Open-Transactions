@@ -1437,6 +1437,75 @@ OTAccount * OT_API::LoadAssetAccount(const OTIdentifier & SERVER_ID,
 }
 
 
+
+// LOAD NYMBOX
+//
+// Caller IS responsible to delete
+//
+OTLedger * OT_API::LoadNymbox(const OTIdentifier & SERVER_ID,
+							  const OTIdentifier & USER_ID)
+{
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			return NULL;
+		}
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	OTLedger * pLedger = new OTLedger(USER_ID, USER_ID, SERVER_ID);
+	
+	OT_ASSERT_MSG(NULL != pLedger, "Error allocating memory in the OT API.");
+	
+	// Beyond this point, I know that pLedger will need to be deleted or returned.
+	// ------------------------------------------------------
+	
+	if (pLedger->LoadNymbox() && pLedger->VerifyAccount(*pNym))
+		return pLedger;
+	else
+	{
+		OTString strUserID(USER_ID);
+		
+		OTLog::vOutput(0, "Unable to load or verify nymbox:\n%s\n",
+					   strUserID.Get());
+		
+		delete pLedger;
+		pLedger = NULL;		
+	}
+	
+	return  NULL;
+}
+
+
+
 // LOAD INBOX
 //
 // Caller IS responsible to delete
@@ -2786,7 +2855,7 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 		
 		// set up the transaction item (each transaction may have multiple items...)
 		OTItem * pItem		= OTItem::CreateItemFromTransaction(*pTransaction, OTItem::withdrawal);
-		pItem->m_lAmount	= lAmount;
+		pItem->SetAmount(lAmount);
 		
 		const OTPseudonym * pServerNym = pServer->GetContractPublicNym();
 				
@@ -3045,7 +3114,8 @@ void OT_API::notarizeDeposit(OTIdentifier	& SERVER_ID,
 						
 						thePurse.Push(*pServerNym, *pToken);
 						
-						pItem->m_lAmount += pToken->GetDenomination();
+						long lTemp = pItem->GetAmount();
+						pItem->SetAmount(lTemp += pToken->GetDenomination());
 					}
 					
 					delete pToken;
@@ -3228,7 +3298,7 @@ void OT_API::withdrawVoucher(OTIdentifier	& SERVER_ID,
 			
 			// set up the transaction item (each transaction may have multiple items...)
 			OTItem * pItem		= OTItem::CreateItemFromTransaction(*pTransaction, OTItem::withdrawVoucher);
-			pItem->m_lAmount	= lAmount;
+			pItem->SetAmount(lAmount);
 			OTString strNote("Withdraw Voucher: ");
 			pItem->SetNote(strNote);
 			
@@ -4028,7 +4098,7 @@ void OT_API::notarizeTransfer(OTIdentifier	& SERVER_ID,
 		
 		// set up the transaction item (each transaction may have multiple items...)
 		OTItem * pItem		= OTItem::CreateItemFromTransaction(*pTransaction, OTItem::transfer, &ACCT_TO);
-		pItem->m_lAmount	= atol(AMOUNT.Get());
+		pItem->SetAmount(atol(AMOUNT.Get()));
 		
 		// The user can include a note here for the recipient.
 		if (NOTE.Exists() && NOTE.GetLength() > 2) 
@@ -4095,6 +4165,73 @@ void OT_API::notarizeTransfer(OTIdentifier	& SERVER_ID,
 }
 
 
+
+
+
+void OT_API::getNymbox(OTIdentifier & SERVER_ID,
+					   OTIdentifier & USER_ID)
+{
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	// -----------------------------------------------------------------
+	
+	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
+	
+	if (!pServer)
+	{
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
+		
+		return;
+	}
+	
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+		
+	OTMessage theMessage;
+	long lRequestNumber = 0;
+	
+	OTString strServerID(SERVER_ID), strNymID(USER_ID);
+	
+	// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+	pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
+	theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+	pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
+	
+	// (1) set up member variables 
+	theMessage.m_strCommand			= "getNymbox";
+	theMessage.m_strNymID			= strNymID;
+	theMessage.m_strServerID		= strServerID;
+	
+	// (2) Sign the Message 
+	theMessage.SignContract(*pNym);		
+	
+	// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+	theMessage.SaveContract();
+	
+	// (Send it)
+#if defined(OT_XMLRPC_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+	m_pClient->ProcessMessageOut(theMessage);	
+}
 
 
 
@@ -4261,6 +4398,78 @@ void OT_API::getOutbox(OTIdentifier & SERVER_ID,
 
 
 
+void OT_API::processNymbox(OTIdentifier	& SERVER_ID,
+						   OTIdentifier	& USER_ID,
+						   OTString		& NYMBOX_LEDGER)
+{
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	// -----------------------------------------------------------------
+	
+	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
+	
+	if (!pServer)
+	{
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
+		
+		return;
+	}
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+		
+	OTMessage theMessage;
+	long lRequestNumber = 0;
+	
+	OTString strServerID(SERVER_ID), strNymID(USER_ID);
+	
+	// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+	pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
+	theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+	pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
+	
+	// (1) set up member variables 
+	theMessage.m_strCommand			= "processNymbox";
+	theMessage.m_strNymID			= strNymID;
+	theMessage.m_strServerID		= strServerID;
+	
+	// Presumably NYMBOX_LEDGER was already set up before this function was called...
+	// See test client for example of it being done.
+	theMessage.m_ascPayload.SetString(NYMBOX_LEDGER);
+	
+	// (2) Sign the Message 
+	theMessage.SignContract(*pNym);		
+	
+	// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+	theMessage.SaveContract();
+	
+	// (Send it)
+#if defined(OT_XMLRPC_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+	m_pClient->ProcessMessageOut(theMessage);	
+}
+
+
+
+
 void OT_API::processInbox(OTIdentifier	& SERVER_ID,
 						  OTIdentifier	& USER_ID,
 						  OTIdentifier	& ACCT_ID,
@@ -4330,7 +4539,7 @@ void OT_API::processInbox(OTIdentifier	& SERVER_ID,
 	// Presumably ACCT_LEDGER was already set up before this function was called...
 	// See test client for example of it being done.
 	theMessage.m_ascPayload.SetString(ACCT_LEDGER);
-
+	
 	// (2) Sign the Message 
 	theMessage.SignContract(*pNym);		
 	

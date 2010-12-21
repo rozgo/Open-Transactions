@@ -166,11 +166,15 @@ public:
 		getTransactionNum,	// Every transaction requires a transaction number. If your wallet doesn't have one, 
 							// then here it can request the server to send one over. (Or several.)
 		
+		getNymbox,			// Grab a copy of my nymbox (contains messages and new transaction numbers)
+		
 		getInbox,			// Grab a copy of my inbox from the server so I can decide what to do with it.
 		
 		getOutbox,			// Grab a copy of my outbox from the server so I can decide what to do with it.
 		
-		processInbox,		// Instruct the server what to do with the various items sitting in my inbox.
+		processNymbox,		// Instruct the server what to do with the various items sitting in my nymbox. (per user)
+		
+		processInbox,		// Instruct the server what to do with the various items sitting in my inbox. (per asset acct)
 		
 		getAccount,			// Grab the server's copy of my asset account file, in case mine is lost.
 		
@@ -281,7 +285,8 @@ public:
 
 	
 	void AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theConnection);
-	
+	void AcceptEntireNymbox(OTLedger & theNymbox, OTServerConnection & theConnection);
+
 	void HarvestTransactionNumbers(OTTransaction & theTransaction, OTPseudonym & theNym);	
 
 };

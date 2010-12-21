@@ -1053,10 +1053,10 @@ void OTMarket::ProcessTrade(OTTrade & theTrade, OTOffer & theOffer, OTOffer & th
 			OT_ASSERT(NULL != pItem1);	OT_ASSERT(NULL != pItem2);
 			OT_ASSERT(NULL != pItem3);	OT_ASSERT(NULL != pItem4);
 			
-			pItem1->m_Status	= OTItem::rejection; // the default.
-			pItem2->m_Status	= OTItem::rejection; // the default.
-			pItem3->m_Status	= OTItem::rejection; // the default.
-			pItem4->m_Status	= OTItem::rejection; // the default.
+			pItem1->SetStatus(OTItem::rejection); // the default.
+			pItem2->SetStatus(OTItem::rejection); // the default.
+			pItem3->SetStatus(OTItem::rejection); // the default.
+			pItem4->SetStatus(OTItem::rejection); // the default.
 
 			
 			// Calculate the amount and remove / add it to the relevant accounts.
@@ -1191,6 +1191,7 @@ void OTMarket::ProcessTrade(OTTrade & theTrade, OTOffer & theOffer, OTOffer & th
 			bool bSuccess = false;
 			
 			long lOfferFinished = 0, lOtherOfferFinished = 0; // We store these up and then add the totals to the offers at the end (only upon success.)
+			long lTotalPaidOut = 0; // However much is paid for the assets, total.
 			
 			// Continuing the example from above, each round I will trade:
 			//		50 oz lMinIncrementPerRound, in return for $65,000 lPrice.
@@ -1230,6 +1231,8 @@ void OTMarket::ProcessTrade(OTTrade & theTrade, OTOffer & theOffer, OTOffer & th
 				// The while() above checks these values in GetAmountAvailable().
 				lOfferFinished		+= lMinIncrementPerRound;
 				lOtherOfferFinished	+= lMinIncrementPerRound;
+				
+				lTotalPaidOut		+= lPrice;
 			}
 			
 			
@@ -1245,10 +1248,10 @@ void OTMarket::ProcessTrade(OTTrade & theTrade, OTOffer & theOffer, OTOffer & th
 			if (true == bSuccess)
 			{
 				// ALL of the four accounts involved need to get a receipt of this trade in their inboxes...
-				pItem1->m_Status	= OTItem::acknowledgement; // pFirstAssetAcct		
-				pItem2->m_Status	= OTItem::acknowledgement; // pFirstCurrencyAcct
-				pItem3->m_Status	= OTItem::acknowledgement; // pOtherAssetAcct
-				pItem4->m_Status	= OTItem::acknowledgement; // pOtherCurrencyAcct				
+				pItem1->SetStatus(OTItem::acknowledgement); // pFirstAssetAcct		
+				pItem2->SetStatus(OTItem::acknowledgement); // pFirstCurrencyAcct
+				pItem3->SetStatus(OTItem::acknowledgement); // pOtherAssetAcct
+				pItem4->SetStatus(OTItem::acknowledgement); // pOtherCurrencyAcct				
 
 				
 				// Everytime a trade processes, a receipt is put in the user's inbox.
@@ -1386,7 +1389,26 @@ void OTMarket::ProcessTrade(OTTrade & theTrade, OTOffer & theOffer, OTOffer & th
 			pItem2->SetAttachment(strOffer);
 			pItem3->SetAttachment(strOtherOffer);
 			pItem4->SetAttachment(strOtherOffer);
-
+			
+			
+			// Inbox receipts need to clearly show the amount moved...
+			// Also need to clearly show negative or positive, since that
+			// is otherwise not obvious just because you have a marketReceipt...
+			if (theOffer.IsAsk()) // I'm selling, he's buying
+			{
+				pItem1->SetAmount(lOfferFinished*(-1));	// first asset
+				pItem2->SetAmount(lTotalPaidOut);		// first currency
+				pItem3->SetAmount(lOtherOfferFinished);	// other asset
+				pItem4->SetAmount(lTotalPaidOut*(-1));	// other currency
+			}
+			else	// I'm buying, he's selling
+			{
+				pItem1->SetAmount(lOfferFinished);	// first asset
+				pItem2->SetAmount(lTotalPaidOut*(-1));		// first currency
+				pItem3->SetAmount(lOtherOfferFinished*(-1));	// other asset
+				pItem4->SetAmount(lTotalPaidOut);	// other currency
+			}
+			
 			// -----------------------------------------------------------------
 			
 			if (true == bSuccess)
@@ -1518,7 +1540,7 @@ void OTMarket::ProcessTrade(OTTrade & theTrade, OTOffer & theOffer, OTOffer & th
 						delete pTrans1;	pTrans1	= NULL;
 					}
 					
-					pTempItem->m_Status = OTItem::rejection;
+					pTempItem->SetStatus(OTItem::rejection);
 					pTempItem->SignContract(*pServerNym);					
 					pTempItem->SaveContract();
 					
@@ -1566,7 +1588,7 @@ void OTMarket::ProcessTrade(OTTrade & theTrade, OTOffer & theOffer, OTOffer & th
 						delete pTrans2;	pTrans2	= NULL;
 					}
 					
-					pTempItem->m_Status	= OTItem::rejection;
+					pTempItem->SetStatus(OTItem::rejection);
 					pTempItem->SignContract(*pServerNym);					
 					pTempItem->SaveContract();
 

@@ -4088,6 +4088,73 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_OT_API_getNymbox) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  OT_API_getNymbox((char const *)arg1,(char const *)arg2);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_LoadNymbox) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *result = 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  result = (char *)OT_API_LoadNymbox((char const *)arg1,(char const *)arg2);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value,result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_OT_API_processInbox) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -4125,6 +4192,43 @@ ZEND_NAMED_FUNCTION(_wrap_OT_API_processInbox) {
     /*@SWIG@*/;
   }
   OT_API_processInbox((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_processNymbox) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  zval **args[3];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[2]);
+    arg3 = (char *) Z_STRVAL_PP(args[2]);
+    /*@SWIG@*/;
+  }
+  OT_API_processNymbox((char const *)arg1,(char const *)arg2,(char const *)arg3);
   
   return;
 fail:
@@ -4704,7 +4808,10 @@ static function_entry otapi_functions[] = {
  ZEND_NAMED_FE(ot_api_notarizetransfer,_wrap_OT_API_notarizeTransfer,NULL)
  ZEND_NAMED_FE(ot_api_getinbox,_wrap_OT_API_getInbox,NULL)
  ZEND_NAMED_FE(ot_api_getoutbox,_wrap_OT_API_getOutbox,NULL)
+ ZEND_NAMED_FE(ot_api_getnymbox,_wrap_OT_API_getNymbox,NULL)
+ ZEND_NAMED_FE(ot_api_loadnymbox,_wrap_OT_API_LoadNymbox,NULL)
  ZEND_NAMED_FE(ot_api_processinbox,_wrap_OT_API_processInbox,NULL)
+ ZEND_NAMED_FE(ot_api_processnymbox,_wrap_OT_API_processNymbox,NULL)
  ZEND_NAMED_FE(ot_api_withdrawvoucher,_wrap_OT_API_withdrawVoucher,NULL)
  ZEND_NAMED_FE(ot_api_depositcheque,_wrap_OT_API_depositCheque,NULL)
  ZEND_NAMED_FE(ot_api_depositpaymentplan,_wrap_OT_API_depositPaymentPlan,NULL)
