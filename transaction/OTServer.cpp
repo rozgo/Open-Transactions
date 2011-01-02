@@ -1213,9 +1213,7 @@ void OTServer::UserCmdGetTransactionNum(OTPseudonym & theNym, OTMessage & MsgIn,
 	OTIdentifier USER_ID;
 	const OTIdentifier SERVER_ID(m_strServerID);
 	theNym.GetIdentifier(USER_ID);
-	
-	OTString strInReferenceTo(MsgIn);
-	
+		
 	OTLedger theLedger(USER_ID, USER_ID, SERVER_ID);
 		
 	if (!bGotNextTransNum)
@@ -1229,12 +1227,13 @@ void OTServer::UserCmdGetTransactionNum(OTPseudonym & theNym, OTMessage & MsgIn,
 		OTTransaction * pTransaction = OTTransaction::GenerateTransaction(theLedger, OTTransaction::blank, lTransNum);
 		
 		if (NULL != pTransaction) // The above has an OT_ASSERT within, but I just like to check my pointers.
-		{
+		{			
 			pTransaction->	SignContract(m_nymServer);
 			pTransaction->	SaveContract();
 
 			theLedger.AddTransaction(*pTransaction);
 			
+			theLedger.ReleaseSignatures();
 			theLedger.SignContract(m_nymServer);
 			theLedger.SaveContract();
 			theLedger.SaveNymbox();
@@ -2014,24 +2013,63 @@ void OTServer::UserCmdCreateAccount(OTPseudonym & theNym, OTMessage & MsgIn, OTM
 		if (true == bSuccessLoadingInbox) // WEIRD IF THIS HAPPENED...
 			bSuccessLoadingInbox	= theInbox.VerifyAccount(m_nymServer); // todo -- this should NEVER happen, the ID was just RANDOMLY generated, so HOW did the inbox already exist???
 		else
+		{
 			bSuccessLoadingInbox	= theInbox.GenerateLedger(theNewAccountID, SERVER_ID, OTLedger::inbox, true); // bGenerateFile=true
-		
+			
+			if (bSuccessLoadingInbox)
+			{
+				bSuccessLoadingInbox	= theInbox.SignContract(m_nymServer);
+				
+				if (bSuccessLoadingInbox)
+				{
+					bSuccessLoadingInbox = theInbox.SaveContract();
+					
+					if (bSuccessLoadingInbox)
+						bSuccessLoadingInbox	= theInbox.SaveInbox();
+				}
+			}
+		}
 		
 		// --------------------------------------------------------------------
 		
 		if (true == bSuccessLoadingOutbox) // WEIRD IF THIS HAPPENED....
 			bSuccessLoadingOutbox	= theOutbox.VerifyAccount(m_nymServer);	// todo -- this should NEVER happen, the ID was just RANDOMLY generated, so HOW did the outbox already exist???
 		else
+		{
 			bSuccessLoadingOutbox	= theOutbox.GenerateLedger(theNewAccountID, SERVER_ID, OTLedger::outbox, true); // bGenerateFile=true
+			
+			if (bSuccessLoadingOutbox)
+			{
+				bSuccessLoadingOutbox	= theOutbox.SignContract(m_nymServer);
+				
+				if (bSuccessLoadingOutbox)
+				{
+					bSuccessLoadingOutbox = theOutbox.SaveContract();
+					
+					if (bSuccessLoadingOutbox)
+						bSuccessLoadingOutbox	= theOutbox.SaveOutbox();
+				}
+			}
+		}
 		
 		// --------------------------------------------------------------------
 		
-		if (false == bSuccessLoadingInbox || false == bSuccessLoadingOutbox)
+		if (false == bSuccessLoadingInbox)
 		{
-			OTLog::Error("ERROR generating inbox or outbox ledger in OTServer::UserCmdCreateAccount.\n");
+			OTString strNewAcctID(theNewAccountID);
+			
+			OTLog::vError("ERROR generating inbox ledger in OTServer::UserCmdCreateAccount:\n%s\n",
+						  strNewAcctID.Get());
+		}
+		else if (false == bSuccessLoadingOutbox)
+		{
+			OTString strNewAcctID(theNewAccountID);
+
+			OTLog::vError("ERROR generating outbox ledger in OTServer::UserCmdCreateAccount:\n%s\n", 
+						  strNewAcctID.Get());
 		}
 		else 
-		{
+		{			
 			msgOut.m_bSuccess = true; // <==== SUCCESS!!
 			
 			pNewAccount->GetIdentifier(msgOut.m_strAcctID);
@@ -2039,7 +2077,8 @@ void OTServer::UserCmdCreateAccount(OTPseudonym & theNym, OTMessage & MsgIn, OTM
 			OTString tempPayload(*pNewAccount);
 			msgOut.m_ascPayload.SetString(tempPayload);
 		}
-			// --------------------------------------------------------------------
+		
+		// --------------------------------------------------------------------
 
 		delete pNewAccount;
 		pNewAccount = NULL;
@@ -4712,7 +4751,7 @@ void OTServer::NotarizeProcessNymbox(OTPseudonym & theNym, OTTransaction & tranI
 		tranOut.AddItem(*pResponseBalanceItem); // the Transaction's destructor will cleanup the item. It "owns" it now.		
 		
 		
-		// This transaction accepts various messages and transaction numbers.
+		// The incoming transaction accepts various messages and transaction numbers.
 		// So when it's all finished, my list of transaction numbers will be higher.
 		// 
 		// I would like to not even process the whole giant loop below, 
@@ -4746,7 +4785,7 @@ void OTServer::NotarizeProcessNymbox(OTPseudonym & theNym, OTTransaction & tranI
 				{
 					bSuccessFindingAllTransactions = true;
 					
-					theNym.AddIssuedNum(m_strServerID, pItem->GetReferenceToNum());
+					theNym.AddIssuedNum(m_strServerID, pItem->GetReferenceToNum()); 
 					theTempNym.AddIssuedNum(m_strServerID, pItem->GetReferenceToNum()); // so I can remove from theNym after VerifyTransactionStatement call
 				}
 				else 
@@ -4770,9 +4809,9 @@ void OTServer::NotarizeProcessNymbox(OTPseudonym & theNym, OTTransaction & tranI
 				theNym.RemoveIssuedNum(m_strServerID, lTemp);
 			}			
 		}
-		else if (false == pBalanceItem->VerifyTransactionStatement(theNym)) // <====== VERIFY TRANSACTION STATEMENT IS HERE.
+		else if (false == pBalanceItem->VerifyTransactionStatement(theNym, false)) // bIsRealTransaction=false (since we're doing Nymbox)
 		{
-			OTLog::vOutput(0, "OTServer::NotarizeProcessNymbox: ERROR verifying transaction statement.");
+			OTLog::vOutput(0, "OTServer::NotarizeProcessNymbox: ERROR verifying transaction statement.\n");
 			
 			// Remove all issued nums from theNym that are stored on theTempNym HERE.
 			for (int i = 0; i < theTempNym.GetIssuedNumCount(SERVER_ID); i++)
@@ -4801,12 +4840,21 @@ void OTServer::NotarizeProcessNymbox(OTPseudonym & theNym, OTTransaction & tranI
 			//
 			// (TO VERIFY TRANSACTION AGREEMENT BEFORE WE BOTHERED TO RUN THIS LOOP BELOW...)
 			
-			// loop through the items that make up the incoming transaction 
+			// loop through the items that make up the incoming transaction, and add them
+			// to the Nym, and remove them from the Nymbox, as appropriate.
+			//
 			for (listOfItems::iterator ii = tranIn.GetItemList().begin(); ii != tranIn.GetItemList().end(); ++ii)
 			{
 				pItem = *ii;
 				
 				OT_ASSERT_MSG(NULL != pItem, "Pointer should not have been NULL.");
+				
+				// We already handled this one (if we're even in this block in the first place.)
+				//
+				if (OTItem::transactionStatement	== pItem->GetType())
+				{
+					continue;
+				}
 				
 				// If the client sent an accept item then let's process it.
 				if ( 
@@ -4814,7 +4862,7 @@ void OTServer::NotarizeProcessNymbox(OTPseudonym & theNym, OTTransaction & tranI
 					&&
 					(
 					 (OTItem::acceptTransaction	== pItem->GetType()) ||	// Accepting new transaction number.
-					 (OTItem::acceptMessage		== pItem->GetType())		// Accepted message.
+					 (OTItem::acceptMessage		== pItem->GetType())	// Accepted message.
 					 )
 					)
 				{
@@ -4909,7 +4957,7 @@ void OTServer::NotarizeProcessNymbox(OTPseudonym & theNym, OTTransaction & tranI
 								 (OTItem::acceptTransaction == pItem->GetType())
 								 &&
 								 (OTTransaction::blank == pServerTransaction->GetType())
-								 )
+								)
 						{
 							// pItem contains the current user's attempt to accept the 
 							// transaction number located in pServerTransaction.
@@ -4942,14 +4990,19 @@ void OTServer::NotarizeProcessNymbox(OTPseudonym & theNym, OTTransaction & tranI
 					// whenever a response item has just been signed. (Normally this is where
 					// this response item would be added to the transaction as well, but I chose
 					// to add it at the time it was constructed, so the transaction could be sure
-					// to take care of destruction.
+					// to take care of destruction.)
 					tranOut.ReleaseSignatures();
 					tranOut.SignContract(m_nymServer);
 					tranOut.SaveContract();
 				}
 				else 
 				{
-					OTLog::Error("Error, unexpected OTItem::itemType in OTServer::NotarizeProcessNymbox\n");
+					const int nStatus	= pItem->GetStatus();
+					OTString strItemType;
+					pItem->GetTypeString(strItemType);
+					
+					OTLog::vError("Error, unexpected item type (%s) and/or status (%d) in OTServer::NotarizeProcessNymbox\n",
+								 strItemType.Get(), nStatus);
 				} // if type == ACCEPT (only)
 			} // for each item
 		} // else (balance agreement verified.)
@@ -6074,7 +6127,22 @@ bool OTServer::ProcessUserCommand(OTMessage & theMessage, OTMessage & msgOut, OT
 								if (true == bSuccessLoadingNymbox) // that's strange, this user didn't exist... but maybe I allow people to drop notes anyway, so then the nymbox might already exist, with usage tokens and messages inside....
 									bSuccessLoadingNymbox	= theNymbox.VerifyAccount(m_nymServer); // make sure it's all good.
 								else
+								{
 									bSuccessLoadingNymbox	= theNymbox.GenerateLedger(theNewNymID, SERVER_ID, OTLedger::nymbox, true); // bGenerateFile=true
+									
+									if (bSuccessLoadingNymbox)
+									{
+										bSuccessLoadingNymbox	= theNymbox.SignContract(m_nymServer);
+										
+										if (bSuccessLoadingNymbox)
+										{
+											bSuccessLoadingNymbox = theNymbox.SaveContract();
+											
+											if (bSuccessLoadingNymbox)
+												bSuccessLoadingNymbox	= theNymbox.SaveNymbox();
+										}
+									}
+								}
 								
 								// by this point, the nymbox DEFINITELY exists -- or not. (generation might have failed, or verification.)
 								

@@ -10,14 +10,15 @@ Fully-Anonymous (cash only): http://billstclair.com/ot/OT-Anon-CashOnly.jpg
 Pseudo-Anonymous (using accounts): http://billstclair.com/ot/OT-Pseudonym-Instruments.jpg
 
 Featuring: 
-    -- Untraceable Digital Cash (real blinded tokens). 
-    -- Pseudonymous User Accounts ('account' == PGP key). 
-    -- Many Financial Instruments (cheques, cash, vouchers, invoices...)
-    -- Anyone An Issuer (Ricardian-style Contracts) 
-    -- Triple-Signed Receipts 
-    -- Basket Currencies
-    -- NEW! Markets with Trades
-    -- NEW! Payment Plans 
+    -- Untraceable Digital Cash     (real blinded tokens)
+    -- Anyone An Issuer             (Ricardian-style Contracts) 
+    -- Bearer-only, Fully-Anonymous (when used cash-only)
+    -- Pseudonymous User Accounts   (user account == PGP key)
+    -- No Account History           (asset account == the last receipt)
+    -- Many Financial Instruments   (cheques, cash, vouchers, invoices...)
+    -- Basket Currencies            (ex:  10 "baskets" == 5 gold, 3 silver, 100 wheat)
+    -- NEW! Markets with Trades     (day orders, limit orders, fill-or-kill...)
+    -- NEW! Payment Plans
     -- NEW! Native API for Java, Ruby, Python, PHP, Perl, C, 
        C++, Objective-C, C#, Tcl, and LISP
     -- NEW! XmlRpc/HTTP transport layer (build option)
@@ -73,12 +74,22 @@ types, by uploading the new currency contract to the server. (This
 functionality is comparable to Ricardo, the transaction server by
 IanG.)
 
--- Triple-Signed Receipts. Client and server are able to agree on
+-- No Account History. Client and server are able to agree on
 balances while simultaneously not storing any transaction history.
 No digital assets can ever be transferred or withdrawn without an
 authorizing signature from the account owner. (Account transfers are
 received via inbox. See Bill St. Clair's excellent Trubanc for an
 example of this.)
+
+-- No Account History. Client and server are able to conduct
+transactions and agree on current holdings via signed receipts. An
+"asset account" is not according to the traditional sense of the word
+("a list of transactions, with a balance, used in double-entry book-
+keeping.") In the user interface, OT is able to mimic the account
+metaphor, making usage intuitive, even though no actual "account"
+need be stored on either side, other than the signed receipt itself!
+See Bill St. Clair's excellent Truledger (http://truledger.com/) for
+another example of this concept.
 
 -- Open Transactions also features MARKETS. Any two asset types can
 be traded against each other. The markets are full-featured and

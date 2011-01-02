@@ -333,7 +333,7 @@ bool OTLedger::GenerateLedger(const OTIdentifier & theAcctID,
 			m_Type	= theType;
 			return true;
 		default:
-			OT_ASSERT_MSG(false, "ERROR: GenerateLedger is only for message, inbox, outbox, and nymbox ledgers.\n");
+			OT_ASSERT_MSG(false, "OTLedger::GenerateLedger: GenerateLedger is only for message, inbox, outbox, and nymbox ledgers.\n");
 			return false; // this return is unecessary because of the assert. But I like having it anyway.
 	}
 	
@@ -345,11 +345,11 @@ bool OTLedger::GenerateLedger(const OTIdentifier & theAcctID,
 	if (bCreateFile)
 	{
 		// Try to load the ledger from disk.
-		bool bLoaded	= LoadContract();
+		bool bAlreadyThere	= OTLog::ConfirmExactPath(m_strFilename.Get());
 		
-		if (bLoaded)
+		if (bAlreadyThere)
 		{
-			OTLog::vError("ERROR: trying to generate ledger that already exists: %s\n", strID.Get());
+			OTLog::vOutput(0, "ERROR: trying to generate ledger that already exists: %s\n", strID.Get());
 			return false;
 		}
 	

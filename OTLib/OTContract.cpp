@@ -930,7 +930,7 @@ bool OTContract::VerifyContractDefaultHash(const EVP_PKEY * pkey, const OTSignat
 	}
 	else
 	{
-		OTLog::vError("RSA_verify_PKCS1_PSS failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
+		OTLog::vOutput(5, "RSA_verify_PKCS1_PSS failed with error %s\n", ERR_error_string(ERR_get_error(), NULL));
 		RSA_free(pRsaKey); pRsaKey = NULL;
 		return false;
 	}

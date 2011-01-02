@@ -576,12 +576,7 @@ void OTMessage::UpdateContents()
 								  m_strNymID.Get(),
 								  m_strServerID.Get()
 								  );
-		
-		// I would check if this was empty, but it should never be empty...
-		// famous last words.
-		if (m_ascPayload.GetLength())
-			m_xmlUnsigned.Concatenate("<responseNym>\n%s</responseNym>\n\n", m_ascPayload.Get());
-		
+
 		m_xmlUnsigned.Concatenate("</%s>\n\n", m_strCommand.Get());
 	} // ------------------------------------------------------------------------
 	
@@ -1962,46 +1957,46 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strServerID	= xml->getAttributeValue("serverID");
 		
 		// move to the next node 
-		xml->read();
-		
-		if (EXN_ELEMENT == xml->getNodeType())  
-		{
-			if (!strcmp("responseNym", xml->getNodeName())) 
-			{		
-				if (false == LoadEncodedTextField(xml, m_ascPayload))
-				{
-					OTLog::Error("Error in OTMessage::ProcessXMLNode: Expected responseNym text field in @getTransactionNum.\n");
-					return (-1); // error condition
-				}
-				
-				xml->read(); // This puts us onto the closing tag
-
-				return 1;
-			}
-			else 
-			{
-				OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
-				return (-1);
-			}
-			
-		}
-		else
-		{
-			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-					"Unexpected text field in @getTransactionNum reply: %s   %s\n",
-					xml->getNodeName(), xml->getNodeData());
-			return (-1); // error condition
-		}
-		
-		// Did we find everything we were looking for?
-		// If the "command responding to" isn't there, or the Payload isn't there, then failure.
-		if (m_bSuccess && !m_ascPayload.GetLength())
-		{
-			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-					"Expected responseNym element with text field in "
-					"@getTransactionNum reply\n");
-			return (-1); // error condition			
-		}
+//		xml->read();
+//		
+//		if (EXN_ELEMENT == xml->getNodeType())  
+//		{
+//			if (!strcmp("responseNym", xml->getNodeName())) 
+//			{		
+//				if (false == LoadEncodedTextField(xml, m_ascPayload))
+//				{
+//					OTLog::Error("Error in OTMessage::ProcessXMLNode: Expected responseNym text field in @getTransactionNum.\n");
+//					return (-1); // error condition
+//				}
+//				
+//				xml->read(); // This puts us onto the closing tag
+//
+//				return 1;
+//			}
+//			else 
+//			{
+//				OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
+//				return (-1);
+//			}
+//			
+//		}
+//		else
+//		{
+//			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
+//					"Unexpected text field in @getTransactionNum reply: %s   %s\n",
+//					xml->getNodeName(), xml->getNodeData());
+//			return (-1); // error condition
+//		}
+//		
+//		// Did we find everything we were looking for?
+//		// If the "command responding to" isn't there, or the Payload isn't there, then failure.
+//		if (m_bSuccess && !m_ascPayload.GetLength())
+//		{
+//			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
+//					"Expected responseNym element with text field in "
+//					"@getTransactionNum reply\n");
+//			return (-1); // error condition			
+//		}
 		
 		//		OTString acctContents(m_ascPayload);
 		OTLog::vOutput(1, "\n Command: %s   %s\n NymID:    %s\n"

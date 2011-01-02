@@ -294,6 +294,23 @@ int main (int argc, char **argv)
 			continue;
 		}
 		
+		else if (strLine.compare(0,5,"clear") == 0)
+		{
+			if (NULL == g_pTemporaryNym)
+			{
+				OTLog::Output(0, "No Nym yet available. Try 'load'.\n");
+				continue;
+			}
+			
+			g_pTemporaryNym->RemoveAllNumbers();
+			
+			g_pTemporaryNym->SaveSignedNymfile(*g_pTemporaryNym);
+			
+			OTLog::Output(0, "Successfully removed all issued and transaction numbers. Saving nym...\n");
+			
+			continue;
+		}			
+		
 		else if (strLine.compare(0,7,"payment") == 0)
 		{
 			if (NULL == g_pTemporaryNym)

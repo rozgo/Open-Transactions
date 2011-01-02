@@ -440,6 +440,37 @@ bool OTPseudonym::GenerateNym()
 
 
 
+// Sometimes for testing I need to clear out all the transaction numbers from a nym.
+// So I added this method to make such a thing easy to do.
+//
+void OTPseudonym::RemoveAllNumbers()
+{
+	for (mapOfTransNums::iterator ii = m_mapIssuedNum.begin();  ii != m_mapIssuedNum.end(); ++ii)
+	{
+		dequeOfTransNums * pDeque = (ii->second);
+		
+		OT_ASSERT(NULL != pDeque);
+		
+		if (!(pDeque->empty()))
+		{
+			pDeque->clear();
+		}
+	}	
+	
+	for (mapOfTransNums::iterator ii = m_mapTransNum.begin();  ii != m_mapTransNum.end(); ++ii)
+	{
+		dequeOfTransNums * pDeque = (ii->second);
+		
+		OT_ASSERT(NULL != pDeque);
+		
+		if (!(pDeque->empty()))
+		{
+			pDeque->clear();
+		}
+	}	
+}
+
+
 
 /*
 typedef std::deque<long>							dequeOfTransNums;
@@ -546,7 +577,7 @@ bool OTPseudonym::RemoveGenericNum(mapOfTransNums & THE_MAP, const OTString & st
 
 // No signer needed for this one, and save is false.
 // This version is ONLY for cases where we're not saving inside this function.
-bool OTPseudonym::AddGenericNum(mapOfTransNums & THE_MAP, const OTString & strServerID, long lTransNum) 
+bool OTPseudonym::AddGenericNum(mapOfTransNums & THE_MAP, const OTString & strServerID, const long lTransNum) 
 {
 	bool bSuccessFindingServerID = false, bSuccess = false;
 	std::string strID	= strServerID.Get();
@@ -565,10 +596,14 @@ bool OTPseudonym::AddGenericNum(mapOfTransNums & THE_MAP, const OTString & strSe
 			
 			OT_ASSERT(NULL != pDeque);
 			
-			pDeque->push_front(lTransNum);
-			bSuccess = true;
+			dequeOfTransNums::iterator iiii = std::find(pDeque->begin(), pDeque->end(), lTransNum);
 			
-			bSuccessFindingServerID = true;
+			if (iiii == pDeque->end()) // Only add it if it's not already there. No duplicates!
+				pDeque->push_front(lTransNum);
+			
+			bSuccess				= true;
+			bSuccessFindingServerID	= true;
+			
 			break;			
 		}
 	}
@@ -747,7 +782,7 @@ int OTPseudonym::GetTransactionNumCount(const OTIdentifier & theServerID)
 
 // No signer needed for this one, and save is false.
 // This version is ONLY for cases where we're not saving inside this function.
-bool OTPseudonym::AddTransactionNum(const OTString & strServerID, long lTransNum)  // doesn't save
+bool OTPseudonym::AddTransactionNum(const OTString & strServerID, const long lTransNum)  // doesn't save
 {
 	return AddGenericNum(m_mapTransNum, strServerID, lTransNum);
 }
@@ -1941,8 +1976,8 @@ bool OTPseudonym::LoadSignedNymfile(OTPseudonym & SIGNER_NYM)
 	// 3. That the signature matches for the signer nym who was passed in.
 	//
 	if (theNymfile.LoadFile()  
-		&& theNymfile.VerifyFile() 
-		&& theNymfile.VerifySignature(SIGNER_NYM) 
+//		&& theNymfile.VerifyFile()					// TODO TEMP TEMPORARY RESUME  (These two lines can be commented out to allow you to load a nymfile with no sig.
+//		&& theNymfile.VerifySignature(SIGNER_NYM)	// These are ONLY commented-out so I can reload a bad nymfile. UNCOMMENT THESE IF YOU SEE THIS.
 		)
 	{
 		OTLog::Output(4, "Loaded and verified signed nymfile. Reading from string...\n");

@@ -1117,6 +1117,27 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 			// ------------------------------------------------------------------------
 		}
 		
+		// get outbox 
+		else if (buf[0] == 'o')
+		{
+			OTLog::Output(0, "(User has instructed to send a getOutbox command to the server...)\n");
+			
+			// ------------------------------------------------------------------------------			
+			// if successful setting up the command payload...
+			
+			if (m_pClient->ProcessUserCommand(OTClient::getOutbox, theMessage, 
+											  *m_pNym, *m_pServerContract,
+														 NULL)) // NULL pAccount on this command.
+			{
+				bSendCommand = true;
+				bSendPayload = true;				
+			}
+			else
+				OTLog::vError("Error processing getOutbox command in ProcessMessage: %c\n", buf[0]);
+			// ------------------------------------------------------------------------
+		}
+		
+		
 		// deposit cheque
 		else if (buf[0] == 'q')
 		{

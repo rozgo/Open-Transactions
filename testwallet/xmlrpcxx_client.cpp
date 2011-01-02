@@ -304,7 +304,21 @@ int main(int argc, char* argv[])
 		{
 			continue;
 		}
-		
+		else if (strLine.compare(0,5,"clear") == 0)
+		{
+			if (NULL == g_pTemporaryNym)
+			{
+				OTLog::Output(0, "No Nym yet available. Try 'load'.\n");
+				continue;
+			}
+			
+			g_pTemporaryNym->RemoveAllNumbers();
+			
+			g_pTemporaryNym->SaveSignedNymfile(*g_pTemporaryNym);
+			
+			OTLog::Output(0, "Successfully removed all issued and transaction numbers. Saving nym...\n");
+			continue;
+		}			
 		else if (strLine.compare(0,7,"payment") == 0)
 		{
 			if (NULL == g_pTemporaryNym)
@@ -1119,6 +1133,25 @@ int main(int argc, char* argv[])
 				}
 				else
 					OTLog::vError("Error processing getInbox command in ProcessMessage: %c\n", buf[0]);
+				// ------------------------------------------------------------------------
+			}
+			
+			// get outbox 
+			else if (buf[0] == 'o')
+			{
+				OTLog::Output(0, "(User has instructed to send a getOutbox command to the server...)\n");
+				
+				// ------------------------------------------------------------------------------			
+				// if successful setting up the command payload...
+				
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::getOutbox, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
+				{
+					bSendCommand = true;
+				}
+				else
+					OTLog::vError("Error processing getOutbox command in ProcessMessage: %c\n", buf[0]);
 				// ------------------------------------------------------------------------
 			}
 			

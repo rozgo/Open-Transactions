@@ -206,7 +206,7 @@ void OTClient::AcceptEntireNymbox(OTLedger & theNymbox, OTServerConnection & the
 		 ii != theNymbox.GetTransactionMap().end(); ++ii)
 	{
 		// If this transaction references the item that I'm trying to accept...
-		if ((pTransaction = (*ii).second) && (pTransaction->GetReferenceToNum()>0)) // if pointer not null AND it refers to some other transaction
+		if ( pTransaction = (*ii).second ) // if pointer not null
 		{
 //			OTString strTransaction(*pTransaction);
 //			OTLog::vError("TRANSACTION CONTENTS:\n%s\n", strTransaction.Get());
@@ -220,6 +220,8 @@ void OTClient::AcceptEntireNymbox(OTLedger & theNymbox, OTServerConnection & the
 			{				
 				OTItem * pAcceptItem = OTItem::CreateItemFromTransaction(*pAcceptTransaction, OTItem::acceptMessage);
 
+				// The above already has OT_ASSERT so, no need to check the pointer for NULL.
+				
 				// the transaction will handle cleaning up the transaction item.
 				pAcceptTransaction->AddItem(*pAcceptItem);
 				
@@ -233,9 +235,10 @@ void OTClient::AcceptEntireNymbox(OTLedger & theNymbox, OTServerConnection & the
 			
 			else if (
 					 (OTTransaction::blank	== pTransaction->GetType()) // if blank (new) transaction number.
-					 )
+					)
 			{				
 				OTItem * pAcceptItem = OTItem::CreateItemFromTransaction(*pAcceptTransaction, OTItem::acceptTransaction);
+
 				// the transaction will handle cleaning up the transaction item.
 				pAcceptTransaction->AddItem(*pAcceptItem);
 				
@@ -371,6 +374,15 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 		return;
 	}
 	
+	// ---------------------------------------------
+	
+	if (theInbox.GetTransactionCount() < 1) 
+	{
+		// If there aren't any transactions in the inbox, no point wasting a # to process an empty box.
+		OTLog::Output(4, "OTClient::AcceptEntireInbox: no point wasting a transaction number in order to process an empty box\n");
+		
+		return;
+	}
 	
 	OTString strServerID(theServerID);
 	long lStoredTransactionNumber=0;
@@ -484,7 +496,7 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 				if (pOriginalItem)
 				{
 					if ( (OTItem::transfer	== pOriginalItem->GetType()) &&
-						(OTItem::request	== pOriginalItem->GetStatus()))  // I'm accepting a transfer that was sent to me.
+						 (OTItem::request	== pOriginalItem->GetStatus()))  // I'm accepting a transfer that was sent to me.
 					{
 						OTItem * pAcceptItem = OTItem::CreateItemFromTransaction(*pAcceptTransaction, OTItem::acceptPending);
 						// the transaction will handle cleaning up the transaction item.
@@ -757,7 +769,6 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 		// that to the response ledger.
 		if (pTransaction->VerifyAccount(*pServerNym)) // if not null && valid transaction reply from server
 		{
-			 
 			// It's a withdrawal...
 			if (OTTransaction::atWithdrawal == pTransaction->GetType())
 			{
@@ -820,6 +831,7 @@ void OTClient::HarvestTransactionNumbers(OTTransaction & theTransaction, OTPseud
 }
 
 
+
 void OTClient::ProcessDepositResponse(OTTransaction & theTransaction, OTServerConnection & theConnection, OTMessage & theReply)
 {
 	const OTIdentifier ACCOUNT_ID(theReply.m_strAcctID);
@@ -849,7 +861,8 @@ void OTClient::ProcessDepositResponse(OTTransaction & theTransaction, OTServerCo
 				
 				pNym->RemoveIssuedNum(*pNym, strServerID, pItem->GetReferenceToNum(), true); // bool bSave=true
 			}
-			else {
+			else 
+			{
 				OTLog::Output(0, "FAILURE -- Server rejects deposit.\n");
 			}
 
@@ -1118,12 +1131,13 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 {
 	OTServerConnection & theConnection = (*m_pConnection);
 	
-	const OTIdentifier ACCOUNT_ID(theReply.m_strAcctID);
-	OTIdentifier SERVER_ID;
+	OTIdentifier ACCOUNT_ID(theReply.m_strAcctID), SERVER_ID;
 	theConnection.GetServerID(SERVER_ID);
+	
 	OTPseudonym * pNym = theConnection.GetNym();
 	OTIdentifier USER_ID;
 	pNym->GetIdentifier(USER_ID);
+	
 	OTPseudonym * pServerNym = (OTPseudonym *)(theConnection.GetServerContract()->GetContractPublicNym());
 
 
@@ -1302,16 +1316,123 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 			   theReply.m_strCommand.Compare("@processNymbox") )
 			 )
 	{
-		OTString strReply(theReply);
+		OTString strServerID(SERVER_ID), strReply(theReply);
 		
 		OTLog::vOutput(0, "Received server response to %s.\n", theReply.m_strCommand.Get());
 //		OTLog::vOutput(0, "Received server response to Get Inbox message:\n%s\n", strReply.Get());
-		
-		
-		// TODO: RESUME:  If the server acknowledges either of these commands, then my transaction
+				
+		// If the server acknowledges either of the above commands, then my transaction
 		// numbers have changed. I need to read the numbers from my last transaction agreement
-		// (which should be in this server reply) and make sure to update my nym accordingly.
+		// (which should be saved in this server reply) and make sure to update my nym accordingly.
 		//
+		OTString strOriginalMessage;
+		
+		theReply.m_ascInReferenceTo.GetString(strOriginalMessage);
+		
+		OTMessage theOriginalMessage;
+		
+		if (strOriginalMessage.Exists() && theOriginalMessage.LoadContractFromString(strOriginalMessage))
+		{
+			OTString	strLedger;
+			
+			if (theReply.m_strCommand.Compare("@processNymbox"))
+				ACCOUNT_ID = USER_ID; // For Nymbox, UserID *is* AcctID.
+			
+			OTLedger	theLedger(USER_ID, ACCOUNT_ID, SERVER_ID);
+			
+			theOriginalMessage.m_ascPayload.GetString(strLedger);
+			
+			if (strLedger.Exists() && theLedger.LoadContractFromString(strLedger))
+			{
+				OTTransaction * pTransaction = NULL;
+				
+				if (theReply.m_strCommand.Compare("@processInbox"))
+				{
+					pTransaction = theLedger.GetTransaction(OTTransaction::processInbox);
+					
+					if (NULL != pTransaction)
+					{
+						// We had to burn a transaction number to process the inbox, so
+						// let's remove that number from our list of responsibility.
+						pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true); // bool bSave=true						
+					}
+				}
+				else
+				{
+					pTransaction = theLedger.GetTransaction(OTTransaction::processNymbox);
+					
+					// We did NOT have to burn a transaction number to process the Nymbox, so we don't
+					// have to remove it from the list of responsibility, like we do above.
+					// The reason is because the Nymbox cannot be used for financial transactions, since
+					// it is associated with a user acct (instead of asset account.)
+					// THIS IS ACTUALLY the WHOLE POINT of the Nymbox: If it required a transaction number
+					// to process the Nymbox, and you use the Nymbox to get transaction numbers, then how
+					// can you ever get a new number if you run out?  You need a number to get a number?
+					// That makes no logical sense.  Therefore, the Nymbox provides a way to get new transaction
+					// numbers WITHOUT HAVING TO BURN ONE TO DO IT.  You still have to do a transaction statement
+					// to do it (sign off on the ones that you actually do have), but you can still process
+					// the Nymbox even if you have zero transaction numbers, whereas with the inbox for an asset
+					// account, you cannot process it until you burn a transaction number to do so. And if you
+					// don't have any transaction numbers to do that with, that's fine: you just get a new one
+					// via your nymbox.  This is the original reason that I added nymboxes in the first place.
+				}
+
+				if (NULL != pTransaction)
+				{					
+					// ------------------------------------------------------------------
+					
+					OTItem * pItem = pTransaction->GetItem(OTItem::transactionStatement);
+
+					if (NULL == pItem)
+					{
+						pItem = pTransaction->GetItem(OTItem::balanceStatement);
+					}
+					
+					// We found it!
+					if (NULL != pItem)
+					{
+						OTString	strMessageNym;
+						OTPseudonym	theMessageNym;
+						
+						pItem->GetAttachment(strMessageNym);
+						
+						if (strMessageNym.Exists() && theMessageNym.LoadFromString(strMessageNym))
+						{
+							// Success!
+							
+							pNym->HarvestTransactionNumbers(*pNym, theMessageNym); // bSave=true
+
+							pNym->SaveSignedNymfile(*pNym);
+						}
+						else 
+						{
+							OTLog::vOutput(0, "Strange... found transaction item in ledger in %s, but didn't find theMessageNym within.\n",
+										   theReply.m_strCommand.Get());
+						}
+					}
+					else 
+					{
+						OTLog::vOutput(0, "Strange... found transaction in ledger in %s, but didn't find the right item type within.\n",
+									   theReply.m_strCommand.Get());
+					}					
+				}
+				else 
+				{
+					OTLog::vOutput(0, "Strange... found ledger in %s, but didn't find the right transaction type within.\n",
+								   theReply.m_strCommand.Get());
+				}
+			}
+			else 
+			{
+				OTLog::vOutput(0, "Strange... received server acknowledgment to %s, but found no ledger within.\n",
+							  theReply.m_strCommand.Get());
+			}			
+		}
+		else 
+		{
+			OTLog::Output(0, "Strange... received server acknowledgment but 'in reference to' message was blank.\n");
+		}
+		
 		return true;
 	}
 

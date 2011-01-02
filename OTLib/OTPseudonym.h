@@ -238,6 +238,7 @@ public:
 	inline mapOfTransNums & GetMapTransNum() { return m_mapTransNum; }
 	inline mapOfTransNums & GetMapIssuedNum() { return m_mapIssuedNum; }
 
+	void RemoveAllNumbers();
 	
 	// HIGH LEVEL:
 	bool	AddTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long lTransNum, bool bSave); // We have received a new trans num from server. Store it.
@@ -264,7 +265,7 @@ public:
 	int GetTransactionNumCount(const OTIdentifier & theServerID); // count
 	long GetTransactionNum(const OTIdentifier & theServerID, int nIndex); // index
 	
-	bool AddTransactionNum(const OTString & strServerID, long lTransNum); // doesn't save
+	bool AddTransactionNum(const OTString & strServerID, const long lTransNum); // doesn't save
 		
 	bool RemoveTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum); // server removes spent number from nym file. Saves.
 	bool RemoveTransactionNum(const OTString & strServerID, const long & lTransNum); // doesn't save.
@@ -278,7 +279,7 @@ public:
 	bool RemoveGenericNum(mapOfTransNums & THE_MAP, OTPseudonym & SIGNER_NYM, const OTString & strServerID, const long & lTransNum); // saves
 	bool RemoveGenericNum(mapOfTransNums & THE_MAP, const OTString & strServerID, const long & lTransNum); // doesn't save
 	
-	bool AddGenericNum(mapOfTransNums & THE_MAP, const OTString & strServerID, long lTransNum); // doesn't save
+	bool AddGenericNum(mapOfTransNums & THE_MAP, const OTString & strServerID, const long lTransNum); // doesn't save
 	
 	int  GetGenericNumCount(mapOfTransNums & THE_MAP, const OTIdentifier & theServerID); 
 	

@@ -122,7 +122,7 @@ using namespace io;
 // -- That the transactions on the Nym, minus the current transaction number being processed,
 //    are all still there.
 //
-bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM)
+bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM, const bool bIsRealTransaction/*=true*/) // Sometimes the trans# is 0 (like when processing Nymbox)
 {
 	if (GetType() != OTItem::transactionStatement)
 	{
@@ -141,21 +141,25 @@ bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM)
 	
 	
 	OTString SERVER_ID(GetPurportedServerID());
-	
-	bool bIWasFound = THE_NYM.VerifyIssuedNum(SERVER_ID, GetTransactionNum());
-	
-	if (!bIWasFound)
-	{
-		OTLog::Output(0, "OTItem::VerifyTransactionStatement: Transaction has # that doesn't appear on Nym's issued list.\n");
-		return false;
+		
+	if (bIsRealTransaction)	// Sometimes my "transaction number" is 0 since we're accepting numbers from the Nymbox (which is done by message, not transaction.)
+	{						//  In such cases, there's no point in checking the server-side to "make sure it has number 0!" (because it won't.)
+		bool bIWasFound = THE_NYM.VerifyIssuedNum(SERVER_ID, GetTransactionNum());
+		
+		if (!bIWasFound)
+		{
+			OTLog::vOutput(0, "OTItem::VerifyTransactionStatement: Transaction# (%ld) doesn't appear on Nym's issued list.\n", 
+						  GetTransactionNum());
+			return false;
+		}
+
+		// The client side has already removed from issued list, and has sent us a signed copy to that effect,
+		// so we remove it on our side as well, so that they will match. (Which allows us to ACTUALLY remove it :)
+		// If anything else fails during this verify process, we have to ADD IT AGAIN since we stil don't have
+		// a valid signature on that number. (Besides the last one that includes it.)
+		//
+		THE_NYM.RemoveIssuedNum(SERVER_ID, GetTransactionNum());
 	}
-	
-	// The client side has already removed from issued list, and has sent us a signed copy to that effect,
-	// so we remove it on our side as well, so that they will match. (Which allows us to ACTUALLY remove it :)
-	// If anything else fails during this verify process, we have to ADD IT AGAIN since we stil don't have
-	// a valid signature on that number. (Besides the last one that includes it.)
-	//
-	THE_NYM.RemoveIssuedNum(SERVER_ID, GetTransactionNum());
 	
 	// ----------------------------------------------------
 	
@@ -169,7 +173,7 @@ bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM)
 	
 	// First, loop through the Nym on my side, and count how many numbers total he has...
 	//
-	for (mapOfTransNums::iterator	iii	 =	THE_NYM.GetMapIssuedNum().begin(); 
+	for (mapOfTransNums::iterator iii = THE_NYM.GetMapIssuedNum().begin(); 
 		 iii !=	THE_NYM.GetMapIssuedNum().end(); ++iii)
 	{	
 		strServerID					= (*iii).first;
@@ -188,6 +192,7 @@ bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM)
 	// Next, loop through theMessageNym, and count his numbers as well...
 	// But ALSO verify that each one exists on THE_NYM, so that each individual
 	// number is checked.
+	//
 	this->GetAttachment(strMessageNym);
 	OTPseudonym theMessageNym;
 	
@@ -205,20 +210,24 @@ bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM)
 			
 			if (!(pDeque->empty()))
 			{
-				nNumberOfTransactionNumbers2 += pDeque->size();
-				
 				for (unsigned i = 0; i < pDeque->size(); i++)
 				{
 					lTransactionNumber = pDeque->at(i);
-					
-					if (false == THE_NYM.VerifyTransactionNum(OTstrServerID, lTransactionNumber))
+
+//					if ()
 					{
-						OTLog::vOutput(0, "OTItem::VerifyTransactionStatement: Issued transaction # %ld from Message Nym not found on this side.\n", 
-									  lTransactionNumber);
+						nNumberOfTransactionNumbers2 ++ ; 
 						
-						THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
-						
-						return false;
+						if (false == THE_NYM.VerifyIssuedNum(OTstrServerID, lTransactionNumber))
+						{
+							OTLog::vOutput(0, "OTItem::VerifyTransactionStatement: Issued transaction # %ld from Message Nym not found on this side.\n", 
+										   lTransactionNumber);
+							
+							if (bIsRealTransaction) // We only removed it to do the verification. If that failed, add it back again (until next time when it succeeds)
+								THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
+							
+							return false;
+						}
 					}
 				}
 			}
@@ -231,7 +240,8 @@ bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM)
 		OTLog::vOutput(0, "OTItem::VerifyTransactionStatement: Transaction # Count mismatch: %d and %d\n", 
 					  nNumberOfTransactionNumbers1, nNumberOfTransactionNumbers2);
 		
-		THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
+		if (bIsRealTransaction)
+			THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
 		
 		return false;
 	}
@@ -1045,7 +1055,7 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 
 
 
-void GetStringFromType(OTItem::itemType theType, OTString & strType)
+void OTItem::GetStringFromType(OTItem::itemType theType, OTString & strType)
 {
 	switch (theType) 
 	{

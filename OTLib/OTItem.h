@@ -270,7 +270,7 @@ public:
 								 OTLedger & THE_OUTBOX,
 								const OTAccount & THE_ACCOUNT);
 	
-	bool VerifyTransactionStatement(OTPseudonym & THE_NYM);
+	bool VerifyTransactionStatement(OTPseudonym & THE_NYM, const bool bIsRealTransaction=true); // Somedays we use this when the trans# is 0 (like when processing Nymbox.)
 	
 	inline OTItem::itemStatus GetStatus() const { return m_Status; }
 	inline void SetStatus(const OTItem::itemStatus & theVal) { m_Status = theVal; }
@@ -294,6 +294,9 @@ public:
 	
 	static OTItem * CreateItemFromTransaction(const OTTransaction & theOwner, OTItem::itemType theType, OTIdentifier * pDestinationAcctID=NULL);
 	
+	static void GetStringFromType(OTItem::itemType theType, OTString & strType);
+
+	inline void GetTypeString(OTString & strType) { OTItem::GetStringFromType(GetType(), strType); }
 	
 	OTItem(const OTIdentifier & theUserID, const OTItem & theOwner);// From owner we can get acct ID, server ID, and transaction Num
 	OTItem(const OTIdentifier & theUserID, const OTTransaction & theOwner);// From owner we can get acct ID, server ID, and transaction Num
