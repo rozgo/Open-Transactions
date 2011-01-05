@@ -422,6 +422,10 @@ int main(int argc, char* argv[])
 			if (!bSuccessSetAgreement)
 			{
 				OTLog::Output(0, "Failed trying to set the agreement!\n");
+				
+				// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+				g_pTemporaryNym->AddTransactionNum(*g_pTemporaryNym, strServerID, lTransactionNumber, true); // bSave=true								
+
 				continue;
 			}
 			
@@ -453,6 +457,10 @@ int main(int argc, char* argv[])
 			if (!bSuccessSetInitialPayment)
 			{
 				OTLog::Output(0, "Failed trying to set the initial payment!\n");
+				
+				// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+				g_pTemporaryNym->AddTransactionNum(*g_pTemporaryNym, strServerID, lTransactionNumber, true); // bSave=true								
+				
 				continue;
 			}
 			
@@ -512,6 +520,10 @@ int main(int argc, char* argv[])
 			if (!bSuccessSetPaymentPlan)
 			{
 				OTLog::Output(0, "Failed trying to set the payment plan!\n");
+				
+				// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+				g_pTemporaryNym->AddTransactionNum(*g_pTemporaryNym, strServerID, lTransactionNumber, true); // bSave=true								
+				
 				continue;
 			}
 			
@@ -637,8 +649,12 @@ int main(int argc, char* argv[])
 				
 				OTLog::vOutput(0, "\n\nOUTPUT:\n\n\n%s\n", strCheque.Get());
 			}
-			else {
+			else 
+			{
 				OTLog::Output(0, "Failed trying to issue the cheque!\n");
+				
+				// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+				g_pTemporaryNym->AddTransactionNum(*g_pTemporaryNym, strServerID, lTransactionNumber, true); // bSave=true								
 			}
 			
 			continue;

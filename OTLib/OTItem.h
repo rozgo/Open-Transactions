@@ -209,8 +209,9 @@ public:
 	// FOR EXAMPLE:  A client may send a TRANSFER request, setting type to Transfer and status to Request.
 	//				 The server may respond with type atTransfer and status Acknowledgment.
 	//							Make sense?
-	
-	enum itemStatus {
+
+	enum itemStatus 
+	{
 		request,			// This item is a request from the client
 		acknowledgement,	// This item is an acknowledgment from the server. (The server has signed it.)
 		rejection,			// This item represents a rejection of the request by the server. (Server will not sign it.)
@@ -265,10 +266,13 @@ public:
 	// Call this on the server side, on a balanceStatement item, to verify
 	// whether the wallet side set it up correctly (and thus it's okay to sign and return with acknowledgement.)
 	bool VerifyBalanceStatement(const long lActualAdjustment, 
-								 OTPseudonym & THE_NYM,
-								 OTLedger & THE_INBOX,
-								 OTLedger & THE_OUTBOX,
-								const OTAccount & THE_ACCOUNT);
+								OTPseudonym & THE_NYM,
+								OTLedger & THE_INBOX,
+								OTLedger & THE_OUTBOX,
+								const OTAccount & THE_ACCOUNT,
+								const long lOutboxTrnsNum=0);	// Used in special case of transfers (the user
+																// didn't know the outbox trans# when constructing
+																// the original request.) Unused when 0.
 	
 	bool VerifyTransactionStatement(OTPseudonym & THE_NYM, const bool bIsRealTransaction=true); // Somedays we use this when the trans# is 0 (like when processing Nymbox.)
 	

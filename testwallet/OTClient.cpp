@@ -143,9 +143,9 @@ bool OTClient::ProcessInBuffer(OTMessage & theServerReply)
 
 
 
-// Without regard to WHAT those transactions ARE that are in my inbox,
-// just process and accept them all!!!  (This is AUTO-ACCEPT functionality
-// built into the test client and not the library itself.)
+/// Without regard to WHAT those transactions ARE that are in my inbox,
+/// just process and accept them all!!!  (This is AUTO-ACCEPT functionality
+/// built into the test client and not the library itself.)
 void OTClient::AcceptEntireNymbox(OTLedger & theNymbox, OTServerConnection & theConnection)
 {
 	OTPseudonym * pNym	= theConnection.GetNym();
@@ -352,11 +352,13 @@ void OTClient::AcceptEntireNymbox(OTLedger & theNymbox, OTServerConnection & the
 
 
 
-// Without regard to WHAT those transactions ARE that are in my inbox,
-// just process and accept them all!!!  (This is AUTO-ACCEPT functionality
-// built into the test client and not the library itself.)
+/// Without regard to WHAT those transactions ARE that are in my inbox,
+/// just process and accept them all!!!  (This is AUTO-ACCEPT functionality
+/// built into the test client and not the library itself.)
 void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theConnection)
 {
+	bool bSuccess = false;
+	
 	OTPseudonym * pNym		= theConnection.GetNym();
 	
 	OTIdentifier theAccountID(theInbox), theServerID;
@@ -595,7 +597,7 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 							if (false == ((strCheque.GetLength() > 2) && 
 										  theCheque.LoadContractFromString(strCheque)))
 							{
-								OTLog::vError("ERROR loading cheque from string in OTServer::NotarizeDeposit:\n%s\n",
+								OTLog::vError("ERROR loading cheque from string in OTClient::AcceptEntireInbox:\n%s\n",
 											  strCheque.Get());
 							}
 							else
@@ -711,19 +713,26 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 			// I could have called SignContract() and then theConnection.ProcessMessageOut(message) 
 			// but I used the above function instead.
 			
+			bSuccess = true; // Otherwise we haven't really burned the transaction num, and need to put it back (below).
 		}
 		else
 			OTLog::Error("Error processing processInbox command in OTClient::AcceptEntireInbox\n");
 	}
+	
+	// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+	if (false == bSuccess)
+		pNym->AddTransactionNum(*pNym, strServerID, lStoredTransactionNumber, true); // bSave=true
 }
 
 
 
-// We have received the server reply (ProcessServerReply) which has vetted it and determined that it
-// is legitimate and safe, and that it is a reply to a transaction request.
-//
-// At that point, this function is called to open the reply, go through the transaction responses,
-// and potentially grab any bearer certificates that are inside and save them in a purse somewhere.
+/// We have received the server reply (ProcessServerReply) which has vetted it and determined that it
+/// is legitimate and safe, and that it is a reply to a transaction request.
+///
+/// At that point, this function is called to open the reply, go through the transaction responses,
+/// and potentially grab any bearer certificates that are inside and save them in a purse somewhere.
+/// (And do any other necessary processing on that reply.)
+///
 void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, OTMessage & theReply)
 {
 	const OTIdentifier ACCOUNT_ID(theReply.m_strAcctID);
@@ -732,6 +741,10 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 	OTPseudonym * pNym = theConnection.GetNym();
 	OTIdentifier USER_ID;
 	pNym->GetIdentifier(USER_ID);
+	
+	OTString	strServerID(SERVER_ID), 
+				strReceiptID("ID_NOT_SET_YET"); // This will be user ID or acct ID depending on whether trans statement or balance statement.
+	
 	OTPseudonym * pServerNym = (OTPseudonym *)(theConnection.GetServerContract()->GetContractPublicNym());
 
 	// The only incoming transactions that we actually care about are responses to cash
@@ -755,7 +768,7 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 	
 	OTLog::Output(3, "Loaded ledger out of message payload.\n");
 	
-	// TODO: Loop through ledger transactions, 		
+	// Loop through ledger transactions, 		
 	OTTransaction * pTransaction	= NULL;
 	
 	for (mapOfTransactions::iterator ii = theLedger.GetTransactionMap().begin(); 
@@ -778,6 +791,93 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 			else if (OTTransaction::atDeposit == pTransaction->GetType())
 			{
 				ProcessDepositResponse(*pTransaction, theConnection, theReply);
+			}
+			
+			// --------------------------------------
+			
+			// We had to burn a transaction number to run the transaction that the server has now replied to,
+			// so let's remove that number from our list of responsibility.
+			//
+			pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true); // bool bSave=true						
+			
+			// -----------------------------------------------------------------
+			//
+			// SAVE THE RECEIPT....
+			
+			OTString strServerID(SERVER_ID);
+			
+			bool bConfirmReceiptMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::ReceiptFolder());
+			
+			if (!bConfirmReceiptMAINFolder)
+			{
+				OTLog::vError("OTClient::ProcessIncomingTransactions: Unable to find or "
+							  "create main Receipt directory: %s%s%s\n", 
+							  OTLog::Path(), OTLog::PathSeparator(), OTLog::ReceiptFolder());				
+			}
+			// -----------------------------------------------------------------
+			else 
+			{
+				OTString strReceiptDirectoryPath;
+				strReceiptDirectoryPath.Format("%s%s%s", 
+											OTLog::ReceiptFolder(), OTLog::PathSeparator(),
+											strServerID.Get());
+				
+				bool bConfirmReceiptFolder = OTLog::ConfirmOrCreateFolder(strReceiptDirectoryPath.Get());
+				
+				if (!bConfirmReceiptFolder)
+				{
+					OTLog::vError("OTClient::ProcessIncomingTransactions: Unable to find or create Receipt subdir "
+								  "for server ID: %s\n\n", 
+								  strReceiptDirectoryPath.Get());
+				}				
+				// ----------------------------------------------------------------------------
+				else 
+				{
+					OTItem * pItem = pTransaction->GetItem(OTItem::atBalanceStatement);
+
+					if (NULL == pItem)
+					{
+						pItem = pTransaction->GetItem(OTItem::atTransactionStatement);
+						
+						if (NULL != pItem)
+							pNym->GetIdentifier(strReceiptID); // In this case, the receipt ID is the Nym ID
+					}
+					else 
+					{
+						strReceiptID = theReply.m_strAcctID; // If a balance statement, then the receipt ID is the Account ID.
+					}
+
+					// ---------------------------------------------------------
+					
+					if (NULL != pItem)
+					{
+						OTString strReceiptPath;
+						
+						if (OTItem::acknowledgement == pItem->GetStatus())
+						{							
+							strReceiptPath.Format("%s%s%s%s%s.success", OTLog::Path(), OTLog::PathSeparator(), 
+												  strReceiptDirectoryPath.Get(), OTLog::PathSeparator(), strReceiptID.Get());
+						}
+						else
+						{
+							strReceiptPath.Format("%s%s%s%s%s.fail", OTLog::Path(), OTLog::PathSeparator(), 
+											  strReceiptDirectoryPath.Get(), OTLog::PathSeparator(), strReceiptID.Get());
+						}
+						
+						pTransaction->SaveContract(strReceiptPath.Get());	
+					}
+					else // This should never happen...
+					{
+						OTString strReceiptPath;
+						
+						strReceiptPath.Format("%s%s%s%s%s.error", OTLog::Path(), OTLog::PathSeparator(), 
+											  strReceiptDirectoryPath.Get(), OTLog::PathSeparator(), strReceiptID.Get());
+						
+						OTLog::vError("Error saving transaction receipt:  %s\n", strReceiptPath.Get());
+						
+						pTransaction->SaveContract(strReceiptPath.Get());	
+					}
+				}
 			}
 			
 			// No matter what kind of transaction it is,
@@ -837,7 +937,6 @@ void OTClient::ProcessDepositResponse(OTTransaction & theTransaction, OTServerCo
 	const OTIdentifier ACCOUNT_ID(theReply.m_strAcctID);
 	OTIdentifier SERVER_ID;
 	theConnection.GetServerID(SERVER_ID);
-	OTString strServerID(SERVER_ID);
 	OTPseudonym * pNym = theConnection.GetNym();
 	OTIdentifier USER_ID;
 	pNym->GetIdentifier(USER_ID);
@@ -858,8 +957,6 @@ void OTClient::ProcessDepositResponse(OTTransaction & theTransaction, OTServerCo
 			if (OTItem::acknowledgement == pItem->GetStatus())
 			{
 				OTLog::Output(0, "SUCCESS -- Server acknowledges deposit.\n");
-				
-				pNym->RemoveIssuedNum(*pNym, strServerID, pItem->GetReferenceToNum(), true); // bool bSave=true
 			}
 			else 
 			{
@@ -873,17 +970,20 @@ void OTClient::ProcessDepositResponse(OTTransaction & theTransaction, OTServerCo
 
 
 
-// It's definitely a withdrawal, we just need to iterate through the items in the transaction and
-// grab any cash tokens that are inside, to save inside a purse.  Also want to display any vouchers.
+/// It's definitely a withdrawal, we just need to iterate through the items in the transaction and
+/// grab any cash tokens that are inside, to save inside a purse.  Also want to display any vouchers.
 void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServerConnection & theConnection, OTMessage & theReply)
 {
 	const OTIdentifier ACCOUNT_ID(theReply.m_strAcctID);
 	OTIdentifier SERVER_ID;
-	OTString strServerID(SERVER_ID);
 	theConnection.GetServerID(SERVER_ID);
+
+	OTString strServerID(SERVER_ID);
+	
 	OTPseudonym * pNym = theConnection.GetNym();
 	OTIdentifier USER_ID;
 	pNym->GetIdentifier(USER_ID);
+	
 	OTWallet * pWallet = theConnection.GetWallet();
 	OTPseudonym * pServerNym = (OTPseudonym *)(theConnection.GetServerContract()->GetContractPublicNym());
 
@@ -909,8 +1009,6 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 			if (theVoucher.LoadContractFromString(strVoucher))
 			{
 				OTLog::vOutput(0, "\nReceived voucher from server:\n\n%s\n\n", strVoucher.Get());	
-				
-				pNym->RemoveIssuedNum(*pNym, strServerID, pItem->GetReferenceToNum(), true); // bool bSave=true
 			}
 		}
 		
@@ -936,7 +1034,7 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 				OTToken * pToken			= NULL;
 				OTToken * pOriginalToken	= NULL;
 				
-				OTString strServerID(SERVER_ID), strAssetID(thePurse.GetAssetID());
+				OTString strAssetID(thePurse.GetAssetID());
 				
 				// -----------------------------------------------------------------
 				
@@ -1106,27 +1204,25 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 					theWalletPurse.SaveContract(strPursePath.Get());
 					
 					OTLog::Output(1, "SUCCESSFULLY UNBLINDED token, and added the cash to the local purse, and saved.\n");
-					
-					pNym->RemoveIssuedNum(*pNym, strServerID, pItem->GetReferenceToNum(), true); // bool bSave=true
 				}
 			} // if (thePurse.LoadContractFromString(strPurse))
 		}
 	} // for
 }
 
-// We have just received a message from the server.
-// Find out what it is and do the appropriate processing.
-// Perhaps we just tried to create an account -- this could be
-// our new account! Let's make sure we receive it and save it
-// to disk somewhere.
-//
-// PS... The Client TAKES OWNERSHIP of this message (adding it
-// to a message buffer) and will store it until the buffer is
-// flushed, or until the messages are popped back off later for
-// processing by the client API.
-// THEREFORE -- theReply MUST be allocated on the heap, and is
-// only passed in as a reference here in order to make sure it's real.
-//
+/// We have just received a message from the server.
+/// Find out what it is and do the appropriate processing.
+/// Perhaps we just tried to create an account -- this could be
+/// our new account! Let's make sure we receive it and save it
+/// to disk somewhere.
+///
+/// PS... The Client TAKES OWNERSHIP of this message (adding it
+/// to a message buffer) and will store it until the buffer is
+/// flushed, or until the messages are popped back off later for
+/// processing by the client API.
+/// THEREFORE -- theReply MUST be allocated on the heap, and is
+/// only passed in as a reference here in order to make sure it's real.
+///
 bool OTClient::ProcessServerReply(OTMessage & theReply)
 {
 	OTServerConnection & theConnection = (*m_pConnection);
@@ -1198,7 +1294,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 	}
 	else if (theReply.m_bSuccess && theReply.m_strCommand.Compare("@getTransactionNum"))
 	{
-		OTLog::Output(0, "Received server response to Get Transaction Num message. Firing off a getNymbox now...");
+		OTLog::Output(0, "Received server response to Get Transaction Num message. Firing off a getNymbox now...\n");
 //		OTLog::vOutput(0, "Received server response to Get Transaction Num message:\n%s\n", strReply.Get());
 
 		// RIGHT HERE: This will need to fire off a getNymbox, and @getNymbox will fire off a
@@ -1225,7 +1321,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 	}
 	else if (theReply.m_bSuccess && theReply.m_strCommand.Compare("@notarizeTransactions"))
 	{
-		OTLog::Output(0, "Received server response to notarize Transactions message.");
+		OTLog::Output(0, "Received server response to notarize Transactions message.\n");
 //		OTLog::vOutput(0, "Received server response to notarize Transactions message:\n%s\n", strReply.Get());
 
 		ProcessIncomingTransactions(theConnection, theReply);
@@ -1333,22 +1429,29 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		
 		if (strOriginalMessage.Exists() && theOriginalMessage.LoadContractFromString(strOriginalMessage))
 		{
-			OTString	strLedger;
+			OTString	strLedger, strReplyLedger;
 			
 			if (theReply.m_strCommand.Compare("@processNymbox"))
 				ACCOUNT_ID = USER_ID; // For Nymbox, UserID *is* AcctID.
 			
-			OTLedger	theLedger(USER_ID, ACCOUNT_ID, SERVER_ID);
+			OTLedger	theLedger(USER_ID, ACCOUNT_ID, SERVER_ID),
+						theReplyLedger(USER_ID, ACCOUNT_ID, SERVER_ID);
 			
 			theOriginalMessage.m_ascPayload.GetString(strLedger);
-			
-			if (strLedger.Exists() && theLedger.LoadContractFromString(strLedger))
+			theReply.m_ascPayload.GetString(strReplyLedger);
+
+			if (strLedger.Exists()							&& 
+				strReplyLedger.Exists()						&&
+				theLedger.LoadContractFromString(strLedger) &&
+				theReplyLedger.LoadContractFromString(strReplyLedger))
 			{
-				OTTransaction * pTransaction = NULL;
+				OTTransaction * pTransaction		= NULL;
+				OTTransaction * pReplyTransaction	= NULL;
 				
 				if (theReply.m_strCommand.Compare("@processInbox"))
 				{
-					pTransaction = theLedger.GetTransaction(OTTransaction::processInbox);
+					pTransaction		= theLedger.GetTransaction(OTTransaction::processInbox);
+					pReplyTransaction	= theReplyLedger.GetTransaction(OTTransaction::atProcessInbox);
 					
 					if (NULL != pTransaction)
 					{
@@ -1359,8 +1462,9 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 				}
 				else
 				{
-					pTransaction = theLedger.GetTransaction(OTTransaction::processNymbox);
-					
+					pTransaction		= theLedger.GetTransaction(OTTransaction::processNymbox);
+					pReplyTransaction	= theReplyLedger.GetTransaction(OTTransaction::atProcessNymbox);
+
 					// We did NOT have to burn a transaction number to process the Nymbox, so we don't
 					// have to remove it from the list of responsibility, like we do above.
 					// The reason is because the Nymbox cannot be used for financial transactions, since
@@ -1377,10 +1481,94 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 					// via your nymbox.  This is the original reason that I added nymboxes in the first place.
 				}
 
-				if (NULL != pTransaction)
+				if ((NULL != pTransaction) && (NULL != pReplyTransaction))
 				{					
-					// ------------------------------------------------------------------
+					// -----------------------------------------------------------------
+					//
+					// SAVE THE RECEIPT....
 					
+					OTString strServerID(SERVER_ID);
+					
+					bool bConfirmReceiptMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::ReceiptFolder());
+					
+					if (!bConfirmReceiptMAINFolder)
+					{
+						OTLog::vError("OTClient::ProcessServerReply: Unable to find or "
+									  "create main Receipt directory: %s%s%s\n", 
+									  OTLog::Path(), OTLog::PathSeparator(), OTLog::ReceiptFolder());				
+					}
+					// -----------------------------------------------------------------
+					else 
+					{
+						OTString strReceiptDirectoryPath;
+						strReceiptDirectoryPath.Format("%s%s%s", 
+													   OTLog::ReceiptFolder(), OTLog::PathSeparator(),
+													   strServerID.Get());
+						
+						bool bConfirmReceiptFolder = OTLog::ConfirmOrCreateFolder(strReceiptDirectoryPath.Get());
+						
+						if (!bConfirmReceiptFolder)
+						{
+							OTLog::vError("OTClient::ProcessServerReply: Unable to find or create Receipt subdir "
+										  "for server ID: %s\n\n", 
+										  strReceiptDirectoryPath.Get());
+						}				
+						// ----------------------------------------------------------------------------
+						else 
+						{
+							OTString strReceiptID("NOT_SET_YET");
+							
+							OTItem * pReplyItem = pReplyTransaction->GetItem(OTItem::atBalanceStatement);
+							
+							if (NULL == pReplyItem)
+							{
+								pReplyItem = pReplyTransaction->GetItem(OTItem::atTransactionStatement);
+								
+								if (NULL != pReplyItem)
+									pNym->GetIdentifier(strReceiptID); // In this case, the receipt ID is the Nym ID
+							}
+							else 
+							{
+								strReceiptID = theReply.m_strAcctID; // If a balance statement, then the receipt ID is the Account ID.
+							}
+							
+							// ---------------------------------------------------------
+							
+							if (NULL != pReplyItem)
+							{
+								OTString strReceiptPath;
+								
+								if (OTItem::acknowledgement == pReplyItem->GetStatus())
+								{							
+									strReceiptPath.Format("%s%s%s%s%s.success", OTLog::Path(), OTLog::PathSeparator(), 
+														  strReceiptDirectoryPath.Get(), OTLog::PathSeparator(), strReceiptID.Get());
+								}
+								else
+								{
+									strReceiptPath.Format("%s%s%s%s%s.fail", OTLog::Path(), OTLog::PathSeparator(), 
+														  strReceiptDirectoryPath.Get(), OTLog::PathSeparator(), strReceiptID.Get());
+								}
+								
+								pReplyTransaction->SaveContract(strReceiptPath.Get());	
+							}
+							else // This should never happen...
+							{
+								OTString strReceiptPath;
+								
+								strReceiptPath.Format("%s%s%s%s%s.error", OTLog::Path(), OTLog::PathSeparator(), 
+													  strReceiptDirectoryPath.Get(), OTLog::PathSeparator(), strReceiptID.Get());
+								
+								OTLog::vError("OTClient::ProcessServerReply: Error saving transaction receipt:  %s\n", 
+											  strReceiptPath.Get());
+								
+								pReplyTransaction->SaveContract(strReceiptPath.Get());	
+							}
+						}
+					}
+										
+					// ------------------------------------------------------------------
+					// HARVEST TRANSACTION NUMBERS
+					//
 					OTItem * pItem = pTransaction->GetItem(OTItem::transactionStatement);
 
 					if (NULL == pItem)
@@ -1756,7 +1944,8 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 			
 		}
 	}
-	else {
+	else 
+	{
 
 	}
 	return false;
@@ -1764,9 +1953,9 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 
 
 
-// This function sets up "theMessage" so that it is ready to be sent out to the server.
-// If you want to set up a checkServerID command and send it to the server, then
-// you just call this to get the OTMessage object all set up and ready to be sent.
+/// This function sets up "theMessage" so that it is ready to be sent out to the server.
+/// If you want to set up a checkServerID command and send it to the server, then
+/// you just call this to get the OTMessage object all set up and ready to be sent.
 bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 								  OTMessage & theMessage,
 								  OTPseudonym & theNym,
@@ -2307,7 +2496,6 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			
 			pTransaction->AddItem(*pItem); // the Transaction's destructor will cleanup the item. It "owns" it now.
 			
-			
 			// ---------------------------------------------
 			
 			OTAccount * pAccount = m_pWallet->GetAccount(ACCT_FROM_ID);
@@ -2323,11 +2511,17 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			if (NULL == pInbox)
 			{
 				OTLog::Output(0, "Failed loading inbox!\n");
+				
+				// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+				theNym.AddTransactionNum(theNym, strServerID, lStoredTransactionNumber, true); // bSave=true				
 			}
 			
 			else if (NULL == pOutbox)
 			{
 				OTLog::Output(0, "Failed loading outbox!\n");
+
+				// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+				theNym.AddTransactionNum(theNym, strServerID, lStoredTransactionNumber, true); // bSave=true				
 			}
 			// BALANCE AGREEMENT 
 			
@@ -2352,7 +2546,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 				// ---------------------------------------------
 				
 				// pBalanceItem is signed and saved within this call. No need to do that again.
-				OTItem * pBalanceItem = pInbox->GenerateBalanceStatement(atol(strAmount.Get())*(-1), *pTransaction, theNym, *pAccount, *pOutbox);
+				OTItem * pBalanceItem = pInbox->GenerateBalanceStatement(atol(strAmount.Get())*(-1), *pTransaction, theNym, *pAccount, *pOutbox);				
 				
 				if (NULL != pBalanceItem) // will never be NULL. Will assert above before it gets here.
 					pTransaction->AddItem(*pBalanceItem); // Better not be NULL... message will fail... But better check anyway.
@@ -2409,7 +2603,8 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			}
 
 		}
-		else {
+		else 
+		{
 			OTLog::Output(0, "No transaction numbers were available. Suggest requesting the server for one.\n");
 		}
 	}
@@ -2926,11 +3121,17 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			if (NULL == pInbox)
 			{
 				OTLog::Output(0, "Failed loading inbox!\n");
+				
+				// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+				theNym.AddTransactionNum(theNym, strServerID, lStoredTransactionNumber, true); // bSave=true								
 			}
 			
 			else if (NULL == pOutbox)
 			{
 				OTLog::Output(0, "Failed loading outbox!\n");
+				
+				// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+				theNym.AddTransactionNum(theNym, strServerID, lStoredTransactionNumber, true); // bSave=true				
 			}
 			else 
 			{
@@ -2981,7 +3182,6 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 				theMessage.SaveContract();
 				
 				bSendCommand = true;
-
 			}
 		}
 	} // else if (OTClient::notarizeCheque == requestedCommand) // DEPOSIT CHEQUE
@@ -3069,11 +3269,17 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			if (NULL == pInbox)
 			{
 				OTLog::Output(0, "Failed loading inbox!\n");
+				
+				// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+				theNym.AddTransactionNum(theNym, strServerID, lStoredTransactionNumber, true); // bSave=true								
 			}
 			
 			else if (NULL == pOutbox)
 			{
 				OTLog::Output(0, "Failed loading outbox!\n");
+				
+				// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+				theNym.AddTransactionNum(theNym, strServerID, lStoredTransactionNumber, true); // bSave=true								
 			}
 			
 			else if (bIssueCheque)
@@ -3386,8 +3592,14 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 				
 				bSendCommand = true;
 			}
+			else 
+			{
+				// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+				theNym.AddTransactionNum(theNym, strServerID, lStoredTransactionNumber, true); // bSave=true								
+			}
 		}
-		else {
+		else 
+		{
 			OTLog::Output(0, "No Transaction Numbers were available. Suggest requesting the server for a new one.\n");
 		}
 		
@@ -3606,16 +3818,21 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 				
 				bSendCommand = true;
 			} // bSuccess
-			else {
+			else 
+			{
 				delete pItem;		pItem = NULL;
 				delete pTransaction;pTransaction = NULL;
+			}
+			
+			if (false == bSuccess)
+			{
+				// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+				theNym.AddTransactionNum(theNym, strServerID, lStoredTransactionNumber, true); // bSave=true												
 			}
 		} // if (pServerNym)
 	} // else if (OTClient::notarizeDeposit == requestedCommand) // NOTARIZE DEPOSIT
 	
 	// ------------------------------------------------------------------------
-	
-	
 	
 	
 	else if (OTClient::notarizePurse == requestedCommand) // NOTARIZE PURSE (deposit)
@@ -3827,10 +4044,17 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 				
 				bSendCommand = true;
 			} // bSuccess
-			else {
+			else 
+			{
 				delete pItem;		pItem = NULL;
 				delete pTransaction;pTransaction = NULL;
 			}
+			
+			if (false == bSuccess)
+			{
+				// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+				theNym.AddTransactionNum(theNym, strServerID, lStoredTransactionNumber, true); // bSave=true								
+			}				
 		} // if (pServerNym)
 	} // else if (OTClient::notarizeDeposit == requestedCommand) // NOTARIZE DEPOSIT
 	
@@ -4078,7 +4302,11 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 				
 				bSendCommand = true;
 			}
-		} 
+			
+			if (false == bSendCommand)				
+				// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+				theNym.AddTransactionNum(theNym, strServerID, lStoredTransactionNumber, true); // bSave=true
+		} // Got Transaction Num
 	} // else if (OTClient::marketOffer == requestedCommand) // MARKET OFFER
 	
 		
@@ -4244,15 +4472,15 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 }
 
 
-// used for testing.
-// Once the wallet is loaded, we are assuming there is at least one server
-// contract in the wallet, and we are asking the wallet to look it up,
-// find the hostname and port inside that contract, and establish a connection
-// to the server.
-//
-// Whereas in a nice user interface, you would loop through all the servers in 
-// the wallet and display them in a nice list on the screen, and the user could
-// just click on one, and you would just call Wallet.Connect(ServerID) and do your thing.
+/// used for testing.
+/// Once the wallet is loaded, we are assuming there is at least one server
+/// contract in the wallet, and we are asking the wallet to look it up,
+/// find the hostname and port inside that contract, and establish a connection
+/// to the server.
+///
+/// Whereas in a nice user interface, you would loop through all the servers in 
+/// the wallet and display them in a nice list on the screen, and the user could
+/// just click on one, and you would just call Wallet.Connect(ServerID) and do your thing.
 bool OTClient::ConnectToTheFirstServerOnList(OTPseudonym & theNym,
 											 OTString & strCA_FILE, OTString & strKEY_FILE, OTString & strKEY_PASSWORD)
 {
@@ -4270,9 +4498,9 @@ bool OTClient::ConnectToTheFirstServerOnList(OTPseudonym & theNym,
 	return false;
 }
 
-// Used in RPC mode (instead of Connect.)
-// Whenever a message needs to be processed, this function is called first, in lieu
-// of Connect(), so that the right pointers and IDs are in place for OTClient to do its thing.
+/// Used in RPC mode (instead of Connect.)
+/// Whenever a message needs to be processed, this function is called first, in lieu
+/// of Connect(), so that the right pointers and IDs are in place for OTClient to do its thing.
 bool OTClient::SetFocusToServerAndNym(OTServerContract & theServerContract, OTPseudonym & theNym, OT_CALLBACK_MSG pCallback)
 {
 	OT_ASSERT(NULL != pCallback);
@@ -4281,7 +4509,7 @@ bool OTClient::SetFocusToServerAndNym(OTServerContract & theServerContract, OTPs
 }
 
 
-// Need to call this before using.
+/// Need to call this before using.
 bool OTClient::InitClient(OTWallet & theWallet)
 {
 	// already done

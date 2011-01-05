@@ -174,8 +174,8 @@ OTItem * OTPseudonym::GenerateTransactionStatement(const OTTransaction & theOwne
 	
 	theMessageNym.HarvestIssuedNumbers(*this /*unused in this case, not saving to disk*/, *this, false); // bSave = false;
 	
-	theMessageNym.RemoveIssuedNum(*this, theOwner.GetRealServerID(), theOwner.GetTransactionNum());  // a transaction number is being used, and REMOVED from my list of responsibility,
-	theMessageNym.RemoveTransactionNum(*this, theOwner.GetRealServerID(), theOwner.GetTransactionNum()); // so I want the new signed list to reflect that number has been REMOVED.
+	theMessageNym.RemoveIssuedNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum());  // a transaction number is being used, and REMOVED from my list of responsibility,
+	theMessageNym.RemoveTransactionNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum()); // so I want the new signed list to reflect that number has been REMOVED.
 
 	OTString	strMessageNym(theMessageNym); // Okay now we have the transaction numbers in this MessageNym string.
 	
@@ -2006,7 +2006,7 @@ bool OTPseudonym::SaveSignedNymfile(OTPseudonym & SIGNER_NYM)
 	GetIdentifier(nymID);
 
 	// Create an OTSignedFile object, giving it the filename (the ID) and the local directory ("nyms")
-	OTSignedFile	theNymfile("nyms", nymID);
+	OTSignedFile	theNymfile(OTLog::NymFolder(), nymID);
 	theNymfile.GetFilename(m_strNymfile);
 	
 	OTLog::vOutput(2, "Saving nym to: %s\n", m_strNymfile.Get());

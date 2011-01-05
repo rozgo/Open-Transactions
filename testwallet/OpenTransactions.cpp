@@ -882,6 +882,10 @@ OTCheque * OT_API::WriteCheque(const OTIdentifier & SERVER_ID,
 		OTLog::Error("OTCheque::IssueCheque failed in OT_API::WriteCheque.\n");
 		
 		delete pCheque; pCheque = NULL;
+		
+		// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+		pNym->AddTransactionNum(*pNym, strServerID, lTransactionNumber, true); // bSave=true								
+		
 		return NULL;			
 	}
 	
@@ -1079,7 +1083,12 @@ OTPaymentPlan * OT_API::WritePaymentPlan(const OTIdentifier & SERVER_ID,
 	if (!bSuccessSetAgreement)
 	{
 		OTLog::Output(0, "Failed trying to set the agreement in OT_API::WritePaymentPlan.\n");
+		
 		delete pPlan; pPlan = NULL;
+		
+		// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+		pNym->AddTransactionNum(*pNym, strServerID, lTransactionNumber, true); // bSave=true								
+
 		return NULL;
 	}
 	
@@ -1099,7 +1108,12 @@ OTPaymentPlan * OT_API::WritePaymentPlan(const OTIdentifier & SERVER_ID,
 	if (!bSuccessSetInitialPayment)
 	{
 		OTLog::Output(0, "Failed trying to set the initial payment in OT_API::WritePaymentPlan.\n");
+		
 		delete pPlan; pPlan = NULL;
+		
+		// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+		pNym->AddTransactionNum(*pNym, strServerID, lTransactionNumber, true); // bSave=true								
+
 		return NULL;
 	}
 	
@@ -1156,7 +1170,12 @@ OTPaymentPlan * OT_API::WritePaymentPlan(const OTIdentifier & SERVER_ID,
 	if (!bSuccessSetPaymentPlan)
 	{
 		OTLog::Output(0, "Failed trying to set the payment plan in OT_API::WritePaymentPlan\n");
+		
 		delete pPlan; pPlan = NULL;
+		
+		// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+		pNym->AddTransactionNum(*pNym, strServerID, lTransactionNumber, true); // bSave=true								
+
 		return NULL;
 	}
 	
@@ -2982,8 +3001,14 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 #endif	
 			m_pClient->ProcessMessageOut(theMessage);	
 		}
+		else 
+		{
+			// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+			pNym->AddTransactionNum(*pNym, strServerID, lStoredTransactionNumber, true); // bSave=true								
+		}
 	}
-	else {
+	else 
+	{
 		OTLog::Output(0, "No Transaction Numbers were available. Suggest requesting the server for a new one.\n");
 	}
 }
@@ -3190,9 +3215,13 @@ void OT_API::notarizeDeposit(OTIdentifier	& SERVER_ID,
 			m_pClient->ProcessMessageOut(theMessage);	
 			
 		} // bSuccess
-		else {
+		else 
+		{
 			delete pItem;		pItem = NULL;
 			delete pTransaction;pTransaction = NULL;
+			
+			// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+			pNym->AddTransactionNum(*pNym, strServerID, lStoredTransactionNumber, true); // bSave=true								
 		}
 	} // if (pServerNym)
 }
@@ -3358,8 +3387,14 @@ void OT_API::withdrawVoucher(OTIdentifier	& SERVER_ID,
 #endif	
 			m_pClient->ProcessMessageOut(theMessage);	
 		}
+		else 
+		{
+			// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+			pNym->AddTransactionNum(*pNym, strServerID, lStoredTransactionNumber, true); // bSave=true								
+		}
 	}
-	else {
+	else 
+	{
 		OTLog::Output(0, "No Transaction Numbers were available. Suggest requesting the server for a new one.\n");
 	}
 }
@@ -3450,7 +3485,6 @@ void OT_API::depositCheque(OTIdentifier	& SERVER_ID,
 		CONTRACT_ID.GetString(strContractID);
 	}
 	
-	
 	// -----------------------------------------------------------------
 	
 	OTMessage theMessage;
@@ -3531,11 +3565,13 @@ void OT_API::depositCheque(OTIdentifier	& SERVER_ID,
 		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
 #endif	
 		m_pClient->ProcessMessageOut(theMessage);	
-		
 	} // bSuccess
 	else 
 	{
 		OTLog::Output(0, "Unable to load cheque from string. Sorry.\n");
+		
+		// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+		pNym->AddTransactionNum(*pNym, strServerID, lStoredTransactionNumber, true); // bSave=true								
 	}
 }
 
@@ -4011,6 +4047,9 @@ void OT_API::issueMarketOffer(const OTIdentifier	& SERVER_ID,
 		else 
 		{
 			OTLog::Output(0, "Unable to create offer or issue trade. Sorry.\n");
+			
+			// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+			pNym->AddTransactionNum(*pNym, strServerID, lStoredTransactionNumber, true); // bSave=true								
 		}							
 	} // got transaction number.
 }
@@ -4072,10 +4111,8 @@ void OT_API::notarizeTransfer(OTIdentifier	& SERVER_ID,
 		
 		return;
 	}
-	
-	
-	// -----------------------------------------------------------------
-	
+
+	// -----------------------------------------------------------------	
 	
 	OTMessage theMessage;
 	
@@ -4159,8 +4196,12 @@ void OT_API::notarizeTransfer(OTIdentifier	& SERVER_ID,
 #endif	
 		m_pClient->ProcessMessageOut(theMessage);	
 	}
-	else {
+	else 
+	{
 		OTLog::Output(0, "No transaction numbers were available. Suggest requesting the server for one.\n");
+		
+		// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+		pNym->AddTransactionNum(*pNym, strServerID, lStoredTransactionNumber, true); // bSave=true								
 	}	
 }
 

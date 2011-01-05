@@ -1693,7 +1693,7 @@ bool OTContract::ParseRawFile()
 						
 						if (!m_strRawFile.sgets(buffer1, 2048))
 						{
-							OTLog::vOutput(0, "Error in signature for contract %s: Unexpected EOF after \"Version:\"", m_strFilename.Get());
+							OTLog::vOutput(0, "Error in signature for contract %s: Unexpected EOF after \"Version:\"\n", m_strFilename.Get());
 							return false;
 						}
 						
@@ -1712,7 +1712,7 @@ bool OTContract::ParseRawFile()
 						
 						if (!m_strRawFile.sgets(buffer1, 2048))
 						{
-							OTLog::vOutput(0, "Error in contract %s: Unexpected EOF after \"Hash:\"", m_strFilename.Get());
+							OTLog::vOutput(0, "Error in contract %s: Unexpected EOF after \"Hash:\"\n", m_strFilename.Get());
 							return false;
 						}
 						continue;
@@ -1771,7 +1771,8 @@ bool OTContract::ParseRawFile()
 //		OTLog::Error("Error in OTContract::ParseRawFile: Contract ID does not match hashed contract file.\n");
 //		return false;
 //	}
-	else {
+	else 
+	{
 		return true;
 	}
 }

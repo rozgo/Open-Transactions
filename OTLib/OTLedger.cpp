@@ -666,8 +666,8 @@ OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTran
 		// it again, and the request is already sent, unlike a cheque that hasn't come in yet. It's definitely burnt,
 		// and the inbox/outbox can track it from there. (With receipt to hit inbox as well, after acceptance.)
 	//
-		theMessageNym.RemoveIssuedNum(theNym, theOwner.GetRealServerID(), theOwner.GetTransactionNum());  // a transaction number is being used, and REMOVED from my list of responsibility,
-		theMessageNym.RemoveTransactionNum(theNym, theOwner.GetRealServerID(), theOwner.GetTransactionNum()); // so I want the new signed list to reflect that number has been REMOVED.
+		theMessageNym.RemoveIssuedNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum());  // a transaction number is being used, and REMOVED from my list of responsibility,
+		theMessageNym.RemoveTransactionNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum()); // so I want the new signed list to reflect that number has been REMOVED.
 //	}
 	
 	OTString	strMessageNym(theMessageNym); // Okay now we have the transaction numbers in this MessageNym string.

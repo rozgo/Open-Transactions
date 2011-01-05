@@ -276,20 +276,23 @@ bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM, const bool bIsRea
 //    are all still there.
 //
 bool OTItem::VerifyBalanceStatement(const long lActualAdjustment, 
-									 OTPseudonym & THE_NYM,
-									 OTLedger & THE_INBOX,
-									 OTLedger & THE_OUTBOX,
-									const OTAccount & THE_ACCOUNT)
-{
-	if (GetType() != OTItem::balanceStatement)
-	{
+									OTPseudonym & THE_NYM,
+									OTLedger & THE_INBOX,
+									OTLedger & THE_OUTBOX,
+									const OTAccount & THE_ACCOUNT,
+									const long lOutboxTrnsNum/*=0*/)	// Only used in the case of transfer, where the user	
+{																		// doesn't know the outbox trans# in advance, so he sends
+	if (GetType() != OTItem::balanceStatement)							// a dummy number (currently '1') which we verify against
+	{																	// the actual outbox trans# successfully, only in that special case.
 		OTLog::Output(0, "OTItem::VerifyBalanceStatement: wrong item type.\n");
 		return false;
 	}
 	
+	// We need to verify:
+	//
 	// 1) That THE_ACCOUNT.GetBalance() + lActualAdjustment equals the amount in this->GetAmount().
 	
-	if ((THE_ACCOUNT.GetBalance() + lActualAdjustment) != this->GetAmount())
+	if ((THE_ACCOUNT.GetBalance() + lActualAdjustment) != this->GetAmount()) // this->GetAmount() contains what the balance WOULD be AFTER successful transaction.
 	{
 		OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Wrong balance %ld (expected %ld).\n",
 					   this->GetAmount(), (THE_ACCOUNT.GetBalance() + lActualAdjustment));
@@ -351,14 +354,40 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 				continue; // This will never happen, due to the first continue above in the first switch.
 		}
 		
-		OTTransaction * pTransaction = pLedger->GetTransaction(pSubItem->GetTransactionNum());
+		OTTransaction * pTransaction = NULL;
+		
+		// In the special case of account transfer, the user has put an outbox transaction
+		// into his balance agreement with the special number '1', since he has no idea what
+		// actual number will be generated on the server side (for the outbox) when his
+		// message is received by the server.
+		//
+		// When that happens (ONLY in account transfer) then lOutboxTrnsNum will be passed
+		// in with the new transaction number chosen by the server (a real number, like 18736
+		// or whatever, instead of the default of 0 that will otherwise be passed in here.)
+		//
+		// Therefore, if lOutboxTrnsNum is larger than 0, AND if we're on an outbox item,
+		// then we can expect lOutboxTrnsNum to contain an actual transaction number, and
+		// we can expect there is a CHANCE that the sub-item will be trans# 1. (It might
+		// NOT be number 1, since there may be other outbox items-we're looping through them
+		// right now in this block.) So we'll check to see if this is the '1' and if so,
+		// we'll look up pTransaction from the outbox using the real transaction number,
+		// instead of '1' which of course would not find it (since the version in the ledger
+		// contains the ACTUAL number now, since the server just issued it.)
+		//
+		if ((lOutboxTrnsNum > 0) && (&THE_OUTBOX == pLedger) && (pSubItem->GetTransactionNum() == 1)) // TODO use a constant for this 1.
+		{
+			pTransaction = pLedger->GetTransaction(lOutboxTrnsNum);			
+		}
+		else
+			pTransaction = pLedger->GetTransaction(pSubItem->GetTransactionNum());
 		
 		// Make sure that the transaction number of each sub-item is found
 		// on the appropriate ledger (inbox or outbox).
 		if (NULL == pTransaction)
 		{
-			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Expected %s transaction (%ld) not found on this side.\n",
-						   pszLedgerType, pSubItem->GetTransactionNum());
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Expected %s transaction (serv %ld, client %ld)\n"
+						   "not found. (Amount %ld.)\n",
+						   pszLedgerType, lOutboxTrnsNum, pSubItem->GetTransactionNum(), pSubItem->GetAmount());
 			return false;
 		}
 		
@@ -370,11 +399,13 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 			return false;
 		}
 		
-		if (pSubItem->GetAmount()			!= pTransaction->GetReceiptAmount())
+		if (pSubItem->GetAmount()			!= (pTransaction->GetReceiptAmount() * (-1)))
 		{
-			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) amounts don't match: %ld, expected %ld.\n",
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) "
+						   "amounts don't match: %ld, expected %ld. (this->GetAmount() == %ld.)\n",
 						   pszLedgerType, pSubItem->GetTransactionNum(),
-						   pSubItem->GetAmount(), pTransaction->GetReceiptAmount());
+						   pSubItem->GetAmount(), pTransaction->GetReceiptAmount(),
+						   this->GetAmount());
 			return false;
 		}
 		
@@ -429,9 +460,10 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 	// and the type was correct.
 	//
 	// So if the caller was planning to remove a number, or clear a receipt from the inbox, he'll have to do
-	// so first before calling this function, and then ADDIT AGAIN if this function fails.  (Because the new
+	// so first before calling this function, and then ADD IT AGAIN if this function fails.  (Because the new
 	// Balance Agreement is always the user signing WHAT THE NEW VERSION WILL BE AFTER THE TRANSACTION IS PROCESSED.)
 	
+	// ----------------------------------------------------------
 	
 	// 3) Also need to verify the transactions on the Nym, versus the transactions stored on this
 	//    (in a message Nym attached to this.)  Check for presence of each, then compare count, like above.
