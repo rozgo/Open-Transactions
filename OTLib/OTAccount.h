@@ -163,8 +163,7 @@ public:
 	virtual bool SaveContractWallet(std::ofstream & ofs);
 	virtual bool SaveContractWallet(OTString & strContents) const;
 	
-	bool DisplayStatistics(OTString & strContents) const;
-
+	virtual bool DisplayStatistics(OTString & strContents) const;
 
 	// --------------------------------------------------------------
 

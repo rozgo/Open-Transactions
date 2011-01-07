@@ -392,13 +392,13 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 
 	OTContract * pContract = NULL;
 	
-	for (mapOfContracts::iterator ii = m_mapContracts.begin(); ii != m_mapContracts.end(); ++ii)
+	for (mapOfContracts::iterator i2i = m_mapContracts.begin(); i2i != m_mapContracts.end(); ++i2i)
 	{
-		pContract = (*ii).second;
+		pContract = (*i2i).second;
 	 
 		OT_ASSERT_MSG(NULL != pContract, "NULL contract pointer in OTWallet::m_mapContracts, OTWallet::DisplayStatistics");
 	 
-		pContract->SaveContractWallet(strOutput);
+		pContract->DisplayStatistics(strOutput);
 	}
 	
 	// ---------------------------------------------------------------
@@ -408,13 +408,13 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 
 	OTContract * pServer = NULL;
 	
-	for (mapOfServers::iterator ii = m_mapServers.begin(); ii != m_mapServers.end(); ++ii)
+	for (mapOfServers::iterator i3i = m_mapServers.begin(); i3i != m_mapServers.end(); ++i3i)
 	{
-		pServer = (*ii).second;
+		pServer = (*i3i).second;
 	 
 		OT_ASSERT_MSG(NULL != pServer, "NULL server pointer in OTWallet::m_mapServers, OTWallet::DisplayStatistics");
 	 
-		pServer->SaveContractWallet(strOutput);
+		pServer->DisplayStatistics(strOutput);
 	}
 	
 	// ---------------------------------------------------------------

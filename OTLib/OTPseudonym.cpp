@@ -177,6 +177,11 @@ OTItem * OTPseudonym::GenerateTransactionStatement(const OTTransaction & theOwne
 	theMessageNym.RemoveIssuedNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum());  // a transaction number is being used, and REMOVED from my list of responsibility,
 	theMessageNym.RemoveTransactionNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum()); // so I want the new signed list to reflect that number has been REMOVED.
 
+	// What about cases where no number is being used? (Such as processNymbox)
+	// Perhaps then if this function is even called, it's with a 0-number transaction, in which 
+	// case the above Removes probably won't hurt anything.  Todo.
+	
+	
 	OTString	strMessageNym(theMessageNym); // Okay now we have the transaction numbers in this MessageNym string.
 	
 	pBalanceItem->SetAttachment(strMessageNym);				// <======== This is where the server will read the transaction numbers from (A nym in item.m_ascAttachment)

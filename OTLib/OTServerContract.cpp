@@ -130,9 +130,24 @@ bool OTServerContract::GetConnectInfo(OTString & strHostname, int & nPort)
 }
 
 
+bool OTServerContract::DisplayStatistics(OTString & strContents) const
+{
+	const OTString strID(m_ID);
+	
+	strContents.Concatenate(
+							" Notary Provider: %s\n"
+							" ServerID: %s\n"
+							"\n",
+							m_strName.Get(),
+							strID.Get());
+	
+	return true;
+}
+
+
 bool OTServerContract::SaveContractWallet(OTString & strContents) const
 {
-	OTString strID(m_ID);
+	const OTString strID(m_ID);
 
 	OTASCIIArmor ascName;
 	

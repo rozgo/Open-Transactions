@@ -112,6 +112,8 @@ public:
 //	virtual bool SaveContractWallet(FILE * fl);
 	virtual bool SaveContractWallet(OTString & strContents) const;
 	virtual bool SaveContractWallet(std::ofstream & ofs);
+	
+	virtual bool DisplayStatistics(OTString & strContents) const;
 };
 
 #endif // __OTSERVERCONTRACT_H__

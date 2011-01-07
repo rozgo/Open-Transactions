@@ -4,19 +4,22 @@
 <pseudonym name="eJxzc/Xx8Q9XCAlyDHP1cQ1SD1YIcQ0OUfCL9GUAAGlbBz0="
  nymID="7d1cff65a7febacaa0bbab73fd65032e6620e6501f41961b2be3ad556d891d4f5cab52acc87c07da91fbdc940da865249cb6e0b3a6fe7d66f6b3f8eb94591b5d" />
 
+<assetType name="eJwrzswpSy1SSC9KzC1mAAAkYgTQ"
+ assetTypeID="17dc81091d89e0754ce3e4612ae044b274cf251cac14641cc8c586b43d97138852858ee7713b26d3fe18da26035e7869b1adb6a86da6563b1b7ae61148e3453b" />
+
 <notaryProvider name="eJzzyU9OzMnILy5RcM7PKylKTC5hAABIywcI"
  serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de" />
 
-<!-- Last retrieved balance: 0 on date: 1294320107 -->
+<!-- Last retrieved balance: 0 on date: 1294409342 -->
 <!-- Account type: simple --><assetAccount name=""
- accountID="bbf263665191f9d51adf6a7ed91f961ad243e7916094cd342aa6cb36f6f29219d31c2ed1dece37e576c84c00bd8a5cd6b47a851cbc0c2052dc8a98521a003051"
+ accountID="60f2da1db3aa880e8a862db753f735c18c771f9aef87f5330cdfef1dd1cc07fae6edeb849a1aaccc9eadd47c42b8bda605de5761e3f67d6b596dbbfb0cf1bcaa"
  userID="7d1cff65a7febacaa0bbab73fd65032e6620e6501f41961b2be3ad556d891d4f5cab52acc87c07da91fbdc940da865249cb6e0b3a6fe7d66f6b3f8eb94591b5d"
  serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de" />
 <!-- assetTypeID: 17dc81091d89e0754ce3e4612ae044b274cf251cac14641cc8c586b43d97138852858ee7713b26d3fe18da26035e7869b1adb6a86da6563b1b7ae61148e3453b -->
 
-<!-- Last retrieved balance: 0 on date: 1294320100 -->
+<!-- Last retrieved balance: 0 on date: 1294409295 -->
 <!-- Account type: issuer --><assetAccount name=""
- accountID="bf24705920a12206a5cbb2772532107e8a66483a3a42383ed06bb350ffd3a4091820a6e481673b6e31ced771da2e5ab49d826d6e6619c082ca89e6251890a288"
+ accountID="a8306e1c713fa27f2ac00a20faf4cc2fbc62ae72695f31ea70d3d527e8188c97bfc758e34a9e549615c6a4ca29232183208af6a16411eacd398147c9a2d50866"
  userID="7d1cff65a7febacaa0bbab73fd65032e6620e6501f41961b2be3ad556d891d4f5cab52acc87c07da91fbdc940da865249cb6e0b3a6fe7d66f6b3f8eb94591b5d"
  serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de" />
 <!-- assetTypeID: 17dc81091d89e0754ce3e4612ae044b274cf251cac14641cc8c586b43d97138852858ee7713b26d3fe18da26035e7869b1adb6a86da6563b1b7ae61148e3453b -->

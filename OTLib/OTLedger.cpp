@@ -667,6 +667,8 @@ OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTran
 		return NULL;
 	}
 	
+	// ------------------------------------------------------
+	
 	const OTIdentifier theNymID(theNym);
 	
 	if (
@@ -716,14 +718,23 @@ OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTran
 	{
 		case OTTransaction::processInbox:
 		case OTTransaction::deposit:
-		case OTTransaction::withdrawal:			
+		case OTTransaction::withdrawal:
+			// These three options will remove the transaction number from the issued list, SUCCESS OR FAIL.
+			// Server will expect the number to be missing from the list, in the case of these.
+			// Therefore I remove it here in order to generate a proper balance agreement, acceptable to the server.
+			//
 			theMessageNym.RemoveIssuedNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum());  // a transaction number is being used, and REMOVED from my list of responsibility,
 			theMessageNym.RemoveTransactionNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum()); // so I want the new signed list to reflect that number has been REMOVED.
 			break;
 		case OTTransaction::transfer:
 		case OTTransaction::marketOffer:
 		case OTTransaction::paymentPlan:
-			// Nothing removed here since the transaction is still in play.
+			// Nothing removed here since the transaction is still in play. (Assuming success.)
+			// If the server replies with rejection for any of these three, then I can remove
+			// the transaction number from my list of issued/signed for. But if success, then I
+			// am responsible for the transaction number until I sign off on closing it.
+			// Since the Balance Statement ANTICIPATES SUCCESS, NOT FAILURE, it assumes the number
+			// to be "in play" here, and thus DOES NOT remove it (vs the cases above, which do.)
 			break;
 		default: 
 			// Error

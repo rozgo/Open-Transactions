@@ -1314,6 +1314,13 @@ bool OTContract::VerifySignature(const char * szFilename, const OTSignature & th
 }
 
 
+bool OTContract::DisplayStatistics(OTString & strContents) const
+{
+	// Subclasses may override this.
+	strContents.Concatenate((char*)"ERROR:  OTContract::DisplayStatistics was called instead of a subclass...\n");
+	
+	return false;	
+}
 
 
 bool OTContract::SaveContractWallet(OTString & strContents) const

@@ -4667,6 +4667,43 @@ void OT_API::issueAssetType(OTIdentifier	&	SERVER_ID,
 		// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
 		theMessage.SaveContract();
 		
+		// ------------------------------------ 
+		// Save the contract to local storage and add to wallet.
+		
+		OTString strFilename;	// In this case the filename isn't actually used, since SaveToContractFolder will
+		// handle setting up the filename and overwrite it anyway. But I still prefer to set it
+		// up correctly, rather than pass a blank. I'm just funny like that.
+		strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						   OTLog::ContractFolder(),
+						   OTLog::PathSeparator(), theMessage.m_strAssetID.Get());
+		
+		OTAssetContract * pContract = new OTAssetContract(theMessage.m_strAssetID, strFilename, theMessage.m_strAssetID);
+		
+		OT_ASSERT(NULL != pContract);
+		
+		// Check the server signature on the contract here. (Perhaps the message is good enough?
+		// After all, the message IS signed by the server and contains the Account.
+		//		if (pContract->LoadContract() && pContract->VerifyContract())
+		if (pContract->LoadContractFromString(THE_CONTRACT) && pContract->VerifyContract())
+		{
+			// Next make sure the wallet has this contract on its list...
+			OTWallet * pWallet = NULL;
+			
+			if (NULL != (pWallet = m_pWallet))
+			{
+				pWallet->AddAssetContract(*pContract); // this saves both the contract and the wallet.
+				pContract = NULL; // Success. The wallet "owns" it now, no need to clean it up.
+			}
+		}
+		// cleanup
+		if (pContract)
+		{
+			delete pContract;
+			pContract = NULL;
+		}
+
+		// ----------------------------
+		
 		// (Send it)
 #if defined(OT_XMLRPC_MODE)
 		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);

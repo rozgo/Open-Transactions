@@ -158,9 +158,12 @@ bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM, const bool bIsRea
 		// this might not be a transaction at all, but in that case we won't enter this block anyway.
 		// Thus, we do NOT want to remove from issued list. That only happens when the plan or offer is
 		// removed from Cron and closed. As the plan or offer continues processing, the user is responsible
-		// for the main transaction number until he signs off on final closing, after many receipts have
-		// been received.
+		// for its main transaction number until he signs off on final closing, after many receipts have
+		// potentially been received.
 //		THE_NYM.RemoveIssuedNum(SERVER_ID, GetTransactionNum()); // commented out, explained just above.
+		// Client side will NOT remove from issued list in this case (market offer, payment plan, which are
+		// the only transactions that use a transactionStatement, which is otherwise used for Nymbox, and
+		// NOT any other transactions.
 	}
 	
 	// ----------------------------------------------------
@@ -225,8 +228,15 @@ bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM, const bool bIsRea
 							OTLog::vOutput(0, "OTItem::VerifyTransactionStatement: Issued transaction # %ld from Message Nym not found on this side.\n", 
 										   lTransactionNumber);
 							
-							if (bIsRealTransaction) // We only removed it to do the verification. If that failed, add it back again (until next time when it succeeds)
-								THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
+							// transactionStatement, unlike BalanceStatement, will never actually REMOVE an issued number.
+							// A transactionStatement accompanies either a processNymbox, which ADDS issued numbers, (doesn't remove),
+							// and uses none (since it's not a real transaction) or it accompanies a marketOffer or paymentPlan,
+							// neither of which actually removes the issued number UNTIL AFTER Cron has entirely finished and closed
+							// with the offer or plan (i.e. sometime in the future.) Thus, the Remove/Add issued code is commented out
+							// here, even though it's still found in some form in BalanceStatement.
+							//
+//							if (bIsRealTransaction) // We only removed it to do the verification. If that failed, add it back again (until next time when it succeeds)
+//								THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
 							
 							return false;
 						}
@@ -242,8 +252,16 @@ bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM, const bool bIsRea
 		OTLog::vOutput(0, "OTItem::VerifyTransactionStatement: Transaction # Count mismatch: %d and %d\n", 
 					  nNumberOfTransactionNumbers1, nNumberOfTransactionNumbers2);
 		
-		if (bIsRealTransaction)
-			THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
+		
+		// transactionStatement, unlike BalanceStatement, will never actually REMOVE an issued number.
+		// A transactionStatement accompanies either a processNymbox, which ADDS issued numbers, (doesn't remove),
+		// and uses none (since it's not a real transaction) or it accompanies a marketOffer or paymentPlan,
+		// neither of which actually removes the issued number UNTIL AFTER Cron has entirely finished and closed
+		// with the offer or plan (i.e. sometime in the future.) Thus, the Remove/Add issued code is commented out
+		// here, even though it's still found in some form in BalanceStatement.
+		//		
+//		if (bIsRealTransaction)
+//			THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
 		
 		return false;
 	}
@@ -485,15 +503,19 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 	
 	// For process inbox, deposit, and withdrawal, the client will remove from issued list as soon as he 
 	// receives my acknowledgment OR rejection. He expects server (me) to remove, so he signs a balance
-	// agreement to that effect.
+	// agreement to that effect. (With the number removed from issued list.)
 	//
 	// Therefore, to verify the balance agreement, we remove it on our side as well, so that they will match.
-	// This allows the client side to ACTUALLY remove when they receive our response, as well as permits
-	// me (server) to actually remove from issued list.
+	// The picture thus formed is what would be correct assuming a successful transaction. That way if
+	// the transaction goes through, we have our signed receipt showing the new state of things (without
+	// which we would not permit the transaction to go through :)
+	//
+	// This allows the client side to then ACTUALLY remove the number when they receive our response,
+	// as well as permits me (server) to actually remove from issued list.
 	//
 	// If ANYTHING ELSE fails during this verify process (other than processInbox, deposit, and withdraw)
-	// then we have to ADD IT AGAIN since we still don't have a valid signature on that number. So you'll 
-	// see this code repeated a few times in reverse, down inside this function. For example, 
+	// then we have to ADD THE # AGAIN since we still don't have a valid signature on that number. So  
+	// you'll see this code repeated a few times in reverse, down inside this function. For example, 
 	//	
 	switch (TARGET_TRANSACTION.GetType()) 
 	{
@@ -505,6 +527,7 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 		case OTTransaction::transfer:
 		case OTTransaction::marketOffer:
 		case OTTransaction::paymentPlan:
+			// These, assuming success, do NOT remove an issued number. So no need to anticipate setting up the list that way, to get a match.
 			break;
 		default: 
 			// Error
@@ -567,7 +590,7 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 				{
 					lTransactionNumber = pDeque->at(i);
 					
-					if (false == THE_NYM.VerifyIssuedNum(OTstrServerID, lTransactionNumber))
+					if (false == THE_NYM.VerifyIssuedNum(OTstrServerID, lTransactionNumber)) // FAILURE
 					{
 						OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Issued transaction # %ld from Message Nym not found on this side.\n", 
 									  lTransactionNumber);

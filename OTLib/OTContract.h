@@ -276,6 +276,8 @@ public:
 	virtual bool SaveContractWallet(std::ofstream & ofs) = 0;
 	virtual bool SaveContractWallet(OTString & strContents) const;
 
+	virtual bool DisplayStatistics(OTString & strContents) const;
+
 	// Save m_xmlUnsigned to a string that's passed in
 	virtual bool SaveContents(OTString & strContents) const;
 		

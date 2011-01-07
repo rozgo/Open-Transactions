@@ -792,28 +792,6 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 		
 		OT_ASSERT_MSG(NULL != pTransaction, "NULL transaction pointer in OTServer::UserCmdNotarizeTransactions\n");
 		
-		
-		
-		
-		OTString strOriginalMessage;
-		
-		theReply.m_ascInReferenceTo.GetString(strOriginalMessage);
-		
-		OTMessage theOriginalMessage;
-		
-		if (strOriginalMessage.Exists() && theOriginalMessage.LoadContractFromString(strOriginalMessage))
-		{
-			OTString	strLedger, strReplyLedger;
-			
-			OTLedger	theLedger(USER_ID, ACCOUNT_ID, SERVER_ID),
-			theReplyLedger(USER_ID, ACCOUNT_ID, SERVER_ID);
-			
-			theOriginalMessage.m_ascPayload.GetString(strLedger);
-			theReply.m_ascPayload.GetString(strReplyLedger);
-			
-		
-		
-		
 		// for each transaction in the ledger, we create a transaction response and add
 		// that to the response ledger.
 		if (pTransaction->VerifyAccount(*pServerNym)) // if not null && valid transaction reply from server
@@ -831,26 +809,22 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 			
 			switch (pTransaction->GetType()) 
 			{
-				case OTTransaction::atDeposit:
-					theItemType = OTItem::deposit;
-					break;
-				case OTTransaction::atWithdrawal:
-					theItemType = OTItem::withdrawal;
-					break;
 			// ----------------------------------------
 				case OTTransaction::atTransfer:
-					theItemType = OTItem::transfer;
+					theItemType = OTItem::atTransfer;
 					break;
 				case OTTransaction::atMarketOffer:
-					theItemType = OTItem::marketOffer;
+					theItemType = OTItem::atMarketOffer;
 					break;
 				case OTTransaction::atPaymentPlan:
-					theItemType = OTItem::paymentPlan;
+					theItemType = OTItem::atPaymentPlan;
 					break;
 				default:
 					continue;
 			}
+			
 			// ----------------------------------------
+			
 			switch (pTransaction->GetType()) 
 			{
 				case OTTransaction::atDeposit:
@@ -862,7 +836,7 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 					ProcessWithdrawalResponse(*pTransaction, theConnection, theReply);
 					pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true); // bool bSave=true	
 					break;
-					
+				// ---------------------------------------
 				case OTTransaction::atTransfer:
 				case OTTransaction::atMarketOffer:
 				case OTTransaction::atPaymentPlan:
@@ -875,13 +849,12 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 					if ((NULL != pItem) &&
 						OTItem::rejection == pItem->GetStatus())
 					{
-						if (false == RemoveIssuedNumber(theNym, lTransactionNumber))
+						if (false == pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true)) // bool bSave=true
 						{
-							OTLog::Error("Error removing issued number from user nym in OTServer::NotarizeTransaction\n");
+							OTLog::Error("Error removing issued number from user nym in OTClient::ProcessIncomingTransactions\n");
 						}			
 					}
 				}
-					
 					break;
 					
 				case OTTransaction::atProcessInbox: // not handled here...
@@ -1633,9 +1606,9 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 										// receipts, for which there are many, but for removing trans from issued list
 										// and closing out for good. Note also, this happens spotaneously as cron runs.)
 										//
-									case atRejectPending: // turn down the money!
-									case atDisputeCronReceipt: // dispute a market trade or payment for a payment plan
-									case atDisputeItemReceipt: // dispute a cheque receipt or transfer receipt.
+									case OTItem::atRejectPending: // turn down the money!
+									case OTItem::atDisputeCronReceipt: // dispute a market trade or payment for a payment plan
+									case OTItem::atDisputeItemReceipt: // dispute a cheque receipt or transfer receipt.
 										continue;
 										
 									default:
@@ -1652,14 +1625,14 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 										// complete. (Many Cron receipts may breeze through here before that happens.)
 									case OTItem::atAcceptCronReceipt:
 										
-										if (OTItem::acknowledgment == pReplyItem->GetStatus()) // <=== Only when successful.
+										if (OTItem::acknowledgement == pReplyItem->GetStatus()) // <=== Only when successful.
 									{
 										OTItem * pItem = pTransaction->GetItem(theItemType);
 										
 										if (NULL != pItem) // acceptItemReceipt or acceptPending are possible types for pItem...
 										{
 											// Load the inbox object from that string.				
-											OTLedger theInbox(USER_ID, ACCOUNT_ID, SERVER_ID);	
+											OTLedger theInbox(USER_ID, ACCOUNT_ID, SERVER_ID);
 											
 											// I JUST had this loaded if I sent acceptWhatever just instants ago, (which I am now processing the reply for.)
 											// Therefore I'm just ASSUMING here that it loads successfully here, since it worked an instant ago. Todo.
@@ -1705,7 +1678,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 													// is in reference to the recipient's acceptPending. THAT item is in reference to
 													// my original transfer (or contains a cheque with my original number.) (THAT's the # I need.)
 													//
-													OTString strOriginalItem
+													OTString strOriginalItem;
 													pServerTransaction->GetReferenceString(strOriginalItem);
 													
 													OTItem * pOriginalItem = OTItem::CreateItemFromString(strOriginalItem, SERVER_ID, pServerTransaction->GetReferenceToNum());
@@ -1788,8 +1761,10 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 
 									default: 
 										// Error
+										OTString strTempTypeString;
+										pReplyItem->GetTypeString(strTempTypeString);
 										OTLog::vError("OTClient::ProcessServerReply: wrong reply item transaction type: %s\n",
-													  pReplyItem->GetTypeString());
+													  strTempTypeString.Get());
 										break;
 								}	// switch replyItem type						
 							} // for (reply items)
@@ -2502,7 +2477,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			theMessage.m_strCommand			= "issueAssetType";
 			theMessage.m_strNymID			= strNymID;
 			theMessage.m_strServerID		= strServerID;
-			newID.GetString(theMessage.m_strAssetID);
+			newID.GetString(theMessage.m_strAssetID); // I've calculated the ID, and now put it on the message...
 			OTString strAssetContract(theAssetContract);
 			theMessage.m_ascPayload.SetString(strAssetContract);
 			
@@ -2512,7 +2487,42 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
 			theMessage.SaveContract();
 			
-			bSendCommand = true;			
+			bSendCommand = true;		
+			
+			// ------------------------------------ 
+			// Save the contract to local storage and add to wallet.
+			
+			OTString strFilename;	// In this case the filename isn't actually used, since SaveToContractFolder will
+			// handle setting up the filename and overwrite it anyway. But I still prefer to set it
+			// up correctly, rather than pass a blank. I'm just funny like that.
+			strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+							   OTLog::ContractFolder(),
+							   OTLog::PathSeparator(), theMessage.m_strAssetID.Get());
+			
+			OTAssetContract * pContract = new OTAssetContract(theMessage.m_strAssetID, strFilename, theMessage.m_strAssetID);
+			
+			OT_ASSERT(NULL != pContract);
+			
+			// Check the server signature on the contract here. (Perhaps the message is good enough?
+			// After all, the message IS signed by the server and contains the Account.
+			//		if (pContract->LoadContract() && pContract->VerifyContract())
+			if (pContract->LoadContractFromString(strSourceContract) && pContract->VerifyContract())
+			{
+				// Next make sure the wallet has this contract on its list...
+				OTWallet * pWallet = NULL;
+				
+				if (NULL != (pWallet = m_pWallet))
+				{
+					pWallet->AddAssetContract(*pContract); // this saves both the contract and the wallet.
+					pContract = NULL; // Success. The wallet "owns" it now, no need to clean it up.
+				}
+			}
+			// cleanup
+			if (pContract)
+			{
+				delete pContract;
+				pContract = NULL;
+			}
 		}		
 	}
 	

@@ -648,7 +648,6 @@ void OTAccount::UpdateContents()
 
 
 
-
 bool OTAccount::DisplayStatistics(OTString & strContents) const
 {
 	const OTString	strAccountID(GetPurportedAccountID()), strServerID(GetPurportedServerID()), 
