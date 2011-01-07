@@ -153,12 +153,14 @@ bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM, const bool bIsRea
 			return false;
 		}
 
-		// The client side has already removed from issued list, and has sent us a signed copy to that effect,
-		// so we remove it on our side as well, so that they will match. (Which allows us to ACTUALLY remove it :)
-		// If anything else fails during this verify process, we have to ADD IT AGAIN since we stil don't have
-		// a valid signature on that number. (Besides the last one that includes it.)
-		//
-		THE_NYM.RemoveIssuedNum(SERVER_ID, GetTransactionNum());
+		// In the case that this is a real transaction, it must be a payment plan or market offer (since
+		// the other transaction types require a balance statement, not a transaction statement.) Also
+		// this might not be a transaction at all, but in that case we won't enter this block anyway.
+		// Thus, we do NOT want to remove from issued list. That only happens when the plan or offer is
+		// removed from Cron and closed. As the plan or offer continues processing, the user is responsible
+		// for the main transaction number until he signs off on final closing, after many receipts have
+		// been received.
+//		THE_NYM.RemoveIssuedNum(SERVER_ID, GetTransactionNum()); // commented out, explained just above.
 	}
 	
 	// ----------------------------------------------------
@@ -482,15 +484,16 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 	
 	
 	// For process inbox, deposit, and withdrawal, the client will remove from issued list as soon as he 
-	// receives my acknowledgment. He expects server (me) to remove, so he signs a balance agreement to that effect.
+	// receives my acknowledgment OR rejection. He expects server (me) to remove, so he signs a balance
+	// agreement to that effect.
 	//
 	// Therefore, to verify the balance agreement, we remove it on our side as well, so that they will match.
-	// This allows the client side to ACTUALLY remove, when they receive our acknowledgment, as well as permits
-	// me (server) to actually remove if the transaction itself succeeds after the balance agreement succeeds.
+	// This allows the client side to ACTUALLY remove when they receive our response, as well as permits
+	// me (server) to actually remove from issued list.
 	//
-	// If ANYTHING ELSE fails during this verify process, we have to ADD IT AGAIN since we still don't have
-	// a valid signature on that number. (Besides the last one that includes it.) So you'll see this code
-	// repeated a few times in reverse, down inside this function.
+	// If ANYTHING ELSE fails during this verify process (other than processInbox, deposit, and withdraw)
+	// then we have to ADD IT AGAIN since we still don't have a valid signature on that number. So you'll 
+	// see this code repeated a few times in reverse, down inside this function. For example, 
 	//	
 	switch (TARGET_TRANSACTION.GetType()) 
 	{

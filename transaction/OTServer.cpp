@@ -4392,7 +4392,7 @@ void OTServer::NotarizeTransaction(OTPseudonym & theNym, OTTransaction & tranIn,
 					OTLog::Output(0, "NotarizeTransaction type: Process Inbox\n");
 					NotarizeProcessInbox(theNym, theFromAccount, tranIn, tranOut);	
 					bSuccess = true;
-					theReplyItemType = OTItem::atProcessInbox;
+//					theReplyItemType = OTItem::atProcessInbox; // Nonexistent, and here, unused.
 					break;
 					
 					// WITHDRAWAL (cash or voucher)	

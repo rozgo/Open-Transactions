@@ -792,6 +792,28 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 		
 		OT_ASSERT_MSG(NULL != pTransaction, "NULL transaction pointer in OTServer::UserCmdNotarizeTransactions\n");
 		
+		
+		
+		
+		OTString strOriginalMessage;
+		
+		theReply.m_ascInReferenceTo.GetString(strOriginalMessage);
+		
+		OTMessage theOriginalMessage;
+		
+		if (strOriginalMessage.Exists() && theOriginalMessage.LoadContractFromString(strOriginalMessage))
+		{
+			OTString	strLedger, strReplyLedger;
+			
+			OTLedger	theLedger(USER_ID, ACCOUNT_ID, SERVER_ID),
+			theReplyLedger(USER_ID, ACCOUNT_ID, SERVER_ID);
+			
+			theOriginalMessage.m_ascPayload.GetString(strLedger);
+			theReply.m_ascPayload.GetString(strReplyLedger);
+			
+		
+		
+		
 		// for each transaction in the ledger, we create a transaction response and add
 		// that to the response ledger.
 		if (pTransaction->VerifyAccount(*pServerNym)) // if not null && valid transaction reply from server
@@ -803,8 +825,32 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 			// the server has removed it from our list of responsibility, so we need to remove it on our side as well.
 			// so that we can properly calculate our balance agreements in the future.
 			//
-			// NOTE: not for all types! See this switch statement:
+			// NOTE: not for all types! See the switch statements:
 			
+			OTItem::itemType theItemType = OTItem::error_state;
+			
+			switch (pTransaction->GetType()) 
+			{
+				case OTTransaction::atDeposit:
+					theItemType = OTItem::deposit;
+					break;
+				case OTTransaction::atWithdrawal:
+					theItemType = OTItem::withdrawal;
+					break;
+			// ----------------------------------------
+				case OTTransaction::atTransfer:
+					theItemType = OTItem::transfer;
+					break;
+				case OTTransaction::atMarketOffer:
+					theItemType = OTItem::marketOffer;
+					break;
+				case OTTransaction::atPaymentPlan:
+					theItemType = OTItem::paymentPlan;
+					break;
+				default:
+					continue;
+			}
+			// ----------------------------------------
 			switch (pTransaction->GetType()) 
 			{
 				case OTTransaction::atDeposit:
@@ -821,6 +867,21 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 				case OTTransaction::atMarketOffer:
 				case OTTransaction::atPaymentPlan:
 					// Nothing removed here since the transaction number is still in play, in these cases.
+					// ACTUALLY, if these are a failure, we need to REMOVE from issued list.
+					// But if success, the number stays in play until a later time.
+				{
+					OTItem * pItem	= pTransaction->GetItem(theItemType);
+					
+					if ((NULL != pItem) &&
+						OTItem::rejection == pItem->GetStatus())
+					{
+						if (false == RemoveIssuedNumber(theNym, lTransactionNumber))
+						{
+							OTLog::Error("Error removing issued number from user nym in OTServer::NotarizeTransaction\n");
+						}			
+					}
+				}
+					
 					break;
 					
 				case OTTransaction::atProcessInbox: // not handled here...
@@ -831,7 +892,8 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 					break;
 			}
 			
-			// atTransfer:		Whether success or fail, KEEP the number on my list of responsibility.
+			// atTransfer:		If success, KEEP the number on my list of responsibility. If fail, REMOVE it.
+			//					(Do the same for atMarketOffer and atPaymentPlan.)
 			// atDeposit:		Whether success or fail, remove the number from my list of responsibility.
 			// atWithdrawal:	Whether success or fail, remove the number from my list of responsibility.
 			// atAcceptPending:	Whether success or fail, remove the number from my list of responsibility.
