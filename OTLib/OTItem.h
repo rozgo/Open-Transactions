@@ -270,6 +270,7 @@ public:
 								OTLedger & THE_INBOX,
 								OTLedger & THE_OUTBOX,
 								const OTAccount & THE_ACCOUNT,
+								OTTransaction & TARGET_TRANSACTION,
 								const long lOutboxTrnsNum=0);	// Used in special case of transfers (the user
 																// didn't know the outbox trans# when constructing
 																// the original request.) Unused when 0.

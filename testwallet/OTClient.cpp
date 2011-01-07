@@ -288,9 +288,6 @@ void OTClient::AcceptEntireNymbox(OTLedger & theNymbox, OTServerConnection & the
 			// calculate the transaction agreement properly. So I used theIssueNym as a temp variable to store those
 			// numbers, so I can add them to my Nym and them remove them again after generating the statement.
 			//
-			// Here I am adding these numbers back again, since I removed them to calculate the balance agreement.
-			// (They won't be removed for real until I receive the server's acknowledgment that those numbers
-			// really were removed. Until then I have to keep them and use them for my balance agreements.)
 			for (int i = 0; i < theIssuedNym.GetIssuedNumCount(theServerID); i++)
 			{
 				long lTemp = theIssuedNym.GetIssuedNum(theServerID, i);
@@ -304,9 +301,8 @@ void OTClient::AcceptEntireNymbox(OTLedger & theNymbox, OTServerConnection & the
 			OTItem * pBalanceItem = pNym->GenerateTransactionStatement(*pAcceptTransaction);
 
 			// -----------------------------------------
-			// Here I am removing them again.
-			//
-			// TODO: Make sure to add them for real later on, upon receipt of server acknowledgment.
+			// Here I am removing them again, now that the statement has been generated.
+			// If the message is successful, then I will need to remove them for real.
 			//
 			for (int i = 0; i < theIssuedNym.GetIssuedNumCount(theServerID); i++)
 			{
@@ -498,7 +494,7 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 				if (pOriginalItem)
 				{
 					if ( (OTItem::transfer	== pOriginalItem->GetType()) &&
-						 (OTItem::request	== pOriginalItem->GetStatus()))  // I'm accepting a transfer that was sent to me.
+						 (OTItem::request	== pOriginalItem->GetStatus()))  // I'm accepting a transfer that was sent to me. (A .PENDING .TRANSFER .REQUEST)
 					{
 						OTItem * pAcceptItem = OTItem::CreateItemFromTransaction(*pAcceptTransaction, OTItem::acceptPending);
 						// the transaction will handle cleaning up the transaction item.
@@ -563,13 +559,12 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 						// these types:
 						(
 						 (
-						  (OTItem::acceptPending			== pOriginalItem->GetType()) // I'm accepting a transfer receipt.
-						  &&	(OTTransaction::transferReceipt	== pTransaction->GetType())
+						  (OTItem::acceptPending			== pOriginalItem->GetType()) && // I'm accepting a transfer receipt.
+						  (OTTransaction::transferReceipt	== pTransaction->GetType())
 						  )  
 						 || 
 						 (
-						  (OTItem::depositCheque			== pOriginalItem->GetType())	 // I'm accepting a notice that someone cashed a cheque I wrote.
-						  &&
+						  (OTItem::depositCheque			== pOriginalItem->GetType()) &&	 // I'm accepting a notice that someone cashed my cheque.
 						  (OTTransaction::chequeReceipt	== pTransaction->GetType())
 						  )
 						 )
@@ -579,13 +574,23 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 						// the transaction will handle cleaning up the transaction item.
 						pAcceptTransaction->AddItem(*pAcceptItem);
 						
+						// In this case, this reference number is someone else's responsibility, not mine. (Someone ELSE deposited my cheque.) ...But I still reference it.
 						pAcceptItem->SetReferenceToNum(pOriginalItem->GetTransactionNum()); // This is critical. Server needs this to look up the original.
 						// Don't need to set transaction num on item since the constructor already got it off the owner transaction.
 						
-						// If pOriginalItem is acceptPending, then I'm NOT removing any transaction numbers (that i'm responsible for)
-						// by accepting it. (Since it was initiated by someone else.) 
-						// But if it's a chequeReceipt, I need to know the transaction number on that
-						// cheque!
+						// If pOriginalItem is acceptPending, that means I'm accepting the transfer receipt from the server,
+						// which has the recipient's acceptance inside of it as the original item. This means the transfer that
+						// *I* originally sent is now finally closed!
+						// 
+						// If it's a depositCheque, that means I'm accepting the cheque receipt from the server,
+						// which has the recipient's deposit inside of it as the original item. This means that the cheque that
+						// *I* originally wrote is now finally closed!
+						//
+						// In both cases, the "original item" itself is not from me, but from the recipient! Therefore,
+						// the number on that item is useless to me (for removing numbers from my own list of issued numbers.)
+						// Rather, I need to load that original cheque, or pending transfer, from WITHIN the original item,
+						// in order to get THAT number, to remove it from my issued list. *sigh*
+						//
 						if (OTItem::depositCheque == pOriginalItem->GetType())
 						{
 							// Get the cheque from the Item and load it up into a Cheque object.
@@ -603,6 +608,15 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 							else
 								theIssuedNym.AddIssuedNum(strServerID, theCheque.GetTransactionNum());
 						}
+						else if (OTItem::acceptPending == pOriginalItem->GetType())
+						{
+							theIssuedNym.AddIssuedNum(strServerID, pOriginalItem->GetReferenceToNum());
+						}
+						else 
+						{
+							OTLog::Error("OTClient::AcceptEntireInbox: Error: wrong pOriginalItem type.\n");
+						}
+
 						
 						// I don't attach the original item here because I already reference it by transaction num,
 						// and because the server already has it and sent it to me. SO I just need to give the server
@@ -781,24 +795,46 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 		// for each transaction in the ledger, we create a transaction response and add
 		// that to the response ledger.
 		if (pTransaction->VerifyAccount(*pServerNym)) // if not null && valid transaction reply from server
-		{
-			// It's a withdrawal...
-			if (OTTransaction::atWithdrawal == pTransaction->GetType())
-			{
-				ProcessWithdrawalResponse(*pTransaction, theConnection, theReply);
-			}			
-			// It's a deposit...
-			else if (OTTransaction::atDeposit == pTransaction->GetType())
-			{
-				ProcessDepositResponse(*pTransaction, theConnection, theReply);
-			}
-			
+		{			
 			// --------------------------------------
 			
 			// We had to burn a transaction number to run the transaction that the server has now replied to,
-			// so let's remove that number from our list of responsibility.
+			// so let's remove that number from our list of responsibility. Whether it was successful or not,
+			// the server has removed it from our list of responsibility, so we need to remove it on our side as well.
+			// so that we can properly calculate our balance agreements in the future.
 			//
-			pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true); // bool bSave=true						
+			// NOTE: not for all types! See this switch statement:
+			
+			switch (pTransaction->GetType()) 
+			{
+				case OTTransaction::atDeposit:
+					ProcessDepositResponse(*pTransaction, theConnection, theReply);
+					pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true); // bool bSave=true	
+					break;
+					
+				case OTTransaction::atWithdrawal:
+					ProcessWithdrawalResponse(*pTransaction, theConnection, theReply);
+					pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true); // bool bSave=true	
+					break;
+					
+				case OTTransaction::atTransfer:
+				case OTTransaction::atMarketOffer:
+				case OTTransaction::atPaymentPlan:
+					// Nothing removed here since the transaction number is still in play, in these cases.
+					break;
+					
+				case OTTransaction::atProcessInbox: // not handled here...
+				default: 
+					// Error
+					OTLog::vError("OTClient::ProcessIncomingTransactions: wrong transaction type: %s\n",
+								  pTransaction->GetTypeString());
+					break;
+			}
+			
+			// atTransfer:		Whether success or fail, KEEP the number on my list of responsibility.
+			// atDeposit:		Whether success or fail, remove the number from my list of responsibility.
+			// atWithdrawal:	Whether success or fail, remove the number from my list of responsibility.
+			// atAcceptPending:	Whether success or fail, remove the number from my list of responsibility.
 			
 			// -----------------------------------------------------------------
 			//
@@ -1210,6 +1246,8 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 	} // for
 }
 
+
+
 /// We have just received a message from the server.
 /// Find out what it is and do the appropriate processing.
 /// Perhaps we just tried to create an account -- this could be
@@ -1369,7 +1407,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		}
 		else 
 		{
-			OTLog::vError("Error loading or verifying nymbox:\n\n%s\n", strNymbox.Get());
+			OTLog::vError("OTClient::ProcessServerReply: Error loading or verifying nymbox:\n\n%s\n", strNymbox.Get());
 		}
 		
 		return true;
@@ -1445,6 +1483,18 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 				theLedger.LoadContractFromString(strLedger) &&
 				theReplyLedger.LoadContractFromString(strReplyLedger))
 			{
+				
+				// atAcceptItemReceipt: Whether success or fail, remove the number used from list of responsibility.
+				//                      ALSO, if success, remove the number from the original cheque or the original transfer request.
+				//
+				// Other options are not handled here, but they ARE handled elsewhere. They are:
+				//
+				// atDeposit:		Whether success or fail, remove the number from my list of responsibility.
+				// atWithdrawal:	Whether success or fail, remove the number from my list of responsibility.
+				// atAcceptPending:	Whether success or fail, remove the number from my list of responsibility.
+				// atTransfer:		If success, KEEP the number on my issued list. (Removed when final receipt is accepted.)
+				//					If failure, REMOVE the number from my issued list. (Use a new one next time.)
+				
 				OTTransaction * pTransaction		= NULL;
 				OTTransaction * pReplyTransaction	= NULL;
 				
@@ -1455,12 +1505,237 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 					
 					if (NULL != pTransaction)
 					{
-						// We had to burn a transaction number to process the inbox, so
-						// let's remove that number from our list of responsibility.
-						pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true); // bool bSave=true						
-					}
+						// pNym->RemoveTransactionNum() happened whenever I first fired off the processInbox request.
+						// Now let's remove that number from our ISSUED list of responsibility, since we got a server reply...
+						//  <====> Whatever trans num I used to process inbox is now OFF my issued list on server side! 
+						// (Therefore remove here too, to match..)
+						pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true); // bool bSave=true	
+						
+						// --------------------------------------------
+						
+						if (NULL != pReplyTransaction)
+						{
+							// Next, loop through the reply items for each "process inbox" item that I must have previously sent.
+							// For each, if successful, remove from inbox.
+							// For item receipts, if successful, also remove the appropriate trans# 
+							// from my issued list of transaction numbers (like above.)
+							
+							for (listOfItems::iterator ii = pReplyTransaction->GetItemList().begin(); 
+								 ii != pReplyTransaction->GetItemList().end(); ++ii)
+							{
+								OTItem * pReplyItem = *ii;
+								
+								OT_ASSERT_MSG(NULL != pReplyItem, "OTClient::ProcessServerReply: Pointer should not have been NULL.");
+								
+								OTItem::itemType theItemType = OTItem::error_state;
+								
+								switch (pReplyItem->GetType()) 
+								{		
+									case OTItem::atAcceptPending: 
+										theItemType = OTItem::acceptPending;
+										break;
+										
+									case OTItem::atAcceptItemReceipt:
+										theItemType = OTItem::acceptItemReceipt;
+										break;
+										
+									case OTItem::atAcceptCronReceipt:
+										theItemType = OTItem::acceptCronReceipt;
+										break;
+										
+									// ------------------------
+										
+									case OTItem::atBalanceStatement:
+										theItemType = OTItem::balanceStatement;
+										continue; // unused
+										 
+									case OTItem::atTransactionStatement:
+										theItemType = OTItem::transactionStatement;
+										continue; // unused
+										
+										
+										// FYI, on server side, it does not bother to process an item,
+										// if the balance statement or transaction statement has not succeeded.
+										//
+										// Thus, if the ITEM ITSELF has succeeded, that means the balance or
+										// transaction statement MUST have succeeded! Because server wouldn't have
+										// even bothered to process the item otherwise.
+										//
+										// There still might be some future application in doing something with these
+										// statements when they come in.
+										
+										// -----------------------------------------------------
+										
+										// TODO! reject pending, dispute cron receipt, and dispute item receipt.
+										// Also need to do some sort of ultimate resolution for cron items (not just
+										// receipts, for which there are many, but for removing trans from issued list
+										// and closing out for good. Note also, this happens spotaneously as cron runs.)
+										//
+									case atRejectPending: // turn down the money!
+									case atDisputeCronReceipt: // dispute a market trade or payment for a payment plan
+									case atDisputeItemReceipt: // dispute a cheque receipt or transfer receipt.
+										continue;
+										
+									default:
+										continue;
+								}
+								
+								// ------------------------------------------------------------------------------------
+								
+								switch (pReplyItem->GetType())	// All three of these need to remove something from the client-side inbox.
+								{								// One of them (ItemReceipt only) also needs to remove an issued transaction number from pNym.
+									case OTItem::atAcceptPending: 
+									case OTItem::atAcceptItemReceipt: // <==================================================
+										// Cron Receipt: We do not remove the original trans# until the Cron job is entirely 
+										// complete. (Many Cron receipts may breeze through here before that happens.)
+									case OTItem::atAcceptCronReceipt:
+										
+										if (OTItem::acknowledgment == pReplyItem->GetStatus()) // <=== Only when successful.
+									{
+										OTItem * pItem = pTransaction->GetItem(theItemType);
+										
+										if (NULL != pItem) // acceptItemReceipt or acceptPending are possible types for pItem...
+										{
+											// Load the inbox object from that string.				
+											OTLedger theInbox(USER_ID, ACCOUNT_ID, SERVER_ID);	
+											
+											// I JUST had this loaded if I sent acceptWhatever just instants ago, (which I am now processing the reply for.)
+											// Therefore I'm just ASSUMING here that it loads successfully here, since it worked an instant ago. Todo.
+											OT_ASSERT_MSG(theInbox.LoadInbox(), "Was trying to load Inbox.");
+											
+											// ----------
+											
+											OTTransaction * pServerTransaction = NULL;
+											
+											if ((OTItem::atAcceptPending		== pReplyItem->GetType()) ||
+												(OTItem::atAcceptItemReceipt	== pReplyItem->GetType()))
+												pServerTransaction = theInbox.GetPendingTransaction(pItem->GetReferenceToNum());
+											
+											else if (OTItem::atAcceptCronReceipt == pReplyItem->GetType())
+												pServerTransaction = theInbox.GetTransaction(pItem->GetReferenceToNum());
+
+											// -----------
+											
+											OTLog::vOutput(0, "Checking client-side inbox for expected pending or receipt transaction: %ld... ",
+														   pItem->GetReferenceToNum()); // temp remove
+											
+											if (NULL == pServerTransaction)
+											{
+												OTLog::Output(0, "NOT found!\n"); // temp remove
+												break;
+											}
+											else 
+											{
+												OTLog::Output(0, "FOUND!\n"); // temp remove
+												
+												// ---------------------------------------------------------------
+												// In the case of item receipt (not cron receipt or pending) I need to
+												// remove the issued num from my list of responsibility. (Since I finally
+												// accepted the receipt and closed it out.)
+												//
+												// (Basically closing out the original transfer I must have sent, or cheque I must have written.)
+												//
+												// After this 'if' block, I will then remove the notice from the client-side inbox.
+												//
+												if (OTItem::atAcceptItemReceipt == pReplyItem->GetType())
+												{
+													// What number do I remove here? the user is accepting a transfer receipt, which
+													// is in reference to the recipient's acceptPending. THAT item is in reference to
+													// my original transfer (or contains a cheque with my original number.) (THAT's the # I need.)
+													//
+													OTString strOriginalItem
+													pServerTransaction->GetReferenceString(strOriginalItem);
+													
+													OTItem * pOriginalItem = OTItem::CreateItemFromString(strOriginalItem, SERVER_ID, pServerTransaction->GetReferenceToNum());
+													OTCleanup<OTItem> theOrigItemGuardian(pOriginalItem); // So I don't have to clean it up later. No memory leaks.
+													
+													if (NULL != pOriginalItem)
+													{
+														// If pOriginalItem is acceptPending, that means I am accepting the transfer receipt from the server, (from my inbox),
+														// which has the recipient's acceptance inside of my transfer as the original item. This means the transfer that
+														// I originally sent is now finally closed!
+														// 
+														// If it's a depositCheque, that means I am accepting the cheque receipt from the server, (from my inbox)
+														// which has the recipient's deposit inside of it as the original item. This means that the cheque that
+														// I originally wrote is now finally closed!
+														//
+														// In both cases, the "original item" itself is not from me, but from the recipient! Therefore,
+														// the number on that item is useless for removing numbers from my list of issued numbers.
+														// Rather, I need to load that original cheque, or pending transfer, from WITHIN the original item,
+														// in order to get THAT number, to remove it from my issued list. 
+														//						
+														if (OTItem::depositCheque == pOriginalItem->GetType()) // I am accepting a CHEQUE RECEIPT, which has a depositCheque (from the recipient) as the original item within.
+														{
+															// Get the cheque from the Item and load it up into a Cheque object.
+															OTString strCheque;
+															pOriginalItem->GetAttachment(strCheque);
+															
+															OTCheque theCheque; // allocated on the stack :-)
+															
+															if (false == ((strCheque.GetLength() > 2) && 
+																		  theCheque.LoadContractFromString(strCheque)))
+															{
+																OTLog::vError("ERROR loading cheque from string in OTClient::ProcessServerReply:\n%s\n",
+																			  strCheque.Get());
+															}
+															else	// Since I wrote the cheque, and I am now accepting the cheque receipt, I can be cleared for that issued number...
+															{		
+																pNym->RemoveIssuedNum(*pNym, strServerID, theCheque.GetTransactionNum(), true); // bool bSave=true	
+															}
+														}
+														//--------------
+														// I am accepting a TRANSFER RECEIPT, which has an acceptPending inside FROM THE RECIPIENT as the original item within,
+														else if (OTItem::acceptPending == pOriginalItem->GetType()) // (which is in reference to my outoing original transfer.)
+														{
+															pNym->RemoveIssuedNum(*pNym, strServerID, pOriginalItem->GetReferenceToNum(), true); // bool bSave=true	
+														}
+														else 
+														{
+															OTString strOriginalItemType;
+															pOriginalItem->GetTypeString(strOriginalItemType);
+															OTLog::vError("OTClient::ProcessServerReply: Original item has wrong type, while accepting item receipt:\n%s\n",
+																		  strOriginalItemType.Get());
+														}
+													}
+													else 
+													{
+														OTLog::vError("OTClient::ProcessServerReply: Unable to load original item from string while accepting item receipt:\n%s\n",
+																	  strOriginalItem.Get());
+													}
+												} // if itemReceipt.
+												
+												
+												// ---------------------------------------------------------------
+												//
+												// Remove from Inbox and save to local storage...  <===================
+												
+												theInbox.RemoveTransaction(pServerTransaction->GetTransactionNum());												
+												theInbox.ReleaseSignatures();
+												theInbox.SignContract(*pNym);
+												theInbox.SaveContract();
+												theInbox.SaveInbox();
+												
+											} // server transaction found in inbox.
+										}
+										else 
+										{
+											OTLog::Error("OTClient::ProcessServerReply: Unable to find matching acceptItemReceipt for atAcceptItemReceipt.\n");
+										}										
+									}
+										break;
+
+									default: 
+										// Error
+										OTLog::vError("OTClient::ProcessServerReply: wrong reply item transaction type: %s\n",
+													  pReplyItem->GetTypeString());
+										break;
+								}	// switch replyItem type						
+							} // for (reply items)
+						} // if pReplyTransaction						
+					} // if pTransaction
+						
 				}
-				else
+				else  // process Nymbox
 				{
 					pTransaction		= theLedger.GetTransaction(OTTransaction::processNymbox);
 					pReplyTransaction	= theReplyLedger.GetTransaction(OTTransaction::atProcessNymbox);
@@ -1481,6 +1756,8 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 					// via your nymbox.  This is the original reason that I added nymboxes in the first place.
 				}
 
+				// -----------------------------------------------------------
+				
 				if ((NULL != pTransaction) && (NULL != pReplyTransaction))
 				{					
 					// -----------------------------------------------------------------
@@ -1647,7 +1924,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		// UPDATE: Keeping the server's signature, and just adding my own.
 		if (theInbox.LoadContractFromString(strInbox) && theInbox.VerifyAccount(*pServerNym))
 		{
-			//			theInbox.ReleaseSignatures(); // Now I'm keeping the server signature, and just adding my own.
+//			theInbox.ReleaseSignatures(); // Now I'm keeping the server signature, and just adding my own.
 			theInbox.SignContract(*pNym);
 			theInbox.SaveContract();
 			theInbox.SaveInbox();
@@ -2532,14 +2809,17 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 				// Otherwise the server would have to refuse it for being inaccurate (server can't sign something inaccurate!) So I throw a dummy on there before generating balance statement.
 				
 				OTTransaction * pOutboxTransaction	= OTTransaction::GenerateTransaction(*pOutbox, OTTransaction::pending,
-					1/*todo pick some number that everyone agrees doesn't matter, like 0. The referring-to is the important 
-					  number in this case, and perhaps server should update this value too before signing and returning.*/);
+					1/*todo pick some number that everyone agrees doesn't matter, like 1. The referring-to is the important 
+					  number in this case, and perhaps server should update this value too before signing and returning.*/); // todo use a constant instead of '1'
 				
 				OT_ASSERT(NULL != pOutboxTransaction); // for now.
 				
 				OTString strItem(*pItem);
 				pOutboxTransaction->SetReferenceString(strItem); // So the GenerateBalanceStatement function below can get the other info off this item (like amount, etc)
 				pOutboxTransaction->SetReferenceToNum(pItem->GetTransactionNum());
+				
+//				pOutboxTransaction->SignContract(theNym);	// Unnecessary to sign/save, since this is just a dummy data for verification
+//				pOutboxTransaction->SaveContract();			// purposes, and isn't being serialized anywhere.
 				
 				pOutbox->AddTransaction(*pOutboxTransaction);  // no need to cleanup pOutboxTransaction since pOutbox will handle it now.
 

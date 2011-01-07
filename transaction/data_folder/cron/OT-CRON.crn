@@ -1,0 +1,59 @@
+-----BEGIN SIGNED CRON-----
+Hash: SAMY
+
+<?xml version="1.0"?>
+
+<cron
+ version="1.0"
+ serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de" >
+
+<transactionNum value="1266" />
+
+<transactionNum value="1267" />
+
+<transactionNum value="1268" />
+
+<transactionNum value="1269" />
+
+<transactionNum value="1270" />
+
+<transactionNum value="1271" />
+
+<transactionNum value="1272" />
+
+<transactionNum value="1273" />
+
+<transactionNum value="1274" />
+
+<transactionNum value="1275" />
+
+<transactionNum value="1276" />
+
+<transactionNum value="1277" />
+
+<transactionNum value="1278" />
+
+<transactionNum value="1279" />
+
+<transactionNum value="1280" />
+
+<transactionNum value="1281" />
+
+<transactionNum value="1282" />
+
+<transactionNum value="1283" />
+
+<transactionNum value="1284" />
+
+<transactionNum value="1285" />
+
+</cron>
+-----BEGIN CRON SIGNATURE-----
+Version: Open Transactions 0.42
+Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
+
+2iE2FH/2xDfahrUC90fOTyogu1+TBOmXhupqQ1qTdcYGt24M64MsmH6x82OqdFlb
+CAZ+Rum45iWiPklzW3hn30CzkbkwNmjvb6LamCPT8G5rjHgJ6MeN+yo8sSUqe/te
+KfrI37fgM/6FnHc8pEusiFWVfjqdhp4RNU8fT4i5fUw=
+-----END CRON SIGNATURE-----
+

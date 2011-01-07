@@ -280,6 +280,7 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 									OTLedger & THE_INBOX,
 									OTLedger & THE_OUTBOX,
 									const OTAccount & THE_ACCOUNT,
+									OTTransaction & TARGET_TRANSACTION,
 									const long lOutboxTrnsNum/*=0*/)	// Only used in the case of transfer, where the user	
 {																		// doesn't know the outbox trans# in advance, so he sends
 	if (GetType() != OTItem::balanceStatement)							// a dummy number (currently '1') which we verify against
@@ -465,7 +466,7 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 	
 	// ----------------------------------------------------------
 	
-	// 3) Also need to verify the transactions on the Nym, versus the transactions stored on this
+	// 3) Also need to verify the transactions on the Nym, against the transactions stored on this
 	//    (in a message Nym attached to this.)  Check for presence of each, then compare count, like above.
 	
 	
@@ -479,12 +480,35 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 		return false;
 	}
 	
-	// The client side has already removed from issued list, and has sent us a signed copy to that effect,
-	// so we remove it on our side as well, so that they will match. (Which allows us to ACTUALLY remove it :)
-	// If anything else fails during this verify process, we have to ADD IT AGAIN since we stil don't have
-	// a valid signature on that number. (Besides the last one that includes it.)
+	
+	// For process inbox, deposit, and withdrawal, the client will remove from issued list as soon as he 
+	// receives my acknowledgment. He expects server (me) to remove, so he signs a balance agreement to that effect.
 	//
-	THE_NYM.RemoveIssuedNum(SERVER_ID, GetTransactionNum());
+	// Therefore, to verify the balance agreement, we remove it on our side as well, so that they will match.
+	// This allows the client side to ACTUALLY remove, when they receive our acknowledgment, as well as permits
+	// me (server) to actually remove if the transaction itself succeeds after the balance agreement succeeds.
+	//
+	// If ANYTHING ELSE fails during this verify process, we have to ADD IT AGAIN since we still don't have
+	// a valid signature on that number. (Besides the last one that includes it.) So you'll see this code
+	// repeated a few times in reverse, down inside this function.
+	//	
+	switch (TARGET_TRANSACTION.GetType()) 
+	{
+		case OTTransaction::processInbox:
+		case OTTransaction::deposit:
+		case OTTransaction::withdrawal:
+			THE_NYM.RemoveIssuedNum(SERVER_ID, GetTransactionNum());
+			break;
+		case OTTransaction::transfer:
+		case OTTransaction::marketOffer:
+		case OTTransaction::paymentPlan:
+			break;
+		default: 
+			// Error
+			OTLog::vError("OTItem::VerifyBalanceStatement: wrong target transaction type: %s\n",
+						 TARGET_TRANSACTION.GetTypeString());
+			break;
+	}
 	
 	// ----------------------------------------------------
 	
@@ -540,12 +564,28 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 				{
 					lTransactionNumber = pDeque->at(i);
 					
-					if (false == THE_NYM.VerifyTransactionNum(OTstrServerID, lTransactionNumber))
+					if (false == THE_NYM.VerifyIssuedNum(OTstrServerID, lTransactionNumber))
 					{
 						OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Issued transaction # %ld from Message Nym not found on this side.\n", 
 									  lTransactionNumber);
 						
-						THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
+						switch (TARGET_TRANSACTION.GetType()) 
+						{
+							case OTTransaction::processInbox:
+							case OTTransaction::deposit:
+							case OTTransaction::withdrawal:
+								THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum()); // we have to add this back again..
+								break;
+							case OTTransaction::transfer:
+							case OTTransaction::marketOffer:
+							case OTTransaction::paymentPlan:
+								break;
+							default: 
+								// Error
+								OTLog::vError("OTItem::VerifyBalanceStatement: wrong target transaction type: %s\n",
+											  TARGET_TRANSACTION.GetTypeString());
+								break;
+						}
 						
 						return false;
 					}
@@ -560,8 +600,24 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 		OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Transaction # Count mismatch: %d and %d\n", 
 					  nNumberOfTransactionNumbers1, nNumberOfTransactionNumbers2);
 		
-		THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
-		
+		switch (TARGET_TRANSACTION.GetType()) 
+		{
+			case OTTransaction::processInbox:
+			case OTTransaction::deposit:
+			case OTTransaction::withdrawal:
+				THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());  // we have to add this back again...
+				break;
+			case OTTransaction::transfer:
+			case OTTransaction::marketOffer:
+			case OTTransaction::paymentPlan:
+				break;
+			default: 
+				// Error
+				OTLog::vError("OTItem::VerifyBalanceStatement: wrong target transaction type: %s\n",
+							  TARGET_TRANSACTION.GetTypeString());
+				break;
+		}
+
 		return false;
 	}
 	

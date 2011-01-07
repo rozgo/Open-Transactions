@@ -432,11 +432,14 @@ mapOfTransactions & OTLedger::GetTransactionMap()
 	return m_mapTransactions;
 }
 
+/// If transaction #87, in reference to #74, is in the inbox, you can remove it
+/// by calling this function and passing in 87.
+///
 bool OTLedger::RemoveTransaction(long lTransactionNum) // if false, transaction wasn't found.
 {
 	// See if there's something there with that transaction number.
 	mapOfTransactions::iterator it = m_mapTransactions.find(lTransactionNum);
-
+	
 	// If it's not already on the list, then there's nothing to remove.
 	if ( it == m_mapTransactions.end() )
 	{
@@ -451,6 +454,63 @@ bool OTLedger::RemoveTransaction(long lTransactionNum) // if false, transaction 
 		
 		OT_ASSERT(NULL != pTransaction);
 		
+		m_mapTransactions.erase(it);
+		delete pTransaction;
+		return true;		
+	}
+	
+	return false;
+}
+
+/// If transaction #87, in reference to #74, is in the inbox, you can remove it
+/// by calling this function and passing in 74.
+///
+bool OTLedger::RemovePendingTransaction(long lTransactionNum) // if false, transaction wasn't found.
+{	
+	// loop through the items that make up this transaction.
+	OTTransaction * pTransaction = NULL;
+	
+	mapOfTransactions::iterator it;
+	
+	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); ii != m_mapTransactions.end(); ++ii)
+	{
+		it = ii;
+		
+		pTransaction = (*ii).second;
+		
+		OT_ASSERT(NULL != pTransaction);
+		
+		bool bCorrectType = false;
+		
+		switch (pTransaction->GetType()) 
+		{
+			case OTTransaction::pending:
+			case OTTransaction::transferReceipt:
+			case OTTransaction::chequeReceipt:
+				bCorrectType = true;
+				break;
+			default:
+				break;
+		}
+		
+		if (bCorrectType && pTransaction->GetReferenceToNum() == lTransactionNum)
+			break;
+		else
+			pTransaction = NULL;
+		
+	}
+	
+	// If it's not already on the list, then there's nothing to remove.
+	if ( NULL == pTransaction )
+	{
+		OTLog::vError("OTLedger::RemovePendingTransaction: Attempt to remove Transaction from ledger,\n"
+					  "when not already there: (the number in reference to) %ld\n",
+					  lTransactionNum);
+		return false;
+	}
+	// Otherwise, if it WAS already there, remove it properly.
+	else 
+	{		
 		m_mapTransactions.erase(it);
 		delete pTransaction;
 		return true;		
@@ -486,7 +546,7 @@ bool OTLedger::AddTransaction(OTTransaction & theTransaction)
 // While processing a transaction, you may wish to query it for items of a certain type.
 OTTransaction * OTLedger::GetTransaction(const OTTransaction::transactionType theType) 
 {
-	// loop through the items that make up this transaction and print them out here, base64-encoded, of course.
+	// loop through the items that make up this transaction
 	
 	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); ii != m_mapTransactions.end(); ++ii)
 	{
@@ -572,7 +632,7 @@ OTTransaction * OTLedger::GetTransactionByIndex(int nIndex)
 // If it can't find anything, it will return NULL.
 OTTransaction * OTLedger::GetPendingTransaction(long lTransactionNum)
 {
-	// loop through the items that make up this transaction and print them out here, base64-encoded, of course.
+	// loop through the items that make up this transaction.
 	OTTransaction * pTransaction = NULL;
 	
 	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); ii != m_mapTransactions.end(); ++ii)
@@ -589,21 +649,21 @@ OTTransaction * OTLedger::GetPendingTransaction(long lTransactionNum)
 }
 
 
-// Only if it is an inbox, a ledger will loop through the transactions
-// and produce the XML output for the report that's necessary during
-// a balance agreement. (Any balance agreement for an account must
-// include the list of transactions the nym has issued for use, as
-// well as a listing of the transactions in the inbox for that account.
-// This function does that last part :)
-//
-// returns a new balance statement item containing the inbox report
-// CALLER IS RESPONSIBLE TO DELETE.
+/// Only if it is an inbox, a ledger will loop through the transactions
+/// and produce the XML output for the report that's necessary during
+/// a balance agreement. (Any balance agreement for an account must
+/// include the list of transactions the nym has issued for use, as
+/// well as a listing of the transactions in the inbox for that account.
+/// This function does that last part :)
+///
+/// returns a new balance statement item containing the inbox report
+/// CALLER IS RESPONSIBLE TO DELETE.
 OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTransaction & theOwner, 
 											OTPseudonym & theNym, const OTAccount & theAccount, OTLedger & theOutbox) 
 {
 	if (OTLedger::inbox != GetType())
 	{
-		OTLog::Error("OTLedger::ProduceInboxReport: Wrong ledger type.\n");
+		OTLog::Error("OTLedger::GenerateBalanceStatement: Wrong ledger type.\n");
 		return NULL;
 	}
 	
@@ -614,7 +674,7 @@ OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTran
 		(theAccount.GetPurportedServerID()	!= GetPurportedServerID()) ||
 		(theAccount.GetUserID()				!= GetUserID()) )
 	{
-		OTLog::Error("Wrong Account passed in to OTLedger::ProduceBalanceStatement.\n");
+		OTLog::Error("Wrong Account passed in to OTLedger::GenerateBalanceStatement.\n");
 		return NULL;
 	}
 	if (
@@ -622,13 +682,13 @@ OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTran
 		(theOutbox.GetPurportedServerID()	!= GetPurportedServerID()) ||
 		(theOutbox.GetUserID()				!= GetUserID()) )
 	{
-		OTLog::Error("Wrong Outbox passed in to OTLedger::ProduceBalanceStatement.\n");
+		OTLog::Error("Wrong Outbox passed in to OTLedger::GenerateBalanceStatement.\n");
 		return NULL;
 	}
 	if (
 		(theNymID	!= GetUserID()))
 	{
-		OTLog::Error("Wrong Nym passed in to OTLedger::ProduceBalanceStatement.\n");
+		OTLog::Error("Wrong Nym passed in to OTLedger::GenerateBalanceStatement.\n");
 		return NULL;
 	}
 	// ---------------------------------------------------------
@@ -649,26 +709,28 @@ OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTran
 	OTPseudonym theMessageNym;
 	
 	theMessageNym.HarvestIssuedNumbers(theNym /*unused in this case, not saving to disk*/, theNym, false); // bSave = false;
-		
 	
-//	if (theOwner.GetType() != OTTransaction::pending)
-//	{
-		// If this is for a withdrawal, or deposit, the transaction number should be removed instantly, and the
-		// statement needs to reflect its new absence. If it's a transfer, should it be removed from my issued list?
-		// since it has then moved to my outbox, and the balance has changed. Or should I keep it on the list UNTIL
-		// the final transferReceipt is accepted or rejected, THEN remove it? Balance might still change until then, and
-		// a new balance agreement may need signing to accept back a rejected transfer.
-		// Therefore, I will RemoveIssuedNum and RemoveTransactionNum (on the server side it's interpreting for issued num.)
-		// ONLY IF IT'S NOT A pending transfer WILL I REMOVE THE NUMBER BELOW. Transfers can wait for the receipt.
-		//
-		// Change of plans: The client and server side both know for a fact that the number is no longer usable,
-		// since the transfer itself was definitely sent.  Might as well remove it from issued list -- I can't use
-		// it again, and the request is already sent, unlike a cheque that hasn't come in yet. It's definitely burnt,
-		// and the inbox/outbox can track it from there. (With receipt to hit inbox as well, after acceptance.)
-	//
-		theMessageNym.RemoveIssuedNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum());  // a transaction number is being used, and REMOVED from my list of responsibility,
-		theMessageNym.RemoveTransactionNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum()); // so I want the new signed list to reflect that number has been REMOVED.
-//	}
+	// -------------------------------------
+	
+	switch (theOwner.GetType()) 
+	{
+		case OTTransaction::processInbox:
+		case OTTransaction::deposit:
+		case OTTransaction::withdrawal:			
+			theMessageNym.RemoveIssuedNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum());  // a transaction number is being used, and REMOVED from my list of responsibility,
+			theMessageNym.RemoveTransactionNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum()); // so I want the new signed list to reflect that number has been REMOVED.
+			break;
+		case OTTransaction::transfer:
+		case OTTransaction::marketOffer:
+		case OTTransaction::paymentPlan:
+			// Nothing removed here since the transaction is still in play.
+			break;
+		default: 
+			// Error
+			OTLog::vError("OTLedger::GenerateBalanceStatement: wrong owner transaction type: %s\n",
+						  theOwner.GetTypeString());
+			break;
+	}
 	
 	OTString	strMessageNym(theMessageNym); // Okay now we have the transaction numbers in this MessageNym string.
 

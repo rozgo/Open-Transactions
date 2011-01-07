@@ -151,6 +151,7 @@ public:
 
 	bool AddTransaction(OTTransaction & theTransaction);
 	bool RemoveTransaction(long lTransactionNum); // if false, transaction wasn't found.
+	bool RemovePendingTransaction(long lTransactionNum); // if false, transaction wasn't found.
 	
 	OTTransaction * GetTransaction(const OTTransaction::transactionType theType);
 	OTTransaction * GetTransaction(long lTransactionNum);	

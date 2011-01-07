@@ -1,0 +1,43 @@
+-----BEGIN SIGNED LEDGER-----
+Hash: SAMY
+
+<accountLedger version="1.0"
+ type="nymbox"
+ accountID="7d1cff65a7febacaa0bbab73fd65032e6620e6501f41961b2be3ad556d891d4f5cab52acc87c07da91fbdc940da865249cb6e0b3a6fe7d66f6b3f8eb94591b5d"
+ userID="7d1cff65a7febacaa0bbab73fd65032e6620e6501f41961b2be3ad556d891d4f5cab52acc87c07da91fbdc940da865249cb6e0b3a6fe7d66f6b3f8eb94591b5d"
+serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de" >
+
+<transaction>
+eJzNksly4jAQhufsp3BxnSJIshaLGlJF2DeTsCTkKKklcADbgIFknn6UySGc5jx9
+6mp1//qq+69WfTx0eoMknA96SacdLmbNZN5sLQbT5POtGvTVaVMP583JaxD8Ko8q
+OylTpnkWlh+FbVT0TmXbShAqY/JzVg7ajYoAbJzjTAlntTJKIa2VFpEDzlBELOcE
+WZ9iR7HkWBNtIwWMcYglBuqYUZoRLxgLgwQoiZ0GIykCFXNGqDSaW6QjxZ0VwLnj
+OnKx1ZIyiTUDT3M+2eN/guJJLl8w1BgKwJCfUQKkEYC8BLJIgnL+Z2cAxzKKMHCp
+kHACAGMLMZdcgMXESOeA2sgQEAgQCIWIx7QkRo6Aww4cYoxGLOYx9SXthI4EUCKl
+Ag7Ww9zcLznvGxVMJPLlNJtZZ482M3aRNyqoEt77Y9duuu+D6rdVbjzy1zbNxXLW
++XLLsz2efHs9nBY2CxffAqcQ3VEStPL93mZlPdyUZVGv1dZpuTnrO5Pva1272+VX
+P3KxO3usfQpUbwVq13SbBsHb9FCbUU7Ey/XApoVrN5/jZbmZLF92x0PzqXNoZR/p
+1fWejjJfC5wO2/0V6pnhaDxadfsP52CYPC47s7Iz4vOP98zBa79/gPXYbfPD8v3U
+elwUyWX6TvsWP/Kn1/w8eN5OYDybzKE56k7MOug9jHFeCmrnh997stosLoVZXbLM
+lHRJim6iJz9R723Dt/NT42ttnaT9r6UFP/4AI8QRGg==
+</transaction>
+
+</accountLedger>
+-----BEGIN LEDGER SIGNATURE-----
+Version: Open Transactions 0.42
+Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
+
+Hvrw9DUce0ToeqqsVbqjLOJuq463aBzWDi3nY0Rj0OknMoi8moRoJmhQH8lwqTu1
+DZTk5D6evKldoXhgdLsS4tYxVnys7KotqxLBMW5bu7p4inRYeAf4Y6KSJPt6Xvbc
+f1orUb3NowL4MvuebRvLYUEpq7hgZfuFlpvaQIeJLgg=
+-----END LEDGER SIGNATURE-----
+
+-----BEGIN LEDGER SIGNATURE-----
+Version: Open Transactions 0.42
+Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
+
+pu69+lYQUbzj5FBKbHkbAOODhDDeka3iCyH85ZKkLdJ05SSfNBwISOCB0IZyp6e0
+MV7srQWUfMsmLul1uFO8syulBli8boe/r8wy79yBYeh1CJyWsNJODicR/1RO5FHB
+q2y+KWYGNT1OXNoE02YdbeP/+mtFBUrR2/468qSyP4g=
+-----END LEDGER SIGNATURE-----
+

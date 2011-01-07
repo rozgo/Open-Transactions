@@ -275,7 +275,7 @@ public:
 	static inline const char * _GetTypeString(transactionType theType)
 		{ int nType = (int)theType; return OTTransaction::_TypeStrings[nType]; }
 	
-	inline const char * GetTypeString() { return OTTransaction::_GetTypeString(m_Type); }
+	inline const char * GetTypeString() const { return OTTransaction::_GetTypeString(m_Type); }
 };
 
 
