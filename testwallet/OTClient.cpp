@@ -829,11 +829,13 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 			{
 				case OTTransaction::atDeposit:
 					ProcessDepositResponse(*pTransaction, theConnection, theReply);
+					pNym->RemoveTransactionNum(*pNym, strServerID, pTransaction->GetTransactionNum()); // bool bSave=true	
 					pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true); // bool bSave=true	
 					break;
 					
 				case OTTransaction::atWithdrawal:
 					ProcessWithdrawalResponse(*pTransaction, theConnection, theReply);
+					pNym->RemoveTransactionNum(*pNym, strServerID, pTransaction->GetTransactionNum()); // bool bSave=true	
 					pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true); // bool bSave=true	
 					break;
 				// ---------------------------------------
@@ -849,10 +851,12 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 					if ((NULL != pItem) &&
 						OTItem::rejection == pItem->GetStatus())
 					{
+						pNym->RemoveTransactionNum(*pNym, strServerID, pTransaction->GetTransactionNum()); // bool bSave=true	
+
 						if (false == pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true)) // bool bSave=true
 						{
 							OTLog::Error("Error removing issued number from user nym in OTClient::ProcessIncomingTransactions\n");
-						}			
+						}
 					}
 				}
 					break;
@@ -1544,6 +1548,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 						// Now let's remove that number from our ISSUED list of responsibility, since we got a server reply...
 						//  <====> Whatever trans num I used to process inbox is now OFF my issued list on server side! 
 						// (Therefore remove here too, to match..)
+						pNym->RemoveTransactionNum(*pNym, strServerID, pTransaction->GetTransactionNum()); // bool bSave=true	
 						pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true); // bool bSave=true	
 						
 						// --------------------------------------------
@@ -1715,6 +1720,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 															}
 															else	// Since I wrote the cheque, and I am now accepting the cheque receipt, I can be cleared for that issued number...
 															{		
+																pNym->RemoveTransactionNum(*pNym, strServerID, theCheque.GetTransactionNum()); // bool bSave=true	
 																pNym->RemoveIssuedNum(*pNym, strServerID, theCheque.GetTransactionNum(), true); // bool bSave=true	
 															}
 														}
@@ -1722,6 +1728,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 														// I am accepting a TRANSFER RECEIPT, which has an acceptPending inside FROM THE RECIPIENT as the original item within,
 														else if (OTItem::acceptPending == pOriginalItem->GetType()) // (which is in reference to my outoing original transfer.)
 														{
+															pNym->RemoveTransactionNum(*pNym, strServerID, pOriginalItem->GetReferenceToNum()); // bool bSave=true	
 															pNym->RemoveIssuedNum(*pNym, strServerID, pOriginalItem->GetReferenceToNum(), true); // bool bSave=true	
 														}
 														else 

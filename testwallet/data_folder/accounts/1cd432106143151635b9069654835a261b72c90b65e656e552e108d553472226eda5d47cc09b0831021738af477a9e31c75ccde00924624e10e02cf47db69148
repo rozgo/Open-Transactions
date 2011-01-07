@@ -6,29 +6,29 @@ Hash: SAMY
 <assetAccount
  version="1.0"
  type="issuer"
- accountID="a8306e1c713fa27f2ac00a20faf4cc2fbc62ae72695f31ea70d3d527e8188c97bfc758e34a9e549615c6a4ca29232183208af6a16411eacd398147c9a2d50866"
+ accountID="1cd432106143151635b9069654835a261b72c90b65e656e552e108d553472226eda5d47cc09b0831021738af477a9e31c75ccde00924624e10e02cf47db69148"
  userID="7d1cff65a7febacaa0bbab73fd65032e6620e6501f41961b2be3ad556d891d4f5cab52acc87c07da91fbdc940da865249cb6e0b3a6fe7d66f6b3f8eb94591b5d"
  serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de"
  assetTypeID="17dc81091d89e0754ce3e4612ae044b274cf251cac14641cc8c586b43d97138852858ee7713b26d3fe18da26035e7869b1adb6a86da6563b1b7ae61148e3453b" >
 
-<balance date="1294409534" amount="-1000000"/>
+<balance date="1294417876" amount="0"/>
 
 </assetAccount>
 -----BEGIN ACCOUNT SIGNATURE-----
 Version: Open Transactions 0.42
 Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
 
-jRJFBrbKeXAsjN/fKnugAfJjdGvmKIbfDf2tLb02vFIRJes5ybcKeuzYy+WuKxFZ
-Ftk//ve6qZu1ROurzW+3dUlUTlBDhM9kM88rB6VBnybkktkp7IOLeZi6zhSuy9IN
-dEPKuY/0V2ycLyO8zU3syPXkgW/zi5B+tFzAK1IhGOk=
+Y9sA+a9/+v6pM98yLRg7kk9qOtuNIyYMFIs/W7KsVqpK8WLfnN4wvDSR1RkaXDcW
+/nnPyAoN9mSBkSaR9Sh7ZLrifzQBVx1K9YLMg0dkBd/Yl4zjxqMqsWfn1T8W9Erb
+k8eNdGKO9rpikoe+m8ncM34vk8IKIKk//bb9rt6PEEA=
 -----END ACCOUNT SIGNATURE-----
 
 -----BEGIN ACCOUNT SIGNATURE-----
 Version: Open Transactions 0.42
 Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
 
-buCV0HipQ0PHQU7yTmsphwqk51AfYpacxMMEv3WcvKEvJfjQNJgjTHQx8ybVY0OW
-Z8+PG56KXnlVCy/AOQqZO4lTMGC1isFwDsKAgHhBb5BIypgPs2VczF+rLGJnuaWT
-rVrOv6wlvcTHRKxJGTiozp2a2I4oEEXh2S3uFmJ0qBQ=
+P5/0qbHN3nuP2mxyZV3QOX/jIOACgJjTuwkKLuGJVdbAPpOiqG8xAhXdcVyzDyRv
+Kg2pbUULIc21L1D7H374wQwOiWqXT1DwlHYsACi5CEl1AKjNTVMnRuHDnj1RDH04
+MA+v3gje1yWKO4ZgdCrAY2ROqVwlpgqpGOYfc8siN5I=
 -----END ACCOUNT SIGNATURE-----
 

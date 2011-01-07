@@ -575,8 +575,13 @@ bool OTServer::RemoveTransactionNumber(OTPseudonym & theNym, const long &lTransa
 	else
 		pNym = &theNym;
 	
-	bool bRemoved = pNym->RemoveTransactionNum(m_nymServer, m_strServerID, lTransactionNumber); // the version that passes in a signer nym -- saves to local storage.
+	bool bRemoved = false;
 	
+	if (bSave)
+		pNym->RemoveTransactionNum(m_nymServer, m_strServerID, lTransactionNumber); // the version that passes in a signer nym -- saves to local storage.
+	else 
+		pNym->RemoveTransactionNum(m_strServerID, lTransactionNumber); // the version that doesn't save.
+
 	return bRemoved;
 }
 
@@ -1235,8 +1240,8 @@ void OTServer::UserCmdGetTransactionNum(OTPseudonym & theNym, OTMessage & MsgIn,
 		OTLog::Error("Error loading or verifying Nymbox in OTServer::UserCmdGetTransactionNum\n");
 	}
 	
-	theNym.RemoveTransactionNum(m_strServerID, lTransNum); // I'll drop it in his Nymbox -- he can SIGN for it.
-	theNym.RemoveIssuedNum(m_strServerID, lTransNum); 
+	RemoveTransactionNumber(theNym, lTransNum, false); //bSave=false
+	RemoveIssuedNumber(theNym, lTransNum, false); // I'll drop it in his Nymbox -- he can SIGN for it.
 	// Then why was it added in the first place? Because we originally sent it back in the reply directly, 
 	// so IssueNext was designed that way.
 
@@ -3419,7 +3424,7 @@ void OTServer::NotarizeDeposit(OTPseudonym & theNym, OTAccount & theAccount, OTT
 						// I'm removing his ability to use that number twice. It will remain on his issued list 
 						// until he signs for the receipt.
 						//
-						RemoveTransactionNumber(*pSenderNym, theCheque.GetTransactionNum())
+						RemoveTransactionNumber(*pSenderNym, theCheque.GetTransactionNum(), true) //bSave=true
 						)
 					{	// need to be able to "roll back" if anything inside this block fails.
 						// update: actually does pretty good roll-back as it is. The debits and credits
@@ -4361,7 +4366,7 @@ void OTServer::NotarizeTransaction(OTPseudonym & theNym, OTTransaction & tranIn,
 		// for that number and must continue signing for it. All this means here is that the
 		// user no longer has the number on his AVAILABLE list. Removal from issued list happens separately.)
 		//
-		if (false == RemoveTransactionNumber(theNym, lTransactionNumber))
+		if (false == RemoveTransactionNumber(theNym, lTransactionNumber, true)) //bSave=true
 		{
 			OTLog::Error("Error removing transaction number (as available) from user nym in OTServer::NotarizeTransaction\n");
 		}			
@@ -4464,13 +4469,19 @@ void OTServer::NotarizeTransaction(OTPseudonym & theNym, OTTransaction & tranIn,
 				{
 					OTItem * pItem	= tranOut.GetItem(theReplyItemType);
 					
-					if ((NULL != pItem) &&
-						OTItem::rejection == pItem->GetStatus())
+					if ((NULL != pItem))
 					{
-						if (false == RemoveIssuedNumber(theNym, lTransactionNumber))
+						if (OTItem::rejection == pItem->GetStatus())
 						{
-							OTLog::Error("Error removing issued number from user nym in OTServer::NotarizeTransaction\n");
-						}			
+							if (false == RemoveIssuedNumber(theNym, lTransactionNumber, true)) //bSave=true
+							{
+								OTLog::Error("Error removing issued number from user nym in OTServer::NotarizeTransaction\n");
+							}
+						}
+						
+						// Just making sure it's entirely removed... really this is already done above.
+						// But when the ISSUED num is removed, it can't hurt to remove transaction again to be safe, can it?
+						RemoveTransactionNumber(theNym, lTransactionNumber, true); //bSave=true
 					}
 				}
 					break;
@@ -4478,10 +4489,14 @@ void OTServer::NotarizeTransaction(OTPseudonym & theNym, OTTransaction & tranIn,
 				case OTTransaction::processInbox:
 				case OTTransaction::withdrawal:
 				case OTTransaction::deposit:
-					if (false == RemoveIssuedNumber(theNym, lTransactionNumber))
+					if (false == RemoveIssuedNumber(theNym, lTransactionNumber, true)) //bSave=true
 					{
 						OTLog::Error("Error removing issued number from user nym in OTServer::NotarizeTransaction\n");
 					}			
+					// Just making sure it's entirely removed... really this is already done above.
+					// But when the ISSUED num is removed, it can't hurt to remove transaction again to be safe, can it?
+					RemoveTransactionNumber(theNym, lTransactionNumber, true); //bSave=true
+
 					break;
 
 				default:
@@ -6256,13 +6271,12 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 				long lTemp = theTempNym.GetIssuedNum(SERVER_ID, i);
 				
 				theNym.RemoveIssuedNum(m_nymServer, m_strServerID, lTemp, false); // bSave = false
+				theNym.RemoveTransactionNum(m_strServerID, lTemp); // bSave = false
 			}
 			
-			// Save if there were changes.
-			if (theTempNym.GetIssuedNumCount(SERVER_ID) > 0)
-			{
-				theNym.SaveSignedNymfile(m_nymServer);
-			}
+			theNym.SaveSignedNymfile(m_nymServer);
+			
+			//-------------------------------------------
 			
 			strPath.Format((char*)"%s%s%s%s%s.success", OTLog::Path(), OTLog::PathSeparator(), 
 						   OTLog::ReceiptFolder(),
