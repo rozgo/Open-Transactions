@@ -706,7 +706,7 @@ OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTran
 	
 	// ---------------------------------------------------------
 	
-	// COPY THE ISSUED TRANSACTION NUMBERS FROM THE NYM
+	// COPY THE ISSUED TRANSACTION NUMBERS FROM THE NYM to the MESSAGE NYM.
 	
 	OTPseudonym theMessageNym;
 	
@@ -724,7 +724,7 @@ OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTran
 			// Therefore I remove it here in order to generate a proper balance agreement, acceptable to the server.
 			//
 			theMessageNym.RemoveIssuedNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum());  // a transaction number is being used, and REMOVED from my list of responsibility,
-			theMessageNym.RemoveTransactionNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum()); // so I want the new signed list to reflect that number has been REMOVED.
+			theMessageNym.RemoveTransactionNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum());  // a transaction number is being used, and REMOVED from my list of  available numbers.
 			break;
 		case OTTransaction::transfer:
 		case OTTransaction::marketOffer:

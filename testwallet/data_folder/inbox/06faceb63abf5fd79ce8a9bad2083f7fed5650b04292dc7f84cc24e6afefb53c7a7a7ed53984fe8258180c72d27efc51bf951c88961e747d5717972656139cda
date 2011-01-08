@@ -2,8 +2,8 @@
 Hash: SAMY
 
 <accountLedger version="1.0"
- type="outbox"
- accountID="1cd432106143151635b9069654835a261b72c90b65e656e552e108d553472226eda5d47cc09b0831021738af477a9e31c75ccde00924624e10e02cf47db69148"
+ type="inbox"
+ accountID="06faceb63abf5fd79ce8a9bad2083f7fed5650b04292dc7f84cc24e6afefb53c7a7a7ed53984fe8258180c72d27efc51bf951c88961e747d5717972656139cda"
  userID="7d1cff65a7febacaa0bbab73fd65032e6620e6501f41961b2be3ad556d891d4f5cab52acc87c07da91fbdc940da865249cb6e0b3a6fe7d66f6b3f8eb94591b5d"
 serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de" >
 
@@ -12,17 +12,17 @@ serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4
 Version: Open Transactions 0.42
 Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
 
-ZmEmA3REM7jNRsJddJjdUjCA0rOtcyjWHvjuamKk/ytuvJyiD7UFVHhzMbHfLkUB
-qbmmgB6Q6sLg4J16xhri1gLexF8NurxbH20jPRhgazSGbDvZBTSECvh4pU6oCoJN
-GxrnawPPtJt+8lUXYz606BrvdIwMQfQb7kFn+Bq+xu0=
+YflF0x99DXL6I+Zj/7EZX/pYAFmcGuwP/ngDcpDxnCZrvEEX0s+5ND23rQGgpKxt
+VozdMTvyRBh82ZHGtr82XuR3mzW5f3OcLbwkx2cprnjMiOsAw4wKBsIiAaQblGbn
+A9rpHBFFqJVxZG+xgepOjLs4mg2zyeVURyvUDIt1hOc=
 -----END LEDGER SIGNATURE-----
 
 -----BEGIN LEDGER SIGNATURE-----
 Version: Open Transactions 0.42
 Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
 
-aSzf8Gfw4CSUdBMIVXWPfDfSxvqye3U5kvOEeftvllB9+wxg0p3XuDWoM11TgJBJ
-HlmTcaY8IqyPGwLF4OrboogeV/Q+w316Pie41FvyNfy/3pTNv2p1FTWI1uNxITME
-rjTy3O1fTYGZt7yvtol69fOg2FrGtiBeH5h1qaciOKE=
+NTZc8D9p5zGlHUsK808sU513QGFri5BIPpzCDxIhdbKqZLNtt9WOcif8hNBFoibl
+4uDjKzg1MZEtTcO7b6ymwzqOOcMkfsWivAUhkZpEB/pfoThbiOrkwuhsHyh2Un/6
+9vVy1x6ITaOhbXWmzWwqY2k/pAcHWH1bjAqfsTqIZtM=
 -----END LEDGER SIGNATURE-----
 

@@ -291,7 +291,7 @@ void OTClient::AcceptEntireNymbox(OTLedger & theNymbox, OTServerConnection & the
 			for (int i = 0; i < theIssuedNym.GetIssuedNumCount(theServerID); i++)
 			{
 				long lTemp = theIssuedNym.GetIssuedNum(theServerID, i);
-				pNym->AddIssuedNum(strServerID, lTemp);
+				pNym->AddIssuedNum(strServerID, lTemp); // doesn't save.
 			}
 	
 			// -----------------------------------------
@@ -384,7 +384,7 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 	
 	OTString strServerID(theServerID);
 	long lStoredTransactionNumber=0;
-	bool bGotTransNum = pNym->GetNextTransactionNum(*pNym, strServerID, lStoredTransactionNumber);
+	bool bGotTransNum = pNym->GetNextTransactionNum(*pNym, strServerID, lStoredTransactionNumber); // Warning: this saves the nym if successful.
 	
 	if (!bGotTransNum)
 	{
@@ -829,13 +829,11 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 			{
 				case OTTransaction::atDeposit:
 					ProcessDepositResponse(*pTransaction, theConnection, theReply);
-					pNym->RemoveTransactionNum(*pNym, strServerID, pTransaction->GetTransactionNum()); // bool bSave=true	
 					pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true); // bool bSave=true	
 					break;
 					
 				case OTTransaction::atWithdrawal:
 					ProcessWithdrawalResponse(*pTransaction, theConnection, theReply);
-					pNym->RemoveTransactionNum(*pNym, strServerID, pTransaction->GetTransactionNum()); // bool bSave=true	
 					pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true); // bool bSave=true	
 					break;
 				// ---------------------------------------
@@ -851,8 +849,6 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 					if ((NULL != pItem) &&
 						OTItem::rejection == pItem->GetStatus())
 					{
-						pNym->RemoveTransactionNum(*pNym, strServerID, pTransaction->GetTransactionNum()); // bool bSave=true	
-
 						if (false == pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true)) // bool bSave=true
 						{
 							OTLog::Error("Error removing issued number from user nym in OTClient::ProcessIncomingTransactions\n");
@@ -1548,7 +1544,6 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 						// Now let's remove that number from our ISSUED list of responsibility, since we got a server reply...
 						//  <====> Whatever trans num I used to process inbox is now OFF my issued list on server side! 
 						// (Therefore remove here too, to match..)
-						pNym->RemoveTransactionNum(*pNym, strServerID, pTransaction->GetTransactionNum()); // bool bSave=true	
 						pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true); // bool bSave=true	
 						
 						// --------------------------------------------
@@ -1720,7 +1715,6 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 															}
 															else	// Since I wrote the cheque, and I am now accepting the cheque receipt, I can be cleared for that issued number...
 															{		
-																pNym->RemoveTransactionNum(*pNym, strServerID, theCheque.GetTransactionNum()); // bool bSave=true	
 																pNym->RemoveIssuedNum(*pNym, strServerID, theCheque.GetTransactionNum(), true); // bool bSave=true	
 															}
 														}
@@ -1728,7 +1722,6 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 														// I am accepting a TRANSFER RECEIPT, which has an acceptPending inside FROM THE RECIPIENT as the original item within,
 														else if (OTItem::acceptPending == pOriginalItem->GetType()) // (which is in reference to my outoing original transfer.)
 														{
-															pNym->RemoveTransactionNum(*pNym, strServerID, pOriginalItem->GetReferenceToNum()); // bool bSave=true	
 															pNym->RemoveIssuedNum(*pNym, strServerID, pOriginalItem->GetReferenceToNum(), true); // bool bSave=true	
 														}
 														else 
@@ -1798,6 +1791,41 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 					// account, you cannot process it until you burn a transaction number to do so. And if you
 					// don't have any transaction numbers to do that with, that's fine: you just get a new one
 					// via your nymbox.  This is the original reason that I added nymboxes in the first place.
+					
+					// ------------------------------------------------------------------
+					// HARVEST TRANSACTION NUMBERS (Nymbox only)
+					//
+					if ((NULL != pTransaction) && (NULL != pReplyTransaction))
+					{					
+						OTItem * pItem = pTransaction->GetItem(OTItem::transactionStatement);
+						
+						// We found it!
+						if ((NULL != pItem) && (pReplyTransaction->GetSuccess()))
+						{
+							OTString	strMessageNym;
+							OTPseudonym	theMessageNym;
+							
+							pItem->GetAttachment(strMessageNym);
+							
+							if (strMessageNym.Exists() && theMessageNym.LoadFromString(strMessageNym))
+							{
+								// Success!
+								
+								pNym->HarvestIssuedNumbers(*pNym, theMessageNym, true); // bSave=true
+							}
+							else 
+							{
+								OTLog::vOutput(0, "Strange... found transaction item in ledger in %s, but didn't find theMessageNym within.\n",
+											   theReply.m_strCommand.Get());
+							}
+						}
+						else 
+						{
+							OTLog::vOutput(0, "Strange... found transaction in ledger in %s, but didn't find the right item type within.\n",
+										   theReply.m_strCommand.Get());
+						}	
+					}
+					// ------------------------------------------------------------------					
 				}
 
 				// -----------------------------------------------------------
@@ -1886,44 +1914,6 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 							}
 						}
 					}
-										
-					// ------------------------------------------------------------------
-					// HARVEST TRANSACTION NUMBERS
-					//
-					OTItem * pItem = pTransaction->GetItem(OTItem::transactionStatement);
-
-					if (NULL == pItem)
-					{
-						pItem = pTransaction->GetItem(OTItem::balanceStatement);
-					}
-					
-					// We found it!
-					if (NULL != pItem)
-					{
-						OTString	strMessageNym;
-						OTPseudonym	theMessageNym;
-						
-						pItem->GetAttachment(strMessageNym);
-						
-						if (strMessageNym.Exists() && theMessageNym.LoadFromString(strMessageNym))
-						{
-							// Success!
-							
-							pNym->HarvestTransactionNumbers(*pNym, theMessageNym); // bSave=true
-
-							pNym->SaveSignedNymfile(*pNym);
-						}
-						else 
-						{
-							OTLog::vOutput(0, "Strange... found transaction item in ledger in %s, but didn't find theMessageNym within.\n",
-										   theReply.m_strCommand.Get());
-						}
-					}
-					else 
-					{
-						OTLog::vOutput(0, "Strange... found transaction in ledger in %s, but didn't find the right item type within.\n",
-									   theReply.m_strCommand.Get());
-					}					
 				}
 				else 
 				{
@@ -2833,7 +2823,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 						SERVER_ID(strServerID),		USER_ID(theNym);
 	
 		long lStoredTransactionNumber=0;
-		bool bGotTransNum = theNym.GetNextTransactionNum(theNym, strServerID, lStoredTransactionNumber);
+		bool bGotTransNum = theNym.GetNextTransactionNum(theNym, strServerID, lStoredTransactionNumber); // this saves
 		
 		if (bGotTransNum)
 		{

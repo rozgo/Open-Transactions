@@ -161,6 +161,7 @@ bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM, const bool bIsRea
 		// for its main transaction number until he signs off on final closing, after many receipts have
 		// potentially been received.
 //		THE_NYM.RemoveIssuedNum(SERVER_ID, GetTransactionNum()); // commented out, explained just above.
+		
 		// Client side will NOT remove from issued list in this case (market offer, payment plan, which are
 		// the only transactions that use a transactionStatement, which is otherwise used for Nymbox, and
 		// NOT any other transactions.
@@ -235,9 +236,9 @@ bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM, const bool bIsRea
 							// with the offer or plan (i.e. sometime in the future.) Thus, the Remove/Add issued code is commented out
 							// here, even though it's still found in some form in BalanceStatement.
 							//
-//							if (bIsRealTransaction) // We only removed it to do the verification. If that failed, add it back again (until next time when it succeeds)
+//							if (bIsRealTransaction) // We only removed it to do the verification. 
+							// Since that failed, add it back again (until next time when it succeeds)
 //								THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
-							
 							return false;
 						}
 					}
@@ -500,6 +501,9 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 		return false;
 	}
 	
+	// BELOW THIS POINT, WE *KNOW* THE ISSUED NUM IS CURRENTLY ON THE LIST...
+	//
+	// (SO I CAN remove it and add it again, KNOWING that I'm never re-adding a num that wasn't there in the first place.
 	
 	// For process inbox, deposit, and withdrawal, the client will remove from issued list as soon as he 
 	// receives my acknowledgment OR rejection. He expects server (me) to remove, so he signs a balance
@@ -595,6 +599,7 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 						OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Issued transaction # %ld from Message Nym not found on this side.\n", 
 									  lTransactionNumber);
 						
+						// I have to do this whenever I RETURN :-(
 						switch (TARGET_TRANSACTION.GetType()) 
 						{
 							case OTTransaction::processInbox:
@@ -626,6 +631,7 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 		OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Transaction # Count mismatch: %d and %d\n", 
 					  nNumberOfTransactionNumbers1, nNumberOfTransactionNumbers2);
 		
+		// I have to do this whenever I RETURN :-(
 		switch (TARGET_TRANSACTION.GetType()) 
 		{
 			case OTTransaction::processInbox:
@@ -653,6 +659,34 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 	// Might want to consider saving the Nym here.
 	// Also want to save the latest signed receipt, since it VERIFIES.
 	// Or maybe let caller decide?
+	
+	
+	// I have to do this whenever I RETURN :-(
+	// EVEN IF SUCCESS, we have only succeeded to verify the balance statement.
+	// We must still go on to verify the transaction itself, and ONLY THEN will
+	// we (possibly) remove the issued number from the list. And the decision will
+	// change from situation to situation, depending on the instrument.
+	// Therefore I add it back here as well. We only fiddled with it in the first place
+	// in order to verify the balance statement. Done. So now let the other pieces decide
+	// their own logic from there.
+	//
+	switch (TARGET_TRANSACTION.GetType()) 
+	{
+		case OTTransaction::processInbox:
+		case OTTransaction::deposit:
+		case OTTransaction::withdrawal:
+			THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());  // we have to add this back again...
+			break;
+		case OTTransaction::transfer:
+		case OTTransaction::marketOffer:
+		case OTTransaction::paymentPlan:
+			break;
+		default: 
+			// Error
+			OTLog::vError("OTItem::VerifyBalanceStatement: wrong target transaction type: %s\n",
+						  TARGET_TRANSACTION.GetTypeString());
+			break;
+	}
 	
 	return true;
 }

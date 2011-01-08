@@ -174,9 +174,17 @@ OTItem * OTPseudonym::GenerateTransactionStatement(const OTTransaction & theOwne
 	
 	theMessageNym.HarvestIssuedNumbers(*this /*unused in this case, not saving to disk*/, *this, false); // bSave = false;
 	
-	theMessageNym.RemoveIssuedNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum());  // a transaction number is being used, and REMOVED from my list of responsibility,
-	theMessageNym.RemoveTransactionNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum()); // so I want the new signed list to reflect that number has been REMOVED.
-
+	// Transaction Statements ONLY have a transaction number in the case of market offers and payment plans, in which case
+	// the number should NOT be removed, and remains in play until final closure from Cron!
+	//
+	// Thus, this code is erroneous and should be commented out.
+	//
+//	if (theOwner.GetTransactionNum() > 0)
+//	{
+//		theMessageNym.RemoveIssuedNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum());  // a transaction number is being used, and REMOVED from my list of responsibility,
+//		theMessageNym.RemoveTransactionNum(theOwner.GetRealServerID(), theOwner.GetTransactionNum()); // so I want the new signed list to reflect that number has been REMOVED.
+//	}
+	
 	// What about cases where no number is being used? (Such as processNymbox)
 	// Perhaps then if this function is even called, it's with a 0-number transaction, in which 
 	// case the above Removes probably won't hurt anything.  Todo.
@@ -901,7 +909,8 @@ bool OTPseudonym::RemoveIssuedNum(OTPseudonym & SIGNER_NYM, const OTString & str
 
 
 
-// OtherNym is used as container for server to send us new transaction numbers
+/// OtherNym is used as container for server to send us new transaction numbers
+/// Currently unused.
 void OTPseudonym::HarvestTransactionNumbers(OTPseudonym & SIGNER_NYM, OTPseudonym & theOtherNym, bool bSave/*=true*/)
 {
 	bool bSuccess = false;
@@ -940,7 +949,7 @@ void OTPseudonym::HarvestTransactionNumbers(OTPseudonym & SIGNER_NYM, OTPseudony
 
 
 
-// OtherNym is used as container for us to send server list of issued transaction numbers.
+/// OtherNym is used as container for us to send server list of issued transaction numbers.
 void OTPseudonym::HarvestIssuedNumbers(OTPseudonym & SIGNER_NYM, OTPseudonym & theOtherNym, bool bSave/*=false*/)
 {
 	bool bSuccess = false;
@@ -963,8 +972,13 @@ void OTPseudonym::HarvestIssuedNumbers(OTPseudonym & SIGNER_NYM, OTPseudonym & t
 			{
 				lTransactionNumber = pDeque->at(i);
 				
-				AddTransactionNum(SIGNER_NYM, OTstrServerID, lTransactionNumber, false); // bSave = false (but saved below...)
-				
+				// If number wasn't already on issued list, then add to BOTH lists.
+				// Otherwise do nothing (it's already on the issued list, and no longer 
+				// valid on the available list--thus shouldn't be re-added there anyway.)
+				// 
+				if (false == VerifyIssuedNum(OTstrServerID, lTransactionNumber))
+					AddTransactionNum(SIGNER_NYM, OTstrServerID, lTransactionNumber, false); // bSave = false (but saved below...)
+
 				bSuccess = true;
 			}
 		}
@@ -979,9 +993,10 @@ void OTPseudonym::HarvestIssuedNumbers(OTPseudonym & SIGNER_NYM, OTPseudonym & t
 
 
 
-// Client side.
-// Get the next available transaction number for the serverID
-// The lTransNum parameter is for the return value.
+/// Client side.
+/// Get the next available transaction number for the serverID
+/// The lTransNum parameter is for the return value.
+/// SAVES if successful.
 bool OTPseudonym::GetNextTransactionNum(OTPseudonym & SIGNER_NYM, const OTString & strServerID, long &lTransNum)
 {
 	bool bRetVal		= false;
@@ -1430,10 +1445,10 @@ void OTPseudonym::DisplayStatistics(OTString & strOutput)
 			}
 		}
 	} // for
-	for (mapOfTransNums::iterator iii = m_mapTransNum.begin(); iii != m_mapTransNum.end(); ++iii)
+	for (mapOfTransNums::iterator iiii = m_mapTransNum.begin(); iiii != m_mapTransNum.end(); ++iiii)
 	{	
-		std::string strServerID		= (*iii).first;
-		dequeOfTransNums * pDeque	= (iii->second);
+		std::string strServerID		= (*iiii).first;
+		dequeOfTransNums * pDeque	= (iiii->second);
 		
 		OT_ASSERT(NULL != pDeque);
 		

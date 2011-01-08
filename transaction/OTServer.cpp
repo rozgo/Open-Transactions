@@ -552,11 +552,11 @@ bool OTServer::VerifyTransactionNumber(OTPseudonym & theNym, const long &lTransa
 	
 	if (pNym->VerifyTransactionNum(m_strServerID, lTransactionNumber))
 		return true;
-	else {
+	else 
 		OTLog::vError("Invalid transaction number: %ld.  (Current Trns# counter: %ld)\n", 
 				lTransactionNumber, m_lTransactionNumber);
-		return false;
-	}
+	
+	return false;
 }
 
 
@@ -578,9 +578,9 @@ bool OTServer::RemoveTransactionNumber(OTPseudonym & theNym, const long &lTransa
 	bool bRemoved = false;
 	
 	if (bSave)
-		pNym->RemoveTransactionNum(m_nymServer, m_strServerID, lTransactionNumber); // the version that passes in a signer nym -- saves to local storage.
+		bRemoved = pNym->RemoveTransactionNum(m_nymServer, m_strServerID, lTransactionNumber); // the version that passes in a signer nym -- saves to local storage.
 	else 
-		pNym->RemoveTransactionNum(m_strServerID, lTransactionNumber); // the version that doesn't save.
+		bRemoved = pNym->RemoveTransactionNum(m_strServerID, lTransactionNumber); // the version that doesn't save.
 
 	return bRemoved;
 }
@@ -4478,10 +4478,6 @@ void OTServer::NotarizeTransaction(OTPseudonym & theNym, OTTransaction & tranIn,
 								OTLog::Error("Error removing issued number from user nym in OTServer::NotarizeTransaction\n");
 							}
 						}
-						
-						// Just making sure it's entirely removed... really this is already done above.
-						// But when the ISSUED num is removed, it can't hurt to remove transaction again to be safe, can it?
-						RemoveTransactionNumber(theNym, lTransactionNumber, true); //bSave=true
 					}
 				}
 					break;
@@ -4493,17 +4489,12 @@ void OTServer::NotarizeTransaction(OTPseudonym & theNym, OTTransaction & tranIn,
 					{
 						OTLog::Error("Error removing issued number from user nym in OTServer::NotarizeTransaction\n");
 					}			
-					// Just making sure it's entirely removed... really this is already done above.
-					// But when the ISSUED num is removed, it can't hurt to remove transaction again to be safe, can it?
-					RemoveTransactionNumber(theNym, lTransactionNumber, true); //bSave=true
-
 					break;
 
 				default:
 					OTLog::vError("OTServer::NotarizeTransaction: Error, unexpected type: %s\n", tranIn.GetTypeString());	
 					break;
 			}
-			
 		}
 
 		// Add a new transaction number item to each outgoing transaction.
@@ -5184,7 +5175,7 @@ void OTServer::NotarizeProcessNymbox(OTPseudonym & theNym, OTTransaction & tranI
 				theNym.RemoveIssuedNum(m_strServerID, lTemp);
 			}			
 		}
-		else if (false == pBalanceItem->VerifyTransactionStatement(theNym, false)) // bIsRealTransaction=false (since we're doing Nymbox)
+		else if (false == pBalanceItem->VerifyTransactionStatement(theNym, false)) // bIsRealTransaction=false (since we're doing Nymbox) // <========
 		{
 			OTLog::vOutput(0, "OTServer::NotarizeProcessNymbox: ERROR verifying transaction statement.\n");
 			
@@ -5211,7 +5202,9 @@ void OTServer::NotarizeProcessNymbox(OTPseudonym & theNym, OTTransaction & tranI
 			
 			// THE ABOVE LOOP WAS JUST A TEST RUN 
 			//
-			// (TO VERIFY TRANSACTION AGREEMENT BEFORE WE BOTHERED TO RUN THIS LOOP BELOW...)
+			// (TO **VERIFY TRANSACTION AGREEMENT** BEFORE WE BOTHERED TO RUN THIS LOOP BELOW...)
+			// (AND TO GET THE LIST OF NUMBERS FOR THE STATEMENT ONTO TEMP NYM.)
+		
 			
 			// loop through the items that make up the incoming transaction, and add them
 			// to the Nym, and remove them from the Nymbox, as appropriate.
@@ -5395,32 +5388,14 @@ void OTServer::NotarizeProcessNymbox(OTPseudonym & theNym, OTTransaction & tranI
 	//
 	// If NEITHER succeeded, then there is no point recording it to a file, now is there?
 	
-	if (OTItem::acknowledgement == pResponseBalanceItem->GetStatus())
+	if ((NULL != pResponseBalanceItem) && OTItem::acknowledgement == pResponseBalanceItem->GetStatus())
 	{
-		if (OTItem::acknowledgement == pResponseItem->GetStatus())
+		if (tranOut.GetSuccess())
 		{
 			// Transaction agreement was a success, AND process nymbox was a success.
 			// Therefore, add any new issued numbers to theNym, and save.
-			for (int i = 0; i < theTempNym.GetIssuedNumCount(SERVER_ID); i++)
-			{
-				long lTemp = theTempNym.GetIssuedNum(SERVER_ID, i);
-								
-				// This is a high-level function which adds the number to BOTH lists.
-				// That is, the "Issued" list of numbers I'm responsible for (since they're signed for)
-				// until I sign off on the final receipt accepting it out of my inbox,
-				// as well as the "transaction" list of numbers, which is the subset of those
-				// that I haven't used yet. (I might use a number on a cheque--and the cheque
-				// gets cashed, so the server knows I used it, and won't let the same cheque through
-				// twice, so therefore has removed it from my transaction list, but it's SITLL on 
-				// my issued list until I accept the cheque RECEIPT to get it out of my inbox.)
-				//
-				theNym.AddTransactionNum(m_nymServer, m_strServerID, lTemp, false); // bSave = false
-			}
 			
-			if (theTempNym.GetIssuedNumCount(SERVER_ID) > 0)
-			{
-				theNym.SaveSignedNymfile(m_nymServer);
-			}
+			theNym.HarvestIssuedNumbers(m_nymServer, theTempNym, true); // bSave=true
 			
 			strPath.Format((char*)"%s%s%s%s%s.success", OTLog::Path(), OTLog::PathSeparator(), 
 						   OTLog::ReceiptFolder(),
@@ -6258,11 +6233,11 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 	//
 	// If NEITHER succeeded, then there is no point recording it to a file, now is there?
 	
-	if (OTItem::acknowledgement == pResponseBalanceItem->GetStatus())
+	if ((NULL != pResponseBalanceItem) && OTItem::acknowledgement == pResponseBalanceItem->GetStatus())
 	{
 		OTString strAcctID(ACCOUNT_ID);
-		
-		if (OTItem::acknowledgement == pResponseItem->GetStatus())
+
+		if (tranOut.GetSuccess())
 		{
 			// Balance agreement was a success, AND process inbox was a success.
 			// Therefore, remove any relevant issued numbers from theNym, and save.
@@ -6270,8 +6245,7 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 			{
 				long lTemp = theTempNym.GetIssuedNum(SERVER_ID, i);
 				
-				theNym.RemoveIssuedNum(m_nymServer, m_strServerID, lTemp, false); // bSave = false
-				theNym.RemoveTransactionNum(m_strServerID, lTemp); // bSave = false
+				theNym.RemoveIssuedNum(m_nymServer, m_strServerID, lTemp, false); // bSave = false (saved immediately below)
 			}
 			
 			theNym.SaveSignedNymfile(m_nymServer);
