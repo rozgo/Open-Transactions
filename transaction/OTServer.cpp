@@ -5424,12 +5424,12 @@ void OTServer::UserCmdProcessInbox(OTPseudonym & theNym, OTMessage & MsgIn, OTMe
 	msgOut.m_strAcctID		= MsgIn.m_strAcctID;	// The Account ID in question
 	
 	const OTIdentifier	USER_ID(msgOut.m_strNymID), 
-	ACCOUNT_ID(MsgIn.m_strAcctID), 
-	SERVER_ID(m_strServerID),
-	SERVER_USER_ID(m_nymServer);
+						ACCOUNT_ID(MsgIn.m_strAcctID), 
+						SERVER_ID(m_strServerID),
+						SERVER_USER_ID(m_nymServer);
 	
-	OTLedger theLedger(USER_ID, ACCOUNT_ID, SERVER_ID);			// These are ledgers used as messages. The one we received 
-	// and the one we're sending back.
+	OTLedger theLedger(USER_ID, ACCOUNT_ID, SERVER_ID);			// These are ledgers used as messages. The one we received, 
+																// and the one we're sending back.
 	OTLedger * pResponseLedger = OTLedger::GenerateLedger(SERVER_USER_ID, ACCOUNT_ID, SERVER_ID, OTLedger::message, false); // bCreateFile=false
 	OTCleanup<OTLedger> theRespLedgerGuardian(pResponseLedger);
 	
@@ -5442,8 +5442,34 @@ void OTServer::UserCmdProcessInbox(OTPseudonym & theNym, OTMessage & MsgIn, OTMe
 	if (msgOut.m_bSuccess = theLedger.LoadContractFromString(strLedger))
 	{		
 		OTAccount theAccount(USER_ID, ACCOUNT_ID, SERVER_ID);
+
+		// Make sure the "from" account even exists...
+		if (!theAccount.LoadContract())
+		{
+			OTLog::vOutput(0, "Failed loading account in OTServer::UserCmdProcessInbox\n");
+		}
+		// Make sure the Account ID loaded from the file matches the one we just set and used as the filename.
+		else if (!theAccount.VerifyContractID())
+		{
+			// this should never happen. How did the wrong ID get into the account file, if the right
+			// ID is on the filename itself? and vice versa.
+			OTLog::Error("Error verifying account ID in OTServer::UserCmdProcessInbox\n");
+		}
+		// Make sure the nymID loaded up in the account as its actual owner matches the nym who was
+		// passed in to this function requesting a transaction on this account... otherwise any asshole
+		// could do transactions on your account, no?
+		else if (!theAccount.VerifyOwner(theNym))
+		{
+			OTLog::vOutput(0, "Failed verifying account ownership in OTServer::UserCmdProcessInbox\n");		
+		}
+		// Make sure I, the server, have signed this file.
+		else if (!theAccount.VerifySignature(m_nymServer))
+		{
+			OTLog::Error("Error verifying server signature on account in OTServer::UserCmdProcessInbox\n");
+		}
+		// No need to call VerifyAccount() here since the above calls go above and beyond that method.
 		
-		if (theAccount.LoadContract())
+		else 
 		{
 			// In this case we need to process the transaction items from the ledger
 			// and create a corresponding transaction where each of the new items
@@ -5451,49 +5477,85 @@ void OTServer::UserCmdProcessInbox(OTPseudonym & theNym, OTMessage & MsgIn, OTMe
 			// Then we send that new "response ledger" back to the user in MsgOut.Payload
 			// as an @processInbox message.
 			
-			OTTransaction * pTransaction	= NULL;
+			OTTransaction * pTransaction	= theLedger.GetTransaction(OTTransaction::processInbox);
 			OTTransaction * pTranResponse	= NULL;
 			
-			for (mapOfTransactions::iterator ii = theLedger.GetTransactionMap().begin(); 
-				 ii != theLedger.GetTransactionMap().end(); ++ii)
-			{	
-				pTransaction = (*ii).second;
-				
-				OT_ASSERT_MSG(NULL != pTransaction, "NULL transaction pointer in OTServer::UserCmdProcessInbox\n");
-				
-				// for each transaction in the ledger, we create a transaction response and add
-				// that to the response ledger.
+			if (NULL == pTransaction) // I'm assuming there's only one in the ledger (for now anyways..)
+			{
+				OTLog::Error("Expected processInbox transaction in OTServer::UserCmdProcessInbox\n");
+			}
+			else
+			{
+				// We create a transaction response and add that to the response ledger...
+				//
 				pTranResponse = OTTransaction::GenerateTransaction(*pResponseLedger, OTTransaction::error_state, pTransaction->GetTransactionNum());
 				
 				// Add the response transaction to the response ledger.
 				// That will go into the response message and be sent back to the client.
 				pResponseLedger->AddTransaction(*pTranResponse);
 				
-				// Now let's make sure the response transaction has a copy of the transaction
-				// it is responding to.
-				//				OTString strResponseTo;
-				//				pTransaction->SaveContract(strResponseTo);
-				//				pTranResponse->m_ascInReferenceTo.SetString(strResponseTo);
-				// I commented out the above because we are keeping too many copies.
-				// Message contains a copy of the message it's responding to.
-				// Then each transaction contains a copy of the transaction responding to...
-				// Then each ITEM in each transaction contains a copy of each item it's responding to.
-				//
-				// Therefore, for the "processInbox" message, I have decided (for now) to have
-				// the extra copy in the items themselves, and in the overall message, but not in the
-				// transactions. Thus, the above is commented out.
+				//---------------------------------------------------
 				
+				const long lTransactionNumber = pTransaction->GetTransactionNum();
 				
-				// It should always return something. Success, or failure, that goes into pTranResponse.
-				// I don't think there's need for more return value than that. The user has gotten deep 
-				// enough that they deserve SOME sort of response.
+				//---------------------------------------------------
+
+				if (!VerifyTransactionNumber(theNym, lTransactionNumber))
+				{
+					// The user may not submit a transaction using a number he's already used before.
+					OTLog::Output(0, "Error verifying transaction number in OTServer::UserCmdProcessInbox\n");
+				}
+				
+				// The items' acct and server ID were already checked in VerifyContractID() when they were loaded. 
+				// Now this checks a little deeper, to verify ownership, signatures, and transaction number
+				// on each item.  That way those things don't have to be checked for security over and over
+				// again in the subsequent calls.
 				//
-				// This function also SIGNS the transaction, so there is no need to sign it after this.
-				// There's also no point to change it after this, unless you plan to sign it twice.
-				NotarizeProcessInbox(theNym, theAccount, *pTransaction, *pTranResponse);
+				else if (!pTransaction->VerifyItems(theNym)) 
+				{
+					OTLog::Output(0, "Error verifying transaction items OTServer::UserCmdProcessInbox\n");
+				}
+				
+				// any other security stuff?
+				// Todo do I need to verify the server ID here as well?
+				else
+				{
+					// We don't want any transaction number being used twice.
+					// (The number, at this point, is STILL issued to the user, who is still responsible
+					// for that number and must continue signing for it. All this means here is that the
+					// user no longer has the number on his AVAILABLE list. Removal from issued list happens separately.)
+					//
+					if (false == RemoveTransactionNumber(theNym, lTransactionNumber, true)) //bSave=true
+					{
+						OTLog::Error("Error removing transaction number (as available) from user nym in OTServer::UserCmdProcessInbox\n");
+					}			
+					
+					// -------------------------------------------------------------------
+					
+					else 
+					{						
+						OTLog::Output(0, "UserCmdProcessInbox type: Process Inbox\n");
+						
+						NotarizeProcessInbox(theNym, theAccount, *pTransaction, *pTranResponse);	
+						
+						// ------------------------------------------
+						
+						// Where appropriate, remove a transaction number from my issued list 
+						// (the list of numbers I must sign for in every balance agreement.)
+						
+						if (false == RemoveIssuedNumber(theNym, lTransactionNumber, true)) //bSave=true
+						{
+							OTLog::Error("Error removing issued number from user nym in OTServer::UserCmdProcessInbox\n");
+						}	
+					}
+				}
+				
+				// sign the outoing transaction
+				pTranResponse->SignContract(m_nymServer);	
+				pTranResponse->SaveContract();	 // don't forget to save (to internal raw file member)			
 				
 				pTranResponse = NULL; // at this point, the ledger now "owns" the response, and will handle deleting it.
-			}
+			} // for loop
 			
 			// TODO: should consider saving a copy of the response ledger here on the server. 
 			// Until the user signs off of the responses, maybe the user didn't receive them.
@@ -5560,11 +5622,12 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 	OTString strBalanceItem;
 	
 	// Grab the actual server ID from this object, and use it as the server ID here.
-	const OTIdentifier SERVER_ID(m_strServerID), ACCOUNT_ID(theAccount), USER_ID(theNym), SERVER_USER_ID(m_nymServer);
+	const OTIdentifier	SERVER_ID(m_strServerID),	ACCOUNT_ID(theAccount), 
+						USER_ID(theNym),			SERVER_USER_ID(m_nymServer);
 
 	OTPseudonym theTempNym;
 
-	// --------------------------------------------------------------------
+	// --------------------------------------------------------------
 	
 	OTLedger * pInbox	= theAccount.LoadInbox(m_nymServer); 
 	OTLedger * pOutbox	= theAccount.LoadOutbox(m_nymServer); 
@@ -5572,7 +5635,7 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 	OTCleanup<OTLedger> theInboxAngel(pInbox);
 	OTCleanup<OTLedger> theOutboxAngel(pOutbox);
 
-	// --------------------------------------------------------------------
+	// --------------------------------------------------------------
 
 	if (NULL == pBalanceItem)
 	{
@@ -6233,37 +6296,34 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 	//
 	// If NEITHER succeeded, then there is no point recording it to a file, now is there?
 	
-	if ((NULL != pResponseBalanceItem) && OTItem::acknowledgement == pResponseBalanceItem->GetStatus())
-	{
-		OTString strAcctID(ACCOUNT_ID);
+	const OTString strAcctID(ACCOUNT_ID);
 
-		if (tranOut.GetSuccess())
+	if (tranOut.GetSuccess())
+	{
+		// Balance agreement was a success, AND process inbox was a success.
+		// Therefore, remove any relevant issued numbers from theNym, and save.
+		for (int i = 0; i < theTempNym.GetIssuedNumCount(SERVER_ID); i++)
 		{
-			// Balance agreement was a success, AND process inbox was a success.
-			// Therefore, remove any relevant issued numbers from theNym, and save.
-			for (int i = 0; i < theTempNym.GetIssuedNumCount(SERVER_ID); i++)
-			{
-				long lTemp = theTempNym.GetIssuedNum(SERVER_ID, i);
-				
-				theNym.RemoveIssuedNum(m_nymServer, m_strServerID, lTemp, false); // bSave = false (saved immediately below)
-			}
+			long lTemp = theTempNym.GetIssuedNum(SERVER_ID, i);
 			
-			theNym.SaveSignedNymfile(m_nymServer);
-			
-			//-------------------------------------------
-			
-			strPath.Format((char*)"%s%s%s%s%s.success", OTLog::Path(), OTLog::PathSeparator(), 
-						   OTLog::ReceiptFolder(),
-						   OTLog::PathSeparator(), strAcctID.Get());
+			theNym.RemoveIssuedNum(m_nymServer, m_strServerID, lTemp, false); // bSave = false (saved immediately below)
 		}
-		else
-			strPath.Format((char*)"%s%s%s%s%s.fail", OTLog::Path(), OTLog::PathSeparator(), 
-						   OTLog::ReceiptFolder(),
-						   OTLog::PathSeparator(), strAcctID.Get());
 		
-		// Save the receipt. (My outgoing transaction including the client's signed request that triggered it.)
-		tranOut.SaveContract(strPath.Get());	
+		theNym.SaveSignedNymfile(m_nymServer);
+		
+		//-------------------------------------------
+		
+		strPath.Format((char*)"%s%s%s%s%s.success", OTLog::Path(), OTLog::PathSeparator(), 
+					   OTLog::ReceiptFolder(),
+					   OTLog::PathSeparator(), strAcctID.Get());
 	}
+	else
+		strPath.Format((char*)"%s%s%s%s%s.fail", OTLog::Path(), OTLog::PathSeparator(), 
+					   OTLog::ReceiptFolder(),
+					   OTLog::PathSeparator(), strAcctID.Get());
+	
+	// Save the receipt. (My outgoing transaction including the client's signed request that triggered it.)
+	tranOut.SaveContract(strPath.Get());	
 }
 
 
