@@ -256,6 +256,11 @@ public class otapi {
     return ret;
   }
 
+  public static string OT_API_Ledger_FinalizeResponse(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_LEDGER, string THE_TRANSACTION, int BOOL_DO_I_ACCEPT) {
+    string ret = otapiPINVOKE.OT_API_Ledger_FinalizeResponse(SERVER_ID, USER_ID, ACCOUNT_ID, THE_LEDGER, THE_TRANSACTION, BOOL_DO_I_ACCEPT);
+    return ret;
+  }
+
   public static string OT_API_Transaction_GetType(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
     string ret = otapiPINVOKE.OT_API_Transaction_GetType(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
     return ret;
@@ -311,6 +316,10 @@ public class otapi {
 
   public static void OT_API_checkUser(string SERVER_ID, string USER_ID, string USER_ID_CHECK) {
     otapiPINVOKE.OT_API_checkUser(SERVER_ID, USER_ID, USER_ID_CHECK);
+  }
+
+  public static void OT_API_sendUserMessage(string SERVER_ID, string USER_ID, string USER_ID_RECIPIENT, string RECIPIENT_PUBKEY, string THE_MESSAGE) {
+    otapiPINVOKE.OT_API_sendUserMessage(SERVER_ID, USER_ID, USER_ID_RECIPIENT, RECIPIENT_PUBKEY, THE_MESSAGE);
   }
 
   public static void OT_API_getRequest(string SERVER_ID, string USER_ID) {

@@ -319,6 +319,11 @@ public:
 	void getRequest(OTIdentifier & SERVER_ID,
 					OTIdentifier & USER_ID);
 	
+	void sendUserMessage(OTIdentifier	& SERVER_ID,
+						 OTIdentifier	& USER_ID,
+						 OTIdentifier	& USER_ID_RECIPIENT,
+						 OTASCIIArmor	& RECIPIENT_PUBKEY,
+						 OTString		& THE_MESSAGE);
 	
 	void issueAssetType(OTIdentifier	&	SERVER_ID,
 						OTIdentifier	&	USER_ID,

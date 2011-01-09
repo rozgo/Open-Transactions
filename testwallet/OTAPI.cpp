@@ -2183,18 +2183,18 @@ const char * OT_API_Ledger_AddTransaction(const char * SERVER_ID,
 
 
 
-// --------------------------------------------------------------
-// Create a 'response' transaction, that will be used to indicate my
-// acceptance or rejection of another transaction. Usually an entire
-// ledger full of these is sent to the server as I process the various
-// transactions in my inbox.
-//
-// The original transaction is passed in, and I generate a response transaction based on it.
-// Also, the response ledger is passed in, so I load it, add the response transaction, save
-// it back to string, and return the string.
-//
-// This way, users can call this function multiple times, adding transactions until done.
-//
+/// --------------------------------------------------------------
+/// Create a 'response' transaction, that will be used to indicate my
+/// acceptance or rejection of another transaction. Usually an entire
+/// ledger full of these is sent to the server as I process the various
+/// transactions in my inbox.
+///
+/// The original transaction is passed in, and I generate a response transaction based on it.
+/// Also, the response ledger is passed in, so I load it, add the response transaction, save
+/// it back to string, and return the string.
+///
+/// This way, users can call this function multiple times, adding transactions until done.
+///
 const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 											   const char * USER_ID,
 											   const char * ACCOUNT_ID,
@@ -2363,6 +2363,9 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 			OTString strAcctID(theAcctID);
 			OTLog::vError("Error generating processInbox transaction in \n"
 						 "OT_API_Transaction_CreateResponse for AcctID:\n%s\n", strAcctID.Get());
+			
+			pNym->AddTransactionNum(*pNym, strServerID, lTransactionNumber, true); // bSave=true.  Have to add this back since we failed to use it.
+
 			return NULL;
 		}
 		
@@ -2491,6 +2494,394 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 	// sign the item
 	pAcceptItem->SignContract(*pNym);
 	pAcceptItem->SaveContract();
+	
+	pTransaction->ReleaseSignatures();
+	pTransaction->SignContract(*pNym);
+	pTransaction->SaveContract();
+	
+	theLedger.ReleaseSignatures();
+	theLedger.SignContract(*pNym);
+	theLedger.SaveContract();
+	
+	OTString strOutput(theLedger); // For the output
+	
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;	
+}
+
+
+
+/// -------------------------------------------------------------------------
+/// (Response Ledger) LEDGER FINALIZE RESPONSE
+///
+/// AFTER you have set up all the transaction responses, call THIS function
+/// to finalize them by adding a BALANCE AGREEMENT.
+///
+/// MAKE SURE you have the latest copy of the account file, inbox file, and
+/// outbox file, since we will need those in here to create the balance statement
+/// properly.
+///
+/// (Client software may wish to check those things, when downloaded, against
+/// the local copies and the local signed receipts. In this way, clients can
+/// protect themselves against malicious servers.)
+///
+const char * OT_API_Ledger_FinalizeResponse(const char * SERVER_ID,
+											const char * USER_ID,
+											const char * ACCOUNT_ID,
+											const char * THE_LEDGER, // 'Response' ledger be sent to the server...
+											OT_BOOL BOOL_DO_I_ACCEPT)   // 0 or 1  (OT_TRUE or OT_FALSE.)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_LEDGER, "NULL THE_LEDGER passed in.");
+	
+	const OTIdentifier	theServerID(SERVER_ID), 
+						theUserID(USER_ID), 
+						theAcctID(ACCOUNT_ID);
+	
+	OTString strLedger(THE_LEDGER), strServerID(theServerID);
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = g_OT_API.GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------------------
+	
+	OTServerContract * pServer = pWallet->GetServerContract(SERVER_ID);
+	
+	if (NULL == pServer)
+	{
+		OTLog::Output(0, "No Server Contract found with that Server ID.\n");
+		return NULL;
+	}
+	
+	// By this point, pServer is a good pointer.  (No need to cleanup.)
+	
+	const OTPseudonym * pServerNym = pServer->GetContractPublicNym();
+	
+	if (NULL == pServerNym)
+	{
+		OTLog::Output(0, "No Contract Nym found in that Server Contract.\n");
+		return NULL;
+	}
+	
+	// By this point, pServerNym is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(theUserID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = g_OT_API.LoadPrivateNym(theUserID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			return NULL;
+		}
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	OTLedger theLedger(theUserID, theAcctID, theServerID);
+	
+	if (false == theLedger.LoadContractFromString(strLedger))
+	{
+		OTString strAcctID(theAcctID);
+		OTLog::vError("Error loading ledger from string in OT_API_Ledger_FinalizeResponse. Acct ID:\n%s\n",
+					  strAcctID.Get());
+		return NULL;
+	}
+	else if (false == theLedger.VerifyAccount(*pNym))
+	{
+		OTString strAcctID(theAcctID);
+		OTLog::vError("Error verifying ledger in OT_API_Ledger_FinalizeResponse. Acct ID:\n%s\n",
+					  strAcctID.Get());
+		return NULL;
+	}
+	
+	// At this point, I know theLedger loaded and verified successfully.
+	// (This is the 'response' ledger that the user previously generated,
+	// and now he is loading it up with responses that this function will 
+	// generate on his behalf.)
+	// -----------------------------------------------------
+		
+	// First, check to see if there is a processInbox transaction already on
+	// the ledger...
+	OTTransaction * pTransaction = theLedger.GetTransaction(OTTransaction::processInbox);
+	
+	// If it's not already there, create it and add it.
+	if (NULL == pTransaction)
+	{
+		OTString strAcctID(theAcctID);
+		OTLog::vError("Error finding processInbox transaction in \n"
+						  "OT_API_Ledger_FinalizeResponse for AcctID:\n%s\n", strAcctID.Get());
+		return NULL;
+	}
+	
+	// At this point I know pTransaction is a processInbox transaction, ready to go,
+	// and that theLedger will handle any cleanup issues related to it.
+	
+	// -----------------------------------------------------
+	
+	// If balance statement is already there, return.
+	if (NULL != pTransaction->GetItem(OTItem::balanceStatement))
+	{
+		OTLog::Error("OT_API_Ledger_FinalizeResponse: this response has already been finalized.\n");
+		return NULL;		
+	}
+
+	// -------------------------------------------------------------
+	
+	// Get the account. 
+	
+	OTAccount *	pAccount = g_OT_API.GetAccount(theAcctID);	
+	
+	if (NULL == pAccount)
+	{
+		OTLog::Output(0, "Unable to load Account.\n");
+		return NULL;		
+	}
+	
+	// -------------------------------------------------------------
+
+	// Load the inbox and outbox.		
+	
+	OTLedger theInbox(theUserID, theAcctID, theServerID);
+	OTLedger theOutbox(theUserID, theAcctID, theServerID);
+	
+	if (!theInbox.LoadInbox())
+	{
+		OTLog::Output(0, "Unable to load Inbox.\n");
+		return NULL;		
+	}
+	
+	if (!theOutbox.LoadOutbox())
+	{
+		OTLog::Output(0, "Unable to load Outbox.\n");
+		return NULL;		
+	}
+	
+	// -------------------------------------------------------------
+
+	// Setup balance agreement item here!	
+	// Adapting code from OTServer... with comments:
+	//
+	// This transaction accepts various incoming pending transfers.
+	// So when it's all done, my balance will be higher.
+	// AND pending inbox items will be removed from my inbox.
+	// 
+	// I would like to not even process the whole giant loop below, 
+	// if I can verify here now that the balance agreement is wrong.
+	//
+	// Thus I will actually loop through the acceptPending items in pTransaction, and then for each one, I'll
+	// lookup the ACTUAL transaction in the inbox, and get its ACTUAL value. (And total them all up.)
+	//
+	// The total of those, (WITHOUT the user having to tell me what it will be, since I'm looking them all up),
+	// should equal the difference in the account balance! Meaning the current balance plus that total will be
+	// the expected NEW balance, according to this balance agreement -- if it wants to be approved, that is.
+	//
+	//
+	
+	bool bSuccessFindingAllTransactions = true;
+	long lTotalBeingAccepted = 0;
+	
+	OTPseudonym theTempNym;
+	
+	for (listOfItems::iterator ii = pTransaction->GetItemList().begin(); ii != pTransaction->GetItemList().end(); ++ii)
+	{
+		OTItem * pItem = *ii;
+		
+		OT_ASSERT_MSG(NULL != pItem, "Pointer should not have been NULL.");
+		
+		if ((pItem->GetType() == OTItem::acceptPending) ||
+			(pItem->GetType() == OTItem::acceptItemReceipt))
+		{
+			OTTransaction * pServerTransaction = theInbox.GetPendingTransaction(pItem->GetReferenceToNum());
+			
+			OTLog::vOutput(0, "Checking client-side inbox for expected pending or receipt transaction: %ld... ",
+						   pItem->GetReferenceToNum()); // temp remove
+			
+			if (NULL == pServerTransaction)
+			{
+				bSuccessFindingAllTransactions = false;
+				OTLog::Output(0, "NOT found! (Do you have the latest inbox?)\n"); // temp remove
+				break;
+			}
+			else 
+			{
+				OTLog::Output(0, "FOUND!\n"); // temp remove
+				
+				bSuccessFindingAllTransactions = true;
+				
+				// IF I'm accepting a pending transfer, then add the amount to my counter of total amount being accepted.
+				//
+				// ELSE if I'm accepting an item receipt (which will remove my responsibility for that item) then add it
+				// to the temp Nym (which is a list of transaction numbers that will be removed from my responsibility if
+				// all is successful.)  Also remove all the Temp Nym numbers from pNym, so we can verify the Balance
+				// Statement AS IF they were already removed. Add them 
+				//
+				if (pItem->GetType() == OTItem::acceptPending) // acceptPending
+					lTotalBeingAccepted += pServerTransaction->GetReceiptAmount();   // <============================
+				
+				else if (pItem->GetType() == OTItem::acceptItemReceipt) // acceptItemReceipt
+				{
+					// What number do I remove here? the user is accepting a transfer receipt, which
+					// is in reference to the recipient's acceptPending. THAT item is in reference to
+					// my original transfer (or contains a cheque with my original number.) (THAT's the # I need.)
+					//
+					OTString strOriginalItem;
+					pServerTransaction->GetReferenceString(strOriginalItem);
+					
+					OTItem * pOriginalItem = OTItem::CreateItemFromString(strOriginalItem, SERVER_ID, pServerTransaction->GetReferenceToNum());
+					OTCleanup<OTItem> theOrigItemGuardian(pOriginalItem); // So I don't have to clean it up later. No memory leaks.
+					
+					if (NULL != pOriginalItem)
+					{
+						// If pOriginalItem is acceptPending, that means the client is accepting the transfer receipt from the server, (from his inbox),
+						// which has the recipient's acceptance inside of the client's transfer as the original item. This means the transfer that
+						// the client originally sent is now finally closed!
+						// 
+						// If it's a depositCheque, that means the client is accepting the cheque receipt from the server, (from his inbox)
+						// which has the recipient's deposit inside of it as the original item. This means that the cheque that
+						// the client originally wrote is now finally closed!
+						//
+						// In both cases, the "original item" itself is not from the client, but from the recipient! Therefore,
+						// the number on that item is useless for removing numbers from the client's list of issued numbers.
+						// Rather, I need to load that original cheque, or pending transfer, from WITHIN the original item,
+						// in order to get THAT number, to remove it from the client's issued list. (Whether for real, or for
+						// setting up dummy data in order to verify the balance agreement.) *sigh*
+						//						
+						if (OTItem::depositCheque == pOriginalItem->GetType()) // client is accepting a cheque receipt, which has a depositCheque (from the recipient) as the original item within.
+						{
+							// Get the cheque from the Item and load it up into a Cheque object.
+							OTString strCheque;
+							pOriginalItem->GetAttachment(strCheque);
+							
+							OTCheque theCheque; // allocated on the stack :-)
+							
+							if (false == ((strCheque.GetLength() > 2) && 
+										  theCheque.LoadContractFromString(strCheque)))
+							{
+								OTLog::vError("ERROR loading cheque from string in OT_API_Ledger_FinalizeResponse:\n%s\n",
+											  strCheque.Get());
+							}
+							else	// Since the client wrote the cheque, and he is now accepting the cheque receipt, he can be cleared for that transaction number...
+							{		
+								pNym->RemoveIssuedNum(strServerID, theCheque.GetTransactionNum()); // Just removing temporarily so I can check the balance statement...
+								theTempNym.AddIssuedNum(strServerID, theCheque.GetTransactionNum()); // (I need to add it back later, so I store here in a temp variable.)
+							}
+						}
+						// client is accepting a transfer receipt, which has an acceptPending from the recipient as the original item within,
+						else if (OTItem::acceptPending == pOriginalItem->GetType()) // (which is in reference to the client's outoing original transfer.)
+						{
+							pNym->RemoveIssuedNum(strServerID, pOriginalItem->GetReferenceToNum()); // Just removing temporarily so I can check the balance statement...
+							theTempNym.AddIssuedNum(strServerID, pOriginalItem->GetReferenceToNum()); // (So I can add it back later, I store here in a temp variable.)
+						}
+						else 
+						{
+							OTString strOriginalItemType;
+							pOriginalItem->GetTypeString(strOriginalItemType);
+							OTLog::vError("OT_API_Ledger_FinalizeResponse: Original item has wrong type, while accepting item receipt:\n%s\n",
+										  strOriginalItemType.Get());
+						}
+					}
+					else 
+					{
+						OTLog::vError("OT_API_Ledger_FinalizeResponse: Unable to load original item from string while accepting item receipt:\n%s\n",
+									  strOriginalItem.Get());
+					}
+				}
+				
+				
+				// I'll also go ahead and remove each transaction from theInbox, and pass said inbox into the VerifyBalanceAgreement call...
+				// (So it can simulate as if the inbox was already changed, and the total is already calculated, and if it succeeds,
+				// then we can allow the giant loop below to do it all for real.)
+				// (I'm not saving this copy of the inbox anyway--there's another one below.)
+				//
+				//theInbox.RemovePendingTransaction(pItem->GetReferenceToNum());
+				// Let's remove it this way instead:
+				theInbox.RemoveTransaction(pServerTransaction->GetTransactionNum());					
+			}
+		} // if pItem type is accept pending or item receipt.
+	}
+	
+	// ------------------------------------------
+	
+	if (false == bSuccessFindingAllTransactions)
+	{
+		OTLog::Output(0, "OT_API_Ledger_FinalizeResponse: transactions in processInbox message do not match actual inbox.\n");
+		
+		// Here, add all the issued nums back (that had been temporarily removed from pNym) that were stored on theTempNym.
+		for (int i = 0; i < theTempNym.GetIssuedNumCount(theServerID); i++)
+		{
+			long lTemp = theTempNym.GetIssuedNum(theServerID, i);
+			pNym->AddIssuedNum(strServerID, lTemp);
+		}						
+		return NULL;		
+	}
+	
+	// -----------------------------------------
+
+
+	// BALANCE AGREEMENT 
+	// The item is signed and saved within this call as well. No need to do that again.
+	OTItem * pBalanceItem = theInbox.GenerateBalanceStatement(lTotalBeingAccepted, *pTransaction, *pNym, *pAccount, theOutbox);
+	
+	if (NULL == pBalanceItem)
+	{
+		OTLog::vOutput(0, "OT_API_Ledger_FinalizeResponse: ERROR generating balance statement.\n");
+		
+		// Here, add all the issued nums back (that had been temporarily removed from pNym) that were stored on theTempNym for safe-keeping.
+		for (int i = 0; i < theTempNym.GetIssuedNumCount(theServerID); i++)
+		{
+			long lTemp = theTempNym.GetIssuedNum(theServerID, i);
+			pNym->AddIssuedNum(strServerID, lTemp);
+		}						
+		return NULL;
+	}
+		
+	// the transaction will handle cleaning up the transaction item.
+	pTransaction->AddItem(*pBalanceItem);
+
+	// -----------------------------------------
+	
+	// Here I am adding these numbers back again, since I removed them to generate the balance agreement.
+	// (They won't be removed for real until I receive the server's acknowledgment that those numbers
+	// really were removed. theTempNym then I have to keep them and use them for my balance agreements.)
+	for (int i = 0; i < theTempNym.GetIssuedNumCount(theServerID); i++)
+	{
+		long lTemp = theTempNym.GetIssuedNum(theServerID, i);
+		pNym->AddIssuedNum(strServerID, lTemp);
+	}
+	
+	// -----------------------------------------
+	
+	// sign the item
+	pBalanceItem->SignContract(*pNym);
+	pBalanceItem->SaveContract();
 	
 	pTransaction->ReleaseSignatures();
 	pTransaction->SignContract(*pNym);
@@ -3750,6 +4141,26 @@ void OT_API_checkUser(const char * SERVER_ID,
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theOtherUserID(USER_ID_CHECK);
 	
 	g_OT_API.checkUser(theServerID, theUserID, theOtherUserID);
+}
+
+
+void OT_API_sendUserMessage(const char * SERVER_ID,
+							const char * USER_ID,
+							const char * USER_ID_RECIPIENT,
+							const char * RECIPIENT_PUBKEY,
+							const char * THE_MESSAGE)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID_RECIPIENT, "Null USER_ID_RECIPIENT passed in.");
+	OT_ASSERT_MSG(NULL != RECIPIENT_PUBKEY, "Null RECIPIENT_PUBKEY passed in.");
+	OT_ASSERT_MSG(NULL != THE_MESSAGE, "Null THE_MESSAGE passed in.");
+	
+	OTIdentifier	theServerID(SERVER_ID), theUserID(USER_ID), theOtherUserID(USER_ID_RECIPIENT);
+	OTASCIIArmor	ascRecipPubkey(RECIPIENT_PUBKEY);
+	OTString		strMessage(THE_MESSAGE);
+	
+	g_OT_API.sendUserMessage(theServerID, theUserID, theOtherUserID, ascRecipPubkey, strMessage);	
 }
 
 	

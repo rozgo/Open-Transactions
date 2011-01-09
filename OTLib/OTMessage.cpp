@@ -240,7 +240,51 @@ void OTMessage::UpdateContents()
 			m_xmlUnsigned.Concatenate("<nymPublicKey>\n%s</nymPublicKey>\n\n", m_strNymPublicKey.Get());
 		else
 			m_xmlUnsigned.Concatenate("<inReferenceTo>\n%s</inReferenceTo>\n\n", m_ascInReferenceTo.Get());
+		
+		m_xmlUnsigned.Concatenate("</%s>\n\n", m_strCommand.Get());
+	} // ------------------------------------------------------------------------
+	
+	
+	
+	// ------------------------------------------------------------------------
+	
+	if (m_strCommand.Compare("sendUserMessage"))
+	{		
+		m_xmlUnsigned.Concatenate("<%s\n"
+								  " nymID=\"%s\"\n"
+								  " nymID2=\"%s\"\n"
+								  " requestNum=\"%s\"\n"
+								  " serverID=\"%s\""
+								  ">\n\n",
+								  m_strCommand.Get(),
+								  m_strNymID.Get(),
+								  m_strNymID2.Get(),
+								  m_strRequestNum.Get(),
+								  m_strServerID.Get()
+								  );
+		
+		if (m_ascPayload.GetLength() > 2)
+			m_xmlUnsigned.Concatenate("<messagePayload>\n%s</messagePayload>\n\n", m_ascPayload.Get());
 
+		m_xmlUnsigned.Concatenate("</%s>\n\n", m_strCommand.Get());
+	} // ------------------------------------------------------------------------
+	
+	
+	// ------------------------------------------------------------------------
+	if (m_strCommand.Compare("@sendUserMessage"))
+	{		
+		m_xmlUnsigned.Concatenate("<%s\n"
+								  " success=\"%s\"\n"
+								  " nymID=\"%s\"\n"
+								  " nymID2=\"%s\"\n"
+								  " serverID=\"%s\""
+								  ">\n\n",
+								  m_strCommand.Get(), (m_bSuccess ? "true" : "false"),
+								  m_strNymID.Get(),
+								  m_strNymID2.Get(),
+								  m_strServerID.Get()
+								  );
+				
 		m_xmlUnsigned.Concatenate("</%s>\n\n", m_strCommand.Get());
 	} // ------------------------------------------------------------------------
 	
@@ -1270,6 +1314,89 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 	
 	// -------------------------------------------------------------------------------------------
 	
+	
+	else if (!strcmp("sendUserMessage", xml->getNodeName())) 
+	{		
+		m_strCommand	= xml->getNodeName();  // Command
+		m_strNymID		= xml->getAttributeValue("nymID");
+		m_strNymID2		= xml->getAttributeValue("nymID2");
+		m_strServerID	= xml->getAttributeValue("serverID");
+		m_strRequestNum = xml->getAttributeValue("requestNum");
+		
+		// move to the next node which SHOULD be the nymPublicKey element field
+		xml->read();
+		
+		const char * pElementExpected = "messagePayload";
+		
+		if (EXN_ELEMENT == xml->getNodeType())  
+		{
+			if (!strcmp(pElementExpected, xml->getNodeName()))
+			{
+				xml->read();
+				
+				if (EXN_TEXT == xml->getNodeType()) 
+				{
+					m_ascPayload.Set(xml->getNodeData());				
+				}
+				else
+				{
+					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
+								  "Expected %s text field in sendUserMessage message\n", 
+								  pElementExpected);
+					return (-1); // error condition
+				}				
+			}
+			else 
+			{
+				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
+							  "sendUserMessage without %s element.\n", pElementExpected);
+				return (-1); // error condition
+			}
+		}
+		else
+		{
+			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
+						  "Expected %s element with text field in sendUserMessage response\n", 
+						  pElementExpected);
+			return (-1); // error condition
+		}
+				
+		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nNymID2:    %s\nServerID: %s\nRequest #: %s\n", 
+					   m_strCommand.Get(), m_strNymID.Get(), m_strNymID2.Get(), m_strServerID.Get(), m_strRequestNum.Get());
+		
+		nReturnVal = 1;
+	}
+	
+	// -------------------------------------------------------------------------------------------
+	
+	else if (!strcmp("@sendUserMessage", xml->getNodeName())) 
+	{		
+		OTString strSuccess;
+		strSuccess		= xml->getAttributeValue("success");
+		if (strSuccess.Compare("true"))
+			m_bSuccess = true;
+		else
+			m_bSuccess = false;
+		
+		m_strCommand	= xml->getNodeName();  // Command
+		m_strNymID		= xml->getAttributeValue("nymID");
+		m_strNymID2		= xml->getAttributeValue("nymID2");
+		m_strServerID	= xml->getAttributeValue("serverID");
+				
+		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nNymID2:    %s\n"
+					   "ServerID: %s\n\n", 
+					   m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"),
+					   m_strNymID.Get(), m_strNymID2.Get(), m_strServerID.Get()
+					   );
+		
+		nReturnVal = 1;
+	}
+	
+	// -------------------------------------------------------------------------------------------
+	
+	
+	
+	
 	else if (!strcmp("checkUser", xml->getNodeName())) 
 	{		
 		m_strCommand	= xml->getNodeName();  // Command
@@ -1277,9 +1404,9 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strNymID2		= xml->getAttributeValue("nymID2");
 		m_strServerID	= xml->getAttributeValue("serverID");
 		m_strRequestNum = xml->getAttributeValue("requestNum");
-
+		
 		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nNymID2:    %s\nServerID: %s\nRequest #: %s\n", 
-				m_strCommand.Get(), m_strNymID.Get(), m_strNymID2.Get(), m_strServerID.Get(), m_strRequestNum.Get());
+					   m_strCommand.Get(), m_strNymID.Get(), m_strNymID2.Get(), m_strServerID.Get(), m_strRequestNum.Get());
 		
 		nReturnVal = 1;
 	}
@@ -1294,7 +1421,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 			m_bSuccess = true;
 		else
 			m_bSuccess = false;
-
+		
 		m_strCommand	= xml->getNodeName();  // Command
 		m_strNymID		= xml->getAttributeValue("nymID");
 		m_strNymID2		= xml->getAttributeValue("nymID2");
@@ -1325,38 +1452,38 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 				else
 				{
 					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-							"Expected %s text field in @checkUser response\n", 
-							pElementExpected);
+								  "Expected %s text field in @checkUser response\n", 
+								  pElementExpected);
 					return (-1); // error condition
 				}				
 			}
 			else 
 			{
 				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-						"@checkUser without %s element.\n", pElementExpected);
+							  "@checkUser without %s element.\n", pElementExpected);
 				return (-1); // error condition
 			}
 		}
 		else
 		{
 			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-					"Expected %s element with text field in @checkUser response\n", 
-					pElementExpected);
+						  "Expected %s element with text field in @checkUser response\n", 
+						  pElementExpected);
 			return (-1); // error condition
 		}
-
+		
 		if (m_bSuccess)
 			OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nNymID2:    %s\n"
-				"ServerID: %s\nNym2 Public Key:\n%s\n\n", 
-				m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"),
-				m_strNymID.Get(), m_strNymID2.Get(), m_strServerID.Get(),
-				m_strNymPublicKey.Get());
+						   "ServerID: %s\nNym2 Public Key:\n%s\n\n", 
+						   m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"),
+						   m_strNymID.Get(), m_strNymID2.Get(), m_strServerID.Get(),
+						   m_strNymPublicKey.Get());
 		else
 			OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nNymID2:    %s\n"
-				"ServerID: %s\n\n", 
-				m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"),
-				m_strNymID.Get(), m_strNymID2.Get(), m_strServerID.Get() // m_ascInReferenceTo.Get()
-				);
+						   "ServerID: %s\n\n", 
+						   m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"),
+						   m_strNymID.Get(), m_strNymID2.Get(), m_strServerID.Get() // m_ascInReferenceTo.Get()
+						   );
 		
 		nReturnVal = 1;
 	}

@@ -2854,19 +2854,41 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 	strMintPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
 					   strMintDirectoryPath.Get(), OTLog::PathSeparator(), strContractID.Get());
 	
+	OTMint theMint(strContractID, strMintPath, strContractID); // <=================
+
 	// -----------------------------------------------------------------	
 	
 	OTMessage theMessage;
 	
 	long lRequestNumber = 0;
-	long lAmount = atol(AMOUNT.Get());
+	
+	const	long lTotalAmount	= atol(AMOUNT.Get());
+			long lAmount		= lTotalAmount;
 	
 	OTString strNymID(USER_ID), strFromAcct(ACCT_ID);
 	
 	long lStoredTransactionNumber=0;
-	bool bGotTransNum = pNym->GetNextTransactionNum(*pNym, strServerID, lStoredTransactionNumber);
+	bool bGotTransNum = false;
 	
-	if (bGotTransNum)
+	// ---------------------------------------------
+	
+	OTLedger * pInbox	= pAccount->LoadInbox(*pNym);
+	OTLedger * pOutbox	= pAccount->LoadOutbox(*pNym);
+	
+	OTCleanup<OTLedger> theInboxAngel(pInbox);
+	OTCleanup<OTLedger> theOutboxAngel(pOutbox);
+	
+	if (NULL == pInbox)
+	{
+		OTLog::Output(0, "Failed loading inbox!\n");
+	}
+	
+	else if (NULL == pOutbox)
+	{
+		OTLog::Output(0, "Failed loading outbox!\n");
+	}
+	
+	else if (bGotTransNum = pNym->GetNextTransactionNum(*pNym, strServerID, lStoredTransactionNumber))
 	{
 		// Create a transaction
 		OTTransaction * pTransaction = OTTransaction::GenerateTransaction (USER_ID, ACCT_ID, SERVER_ID, 
@@ -2874,13 +2896,18 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 		
 		// set up the transaction item (each transaction may have multiple items...)
 		OTItem * pItem		= OTItem::CreateItemFromTransaction(*pTransaction, OTItem::withdrawal);
-		pItem->SetAmount(lAmount);
+		pItem->SetAmount(lTotalAmount);
+//		pItem->m_lAmount	= atol(strAmount.Get());
+		OTString strNote("Gimme cash!");
+		pItem->SetNote(strNote);
 		
 		const OTPseudonym * pServerNym = pServer->GetContractPublicNym();
-				
-		OTMint theMint(strContractID, strMintPath, strContractID);
 		
-		if (pServerNym && theMint.LoadContract() && theMint.VerifyMint((OTPseudonym&)*pServerNym))
+		// -----------------------------------------------------------------
+
+		if (pServerNym && 
+			theMint.LoadContract() && 
+			theMint.VerifyMint((OTPseudonym&)*pServerNym))
 		{
 			OTPurse * pPurse		= new OTPurse(SERVER_ID, CONTRACT_ID);
 			OTPurse * pPurseMyCopy	= new OTPurse(SERVER_ID, CONTRACT_ID);
@@ -2954,6 +2981,17 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 			pItem->SaveContract();
 			
 			pTransaction->AddItem(*pItem); // the Transaction's destructor will cleanup the item. It "owns" it now.
+			
+			// ---------------------------------------------
+			// BALANCE AGREEMENT
+			
+			// pBalanceItem is signed and saved within this call. No need to do that again.
+			OTItem * pBalanceItem = pInbox->GenerateBalanceStatement(lTotalAmount*(-1), *pTransaction, *pNym, *pAccount, *pOutbox);
+			
+			if (NULL != pBalanceItem) // will never be NULL. Will assert above before it gets here.
+				pTransaction->AddItem(*pBalanceItem); // Better not be NULL... message will fail... But better check anyway.
+			
+			// ---------------------------------------------
 			
 			// sign the transaction
 			pTransaction->SignContract(*pNym);
@@ -3087,12 +3125,31 @@ void OT_API::notarizeDeposit(OTIdentifier	& SERVER_ID,
 	const OTPseudonym * pServerNym = pServer->GetContractPublicNym();
 	
 	long lStoredTransactionNumber=0;
-	bool bGotTransNum = pNym->GetNextTransactionNum(*pNym, strServerID, lStoredTransactionNumber);
+	bool bGotTransNum = false;
 	
-	if (!bGotTransNum)
+	// ---------------------------------------------
+	
+	OTLedger * pInbox	= pAccount->LoadInbox(*pNym);
+	OTLedger * pOutbox	= pAccount->LoadOutbox(*pNym);
+	
+	OTCleanup<OTLedger> theInboxAngel(pInbox);
+	OTCleanup<OTLedger> theOutboxAngel(pOutbox);
+	
+	if (NULL == pInbox)
+	{
+		OTLog::Output(0, "Failed loading inbox!\n");
+	}
+	
+	else if (NULL == pOutbox)
+	{
+		OTLog::Output(0, "Failed loading outbox!\n");
+	}
+	
+	else if (!(bGotTransNum = pNym->GetNextTransactionNum(*pNym, strServerID, lStoredTransactionNumber)))
 	{
 		OTLog::Output(0, "No Transaction Numbers were available. Try requesting the server for a new one.\n");
 	}
+	
 	else if (pServerNym)
 	{
 		bool bSuccess = false;
@@ -3172,10 +3229,20 @@ void OT_API::notarizeDeposit(OTIdentifier	& SERVER_ID,
 			// the Transaction "owns" the item now and will handle cleaning it up.
 			pTransaction->AddItem(*pItem); // the Transaction's destructor will cleanup the item. It "owns" it now.
 			
+			// ---------------------------------------------
+			// BALANCE AGREEMENT
+			
+			// pBalanceItem is signed and saved within this call. No need to do that again.
+			OTItem * pBalanceItem = pInbox->GenerateBalanceStatement(pItem->GetAmount(), *pTransaction, *pNym, *pAccount, *pOutbox);
+			
+			if (NULL != pBalanceItem) // will never be NULL. Will assert above before it gets here.
+				pTransaction->AddItem(*pBalanceItem); // Better not be NULL... message will fail... But better check anyway.
+			
+			// ---------------------------------------------
+			
 			// sign the transaction
 			pTransaction->SignContract(*pNym);
 			pTransaction->SaveContract();
-			
 			
 			// set up the ledger
 			OTLedger theLedger(USER_ID, ACCT_ID, SERVER_ID);
@@ -3319,7 +3386,31 @@ void OT_API::withdrawVoucher(OTIdentifier	& SERVER_ID,
 														  VALID_FROM, VALID_TO, ACCT_ID, USER_ID, strChequeMemo,
 														  (strRecipientUserID.GetLength() > 2) ? &(RECIPIENT_USER_ID) : NULL);
 		
-		if (bIssueCheque)
+		// --------------------------------------------------
+		
+		OTLedger * pInbox	= pAccount->LoadInbox(*pNym);
+		OTLedger * pOutbox	= pAccount->LoadOutbox(*pNym);
+		
+		OTCleanup<OTLedger> theInboxAngel(pInbox);
+		OTCleanup<OTLedger> theOutboxAngel(pOutbox);
+		
+		if (NULL == pInbox)
+		{
+			OTLog::Output(0, "Failed loading inbox!\n");
+			
+			// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+			pNym->AddTransactionNum(*pNym, strServerID, lStoredTransactionNumber, true); // bSave=true								
+		}
+		
+		else if (NULL == pOutbox)
+		{
+			OTLog::Output(0, "Failed loading outbox!\n");
+			
+			// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+			pNym->AddTransactionNum(*pNym, strServerID, lStoredTransactionNumber, true); // bSave=true								
+		}
+		
+		else if (bIssueCheque)
 		{
 			// Create a transaction
 			OTTransaction * pTransaction = OTTransaction::GenerateTransaction (USER_ID, ACCT_ID, SERVER_ID, 
@@ -3342,6 +3433,18 @@ void OT_API::withdrawVoucher(OTIdentifier	& SERVER_ID,
 			pItem->SaveContract();
 			
 			pTransaction->AddItem(*pItem); // the Transaction's destructor will cleanup the item. It "owns" it now.
+			
+			// ---------------------------------------------
+			
+			// BALANCE AGREEMENT 
+			
+			// The item is signed and saved within this call as well. No need to do that again.
+			OTItem * pBalanceItem = pInbox->GenerateBalanceStatement(lAmount*(-1), *pTransaction, *pNym, *pAccount, *pOutbox);
+			
+			if (NULL != pBalanceItem)
+				pTransaction->AddItem(*pBalanceItem); // Better not be NULL... message will fail... But better check anyway.
+			
+			// ---------------------------------------------
 			
 			// sign the transaction
 			pTransaction->SignContract(*pNym);
@@ -3525,46 +3628,83 @@ void OT_API::depositCheque(OTIdentifier	& SERVER_ID,
 		// the Transaction "owns" the item now and will handle cleaning it up.
 		pTransaction->AddItem(*pItem); // the Transaction's destructor will cleanup the item. It "owns" it now.
 		
-		// sign the transaction
-		pTransaction->SignContract(*pNym);
-		pTransaction->SaveContract();
+		// ---------------------------------------------
 		
-		// set up the ledger
-		OTLedger theLedger(USER_ID, ACCT_ID, SERVER_ID);
-		theLedger.GenerateLedger(ACCT_ID, SERVER_ID, OTLedger::message); // bGenerateLedger defaults to false, which is correct.
-		theLedger.AddTransaction(*pTransaction); // now the ledger "owns" and will handle cleaning up the transaction.
+		OTLedger * pInbox	= pAccount->LoadInbox(*pNym);
+		OTLedger * pOutbox	= pAccount->LoadOutbox(*pNym);
 		
-		// sign the ledger
-		theLedger.SignContract(*pNym);
-		theLedger.SaveContract();
+		OTCleanup<OTLedger> theInboxAngel(pInbox);
+		OTCleanup<OTLedger> theOutboxAngel(pOutbox);
 		
-		// extract the ledger in ascii-armored form... encoding...
-		OTString		strLedger(theLedger);
-		OTASCIIArmor	ascLedger(strLedger);
+		if (NULL == pInbox)
+		{
+			OTLog::Output(0, "Failed loading inbox!\n");
+			
+			// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+			pNym->AddTransactionNum(*pNym, strServerID, lStoredTransactionNumber, true); // bSave=true								
+		}
 		
-		// (0) Set up the REQUEST NUMBER and then INCREMENT IT
-		pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
-		theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
-		pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
-		
-		// (1) Set up member variables 
-		theMessage.m_strCommand			= "notarizeTransactions";
-		theMessage.m_strNymID			= strNymID;
-		theMessage.m_strServerID		= strServerID;
-		theMessage.m_strAcctID			= strFromAcct;
-		theMessage.m_ascPayload			= ascLedger;
-		
-		// (2) Sign the Message 
-		theMessage.SignContract(*pNym);		
-		
-		// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
-		theMessage.SaveContract();
-		
-		// (Send it)
+		else if (NULL == pOutbox)
+		{
+			OTLog::Output(0, "Failed loading outbox!\n");
+			
+			// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+			pNym->AddTransactionNum(*pNym, strServerID, lStoredTransactionNumber, true); // bSave=true				
+		}
+		else 
+		{
+			// BALANCE AGREEMENT 
+			// ---------------------------------------------
+			
+			// pBalanceItem is signed and saved within this call. No need to do that twice.
+			OTItem * pBalanceItem = pInbox->GenerateBalanceStatement(theCheque.GetAmount(), *pTransaction, *pNym, *pAccount, *pOutbox);
+			
+			if (NULL != pBalanceItem) // will never be NULL. Will assert above before it gets here.
+				pTransaction->AddItem(*pBalanceItem); // Better not be NULL... message will fail... But better check anyway.
+			
+			// ---------------------------------------------
+			
+			// sign the transaction
+			pTransaction->SignContract(*pNym);
+			pTransaction->SaveContract();
+			
+			// set up the ledger
+			OTLedger theLedger(USER_ID, ACCT_ID, SERVER_ID);
+			theLedger.GenerateLedger(ACCT_ID, SERVER_ID, OTLedger::message); // bGenerateLedger defaults to false, which is correct.
+			theLedger.AddTransaction(*pTransaction); // now the ledger "owns" and will handle cleaning up the transaction.
+			
+			// sign the ledger
+			theLedger.SignContract(*pNym);
+			theLedger.SaveContract();
+			
+			// extract the ledger in ascii-armored form... encoding...
+			OTString		strLedger(theLedger);
+			OTASCIIArmor	ascLedger(strLedger);
+			
+			// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+			pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
+			theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+			pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
+			
+			// (1) Set up member variables 
+			theMessage.m_strCommand			= "notarizeTransactions";
+			theMessage.m_strNymID			= strNymID;
+			theMessage.m_strServerID		= strServerID;
+			theMessage.m_strAcctID			= strFromAcct;
+			theMessage.m_ascPayload			= ascLedger;
+			
+			// (2) Sign the Message 
+			theMessage.SignContract(*pNym);		
+			
+			// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+			theMessage.SaveContract();
+			
+			// (Send it)
 #if defined(OT_XMLRPC_MODE)
-		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+			m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
 #endif	
-		m_pClient->ProcessMessageOut(theMessage);	
+			m_pClient->ProcessMessageOut(theMessage);
+		}
 	} // bSuccess
 	else 
 	{
@@ -3750,6 +3890,17 @@ void OT_API::depositPaymentPlan(const OTIdentifier	& SERVER_ID,
 		
 		// the Transaction "owns" the item now and will handle cleaning it up.
 		pTransaction->AddItem(*pItem); // the Transaction's destructor will cleanup the item. It "owns" it now.
+		
+		// ---------------------------------------------
+		// TRANSACTION AGREEMENT
+		
+		// pBalanceItem is signed and saved within this call. No need to do that again.
+		OTItem * pStatementItem = pNym->GenerateTransactionStatement(*pTransaction);
+		
+		if (NULL != pStatementItem) // will never be NULL. Will assert above before it gets here.
+			pTransaction->AddItem(*pStatementItem); // Better not be NULL... message will fail... But better check anyway.
+		
+		// ---------------------------------------------		
 		
 		// sign the transaction
 		pTransaction->SignContract(*pNym);
@@ -4003,6 +4154,17 @@ void OT_API::issueMarketOffer(const OTIdentifier	& SERVER_ID,
 			// the Transaction "owns" the item now and will handle cleaning it up.
 			pTransaction->AddItem(*pItem); // the Transaction's destructor will cleanup the item. It "owns" it now.
 			
+			// ---------------------------------------------
+			// TRANSACTION AGREEMENT
+			
+			// pBalanceItem is signed and saved within this call. No need to do that again.
+			OTItem * pStatementItem = pNym->GenerateTransactionStatement(*pTransaction);
+			
+			if (NULL != pStatementItem) // will never be NULL. Will assert above before it gets here.
+				pTransaction->AddItem(*pStatementItem); // Better not be NULL... message will fail... But better check anyway.
+			
+			// ---------------------------------------------
+			
 			// sign the transaction
 			pTransaction->SignContract(*pNym);
 			pTransaction->SaveContract();
@@ -4147,61 +4309,118 @@ void OT_API::notarizeTransfer(OTIdentifier	& SERVER_ID,
 		pItem->SignContract(*pNym);
 		pItem->SaveContract();
 		
-		
 		pTransaction->AddItem(*pItem); // the Transaction's destructor will cleanup the item. It "owns" it now.
 		
-		// sign the transaction
-		pTransaction->SignContract(*pNym);
-		pTransaction->SaveContract();
+		// --------------------------------------------------
 		
+		OTLedger * pInbox	= pAccount->LoadInbox(*pNym);
+		OTLedger * pOutbox	= pAccount->LoadOutbox(*pNym);
 		
-		// set up the ledger
-		OTLedger theLedger(USER_ID, ACCT_FROM, SERVER_ID);
-		theLedger.GenerateLedger(ACCT_FROM, SERVER_ID, OTLedger::message); // bGenerateLedger defaults to false, which is correct.
-		theLedger.AddTransaction(*pTransaction);
+		OTCleanup<OTLedger> theInboxAngel(pInbox);
+		OTCleanup<OTLedger> theOutboxAngel(pOutbox);
 		
-		// sign the ledger
-		theLedger.SignContract(*pNym);
-		theLedger.SaveContract();
+		if (NULL == pInbox)
+		{
+			OTLog::Output(0, "Failed loading inbox!\n");
+			
+			// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+			pNym->AddTransactionNum(*pNym, strServerID, lStoredTransactionNumber, true); // bSave=true				
+		}
 		
-		// extract the ledger in ascii-armored form
-		OTString		strLedger(theLedger);
-		OTASCIIArmor	ascLedger;
+		else if (NULL == pOutbox)
+		{
+			OTLog::Output(0, "Failed loading outbox!\n");
+			
+			// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+			pNym->AddTransactionNum(*pNym, strServerID, lStoredTransactionNumber, true); // bSave=true				
+		}
 		
-		// Encoding...
-		ascLedger.SetString(strLedger);
-		
-		
-		// (0) Set up the REQUEST NUMBER and then INCREMENT IT
-		pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
-		theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
-		pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
-		
-		// (1) Set up member variables 
-		theMessage.m_strCommand			= "notarizeTransactions";
-		theMessage.m_strNymID			= strNymID;
-		theMessage.m_strServerID		= strServerID;
-		theMessage.m_strAcctID			= strFromAcct;
-		theMessage.m_ascPayload			= ascLedger;
-		
-		// (2) Sign the Message 
-		theMessage.SignContract(*pNym);		
-		
-		// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
-		theMessage.SaveContract();
+		else 
+		{
+			// Need to setup a dummy outbox transaction (to mimic the one that will be on the server side when this pending transaction is actually put into the real outbox.)
+			// When the server adds its own, and then compares the two, they should both show the same pending transaction, in order for this balance agreement to be valid..
+			// Otherwise the server would have to refuse it for being inaccurate (server can't sign something inaccurate!) So I throw a dummy on there before generating balance statement.
+			
+			OTTransaction * pOutboxTransaction	= OTTransaction::GenerateTransaction(*pOutbox, OTTransaction::pending,
+																					 1/*todo pick some number that everyone agrees doesn't matter, like 1. The referring-to is the important 
+																					   number in this case, and perhaps server should update this value too before signing and returning.*/); // todo use a constant instead of '1'
+			
+			OT_ASSERT(NULL != pOutboxTransaction); // for now.
+			
+			OTString strItem(*pItem);
+			pOutboxTransaction->SetReferenceString(strItem); // So the GenerateBalanceStatement function below can get the other info off this item (like amount, etc)
+			pOutboxTransaction->SetReferenceToNum(pItem->GetTransactionNum());
+			
+//			pOutboxTransaction->SignContract(*pNym);	// Unnecessary to sign/save, since this is just a dummy data for verification
+//			pOutboxTransaction->SaveContract();			// purposes, and isn't being serialized anywhere.
+			
+			pOutbox->AddTransaction(*pOutboxTransaction);  // no need to cleanup pOutboxTransaction since pOutbox will handle it now.
+			
+			// ---------------------------------------------
+			// BALANCE AGREEMENT 
 
-		// (Send it)
-#if defined(OT_XMLRPC_MODE)
-		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
-#endif	
-		m_pClient->ProcessMessageOut(theMessage);	
+			// pBalanceItem is signed and saved within this call. No need to do that twice.
+			//
+			OTItem * pBalanceItem = pInbox->GenerateBalanceStatement(atol(AMOUNT.Get())*(-1), *pTransaction, *pNym, *pAccount, *pOutbox);				
+			
+			if (NULL != pBalanceItem) // will never be NULL. Will assert above before it gets here.
+				pTransaction->AddItem(*pBalanceItem); // Better not be NULL... message will fail... But better check anyway.
+			
+			// ---------------------------------------------
+			
+			// sign the transaction
+			pTransaction->SignContract(*pNym);
+			pTransaction->SaveContract();
+			
+			// set up the ledger
+			OTLedger theLedger(USER_ID, ACCT_FROM, SERVER_ID);
+			theLedger.GenerateLedger(ACCT_FROM, SERVER_ID, OTLedger::message); // bGenerateLedger defaults to false, which is correct.
+			theLedger.AddTransaction(*pTransaction);
+			
+			// sign the ledger
+			theLedger.SignContract(*pNym);
+			theLedger.SaveContract();
+			
+			// extract the ledger in ascii-armored form
+			OTString		strLedger(theLedger);
+			OTASCIIArmor	ascLedger;
+			
+			// Encoding...
+			ascLedger.SetString(strLedger);
+			
+			
+			// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+			pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
+			theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+			pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
+			
+			// (1) Set up member variables 
+			theMessage.m_strCommand			= "notarizeTransactions";
+			theMessage.m_strNymID			= strNymID;
+			theMessage.m_strServerID		= strServerID;
+			theMessage.m_strAcctID			= strFromAcct;
+			theMessage.m_ascPayload			= ascLedger;
+			
+			// (2) Sign the Message 
+			theMessage.SignContract(*pNym);		
+			
+			// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+			theMessage.SaveContract();
+
+			// (Send it)
+	#if defined(OT_XMLRPC_MODE)
+			m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+	#endif	
+			m_pClient->ProcessMessageOut(theMessage);	
+		}
 	}
 	else 
 	{
 		OTLog::Output(0, "No transaction numbers were available. Suggest requesting the server for one.\n");
 		
 		// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
-		pNym->AddTransactionNum(*pNym, strServerID, lStoredTransactionNumber, true); // bSave=true								
+//		pNym->AddTransactionNum(*pNym, strServerID, lStoredTransactionNumber, true); // bSave=true	
+		// Duh! No need to re-add a transaction num when the error is that there weren't any transaction numbers...
 	}	
 }
 
@@ -4224,7 +4443,6 @@ void OT_API::getNymbox(OTIdentifier & SERVER_ID,
 		
 		return;
 	}
-	
 	
 	// -----------------------------------------------------
 	
@@ -5136,7 +5354,7 @@ void OT_API::checkUser(OTIdentifier & SERVER_ID,
 	
 	OTMessage theMessage;
 	long lRequestNumber = 0;
-
+	
 	OTString strServerID(SERVER_ID), strNymID(USER_ID), strNymID2(USER_ID_CHECK);
 	
 	// (0) Set up the REQUEST NUMBER and then INCREMENT IT
@@ -5155,7 +5373,7 @@ void OT_API::checkUser(OTIdentifier & SERVER_ID,
 	
 	// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
 	theMessage.SaveContract();
-		
+	
 	// (Send it)
 #if defined(OT_XMLRPC_MODE)
 	// -----------------------------------------------------------------
@@ -5173,6 +5391,95 @@ void OT_API::checkUser(OTIdentifier & SERVER_ID,
 #endif	
 	m_pClient->ProcessMessageOut(theMessage);
 }
+
+
+
+void OT_API::sendUserMessage(OTIdentifier	& SERVER_ID,
+							 OTIdentifier	& USER_ID,
+							 OTIdentifier	& USER_ID_RECIPIENT,
+							 OTASCIIArmor	& RECIPIENT_PUBKEY,
+							 OTString		& THE_MESSAGE)
+{	
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = m_pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		m_pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	
+	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
+	
+	if (!pServer)
+	{
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
+		
+		return;
+	}
+	
+	// -----------------------------------------------------
+	
+	OTMessage theMessage;
+	long lRequestNumber = 0;
+	
+	OTString strServerID(SERVER_ID), strNymID(USER_ID), strNymID2(USER_ID_RECIPIENT);
+	
+	// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+	pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
+	theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+	pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
+	
+	// (1) set up member variables 
+	theMessage.m_strCommand			= "sendUserMessage";
+	theMessage.m_strNymID			= strNymID;
+	theMessage.m_strNymID2			= strNymID2;
+	theMessage.m_strServerID		= strServerID;
+	
+	OTEnvelope theEnvelope;
+	OTAsymmetricKey thePubkey;
+	
+	if (!thePubkey.SetPublicKey(RECIPIENT_PUBKEY))
+	{
+		OTLog::Output(0, "Failed setting public key.\n");
+	}
+	else if (THE_MESSAGE.Exists() && 
+			 theEnvelope.Seal(thePubkey, THE_MESSAGE) &&
+			 theEnvelope.GetAsciiArmoredData(theMessage.m_ascPayload))
+	{
+		// (2) Sign the Message 
+		theMessage.SignContract(*pNym);		
+		
+		// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+		theMessage.SaveContract();
+		
+		// (Send it)
+#if defined(OT_XMLRPC_MODE)
+		// -----------------------------------------------------------------
+		
+		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#endif	
+		m_pClient->ProcessMessageOut(theMessage);
+	}
+	else
+	{
+		OTLog::Output(0, "Failed sealing envelope.\n");
+	}	
+}
+
+
 
 
 void OT_API::createUserAccount(OTIdentifier	& SERVER_ID,

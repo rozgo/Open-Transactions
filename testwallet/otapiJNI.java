@@ -57,6 +57,7 @@ class otapiJNI {
   public final static native String OT_API_Ledger_GetTransactionIDByIndex(String jarg1, String jarg2, String jarg3, String jarg4, int jarg5);
   public final static native String OT_API_Ledger_AddTransaction(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5);
   public final static native String OT_API_Transaction_CreateResponse(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5, int jarg6);
+  public final static native String OT_API_Ledger_FinalizeResponse(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5, int jarg6);
   public final static native String OT_API_Transaction_GetType(String jarg1, String jarg2, String jarg3, String jarg4);
   public final static native String OT_API_Transaction_GetVoucher(String jarg1, String jarg2, String jarg3, String jarg4);
   public final static native int OT_API_Transaction_GetSuccess(String jarg1, String jarg2, String jarg3, String jarg4);
@@ -69,6 +70,7 @@ class otapiJNI {
   public final static native void OT_API_checkServerID(String jarg1, String jarg2);
   public final static native void OT_API_createUserAccount(String jarg1, String jarg2);
   public final static native void OT_API_checkUser(String jarg1, String jarg2, String jarg3);
+  public final static native void OT_API_sendUserMessage(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5);
   public final static native void OT_API_getRequest(String jarg1, String jarg2);
   public final static native void OT_API_getTransactionNumber(String jarg1, String jarg2);
   public final static native void OT_API_issueAssetType(String jarg1, String jarg2, String jarg3);

@@ -647,6 +647,28 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 
 
 
+/// -------------------------------------------------------------------------
+/// (Response Ledger) LEDGER FINALIZE RESPONSE
+///
+/// AFTER you have set up all the transaction responses, call THIS function
+/// to finalize them by adding a BALANCE AGREEMENT.
+///
+/// MAKE SURE you have the latest copy of the account file, inbox file, and
+/// outbox file, since we will need those in here to create the balance statement
+/// properly.
+///
+/// (Client software may wish to check those things, when downloaded, against
+/// the local copies and the local signed receipts. In this way, clients can
+/// protect themselves against malicious servers.)
+///
+const char * OT_API_Ledger_FinalizeResponse(const char * SERVER_ID,
+											const char * USER_ID,
+											const char * ACCOUNT_ID,
+											const char * THE_LEDGER, // 'Response' ledger be sent to the server...
+											const char * THE_TRANSACTION, // Responding to...?
+											int BOOL_DO_I_ACCEPT);   // 0 or 1  (OT_TRUE or OT_FALSE.)
+
+
 // --------------------------------------------------------------------
 /// Get Transaction Type  (internally uses GetTransactionTypeString().)
 //
@@ -868,6 +890,26 @@ void OT_API_createUserAccount(const char * SERVER_ID,
 void OT_API_checkUser(const char * SERVER_ID,
 					  const char * USER_ID,
 					  const char * USER_ID_CHECK);
+
+// --------------------------------------------------------------------
+/**
+ SEND USER MESSAGE --- (Send a message to another user, encrypted to his pubkey.)
+ 
+ ServerID -- Must be included with every message.
+ USER_ID  -- You must include your own userID so the server can reply.
+ USER_ID_RECIPIENT -- This is a recipient user ID.
+ RECIPIENT_PUBKEY -- Recipient's public key in base64-encoded form.
+ THE_MESSAGE -- plaintext message you want to send. A cheque? Some cash? A note? Etc.
+ 
+ In this message, you are requesting the server to send a message to
+ another user, encrypted to his public key and dropped in his nymbox.
+  
+ */
+void OT_API_sendUserMessage(const char * SERVER_ID,
+							const char * USER_ID,
+							const char * USER_ID_RECIPIENT,
+							const char * RECIPIENT_PUBKEY,
+							const char * THE_MESSAGE);
 
 // --------------------------------------------------------------------
 /**

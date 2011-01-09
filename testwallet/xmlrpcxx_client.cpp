@@ -950,6 +950,25 @@ int main(int argc, char* argv[])
 				// ------------------------------------------------------------------------
 			}
 			
+			// sendUserMessage
+			else if (buf[0] == 's')
+			{
+				OTLog::Output(0, "(User has instructed to send a sendUserMessage command to the server...)\n");
+				
+				// ------------------------------------------------------------------------------			
+				// if successful setting up the command payload...
+				
+				if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::sendUserMessage, theMessage, 
+															 *g_pTemporaryNym, *pServerContract,
+															 NULL)) // NULL pAccount on this command.
+				{
+					bSendCommand = true;
+				}
+				else
+					OTLog::vError("Error processing sendUserMessage command in ProcessMessage: %c\n", buf[0]);
+				// ------------------------------------------------------------------------
+			}
+			
 			// register new asset account 
 			else if (buf[0] == 'a')
 			{

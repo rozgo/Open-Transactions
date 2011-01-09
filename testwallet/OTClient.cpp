@@ -231,6 +231,9 @@ void OTClient::AcceptEntireNymbox(OTLedger & theNymbox, OTServerConnection & the
 				// sign the item
 				pAcceptItem->SignContract(*pNym);
 				pAcceptItem->SaveContract();
+				
+				OTLog::vOutput(0, "Received an encrypted message in your Nymbox:\n%s\n", strRespTo.Get());
+				
 			} // if message
 			
 			else if (
@@ -810,6 +813,9 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 			switch (pTransaction->GetType()) 
 			{
 			// ----------------------------------------
+				case OTTransaction::atDeposit:
+				case OTTransaction::atWithdrawal:
+					break;
 				case OTTransaction::atTransfer:
 					theItemType = OTItem::atTransfer;
 					break;
@@ -820,6 +826,7 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 					theItemType = OTItem::atPaymentPlan;
 					break;
 				default:
+				case OTTransaction::atProcessInbox: // not handled here...
 					continue;
 			}
 			
@@ -836,10 +843,13 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 					ProcessWithdrawalResponse(*pTransaction, theConnection, theReply);
 					pNym->RemoveIssuedNum(*pNym, strServerID, pTransaction->GetTransactionNum(), true); // bool bSave=true	
 					break;
+					
 				// ---------------------------------------
+				
 				case OTTransaction::atTransfer:
 				case OTTransaction::atMarketOffer:
 				case OTTransaction::atPaymentPlan:
+					
 					// Nothing removed here since the transaction number is still in play, in these cases.
 					// ACTUALLY, if these are a failure, we need to REMOVE from issued list.
 					// But if success, the number stays in play until a later time.
@@ -857,7 +867,6 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 				}
 					break;
 					
-				case OTTransaction::atProcessInbox: // not handled here...
 				default: 
 					// Error
 					OTLog::vError("OTClient::ProcessIncomingTransactions: wrong transaction type: %s\n",
@@ -2377,6 +2386,96 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	// order to thwart would-be attackers who cannot break the crypto, but try to capture encrypted messages and
 	// send them to the server twice. Better that new requests requre new request numbers :-)
 	
+	else if (OTClient::sendUserMessage == requestedCommand) // SEND USER MESSAGE
+	{
+		OTLog::Output(0, "Please enter a NymID (for recipient): ");
+		
+		// User input.
+		// I need a second NymID, so I allow the user to enter it here.
+		OTString strNymID2;
+		strNymID2.OTfgets(std::cin);
+		
+		// -----------------------------------
+		
+		OTLog::Output(0, "Enter recipient's public key:\n> ");
+		
+		OTASCIIArmor theArmoredText;
+		char decode_buffer[200]; // Safe since we only read sizeof - 1.
+		
+		do {
+			decode_buffer[0] = 0;
+			if (NULL != fgets(decode_buffer, sizeof(decode_buffer)-1, stdin))
+			{
+				theArmoredText.Concatenate("%s\n", decode_buffer);
+				OTLog::Output(0, "> ");
+			}
+			else 
+			{
+				break;
+			}
+			
+		} while (strlen(decode_buffer)>1);
+				
+		// ----------------------------------------
+		
+		decode_buffer[0] = '\0';
+		OTString strPlaintext;
+		
+		OTLog::Output(0, "Please enter a plaintext message, terminate with ~ on a new line:\n> ");
+		
+		do {
+			fgets(decode_buffer, sizeof(decode_buffer), stdin);
+			
+			if (decode_buffer[0] != '~')
+			{
+				strPlaintext.Concatenate("%s", decode_buffer);
+				OTLog::Output(0, "> ");
+			}
+		} while (decode_buffer[0] != '~');
+		
+		// -----------------------------------
+		
+		// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+		theNym.GetCurrentRequestNum(strServerID, lRequestNumber);
+		theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+		theNym.IncrementRequestNum(theNym, strServerID); // since I used it for a server request, I have to increment it
+		
+//		OTLog::vError("DEBUG: Sending request number: %ld\n", lRequestNumber);
+			
+		// (1) set up member variables 
+		theMessage.m_strCommand			= "sendUserMessage";
+		theMessage.m_strNymID			= strNymID;
+		theMessage.m_strNymID2			= strNymID2;
+		theMessage.m_strServerID		= strServerID;
+		
+		OTEnvelope theEnvelope;
+		OTAsymmetricKey thePubkey;
+		
+		if (theArmoredText.Exists() && !thePubkey.SetPublicKey(theArmoredText))
+		{
+			OTLog::Output(0, "Failed setting public key.\n");
+		}
+		else if (strPlaintext.Exists() && 
+				 theEnvelope.Seal(thePubkey, strPlaintext) &&
+				 theEnvelope.GetAsciiArmoredData(theMessage.m_ascPayload))
+		{
+			// (2) Sign the Message 
+			theMessage.SignContract(theNym);		
+			
+			// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+			theMessage.SaveContract();
+			
+			// (Send it)
+			bSendCommand = true;
+		}
+		else
+		{
+			OTLog::Output(0, "Failed sealing envelope.\n");
+		}	
+	}
+	
+	// ------------------------------------------------------------------------
+	
 	else if (OTClient::checkUser == requestedCommand) // CHECK USER
 	{
 		OTLog::Output(0, "Please enter a NymID: ");
@@ -2390,8 +2489,8 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		theNym.GetCurrentRequestNum(strServerID, lRequestNumber);
 		theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
 		theNym.IncrementRequestNum(theNym, strServerID); // since I used it for a server request, I have to increment it
-
-//		OTLog::vError("DEBUG: Sending request number: %ld\n", lRequestNumber);
+		
+		//		OTLog::vError("DEBUG: Sending request number: %ld\n", lRequestNumber);
 		
 		// (1) set up member variables 
 		theMessage.m_strCommand			= "checkUser";
@@ -3709,11 +3808,17 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 				
 				bSendCommand = true;
 			}
+			else 
+			{
+				// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
+				theNym.AddTransactionNum(theNym, strServerID, lStoredTransactionNumber, true); // bSave=true
+			}
+
 		}
-		else {
+		else 
+		{
 			OTLog::Output(0, "No Transaction Numbers were available. Suggest requesting the server for a new one.\n");
 		}
-		
 	}
 	
 	// ------------------------------------------------------------------------
@@ -3751,7 +3856,8 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 		OTString strAmount;
 		strAmount.OTfgets(std::cin);
 		
-		long lAmount = atol(strAmount.Get());
+		const	long lTotalAmount	= atol(strAmount.Get());
+				long lAmount		= lTotalAmount;
 		
 		OTIdentifier ACCT_FROM_ID(strFromAcct), SERVER_ID(strServerID), USER_ID(theNym);
 		
@@ -3784,7 +3890,7 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			
 			// set up the transaction item (each transaction may have multiple items...)
 			OTItem * pItem		= OTItem::CreateItemFromTransaction(*pTransaction, OTItem::withdrawal);
-			pItem->SetAmount(lAmount);
+			pItem->SetAmount(lTotalAmount);
 	//		pItem->m_lAmount	= atol(strAmount.Get());
 			OTString strNote("Gimme cash!");
 			pItem->SetNote(strNote);
@@ -3887,12 +3993,11 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 				
 				pTransaction->AddItem(*pItem); // the Transaction's destructor will cleanup the item. It "owns" it now.
 				
-				
 				// ---------------------------------------------
 				// BALANCE AGREEMENT
 				
 				// pBalanceItem is signed and saved within this call. No need to do that again.
-				OTItem * pBalanceItem = pInbox->GenerateBalanceStatement(lAmount*(-1), *pTransaction, theNym, *pAccount, *pOutbox);
+				OTItem * pBalanceItem = pInbox->GenerateBalanceStatement(lTotalAmount*(-1), *pTransaction, theNym, *pAccount, *pOutbox);
 				
 				if (NULL != pBalanceItem) // will never be NULL. Will assert above before it gets here.
 					pTransaction->AddItem(*pBalanceItem); // Better not be NULL... message will fail... But better check anyway.

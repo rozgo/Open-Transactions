@@ -256,6 +256,14 @@
   (ORIGINAL_TRANSACTION :string)
   (BOOL_DO_I_ACCEPT :int))
 
+(cffi:defcfun ("OT_API_Ledger_FinalizeResponse" OT_API_Ledger_FinalizeResponse) :string
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (ACCOUNT_ID :string)
+  (THE_LEDGER :string)
+  (THE_TRANSACTION :string)
+  (BOOL_DO_I_ACCEPT :int))
+
 (cffi:defcfun ("OT_API_Transaction_GetType" OT_API_Transaction_GetType) :string
   (SERVER_ID :string)
   (USER_ID :string)
@@ -321,6 +329,13 @@
   (SERVER_ID :string)
   (USER_ID :string)
   (USER_ID_CHECK :string))
+
+(cffi:defcfun ("OT_API_sendUserMessage" OT_API_sendUserMessage) :void
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (USER_ID_RECIPIENT :string)
+  (RECIPIENT_PUBKEY :string)
+  (THE_MESSAGE :string))
 
 (cffi:defcfun ("OT_API_getRequest" OT_API_getRequest) :void
   (SERVER_ID :string)

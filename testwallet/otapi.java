@@ -204,6 +204,10 @@ public class otapi {
     return otapiJNI.OT_API_Transaction_CreateResponse(SERVER_ID, USER_ID, ACCOUNT_ID, RESPONSE_LEDGER, ORIGINAL_TRANSACTION, BOOL_DO_I_ACCEPT);
   }
 
+  public static String OT_API_Ledger_FinalizeResponse(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_LEDGER, String THE_TRANSACTION, int BOOL_DO_I_ACCEPT) {
+    return otapiJNI.OT_API_Ledger_FinalizeResponse(SERVER_ID, USER_ID, ACCOUNT_ID, THE_LEDGER, THE_TRANSACTION, BOOL_DO_I_ACCEPT);
+  }
+
   public static String OT_API_Transaction_GetType(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
     return otapiJNI.OT_API_Transaction_GetType(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
   }
@@ -250,6 +254,10 @@ public class otapi {
 
   public static void OT_API_checkUser(String SERVER_ID, String USER_ID, String USER_ID_CHECK) {
     otapiJNI.OT_API_checkUser(SERVER_ID, USER_ID, USER_ID_CHECK);
+  }
+
+  public static void OT_API_sendUserMessage(String SERVER_ID, String USER_ID, String USER_ID_RECIPIENT, String RECIPIENT_PUBKEY, String THE_MESSAGE) {
+    otapiJNI.OT_API_sendUserMessage(SERVER_ID, USER_ID, USER_ID_RECIPIENT, RECIPIENT_PUBKEY, THE_MESSAGE);
   }
 
   public static void OT_API_getRequest(String SERVER_ID, String USER_ID) {

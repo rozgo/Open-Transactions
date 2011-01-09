@@ -894,14 +894,34 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 			// if successful setting up the command payload...
 			
 			if (m_pClient->ProcessUserCommand(OTClient::checkUser, theMessage, 
-											*m_pNym, *m_pServerContract,
-											NULL)) // NULL pAccount on this command.
+											  *m_pNym, *m_pServerContract,
+											  NULL)) // NULL pAccount on this command.
 			{
 				bSendCommand = true;
 				bSendPayload = true;				
 			}
 			else
 				OTLog::vError("Error processing checkUser command in ProcessMessage: %c\n", buf[0]);
+			// ------------------------------------------------------------------------
+		}
+		
+		// sendUserMessage
+		else if (buf[0] == 's')
+		{
+			OTLog::Output(0, "(User has instructed to send a sendUserMessage command to the server...)\n");
+			
+			// ------------------------------------------------------------------------------			
+			// if successful setting up the command payload...
+			
+			if (m_pClient->ProcessUserCommand(OTClient::sendUserMessage, theMessage, 
+											  *m_pNym, *m_pServerContract,
+											  NULL)) // NULL pAccount on this command.
+			{
+				bSendCommand = true;
+				bSendPayload = true;				
+			}
+			else
+				OTLog::vError("Error processing sendUserMessage command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		

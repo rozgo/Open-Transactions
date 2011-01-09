@@ -331,6 +331,9 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Transaction_CreateResponse")]
   public static extern string OT_API_Transaction_CreateResponse(string jarg1, string jarg2, string jarg3, string jarg4, string jarg5, int jarg6);
 
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Ledger_FinalizeResponse")]
+  public static extern string OT_API_Ledger_FinalizeResponse(string jarg1, string jarg2, string jarg3, string jarg4, string jarg5, int jarg6);
+
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Transaction_GetType")]
   public static extern string OT_API_Transaction_GetType(string jarg1, string jarg2, string jarg3, string jarg4);
 
@@ -366,6 +369,9 @@ class otapiPINVOKE {
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_checkUser")]
   public static extern void OT_API_checkUser(string jarg1, string jarg2, string jarg3);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_sendUserMessage")]
+  public static extern void OT_API_sendUserMessage(string jarg1, string jarg2, string jarg3, string jarg4, string jarg5);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_getRequest")]
   public static extern void OT_API_getRequest(string jarg1, string jarg2);

@@ -7,53 +7,53 @@ Hash: SAMY
  version="1.0"
  serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de" >
 
-<transactionNum value="1515" />
+<transactionNum value="1549" />
 
-<transactionNum value="1516" />
+<transactionNum value="1550" />
 
-<transactionNum value="1517" />
+<transactionNum value="1551" />
 
-<transactionNum value="1518" />
+<transactionNum value="1552" />
 
-<transactionNum value="1519" />
+<transactionNum value="1553" />
 
-<transactionNum value="1520" />
+<transactionNum value="1554" />
 
-<transactionNum value="1521" />
+<transactionNum value="1555" />
 
-<transactionNum value="1522" />
+<transactionNum value="1556" />
 
-<transactionNum value="1523" />
+<transactionNum value="1557" />
 
-<transactionNum value="1524" />
+<transactionNum value="1558" />
 
-<transactionNum value="1525" />
+<transactionNum value="1559" />
 
-<transactionNum value="1526" />
+<transactionNum value="1560" />
 
-<transactionNum value="1527" />
+<transactionNum value="1561" />
 
-<transactionNum value="1528" />
+<transactionNum value="1562" />
 
-<transactionNum value="1529" />
+<transactionNum value="1563" />
 
-<transactionNum value="1530" />
+<transactionNum value="1564" />
 
-<transactionNum value="1531" />
+<transactionNum value="1565" />
 
-<transactionNum value="1532" />
+<transactionNum value="1566" />
 
-<transactionNum value="1533" />
+<transactionNum value="1567" />
 
-<transactionNum value="1534" />
+<transactionNum value="1568" />
 
 </cron>
 -----BEGIN CRON SIGNATURE-----
 Version: Open Transactions 0.42
 Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
 
-bElaIc2WzYPpHpjzvQpdwGdZfUVXh3c/mscpQ16QUWtJrHx6Ug7bAUBZ84NXm6zc
-1L4hxVs23Fka5NCeDxc+yNV9E8l+h+xSxbg4d2abEfnrdedG2z5wnj4gShdl2uRw
-eeh+gOz7gpEiRFRoAPiBVaakkK7Ut1dYpt2oEYyib7Q=
+nwzKNH5hE3VIYmRfmXQAhTmuTfqNK3Q8gFRoWPLim+1oFBJv6q2Tl6DyPZblUvq+
+ZD0woujH93qPw4xFd2nBaFMsg8Njn8O175D8RmcLhRqqNt5s4ZqyeHM8hbbjJS6A
+0vFwzxMaljPzOMggql3h+v7Zs5IvlEetyyLKtNgeGLg=
 -----END CRON SIGNATURE-----
 

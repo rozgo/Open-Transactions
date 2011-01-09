@@ -1288,6 +1288,72 @@ void OTServer::UserCmdGetRequest(OTPseudonym & theNym, OTMessage & MsgIn, OTMess
 
 
 
+void OTServer::UserCmdSendUserMessage(OTPseudonym & theNym, OTMessage & MsgIn, OTMessage & msgOut)
+{
+	long lTransNum = 0;
+	
+	// (1) set up member variables 
+	msgOut.m_strCommand		= "@sendUserMessage";	// reply to sendUserMessage
+	msgOut.m_strNymID		= MsgIn.m_strNymID;	// UserID
+	msgOut.m_strNymID2		= MsgIn.m_strNymID2;// UserID of recipient pubkey
+	msgOut.m_strServerID	= m_strServerID;	// ServerID, a hash of the server contract.
+		
+	bool bGotNextTransNum	= IssueNextTransactionNumber(m_nymServer, lTransNum, false); // bool bStoreTheNumber = false
+
+	OTPseudonym nym2;	
+	nym2.SetIdentifier(MsgIn.m_strNymID2);
+	
+	OTIdentifier RECIPIENT_USER_ID(nym2), SERVER_ID(m_strServerID);
+	
+	OTLedger theLedger(RECIPIENT_USER_ID, RECIPIENT_USER_ID, SERVER_ID);
+
+	OTString strInMessage(MsgIn);
+	msgOut.m_ascInReferenceTo.SetString(strInMessage);
+
+	if (!bGotNextTransNum)
+	{
+		lTransNum = 0;
+		OTLog::Error("Error getting next transaction number in OTServer::UserCmdSendUserMessage\n");
+	}
+	// Drop in the Nymbox 
+	else if (msgOut.m_bSuccess = (theLedger.LoadNymbox() && theLedger.VerifyAccount(m_nymServer)) )
+	{						
+		OTTransaction * pTransaction = OTTransaction::GenerateTransaction(theLedger, OTTransaction::message, lTransNum);
+		
+		if (NULL != pTransaction) // The above has an OT_ASSERT within, but I just like to check my pointers.
+		{			
+			pTransaction->	SetReferenceToNum(lTransNum);		// <====== Recipient RECEIVES entire incoming message as string here, which includes the sender user ID,
+			pTransaction->	SetReferenceString(strInMessage);	// and has an OTEnvelope in the payload. Message is signed by sender, and envelope is encrypted to recipient.
+			
+			pTransaction->	SignContract(m_nymServer);
+			pTransaction->	SaveContract();
+			
+			theLedger.AddTransaction(*pTransaction); // Add the message transaction to the nymbox.
+			
+			theLedger.ReleaseSignatures();
+			theLedger.SignContract(m_nymServer);
+			theLedger.SaveContract();
+			theLedger.SaveNymbox();
+
+			msgOut.m_bSuccess = true;
+		}
+		else 
+		{
+			msgOut.m_bSuccess = false;
+		}
+	}	
+		
+	// (2) Sign the Message 
+	msgOut.SignContract(m_nymServer);		
+	
+	// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+	//
+	// FYI, SaveContract takes m_xmlUnsigned and wraps it with the signatures and ------- BEGIN  bookends
+	// If you don't pass a string in, then SaveContract saves the new version to its member, m_strRawFile
+	msgOut.SaveContract();
+}
+
+
 void OTServer::UserCmdCheckUser(OTPseudonym & theNym, OTMessage & MsgIn, OTMessage & msgOut)
 {
 	// (1) set up member variables 
@@ -1295,10 +1361,10 @@ void OTServer::UserCmdCheckUser(OTPseudonym & theNym, OTMessage & MsgIn, OTMessa
 	msgOut.m_strNymID		= MsgIn.m_strNymID;	// UserID
 	msgOut.m_strNymID2		= MsgIn.m_strNymID2;// UserID of public key requested by user.
 	msgOut.m_strServerID	= m_strServerID;	// ServerID, a hash of the server contract.
-
+	
 	OTPseudonym nym2;	
 	nym2.SetIdentifier(MsgIn.m_strNymID2);
-		
+	
 	// If success, we send the Nym2's public key back to the user.
 	if (msgOut.m_bSuccess = nym2.LoadPublicKey())
 	{
@@ -1310,7 +1376,7 @@ void OTServer::UserCmdCheckUser(OTPseudonym & theNym, OTMessage & MsgIn, OTMessa
 		OTString tempInMessage(MsgIn);
 		msgOut.m_ascInReferenceTo.SetString(tempInMessage);
 	}
-
+	
 	// (2) Sign the Message 
 	msgOut.SignContract(m_nymServer);		
 	
@@ -6937,6 +7003,14 @@ bool OTServer::ProcessUserCommand(OTMessage & theMessage, OTMessage & msgOut, OT
 		OTLog::Output(0, "\n==> Received a checkUser message. Processing...\n");
 		
 		UserCmdCheckUser(*pNym, theMessage, msgOut);
+		
+		return true;
+	}
+	else if (theMessage.m_strCommand.Compare("sendUserMessage"))
+	{
+		OTLog::Output(0, "\n==> Received a sendUserMessage message. Processing...\n");
+		
+		UserCmdSendUserMessage(*pNym, theMessage, msgOut);
 		
 		return true;
 	}
