@@ -759,13 +759,17 @@ OTItem * OTLedger::GenerateBalanceStatement(const long lAdjustment, const OTTran
 	// (So the balance item contains a complete report on the receipts in this inbox.)
 	OTTransaction * pTransaction = NULL;
 	
+	OTLog::Output(1, "About to loop through the inbox items and produce a report for each one...\n");
+	
 	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); 
 		 ii != m_mapTransactions.end(); ++ii)
 	{
 		pTransaction = (*ii).second;
 		
 		OT_ASSERT(NULL != pTransaction);
-		
+
+		OTLog::Output(1, "Producing a report...\n");
+
 		// it only reports receipts where we don't yet have balance agreement.
 		pTransaction->ProduceInboxReportItem(*pBalanceItem);	// <======= This function adds a receipt sub-item to pBalanceItem, where appropriate for INBOX items.
 	}

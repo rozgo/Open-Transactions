@@ -331,6 +331,8 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 	
 	const char * pszLedgerType = NULL;
 
+	OTLog::vOutput(1, "Number of inbox/outbox items on this balance statement: %d\n", GetItemCount());
+	
 	for (int i=0; i < GetItemCount(); i++)
 	{
 		OTItem * pSubItem = GetItem(i);
@@ -350,6 +352,12 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 			case OTItem::transfer:
 				break;
 			default:
+			{
+				OTString strItemType;
+				GetTypeString(strItemType);
+				OTLog::vOutput(1, "OTItem::VerifyBalanceStatement: Ignoring %s item "
+							   "in balance statement while verifying it against inbox.\n", strItemType.Get());
+			}				
 				continue;
 		}
 		
@@ -470,7 +478,12 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 	if ((nInboxItemCount	!= THE_INBOX.GetTransactionCount()) || 
 		(nOutboxItemCount	!= THE_OUTBOX.GetTransactionCount()))
 	{
-		OTLog::Output(0, "OTItem::VerifyBalanceStatement: Inbox or Outbox mismatch in expected transaction count.\n");
+		OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: Inbox or Outbox mismatch in expected transaction count.\n"
+					   " --- THE_INBOX count: %d --- THE_OUTBOX count: %d\n"
+					   "--- nInboxItemCount count: %d --- nOutboxItemCount count: %d\n\n", 
+					   THE_INBOX.GetTransactionCount(), THE_OUTBOX.GetTransactionCount(), 
+					   nInboxItemCount, nOutboxItemCount);
+		
 		return false;
 	}
 	

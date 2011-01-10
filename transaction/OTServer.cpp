@@ -5751,8 +5751,30 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 			
 			OT_ASSERT_MSG(NULL != pItem, "Pointer should not have been NULL.");
 			
-			if ((pItem->GetType() == OTItem::acceptPending) ||
-				(pItem->GetType() == OTItem::acceptItemReceipt))
+			if (pItem->GetType() == OTItem::acceptCronReceipt)
+			{
+				OTTransaction * pServerTransaction = pInbox->GetTransaction(pItem->GetReferenceToNum());
+
+				OTLog::vOutput(0, "Checking server-side inbox for expected cron receipt: %ld... ",
+							   pItem->GetReferenceToNum()); // temp remove
+				
+				if (NULL == pServerTransaction)
+				{
+					bSuccessFindingAllTransactions = false;
+					OTLog::Output(0, "NOT found!\n"); // temp remove
+					break;
+				}
+				else 
+				{
+					OTLog::Output(0, "FOUND!\n"); // temp remove
+					
+					bSuccessFindingAllTransactions = true;
+					
+					pInbox->RemoveTransaction(pServerTransaction->GetTransactionNum());					
+				}					
+			}
+			else if ((pItem->GetType() == OTItem::acceptPending) ||
+					 (pItem->GetType() == OTItem::acceptItemReceipt))
 			{
 				OTTransaction * pServerTransaction = pInbox->GetPendingTransaction(pItem->GetReferenceToNum());
 				

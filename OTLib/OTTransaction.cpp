@@ -559,6 +559,8 @@ void OTTransaction::ProduceInboxReportItem(OTItem & theBalanceItem)
 {	
 	OTItem::itemType theItemType = OTItem::error_state;
 	
+	OTLog::vOutput(1, "Producing statement report item for inbox item type: %s.\n", GetTypeString()); // temp remove.
+	
 	switch (m_Type) 
 	{	// These are the types that have an amount (somehow)
 		case OTTransaction::pending: // the amount is stored on the transfer item in my list.
@@ -571,9 +573,13 @@ void OTTransaction::ProduceInboxReportItem(OTItem & theBalanceItem)
 			theItemType = OTItem::marketReceipt;
 			break;
 		case OTTransaction::paymentReceipt:	// amount is stored on paymentReceipt item
-			theItemType = OTItem::paymentReceipt;
+			theItemType = OTItem::paymentReceipt;			
 			break;
-		default: // All other types are irrelevant for inbox reports 
+		default: // All other types are irrelevant for inbox reports
+		{
+			OTLog::vOutput(1, "OTTransaction::ProduceInboxReportItem: Ignoring %s transaction "
+						   "in inbox while making balance statement.\n", GetTypeString());
+		}
 			return;
 	}	// why not transfer receipt? presumably because the number was already cleared when you first sent it?
 	
