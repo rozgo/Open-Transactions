@@ -1398,7 +1398,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		}
 		else
 			OTLog::Error("Error processing getNymbox command in OTClient::ProcessServerReply\n");
-
+		
 		return true;
 	}
 	else if (theReply.m_bSuccess && theReply.m_strCommand.Compare("@notarizeTransactions"))
@@ -2019,6 +2019,24 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 			theOutbox.SignContract(*pNym);
 			theOutbox.SaveContract();
 			theOutbox.SaveOutbox();
+			
+//#if defined (TEST_CLIENT)
+			OTMessage theMessage;
+			OTAccount * pAccount = NULL;
+			
+			if ( (NULL != (pAccount = m_pWallet->GetAccount(ACCOUNT_ID))) && 
+				ProcessUserCommand(OTClient::getInbox, theMessage, 
+								   *pNym, 
+//								   *(pAssetContract),
+								   *(theConnection.GetServerContract()), 
+								   pAccount)) 
+			{
+				// Sign it and send it out.
+				theConnection.ProcessMessageOut(theMessage);
+			}
+			else
+				OTLog::Error("Error processing getInbox command in OTClient::ProcessServerReply\n");
+//#endif
 		}
 		else 
 		{
@@ -2200,6 +2218,26 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 			if (pWallet = theConnection.GetWallet())
 			{
 				pWallet->AddAccount(*pAccount);
+			
+				// --------------------------------------------------
+
+//#if defined (TEST_CLIENT)
+				OTMessage theMessage;
+				
+				if (ProcessUserCommand(OTClient::getOutbox, theMessage, 
+									   *pNym, 
+//									   *(pAssetContract),
+									   *(theConnection.GetServerContract()), 
+									   pAccount)) 
+				{
+					// Sign it and send it out.
+					theConnection.ProcessMessageOut(theMessage);
+				}
+				else
+					OTLog::Error("Error processing getOutbox command in OTClient::ProcessServerReply\n");
+//#endif			
+				// --------------------------------------------------
+				
 				pAccount = NULL; // Success. The wallet "owns" it now, no need to clean it up.
 			}
 		}
@@ -3232,12 +3270,22 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	
 	else if (OTClient::getInbox == requestedCommand) // GET INBOX
 	{	
-		OTLog::Output(0, "Please enter an account number: ");
-		// User input.
-		// I need an account
 		OTString strAcctID;
-		strAcctID.OTfgets(std::cin);
+		OTIdentifier theAccountID;
 		
+		if (pAccount)
+		{	// set up strAcctID based on pAccount
+			pAccount->GetIdentifier(theAccountID);
+			theAccountID.GetString(strAcctID);
+		}
+		else 
+		{
+			OTLog::Output(0, "Please enter an account number: ");
+			// User input.
+			// I need an account
+			strAcctID.OTfgets(std::cin);
+			theAccountID.SetString(strAcctID);
+		}		
 		
 		// (0) Set up the REQUEST NUMBER and then INCREMENT IT
 		theNym.GetCurrentRequestNum(strServerID, lRequestNumber);
@@ -3263,12 +3311,22 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	
 	else if (OTClient::getOutbox == requestedCommand) // GET OUTBOX
 	{	
-		OTLog::Output(0, "Please enter an account number: ");
-		// User input.
-		// I need an account
 		OTString strAcctID;
-		strAcctID.OTfgets(std::cin);
+		OTIdentifier theAccountID;
 		
+		if (pAccount)
+		{	// set up strAcctID based on pAccount
+			pAccount->GetIdentifier(theAccountID);
+			theAccountID.GetString(strAcctID);
+		}
+		else 
+		{
+			OTLog::Output(0, "Please enter an account number: ");
+			// User input.
+			// I need an account
+			strAcctID.OTfgets(std::cin);
+			theAccountID.SetString(strAcctID);
+		}		
 		
 		// (0) Set up the REQUEST NUMBER and then INCREMENT IT
 		theNym.GetCurrentRequestNum(strServerID, lRequestNumber);
@@ -3338,7 +3396,8 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			pAccount->GetIdentifier(theAccountID);
 			theAccountID.GetString(strAcctID);
 		}
-		else {
+		else 
+		{
 			OTLog::Output(0, "Please enter an account number: ");
 			// User input.
 			// I need an account
@@ -3371,20 +3430,21 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 	else if (OTClient::getAccount == requestedCommand) // GET ACCOUNT
 	{	
 		OTString strAcctID;
+		OTIdentifier theAccountID;
 		
 		if (pAccount)
 		{	// set up strAcctID based on pAccount
-			OTIdentifier theAccountID;
 			pAccount->GetIdentifier(theAccountID);
 			theAccountID.GetString(strAcctID);
 		}
-		else {
+		else 
+		{
 			OTLog::Output(0, "Please enter an account number: ");
 			// User input.
 			// I need an account
 			strAcctID.OTfgets(std::cin);
-		}
-		
+			theAccountID.SetString(strAcctID);
+		}		
 		
 		// (0) Set up the REQUEST NUMBER and then INCREMENT IT
 		theNym.GetCurrentRequestNum(strServerID, lRequestNumber);
