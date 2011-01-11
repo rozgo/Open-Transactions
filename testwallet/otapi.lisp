@@ -261,7 +261,6 @@
   (USER_ID :string)
   (ACCOUNT_ID :string)
   (THE_LEDGER :string)
-  (THE_TRANSACTION :string)
   (BOOL_DO_I_ACCEPT :int))
 
 (cffi:defcfun ("OT_API_Transaction_GetType" OT_API_Transaction_GetType) :string

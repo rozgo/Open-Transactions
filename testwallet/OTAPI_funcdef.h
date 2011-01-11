@@ -665,7 +665,6 @@ const char * OT_API_Ledger_FinalizeResponse(const char * SERVER_ID,
 											const char * USER_ID,
 											const char * ACCOUNT_ID,
 											const char * THE_LEDGER, // 'Response' ledger be sent to the server...
-											const char * THE_TRANSACTION, // Responding to...?
 											int BOOL_DO_I_ACCEPT);   // 0 or 1  (OT_TRUE or OT_FALSE.)
 
 

@@ -256,8 +256,8 @@ public class otapi {
     return ret;
   }
 
-  public static string OT_API_Ledger_FinalizeResponse(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_LEDGER, string THE_TRANSACTION, int BOOL_DO_I_ACCEPT) {
-    string ret = otapiPINVOKE.OT_API_Ledger_FinalizeResponse(SERVER_ID, USER_ID, ACCOUNT_ID, THE_LEDGER, THE_TRANSACTION, BOOL_DO_I_ACCEPT);
+  public static string OT_API_Ledger_FinalizeResponse(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_LEDGER, int BOOL_DO_I_ACCEPT) {
+    string ret = otapiPINVOKE.OT_API_Ledger_FinalizeResponse(SERVER_ID, USER_ID, ACCOUNT_ID, THE_LEDGER, BOOL_DO_I_ACCEPT);
     return ret;
   }
 

@@ -4667,8 +4667,7 @@ SWIGINTERN PyObject *_wrap_OT_API_Ledger_FinalizeResponse(PyObject *SWIGUNUSEDPA
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
   char *arg4 = (char *) 0 ;
-  char *arg5 = (char *) 0 ;
-  int arg6 ;
+  int arg5 ;
   char *result = 0 ;
   int res1 ;
   char *buf1 = 0 ;
@@ -4682,19 +4681,15 @@ SWIGINTERN PyObject *_wrap_OT_API_Ledger_FinalizeResponse(PyObject *SWIGUNUSEDPA
   int res4 ;
   char *buf4 = 0 ;
   int alloc4 = 0 ;
-  int res5 ;
-  char *buf5 = 0 ;
-  int alloc5 = 0 ;
-  int val6 ;
-  int ecode6 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
-  PyObject * obj5 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:OT_API_Ledger_FinalizeResponse",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:OT_API_Ledger_FinalizeResponse",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Ledger_FinalizeResponse" "', argument " "1"" of type '" "char const *""'");
@@ -4715,30 +4710,23 @@ SWIGINTERN PyObject *_wrap_OT_API_Ledger_FinalizeResponse(PyObject *SWIGUNUSEDPA
     SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_Ledger_FinalizeResponse" "', argument " "4"" of type '" "char const *""'");
   }
   arg4 = (char *)(buf4);
-  res5 = SWIG_AsCharPtrAndSize(obj4, &buf5, NULL, &alloc5);
-  if (!SWIG_IsOK(res5)) {
-    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "OT_API_Ledger_FinalizeResponse" "', argument " "5"" of type '" "char const *""'");
-  }
-  arg5 = (char *)(buf5);
-  ecode6 = SWIG_AsVal_int(obj5, &val6);
-  if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "OT_API_Ledger_FinalizeResponse" "', argument " "6"" of type '" "int""'");
+  ecode5 = SWIG_AsVal_int(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "OT_API_Ledger_FinalizeResponse" "', argument " "5"" of type '" "int""'");
   } 
-  arg6 = (int)(val6);
-  result = (char *)OT_API_Ledger_FinalizeResponse((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5,arg6);
+  arg5 = (int)(val5);
+  result = (char *)OT_API_Ledger_FinalizeResponse((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5);
   resultobj = SWIG_FromCharPtr((const char *)result);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
-  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
   return resultobj;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
-  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
   return NULL;
 }
 

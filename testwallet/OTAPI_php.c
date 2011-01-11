@@ -2791,13 +2791,12 @@ ZEND_NAMED_FUNCTION(_wrap_OT_API_Ledger_FinalizeResponse) {
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
   char *arg4 = (char *) 0 ;
-  char *arg5 = (char *) 0 ;
-  int arg6 ;
+  int arg5 ;
   char *result = 0 ;
-  zval **args[6];
+  zval **args[5];
   
   SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 6 || zend_get_parameters_array_ex(6, args) != SUCCESS) {
+  if(ZEND_NUM_ARGS() != 5 || zend_get_parameters_array_ex(5, args) != SUCCESS) {
     WRONG_PARAM_COUNT;
   }
   
@@ -2826,18 +2825,12 @@ ZEND_NAMED_FUNCTION(_wrap_OT_API_Ledger_FinalizeResponse) {
     /*@SWIG@*/;
   }
   {
-    /*@SWIG:CONVERT_STRING_IN@*/
-    convert_to_string_ex(args[4]);
-    arg5 = (char *) Z_STRVAL_PP(args[4]);
-    /*@SWIG@*/;
-  }
-  {
     /*@SWIG:CONVERT_INT_IN@*/
-    convert_to_long_ex(args[5]);
-    arg6 = (int) Z_LVAL_PP(args[5]);
+    convert_to_long_ex(args[4]);
+    arg5 = (int) Z_LVAL_PP(args[4]);
     /*@SWIG@*/;
   }
-  result = (char *)OT_API_Ledger_FinalizeResponse((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5,arg6);
+  result = (char *)OT_API_Ledger_FinalizeResponse((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5);
   {
     if(!result) {
       ZVAL_NULL(return_value);

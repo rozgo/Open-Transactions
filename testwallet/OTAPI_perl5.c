@@ -3776,8 +3776,7 @@ XS(_wrap_OT_API_Ledger_FinalizeResponse) {
     char *arg2 = (char *) 0 ;
     char *arg3 = (char *) 0 ;
     char *arg4 = (char *) 0 ;
-    char *arg5 = (char *) 0 ;
-    int arg6 ;
+    int arg5 ;
     char *result = 0 ;
     int res1 ;
     char *buf1 = 0 ;
@@ -3791,16 +3790,13 @@ XS(_wrap_OT_API_Ledger_FinalizeResponse) {
     int res4 ;
     char *buf4 = 0 ;
     int alloc4 = 0 ;
-    int res5 ;
-    char *buf5 = 0 ;
-    int alloc5 = 0 ;
-    int val6 ;
-    int ecode6 = 0 ;
+    int val5 ;
+    int ecode5 = 0 ;
     int argvi = 0;
     dXSARGS;
     
-    if ((items < 6) || (items > 6)) {
-      SWIG_croak("Usage: OT_API_Ledger_FinalizeResponse(SERVER_ID,USER_ID,ACCOUNT_ID,THE_LEDGER,THE_TRANSACTION,BOOL_DO_I_ACCEPT);");
+    if ((items < 5) || (items > 5)) {
+      SWIG_croak("Usage: OT_API_Ledger_FinalizeResponse(SERVER_ID,USER_ID,ACCOUNT_ID,THE_LEDGER,BOOL_DO_I_ACCEPT);");
     }
     res1 = SWIG_AsCharPtrAndSize(ST(0), &buf1, NULL, &alloc1);
     if (!SWIG_IsOK(res1)) {
@@ -3822,23 +3818,17 @@ XS(_wrap_OT_API_Ledger_FinalizeResponse) {
       SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_Ledger_FinalizeResponse" "', argument " "4"" of type '" "char const *""'");
     }
     arg4 = (char *)(buf4);
-    res5 = SWIG_AsCharPtrAndSize(ST(4), &buf5, NULL, &alloc5);
-    if (!SWIG_IsOK(res5)) {
-      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "OT_API_Ledger_FinalizeResponse" "', argument " "5"" of type '" "char const *""'");
-    }
-    arg5 = (char *)(buf5);
-    ecode6 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(5), &val6);
-    if (!SWIG_IsOK(ecode6)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "OT_API_Ledger_FinalizeResponse" "', argument " "6"" of type '" "int""'");
+    ecode5 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(4), &val5);
+    if (!SWIG_IsOK(ecode5)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "OT_API_Ledger_FinalizeResponse" "', argument " "5"" of type '" "int""'");
     } 
-    arg6 = (int)(val6);
-    result = (char *)OT_API_Ledger_FinalizeResponse((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5,arg6);
+    arg5 = (int)(val5);
+    result = (char *)OT_API_Ledger_FinalizeResponse((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5);
     ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
     if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
     if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
     if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
-    if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
     
     XSRETURN(argvi);
   fail:
@@ -3846,7 +3836,6 @@ XS(_wrap_OT_API_Ledger_FinalizeResponse) {
     if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
     if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
-    if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
     
     SWIG_croak_null();
   }

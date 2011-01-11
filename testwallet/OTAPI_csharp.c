@@ -959,23 +959,21 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Transaction_CreateResponse(char * ja
 }
 
 
-SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Ledger_FinalizeResponse(char * jarg1, char * jarg2, char * jarg3, char * jarg4, char * jarg5, int jarg6) {
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Ledger_FinalizeResponse(char * jarg1, char * jarg2, char * jarg3, char * jarg4, int jarg5) {
   char * jresult ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
   char *arg4 = (char *) 0 ;
-  char *arg5 = (char *) 0 ;
-  int arg6 ;
+  int arg5 ;
   char *result = 0 ;
   
   arg1 = (char *)jarg1; 
   arg2 = (char *)jarg2; 
   arg3 = (char *)jarg3; 
   arg4 = (char *)jarg4; 
-  arg5 = (char *)jarg5; 
-  arg6 = (int)jarg6; 
-  result = (char *)OT_API_Ledger_FinalizeResponse((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5,arg6);
+  arg5 = (int)jarg5; 
+  result = (char *)OT_API_Ledger_FinalizeResponse((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5);
   jresult = SWIG_csharp_string_callback((const char *)result); 
   return jresult;
 }

@@ -1492,14 +1492,13 @@ SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Transaction_1CreateResponse(JN
 }
 
 
-SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Ledger_1FinalizeResponse(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jint jarg6) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Ledger_1FinalizeResponse(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jint jarg5) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
   char *arg4 = (char *) 0 ;
-  char *arg5 = (char *) 0 ;
-  int arg6 ;
+  int arg5 ;
   char *result = 0 ;
   
   (void)jenv;
@@ -1524,19 +1523,13 @@ SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Ledger_1FinalizeResponse(JNIEn
     arg4 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg4, 0);
     if (!arg4) return 0;
   }
-  arg5 = 0;
-  if (jarg5) {
-    arg5 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg5, 0);
-    if (!arg5) return 0;
-  }
-  arg6 = (int)jarg6; 
-  result = (char *)OT_API_Ledger_FinalizeResponse((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5,arg6);
+  arg5 = (int)jarg5; 
+  result = (char *)OT_API_Ledger_FinalizeResponse((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5);
   if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
   if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
   if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, (const char *)arg3);
   if (arg4) (*jenv)->ReleaseStringUTFChars(jenv, jarg4, (const char *)arg4);
-  if (arg5) (*jenv)->ReleaseStringUTFChars(jenv, jarg5, (const char *)arg5);
   return jresult;
 }
 
