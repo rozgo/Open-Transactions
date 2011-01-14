@@ -905,26 +905,6 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 			// ------------------------------------------------------------------------
 		}
 		
-		// sendUserMessage
-		else if (buf[0] == 's')
-		{
-			OTLog::Output(0, "(User has instructed to send a sendUserMessage command to the server...)\n");
-			
-			// ------------------------------------------------------------------------------			
-			// if successful setting up the command payload...
-			
-			if (m_pClient->ProcessUserCommand(OTClient::sendUserMessage, theMessage, 
-											  *m_pNym, *m_pServerContract,
-											  NULL)) // NULL pAccount on this command.
-			{
-				bSendCommand = true;
-				bSendPayload = true;				
-			}
-			else
-				OTLog::vError("Error processing sendUserMessage command in ProcessMessage: %c\n", buf[0]);
-			// ------------------------------------------------------------------------
-		}
-		
 		// register new asset account 
 		else if (buf[0] == 'a')
 		{
@@ -1094,6 +1074,26 @@ void OTServerConnection::ProcessMessageOut(char *buf, int * pnExpectReply)
 				//				bSendCommand = true; // No message sent.
 				//				bSendPayload = true; 
 			}
+			// ------------------------------------------------------------------------
+		}
+		
+		// sendUserMessage
+		else if (buf[0] == 's')
+		{
+			OTLog::Output(0, "(User has instructed to send a sendUserMessage command to the server...)\n");
+			
+			// ------------------------------------------------------------------------------			
+			// if successful setting up the command payload...
+			
+			if (m_pClient->ProcessUserCommand(OTClient::sendUserMessage, theMessage, 
+											  *m_pNym, *m_pServerContract,
+											  NULL)) // NULL pAccount on this command.
+			{
+				bSendCommand = true;
+				bSendPayload = true;				
+			}
+			else
+				OTLog::vError("Error processing sendUserMessage command in ProcessMessage: %c\n", buf[0]);
 			// ------------------------------------------------------------------------
 		}
 		

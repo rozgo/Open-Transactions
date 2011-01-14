@@ -168,105 +168,19 @@ bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM, const bool bIsRea
 	}
 	
 	// ----------------------------------------------------
-	
-	long lTransactionNumber	= 0; // Used in the loop below.
-	
-	int nNumberOfTransactionNumbers1 = 0; // The Nym on this side
-	int nNumberOfTransactionNumbers2 = 0; // The Message Nym.
+
+	// VERIFY that the Nyms have a matching list of transaction numbers...
 	
 	OTString	strMessageNym; 
-	std::string	strServerID;
 	
-	// First, loop through the Nym on my side, and count how many numbers total he has...
-	//
-	for (mapOfTransNums::iterator iii = THE_NYM.GetMapIssuedNum().begin(); 
-		 iii !=	THE_NYM.GetMapIssuedNum().end(); ++iii)
-	{	
-		strServerID					= (*iii).first;
-		dequeOfTransNums * pDeque	= (iii->second);
-		
-		OTString OTstrServerID = strServerID.c_str();
-		
-		OT_ASSERT(NULL != pDeque);
-		
-		if (!(pDeque->empty()))
-		{
-			nNumberOfTransactionNumbers1 += pDeque->size();
-		}
-	} // for
-	
-	// Next, loop through theMessageNym, and count his numbers as well...
-	// But ALSO verify that each one exists on THE_NYM, so that each individual
-	// number is checked.
-	//
 	this->GetAttachment(strMessageNym);
 	OTPseudonym theMessageNym;
 	
 	if ((strMessageNym.GetLength() > 2) && theMessageNym.LoadFromString(strMessageNym))
 	{
-		for (mapOfTransNums::iterator	iii	 =	theMessageNym.GetMapIssuedNum().begin(); 
-			 iii !=	theMessageNym.GetMapIssuedNum().end(); ++iii)
-		{	
-			strServerID					= (*iii).first;
-			dequeOfTransNums * pDeque	= (iii->second);
-			
-			OTString OTstrServerID = strServerID.c_str();
-			
-			OT_ASSERT(NULL != pDeque);
-			
-			if (!(pDeque->empty()))
-			{
-				for (unsigned i = 0; i < pDeque->size(); i++)
-				{
-					lTransactionNumber = pDeque->at(i);
+		return THE_NYM.VerifyIssuedNumbersOnNym(theMessageNym);
+	}
 
-//					if ()
-					{
-						nNumberOfTransactionNumbers2 ++ ; 
-						
-						if (false == THE_NYM.VerifyIssuedNum(OTstrServerID, lTransactionNumber))
-						{
-							OTLog::vOutput(0, "OTItem::VerifyTransactionStatement: Issued transaction # %ld from Message Nym not found on this side.\n", 
-										   lTransactionNumber);
-							
-							// transactionStatement, unlike BalanceStatement, will never actually REMOVE an issued number.
-							// A transactionStatement accompanies either a processNymbox, which ADDS issued numbers, (doesn't remove),
-							// and uses none (since it's not a real transaction) or it accompanies a marketOffer or paymentPlan,
-							// neither of which actually removes the issued number UNTIL AFTER Cron has entirely finished and closed
-							// with the offer or plan (i.e. sometime in the future.) Thus, the Remove/Add issued code is commented out
-							// here, even though it's still found in some form in BalanceStatement.
-							//
-//							if (bIsRealTransaction) // We only removed it to do the verification. 
-							// Since that failed, add it back again (until next time when it succeeds)
-//								THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
-							return false;
-						}
-					}
-				}
-			}
-		} // for
-	}
-	
-	// Finally, verify that the counts match...
-	if (nNumberOfTransactionNumbers1 != nNumberOfTransactionNumbers2)
-	{
-		OTLog::vOutput(0, "OTItem::VerifyTransactionStatement: Transaction # Count mismatch: %d and %d\n", 
-					  nNumberOfTransactionNumbers1, nNumberOfTransactionNumbers2);
-		
-		
-		// transactionStatement, unlike BalanceStatement, will never actually REMOVE an issued number.
-		// A transactionStatement accompanies either a processNymbox, which ADDS issued numbers, (doesn't remove),
-		// and uses none (since it's not a real transaction) or it accompanies a marketOffer or paymentPlan,
-		// neither of which actually removes the issued number UNTIL AFTER Cron has entirely finished and closed
-		// with the offer or plan (i.e. sometime in the future.) Thus, the Remove/Add issued code is commented out
-		// here, even though it's still found in some form in BalanceStatement.
-		//		
-//		if (bIsRealTransaction)
-//			THE_NYM.AddIssuedNum(SERVER_ID, GetTransactionNum());
-		
-		return false;
-	}
-	
 	// By this point, I know the local Nym has the same number of transactions as the message nym, and that
 	// EVERY ONE OF THEM was found individually.
 	
@@ -274,7 +188,7 @@ bool OTItem::VerifyTransactionStatement(OTPseudonym & THE_NYM, const bool bIsRea
 	// Also want to save the latest signed receipt, since it VERIFIES.
 	// Or maybe let caller decide?
 	
-	return true;
+	return false;
 }
 
 
@@ -752,6 +666,24 @@ OTItem * OTItem::GetItem(int nIndex)
 }
 
 
+// While processing an item, you may wish to query it for sub-items
+OTItem * OTItem::GetItemByTransactionNum(const long lTransactionNumber) 
+{
+	OTItem * pItem = NULL;
+	
+	for (listOfItems::iterator ii = m_listItems.begin(); ii != m_listItems.end(); ++ii)
+	{
+		pItem = *ii;
+		
+		OT_ASSERT(NULL != pItem);
+		
+		if (pItem->GetTransactionNum() == lTransactionNumber)
+			return pItem;
+	}
+	
+	return NULL;	
+}
+
 
 
 
@@ -883,7 +815,10 @@ OTItem * OTItem::CreateItemFromString(const OTString & strItem, const OTIdentifi
 
 void OTItem::InitItem()
 {
-	
+	m_lNewOutboxTransNum=0;	// When the user puts a "1" in his outbox for a balance agreement (since he doesn't know what trans# the actual outbox item
+							// will have if the transaction is successful, since the server hasn't issued it yet) then the balance receipt will have 1 in
+							// the user's portion for that outbox transaction, and the balance receipt will also have, say, #34 (the actual number) here
+							// in this variable, in the server's reply portion of that same receipt.
 	m_lAmount			= 0; // Accounts default to ZERO.  They can only change that amount by receiving from another account.
 	m_Status			= OTItem::request;					// (Unless an issuer account, which can create currency of that type.)
 	m_Type				= OTItem::error_state;
@@ -936,7 +871,7 @@ OTItem& OTItem::operator=(const OTItem& rhs)
 	m_AcctFromID		= rhs.m_AcctFromID;		
 	m_AcctToID			= rhs.m_AcctToID;
 	m_AcctServerID		= rhs.m_AcctServerID;		
-	m_OutboxHash		= rhs.m_OutboxHash;		
+	m_OutboxHash		= rhs.m_OutboxHash;		// not feasible on OT -- my outbox is signed by me on my side and server's side is signed by server. Plus server knows certain IDs only after I have sent the request, preventing me from directly including (one specifically) into the actual request.
 	m_ascInReferenceTo	= rhs.m_ascInReferenceTo;
 	m_lInReferenceToTrans = rhs.m_lInReferenceToTrans;
 	
@@ -1100,12 +1035,18 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		else
 			m_Status = OTItem::error_status;
 		
-		OTString strAcctFromID, strAcctToID, strServerID, strUserID;
+		OTString strAcctFromID, strAcctToID, strServerID, strUserID, strOutboxNewTransNum;
 		
 		strAcctFromID		= xml->getAttributeValue("fromAccountID"); 
 		strAcctToID			= xml->getAttributeValue("toAccountID"); 
 		strServerID			= xml->getAttributeValue("serverID");
 		strUserID			= xml->getAttributeValue("userID");
+		
+		strOutboxNewTransNum = xml->getAttributeValue("outboxNewTransNum");
+
+		if (strOutboxNewTransNum.Exists())
+			m_lNewOutboxTransNum = atol(strOutboxNewTransNum.Get());
+		
 		
 		OTIdentifier	ACCOUNT_ID(strAcctFromID), SERVER_ID(strServerID), DESTINATION_ACCOUNT(strAcctToID),
 						USER_ID(strUserID);
@@ -1394,7 +1335,24 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 	// I release this because I'm about to repopulate it.
 	m_xmlUnsigned.Release();
 		
-	m_xmlUnsigned.Concatenate("<item type=\"%s\"\n status=\"%s\"\n"
+	
+	if (m_lNewOutboxTransNum > 0) 
+		m_xmlUnsigned.Concatenate("<item type=\"%s\"\n status=\"%s\"\n"  
+								  " outboxNewTransNum=\"%ld\"\n" // only used in server reply item: atBalanceStatement. In cases where the statement includes a new outbox item, this variable is used to transport the new transaction number (generated on server side for that new outbox item) back to the client, so the client knows the transaction number to verify when he is verifying the outbox against the last signed receipt.
+								  " transactionNum=\"%ld\"\n"
+								  " serverID=\"%s\"\n"
+								  " userID=\"%s\"\n"
+								  " fromAccountID=\"%s\"\n"
+								  " toAccountID=\"%s\"\n"
+								  " inReferenceTo=\"%ld\"\n" 
+								  " amount=\"%ld\" >\n\n", 
+								  strType.Get(), strStatus.Get(),
+								  m_lNewOutboxTransNum,
+								  GetTransactionNum(), strServerID.Get(), 
+								  strUserID.Get(),
+								  strFromAcctID.Get(), strToAcctID.Get(), GetReferenceToNum(), m_lAmount);
+	else
+		m_xmlUnsigned.Concatenate("<item type=\"%s\"\n status=\"%s\"\n"
 							  " transactionNum=\"%ld\"\n"
 							  " serverID=\"%s\"\n"
 							  " userID=\"%s\"\n"
@@ -1402,7 +1360,8 @@ void OTItem::UpdateContents() // Before transmission or serialization, this is w
 							  " toAccountID=\"%s\"\n"
 							  " inReferenceTo=\"%ld\"\n" 
 							  " amount=\"%ld\" >\n\n", 
-							  strType.Get(), strStatus.Get(), GetTransactionNum(), strServerID.Get(), 
+							  strType.Get(), strStatus.Get(),
+							  GetTransactionNum(), strServerID.Get(), 
 							  strUserID.Get(),
 							  strFromAcctID.Get(), strToAcctID.Get(), GetReferenceToNum(), m_lAmount);
 		

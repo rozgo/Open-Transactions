@@ -2048,6 +2048,141 @@ bool OTPseudonym::SaveSignedNymfile(OTPseudonym & SIGNER_NYM)
 }
 
 
+/// See if two nyms have identical lists of issued transaction numbers (#s currently signed for.)
+//
+bool OTPseudonym::VerifyIssuedNumbersOnNym(OTPseudonym & THE_NYM)
+{
+	long lTransactionNumber	= 0; // Used in the loop below.
+	
+	int nNumberOfTransactionNumbers1 = 0; // *this
+	int nNumberOfTransactionNumbers2 = 0; // THE_NYM.
+	
+	std::string	strServerID;
+	
+	// First, loop through the Nym on my side (*this), and count how many numbers total he has...
+	//
+	for (mapOfTransNums::iterator iii = GetMapIssuedNum().begin(); 
+		 iii !=	GetMapIssuedNum().end(); ++iii)
+	{	
+		strServerID					= (*iii).first;
+		dequeOfTransNums * pDeque	= (iii->second);
+		
+		OTString OTstrServerID = strServerID.c_str();
+		
+		OT_ASSERT(NULL != pDeque);
+		
+		if (!(pDeque->empty()))
+		{
+			nNumberOfTransactionNumbers1 += pDeque->size();
+		}
+	} // for
+	
+	// Next, loop through THE_NYM, and count his numbers as well...
+	// But ALSO verify that each one exists on *this, so that each individual
+	// number is checked.
+	//
+	
+	for (mapOfTransNums::iterator	iii	 =	THE_NYM.GetMapIssuedNum().begin(); 
+		 iii !=	THE_NYM.GetMapIssuedNum().end(); ++iii)
+	{	
+		strServerID					= (*iii).first;
+		dequeOfTransNums * pDeque	= (iii->second);
+		
+		OTString OTstrServerID = strServerID.c_str();
+		
+		OT_ASSERT(NULL != pDeque);
+		
+		if (!(pDeque->empty()))
+		{
+			for (unsigned i = 0; i < pDeque->size(); i++)
+			{
+				lTransactionNumber = pDeque->at(i);
+				
+				//					if ()
+				{
+					nNumberOfTransactionNumbers2 ++ ; 
+					
+					if (false == VerifyIssuedNum(OTstrServerID, lTransactionNumber))
+					{
+						OTLog::vOutput(0, "OTPseudonym::VerifyIssuedNumbersOnNym: Issued transaction # %ld from THE_NYM not found on *this.\n", 
+									   lTransactionNumber);
+						
+						return false;
+					}
+				}
+			}
+		}
+	} // for
+	
+	// Finally, verify that the counts match...
+	if (nNumberOfTransactionNumbers1 != nNumberOfTransactionNumbers2)
+	{
+		OTLog::vOutput(0, "OTPseudonym::VerifyIssuedNumbersOnNym: Issued transaction # Count mismatch: %d and %d\n", 
+					   nNumberOfTransactionNumbers1, nNumberOfTransactionNumbers2);
+		
+		return false;
+	}	
+	
+	return true;
+}
+
+
+
+// It's okay if some issued transaction #s in THE_NYM aren't found on *this, since the last balance agreement
+// may have cleaned them out after they were recorded in THE_NYM (from the transaction statement receipt).
+//
+// But I should never see transaction #s APPEAR in *this that aren't in THE_NYM, since a balance agreement
+// can ONLY remove numbers, not add them. So any numbers left over should still be accounted for on the
+// last signed receipt (which supplied THE_NYM as that list of numbers.)
+//
+// Conclusion: Loop through *this, which is newer, and make sure ALL numbers appear on THE_NYM.
+// No need to check the reverse, and no need to match the count.
+//
+bool OTPseudonym::VerifyTransactionStatementNumbersOnNym(OTPseudonym & THE_NYM)
+{
+	long lTransactionNumber	= 0; // Used in the loop below.
+	
+	std::string	strServerID;
+	
+	// First, loop through the Nym on my side (*this), and verify that all those #s appear on the last receipt (THE_NYM)
+	//
+	for (mapOfTransNums::iterator iii = GetMapIssuedNum().begin(); 
+		 iii !=	GetMapIssuedNum().end(); ++iii)
+	{	
+		strServerID					= (*iii).first;
+		dequeOfTransNums * pDeque	= (iii->second);
+		
+		OTString OTstrServerID = strServerID.c_str();
+		
+		OT_ASSERT(NULL != pDeque);
+		
+		if (!(pDeque->empty()))
+		{
+			for (unsigned i = 0; i < pDeque->size(); i++)
+			{
+				lTransactionNumber = pDeque->at(i);
+
+				if (false == THE_NYM.VerifyIssuedNum(OTstrServerID, lTransactionNumber))
+				{
+					OTLog::vOutput(0, "OTPseudonym::VerifyTransactionStatementNumbersOnNym: Issued transaction # %ld from *this not found on THE_NYM.\n", 
+								   lTransactionNumber);
+					return false;
+				}
+			}
+		}
+	} // for
+	
+	// Getting here means that, though issued numbers may have been removed from my responsibility
+	// in a subsequent balance agreement (since the transaction agreement was signed), I know
+	// for a fact that no numbers have been ADDED to my list of responsibility.
+	// That's the most we can verify here, since we don't know the account number that was
+	// used for the last balance agreement.
+	
+	
+	return true;
+}
+
+
 
 
 

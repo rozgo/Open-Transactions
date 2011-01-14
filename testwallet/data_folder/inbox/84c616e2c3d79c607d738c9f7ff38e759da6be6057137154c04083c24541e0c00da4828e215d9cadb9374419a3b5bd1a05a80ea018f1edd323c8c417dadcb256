@@ -2,18 +2,18 @@
 Hash: SAMY
 
 <accountLedger version="1.0"
- type="outbox"
- accountID="28ec1d595e5bd6602df90648aee3b98a32336f31dfdbb44923c550efd4b96deb09b32e9f2eb69b4cb80fe96b1daa39902cf5a6e2689f7456e7f7f012cd693dd4"
+ type="inbox"
+ accountID="84c616e2c3d79c607d738c9f7ff38e759da6be6057137154c04083c24541e0c00da4828e215d9cadb9374419a3b5bd1a05a80ea018f1edd323c8c417dadcb256"
  userID="7d1cff65a7febacaa0bbab73fd65032e6620e6501f41961b2be3ad556d891d4f5cab52acc87c07da91fbdc940da865249cb6e0b3a6fe7d66f6b3f8eb94591b5d"
 serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de" >
 
 </accountLedger>
 -----BEGIN LEDGER SIGNATURE-----
-Version: Open Transactions 0.42
+Version: Open Transactions 0.43
 Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
 
-PnxThUrLEbVDqffsoSnuy9wDGub96zgfNhcOZjvemSb/BbhiddRN9h15Qy9AsVGo
-UXUSgceTeCxTvr1Ssh/BArUof96X+ke0zbeykqGQkMlubZKUPC73uwTSYtGR6iUh
-fPqGZzUuNU3rh0BTCD7lbWWe/uA7JU/xOfZRp7G0uMI=
+YzQ+FHbt5ZlBZl7Vb43zoYZW8Ai/lwM9fIVsL6R8N52RVZeHWrj6zwoHJDf0XiN0
+euaKBjvRiRDjxk7HzxH0hhz84i6mJz3wEUg8cJJLfXU+jwErwPLGbDaDatTxk7J3
+kNA6VZ0JAEOImnSIyAmnBx9iIcPcYVjxtQqt7cKqVms=
 -----END LEDGER SIGNATURE-----
 

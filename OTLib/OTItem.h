@@ -243,22 +243,31 @@ protected:
 	itemType		m_Type;			// the item type. Could be a transfer, a fee, a balance or client accept/rejecting an item
 	itemStatus		m_Status;		// request, acknowledgment, or rejection.
 
+	long			m_lNewOutboxTransNum;	// Used for balance agreement. The user puts transaction "1" in his outbox when doing a transfer, since he has no idea
+											// what # will actually be issued on the server side after he sends his message. Let's say the server issues # 34, and
+											// puts that in the outbox. It thus sets this member to 34, and it is understood that 1 in the client request corresponds
+											// to 34 on this member variable in the reply.  Only one transfer can be done at a time. In cases where verifying a balance
+											// receipt and you come across transaction #1 in the outbox, simply look up this variable on the server's portion of the reply
+											// and then look up that number instead.
+	
 public:
 	
 	// used for looping through the items in a few places.
 	inline listOfItems & GetItemList() { return m_listItems; }
 	
 	OTItem * GetItem(int nIndex); // While processing an item, you may wish to query it for sub-items of a certain type.
+	OTItem * GetItemByTransactionNum(const long lTransactionNumber); // While processing an item, you may wish to query it for sub-items
 	inline int	GetItemCount() { return m_listItems.size(); }
 	void AddItem(OTItem & theItem); // You have to allocate the item on the heap and then pass it in as a reference. 
 	// OTItem will take care of it from there and will delete it in destructor.
 
 	void ReleaseItems();
 
-	
 	// the "From" accountID and the ServerID are now in the parent class. (2 of each.)
 	
-	OTIdentifier	m_OutboxHash;		// Used for balance agreement.
+	inline void		SetNewOutboxTransNum(const long lTransNum) { m_lNewOutboxTransNum =  lTransNum; }
+	inline long		GetNewOutboxTransNum() const { return m_lNewOutboxTransNum; } // See above comment in protected section.
+	
 	OTASCIIArmor	m_ascNote;			// a text field for the user. Cron may also store receipt data here. Also inbox reports go here for balance agreement
 	OTASCIIArmor	m_ascAttachment;	// the digital cash token is sent here, signed, and returned here. (or purse of tokens.)
 										// As well as a cheque, or a voucher, or a server update on a market offer, or a nym full of transactions for balance agreement.

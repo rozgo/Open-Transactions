@@ -85,6 +85,8 @@
 #ifndef __OTTRANSACTION_H__
 #define __OTTRANSACTION_H__
 
+#include <ctime>
+
 #include <list>
 #include <fstream>
 
@@ -212,7 +214,8 @@ public:
 
 	
 protected:	
-	
+	time_t			m_DATE_SIGNED;		// The date, in seconds, when the instrument was last signed.
+
 	transactionType		m_Type;				// blank, pending, processInbox, transfer, deposit, withdrawal, trade, etc.
 
 	
@@ -230,6 +233,8 @@ protected:
 	
 public:
 	
+	inline time_t GetDateSigned()	const { return m_DATE_SIGNED; }
+
 	bool GetSuccess(); // Tries to determine, based on items within, whether it was a success or fail.
 	
 	long GetReceiptAmount(); // Tries to determine IF there is an amount (depending on type) and return it.
@@ -251,6 +256,26 @@ public:
 
 	inline transactionType GetType() const { return m_Type; }
 	inline void SetType(const transactionType theType) { m_Type = theType; }
+	
+	// -------------
+	
+	static bool VerifyBalanceReceipt(OTPseudonym & SERVER_NYM,
+									 OTPseudonym & THE_NYM,
+									 OTIdentifier & SERVER_ID,
+									 OTIdentifier & ACCT_ID
+									 );
+	
+	bool VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, OTPseudonym & THE_NYM);
+	
+	// ----
+	
+	static bool VerifyTransactionReceipt(OTPseudonym & SERVER_NYM,
+										 OTPseudonym & THE_NYM,
+										 OTIdentifier & SERVER_ID);
+	
+	bool VerifyTransactionReceipt(OTPseudonym & SERVER_NYM, OTPseudonym & THE_NYM);
+	
+	// -----------
 	
 	bool VerifyItems(OTPseudonym & theNym);
 	

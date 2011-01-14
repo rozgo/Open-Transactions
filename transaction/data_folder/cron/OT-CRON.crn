@@ -7,53 +7,53 @@ Hash: SAMY
  version="1.0"
  serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de" >
 
-<transactionNum value="1586" />
+<transactionNum value="1780" />
 
-<transactionNum value="1587" />
+<transactionNum value="1781" />
 
-<transactionNum value="1588" />
+<transactionNum value="1782" />
 
-<transactionNum value="1589" />
+<transactionNum value="1783" />
 
-<transactionNum value="1590" />
+<transactionNum value="1784" />
 
-<transactionNum value="1591" />
+<transactionNum value="1785" />
 
-<transactionNum value="1592" />
+<transactionNum value="1786" />
 
-<transactionNum value="1593" />
+<transactionNum value="1787" />
 
-<transactionNum value="1594" />
+<transactionNum value="1788" />
 
-<transactionNum value="1595" />
+<transactionNum value="1789" />
 
-<transactionNum value="1596" />
+<transactionNum value="1790" />
 
-<transactionNum value="1597" />
+<transactionNum value="1791" />
 
-<transactionNum value="1598" />
+<transactionNum value="1792" />
 
-<transactionNum value="1599" />
+<transactionNum value="1793" />
 
-<transactionNum value="1600" />
+<transactionNum value="1794" />
 
-<transactionNum value="1601" />
+<transactionNum value="1795" />
 
-<transactionNum value="1602" />
+<transactionNum value="1796" />
 
-<transactionNum value="1603" />
+<transactionNum value="1797" />
 
-<transactionNum value="1604" />
+<transactionNum value="1798" />
 
-<transactionNum value="1605" />
+<transactionNum value="1799" />
 
 </cron>
 -----BEGIN CRON SIGNATURE-----
-Version: Open Transactions 0.42
+Version: Open Transactions 0.43
 Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
 
-CBs2Yil4Gi6Z6Ok/ewqY5uShjAqqIqGE3z3n6ZtXYWVRZBZHwGJpTFO5tQdV3YKG
-f3XuK37W2TNXi7zG8nT1NYNfXkNwK2bLr0e9gofE5Kg5qkZrIWf0OCkU/BjoIRp6
-0P/DgNlRxnHgrsxaSEnMxmF/U0xsb9hV9sC6ZXEbB44=
+F7mTr/W2BVbSotY03D/3LsI9gxORRjvyl9l/1v8iD+QDEh1DHzoH9ZMSPLuPD1K+
+bhRJuD0DC/j5dJey86FSW8pokYg20Wvpt2brhopI/9lQhtzGY1STAVDluMtFP6Ro
+uC4W4EaYua0J7tf4JsrHZbKoWhMTbT24CPAZKe+I3qc=
 -----END CRON SIGNATURE-----
 

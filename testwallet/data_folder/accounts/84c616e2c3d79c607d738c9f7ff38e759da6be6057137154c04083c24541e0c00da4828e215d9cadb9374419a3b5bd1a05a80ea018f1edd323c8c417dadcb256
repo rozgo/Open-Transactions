@@ -1,0 +1,25 @@
+-----BEGIN SIGNED ACCOUNT-----
+Hash: SAMY
+
+<?xml version="1.0"?>
+
+<assetAccount
+ version="1.0"
+ type="issuer"
+ accountID="84c616e2c3d79c607d738c9f7ff38e759da6be6057137154c04083c24541e0c00da4828e215d9cadb9374419a3b5bd1a05a80ea018f1edd323c8c417dadcb256"
+ userID="7d1cff65a7febacaa0bbab73fd65032e6620e6501f41961b2be3ad556d891d4f5cab52acc87c07da91fbdc940da865249cb6e0b3a6fe7d66f6b3f8eb94591b5d"
+ serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de"
+ assetTypeID="4f3e55afa478dba67e1f100c2990f88e4e397a9a081a45d1562e94f5a8edaed4a756e34b9750022f4c4eda92ae89d81d6094756da7a5db8348c7e5f7a2fdd05e" >
+
+<balance date="1295006408" amount="-9999813"/>
+
+</assetAccount>
+-----BEGIN ACCOUNT SIGNATURE-----
+Version: Open Transactions 0.43
+Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
+
+Xoy5YIBas9XKFS1gEQ1+nTMuUofXVyqnJMzi5ItpLByUk66xkQtWc6mv9opDbS7M
+JbakX4gUjlAskGPmXGUg+nSso+PTfDZAJieyRuC0VYgHs8QVBOF0siQWqMJzSdTB
+aMBdiMwyrMa8F0K7LOe+ey2Ft1eeYSsVZqFlf59Cna0=
+-----END ACCOUNT SIGNATURE-----
+

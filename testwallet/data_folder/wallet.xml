@@ -5,23 +5,23 @@
  nymID="7d1cff65a7febacaa0bbab73fd65032e6620e6501f41961b2be3ad556d891d4f5cab52acc87c07da91fbdc940da865249cb6e0b3a6fe7d66f6b3f8eb94591b5d" />
 
 <assetType name="eJwrzswpSy1SSC9KzC1mAAAkYgTQ"
- assetTypeID="17dc81091d89e0754ce3e4612ae044b274cf251cac14641cc8c586b43d97138852858ee7713b26d3fe18da26035e7869b1adb6a86da6563b1b7ae61148e3453b" />
+ assetTypeID="4f3e55afa478dba67e1f100c2990f88e4e397a9a081a45d1562e94f5a8edaed4a756e34b9750022f4c4eda92ae89d81d6094756da7a5db8348c7e5f7a2fdd05e" />
 
 <notaryProvider name="eJzzyU9OzMnILy5RcM7PKylKTC5hAABIywcI"
  serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de" />
 
-<!-- Last retrieved balance: 0 on date: 1294624922 -->
-<!-- Account type: simple --><assetAccount name=""
- accountID="28ec1d595e5bd6602df90648aee3b98a32336f31dfdbb44923c550efd4b96deb09b32e9f2eb69b4cb80fe96b1daa39902cf5a6e2689f7456e7f7f012cd693dd4"
+<!-- Last retrieved balance: 9999813 on date: 1295006408 -->
+<!-- Account type: simple --><assetAccount name="eJwL9vQJcw1ScA9y9A1W0HALUS9WKCjKzE0sqlQozswpSy1SSExOLtFkAAD5+wyp"
+ accountID="3dec64803a789292ccbf33ad27e6f53c24c46745f9af15ba9b16ca7404aeb6c4b7e0749ddf0047952b854d7e436d0e188ef4420d26b3dbfd822e7f6524db5e71"
  userID="7d1cff65a7febacaa0bbab73fd65032e6620e6501f41961b2be3ad556d891d4f5cab52acc87c07da91fbdc940da865249cb6e0b3a6fe7d66f6b3f8eb94591b5d"
  serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de" />
-<!-- assetTypeID: 17dc81091d89e0754ce3e4612ae044b274cf251cac14641cc8c586b43d97138852858ee7713b26d3fe18da26035e7869b1adb6a86da6563b1b7ae61148e3453b -->
+<!-- assetTypeID: 4f3e55afa478dba67e1f100c2990f88e4e397a9a081a45d1562e94f5a8edaed4a756e34b9750022f4c4eda92ae89d81d6094756da7a5db8348c7e5f7a2fdd05e -->
 
-<!-- Last retrieved balance: 0 on date: 1294624848 -->
-<!-- Account type: issuer --><assetAccount name=""
- accountID="4601e7bd83a306761eaea991d109150d953a8ca7547605408b4e3c3a83960851f83144a0f35096fd9632f88b344107aea2752d3959f3f762f604ee44df53106d"
+<!-- Last retrieved balance: -9999813 on date: 1295006408 -->
+<!-- Account type: issuer --><assetAccount name="eJzzDA4OdQ1ScHR29g/1C1HQCPb0CQPy3YMcfYM1GQCA0wfp"
+ accountID="84c616e2c3d79c607d738c9f7ff38e759da6be6057137154c04083c24541e0c00da4828e215d9cadb9374419a3b5bd1a05a80ea018f1edd323c8c417dadcb256"
  userID="7d1cff65a7febacaa0bbab73fd65032e6620e6501f41961b2be3ad556d891d4f5cab52acc87c07da91fbdc940da865249cb6e0b3a6fe7d66f6b3f8eb94591b5d"
  serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de" />
-<!-- assetTypeID: 17dc81091d89e0754ce3e4612ae044b274cf251cac14641cc8c586b43d97138852858ee7713b26d3fe18da26035e7869b1adb6a86da6563b1b7ae61148e3453b -->
+<!-- assetTypeID: 4f3e55afa478dba67e1f100c2990f88e4e397a9a081a45d1562e94f5a8edaed4a756e34b9750022f4c4eda92ae89d81d6094756da7a5db8348c7e5f7a2fdd05e -->
 
 </wallet>

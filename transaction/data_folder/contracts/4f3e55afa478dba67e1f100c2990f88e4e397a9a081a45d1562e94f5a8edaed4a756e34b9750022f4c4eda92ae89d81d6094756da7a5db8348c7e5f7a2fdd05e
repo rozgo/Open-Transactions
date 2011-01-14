@@ -133,10 +133,11 @@ LmNvbT6IVgQTEQIAFgUCOaEZEQQLCgQDAxUDAgMWAgECF4AACgkQKfOLUygtdArw
 
 </digitalAssetContract>
 -----BEGIN CONTRACT SIGNATURE-----
-Version: Open Transactions 0.24
+Version: Open Transactions 0.43
 Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
 
 GxzYxafPqd5b0spuH/RZe56cb7dK4gzMw/kyya8jT4Zm9gR/e4ETqUq+4eRXM+hi
 Bf0VrkeKS6l8yoyvB3en0EWGZGQ32nJmnHwi8r3HusaqNci/y9VTmAC4fTdmuYVe
 tQJXSefjoWaU+shGcmNuNSpmucA6MBXrCmojFxp6pEA=
 -----END CONTRACT SIGNATURE-----
+

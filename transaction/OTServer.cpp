@@ -2503,6 +2503,7 @@ void OTServer::NotarizeTransfer(OTPseudonym & theNym, OTAccount & theFromAccount
 				else 
 				{
 					pResponseBalanceItem->SetStatus(OTItem::acknowledgement); // the balance agreement (just above) was successful.
+					pResponseBalanceItem->SetNewOutboxTransNum(lNewTransactionNumber); // So the receipt will show that the client's "1" in the outbox is now actually "34" or whatever, issued by the server as part of successfully processing the transaction.
 					
 					// Deduct the amount from the account...
 					// TODO an issuer account here, can go negative.
@@ -5323,8 +5324,9 @@ void OTServer::NotarizeProcessNymbox(OTPseudonym & theNym, OTTransaction & tranI
 					pResponseItem = OTItem::CreateItemFromTransaction(tranOut, theReplyItemType);	 
 					pResponseItem->SetStatus(OTItem::rejection); // the default.
 					pResponseItem->SetReferenceString(strInReferenceTo); // the response item carries a copy of what it's responding to.
-					pResponseItem->SetReferenceToNum(pItem->GetTransactionNum());
-					
+//					pResponseItem->SetReferenceToNum(pItem->GetTransactionNum()); // This was just 0 every time, since Nymbox needs no transaction numbers.
+					pResponseItem->SetReferenceToNum(pItem->GetReferenceToNum()); // So the reference was useless. I'm hoping to change it to this and make sure nothing breaks.
+																				// ReferenceNum actually means you can match it up against the request items, and also, that is where THEY store it.
 					tranOut.AddItem(*pResponseItem); // the Transaction's destructor will cleanup the item. It "owns" it now.		
 					
 					// ---------------------------------------------

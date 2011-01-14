@@ -248,6 +248,11 @@ public:
 	bool	VerifyIssuedNum(const OTString & strServerID, const long & lTransNum); // verify user is still responsible for (signed for) a certain trans# that was previous issued to him. (i.e. it's been used, but not yet accepted receipt through inbox.)
 	bool	VerifyTransactionNum(const OTString & strServerID, const long & lTransNum); // server verifies that nym has this TransNum available for use.
 
+	// These two functions are for when you re-download your nym/account/inbox/outbox, and you
+	// need to verify it against the last signed receipt to make sure you aren't getting screwed.
+	bool VerifyIssuedNumbersOnNym(OTPseudonym & THE_NYM);
+	bool VerifyTransactionStatementNumbersOnNym(OTPseudonym & THE_NYM);
+
 	// -------------------------------------
 	// These functions are for transaction numbers that were assigned to me, 
 	// until I accept the receipts or put stop payment onto them.
