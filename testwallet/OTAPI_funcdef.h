@@ -1239,6 +1239,9 @@ void OT_API_notarizeTransfer(const char * SERVER_ID,
  -- Call OT_API_Transaction_CreateResponse to create a response for each
  transaction, accepting or rejecting it, and adding it to the response
  ledger.
+  
+ -- Penultimately, call OT_API_Ledger_FinalizeResponse() which will create
+ a Balance Agreement for the ledger.
  
  -- Finally, call OT_API_processInbox to send that response ledger to the
  server and process the various items.

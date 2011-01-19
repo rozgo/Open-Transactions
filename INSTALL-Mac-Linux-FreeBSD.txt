@@ -11,7 +11,7 @@ OpenTransactions for Mac OS X, Linux, and FreeBSD
  
  --- OpenSSL version 1.0.0a (at least) is necessary, since the SAMY hash 
      uses WHRLPOOL. (XOR'd with SHA-512.) WHIRLPOOL is a new addition to 
-     OpenSSL.
+     OpenSSL. (Current build is tested with 1.0.0c)
  
  --- Let me know if there are any problems, since this is new software;
      this will be a living document.
@@ -62,7 +62,7 @@ TWO more XCode notes:
 1) The include path issue is addressed by changing:
 Search Paths->Header Search Paths = "/opt/local/include" instead
 of "/usr/local/include" (So you get the macports version of OpenSSL,
-which is 1.0.0a, instead of the default version, which is 0.9.8)
+which is 1.0.0c, instead of the default version, which is 0.9.8)
 
 2) You also have to change a couple links that the Mac system uses to
 point at the "current" OpenSSL:

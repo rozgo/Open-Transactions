@@ -110,7 +110,7 @@ endif
 ifeq ($(PLATFORM), freebsd)
 SSL_INCLUDEDIRS = -I/usr/local/include
 SSL_LIBDIRS = -L/usr/local/lib
-#SSL_LIBDIRS = -L/usr/ports/security/openssl/work/openssl-1.0.0a
+#SSL_LIBDIRS = -L/usr/ports/security/openssl/work/openssl-1.0.0c
 endif
 
 

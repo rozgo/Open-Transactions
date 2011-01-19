@@ -16,8 +16,8 @@ Featuring:
     -- Pseudonymous User Accounts   (user account == PGP key)
     -- No Account History           (asset account == the last receipt)
     -- Many Financial Instruments   (cheques, cash, vouchers, invoices...)
-    -- Basket Currencies            (ex:  10 "baskets" == 5 gold, 3 silver, 100 wheat)
-    -- NEW! Markets with Trades     (day orders, limit orders, fill-or-kill...)
+    -- Basket Currencies            (10 "baskets" == 5 gold, 3 silver)
+    -- Markets with Trades          (stop, fill-or-kill, limit orders...)
     -- NEW! Payment Plans
     -- NEW! Native API for Java, Ruby, Python, PHP, Perl, C, 
        C++, Objective-C, C#, Tcl, and LISP
@@ -29,6 +29,9 @@ Featuring:
 
 Please see the Project page:
 http://github.com/FellowTraveler/Open-Transactions/wiki
+
+Use Cases:
+http://github.com/FellowTraveler/Open-Transactions/wiki/Use-Cases
 
 FAQ:
 http://github.com/FellowTraveler/Open-Transactions/wiki/FAQ

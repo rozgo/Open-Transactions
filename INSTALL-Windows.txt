@@ -11,7 +11,7 @@ OpenTransactions for WINDOWS
  
  --- OpenSSL version 1.0.0a (at least) is necessary, since the SAMY hash 
      uses WHRLPOOL. (XOR'd with SHA-512.) WHIRLPOOL is a new addition to 
-     OpenSSL.
+     OpenSSL.  Currently the code is up to 1.0.0c.
  
  --- Let me know if there are any problems, since this is new software;
      this will be a living document.
@@ -50,6 +50,9 @@ The specific OpenSSL version that I installed was this one:
 
 Win32 OpenSSL v1.0.0a
 http://www.slproweb.com/download/Win32OpenSSL-1_0_0a.exe
+
+
+(But you might poke around there and see if they have build c, which is newer.)
 
 
 IMPORTANT: While the default install folder for OpenSSL is "C:\OpenSSL-Win32",
