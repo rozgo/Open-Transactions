@@ -29,7 +29,13 @@ PRE-BUILD:
     * To upgrade on Mac:    sudo port install openssl
       If that doesn't work: sudo port install openssl-devel
 
-    * On Linux: sudo apt-get install openssl
+    * On Linux: 
+          wget http://www.openssl.org/source/openssl-1.0.0c.tar.gz
+          tar -xf openssl-1.0.0c.tar.gz
+          cd openssl-1.0.0c
+          ./config
+          make
+          sudo make install
 
     * On FreeBSD (as root):  cd /usr/ports/security/openssl/ && make install clean
 
