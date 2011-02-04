@@ -1,28 +1,53 @@
 These instructions cover: BUILDING the API.
 
-If you were looking for instructions for USING the API,
-here they are:
+You can now build the API from the top folder. 
+From where you are now, just do this:
+
+>  cd ..
+>  make clean
+
+Then choose a language:
+>  make php5
+>  make perl5
+>  make ruby
+>  make c
+>  make java
+
+If you don't see your favorite language, fear not: it may still be
+supported, just further down in this document! (I.e. not available
+as a top-level build option.)
+
+OTHERWISE, YOU'RE DONE!!!
+
+(See below for more details.)
+
+---------------------------------------------------------
+
+
+How to USE the API:
 https://github.com/FellowTraveler/Open-Transactions/wiki/API
+https://github.com/FellowTraveler/Open-Transactions/wiki/Use-Cases
 
 
 
-First, to build the test client (it runs on the command-line):   
+------------------------------------------
 
-MAC OR LINUX:  make
-FREEBSD:       gmake
+===> BUILD THE TEST CLIENT - (Makefile)
+(command line utility)
 
-
-You probably prefer to build in XmlRpc mode:
+You probably prefer to build in XmlRpc/HTTP mode:
 
                make TRANSPORT=XmlRpc
                gmake TRANSPORT=XmlRpc
 
+Otherwise there is the old TCP/SSL (not recommended):
 
-
+MAC OR LINUX:  make
+FREEBSD:       gmake
 
 -----------------------------------------
 
-WINDOWS: inside the Open-Transactions\testwallet\testwallet folder
+WINDOWS ONLY: inside the Open-Transactions\testwallet\testwallet folder
 is an MS Visual C++ 2010 Express project that will build this project
 for Windows.
 
@@ -32,12 +57,10 @@ Run it from this directory like so: ./testwallet.exe
 On Windows you may have to copy it to this directory first, as it may
 be in a Debug or Release folder.
 
-------------------------------------------
+**********************************************
 
 
-
-
-BUILDING THE OTAPI (Makefile.API)
+===>  BUILD THE API - (Makefile.API)
 
 Open Transactions now supports native interfaces to the
 following languages:
@@ -46,7 +69,7 @@ C, Obj-C, C++, C#, Java, Ruby, Python, Perl, Php, Tcl, Lisp
 
 (Instructions for each language are below.)
 
-You likely wish to add TRANSPORT=XmlRpc to the below commands, as well.
+** You likely wish to add TRANSPORT=XmlRpc to the below commands, as well.
 And: MAKE SURE you do a make clean when switching languages, since they
 can interfere with each other. 
 
@@ -59,29 +82,30 @@ cd ../OTLib; make clean; make DYNAMIC_OTLIB=1; cd ../testwallet
 
 Now you may continue with the rest of these instructions...
 ----------------
-ADDITIONAL WARNING: I had python working on darwin, but then on linux
-I had issues loading the .so. But then I realized I was on 64-bit linux,
-and some pieces were linking with 64-bit, while others weren't, so that
-was the problem.
-
-My point?
-
-In EVERY CASE, issues are possible. If you can work through them, please
-let me know the details so I can add them to these notes. And if you need
-my help, contact me, since I want to support people who are using the API.
-----------------
 
 
-
-C, Obj-C, C++
+THE 'C++' HIGH-LEVEL CLASS
 
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=c
 
-To use OT in C, C++, or Obj-C, link to libOTAPI.a, and...
+-- link to libOTAPI.a
 
-...to use the OTAPI C functions in C, Obj-C, or C++, include OTAPI.h
+-- include OpenTransactions.h in your code.
 
-...or to use the OTAPI C++ class in C++, include OpenTransactions.h
+--------------------------------
+
+
+THE 'Straight C' API
+
+(To be used in C, Obj-C, and C++ projects)
+
+make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=c
+
+-- link to libOTAPI.a
+
+-- include OTAPI.h in your code
+-- You'll also need a copy of OTAPI_funcdef.h
+   (but DON'T #include it--just make sure that it's there.)
 
 --------------------------------
 
@@ -89,8 +113,10 @@ C#
 
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=csharp
 
-This builds the shared lib libotapi.so. Use otapi.cs in your C-Sharp
-project.
+This builds the shared lib: 
+libotapi.so
+
+-- Use otapi.cs in your C-Sharp project.
 
 --------------------------------
 
@@ -98,8 +124,10 @@ Java
 
 make -f Makefile.API [TRANSPORT=XmlRpc] LANGUAGE=java
 
-This builds the shared lib libotapi.jnilib. Use otapi.java in your Java 
-project.
+This builds the shared lib:
+libotapi.jnilib
+
+-- Use otapi.java in your Java project.
 
 --------------------------------
 
@@ -113,7 +141,6 @@ in your Ruby project like any other native library.
 On Linux I installed Ruby and Ruby-Dev:
 apt-get install ruby
 apt-get install ruby-dev
-
 
 
 NOTE: The Ruby API now features a top-level build target! Especially on Linux,

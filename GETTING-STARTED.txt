@@ -1,87 +1,153 @@
 
 Welcome to Open Transactions.
 
+See LICENSE-AND-CREDITS file, which should be in the same
+folder as this README file. You agree to the terms. 
+
+Online install instructions:
+https://github.com/FellowTraveler/Open-Transactions/wiki/Install
 
 -------------------------------------------------------------------------
 
-
 GETTING STARTED:
 
-1) See LICENSE-AND-CREDITS file, which should be in the same
-   folder as this README file. You agree to the terms.  
 
-2) See INSTALL files (this folder) for instructions on building everything.
-   There are versions for Android, Windows, and Mac/Linux/FreeBSD.
-
-   For most users, you just type this:
+1) For most users, you just type this:
    
-     make
-
-   (It will auto-detect platform, etc.)  EVEN BETTER:
-
     make rpc
 
+   (It will auto-detect platform, etc.)
    XmlRpc is the preferred method of building, so it's better to build
    with "make rpc", even though it's not the default. YOU'LL PREFER IT.
 
-
-3) While the Open Transactions library itself is transport neutral, the
-   applications such as the server and client come with different options
-   for transport protocol.
-   The preferred mode of transport is (OTMessage -> XmlRpc -> HTTP). But
-   this is not what is built by default. 
-   You can use 'make rpc' instead of 'make', (or 'make debugrpc'
-   instead of 'make debug'), and you can run in the preferred HTTP mode.
-   But if you prefer the old SSL/TCP mode, just use 'make' or 'make debug'
-   and use the default transport, which is (OTMessage -> TCP -> SSL).
-
-4) You can *ignore* the ssl folder and the docs/SSL-NOTES.txt file unless 
-   you want to wipe and re-create the test certs and keys for the client
-   and server. (Not recommended.)
-
-   (I have already created test certs for you for client and server. 
-   But if you would like to re-create them, then open docs/SSL_NOTES.txt 
-   I explained it all in there.  Otherwise, for testing, you can entirely
-   ignore it and use the test keys that I already generated.) 
-
-   THE PASSWORD for ALL the test certs is "test".
-
-5) To run the server, from this folder, type:
+2) To run the server, from this folder, type:
        cd transaction; ./transaction.exe
 
-6) To run the test client, from this folder, type:
+3) To run the test client, from this folder, type:
        cd testwallet; ./testwallet.exe
 
 ** password is test (always) 
 
-** More detailed instructions are in the INSTALL.
-
 
 -------------------------------------------------------------------------
 
 
-FOLDERS:
+IN MORE DETAIL:
 
---- OTLib. This folder contains the actual library.
-    It builds to create libOTLib.a
+      INSTALL-Mac-Linux-FreeBSD.txt
+(or)  INSTALL-Windows.txt
+(or)  INSTALL-Android.txt
 
---- docs. Just extra documentation and notes.
+-------------------------------------------------------------------
 
---- ssl. The public/private keys and certs are generated here.
-    The various test contracts and user accounts that come with
-    this distribution are based on the certs in this folder. Also,
-    if you ever need to re-generate them, This's where you'll do it.
+Open Transactions requires OpenSSL version 1.0.0.
 
---- testwallet. This contains the code for the test client. The same
-    code can also be compiled into a high-level API: OTAPI.a
-    There are also makefiles here for building the JNI wrapper for
-    the OTAPI. This allows you to call the OTAPI from Java (see the
-    supplied Java class.) It also allows you to use Open Transactions
-    with JRuby, Groove, Jython, etc.
+	* To check current version:  openssl version
 
---- transaction. This folder contains the server.
+	* To upgrade on Mac:    sudo port install openssl
+	  If that doesn't work: sudo port install openssl-devel
 
---- util. This folder contains various utilities, for generating mints
-    and signing contracts.
+	* On Linux: 
+		wget http://www.openssl.org/source/openssl-1.0.0c.tar.gz
+		tar -xf openssl-1.0.0c.tar.gz
+		cd openssl-1.0.0c
+		./config
+		make
+		sudo make install
+
+	* On FreeBSD (as root):  
+	  cd /usr/ports/security/openssl/ && make install clean
+
+---------------------------------------------------------------
+
+DOWNLOAD OPEN TRANSACTIONS
+
+git clone git://github.com/FellowTraveler/Open-Transactions.git
+
+Source code (FYI): 
+https://github.com/FellowTraveler/Open-Transactions
+
+----------------------------------------------------------------
+
+BUILD THE TEST CLIENT
+
+cd Open-Transactions && make clean && make rpc
+
+"make rpc" builds the (preferred) XmlRpc version of OT, 
+as well as the command-line test client. (Most likely you
+do not want "make", which is the SSL/TCP version.)
+
+---------------------------------------------------------------
+
+BUILD THE API
+
+To build the API for a specific language, try:
+
+make java
+make python
+make php5
+make perl5
+make ruby
+make c
+
+Etc. Use "make clean" between builds.
+
+See testwallet/API-README.txt for full instructions on building
+the API for the various different languages. (There are more languages
+available.)
+
+---------------------------------------------------------------
+
+DEVELOPER RESOURCES
+
+The OT API, with notes:
+https://github.com/FellowTraveler/Open-Transactions/wiki/API
+
+Use cases for the OT API:
+https://github.com/FellowTraveler/Open-Transactions/wiki/Use-Cases
+
+---------------------------------------------------------------
+
+TO START THE SERVER
+
+cd transaction && ./transaction.exe
+
+The server requires a password and a path when it starts up. 
+(It will tell you what to do.)
+
+FYI, the data folder for the server is: 
+Open-Transactions/transaction/data_folder
+
+If you want to back up a copy of it, then you can feel free
+to play around with the data files, knowing you can refresh them 
+at any time.
+
+---------------------------------------------------------------
+
+TO RUN THE TEST CLIENT
+
+Once the server is running, then try the testwallet in a
+separate terminal:
+
+cd Open-Transactions && cd testwallet && ./testwallet.exe
+
+Again, it will ask you to enter a password and a path. 
+Don't worry, it gives clear instructions.
+
+To use the testwallet, read docs/CLIENT-COMMANDS.txt
+Online:
+https://github.com/FellowTraveler/Open-Transactions/wiki/Test-Wallet-commands
+
+Note: the test wallet and the API are really just different build 
+options for the same client-side code, which is located in the 
+Open-Transactions/testwallet folder.
+
+The data folder for the client is: 
+Open-Transactions/testwallet/data_folder
+If you want to back up a copy of it, then you can feel free to play 
+around with the data files, knowing you can refresh them at any time.
+
+
+
 
 
