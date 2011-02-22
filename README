@@ -5,9 +5,9 @@ It's a solid, easy-to-use, FINANCIAL CRYPTO and DIGITAL CASH LIBRARY.
 Including an operational API, SERVER and CLIENT.
 
 Diagrams:  
-Architecture Overview: http://billstclair.com/ot/ot-diagram.jpg
-Fully-Anonymous (cash only): http://billstclair.com/ot/OT-Anon-CashOnly.jpg
-Pseudo-Anonymous (using accounts): http://billstclair.com/ot/OT-Pseudonym-Instruments.jpg
+Architecture Overview: http://opentransact.nevermeta.com/OT%20Diagram.jpg
+Fully-Anonymous (cash only): http://opentransact.nevermeta.com/OT-Anon-CashOnly.jpg
+Pseudo-Anonymous (using accounts): http://opentransact.nevermeta.com/OT-Pseudonym-Instruments.jpg
 
 Featuring: 
     -- Untraceable Digital Cash     (real blinded tokens)
@@ -18,10 +18,10 @@ Featuring:
     -- Many Financial Instruments   (cheques, cash, vouchers, invoices...)
     -- Basket Currencies            (10 "baskets" == 5 gold, 3 silver)
     -- Markets with Trades          (stop, fill-or-kill, limit orders...)
-    -- NEW! Payment Plans
-    -- NEW! Native API for Java, Ruby, Python, PHP, Perl, C, 
+    -- Payment Plans
+    -- Native API for Java, Ruby, Python, PHP, Perl, C, 
        C++, Objective-C, C#, Tcl, and LISP
-    -- NEW! XmlRpc/HTTP transport layer (build option)
+    -- XmlRpc/HTTP transport layer (build option)
     -- Soon: Stocks that pay dividends, Bonds that pay interest,
        and even Collateralized Debt Obligations.
     -- Soon: 2-D Barcodes to make possible 'Any screen a cash
@@ -77,26 +77,15 @@ types, by uploading the new currency contract to the server. (This
 functionality is comparable to Ricardo, the transaction server by
 IanG.)
 
--- No Account History. Client and server are able to agree on
-balances while simultaneously not storing any transaction history.
-No digital assets can ever be transferred or withdrawn without an
-authorizing signature from the account owner. (Account transfers are
-received via inbox. See Bill St. Clair's excellent Trubanc for an
-example of this.)
-
 -- No Account History. Client and server are able to conduct
-transactions and agree on current holdings via signed receipts. An
-"asset account" is not according to the traditional sense of the word
-("a list of transactions, with a balance, used in double-entry book-
-keeping.") In the user interface, OT is able to mimic the account
-metaphor, making usage intuitive, even though no actual "account"
-need be stored on either side, other than the signed receipt itself!
-See Bill St. Clair's excellent Truledger (http://truledger.com/) for
-another example of this concept.
+transactions, and agree on current holdings, via signed receipts,
+without the need to store any transaction history (beyond the
+last receipt itself.) See Bill St. Clair's excellent Truledger
+(http://truledger.com/) for another example of this concept.
 
 -- Open Transactions also features MARKETS. Any two asset types can
 be traded against each other. The markets are full-featured and
-include LIMIT ORDERS, STOP ORDERS, FILL-OR-KILL orders, DAY orders
+include LIMIT ORDERS, STOP ORDERS, FILL-or-KILL orders, DAY orders
 (date ranges), and stop limits.
 
 -- Open Transactions also supports BASKET CURRENCIES. Users can

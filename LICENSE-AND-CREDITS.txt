@@ -166,70 +166,161 @@ Public key for "FellowTraveler", author:
 A few relevant notes, followed by contributor credits:
 
 
-
-"Because you say, 'I am rich, and increased with goods, and I need nothing,' 
-and you know not that you are wretched, and miserable, and poor, and blind, 
-and naked...
-"I counsel you to buy from me gold refined by fire, so that you may be rich, 
-and white garments so that you may clothe yourself and the shame of your 
-nakedness may not be seen, and salve to anoint your eyes, so that you may see."
-Rev. 3:17-18
-
 "The silver is mine, and the gold is mine, says the LORD of hosts."
 Haggai 2:8 
 
 "By your wisdom and your understanding you have made wealth for 
-yourself, and have gathered gold and silver into your treasuries"
+ yourself, and have gathered gold and silver into your treasuries"
 Ezekiel 28:4
 
 "Precious treasure and oil are in a wise man's dwelling,
-but a foolish man devours it."
+ but a foolish man devours it."
 Proverbs 21:20
+
+"Because you say, 'I am rich, and increased with goods, and I need nothing,' 
+ and you know not that you are wretched, and miserable, and poor, and blind, 
+ and naked...
+"I counsel you to buy from me gold refined by fire, so that you may be rich, 
+ and white garments so that you may clothe yourself and the shame of your 
+ nakedness may not be seen, and salve to anoint your eyes, so that you may see."
+Rev. 3:17-18
+
+"Say to the children of Israel, I am the LORD, 
+ and I will bring you out from under the burdens of the Egyptians, 
+ and I will rid you out of their bondage, 
+ and I will redeem you with a stretched out arm, 
+ and with great judgments.
+And I will take you to me for a people, 
+ and I will be to you a God: 
+ and you shall know that I am the LORD your God, 
+ which brings you out from under the burdens of the Egyptians. 
+And I will bring you in unto the land, 
+ concerning which I did swear to give it to Abraham, to Isaac, and to Jacob; 
+and I will give it you for an heritage: I am the LORD."
+Exodus 6:6-9
+
+"After the doings of the land of Egypt, 
+  where you dwelt, you shall not do: 
+ and after the doings of the land of Canaan, 
+  where I bring you, you shall not do: 
+ neither shall you walk in their ordinances. 
+You shall do my judgments, and keep mine ordinances, 
+ to walk therein: I am the LORD your God. 
+You shall therefore keep my statutes, and my judgments: 
+ which if a man do, he shall live in them: I am the LORD."
+Leviticus 18:1-5
+
+"Do what is right and good in the Lord's sight, 
+ so all will go well with you."
+Deuteronomy 6:18
+
+"Hate evil, and love good, 
+ and establish justice in the courts."
+Amos 5:15
+
+"Except the LORD build the house, they labor in vain that build it: 
+ except the LORD keep the city, the watchman wakes in vain."
+Psalms 127
+
+"Justice, and only justice, you shall follow, that you may live and
+ inherit the land that the Lord your God is giving you."
+Deuteronomy 16:20
+
+"Select capable men from all the people,
+ men who fear God, trustworthy men who hate dishonest gain,
+ and appoint them as officials over thousands, hundreds, fifties and tens."
+Exodus 18:21
+
+"Let every soul be subject unto the higher powers. 
+ For there is no power but of God: 
+  the powers that be are ordained of God. 
+ Whosoever therefore resists the power, resists the ordinance of God: 
+  and they that resist shall receive to themselves condemnation. 
+ For rulers are not a terror to good works, but to the evil. 
+ Will you then not be afraid of the power? 
+ Do that which is good, and you shall have praise of the same: 
+ For he is the minister of God to you for good. 
+ But if you do that which is evil, be afraid; 
+  for he bears not the sword in vain: 
+  for he is the minister of God, 
+  a revenger to execute wrath upon him that does evil. 
+ Therefore you must be subject, not only for wrath, 
+  but also for conscience sake."
+Romans 13:1-5
+
+"Then came also publicans to be baptized, and said unto Him, 
+  'Master, what shall we do?' 
+  And He said to them, 'Exact no more than that which is appointed you.' 
+  And the soldiers likewise demanded of Him, saying, 'And what shall we do?'
+  And He said unto them, 'Do violence to no man, neither accuse any falsely;
+   and be content with your wages.'"
+Luke 3:12-14
+
+"Woe unto them that decree unrighteous decrees, and 
+ that write grievousness which they have prescribed;"
+Isaiah 10:1
+
+"Do not pervert justice; 
+ do not show partiality to the poor 
+ or favoritism to the strong, 
+ but judge your neighbor fairly."
+Leviticus 19:15
+
+"You shall not accept a bribe, 
+ for a bribe blinds the eyes of the wise
+ and subverts the cause of the righteous."
+Deuteronomy 16:19
 
 "You shall not steal."
 Exodus 20:15  
 
+"You shall not lend upon usury to thy brother; 
+ usury of money, usury of victuals, 
+ usury of any thing that is lent upon usury: 
+ Unto a stranger you may lend upon usury; 
+ but unto your brother you shall not lend upon usury: 
+ that the LORD your God may bless you in all that you set your hand to 
+ in the land whither you go to possess it."
+Deut 23:19-20
+
 "You shall not have different weights in your bag, a great and a small.
-You shall not have different measures in your house, a great and a small.
-But you shall have a perfect and just weight, a perfect and just measure 
-you shall have: That your days may be lengthened in the land which the 
-LORD your God gives you."
+ You shall not have different measures in your house, a great and a small.
+ But you shall have a perfect and just weight, a perfect and just measure 
+ you shall have: That your days may be lengthened in the land which the 
+ LORD your God gives you."
 Deuteronomy 25:13  
 
 "Different weights, and different measures, both of them are alike 
-abomination to the LORD."
+ abomination to the LORD."
 Proverbs 20:10
-
-"Be not deceived; God is not mocked: for whatsoever a man sows, 
-he shall also reap."
-Galatians 6:7 
-
-"Do not pervert justice; do not show partiality to the poor or favoritism 
-to the strong, but judge your neighbor fairly."
-Leviticus 19:15
-
-"The rich rule over the poor, and the borrower is servant to the lender."
-Proverbs 22:7  
 
 "You cannot serve both God and Mammon."
 Luke 16:13
 
+"The rich rule over the poor, and the borrower is servant to the lender."
+Proverbs 22:7  
+
+"Be not deceived; God is not mocked: for whatsoever a man sows, 
+ he shall also reap."
+Galatians 6:7 
+
 "You are bought with a price; be you not the servants of men."
 1 Corinthians 7:23 
 
-"Now the Lord is the Spirit, and where the Spirit of the Lord is,
-there is liberty."
+"Now the Lord is the Spirit, 
+ and where the Spirit of the Lord is,
+ there is liberty."
 2 Corinthians 3:17
-
-"So in everything, do unto others what you would have them do unto you,
-for this sums up the Law and the Prophets."
-Matthew 7:12
-
-"Is it not lawful for me to do what I wish with my own things?"
--Jesus Christ, Matthew 20:15
 
 "Proclaim liberty throughout all the land unto all its inhabitants."
 Leviticus 25:10
+
+"From any tree of the garden you may eat freely;"
+Genesis 2:16a
+
+"So in everything, do unto others what you would have them do unto you,
+for this sums up the Law and the Prophets."
+-Jesus Christ, Matthew 7:12
 
 "We must obey God rather than men."
 -Acts 5:29
@@ -240,42 +331,100 @@ Leviticus 25:10
 Isaiah 33:22
 
 "And it shall come to pass, if you listen diligently to the voice of the
-Lord your God, to observe and to do all his commandments which I command
-you today, that the Lord your God will set you on high, above all nations
-of the earth"
+ Lord your God, to observe and to do all his commandments which I command
+ you today, that the Lord your God will set you on high, above all nations
+ of the earth"
 Deuteronomy 28:1
 
 "Righteousness exalts a nation." 
 Proverbs 14:34
 
+"Observe and hear all these words which I command you, that it may
+ go well with you, and with your children after you forever, when you 
+ do that which is good and right in the sight of the LORD your God."
+Deuteronomy 12:28-32
+
+"Tell the righteous it will be well with them, 
+ for they will enjoy the fruit of their labor."
+Isaiah 3:10
+
+"A righteous man knows the rights of the poor;
+ a wicked man does not understand such knowledge."
+Proverbs 29:7
+
+"Is it not lawful for me to do what I wish with my own things?"
+-Jesus Christ, Matthew 20:15
+
 "The man who looks intently into the perfect law that gives freedom, 
-and continues to do this, not forgetting what he has heard, but doing
-it-he will be blessed in what he does."
+ and continues to do this, not forgetting what he has heard, but doing it,
+ he will be blessed in what he does."
 James 1:25
 
 "It is for freedom that Christ has set us free. Stand firm, then, 
-and do not let yourselves be burdened again by a yoke of slavery." 
+ and do not let yourselves be burdened again by a yoke of slavery." 
 -Galatians 5:1
 
-"A foolish man built his house upon the sand and the rain descended, 
-and the rivers came, and the winds blew, and they dashed against that 
-house; and it fell, and its fall was great."
+"My people are destroyed for lack of knowledge: 
+ because you have rejected knowledge, 
+ I will also reject you, 
+ that you shall be no priest to me: 
+ seeing you have forgotten the law of your God, 
+ I will also forget your children."
+Hosea 4:6
+
+"A foolish man built his house upon the sand,
+ and the rain descended, 
+ and the rivers came, 
+ and the winds blew, 
+ and they dashed against that house; 
+ and it fell, and its fall was great."
 Luke 7:25-26
 
+"Come now you rich, weep and howl for your miseries 
+   which are coming upon you.
+   Your riches have rotted and your garments,
+   have become moth-eaten.
+ Your gold and your silver have rusted; 
+   and their rust will be a witness against you 
+   and will consume your flesh like fire. 
+   It is in the last days that you have stored up your treasure!
+"Behold, the pay of the laborers who mowed your fields, 
+   and which has been withheld by you, cries out against you; 
+   and the outcry of those who did the harvesting
+   has reached the ears of the Lord of the Sabbath.
+ You have lived luxuriously on the earth
+   and led a life of wanton pleasure; 
+   you have fattened your hearts 
+   in a day of slaughter.
+ You have condemned and murdered the righteous man;"
+James 5:1-6
+
 "...And you had turned, and had done right in my sight, in 
-proclaiming liberty, every man to his neighbor; and you had made a 
-covenant before me in the house which is called by my name.
-    "But you turned and polluted my name, and caused every man his
-servant, and every man his handmaid, whom you had set at liberty, to 
-return, and brought them into subjection, to be your servants and 
-handmaids.
-    "Therefore thus says the Lord; You have not hearkened unto me, 
-in proclaiming a liberty, every one to his brother, and every man to his
-neighbor: behold, I proclaim a liberty for you, says the Lord, to the 
-sword, to the pestilence, and to the famine; and I will make you to be 
-removed into all the kingdoms of the earth."
+ proclaiming liberty, every man to his neighbor; and you had made a 
+ covenant before me in the house which is called by my name.
+"But you turned and polluted my name, and caused every man his
+ servant, and every man his handmaid, whom you had set at liberty, to 
+ return, and brought them into subjection, to be your servants and 
+ handmaids.
+"Therefore thus says the Lord; You have not hearkened unto me, 
+ in proclaiming a liberty, every one to his brother, and every man to his
+ neighbor: behold, I proclaim a liberty for you, says the Lord, to the 
+ sword, to the pestilence, and to the famine; and I will make you to be 
+ removed into all the kingdoms of the earth."
 Jeremiah 34:15-17
 
+"In the last days... everyone will 
+   sit under their own vine,
+   and under their own fig tree, 
+   and no one will make them afraid, 
+   for the LORD Almighty has spoken."
+Micah 4:1-4
+
+"Because the creature itself also shall be delivered 
+ from the bondage of corruption 
+ into the glorious liberty 
+ of the children of God."
+Romans 8:21
 
 
 
