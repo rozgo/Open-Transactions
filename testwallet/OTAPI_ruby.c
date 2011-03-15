@@ -2122,6 +2122,33 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_OT_API_GetAccountWallet_ServerID(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetAccountWallet_ServerID" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_GetAccountWallet_ServerID((char const *)arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_OT_API_GetNym_TransactionNumCount(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -2882,6 +2909,33 @@ _wrap_OT_API_LoadAssetContract(int argc, VALUE *argv, VALUE self) {
   }
   arg1 = (char *)(buf1);
   result = (char *)OT_API_LoadAssetContract((char const *)arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_LoadServerContract(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_LoadServerContract" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_LoadServerContract((char const *)arg1);
   vresult = SWIG_FromCharPtr((const char *)result);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return vresult;
@@ -6399,6 +6453,7 @@ SWIGEXPORT void Init_otapi(void) {
   rb_define_module_function(mOtapi, "OT_API_GetAccountWallet_Balance", _wrap_OT_API_GetAccountWallet_Balance, -1);
   rb_define_module_function(mOtapi, "OT_API_GetAccountWallet_Type", _wrap_OT_API_GetAccountWallet_Type, -1);
   rb_define_module_function(mOtapi, "OT_API_GetAccountWallet_AssetTypeID", _wrap_OT_API_GetAccountWallet_AssetTypeID, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetAccountWallet_ServerID", _wrap_OT_API_GetAccountWallet_ServerID, -1);
   rb_define_module_function(mOtapi, "OT_API_GetNym_TransactionNumCount", _wrap_OT_API_GetNym_TransactionNumCount, -1);
   rb_define_module_function(mOtapi, "OT_API_GetNym_ID", _wrap_OT_API_GetNym_ID, -1);
   rb_define_module_function(mOtapi, "OT_API_GetNym_Name", _wrap_OT_API_GetNym_Name, -1);
@@ -6415,6 +6470,7 @@ SWIGEXPORT void Init_otapi(void) {
   rb_define_module_function(mOtapi, "OT_API_LoadPurse", _wrap_OT_API_LoadPurse, -1);
   rb_define_module_function(mOtapi, "OT_API_LoadMint", _wrap_OT_API_LoadMint, -1);
   rb_define_module_function(mOtapi, "OT_API_LoadAssetContract", _wrap_OT_API_LoadAssetContract, -1);
+  rb_define_module_function(mOtapi, "OT_API_LoadServerContract", _wrap_OT_API_LoadServerContract, -1);
   rb_define_module_function(mOtapi, "OT_API_IsBasketCurrency", _wrap_OT_API_IsBasketCurrency, -1);
   rb_define_module_function(mOtapi, "OT_API_Basket_GetMemberCount", _wrap_OT_API_Basket_GetMemberCount, -1);
   rb_define_module_function(mOtapi, "OT_API_Basket_GetMemberType", _wrap_OT_API_Basket_GetMemberType, -1);

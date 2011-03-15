@@ -39,7 +39,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
+    <IncludePath>C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\XmlRpcC4Win;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
     <LibraryPath>C:\~\OpenSSL-Win32\lib\VC;C:\~\Open-Transactions\OTLib\OTLib\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -51,7 +51,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;OT_XMLRPC_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -80,18 +80,27 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\XmlRpcC4Win\timxmlrpc.h" />
     <ClInclude Include="..\main.h" />
     <ClInclude Include="..\OTClientConnection.h" />
     <ClInclude Include="..\OTServer.h" />
-    <ClInclude Include="..\SSL-Example\SFSocket.h" />
+    <ClInclude Include="..\SSL-Example\SFSocket.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\XmlRpcC4Win\TimXmlRpc.cpp" />
     <ClCompile Include="..\OTClientConnection.cpp" />
     <ClCompile Include="..\OTServer.cpp" />
-    <ClCompile Include="..\SSL-Example\SFSocket.c" />
-    <ClCompile Include="..\testserver.cpp" />
+    <ClCompile Include="..\SSL-Example\SFSocket.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\testserver.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\xmlrpcxx_server.cpp" />
     <ClCompile Include="applink.c" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="transaction.cpp" />

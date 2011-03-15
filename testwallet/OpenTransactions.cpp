@@ -147,8 +147,12 @@ extern OT_API g_OT_API;
 
 // If you build in tcp/ssl mode, this file will build even if you don't have this library.
 // But if you build in xml/rpc/http mode, 
-#include "XmlRpc.h"  
+#ifdef _WIN32
+#include "timxmlrpc.h" // XmlRpcC4Win
+#else
+#include "XmlRpc.h"  // xmlrpcpp
 using namespace XmlRpc;
+#endif
 
 // The Callback so OT can give us messages to send using our xmlrpc transport.
 // Whenever OT needs to pop a message on over to the server, it calls this so we
@@ -178,6 +182,8 @@ void OT_XmlRpcCallback(OTServerContract & theServerContract, OTEnvelope & theEnv
 		// Here's our connection...
 #if defined (linux)
 		XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort, 0); // serverhost, port.
+#elif defined (_WIN32) 
+		XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort, NULL); // serverhost, port.
 #else
 		XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort); // serverhost, port.
 #endif
@@ -1322,6 +1328,54 @@ OTMint * OT_API::LoadMint(const OTIdentifier & SERVER_ID,
 	// that I have successfully loaded the Mint file...
 	
 	return pMint;
+}
+
+
+
+// LOAD SERVER CONTRACT (from local storage)
+//
+// Caller is responsible to delete.
+//
+OTServerContract * OT_API::LoadServerContract(const OTIdentifier & SERVER_ID)
+{
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	OTString strServerID(SERVER_ID);
+	
+	// -----------------------------------------------------------------
+	
+	bool bConfirmContractFolder = OTLog::ConfirmOrCreateFolder(OTLog::ContractFolder());
+	
+	if (!bConfirmContractFolder)
+	{
+		OTLog::vError("OT_API::LoadServerContract: Unable to find or "
+					  "create Contract directory: %s%s%s\n", 
+					  OTLog::Path(), OTLog::PathSeparator(), OTLog::ContractFolder());
+		
+		return NULL;
+	}
+	
+	// -----------------------------------------------------------------
+	
+	OTString strContractPath;
+	strContractPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
+						   OTLog::ContractFolder(),
+						   OTLog::PathSeparator(), strServerID.Get());
+	
+	OTServerContract * pContract = new OTServerContract(strServerID, strContractPath, strServerID);
+	
+	OT_ASSERT_MSG(NULL != pContract, "Error allocating memory for Server "
+				  "Contract in OT_API::LoadServerContract\n");
+	
+	if (pContract->LoadContract() && pContract->VerifyContract())
+	{
+		return pContract;
+	}
+	
+	delete pContract; 
+	pContract = NULL;
+	
+	return NULL;
 }
 
 

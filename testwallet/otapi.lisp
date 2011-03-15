@@ -97,6 +97,9 @@
 (cffi:defcfun ("OT_API_GetAccountWallet_AssetTypeID" OT_API_GetAccountWallet_AssetTypeID) :string
   (ACCOUNT_ID :string))
 
+(cffi:defcfun ("OT_API_GetAccountWallet_ServerID" OT_API_GetAccountWallet_ServerID) :string
+  (ACCOUNT_ID :string))
+
 (cffi:defcfun ("OT_API_GetNym_TransactionNumCount" OT_API_GetNym_TransactionNumCount) :int
   (SERVER_ID :string)
   (NYM_ID :string))
@@ -175,6 +178,9 @@
 
 (cffi:defcfun ("OT_API_LoadAssetContract" OT_API_LoadAssetContract) :string
   (ASSET_TYPE_ID :string))
+
+(cffi:defcfun ("OT_API_LoadServerContract" OT_API_LoadServerContract) :string
+  (SERVER_ID :string))
 
 (cffi:defcfun ("OT_API_IsBasketCurrency" OT_API_IsBasketCurrency) :int
   (ASSET_TYPE_ID :string))

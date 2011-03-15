@@ -101,6 +101,11 @@ public class otapi {
     return ret;
   }
 
+  public static string OT_API_GetAccountWallet_ServerID(string ACCOUNT_ID) {
+    string ret = otapiPINVOKE.OT_API_GetAccountWallet_ServerID(ACCOUNT_ID);
+    return ret;
+  }
+
   public static int OT_API_GetNym_TransactionNumCount(string SERVER_ID, string NYM_ID) {
     int ret = otapiPINVOKE.OT_API_GetNym_TransactionNumCount(SERVER_ID, NYM_ID);
     return ret;
@@ -178,6 +183,11 @@ public class otapi {
 
   public static string OT_API_LoadAssetContract(string ASSET_TYPE_ID) {
     string ret = otapiPINVOKE.OT_API_LoadAssetContract(ASSET_TYPE_ID);
+    return ret;
+  }
+
+  public static string OT_API_LoadServerContract(string SERVER_ID) {
+    string ret = otapiPINVOKE.OT_API_LoadServerContract(SERVER_ID);
     return ret;
   }
 

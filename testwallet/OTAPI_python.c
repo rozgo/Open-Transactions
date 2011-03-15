@@ -3112,6 +3112,31 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_OT_API_GetAccountWallet_ServerID(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:OT_API_GetAccountWallet_ServerID",&obj0)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetAccountWallet_ServerID" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_GetAccountWallet_ServerID((char const *)arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_OT_API_GetNym_TransactionNumCount(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   char *arg1 = (char *) 0 ;
@@ -3872,6 +3897,31 @@ SWIGINTERN PyObject *_wrap_OT_API_LoadAssetContract(PyObject *SWIGUNUSEDPARM(sel
   }
   arg1 = (char *)(buf1);
   result = (char *)OT_API_LoadAssetContract((char const *)arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_LoadServerContract(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:OT_API_LoadServerContract",&obj0)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_LoadServerContract" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_LoadServerContract((char const *)arg1);
   resultobj = SWIG_FromCharPtr((const char *)result);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return resultobj;
@@ -7199,6 +7249,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"OT_API_GetAccountWallet_Balance", _wrap_OT_API_GetAccountWallet_Balance, METH_VARARGS, NULL},
 	 { (char *)"OT_API_GetAccountWallet_Type", _wrap_OT_API_GetAccountWallet_Type, METH_VARARGS, NULL},
 	 { (char *)"OT_API_GetAccountWallet_AssetTypeID", _wrap_OT_API_GetAccountWallet_AssetTypeID, METH_VARARGS, NULL},
+	 { (char *)"OT_API_GetAccountWallet_ServerID", _wrap_OT_API_GetAccountWallet_ServerID, METH_VARARGS, NULL},
 	 { (char *)"OT_API_GetNym_TransactionNumCount", _wrap_OT_API_GetNym_TransactionNumCount, METH_VARARGS, NULL},
 	 { (char *)"OT_API_GetNym_ID", _wrap_OT_API_GetNym_ID, METH_VARARGS, NULL},
 	 { (char *)"OT_API_GetNym_Name", _wrap_OT_API_GetNym_Name, METH_VARARGS, NULL},
@@ -7215,6 +7266,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"OT_API_LoadPurse", _wrap_OT_API_LoadPurse, METH_VARARGS, NULL},
 	 { (char *)"OT_API_LoadMint", _wrap_OT_API_LoadMint, METH_VARARGS, NULL},
 	 { (char *)"OT_API_LoadAssetContract", _wrap_OT_API_LoadAssetContract, METH_VARARGS, NULL},
+	 { (char *)"OT_API_LoadServerContract", _wrap_OT_API_LoadServerContract, METH_VARARGS, NULL},
 	 { (char *)"OT_API_IsBasketCurrency", _wrap_OT_API_IsBasketCurrency, METH_VARARGS, NULL},
 	 { (char *)"OT_API_Basket_GetMemberCount", _wrap_OT_API_Basket_GetMemberCount, METH_VARARGS, NULL},
 	 { (char *)"OT_API_Basket_GetMemberType", _wrap_OT_API_Basket_GetMemberType, METH_VARARGS, NULL},

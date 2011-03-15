@@ -9,135 +9,102 @@ OpenTransactions for WINDOWS
      - Linux Ubuntu 2.6.32 and FreeBSD using g++/gcc.
      - Android 8 using NDK.
  
- --- OpenSSL version 1.0.0a (at least) is necessary, since the SAMY hash 
-     uses WHRLPOOL. (XOR'd with SHA-512.) WHIRLPOOL is a new addition to 
-     OpenSSL.  Currently the code is up to 1.0.0c.
+ --- OpenSSL version 1.0.0a (at least) is necessary, since the SAMY hash uses WHRLPOOL. (XOR'd with SHA-512.) WHIRLPOOL is a new addition to OpenSSL.  Currently the code is up to 1.0.0d.
  
- --- Let me know if there are any problems, since this is new software;
-     this will be a living document.
+ --- Let me know if there are any problems, since this is new software; this will be a living document.
  
 
 FOR MICROSOFT WINDOWS:
 
-1) I used Microsoft Visual C++ 2010 Express, which is free, to build Open 
-Transactions on Windows 7, which I run on my Mac at home (in a virtual 
-machine, in a little window next to all my Mac apps.) I think it would have
-worked fine with VS 2008, but 2010 is the one I installed.
-
-(The irony of sitting on a Mac and working on Windows software was not 
-lost on me.)
+1) I used Microsoft Visual C++ 2010 Express, which is free, to build Open Transactions on Windows 7.
 
 ------------
 
-2) If you prefer to run in XmlRpc/HTTP mode (transport protocol), which is
-   the preferred mode, then you must install the XmlRpc++ library, which you
-   can get right here:  http://xmlrpcpp.sourceforge.net/
-   It's available for Windows.  If you don't want to install the library, that's
-   okay, since the default build uses the OTMessage -> TCP -> SSL transport mode.
+2) The Windows versions are currently set up for XmlRpc on the client AND on the server. The server doesn't work in XmlRpc mode (IN WINDOWS -- it works fine elsewhere).  
 
-PS the distribution now comes with a copy of XmlRpc++, so I might just be able to
-add it to the Windows project file... Simply not sure yet.
- 
+What's important with Windows is the CLIENT, anyway.
+
+FYI, Windows client AND server both work in TCP/SSL mode, but I doubt you want that...
+
 ------------
 
-3) I had to install OpenSSL for Windows, (version 1.0.0 at least is necessary 
-for Open Transactions to function properly.) The download page is here:
+3) I had to install OpenSSL for Windows, (version 1.0.0 at least is necessary for Open Transactions to function properly.) The download page is here:
+
 http://www.slproweb.com/products/Win32OpenSSL.html
 
 (I found it by looking here: http://www.openssl.org/related/binaries.html)
 
 The specific OpenSSL version that I installed was this one:
+Win32 OpenSSL v1.0.0d
+http://www.slproweb.com/download/Win32OpenSSL-1_0_0d.exe
 
-Win32 OpenSSL v1.0.0a
-http://www.slproweb.com/download/Win32OpenSSL-1_0_0a.exe
+IMPORTANT: While the default install folder for OpenSSL is:
+    "C:\OpenSSL-Win32", HOWEVER, DO NOT USE THIS LOCATION!
 
-
-(But you might poke around there and see if they have build c, which is newer.)
-
-
-IMPORTANT: While the default install folder for OpenSSL is "C:\OpenSSL-Win32",
 I HAVE INSTEAD INSTALLED IT HERE:   "C:\~\OpenSSL-Win32"
-This is at the request of our only known Windows developer.
+This is at the request of our only known Windows developer. Notice the TILDE character in that path!
 
 THEREFORE, make sure you install OpenSSL to that folder, again: C:\~\OpenSSL-Win32
 
-...since that is where the project will assume that it can be found. If you prefer
-to install to the default location, be warned that you need to update the path in
-various files in the project for it to work.
+...since that is where the project will assume that it can be found. If you prefer to install to the default location, be warned that you need to update the path in various project files in order for it to work.
 
 ------------
 
 4) Then I had to download these header files:
 http://code.google.com/p/msinttypes/downloads/detail?name=msinttypes-r26.zip&can=2&q=
 
-Once you download the header files, unzip them so that they appear in your
-C:\~\OpenSSL-Win32\include folder, (which we will later add to the path in the
-library project.)
+Once you download the header files, unzip them so that they appear in your C:\~\OpenSSL-Win32\include folder, (and this path is specified in the OTLib project, so make sure you use the same path.)
 
-Those were headers that are included in Unix but not Windows, so you just
-have to download them separately and put them into an include folder.
+(Those were headers that are included in Unix but not Windows, so you just have to download them separately and put them into an include folder. That's what this step (4) does.)
 
 ------------
 
 5) Then I created a Win32 command-line application and chose 'library' as the type.
-(You won't have to do this since it's already done: I have included the project files 
-with this distribution.)
 
-Then I copied all of the OTLib files into the new Win32 OTLib folder for my
-new project.
+(YOU DON'T HAVE TO WORRY ABOUT THIS STEP, since it's already done: I have included the project files with this distribution.)
 
---- I also created Visual C++ projects for transaction and testwallet (the server and
-client.) I created them as normal command-line applications, and I copied the files of
-each to their respective folders and added to each project as appropriate.
+FYI, then I copied all of the OTLib files into the new Win32 OTLib folder for my new project.
+
+I also created Visual C++ projects for transaction and testwallet (the server and client.) I created them as normal command-line applications, and I copied the files of each to their respective folders and added to each project as appropriate.
 
 ------------
 
-6) Transaction server and client both still have a hardcoded path in the source code. 
-(It's just a default path and IS configurable on the command line.)
+The idea is for you to use C:\~\Open-Transactions as your main folder. If you do that, all the paths are ALREADY set up for you correctly.
 
-Search the code for "C:\\", which appears once in the client and 
-once in the server for each platform.
-
-The relevant source code: Open-Transactions\transaction\server.cpp and 
-Open-Transactions\testwallet\client.cpp
-
-Replace the REDACTED (entire path) with whatever path is appropriate for your system.
-The path needs to be whatever is appropriate for your system. But the idea is for you
-to use C:\~\Open-Transactions as your main folder. If you do that, all the paths are
-ALREADY set up for you correctly.
-
-(Otherwise you'd have to search the project and fix them all, which is not a big deal
-if you prefer to do that.)
+(Otherwise you'd have to search the project and fix them all, which is not a big deal if you prefer to do that.)
 
 CONFIG FILES:
-Any path corrections should be unnecessary if you install to C:\~\Open-Transactions
-but if you prefer to use different directories, you will have to fix the path in 
-these locations:
- 
-The server config file: 
-Open-Transactions\transaction\notaryServer.xml
+Any path corrections should be unnecessary if you install to 
+C:\~\Open-Transactions
+but if you prefer to use different directories, you will have to fix the path in these locations:
 
-As well as the client config file:  
-Open-Transactions\testwallet\wallet.xml
-
-On Windows, if you use the VC++ project files that I distributed, the paths are in 
-these files: 
+On Windows, if you use the VC++ project files that I distributed, the paths are in these files: 
 Open-Transactions\testwallet\testwallet\testwallet.vcxproj
 Open-Transactions\transaction\transaction\transaction.vcxproj
 Open-Transactions\OTLib\OTLib\OTLib.vcxproj
 
-
 ------
+
+
+
+YOU'RE BASICALLY DONE. Built OTLib, then CPP_API_Windows, then JNI_API_WINDOWS.
+
+(Or build the testwallet if you prefer, but I prefer you want the Java API...)
+
+BELOW ARE ONLY FOR MY NOTES:
+
+
+
+
+-------------------
+
+
 
 7) The VC++ projects should be set up with precompiled headers turned OFF. 
 
-(Under C/C++, click on Precompiled Headers and made sure I set "Precompiled
-Header" to "Not Using Precompiled Headers".)
+(Under C/C++, click on Precompiled Headers and made sure I set "Precompiled Header" to "Not Using Precompiled Headers".)
 
-NOTE: You should be able to use any good C++ compiler for Windows that you want to.
-As long as you get the right headers and libraries etc. But VC++ 2010 is what I
-used, since it was free.
-
+NOTE: You should be able to use any good C++ compiler for Windows that you want to, as long as you get the right headers and libraries etc. But VC++ 2010 is what I used, since it was free.
 
 
 ------
@@ -151,8 +118,7 @@ C:\~\Open-Transactions\OTLib\Lucre;
 C:\~\OpenSSL-Win32\include;
 $(IncludePath)
 
-(I added newlines to make it easier for you to decipher.)  Make sure your own
-project includes the OpenSSL path and the Lucre path as appropriate for your system.
+(I added newlines to make it easier for you to decipher.)  Make sure your own project includes the OpenSSL path and the Lucre path as appropriate for your system.
 
 -----
 
@@ -164,8 +130,7 @@ C:\~\OpenSSL-Win32\include;
 C:\~\Open-Transactions\OTLib;
 $(IncludePath)
 
-Again, I added newlines above to make it easier to read. When I copied it, this 
-was all on a single line.
+Again, I added newlines above to make it easier to read. When I copied it, this was all on a single line.
 
 Just underneath that are the Library Directories. Mine is set to:
 C:\~\OpenSSL-Win32\lib\VC;

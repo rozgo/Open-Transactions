@@ -94,20 +94,28 @@
 #include <map>
 #include <algorithm>
 
+#ifdef _WIN32 // Including this so it'll be above the openssl/ssl.h
+#include <winsock.h> // So there won't be a conflict with WinCrypt.h due to Windows sucking
+#endif
+
 
 extern "C"
 {
+#include <openssl/crypto.h>
+#include <openssl/ssl.h>
+	
 #include <openssl/sha.h>
-
+	
 #include <openssl/pem.h>
 #include <openssl/conf.h>
 #include <openssl/x509v3.h>
+	
 #ifndef OPENSSL_NO_ENGINE
 #include <openssl/engine.h>
 #endif
 	
-int mkcert(X509 **x509p, EVP_PKEY **pkeyp, int bits, int serial, int days);
-int add_ext(X509 *cert, int nid, char *value);
+	int mkcert(X509 **x509p, EVP_PKEY **pkeyp, int bits, int serial, int days);
+	int add_ext(X509 *cert, int nid, char *value);
 	
 }
 
@@ -131,6 +139,7 @@ using namespace io;
 #include "OTTransaction.h"
 
 #include "OTLog.h"
+
 
 
 

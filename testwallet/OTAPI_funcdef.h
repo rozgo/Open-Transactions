@@ -198,7 +198,8 @@ const char * OT_API_GetAccountWallet_ID(int nIndex);	 // returns a string contai
 const char * OT_API_GetAccountWallet_Name(const char * ACCOUNT_ID);	 // returns the account name, based on account ID.
 const char * OT_API_GetAccountWallet_Balance(const char * ACCOUNT_ID);	 // returns the account balance, based on account ID.
 const char * OT_API_GetAccountWallet_Type(const char * ACCOUNT_ID);	 // returns the account type (simple, issuer, etc)
-const char * OT_API_GetAccountWallet_AssetTypeID(const char * ACCOUNT_ID);	 // returns asset type of the account
+const char * OT_API_GetAccountWallet_AssetTypeID(const char * ACCOUNT_ID);	 // returns asset type ID of the account
+const char * OT_API_GetAccountWallet_ServerID(const char * ACCOUNT_ID);	 // returns Server ID of the account
 
 
 
@@ -469,9 +470,9 @@ int OT_API_VerifyUserPrivateKey(const char * USER_ID); // returns OT_BOOL
 
 
 // --------------------------------------------------------------
-/// LOAD PURSE / MINT / ASSET CONTRACT -- (from local storage)
+/// LOAD PURSE or MINT or ASSET CONTRACT or SERVER CONTRACT -- (from local storage)
 ///
-/// Based on Asset Type ID: load a purse, a public mint, or an asset contract
+/// Based on Asset Type ID: load a purse, a public mint, or an asset/server contract
 /// and return it as a string -- or return NULL if it wasn't found.
 ///
 const char * OT_API_LoadPurse(const char * SERVER_ID,
@@ -481,6 +482,8 @@ const char * OT_API_LoadMint(const char * SERVER_ID,
 							 const char * ASSET_TYPE_ID); // returns NULL, or a mint
 
 const char * OT_API_LoadAssetContract(const char * ASSET_TYPE_ID); // returns NULL, or an asset contract.
+
+const char * OT_API_LoadServerContract(const char * SERVER_ID); // returns NULL, or a server contract.
 
 
 

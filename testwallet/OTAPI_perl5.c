@@ -2151,6 +2151,35 @@ XS(_wrap_OT_API_GetAccountWallet_AssetTypeID) {
 }
 
 
+XS(_wrap_OT_API_GetAccountWallet_ServerID) {
+  {
+    char *arg1 = (char *) 0 ;
+    char *result = 0 ;
+    int res1 ;
+    char *buf1 = 0 ;
+    int alloc1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OT_API_GetAccountWallet_ServerID(ACCOUNT_ID);");
+    }
+    res1 = SWIG_AsCharPtrAndSize(ST(0), &buf1, NULL, &alloc1);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetAccountWallet_ServerID" "', argument " "1"" of type '" "char const *""'");
+    }
+    arg1 = (char *)(buf1);
+    result = (char *)OT_API_GetAccountWallet_ServerID((char const *)arg1);
+    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    XSRETURN(argvi);
+  fail:
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    SWIG_croak_null();
+  }
+}
+
+
 XS(_wrap_OT_API_GetNym_TransactionNumCount) {
   {
     char *arg1 = (char *) 0 ;
@@ -2945,6 +2974,35 @@ XS(_wrap_OT_API_LoadAssetContract) {
     }
     arg1 = (char *)(buf1);
     result = (char *)OT_API_LoadAssetContract((char const *)arg1);
+    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    XSRETURN(argvi);
+  fail:
+    if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OT_API_LoadServerContract) {
+  {
+    char *arg1 = (char *) 0 ;
+    char *result = 0 ;
+    int res1 ;
+    char *buf1 = 0 ;
+    int alloc1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OT_API_LoadServerContract(SERVER_ID);");
+    }
+    res1 = SWIG_AsCharPtrAndSize(ST(0), &buf1, NULL, &alloc1);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_LoadServerContract" "', argument " "1"" of type '" "char const *""'");
+    }
+    arg1 = (char *)(buf1);
+    result = (char *)OT_API_LoadServerContract((char const *)arg1);
     ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
     if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
     XSRETURN(argvi);
@@ -6428,6 +6486,7 @@ static swig_command_info swig_commands[] = {
 {"otapic::OT_API_GetAccountWallet_Balance", _wrap_OT_API_GetAccountWallet_Balance},
 {"otapic::OT_API_GetAccountWallet_Type", _wrap_OT_API_GetAccountWallet_Type},
 {"otapic::OT_API_GetAccountWallet_AssetTypeID", _wrap_OT_API_GetAccountWallet_AssetTypeID},
+{"otapic::OT_API_GetAccountWallet_ServerID", _wrap_OT_API_GetAccountWallet_ServerID},
 {"otapic::OT_API_GetNym_TransactionNumCount", _wrap_OT_API_GetNym_TransactionNumCount},
 {"otapic::OT_API_GetNym_ID", _wrap_OT_API_GetNym_ID},
 {"otapic::OT_API_GetNym_Name", _wrap_OT_API_GetNym_Name},
@@ -6444,6 +6503,7 @@ static swig_command_info swig_commands[] = {
 {"otapic::OT_API_LoadPurse", _wrap_OT_API_LoadPurse},
 {"otapic::OT_API_LoadMint", _wrap_OT_API_LoadMint},
 {"otapic::OT_API_LoadAssetContract", _wrap_OT_API_LoadAssetContract},
+{"otapic::OT_API_LoadServerContract", _wrap_OT_API_LoadServerContract},
 {"otapic::OT_API_IsBasketCurrency", _wrap_OT_API_IsBasketCurrency},
 {"otapic::OT_API_Basket_GetMemberCount", _wrap_OT_API_Basket_GetMemberCount},
 {"otapic::OT_API_Basket_GetMemberType", _wrap_OT_API_Basket_GetMemberType},

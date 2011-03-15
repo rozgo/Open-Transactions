@@ -26,6 +26,7 @@ class otapiJNI {
   public final static native String OT_API_GetAccountWallet_Balance(String jarg1);
   public final static native String OT_API_GetAccountWallet_Type(String jarg1);
   public final static native String OT_API_GetAccountWallet_AssetTypeID(String jarg1);
+  public final static native String OT_API_GetAccountWallet_ServerID(String jarg1);
   public final static native int OT_API_GetNym_TransactionNumCount(String jarg1, String jarg2);
   public final static native String OT_API_GetNym_ID(int jarg1);
   public final static native String OT_API_GetNym_Name(String jarg1);
@@ -42,6 +43,7 @@ class otapiJNI {
   public final static native String OT_API_LoadPurse(String jarg1, String jarg2);
   public final static native String OT_API_LoadMint(String jarg1, String jarg2);
   public final static native String OT_API_LoadAssetContract(String jarg1);
+  public final static native String OT_API_LoadServerContract(String jarg1);
   public final static native int OT_API_IsBasketCurrency(String jarg1);
   public final static native int OT_API_Basket_GetMemberCount(String jarg1);
   public final static native String OT_API_Basket_GetMemberType(String jarg1, int jarg2);

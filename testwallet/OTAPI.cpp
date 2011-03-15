@@ -795,8 +795,8 @@ const char * OT_API_GetAccountWallet_Type(const char * THE_ID)
 
 
 
-// Returns an account's asset type ID, based on account ID.
-// (Which is a hash of the contract used to issue the asset type.)
+/// Returns an account's asset type ID, based on account ID.
+/// (Which is a hash of the contract used to issue the asset type.)
 const char * OT_API_GetAccountWallet_AssetTypeID(const char * THE_ID)
 {
 	OT_ASSERT_MSG(NULL != THE_ID, "Null THE_ID passed in.");
@@ -822,6 +822,37 @@ const char * OT_API_GetAccountWallet_AssetTypeID(const char * THE_ID)
 	
 	return NULL;	
 }
+
+
+
+/// Returns an account's Server ID, based on account ID.
+/// (Which is a hash of the server contract.)
+const char * OT_API_GetAccountWallet_ServerID(const char * THE_ID)
+{
+	OT_ASSERT_MSG(NULL != THE_ID, "Null THE_ID passed in.");
+	
+	OTIdentifier	theID(THE_ID);
+	
+	OTAccount * pContract = g_OT_API.GetAccount(theID);
+	
+	if (NULL != pContract)
+	{		
+		OTString strServerID(pContract->GetPurportedServerID());
+		
+		const char * pBuf = strServerID.Get(); 
+		
+#ifdef _WIN32
+		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+		strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+		
+		return g_tempBuf;
+	}
+	
+	return NULL;	
+}
+
 
 
 // --------------------------------------------------
@@ -1469,7 +1500,7 @@ const char * OT_API_LoadMint(const char * SERVER_ID,
 		return g_tempBuf;
 	}
 	
-	return NULL;		
+	return NULL;
 }
 
 
@@ -1490,6 +1521,43 @@ const char * OT_API_LoadAssetContract(const char * ASSET_TYPE_ID) // returns NUL
 	{
 		OTLog::vOutput(0, "Failure calling OT_API::LoadAssetContract in OT_API_LoadAssetContract.\n "
 					   "Asset Type: %s\n", ASSET_TYPE_ID);
+	}
+	else // success 
+	{
+		OTString strOutput(*pContract); // For the output
+		
+		const char * pBuf = strOutput.Get(); 
+		
+#ifdef _WIN32
+		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+		strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+		
+		return g_tempBuf;
+	}
+	
+	return NULL;			
+}
+
+
+const char * OT_API_LoadServerContract(const char * SERVER_ID) // returns NULL, or an asset contract
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	
+	const OTIdentifier theServerID(SERVER_ID);
+	
+	// There is an OT_ASSERT in here for memory failure,
+	// but it still might return NULL if various verification fails.
+	OTServerContract * pContract = g_OT_API.LoadServerContract(theServerID); 
+	
+	// Make sure it gets cleaned up when this goes out of scope.
+	OTCleanup<OTServerContract>	theAngel(pContract); // I pass the pointer, in case it's NULL.
+	
+	if (NULL == pContract)
+	{
+		OTLog::vOutput(0, "Failure calling OT_API::LoadServerContract in OT_API_LoadServerContract.\n "
+					   "Server ID: %s\n", SERVER_ID);
 	}
 	else // success 
 	{
@@ -1684,19 +1752,19 @@ const char * OT_API_LoadOutbox(const char * SERVER_ID,
 
 // --------------------------------------------------------------
 
-/*
+/**
  SO HOW WOULD YOU **USE** THIS?  To process your inbox...
  
  -- First you call OT_API_getInbox to grab the latest inbox from the server.
  
  -- Then you call OT_API_LoadInbox to load it from local storage.
  
- (At this time, your user has the opportunity to peruse the
+ (During this time, your user has the opportunity to peruse the
  inbox, and to decide which transactions therein he wishes to 
  accept or reject.)
  
  -- Then call OT_API_Ledger_CreateResponse in order to create a
- 'response' ledger for that inbox, (which will be sent to the server.)
+ 'response' ledger for that inbox, which will be sent to the server.
  
  -- Then call OT_API_Ledger_GetCount (pass it the inbox) to find out how many 
  transactions are inside of it.  Use that count to LOOP through them...
@@ -1707,6 +1775,9 @@ const char * OT_API_LoadOutbox(const char * SERVER_ID,
  -- Call OT_API_Transaction_CreateResponse to create a response for each
  transaction, accepting or rejecting it, and adding it to the response
  ledger.
+ 
+ -- Penultimately, call OT_API_Ledger_FinalizeResponse() which will create
+ a Balance Agreement for the ledger.
  
  -- Finally, call OT_API_processInbox to send that response ledger to the
  server and process the various items.

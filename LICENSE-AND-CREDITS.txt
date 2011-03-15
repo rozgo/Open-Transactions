@@ -2,7 +2,7 @@
 
 /*************************************************************************
  *    
- * Open Transactions 0.44 -- Library, API, Protocol, Server, Test Client
+ * Open Transactions 0.45 -- Library, API, Protocol, Server, Test Client
  *    
  *    			-- Anonymous Numbered Accounts...
  *    			-- Untraceable Digital Cash...
@@ -271,9 +271,6 @@ Leviticus 19:15
  and subverts the cause of the righteous."
 Deuteronomy 16:19
 
-"You shall not steal."
-Exodus 20:15  
-
 "You shall not lend upon usury to thy brother; 
  usury of money, usury of victuals, 
  usury of any thing that is lent upon usury: 
@@ -290,9 +287,19 @@ Deut 23:19-20
  LORD your God gives you."
 Deuteronomy 25:13  
 
+"You shall not steal."
+Exodus 20:15  
+
 "Different weights, and different measures, both of them are alike 
  abomination to the LORD."
 Proverbs 20:10
+
+ He overturned the tables of the money changers 
+ and the benches of those selling doves. 
+ "It is written," he said to them,
+ "'My house will be called a house of prayer,' (1)
+ but you are making it a 'den of thieves' (2)."
+Matthew 21:12b-13, (1) Isaiah 56:7, (2) Jeremiah 7:11
 
 "You cannot serve both God and Mammon."
 Luke 16:13
@@ -360,9 +367,28 @@ Proverbs 29:7
  he will be blessed in what he does."
 James 1:25
 
+"Whoever hears these words of mine and puts them into practice,
+ he is like a wise man, who built his house upon a rock:
+ and the rain descended,
+ and the floods came, 
+ and the winds blew,
+ and beat upon that house;
+ and it fell not:
+ for it was founded upon a rock."
+Matthew 7:24-25
+
 "It is for freedom that Christ has set us free. Stand firm, then, 
  and do not let yourselves be burdened again by a yoke of slavery." 
 -Galatians 5:1
+
+"Whoever hears these words of mine and fails to do them,
+ he is like a foolish man who built his house upon the sand,
+ and the rain descended, 
+ and the rivers came, 
+ and the winds blew, 
+ and they dashed against that house; 
+ and it fell, and its fall was great."
+Matthew 7:26-27
 
 "My people are destroyed for lack of knowledge: 
  because you have rejected knowledge, 
@@ -372,41 +398,38 @@ James 1:25
  I will also forget your children."
 Hosea 4:6
 
-"A foolish man built his house upon the sand,
- and the rain descended, 
- and the rivers came, 
- and the winds blew, 
- and they dashed against that house; 
- and it fell, and its fall was great."
-Luke 7:25-26
-
-"Come now you rich, weep and howl for your miseries 
-   which are coming upon you.
-   Your riches have rotted and your garments,
-   have become moth-eaten.
- Your gold and your silver have rusted; 
-   and their rust will be a witness against you 
-   and will consume your flesh like fire. 
-   It is in the last days that you have stored up your treasure!
-"Behold, the pay of the laborers who mowed your fields, 
-   and which has been withheld by you, cries out against you; 
-   and the outcry of those who did the harvesting
-   has reached the ears of the Lord of the Sabbath.
- You have lived luxuriously on the earth
-   and led a life of wanton pleasure; 
-   you have fattened your hearts 
-   in a day of slaughter.
- You have condemned and murdered the righteous man;"
+"Come now you rich,
+  weep and howl for your miseries 
+  which are coming upon you
+Your riches have rotted
+  Your gold and your silver have rusted
+  and their rust will be a witness against you
+It is in the last days that you have stored up your treasure!
+Behold, the pay of the laborers who mowed your fields
+  (which has been withheld by you)
+  cries out against you
+  and the outcry of those who did the harvesting
+  has reached the ears of the Lord of the Sabbath
+You have lived luxuriously on the earth
+  and led a life of wanton pleasure
+  you have fattened your hearts 
+  in a day of slaughter
+You have condemned and murdered the righteous man;"
 James 5:1-6
+
+And David said to God, 
+"Was it not I who commanded the people to be numbered? 
+ I am the one who has sinned, and done evil indeed;"
+1 Chronicles 21:17a
 
 "...And you had turned, and had done right in my sight, in 
  proclaiming liberty, every man to his neighbor; and you had made a 
  covenant before me in the house which is called by my name.
-"But you turned and polluted my name, and caused every man his
+But you turned and polluted my name, and caused every man his
  servant, and every man his handmaid, whom you had set at liberty, to 
  return, and brought them into subjection, to be your servants and 
  handmaids.
-"Therefore thus says the Lord; You have not hearkened unto me, 
+Therefore thus says the Lord; You have not hearkened unto me, 
  in proclaiming a liberty, every one to his brother, and every man to his
  neighbor: behold, I proclaim a liberty for you, says the Lord, to the 
  sword, to the pestilence, and to the famine; and I will make you to be 
@@ -422,8 +445,7 @@ Micah 4:1-4
 
 "Because the creature itself also shall be delivered 
  from the bondage of corruption 
- into the glorious liberty 
- of the children of God."
+ into the glorious liberty of the children of God."
 Romans 8:21
 
 

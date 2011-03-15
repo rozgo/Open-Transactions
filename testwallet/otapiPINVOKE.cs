@@ -238,6 +238,9 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_GetAccountWallet_AssetTypeID")]
   public static extern string OT_API_GetAccountWallet_AssetTypeID(string jarg1);
 
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetAccountWallet_ServerID")]
+  public static extern string OT_API_GetAccountWallet_ServerID(string jarg1);
+
   [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_TransactionNumCount")]
   public static extern int OT_API_GetNym_TransactionNumCount(string jarg1, string jarg2);
 
@@ -285,6 +288,9 @@ class otapiPINVOKE {
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_LoadAssetContract")]
   public static extern string OT_API_LoadAssetContract(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_LoadServerContract")]
+  public static extern string OT_API_LoadServerContract(string jarg1);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_IsBasketCurrency")]
   public static extern int OT_API_IsBasketCurrency(string jarg1);

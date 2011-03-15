@@ -258,6 +258,7 @@ public:
 					  const OTIdentifier & ASSET_ID);
 	
 	OTAssetContract * LoadAssetContract(const OTIdentifier & ASSET_ID);
+	OTServerContract * LoadServerContract(const OTIdentifier & SERVER_ID);
 	
 	// ----------------------------------------------------
 

@@ -80,6 +80,10 @@ public class otapi {
     return otapiJNI.OT_API_GetAccountWallet_AssetTypeID(ACCOUNT_ID);
   }
 
+  public static String OT_API_GetAccountWallet_ServerID(String ACCOUNT_ID) {
+    return otapiJNI.OT_API_GetAccountWallet_ServerID(ACCOUNT_ID);
+  }
+
   public static int OT_API_GetNym_TransactionNumCount(String SERVER_ID, String NYM_ID) {
     return otapiJNI.OT_API_GetNym_TransactionNumCount(SERVER_ID, NYM_ID);
   }
@@ -142,6 +146,10 @@ public class otapi {
 
   public static String OT_API_LoadAssetContract(String ASSET_TYPE_ID) {
     return otapiJNI.OT_API_LoadAssetContract(ASSET_TYPE_ID);
+  }
+
+  public static String OT_API_LoadServerContract(String SERVER_ID) {
+    return otapiJNI.OT_API_LoadServerContract(SERVER_ID);
   }
 
   public static int OT_API_IsBasketCurrency(String ASSET_TYPE_ID) {

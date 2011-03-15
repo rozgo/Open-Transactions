@@ -98,14 +98,14 @@
 
 // Use Win or Posix
 // IF I need this while porting, then uncomment it.
-//#ifdef _WIN32
-//#include <windows.h>
+#ifdef _WIN32
+#include <windows.h>
 //#else
 //#ifndef POSIX
 //#warning POSIX will be used (but you did not define it)
 //#endif
 //#include <unistd.h>
-//#endif
+#endif
 
 
 extern "C" 
@@ -144,7 +144,7 @@ int OTLog::__CurrentLogLevel = -1;	// If you build with DSP=1, it assumes a spec
 int OTLog::__CurrentLogLevel = 1;
 #endif
 
-OTString OTLog::__Version = "0.44";
+OTString OTLog::__Version = "0.45";
 
 
 

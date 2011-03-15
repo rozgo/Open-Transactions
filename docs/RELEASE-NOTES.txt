@@ -3,6 +3,8 @@ NOTES on the Version:
 
 // ---------------------------------------------------------------------
 
+   0.45 --- Added a few API functions and updated the Windows build.
+
    0.44 --- RECEIPT VERIFICATION. Goes with the below change. Client-side
             receipts are now saved after every transaction, and whenever
             account/inbox/outbox files are downloaded, they're verified

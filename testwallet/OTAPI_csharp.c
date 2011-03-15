@@ -455,6 +455,18 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetAccountWallet_AssetTypeID(char * 
 }
 
 
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetAccountWallet_ServerID(char * jarg1) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  result = (char *)OT_API_GetAccountWallet_ServerID((char const *)arg1);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
 SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_GetNym_TransactionNumCount(char * jarg1, char * jarg2) {
   int jresult ;
   char *arg1 = (char *) 0 ;
@@ -704,6 +716,18 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_LoadAssetContract(char * jarg1) {
   
   arg1 = (char *)jarg1; 
   result = (char *)OT_API_LoadAssetContract((char const *)arg1);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_LoadServerContract(char * jarg1) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  result = (char *)OT_API_LoadServerContract((char const *)arg1);
   jresult = SWIG_csharp_string_callback((const char *)result); 
   return jresult;
 }
