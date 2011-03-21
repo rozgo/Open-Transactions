@@ -88,6 +88,8 @@ extern "C"
 {
 #include <openssl/crypto.h>
 	
+#include <openssl/asn1.h>
+
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <openssl/sha.h>
@@ -148,6 +150,10 @@ extern "C"
 #include "OTLog.h"
 
 //using namespace CryptoPP;
+
+
+// `BigIntegerLibrary.hh' includes all of the library headers for bigint
+#include "BigIntegerLibrary.hh"
 
 
 
@@ -224,15 +230,19 @@ void OTIdentifier::CopyTo(unsigned char * szNewLocation) const
 // our signatures are still safe. 
 // Smart, eh?  So I named it in his honor.
 // (I have chosen SHA-256 and RIPEMD-256.)
+// UPDATE: SHA-512 and WHIRLPOOL
+// UPDATE: SHA-256 and WHIRLPOOL
+// We now have 256-bit keysize, though half of WHIRLPOOL output is still XORed onto it.
+// We also now input/output the string values with Base62 instead of Hex. (More compact.)
 //
 
 #ifndef ANDROID
 const OTString OTIdentifier::DefaultHashAlgorithm("SAMY");
 #else
-const OTString OTIdentifier::DefaultHashAlgorithm("SHA512");
+const OTString OTIdentifier::DefaultHashAlgorithm("SHA256");
 #endif // ANDROID
 
-const OTString OTIdentifier::HashAlgorithm1("SHA512");
+const OTString OTIdentifier::HashAlgorithm1("SHA256");
 const OTString OTIdentifier::HashAlgorithm2("WHIRLPOOL");
 
 // I would like to use Tiger and/or Whirlpool in the mix here.
@@ -392,26 +402,26 @@ const EVP_MD * OTIdentifier::GetOpenSSLDigestByName(const OTString & theName)
  const OTString OTIdentifier::DefaultHashAlgorithm("SAMY");
  
  const OTString OTIdentifier::HashAlgorithm1("SHA256");
- const OTString OTIdentifier::HashAlgorithm2("RMD256");
+ const OTString OTIdentifier::HashAlgorithm2("WHIRLPOOL");
  */
 
 
 // This method implements the SAMY hash
 bool OTIdentifier::CalculateDigest(const OTString & strInput)
 {
-#ifndef ANDROID // SHA512 on Android; no whirlpool until OpenSSL 1.0.0a is added.
+#ifndef ANDROID // If NOT Android...
 	OTIdentifier idSecondHash;
 	
 	if (idSecondHash.CalculateDigest(strInput, HashAlgorithm2) &&
 		CalculateDigest(strInput, HashAlgorithm1))
 	{
-		// At this point, we have successfully generated the RMD-256 hash in 
+		// At this point, we have successfully generated the WHRLPOOL hash in 
 		// idSecondHash, and we've successfully generated the SHA-256 hash in 
 		// this object.
 		// Next we XOR them together for the final product.
 		return XOR(idSecondHash);
 	}
-#else // ANDROID
+#else // SHA256 on Android; no whirlpool until OpenSSL 1.0.0 is added.
 	if (CalculateDigest(strInput, HashAlgorithm1))
 	{
 		return true;
@@ -425,20 +435,20 @@ bool OTIdentifier::CalculateDigest(const OTString & strInput)
 // This method implements the SAMY hash
 bool OTIdentifier::CalculateDigest(const OTData & dataInput)
 {
-#ifndef ANDROID // SHA512 on Android; no whirlpool until OpenSSL 1.0.0a is added.
+#ifndef ANDROID // SHA256 on Android; no whirlpool until OpenSSL 1.0.0 is added.
 	OTIdentifier idSecondHash;
 	
 	if (idSecondHash.CalculateDigest(dataInput, HashAlgorithm2) &&
 		CalculateDigest(dataInput, HashAlgorithm1))
 	{
-		// At this point, we have successfully generated the RMD-256 hash in 
+		// At this point, we have successfully generated the WHRLPOOL hash in 
 		// idSecondHash, and we've successfully generated the SHA-256 hash in 
 		// this object.
 		// Next we XOR them together for the final product.
 		return XOR(idSecondHash);
 	}
 #else // ANDROID
-	if (CalculateDigest(dataInput, HashAlgorithm1))
+	if (CalculateDigest(dataInput, HashAlgorithm1)) // SHA256 only until I add the new OpenSSL 1.0 for Android
 	{
 		return true;
 	}	
@@ -450,6 +460,7 @@ bool OTIdentifier::CalculateDigest(const OTData & dataInput)
 
 
 // Some of the digest calculations are done by crypto++, instead of OpenSSL.
+// (UPDATE that is no longer true.)
 // Also, at least one of the algorithms (SAMY) is an internal name, and again not
 // handled by OpenSSL.  So I call this function first to see if the hash type requres
 // internal handling. If not, then I return false and the caller knows to use OpenSSL
@@ -471,6 +482,7 @@ bool OTIdentifier::CalculateDigestInternal(const OTString & strInput, const OTSt
 
 
 // Some of the digest calculations are done by crypto++, instead of OpenSSL.
+// (UPDATE: above is no longer true...)
 // Also, at least one of the algorithms (SAMY) is an internal name, and again not
 // handled by OpenSSL.  So I call this function first to see if the hash type requres
 // internal handling. If not, then I return false and the caller knows to use OpenSSL
@@ -582,7 +594,51 @@ bool OTIdentifier::CalculateDigest(const OTData & dataInput, const OTString & st
 	return true;
 }
 
-// So we can implement the SAMY hash, which is currently an XOR of SHA-256 with RIPEMD-256
+// So we can implement the SAMY hash, which is currently an XOR of SHA-256 with WHRLPOOL
+//
+// Originally, it was SHA512 and WHRLPOOL, which both have a 512-bit output-size.
+// I was then going to cut the result in half and XOR together again. But then I 
+// though, for now, instead of doing all that extra work, I'll just change the
+// two "HashAlgorithms" from SHA512 and WHRLPOOL to SHA256 and WHIRLPOOL.
+//
+// This was very much easier, as I only had to change the little "512" to say 
+// "256" instead, and basically the job was done. Of course, this means that OT
+// is generating a 256-bit hash in THIS object, and a 512-bit WHIRLPOOL hash in
+// the other object. i.e. There is still one 512-bit hash that you are forced to
+// calculate, even if you throw away half of it after the calculation is done.
+//
+// Since the main object has a 256-bit hash, the XOR() function below was already
+// coded to XOR the minimum length based on the smallest of the two objects.
+// Therefore, it will XOR 256 bits of the WHRLPOOL output into the 256 bits of
+// the main output (SHA256) and stop there: we now have a 256 bit ID. 
+//
+// The purpose here is to reduce the ID size so that it will work on Windows with
+// the filenames. The current 512bit output is 64 bytes, or 128 characters when
+// exported to a hex string (in all the OT contracts for example, over and over 
+// again.)
+//
+// The new size will be 256bit, which is 32 bytes of binary. In hex string that
+// would be 64 characters. But we're also converting from Hex to Base62, which
+// means we'll get it down to around 43 characters.
+//
+// This means our IDs are going to go from this:
+//
+//
+// To this:
+//
+//
+// You might ask: is 256 bits big enough of a hash size to be safe from collisions?
+// Practically speaking, I believe so.  The IDs are used for accounts, servers, asset types,
+// and users. How many different asset types do you expect there will be, where changing the
+// contract to anything still intelligible would result in a still-valid signature? To find
+// a collision in a contract, where the signature would still work, would you expect the necessary
+// changed plaintext to be something that would still make sense in the contract? Would such
+// a random piece of data turn out to form proper XML?
+//
+// 256bits is enough to store the number of atoms in the Universe. If we ever need a bigger
+// hashsize, just go change the HashAlgorithm1 back to "SHA512" instead of "SHA256", and you'll
+// instantly have a doubled hash output size  :-)
+//
 bool OTIdentifier::XOR(const OTIdentifier & theInput)
 {
 	// Go with the smallest of the two
@@ -590,6 +646,7 @@ bool OTIdentifier::XOR(const OTIdentifier & theInput)
 	
 	for (int i = 0; i < lSize; i++)
 	{
+		// When converting to BigInteger internally, this will be a bit more efficient.
 		((char*)GetPointer())[i] ^= ((char*)theInput.GetPointer())[i];
 	}
 	
@@ -618,6 +675,7 @@ void OTIdentifier::SetString(const char * szString)
 // Basically so you could take one of the hashes out of the
 // xml files, as a string, and plug it in here to get the 
 // binary hash back into memory inside this object.
+/*
 void OTIdentifier::SetString(const OTString & theStr)
 {	
 	
@@ -698,12 +756,12 @@ void OTIdentifier::SetString(const OTString & theStr)
 	OT_ASSERT_MSG(64 == i, "ID wrong length after calculation.");
 }
 
-/*
+
+ //
+ //for (i = 0; i < md_len; i++) OTLog::vError("%02x", md_value[i]);
+ //OTLog::Error("\n");
  
- for (i = 0; i < md_len; i++) OTLog::vError("%02x", md_value[i]);
- OTLog::Error("\n");
- 
- */
+
 
 // This Identifier is stored in binary form.
 // But what if you want a pretty hex string version of it?
@@ -734,5 +792,200 @@ void OTIdentifier::GetString(OTString & theStr) const
 	
 	OT_ASSERT_MSG(128 == theStr.GetLength(), "String wrong length after ID calculation.");
 }
+
+*/
+
+
+
+
+bool OTIdentifier::operator==(const OTIdentifier &s2) const
+{
+	OTString ots1(*this), ots2(s2);
+	
+	return ots1.Compare(ots2);	
+}
+
+bool OTIdentifier::operator!=(const OTIdentifier &s2) const
+{
+	OTString ots1(*this), ots2(s2);
+	
+	return !(ots1.Compare(ots2));	
+}
+
+
+
+
+
+//base62...
+//
+// Using a BigInteger lib I just added.
+//
+// Hopefully use something like this to replace some of the internals for OTIdentifier.
+// I need to get the author to add a "back into data again" function though.
+//
+void OTIdentifier::SetString(const OTString & theStr)
+{	
+	Release();
+	
+	if (!theStr.GetLength())
+		return;
+		
+	const std::string strINPUT = theStr.Get();
+	
+	// Todo there are try/catches in here, so need to handle those at some point.	
+	BigInteger bigIntFromBase62 = stringToBigIntegerBase62(strINPUT);
+
+
+	// Now theBaseConverter contains a BigInteger that it read in as base62.
+
+	// Next step is to output it from that to Hex so I can convert to Binary.
+	
+	// Why not convert it DIRECTLY to binary, you might ask?  TODO.
+	// In fact this is what we SHOULD be doing. But the BigInteger lib
+	// I'm using doesn't have a damned output to binary!  I'm emailing the
+	// author now.
+	// 
+	// In the meantime, I had old code from before, that converted hex string to
+	// binary, which still needs to be removed. But for now, I'll just convert the
+	// BigInteger to hex, and then call my old code (below) just to get things running.
+	
+	// You can convert the other way too.
+	std::string strHEX_VERSION = bigIntegerToStringBase16(bigIntFromBase62); 
+
+	// I would rather use stringToBigUnsigned and then convert that to data.
+	// But apparently this class has no conversion back to data, I will contact the author.
+	//---------------------------------------------------------------	
+	
+	BIGNUM * pBigNum = BN_new();
+	OT_ASSERT(NULL != pBigNum);
+	
+  	// -----------------------------------------
+	
+	// Convert from Hex String to BIGNUM.
+	
+	OT_ASSERT (0 < BN_hex2bn(&pBigNum, strHEX_VERSION.c_str()));
+		
+	// -----------------------------------------
+	
+	// Convert from Hex String to BigInteger (unwieldy, I know. Future versions will improve.)
+	
+	//BN_bin2bn((unsigned char *)GetPointer(), GetSize(), pBigNum);
+	
+	uint32_t nBigNumBytes = BN_num_bytes(pBigNum);
+	
+	this->SetSize(nBigNumBytes);
+	
+	OT_ASSERT(BN_bn2bin(pBigNum, (unsigned char *)GetPointer()));
+	// BN_bn2bin() converts the absolute value of param 1 into big-endian form and stores it at param2.
+	// param2 must point to BN_num_bytes(pBigNum) bytes of memory.
+	
+	BN_free(pBigNum);
+}
+
+/*
+ 
+ for (i = 0; i < md_len; i++) OTLog::vError("%02x", md_value[i]);
+ OTLog::Error("\n");
+ 
+ 
+ bigIntegerToStringBase16
+ bigIntegerToStringBase62
+ 
+ stringToBigIntegerBase16
+ stringToBigIntegerBase62
+ 
+ */
+
+
+
+
+// This Identifier is stored in binary form.
+// But what if you want a pretty hex string version of it?
+// Just call this function.
+// UPDATE: Now Base62 instead of Hex. (More compact.)
+//
+void OTIdentifier::GetString(OTString & theStr) const
+{
+	theStr.Release();
+	
+	if (IsEmpty()) 
+	{
+		return;
+	}
+	
+//	OT_ASSERT_MSG(32 == GetSize(), "ID wrong length before calculation."); // 32 bytes in binary
+	
+	// Creates a BigInteger from data such as `char's; read below for details.
+//	BigInteger theBigInt = dataToBigInteger<unsigned char>(((unsigned char *)GetPointer()), GetSize(), BigInteger::positive);
+
+	// -----------------------------------------
+
+	// Convert from internal binary format to BIGNUM format.
+	
+	BIGNUM * pBigNum = BN_new();
+	OT_ASSERT(NULL != pBigNum);
+	
+    BN_bin2bn((unsigned char *)GetPointer(), GetSize(), pBigNum);
+
+	// -----------------------------------------
+
+	// Convert from BIGNUM to Hex String.
+	
+	char * szBigNumInHex = BN_bn2hex(pBigNum);
+	OT_ASSERT(szBigNumInHex != NULL);
+	
+	// -----------------------------------------
+
+	// Convert from Hex String to BigInteger (unwieldy, I know. Future versions will improve.)
+	
+	BigInteger theBigInt = stringToBigIntegerBase16(szBigNumInHex);
+	
+	OPENSSL_free(szBigNumInHex);
+	BN_free(pBigNum);
+	
+	// -----------------------------------------
+	
+	// Convert from BigInteger to std::string in Base62 format.
+	
+	std::string strBigInt = bigIntegerToStringBase62(theBigInt);
+	
+	theStr.Set(strBigInt.c_str());
+	
+	// Now that we're using Base62 instead of Hex, there's no guarantee 
+	// the output size will be the same here every time.
+	//
+//	if (64 != theStr.GetLength())
+//		OTLog::vError("STRING LENGTH:  %d\n", theStr.GetLength()); // from the hex days
+	
+//	OT_ASSERT_MSG(128 == theStr.GetLength(), "String wrong length after ID calculation.");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

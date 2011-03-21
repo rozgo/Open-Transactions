@@ -3137,6 +3137,31 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_OT_API_GetAccountWallet_NymID(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:OT_API_GetAccountWallet_NymID",&obj0)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetAccountWallet_NymID" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_GetAccountWallet_NymID((char const *)arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_OT_API_GetNym_TransactionNumCount(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   char *arg1 = (char *) 0 ;
@@ -3217,6 +3242,43 @@ SWIGINTERN PyObject *_wrap_OT_API_GetNym_Name(PyObject *SWIGUNUSEDPARM(self), Py
   return resultobj;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OT_API_IsNym_RegisteredAtServer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:OT_API_IsNym_RegisteredAtServer",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_IsNym_RegisteredAtServer" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_IsNym_RegisteredAtServer" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  result = (int)OT_API_IsNym_RegisteredAtServer((char const *)arg1,(char const *)arg2);
+  resultobj = SWIG_From_int((int)(result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
 }
 
@@ -3811,6 +3873,7 @@ SWIGINTERN PyObject *_wrap_OT_API_LoadPurse(PyObject *SWIGUNUSEDPARM(self), PyOb
   PyObject *resultobj = 0;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
   char *result = 0 ;
   int res1 ;
   char *buf1 = 0 ;
@@ -3818,10 +3881,14 @@ SWIGINTERN PyObject *_wrap_OT_API_LoadPurse(PyObject *SWIGUNUSEDPARM(self), PyOb
   int res2 ;
   char *buf2 = 0 ;
   int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:OT_API_LoadPurse",&obj0,&obj1)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO:OT_API_LoadPurse",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_LoadPurse" "', argument " "1"" of type '" "char const *""'");
@@ -3832,14 +3899,21 @@ SWIGINTERN PyObject *_wrap_OT_API_LoadPurse(PyObject *SWIGUNUSEDPARM(self), PyOb
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_LoadPurse" "', argument " "2"" of type '" "char const *""'");
   }
   arg2 = (char *)(buf2);
-  result = (char *)OT_API_LoadPurse((char const *)arg1,(char const *)arg2);
+  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_LoadPurse" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  result = (char *)OT_API_LoadPurse((char const *)arg1,(char const *)arg2,(char const *)arg3);
   resultobj = SWIG_FromCharPtr((const char *)result);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return resultobj;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return NULL;
 }
 
@@ -7250,9 +7324,11 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"OT_API_GetAccountWallet_Type", _wrap_OT_API_GetAccountWallet_Type, METH_VARARGS, NULL},
 	 { (char *)"OT_API_GetAccountWallet_AssetTypeID", _wrap_OT_API_GetAccountWallet_AssetTypeID, METH_VARARGS, NULL},
 	 { (char *)"OT_API_GetAccountWallet_ServerID", _wrap_OT_API_GetAccountWallet_ServerID, METH_VARARGS, NULL},
+	 { (char *)"OT_API_GetAccountWallet_NymID", _wrap_OT_API_GetAccountWallet_NymID, METH_VARARGS, NULL},
 	 { (char *)"OT_API_GetNym_TransactionNumCount", _wrap_OT_API_GetNym_TransactionNumCount, METH_VARARGS, NULL},
 	 { (char *)"OT_API_GetNym_ID", _wrap_OT_API_GetNym_ID, METH_VARARGS, NULL},
 	 { (char *)"OT_API_GetNym_Name", _wrap_OT_API_GetNym_Name, METH_VARARGS, NULL},
+	 { (char *)"OT_API_IsNym_RegisteredAtServer", _wrap_OT_API_IsNym_RegisteredAtServer, METH_VARARGS, NULL},
 	 { (char *)"OT_API_SetNym_Name", _wrap_OT_API_SetNym_Name, METH_VARARGS, NULL},
 	 { (char *)"OT_API_SetAccountWallet_Name", _wrap_OT_API_SetAccountWallet_Name, METH_VARARGS, NULL},
 	 { (char *)"OT_API_SetAssetType_Name", _wrap_OT_API_SetAssetType_Name, METH_VARARGS, NULL},

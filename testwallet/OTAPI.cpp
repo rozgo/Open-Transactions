@@ -426,6 +426,25 @@ const char * OT_API_GetNym_Name(const char * NYM_ID)
 }
 
 
+
+OT_BOOL OT_API_IsNym_RegisteredAtServer(const char * NYM_ID, const char * SERVER_ID)
+{
+	OT_ASSERT_MSG(NULL != NYM_ID, "Null NYM_ID passed in.");
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	
+	const OTIdentifier	theNymID(NYM_ID), 
+						theServerID(SERVER_ID);
+	
+	bool bSuccess = g_OT_API.IsNym_RegisteredAtServer(theNymID, theServerID);
+	
+	if (true == bSuccess)
+		return OT_TRUE;
+	
+	return OT_FALSE;
+}
+
+
+
 // -----------------------------------
 // SET NYM NAME
 //
@@ -795,7 +814,7 @@ const char * OT_API_GetAccountWallet_Type(const char * THE_ID)
 
 
 
-/// Returns an account's asset type ID, based on account ID.
+/// Returns an account's asset type ID.
 /// (Which is a hash of the contract used to issue the asset type.)
 const char * OT_API_GetAccountWallet_AssetTypeID(const char * THE_ID)
 {
@@ -825,7 +844,7 @@ const char * OT_API_GetAccountWallet_AssetTypeID(const char * THE_ID)
 
 
 
-/// Returns an account's Server ID, based on account ID.
+/// Returns an account's Server ID.
 /// (Which is a hash of the server contract.)
 const char * OT_API_GetAccountWallet_ServerID(const char * THE_ID)
 {
@@ -840,6 +859,37 @@ const char * OT_API_GetAccountWallet_ServerID(const char * THE_ID)
 		OTString strServerID(pContract->GetPurportedServerID());
 		
 		const char * pBuf = strServerID.Get(); 
+		
+#ifdef _WIN32
+		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+		strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+		
+		return g_tempBuf;
+	}
+	
+	return NULL;	
+}
+
+
+
+
+/// Returns an account's Nym ID.
+/// (Which is a hash of the Nym's public key for the owner of this account.)
+const char * OT_API_GetAccountWallet_NymID(const char * THE_ID)
+{
+	OT_ASSERT_MSG(NULL != THE_ID, "Null THE_ID passed in.");
+	
+	OTIdentifier	theID(THE_ID);
+	
+	OTAccount * pContract = g_OT_API.GetAccount(theID);
+	
+	if (NULL != pContract)
+	{		
+		OTString strUserID(pContract->GetUserID());
+		
+		const char * pBuf = strUserID.Get(); 
 		
 #ifdef _WIN32
 		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
@@ -1425,17 +1475,20 @@ OT_BOOL OT_API_VerifyUserPrivateKey(const char * USER_ID) // returns OT_BOOL
 // and return it as a string -- or return NULL if it wasn't found.
 //
 const char * OT_API_LoadPurse(const char * SERVER_ID,
-							  const char * ASSET_TYPE_ID) // returns NULL, or a purse.
+							  const char * ASSET_TYPE_ID,
+							  const char * USER_ID) // returns NULL, or a purse.
 {
 	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
 	OT_ASSERT_MSG(NULL != ASSET_TYPE_ID, "Null ASSET_TYPE_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
 			
 	const OTIdentifier theServerID(SERVER_ID);
 	const OTIdentifier theAssetID(ASSET_TYPE_ID);
+	const OTIdentifier theUserID(USER_ID);
 	
 	// There is an OT_ASSERT in here for memory failure,
 	// but it still might return NULL if various verification fails.
-	OTPurse * pPurse = g_OT_API.LoadPurse(theServerID, theAssetID); 
+	OTPurse * pPurse = g_OT_API.LoadPurse(theServerID, theAssetID, theUserID); 
 	
 	// Make sure it gets cleaned up when this goes out of scope.
 	OTCleanup<OTPurse>	thePurseAngel(pPurse); // I pass the pointer, in case it's NULL.
@@ -1756,12 +1809,24 @@ const char * OT_API_LoadOutbox(const char * SERVER_ID,
  SO HOW WOULD YOU **USE** THIS?  To process your inbox...
  
  -- First you call OT_API_getInbox to grab the latest inbox from the server.
+ (You will also want to call OT_API_getOutbox as well as
+ OT_API_getAccount, since you need to have the latest versions of
+ those files, or your balance agreement will be calculated wrong,
+ causing your transaction to fail.)
  
  -- Then you call OT_API_LoadInbox to load it from local storage.
  
- (During this time, your user has the opportunity to peruse the
- inbox, and to decide which transactions therein he wishes to 
- accept or reject.)
+  During this time, your user has the opportunity to peruse the
+  inbox, and to decide which transactions therein he wishes to 
+  accept or reject.  If you want to display the inbox items on
+  the screen, use these functions to loop through them:
+  OT_API_Ledger_GetCount
+  OT_API_Ledger_GetTransactionByIndex
+  OT_API_Ledger_GetTransactionIDByIndex
+ 
+  You will probably ask me for more introspection on the transactions themselves. 
+  (Just ask -- No problem.)  Here's what you have right now:
+  OT_API_Transaction_GetType
  
  -- Then call OT_API_Ledger_CreateResponse in order to create a
  'response' ledger for that inbox, which will be sent to the server.

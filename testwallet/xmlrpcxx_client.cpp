@@ -304,6 +304,17 @@ int main(int argc, char* argv[])
 		{
 			continue;
 		}
+		else if (strLine.compare(0,4,"test") == 0)
+		{
+			OTString strtestID("LG4bi40PAw6vlkU5TXiphXqmEELf3k1gjMsKQVjw7SE");
+			
+			OTIdentifier theTestID(strtestID);
+			
+			OTString strBlahFoo(theTestID);
+			
+			OTLog::vOutput(0, "Input:  %s\nOutput: %s\n", strtestID.Get(), strBlahFoo.Get());
+			continue;
+		}			
 		else if (strLine.compare(0,5,"clear") == 0)
 		{
 			if (NULL == g_pTemporaryNym)

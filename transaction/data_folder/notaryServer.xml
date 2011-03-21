@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <notaryServer version="1.0"
- serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de"
- serverUserID="2b6909e3b21cbaaeebbf4900280a8506c683361590f67ace8c71742201337e7074c000144b97372983bc01f011a368bc2df389a6d89f5668ed7a188e8e7844f8"
- transactionNum="1830" >
+ serverID="44FmyPAgrmGu671RywGnhrt8aR6tzmNFn9WKQ92BXn"
+ serverUserID="LG4bi40PAw6vlkU5TXiphXqmEELf3k1gjMsKQVjw7SE"
+ transactionNum="1866" >
 
 <assetType name="eJwrzswpSy1SSC9KzC1mAAAkYgTQ"
- assetTypeID="4f3e55afa478dba67e1f100c2990f88e4e397a9a081a45d1562e94f5a8edaed4a756e34b9750022f4c4eda92ae89d81d6094756da7a5db8348c7e5f7a2fdd05e" />
+ assetTypeID="XUHBvdsWAEmErZMzHaRKaNPaAVsUvKwL4uLY4nOY2s4" />
 
 </notaryServer>
 

@@ -27,9 +27,11 @@ class otapiJNI {
   public final static native String OT_API_GetAccountWallet_Type(String jarg1);
   public final static native String OT_API_GetAccountWallet_AssetTypeID(String jarg1);
   public final static native String OT_API_GetAccountWallet_ServerID(String jarg1);
+  public final static native String OT_API_GetAccountWallet_NymID(String jarg1);
   public final static native int OT_API_GetNym_TransactionNumCount(String jarg1, String jarg2);
   public final static native String OT_API_GetNym_ID(int jarg1);
   public final static native String OT_API_GetNym_Name(String jarg1);
+  public final static native int OT_API_IsNym_RegisteredAtServer(String jarg1, String jarg2);
   public final static native int OT_API_SetNym_Name(String jarg1, String jarg2, String jarg3);
   public final static native int OT_API_SetAccountWallet_Name(String jarg1, String jarg2, String jarg3);
   public final static native int OT_API_SetAssetType_Name(String jarg1, String jarg2);
@@ -40,7 +42,7 @@ class otapiJNI {
   public final static native String OT_API_LoadUserPubkey(String jarg1);
   public final static native String OT_API_LoadPubkey(String jarg1);
   public final static native int OT_API_VerifyUserPrivateKey(String jarg1);
-  public final static native String OT_API_LoadPurse(String jarg1, String jarg2);
+  public final static native String OT_API_LoadPurse(String jarg1, String jarg2, String jarg3);
   public final static native String OT_API_LoadMint(String jarg1, String jarg2);
   public final static native String OT_API_LoadAssetContract(String jarg1);
   public final static native String OT_API_LoadServerContract(String jarg1);

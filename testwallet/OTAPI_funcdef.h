@@ -200,6 +200,7 @@ const char * OT_API_GetAccountWallet_Balance(const char * ACCOUNT_ID);	 // retur
 const char * OT_API_GetAccountWallet_Type(const char * ACCOUNT_ID);	 // returns the account type (simple, issuer, etc)
 const char * OT_API_GetAccountWallet_AssetTypeID(const char * ACCOUNT_ID);	 // returns asset type ID of the account
 const char * OT_API_GetAccountWallet_ServerID(const char * ACCOUNT_ID);	 // returns Server ID of the account
+const char * OT_API_GetAccountWallet_NymID(const char * ACCOUNT_ID);	 // returns Nym ID of the account
 
 
 
@@ -218,6 +219,8 @@ int OT_API_GetNym_TransactionNumCount(const char * SERVER_ID, const char * NYM_I
 
 const char * OT_API_GetNym_ID(int nIndex); // based on Index (above 4 functions) this returns the Nym's ID
 const char * OT_API_GetNym_Name(const char * NYM_ID); // Returns Nym Name (based on NymID)
+
+int OT_API_IsNym_RegisteredAtServer(const char * NYM_ID, const char * SERVER_ID); // actually returns OT_BOOL
 
 
 // -----------------------------------
@@ -476,7 +479,8 @@ int OT_API_VerifyUserPrivateKey(const char * USER_ID); // returns OT_BOOL
 /// and return it as a string -- or return NULL if it wasn't found.
 ///
 const char * OT_API_LoadPurse(const char * SERVER_ID,
-							  const char * ASSET_TYPE_ID); // returns NULL, or a purse.
+							  const char * ASSET_TYPE_ID,
+							  const char * USER_ID); // returns NULL, or a purse.
 
 const char * OT_API_LoadMint(const char * SERVER_ID,
 							 const char * ASSET_TYPE_ID); // returns NULL, or a mint
@@ -1223,12 +1227,24 @@ void OT_API_notarizeTransfer(const char * SERVER_ID,
  SO HOW WOULD YOU **USE** THIS?  To process your inbox...
  
  -- First you call OT_API_getInbox to grab the latest inbox from the server.
+ (You will also want to call OT_API_getOutbox as well as
+ OT_API_getAccount, since you need to have the latest versions of
+ those files, or your balance agreement will be calculated wrong,
+ causing your transaction to fail.)
  
  -- Then you call OT_API_LoadInbox to load it from local storage.
  
- (During this time, your user has the opportunity to peruse the
+ During this time, your user has the opportunity to peruse the
  inbox, and to decide which transactions therein he wishes to 
- accept or reject.)
+ accept or reject.  If you want to display the inbox items on
+ the screen, use these functions to loop through them:
+ OT_API_Ledger_GetCount
+ OT_API_Ledger_GetTransactionByIndex
+ OT_API_Ledger_GetTransactionIDByIndex
+ 
+ You will probably ask me for more introspection on the transactions themselves. 
+ (Just ask -- No problem.)  Here's what you have right now:
+ OT_API_Transaction_GetType
  
  -- Then call OT_API_Ledger_CreateResponse in order to create a
  'response' ledger for that inbox, which will be sent to the server.

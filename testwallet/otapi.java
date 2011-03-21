@@ -84,6 +84,10 @@ public class otapi {
     return otapiJNI.OT_API_GetAccountWallet_ServerID(ACCOUNT_ID);
   }
 
+  public static String OT_API_GetAccountWallet_NymID(String ACCOUNT_ID) {
+    return otapiJNI.OT_API_GetAccountWallet_NymID(ACCOUNT_ID);
+  }
+
   public static int OT_API_GetNym_TransactionNumCount(String SERVER_ID, String NYM_ID) {
     return otapiJNI.OT_API_GetNym_TransactionNumCount(SERVER_ID, NYM_ID);
   }
@@ -94,6 +98,10 @@ public class otapi {
 
   public static String OT_API_GetNym_Name(String NYM_ID) {
     return otapiJNI.OT_API_GetNym_Name(NYM_ID);
+  }
+
+  public static int OT_API_IsNym_RegisteredAtServer(String NYM_ID, String SERVER_ID) {
+    return otapiJNI.OT_API_IsNym_RegisteredAtServer(NYM_ID, SERVER_ID);
   }
 
   public static int OT_API_SetNym_Name(String NYM_ID, String SIGNER_NYM_ID, String NYM_NEW_NAME) {
@@ -136,8 +144,8 @@ public class otapi {
     return otapiJNI.OT_API_VerifyUserPrivateKey(USER_ID);
   }
 
-  public static String OT_API_LoadPurse(String SERVER_ID, String ASSET_TYPE_ID) {
-    return otapiJNI.OT_API_LoadPurse(SERVER_ID, ASSET_TYPE_ID);
+  public static String OT_API_LoadPurse(String SERVER_ID, String ASSET_TYPE_ID, String USER_ID) {
+    return otapiJNI.OT_API_LoadPurse(SERVER_ID, ASSET_TYPE_ID, USER_ID);
   }
 
   public static String OT_API_LoadMint(String SERVER_ID, String ASSET_TYPE_ID) {

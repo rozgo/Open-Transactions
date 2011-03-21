@@ -2,7 +2,7 @@
 
 /*************************************************************************
  *    
- * Open Transactions 0.45 -- Library, API, Protocol, Server, Test Client
+ * Open Transactions 0.50 -- Library, API, Protocol, Server, Test Client
  *    
  *    			-- Anonymous Numbered Accounts...
  *    			-- Untraceable Digital Cash...
@@ -170,45 +170,50 @@ A few relevant notes, followed by contributor credits:
 Haggai 2:8 
 
 "By your wisdom and your understanding you have made wealth for 
- yourself, and have gathered gold and silver into your treasuries"
+  yourself, and have gathered gold and silver into your treasuries"
 Ezekiel 28:4
 
 "Precious treasure and oil are in a wise man's dwelling,
- but a foolish man devours it."
+  but a foolish man devours it."
 Proverbs 21:20
 
 "Because you say, 'I am rich, and increased with goods, and I need nothing,' 
- and you know not that you are wretched, and miserable, and poor, and blind, 
- and naked...
+  and you know not that you are wretched, and miserable, and poor, and blind, 
+   and naked...
 "I counsel you to buy from me gold refined by fire, so that you may be rich, 
- and white garments so that you may clothe yourself and the shame of your 
- nakedness may not be seen, and salve to anoint your eyes, so that you may see."
+  and white garments so that you may clothe yourself and the shame of your 
+   nakedness may not be seen, and salve to anoint your eyes, 
+    so that you may see."
 Rev. 3:17-18
 
 "Say to the children of Israel, I am the LORD, 
- and I will bring you out from under the burdens of the Egyptians, 
- and I will rid you out of their bondage, 
- and I will redeem you with a stretched out arm, 
- and with great judgments.
-And I will take you to me for a people, 
- and I will be to you a God: 
- and you shall know that I am the LORD your God, 
- which brings you out from under the burdens of the Egyptians. 
-And I will bring you in unto the land, 
- concerning which I did swear to give it to Abraham, to Isaac, and to Jacob; 
-and I will give it you for an heritage: I am the LORD."
+  and I will bring you out from under the burdens of the Egyptians, 
+  and I will rid you out of their bondage, 
+  and I will redeem you with a stretched out arm, 
+   and with great judgments.
+ And I will take you to me for a people, 
+  and I will be to you a God: 
+  and you shall know that I am the LORD your God, 
+   which brings you out from under the burdens of the Egyptians. 
+ And I will bring you in unto the land, 
+  concerning which I did swear to give it to Abraham, to Isaac, and to Jacob; 
+   and I will give it you for an heritage: I am the LORD."
 Exodus 6:6-9
 
 "After the doings of the land of Egypt, 
-  where you dwelt, you shall not do: 
- and after the doings of the land of Canaan, 
-  where I bring you, you shall not do: 
- neither shall you walk in their ordinances. 
-You shall do my judgments, and keep mine ordinances, 
- to walk therein: I am the LORD your God. 
-You shall therefore keep my statutes, and my judgments: 
- which if a man do, he shall live in them: I am the LORD."
+   (where you lived before), you shall not do: 
+  and after the doings of the land of Canaan, 
+   (where I am bringing you), you shall not do: 
+   neither shall you walk in their ordinances. 
+ You shall do MY judgments, and keep MY ordinances, 
+   to walk in them: I am the LORD your God. 
+ You shall therefore keep my statutes, and my judgments: 
+   which if a man does, he shall live in them: I am the LORD."
 Leviticus 18:1-5
+
+"Except the LORD build the house, they labor in vain that build it: 
+ except the LORD keep the city, the watchman wakes in vain."
+Psalms 127
 
 "Do what is right and good in the Lord's sight, 
  so all will go well with you."
@@ -217,10 +222,6 @@ Deuteronomy 6:18
 "Hate evil, and love good, 
  and establish justice in the courts."
 Amos 5:15
-
-"Except the LORD build the house, they labor in vain that build it: 
- except the LORD keep the city, the watchman wakes in vain."
-Psalms 127
 
 "Justice, and only justice, you shall follow, that you may live and
  inherit the land that the Lord your God is giving you."
@@ -248,43 +249,62 @@ Exodus 18:21
   but also for conscience sake."
 Romans 13:1-5
 
-"Then came also publicans to be baptized, and said unto Him, 
-  'Master, what shall we do?' 
-  And He said to them, 'Exact no more than that which is appointed you.' 
-  And the soldiers likewise demanded of Him, saying, 'And what shall we do?'
-  And He said unto them, 'Do violence to no man, neither accuse any falsely;
-   and be content with your wages.'"
-Luke 3:12-14
-
 "Woe unto them that decree unrighteous decrees, and 
  that write grievousness which they have prescribed;"
 Isaiah 10:1
 
+"And David said to God, 
+'Wasn't it I who commanded the people to be numbered? 
+ I am the one who has sinned, and done evil indeed;'"
+1 Chronicles 21:17a
+
+"Woe to those who scheme iniquity,
+  who work out evil on their beds!
+ When morning comes, they do it,
+  (for it is in the power of their hands.) 
+ They covet fields and then seize them,
+  and houses, and take them away.
+ They rob a man and his house,
+  a man and his inheritance."
+Micah 2:1-2
+
+"Then came also publicans to be baptized, and said unto Him, 
+    'Master, what shall we do?' 
+  And He said to them, 
+    'Exact no more than that which is appointed you.' 
+  And the soldiers likewise demanded of Him, saying, 
+    'And what shall we do?'
+  And He said to them, 
+    'Do violence to no man, 
+      neither accuse any falsely;
+       and be content with your wages.'"
+Luke 3:12-14
+
 "Do not pervert justice; 
- do not show partiality to the poor 
- or favoritism to the strong, 
+  do not show partiality to the poor
+  or favoritism to the strong, 
  but judge your neighbor fairly."
 Leviticus 19:15
 
 "You shall not accept a bribe, 
- for a bribe blinds the eyes of the wise
+ for a bribe blinds the eyes of the wise,
  and subverts the cause of the righteous."
 Deuteronomy 16:19
 
 "You shall not lend upon usury to thy brother; 
- usury of money, usury of victuals, 
- usury of any thing that is lent upon usury: 
+  usury of money, usury of victuals, 
+   usury of any thing that is lent upon usury: 
  Unto a stranger you may lend upon usury; 
- but unto your brother you shall not lend upon usury: 
- that the LORD your God may bless you in all that you set your hand to 
- in the land whither you go to possess it."
-Deut 23:19-20
+  but unto your brother you shall not lend upon usury: 
+   that the LORD your God may bless you in all that you set your hand to 
+   in the land you go to possess."
+Deuteronomy 23:19-20
 
 "You shall not have different weights in your bag, a great and a small.
- You shall not have different measures in your house, a great and a small.
+  You shall not have different measures in your house, a great and a small.
  But you shall have a perfect and just weight, a perfect and just measure 
- you shall have: That your days may be lengthened in the land which the 
- LORD your God gives you."
+  you shall have: That your days may be lengthened in the land which the 
+   LORD your God gives you."
 Deuteronomy 25:13  
 
 "You shall not steal."
@@ -294,15 +314,12 @@ Exodus 20:15
  abomination to the LORD."
 Proverbs 20:10
 
- He overturned the tables of the money changers 
- and the benches of those selling doves. 
+ He overturned the tables of the money-lenders, 
+ and the benches of those selling doves.
  "It is written," he said to them,
  "'My house will be called a house of prayer,' (1)
- but you are making it a 'den of thieves' (2)."
-Matthew 21:12b-13, (1) Isaiah 56:7, (2) Jeremiah 7:11
-
-"You cannot serve both God and Mammon."
-Luke 16:13
+ but you are making it a 'den of thieves'." (2)
+Matthew 21:12b-13, 1. Isaiah 56:7, 2. Jeremiah 7:11
 
 "The rich rule over the poor, and the borrower is servant to the lender."
 Proverbs 22:7  
@@ -314,9 +331,11 @@ Galatians 6:7
 "You are bought with a price; be you not the servants of men."
 1 Corinthians 7:23 
 
+"You cannot serve both God and Mammon."
+Luke 16:13
+
 "Now the Lord is the Spirit, 
- and where the Spirit of the Lord is,
- there is liberty."
+ and where the Spirit of the Lord is, there is liberty."
 2 Corinthians 3:17
 
 "Proclaim liberty throughout all the land unto all its inhabitants."
@@ -330,29 +349,26 @@ for this sums up the Law and the Prophets."
 -Jesus Christ, Matthew 7:12
 
 "We must obey God rather than men."
--Acts 5:29
+Acts 5:29
 
 "For the LORD is our judge; 
  the LORD is our lawgiver; 
  the LORD is our king."
 Isaiah 33:22
 
-"And it shall come to pass, if you listen diligently to the voice of the
- Lord your God, to observe and to do all his commandments which I command
- you today, that the Lord your God will set you on high, above all nations
- of the earth"
+"And it shall come to pass, if you listen diligently 
+ to the voice of the Lord your God, 
+  to observe and to do all his commandments 
+   which I command you today, 
+ that the Lord your God will set you on high, 
+  above all nations of the earth"
 Deuteronomy 28:1
 
 "Righteousness exalts a nation." 
 Proverbs 14:34
 
-"Observe and hear all these words which I command you, that it may
- go well with you, and with your children after you forever, when you 
- do that which is good and right in the sight of the LORD your God."
-Deuteronomy 12:28-32
-
 "Tell the righteous it will be well with them, 
- for they will enjoy the fruit of their labor."
+  for they will enjoy the fruit of their labor."
 Isaiah 3:10
 
 "A righteous man knows the rights of the poor;
@@ -363,88 +379,102 @@ Proverbs 29:7
 -Jesus Christ, Matthew 20:15
 
 "The man who looks intently into the perfect law that gives freedom, 
- and continues to do this, not forgetting what he has heard, but doing it,
- he will be blessed in what he does."
+  and continues to do this, not forgetting what he has heard, but doing it,
+   he will be blessed in what he does."
 James 1:25
 
 "Whoever hears these words of mine and puts them into practice,
- he is like a wise man, who built his house upon a rock:
- and the rain descended,
- and the floods came, 
- and the winds blew,
- and beat upon that house;
- and it fell not:
- for it was founded upon a rock."
+  he is like a wise man, who built his house upon a rock:
+   and the rain descended,
+    and the floods came, 
+     and the winds blew,
+      and beat upon that house;
+      yet it fell not:
+    for it was founded upon a rock."
 Matthew 7:24-25
+
+"Observe and hear all these words which I command you, that it may
+  go well with you, and with your children after you forever, 
+   when you do that which is good and right 
+   in the sight of the LORD your God."
+Deuteronomy 12:28-32
 
 "It is for freedom that Christ has set us free. Stand firm, then, 
  and do not let yourselves be burdened again by a yoke of slavery." 
 -Galatians 5:1
 
 "Whoever hears these words of mine and fails to do them,
- he is like a foolish man who built his house upon the sand,
- and the rain descended, 
- and the rivers came, 
- and the winds blew, 
- and they dashed against that house; 
- and it fell, and its fall was great."
+  he is like a foolish man who built his house upon the sand,
+   and the rain descended, 
+    and the rivers came, 
+     and the winds blew, 
+      and they dashed against that house; 
+      and it fell -- and its fall was great."
 Matthew 7:26-27
 
 "My people are destroyed for lack of knowledge: 
- because you have rejected knowledge, 
- I will also reject you, 
- that you shall be no priest to me: 
- seeing you have forgotten the law of your God, 
- I will also forget your children."
+   because you have rejected knowledge, 
+  I will also reject you, 
+   that you shall be no priest to me: 
+    seeing you have forgotten the law of your God, 
+  I will also forget your children."
 Hosea 4:6
 
 "Come now you rich,
   weep and howl for your miseries 
-  which are coming upon you
-Your riches have rotted
+  which are coming upon you.
+ Your riches have rotted
   Your gold and your silver have rusted
-  and their rust will be a witness against you
-It is in the last days that you have stored up your treasure!
-Behold, the pay of the laborers who mowed your fields
-  (which has been withheld by you)
-  cries out against you
+  and their rust will be a witness against you.
+ It is in the last days that you have stored up your treasure!
+ Behold, the pay of the laborers who mowed your fields
+   (which has been withheld by you)
+    cries out against you,
   and the outcry of those who did the harvesting
-  has reached the ears of the Lord of the Sabbath
-You have lived luxuriously on the earth
-  and led a life of wanton pleasure
-  you have fattened your hearts 
-  in a day of slaughter
-You have condemned and murdered the righteous man;"
+   has reached the ears of the Lord of the Sabbath.
+ You have lived luxuriously on the earth,
+  and led a life of wanton pleasure.
+ You have fattened your hearts in a day of slaughter.
+ You have condemned and murdered the righteous man;"
 James 5:1-6
 
-And David said to God, 
-"Was it not I who commanded the people to be numbered? 
- I am the one who has sinned, and done evil indeed;"
-1 Chronicles 21:17a
-
-"...And you had turned, and had done right in my sight, in 
- proclaiming liberty, every man to his neighbor; and you had made a 
- covenant before me in the house which is called by my name.
-But you turned and polluted my name, and caused every man his
- servant, and every man his handmaid, whom you had set at liberty, to 
- return, and brought them into subjection, to be your servants and 
- handmaids.
-Therefore thus says the Lord; You have not hearkened unto me, 
- in proclaiming a liberty, every one to his brother, and every man to his
- neighbor: behold, I proclaim a liberty for you, says the Lord, to the 
- sword, to the pestilence, and to the famine; and I will make you to be 
- removed into all the kingdoms of the earth."
+"'...And you had turned, and had done right in my sight, in 
+   proclaiming liberty, every man to his neighbor; and you had made a 
+    covenant before me in the house which is called by my name.
+"'But you turned and polluted my name, and caused every man his
+   servant, and every man his handmaid, whom you had set at liberty, to 
+    return, and brought them into subjection, to be your servants and 
+     handmaids.
+"'Therefore,' (thus says the Lord) 'You have not hearkened unto me, 
+   in proclaiming a liberty, every one to his brother, and every man to his
+    neighbor: behold, I proclaim a liberty for you, says the Lord, to the 
+     sword, to the pestilence, and to the famine; and I will make you to be 
+      removed into all the kingdoms of the earth.'"
 Jeremiah 34:15-17
 
+"Now it shall come to pass in the latter days 
+  that the mountain of the LORD's house 
+ shall be established on the top of the mountains, 
+  and shall be exalted above the hills; 
+   and all nations shall flow to it. 
+ Many people shall come and say:
+  'Come, and let us go up to the mountain of the Lord, 
+    to the house of the God of Jacob; 
+   He will teach us His ways, 
+    and we shall walk in His paths.'
+ For out of Zion shall go forth the law, 
+  and the word of the Lord from Jerusalem."
+Isaiah 2:2-3
+
 "In the last days... everyone will 
-   sit under their own vine,
+  sit under their own vine,
    and under their own fig tree, 
-   and no one will make them afraid, 
+    and no one will make them afraid, 
    for the LORD Almighty has spoken."
 Micah 4:1-4
 
 "Because the creature itself also shall be delivered 
- from the bondage of corruption 
+  from the bondage of corruption
  into the glorious liberty of the children of God."
 Romans 8:21
 
@@ -780,14 +810,38 @@ Paul C. Sutton	paul@openssl.org	paul@awe.com	UK
  *                          Used under terms of the GNU LGPL.
  *                          http://xmlrpcpp.sourceforge.net/
  *                          
- *                          OT includes version 0.7 of XmlRpc++, an implementation of the XmlRpc protocol
- *                          written in C++, based upon Shilad Sen's excellent py-xmlrpc library. Although
- *                          no code was re-used, the design and structure of the library is based upon the
- *                          py-xmlrpc implementation. The base64 decoder/encoder is by Konstantin Pilipchuk.
+ *                     OT includes version 0.7 of XmlRpc++, an implementation of the XmlRpc protocol
+ *                     written in C++, based upon Shilad Sen's excellent py-xmlrpc library. Although
+ *                     no code was re-used, the design and structure of the library is based upon the
+ *                     py-xmlrpc implementation. The base64 decoder/encoder is by Konstantin Pilipchuk.
  *                       
  */
  
  
+
+/*
+       (transport: OTMessage -> XmlRpc -> HTTP)  (WINDOWS)
+ 	GPL or LGPL, according to SourceForge.
+
+XmlRpc C++ client for Windows
+-----------------------------
+
+Created by Dr Tim Cooper,  tco@smartsgroup.com,   March 2009.
+
+This lets you talk to web sites using XmlRpc from C++ on Windows.  It differs
+from similar libraries as follows:
+        - works on Windows
+        - supports HTTPS (SSL)
+        - uses wininet to manage HTTP/HTTPS, so it's really very minimal
+        - much faster than XmlRpc++ which suffers from STL performance problems.
+
+This project consists of 2 files:   "TimXmlRpc.h"  &&  "TimXmlRpc.cpp".
+
+Parts of this project have been taken from Chris Morley's "XmlRpc++" project,
+in particular the API.  Chris's contribution is acknowledged by marking his
+work with the token:  "/*ChrisMorley/".  Thanks, Chris!
+
+*/
 
 
 
@@ -869,9 +923,45 @@ Paul C. Sutton	paul@openssl.org	paul@awe.com	UK
 
 
 /*
+ C++ Big Integer Library
+ 
+ http://mattmccutchen.net/bigint/
+ 
+ Written and maintained by Matt McCutchen <matt@mattmccutchen.net>
+ 
+ Legal
+ -----
+ I, Matt McCutchen, the sole author of the original Big Integer Library, waive my
+ copyright to it, placing it in the public domain.  The library comes with
+ absolutely no warranty.
+ 
+ */
+
+
+
+/*
   It seems appropriate to mention a few other people who deserve mentioning.
 
-  Tip of the hat to Dr. Douglas Jackson for his sacrifices and accomplishments. 
+  A moment of silence for "Jolly Good Fellow" Bernard von NotHaus, the founder
+  of NORFED who was recently (and wrongfully) convicted of "domestic terrorism."
+  For history, I will reproduce a few gloating FBI quotes:
+
+  "Attempts to undermine the legitimate currency of this country
+   are simply a unique form of domestic terrorism."
+   ...
+  "We are determined to meet these threats through infiltration,
+   disruption, and dismantling of organizations which seek to challenge the
+   legitimacy of our democratic form of government."
+   ...
+  "While these forms of anti-government activities do not involve
+   violence, they are every bit as insidious and represent a clear and
+   present danger to the economic stability of this country."
+
+ // -----------------------------------------------
+
+  Speaking of wrongful prosecution...
+
+  Tip of the hat to Dr. Douglas Jackson for his sacrifices and accomplishments.
   May this software protect future innovators from persecution, in a diversity
   of jurisdictions.  And check out e-gold.com, as well as goldmoney.com, 
   igolder, pecunix, and all the other digital gold reserve outfits. May they
@@ -882,7 +972,7 @@ Paul C. Sutton	paul@openssl.org	paul@awe.com	UK
   Kudos to David Wagner, and Ben Laurie, who brought us Lucre.
 
   Kudos to Ian Grigg for his many advancements in financial cryptography.  
-  Check out his website at http://iang.org
+  Check out his website at http://iang.org/
 
   J. Orlin Grabbe and his writings have been inspirational. He will be missed. 
   His DMT as well as critiques of it were useful to me.
@@ -892,8 +982,8 @@ Paul C. Sutton	paul@openssl.org	paul@awe.com	UK
   power into the hands of the people. Many people in corrupt jurisdictions
   now have PGP to thank for their lives. Let's do the same for their money.
 
-  Bill St. Clair, whose Trubanc was truly inspirational. Check out Trubanc
-  at http://trubanc.com:8080/
+  Bill St. Clair, whose Truledger was truly inspirational. Check out Truledger
+  at http://truledger.com/
 
   Patrick Chkoreff, whose Loom is operational and is what showed me the
   idea of separation of powers. Check out https://Loom.cc for more info.
@@ -907,7 +997,7 @@ Paul C. Sutton	paul@openssl.org	paul@awe.com	UK
   I still don't understand why he was stink-bombing IRS offices instead of
   writing code. But he definitely made his mark. 
 
-  Tim May for writing the Cyphernomicon.
+  Tim May for writing the Cyphernomicon. (Google it.)
 
   Robert A. Hettinga for his writings:  http://www.philodox.com/
 

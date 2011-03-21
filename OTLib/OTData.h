@@ -117,8 +117,9 @@ public:
 
 	void Initialize();
 
-	OTData & operator=(const OTData &theSource);
 	OTData & operator+=(const OTData & rhs);
+
+	OTData & operator=(const OTData &theSource);
 
 	bool operator==(const OTData &s2) const;
 	bool operator!=(const OTData &s2) const;

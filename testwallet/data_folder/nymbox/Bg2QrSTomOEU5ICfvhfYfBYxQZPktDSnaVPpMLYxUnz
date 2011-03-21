@@ -1,0 +1,32 @@
+-----BEGIN SIGNED LEDGER-----
+Hash: SAMY
+
+<accountLedger version="1.0"
+ type="nymbox"
+ accountID="Bg2QrSTomOEU5ICfvhfYfBYxQZPktDSnaVPpMLYxUnz"
+ userID="Bg2QrSTomOEU5ICfvhfYfBYxQZPktDSnaVPpMLYxUnz"
+serverID="44FmyPAgrmGu671RywGnhrt8aR6tzmNFn9WKQ92BXn" >
+
+<transaction>
+eJyVkM2OokAUhWfNUxC2xgaVBjFjJwiCaAvKn427AoufQBWIhYBPP/S4aFeTzF3e
+e76T3G88Hma11g2TdgzdXKu0a8umIyuuYZnftzG1Abd0QTvyPqCo36QG+AYikpWY
+Jn0Fl0xYAJwzFH0BBDpZguFlyUxmHCdywnTCDQcQRWWDiaEumVUyPdaOWyJr7b0b
+SnxP4yBeBd3xfMiJ6mDgH6r9Z9B5+DGAzQ3W/08N0P3J8byG+oOc1EhvBHFi962O
+05rMgS2QBzI1LJ12R2m6+sID9vKY2aDhhbnAD+sM2zCGNcQRdMslwzH0x2CBfUl/
+UOMfhy/y/vqUXc9ePzX6sL4N8QVtVRDT7k/Bjebe+HdKKRGCmCzolJBqwbJJRtIm
+fItKxGqwKMp2QO6wgDX7XTB+LWDbLM8oarvteG13VGPbgeBsSaLuXwvp6gUZlzxC
+AV+NvkLpKeSUnXKZ+9Jm5Eft9Nj2oxBvc4WjOCCOutXs6+xZclrhE7gezz0aHQLW
+kmcRrE6yr5mxDtv9tsBF8qn4GzadTUW3w4jUpznVaGy32R/UUpOKONR8cb5hJTyq
+c9QB/poLe9cURDcL4sJbPrWtTfVf0qhffwCemtRv
+</transaction>
+
+</accountLedger>
+-----BEGIN LEDGER SIGNATURE-----
+Version: Open Transactions 0.45
+Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
+
+bMUhrqjLbyH3WrpJC4F/5zxCIUtetfxgDfmZmE5rUwrQy/LfaJXcWEk7nQ2UY0Be
+U8vgirr3D+wSPj1j6QPmFtNYzFeJp16hACE3AKPwpq159O/+aqigaC17dnHzzo6D
+WDmLUo7QRlaCipIWiKirLOxSmYLOpeBKxbgr+zWv+II=
+-----END LEDGER SIGNATURE-----
+

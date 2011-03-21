@@ -1064,6 +1064,8 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 	OTIdentifier USER_ID;
 	pNym->GetIdentifier(USER_ID);
 	
+	const OTString strUserID(USER_ID);
+	
 	OTWallet * pWallet = theConnection.GetWallet();
 	OTPseudonym * pServerNym = (OTPseudonym *)(theConnection.GetServerContract()->GetContractPublicNym());
 
@@ -1190,9 +1192,27 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 				
 				// ----------------------------------------------------------------------------
 				
+				OTString strPurseUserPath;
+				strPurseUserPath.Format("%s%s%s", 
+											 strPurseDirectoryPath.Get(), OTLog::PathSeparator(),
+											 strUserID.Get());
+				
+				bool bConfirmPurseUserFolder = OTLog::ConfirmOrCreateFolder(strPurseUserPath.Get());
+				
+				if (!bConfirmPurseUserFolder)
+				{
+					OTLog::vError("ProcessWithdrawalResponse: Unable to find or create purse subdir "
+								  "for User ID: %s\n\n%s\n", 
+								  strPurseUserPath.Get(),
+								  strPurse.Get()); // Output the purse so it's safe in the log. (Since couldn't write.)
+					return;
+				}
+				
+				// ----------------------------------------------------------------------------
+				
 				OTString strPursePath;
 				strPursePath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-									strPurseDirectoryPath.Get(), OTLog::PathSeparator(), strAssetID.Get());
+									strPurseUserPath.Get(), OTLog::PathSeparator(), strAssetID.Get());
 				
 								
 				// Unlike the purse which we read out of a message,

@@ -523,6 +523,28 @@ bool OT_API::SetServer_Name(const OTIdentifier	&	SERVER_ID,
 
 
 
+bool OT_API::IsNym_RegisteredAtServer(const OTIdentifier & NYM_ID, const OTIdentifier & SERVER_ID)
+{
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	OTPseudonym *	pNym	= GetNym(NYM_ID);
+	
+	if (NULL == pNym)
+	{
+		OTString strOutput(NYM_ID);
+		OTLog::vOutput(0, "No user found with Nym ID: %s\n", strOutput.Get());
+	}
+	else
+	{
+		const OTString strServerID(SERVER_ID);
+		
+		return pNym->IsRegisteredAtServer(strServerID);
+	}
+	
+	return false;	
+}
+
+
 
 // The Nym's Name is basically just a client-side label.
 // This function lets you change it.
@@ -1202,11 +1224,13 @@ OTPaymentPlan * OT_API::WritePaymentPlan(const OTIdentifier & SERVER_ID,
 // (Caller responsible to delete.)
 //
 OTPurse * OT_API::LoadPurse(const OTIdentifier & SERVER_ID,
-							const OTIdentifier & ASSET_ID)
+							const OTIdentifier & ASSET_ID,
+							const OTIdentifier & USER_ID)
 {	
 	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 	
 	const OTString strAssetTypeID(ASSET_ID);
+	const OTString strUserID(USER_ID);
 	
 	// -----------------------------------------------------------------
 	
@@ -1242,9 +1266,26 @@ OTPurse * OT_API::LoadPurse(const OTIdentifier & SERVER_ID,
 	
 	// ----------------------------------------------------------------------------
 	
+	OTString strPurseUserPath;
+	strPurseUserPath.Format("%s%s%s", 
+								 strPurseDirectoryPath.Get(), OTLog::PathSeparator(),
+								 strUserID.Get());
+	
+	bool bConfirmPurseUserFolder = OTLog::ConfirmOrCreateFolder(strPurseUserPath.Get());
+	
+	if (!bConfirmPurseUserFolder)
+	{
+		OTLog::vError("OT_API::LoadPurse: Unable to find or create purse subdir "
+					  "for user ID: %s\n\n", 
+					  strPurseUserPath.Get());
+		return NULL;
+	}
+	
+	// ----------------------------------------------------------------------------
+	
 	OTString strPursePath;
 	strPursePath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-						strPurseDirectoryPath.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
+						strPurseUserPath.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
 	
 	OTPurse * pPurse = new OTPurse(SERVER_ID, ASSET_ID);
 	

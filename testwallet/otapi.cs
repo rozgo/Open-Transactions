@@ -106,6 +106,11 @@ public class otapi {
     return ret;
   }
 
+  public static string OT_API_GetAccountWallet_NymID(string ACCOUNT_ID) {
+    string ret = otapiPINVOKE.OT_API_GetAccountWallet_NymID(ACCOUNT_ID);
+    return ret;
+  }
+
   public static int OT_API_GetNym_TransactionNumCount(string SERVER_ID, string NYM_ID) {
     int ret = otapiPINVOKE.OT_API_GetNym_TransactionNumCount(SERVER_ID, NYM_ID);
     return ret;
@@ -118,6 +123,11 @@ public class otapi {
 
   public static string OT_API_GetNym_Name(string NYM_ID) {
     string ret = otapiPINVOKE.OT_API_GetNym_Name(NYM_ID);
+    return ret;
+  }
+
+  public static int OT_API_IsNym_RegisteredAtServer(string NYM_ID, string SERVER_ID) {
+    int ret = otapiPINVOKE.OT_API_IsNym_RegisteredAtServer(NYM_ID, SERVER_ID);
     return ret;
   }
 
@@ -171,8 +181,8 @@ public class otapi {
     return ret;
   }
 
-  public static string OT_API_LoadPurse(string SERVER_ID, string ASSET_TYPE_ID) {
-    string ret = otapiPINVOKE.OT_API_LoadPurse(SERVER_ID, ASSET_TYPE_ID);
+  public static string OT_API_LoadPurse(string SERVER_ID, string ASSET_TYPE_ID, string USER_ID) {
+    string ret = otapiPINVOKE.OT_API_LoadPurse(SERVER_ID, ASSET_TYPE_ID, USER_ID);
     return ret;
   }
 

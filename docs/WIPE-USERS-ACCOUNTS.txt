@@ -6,25 +6,27 @@ TO CLEAR THE SERVER INSTALLATION OF ALL: User Accounts, Asset Types, Asset Accou
 In Open-Transactions/transaction/data_folder:
 
 rm accounts/*
-rm contracts/*
+rm contracts/*  (EXCEPT WAIT! Don't erase the server's own contract! duh…)
 rm inbox/*
 rm outbox/*
+rm nymbox/*
 rm mints/*
 rm pubkeys/*
 rm useraccounts/*
 rm -R spent/*
+rm nymbox/*
 
 Do NOT touch the certs folder.
 
 In the nyms folder (Open-Transactions/transaction/nyms), remove EVERY FILE EXCEPT THE SERVER NYM, WHICH IS THIS ONE (IN THE TEST DATA):
-3b607ceb1793acc7417048fc23387735cf5ca75d0f2e7bc227c1a04163bd8f24933b94f68e26e585c2dd50af76d75fcc1248008bcbbcb9e32ae324fc79e90e77
+2b6909e3b21cbaaeebbf4900280a8506c683361590f67ace8c71742201337e7074c000144b97372983bc01f011a368bc2df389a6d89f5668ed7a188e8e7844f8
 
 Then edit notaryServer.xml and remove all of the extra user data such as asset types, etc. It should look like this when you're done:
 
 <?xml version="1.0"?>
 <notaryServer version="1.0"
- serverID="6147e7dead777e4671020f5ae7d8abb1b84d8c2dae630f7557778129beb5b2bb082c813af3412e77cb865cd91eb213df5cc979367528b7634453113d77fd5953"
- serverUserID="3b607ceb1793acc7417048fc23387735cf5ca75d0f2e7bc227c1a04163bd8f24933b94f68e26e585c2dd50af76d75fcc1248008bcbbcb9e32ae324fc79e90e77"
+ serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de"
+ serverUserID="2b6909e3b21cbaaeebbf4900280a8506c683361590f67ace8c71742201337e7074c000144b97372983bc01f011a368bc2df389a6d89f5668ed7a188e8e7844f8"
  transactionNum="1" >
 
 </notaryServer>
@@ -39,17 +41,20 @@ In the Open-Transactions/testwallet directory:
 
 
 rm accounts/*
+rm inbox/*
+rm outbox/*
+rm nymbox/*
 
-In the testwallet/data_folder/contracts folder, do NOT remove transactionscom.xml, since that is your server contract. (It's the test server contract that tries to connect to a server on localhost.) There is a backup of this file in the sample-contracts directory.
+In the testwallet/data_folder/contracts folder, do NOT remove 4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de which is actually transactionscom.xml, since that is your server contract. (It's the test server contract that tries to connect to a server on localhost.) There is a backup of this file in the sample-contracts directory.
 Remove all the other files in the contracts folder, except transactionscom.xml as just described.
 
 Do NOT touch the certs folder.
 
-rm mints/*
+rm -rf mints/*
 
 Do NOT touch the nyms folder.  You keep your nym on the client side, and use it to create your user account on the server. If you erase your own nym, then you cannot use it to create your user account when you connect to the Open Transactions server.
 
-rm purse/*
+rm -rf purse/*
 
 edit wallet.xml with your favorite editor...
 -- keep the pseudonym.

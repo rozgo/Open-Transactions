@@ -1,0 +1,35 @@
+-----BEGIN SIGNED MESSAGE-----
+Hash: SAMY
+
+<?xml version="1.0"?>
+
+<OTmessage
+ version="1.0">
+
+<createUserAccount
+ nymID="Bg2QrSTomOEU5ICfvhfYfBYxQZPktDSnaVPpMLYxUnz"
+ serverID="44FmyPAgrmGu671RywGnhrt8aR6tzmNFn9WKQ92BXn">
+
+<nymPublicKey>
+- -----BEGIN PUBLIC KEY-----
+LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlHZk1BMEdDU3FHU0liM0RRRUJB
+UVVBQTRHTkFEQ0JpUUtCZ1FEZThQMTg3aWkvanpuZ3Z6QmV1QisvYTJXMApQUFNK
+NVd0TTFJdTdMWEc1REp2Ly80ekJuUVJqQzd5TXd4Q3VwdFJwZ2JyTHpNbTdmYklF
+cXNFMDgvQW41OGtUCjYxK0JXRHpyUjBaVnZBeDNncUdtUXEybWtsZVpsb2FvdXE4
+UXRwZHJoVEQwM2VxRDk5cVBRMHdRTWdHRy8rMFAKOEhsVHJtOGY1VFFtVkVuVHVR
+SURBUUFCCi0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=
+- -----END PUBLIC KEY-----
+</nymPublicKey>
+
+</createUserAccount>
+
+</OTmessage>
+-----BEGIN MESSAGE SIGNATURE-----
+Version: Open Transactions 0.45
+Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
+
+yfQTfU4UR3IV6QNmYA4jl2+kmE6myQ7movsgg3MzICe5iJLbcIXZ7tzW0ETJ+LxG
+DX9KB/RSfhwCVISMNTHOryC09gx5bNbwZGTG23BlkJcNdirKNtExK7Hyp/kpeB+7
+hJcBi2gZaqbvIf/q8Oh/nnESR25jipQf2vq03BO6oGQ=
+-----END MESSAGE SIGNATURE-----
+

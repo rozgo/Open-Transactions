@@ -1,6 +1,3 @@
------BEGIN SIGNED CONTRACT-----
-Hash: SAMY
-
 <?xml version="1.0"?>
 <digitalAssetContract version="1.0">
 
@@ -148,11 +145,3 @@ LmNvbT6IVgQTEQIAFgUCOaEZEQQLCgQDAxUDAgMWAgECF4AACgkQKfOLUygtdArw
 </key>
 
 </digitalAssetContract>
------BEGIN CONTRACT SIGNATURE-----
-Version: Open Transactions 0.24
-Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
-
-mKOvY9WEoh5iT8GiOcPYghBZlQiqCuFoCE7O7AU+iiAFt7aHTYmJzL6Gt8oSTcYg
-J+SRe7PjazNSynzd2xJW7mr4VEe0ql0KVgo758mn0Cj1UAEVC5RZkkBpyoceRyXZ
-4fCbhbB/zgws9qrRxQ/iCuWw5cKRX8z9jhsxHPJwfJE=
------END CONTRACT SIGNATURE-----

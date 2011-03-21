@@ -2089,6 +2089,30 @@ fail:
 
 
 SWIGINTERN int
+_wrap_OT_API_GetAccountWallet_NymID(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:OT_API_GetAccountWallet_NymID ACCOUNT_ID ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(objv[1], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetAccountWallet_NymID" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_GetAccountWallet_NymID((char const *)arg1);
+  Tcl_SetObjResult(interp,SWIG_FromCharPtr((const char *)result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return TCL_OK;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
 _wrap_OT_API_GetNym_TransactionNumCount(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -2164,6 +2188,41 @@ _wrap_OT_API_GetNym_Name(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, i
   return TCL_OK;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OT_API_IsNym_RegisteredAtServer(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:OT_API_IsNym_RegisteredAtServer NYM_ID SERVER_ID ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(objv[1], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_IsNym_RegisteredAtServer" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(objv[2], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_IsNym_RegisteredAtServer" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  result = (int)OT_API_IsNym_RegisteredAtServer((char const *)arg1,(char const *)arg2);
+  Tcl_SetObjResult(interp,SWIG_From_int((int)(result)));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return TCL_OK;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return TCL_ERROR;
 }
 
@@ -2720,6 +2779,7 @@ SWIGINTERN int
 _wrap_OT_API_LoadPurse(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
   char *result = 0 ;
   int res1 ;
   char *buf1 = 0 ;
@@ -2727,8 +2787,11 @@ _wrap_OT_API_LoadPurse(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int
   int res2 ;
   char *buf2 = 0 ;
   int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
   
-  if (SWIG_GetArgs(interp, objc, objv,"oo:OT_API_LoadPurse SERVER_ID ASSET_TYPE_ID ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  if (SWIG_GetArgs(interp, objc, objv,"ooo:OT_API_LoadPurse SERVER_ID ASSET_TYPE_ID USER_ID ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
   res1 = SWIG_AsCharPtrAndSize(objv[1], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_LoadPurse" "', argument " "1"" of type '" "char const *""'");
@@ -2739,14 +2802,21 @@ _wrap_OT_API_LoadPurse(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_LoadPurse" "', argument " "2"" of type '" "char const *""'");
   }
   arg2 = (char *)(buf2);
-  result = (char *)OT_API_LoadPurse((char const *)arg1,(char const *)arg2);
+  res3 = SWIG_AsCharPtrAndSize(objv[3], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_LoadPurse" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  result = (char *)OT_API_LoadPurse((char const *)arg1,(char const *)arg2,(char const *)arg3);
   Tcl_SetObjResult(interp,SWIG_FromCharPtr((const char *)result));
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return TCL_OK;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return TCL_ERROR;
 }
 
@@ -5943,9 +6013,11 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "OT_API_GetAccountWallet_Type", (swig_wrapper_func) _wrap_OT_API_GetAccountWallet_Type, NULL},
     { SWIG_prefix "OT_API_GetAccountWallet_AssetTypeID", (swig_wrapper_func) _wrap_OT_API_GetAccountWallet_AssetTypeID, NULL},
     { SWIG_prefix "OT_API_GetAccountWallet_ServerID", (swig_wrapper_func) _wrap_OT_API_GetAccountWallet_ServerID, NULL},
+    { SWIG_prefix "OT_API_GetAccountWallet_NymID", (swig_wrapper_func) _wrap_OT_API_GetAccountWallet_NymID, NULL},
     { SWIG_prefix "OT_API_GetNym_TransactionNumCount", (swig_wrapper_func) _wrap_OT_API_GetNym_TransactionNumCount, NULL},
     { SWIG_prefix "OT_API_GetNym_ID", (swig_wrapper_func) _wrap_OT_API_GetNym_ID, NULL},
     { SWIG_prefix "OT_API_GetNym_Name", (swig_wrapper_func) _wrap_OT_API_GetNym_Name, NULL},
+    { SWIG_prefix "OT_API_IsNym_RegisteredAtServer", (swig_wrapper_func) _wrap_OT_API_IsNym_RegisteredAtServer, NULL},
     { SWIG_prefix "OT_API_SetNym_Name", (swig_wrapper_func) _wrap_OT_API_SetNym_Name, NULL},
     { SWIG_prefix "OT_API_SetAccountWallet_Name", (swig_wrapper_func) _wrap_OT_API_SetAccountWallet_Name, NULL},
     { SWIG_prefix "OT_API_SetAssetType_Name", (swig_wrapper_func) _wrap_OT_API_SetAssetType_Name, NULL},

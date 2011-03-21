@@ -65,6 +65,7 @@ endif
 OT_INCLUDEDIRS = \
 	-I./irrxml \
 	-I./Lucre \
+	-I./bigint \
 	-I./
 
 
@@ -141,13 +142,20 @@ DEBUG_LIBS = -lssl -lcrypto
 # directory information to be passed to the linker.
 #
 
+BIGINTSOURCES = bigint/BigUnsigned.o \
+        bigint/BigInteger.o \
+        bigint/BigIntegerAlgorithms.o \
+        bigint/BigUnsignedInABase.o \
+        bigint/BigIntegerUtils.o
+
+
 LUCRESOURCES = Lucre/bankimp.cpp
 
 IRRXMLSOURCES = irrxml/irrXML.cpp      
 
 CSOURCES = easyzlib.c mkcert.c
 
-CXXSOURCES = $(LUCRESOURCES) $(IRRXMLSOURCES) \
+CXXSOURCES = $(BIGINTSOURCES) $(LUCRESOURCES) $(IRRXMLSOURCES) \
 			 OTData.cpp \
 			 OTString.cpp \
 			 OTStringXML.cpp \
@@ -242,6 +250,17 @@ irrxml/irrXML.o: irrxml/irrXML.cpp irrxml/irrXML.h
 
 Lucre/bankimp.o: Lucre/bankimp.cpp Lucre/bank.h
 	$(CXX) $(CXXFLAGS) -c -o Lucre/bankimp.o Lucre/bankimp.cpp
+
+bigint/BigUnsigned.o: bigint/BigUnsigned.cc bigint/BigUnsigned.hh
+	$(CXX) $(CXXFLAGS) -c -o bigint/BigUnsigned.o bigint/BigUnsigned.cc 
+bigint/BigInteger.o: bigint/BigInteger.cc bigint/BigInteger.hh
+	$(CXX) $(CXXFLAGS) -c -o bigint/BigInteger.o bigint/BigInteger.cc 
+bigint/BigIntegerAlgorithms.o: bigint/BigIntegerAlgorithms.cc bigint/BigIntegerAlgorithms.hh
+	$(CXX) $(CXXFLAGS) -c -o bigint/BigIntegerAlgorithms.o bigint/BigIntegerAlgorithms.cc 
+bigint/BigUnsignedInABase.o: bigint/BigUnsignedInABase.cc bigint/BigUnsignedInABase.hh
+	$(CXX) $(CXXFLAGS) -c -o bigint/BigUnsignedInABase.o bigint/BigUnsignedInABase.cc 
+bigint/BigIntegerUtils.o: bigint/BigIntegerUtils.cc bigint/BigIntegerUtils.hh
+	$(CXX) $(CXXFLAGS) -c -o bigint/BigIntegerUtils.o bigint/BigIntegerUtils.cc 
 
 OTData.o: OTData.cpp OTData.h
 	$(CXX) $(CXXFLAGS) -c -o OTData.o OTData.cpp

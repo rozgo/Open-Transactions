@@ -493,6 +493,35 @@ void OTPseudonym::RemoveAllNumbers()
 }
 
 
+// You can't go using a Nym at a certain server, if it's not registered there...
+bool OTPseudonym::IsRegisteredAtServer(const OTString & strServerID)
+{
+	bool bRetVal		= false; // default is return false: "No, I'm NOT registered at that Server."
+	std::string strID	= strServerID.Get();
+	
+	// The Pseudonym has a map of the request numbers for different servers.
+	// For Server Bob, with this Pseudonym, I might be on number 34.
+	// For but Server Alice, I might be on number 59.
+	// 
+	// So let's loop through all the numbers I have, and if the server ID on the map
+	// matches the Server ID that was passed in, then return TRUE.
+	for (mapOfRequestNums::iterator ii = m_mapRequestNum.begin();  ii != m_mapRequestNum.end(); ++ii)
+	{
+		if ( strID == ii->first )
+		{			
+			// The call has succeeded
+			bRetVal = true;
+			
+			break;
+		}
+	}
+	
+	return bRetVal;	
+}
+
+
+
+
 
 /*
 typedef std::deque<long>							dequeOfTransNums;
@@ -2004,9 +2033,9 @@ bool OTPseudonym::LoadSignedNymfile(OTPseudonym & SIGNER_NYM)
 	// 2. That the local subdir and filename match the versions inside the file.
 	// 3. That the signature matches for the signer nym who was passed in.
 	//
-	if (theNymfile.LoadFile()  
-//		&& theNymfile.VerifyFile()					// TODO TEMP TEMPORARY RESUME  (These two lines can be commented out to allow you to load a nymfile with no sig.
-//		&& theNymfile.VerifySignature(SIGNER_NYM)	// These are ONLY commented-out so I can reload a bad nymfile. UNCOMMENT THESE IF YOU SEE THIS.
+	if (theNymfile.LoadFile()						// Also see OTWallet.cpp where it says:   //pNym->SaveSignedNymfile(*pNym); // Uncomment this if you want to generate a new nym by hand. NORMALLY LEAVE IT COMMENTED OUT!!!! IT'S DANGEROUS!!!
+		&& theNymfile.VerifyFile()					// TODO TEMP TEMPORARY RESUME  (These two lines can be commented out to allow you to load a nymfile with no sig.
+		&& theNymfile.VerifySignature(SIGNER_NYM)	// These are ONLY commented-out so I can reload a bad nymfile. UNCOMMENT THESE IF YOU SEE THIS.
 		)
 	{
 		OTLog::Output(4, "Loaded and verified signed nymfile. Reading from string...\n");

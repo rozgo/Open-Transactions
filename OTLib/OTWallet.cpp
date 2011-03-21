@@ -661,6 +661,10 @@ void OTWallet::AddNym(const OTPseudonym & theNym)
 			OTString strName(pNym->GetNymName());
 			((OTPseudonym &)theNym).SetNymName(strName);
 			
+			// TODO remove this temporary block, used for testing only.	
+			if (pNym == g_pTemporaryNym)
+				g_pTemporaryNym = (OTPseudonym *)&theNym; 
+			
 			m_mapNyms.erase(ii);
 			delete pNym;
 			pNym = NULL;
@@ -673,6 +677,7 @@ void OTWallet::AddNym(const OTPseudonym & theNym)
 		
 	const OTString	strNymID(NYM_ID);
 	m_mapNyms[strNymID.Get()] = (OTPseudonym *)&theNym; // Insert to wallet's list of Nyms.
+	
 }
 
 
@@ -963,6 +968,8 @@ bool OTWallet::LoadWallet(const char * szFilename)
  							if (pNym->LoadSignedNymfile(*pNym))  // (Uncomment) Comment OUT this line to generate a new nym by hand.
 							{
 	   // pNym->SaveSignedNymfile(*pNym); // Uncomment this if you want to generate a new nym by hand. NORMALLY LEAVE IT COMMENTED OUT!!!! IT'S DANGEROUS!!!
+								// Also see OTPseudonym.cpp where it says:  //		&& theNymfile.VerifyFile()
+								
 								
 								this->AddNym(*pNym); // Nym loaded. Insert to wallet's list of Nyms.
 							}

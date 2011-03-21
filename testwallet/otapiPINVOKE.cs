@@ -241,6 +241,9 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_GetAccountWallet_ServerID")]
   public static extern string OT_API_GetAccountWallet_ServerID(string jarg1);
 
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetAccountWallet_NymID")]
+  public static extern string OT_API_GetAccountWallet_NymID(string jarg1);
+
   [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_TransactionNumCount")]
   public static extern int OT_API_GetNym_TransactionNumCount(string jarg1, string jarg2);
 
@@ -249,6 +252,9 @@ class otapiPINVOKE {
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_Name")]
   public static extern string OT_API_GetNym_Name(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_IsNym_RegisteredAtServer")]
+  public static extern int OT_API_IsNym_RegisteredAtServer(string jarg1, string jarg2);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_SetNym_Name")]
   public static extern int OT_API_SetNym_Name(string jarg1, string jarg2, string jarg3);
@@ -281,7 +287,7 @@ class otapiPINVOKE {
   public static extern int OT_API_VerifyUserPrivateKey(string jarg1);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_LoadPurse")]
-  public static extern string OT_API_LoadPurse(string jarg1, string jarg2);
+  public static extern string OT_API_LoadPurse(string jarg1, string jarg2, string jarg3);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_LoadMint")]
   public static extern string OT_API_LoadMint(string jarg1, string jarg2);

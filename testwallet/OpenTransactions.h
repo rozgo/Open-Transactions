@@ -199,6 +199,8 @@ public:
 	
 	OTPseudonym *		CreateNym(); // returns a new nym (with key pair) and files created. (Or NULL.)
 
+	bool	IsNym_RegisteredAtServer(const OTIdentifier & NYM_ID, const OTIdentifier & SERVER_ID);
+	
 	// ----------------------------------------------------
 	//
 	// Returns an OTCheque pointer, or NULL. 
@@ -252,7 +254,8 @@ public:
 	// ----------------------------------------------------
 
 	OTPurse * LoadPurse(const OTIdentifier & SERVER_ID,
-						const OTIdentifier & ASSET_ID);
+						const OTIdentifier & ASSET_ID,
+						const OTIdentifier & USER_ID);
 	
 	OTMint * LoadMint(const OTIdentifier & SERVER_ID,
 					  const OTIdentifier & ASSET_ID);

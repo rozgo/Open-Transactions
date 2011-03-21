@@ -490,6 +490,25 @@ SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetAccountWallet_1ServerID(JNI
 }
 
 
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetAccountWallet_1NymID(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+  jstring jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
+  }
+  result = (char *)OT_API_GetAccountWallet_NymID((char const *)arg1);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
+  return jresult;
+}
+
+
 SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1GetNym_1TransactionNumCount(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2) {
   jint jresult = 0 ;
   char *arg1 = (char *) 0 ;
@@ -545,6 +564,32 @@ SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetNym_1Name(JNIEnv *jenv, jcl
   result = (char *)OT_API_GetNym_Name((char const *)arg1);
   if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
   if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1IsNym_1RegisteredAtServer(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2) {
+  jint jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
+  }
+  arg2 = 0;
+  if (jarg2) {
+    arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+    if (!arg2) return 0;
+  }
+  result = (int)OT_API_IsNym_RegisteredAtServer((char const *)arg1,(char const *)arg2);
+  jresult = (jint)result; 
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
+  if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
   return jresult;
 }
 
@@ -935,10 +980,11 @@ SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1VerifyUserPrivateKey(JNIEnv *jenv
 }
 
 
-SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1LoadPurse(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1LoadPurse(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
   char *result = 0 ;
   
   (void)jenv;
@@ -953,10 +999,16 @@ SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1LoadPurse(JNIEnv *jenv, jclass
     arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
     if (!arg2) return 0;
   }
-  result = (char *)OT_API_LoadPurse((char const *)arg1,(char const *)arg2);
+  arg3 = 0;
+  if (jarg3) {
+    arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
+    if (!arg3) return 0;
+  }
+  result = (char *)OT_API_LoadPurse((char const *)arg1,(char const *)arg2,(char const *)arg3);
   if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
   if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
+  if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, (const char *)arg3);
   return jresult;
 }
 

@@ -467,6 +467,18 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetAccountWallet_ServerID(char * jar
 }
 
 
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetAccountWallet_NymID(char * jarg1) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  result = (char *)OT_API_GetAccountWallet_NymID((char const *)arg1);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
 SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_GetNym_TransactionNumCount(char * jarg1, char * jarg2) {
   int jresult ;
   char *arg1 = (char *) 0 ;
@@ -501,6 +513,20 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetNym_Name(char * jarg1) {
   arg1 = (char *)jarg1; 
   result = (char *)OT_API_GetNym_Name((char const *)arg1);
   jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_IsNym_RegisteredAtServer(char * jarg1, char * jarg2) {
+  int jresult ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int result;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (char *)jarg2; 
+  result = (int)OT_API_IsNym_RegisteredAtServer((char const *)arg1,(char const *)arg2);
+  jresult = result; 
   return jresult;
 }
 
@@ -681,15 +707,17 @@ SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_VerifyUserPrivateKey(char * jarg1) {
 }
 
 
-SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_LoadPurse(char * jarg1, char * jarg2) {
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_LoadPurse(char * jarg1, char * jarg2, char * jarg3) {
   char * jresult ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
   char *result = 0 ;
   
   arg1 = (char *)jarg1; 
   arg2 = (char *)jarg2; 
-  result = (char *)OT_API_LoadPurse((char const *)arg1,(char const *)arg2);
+  arg3 = (char *)jarg3; 
+  result = (char *)OT_API_LoadPurse((char const *)arg1,(char const *)arg2,(char const *)arg3);
   jresult = SWIG_csharp_string_callback((const char *)result); 
   return jresult;
 }

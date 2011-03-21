@@ -100,6 +100,9 @@
 (cffi:defcfun ("OT_API_GetAccountWallet_ServerID" OT_API_GetAccountWallet_ServerID) :string
   (ACCOUNT_ID :string))
 
+(cffi:defcfun ("OT_API_GetAccountWallet_NymID" OT_API_GetAccountWallet_NymID) :string
+  (ACCOUNT_ID :string))
+
 (cffi:defcfun ("OT_API_GetNym_TransactionNumCount" OT_API_GetNym_TransactionNumCount) :int
   (SERVER_ID :string)
   (NYM_ID :string))
@@ -109,6 +112,10 @@
 
 (cffi:defcfun ("OT_API_GetNym_Name" OT_API_GetNym_Name) :string
   (NYM_ID :string))
+
+(cffi:defcfun ("OT_API_IsNym_RegisteredAtServer" OT_API_IsNym_RegisteredAtServer) :int
+  (NYM_ID :string)
+  (SERVER_ID :string))
 
 (cffi:defcfun ("OT_API_SetNym_Name" OT_API_SetNym_Name) :int
   (NYM_ID :string)
@@ -170,7 +177,8 @@
 
 (cffi:defcfun ("OT_API_LoadPurse" OT_API_LoadPurse) :string
   (SERVER_ID :string)
-  (ASSET_TYPE_ID :string))
+  (ASSET_TYPE_ID :string)
+  (USER_ID :string))
 
 (cffi:defcfun ("OT_API_LoadMint" OT_API_LoadMint) :string
   (SERVER_ID :string)

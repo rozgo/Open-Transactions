@@ -93,6 +93,7 @@ extern "C"
 #include "OTData.h"
 #include "OTString.h"
 
+
 // An Identifier is basically a 256 bit hash value.
 // This class makes it easy to convert IDs back and forth to strings.
 // 
@@ -124,7 +125,11 @@ public:
 	OTIdentifier(const OTOffer &theOffer);
 	OTIdentifier(const OTMarket &theMarket);
 	virtual ~OTIdentifier();
-			
+				
+	bool operator==(const OTIdentifier &s2) const;
+	bool operator!=(const OTIdentifier &s2) const;
+
+	
 	bool CalculateDigest(const OTData & dataInput);
 	bool CalculateDigest(const OTString & strInput);
 	
