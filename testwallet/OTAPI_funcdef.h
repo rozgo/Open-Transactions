@@ -217,10 +217,45 @@ const char * OT_API_GetAccountWallet_NymID(const char * ACCOUNT_ID);	 // returns
 ///
 int OT_API_GetNym_TransactionNumCount(const char * SERVER_ID, const char * NYM_ID);
 
-const char * OT_API_GetNym_ID(int nIndex); // based on Index (above 4 functions) this returns the Nym's ID
-const char * OT_API_GetNym_Name(const char * NYM_ID); // Returns Nym Name (based on NymID)
+const char * OT_API_GetNym_ID(int nIndex); /// based on Index (above 4 functions) this returns the Nym's ID
+const char * OT_API_GetNym_Name(const char * NYM_ID); /// Returns Nym Name (based on NymID)
+const char * OT_API_GetNym_Stats(const char * NYM_ID); /// Returns Nym Statistics (based on NymID)
 
 int OT_API_IsNym_RegisteredAtServer(const char * NYM_ID, const char * SERVER_ID); // actually returns OT_BOOL
+
+
+/// Each Nym has mail messages, they can come from different servers.
+/// This allows you to peruse the mail for a given Nym, and erase messages.
+///
+/***
+ 
+ So how would you actually USE this to browse a Nym's mail?
+ 
+ -- Call OT_API_GetNym_MailCount() to find out how many mail items there are.
+ 
+ -- Then LOOP through them, and use OT_API_GetNym_MailSenderIDByIndex and
+    OT_API_GetNym_MailServerIDByIndex to populate the list.
+ 
+ -- If you want to add a subject display, you'll have to call OT_API_GetNym_MailContentsByIndex()
+    and check for a first line beginning in Subject:  (there may not be one.)
+ 
+ -- OT_API_GetNym_MailContentsByIndex returns the body of the mail regardless.
+ 
+ -- Use OT_API_Nym_VerifyMailByIndex() to verify the signature on the mail,
+ 
+ -- and use OT_API_Nym_RemoveMailByIndex() to erase mail (when you want to.)
+ 
+ */
+
+int				OT_API_GetNym_MailCount(const char * NYM_ID);
+
+const char *	OT_API_GetNym_MailContentsByIndex(const char * NYM_ID, int nIndex); /// returns the message itself (Subject: optionally as first line)
+
+const char *	OT_API_GetNym_MailSenderIDByIndex(const char * NYM_ID, int nIndex); /// returns the NymID of the sender.
+const char *	OT_API_GetNym_MailServerIDByIndex(const char * NYM_ID, int nIndex); /// returns the ServerID where the message came from.
+
+int				OT_API_Nym_RemoveMailByIndex(const char * NYM_ID, int nIndex); /// actually returns OT_BOOL, (1 or 0.)
+int				OT_API_Nym_VerifyMailByIndex(const char * NYM_ID, int nIndex); /// actually returns OT_BOOL. OT_TRUE if signature verifies. (Sender Nym MUST be in my wallet for this to work.)
 
 
 // -----------------------------------
@@ -734,6 +769,21 @@ int OT_API_Transaction_GetSuccess(const char * SERVER_ID,
 								  const char * THE_TRANSACTION); 
 
 
+/// --------------------------------------------------
+///
+/// Get Transaction Date Signed  (internally uses OTTransaction::GetDateSigned().)
+///
+const char * OT_API_Transaction_GetDateSigned(const char * SERVER_ID,
+											  const char * USER_ID,
+											  const char * ACCOUNT_ID,
+											  const char * THE_TRANSACTION); 
+
+const char * OT_API_Transaction_GetAmount(const char * SERVER_ID,
+										  const char * USER_ID,
+										  const char * ACCOUNT_ID,
+										  const char * THE_TRANSACTION);
+
+
 // --------------------------------------------------
 ///
 /// PENDING TRANSFER (various functions)
@@ -744,25 +794,35 @@ int OT_API_Transaction_GetSuccess(const char * SERVER_ID,
 /// order to get data from each pending transfer. That way your user can
 /// then decide whether to accept or reject it (see the ledger functions.)
 ///
-const char * OT_API_Pending_GetFromUserID(const char * SERVER_ID,
-										  const char * USER_ID,
-										  const char * ACCOUNT_ID,
-										  const char * THE_TRANSACTION);
-
-const char * OT_API_Pending_GetFromAcctID(const char * SERVER_ID,
-										  const char * USER_ID,
-										  const char * ACCOUNT_ID,
-										  const char * THE_TRANSACTION);
 
 const char * OT_API_Pending_GetNote(const char * SERVER_ID,
 									const char * USER_ID,
 									const char * ACCOUNT_ID,
 									const char * THE_TRANSACTION);
 
-const char * OT_API_Pending_GetAmount(const char * SERVER_ID,
-									  const char * USER_ID,
-									  const char * ACCOUNT_ID,
-									  const char * THE_TRANSACTION);
+
+// ----------
+
+const char * OT_API_Transaction_GetSenderUserID(const char * SERVER_ID,
+												const char * USER_ID,
+												const char * ACCOUNT_ID,
+												const char * THE_TRANSACTION);
+
+const char * OT_API_Transaction_GetSenderAcctID(const char * SERVER_ID,
+												const char * USER_ID,
+												const char * ACCOUNT_ID,
+												const char * THE_TRANSACTION);
+
+const char * OT_API_Transaction_GetRecipientUserID(const char * SERVER_ID,
+												   const char * USER_ID,
+												   const char * ACCOUNT_ID,
+												   const char * THE_TRANSACTION);
+
+const char * OT_API_Transaction_GetRecipientAcctID(const char * SERVER_ID,
+												   const char * USER_ID,
+												   const char * ACCOUNT_ID,
+												   const char * THE_TRANSACTION);
+
 
 /// The pending notice in the inbox has a transaction number that
 /// was issued to the server (so it could put the notice in your inbox.)
@@ -771,10 +831,10 @@ const char * OT_API_Pending_GetAmount(const char * SERVER_ID,
 /// this function queries a pending transaction to see what transaction
 /// it is "in reference to."
 ///
-const char * OT_API_Pending_GetReferenceToNum(const char * SERVER_ID,
-											  const char * USER_ID,
-											  const char * ACCOUNT_ID,
-											  const char * THE_TRANSACTION);
+const char * OT_API_Transaction_GetDisplayReferenceToNum(const char * SERVER_ID,
+														 const char * USER_ID,
+														 const char * ACCOUNT_ID,
+														 const char * THE_TRANSACTION);
 
 
 

@@ -2265,6 +2265,33 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_OT_API_GetNym_Stats(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetNym_Stats" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (char *)OT_API_GetNym_Stats((char const *)arg1);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_OT_API_IsNym_RegisteredAtServer(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -2298,6 +2325,208 @@ _wrap_OT_API_IsNym_RegisteredAtServer(int argc, VALUE *argv, VALUE self) {
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_GetNym_MailCount(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetNym_MailCount" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (int)OT_API_GetNym_MailCount((char const *)arg1);
+  vresult = SWIG_From_int((int)(result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_GetNym_MailContentsByIndex(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetNym_MailContentsByIndex" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  ecode2 = SWIG_AsVal_int(argv[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "OT_API_GetNym_MailContentsByIndex" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  result = (char *)OT_API_GetNym_MailContentsByIndex((char const *)arg1,arg2);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_GetNym_MailSenderIDByIndex(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetNym_MailSenderIDByIndex" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  ecode2 = SWIG_AsVal_int(argv[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "OT_API_GetNym_MailSenderIDByIndex" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  result = (char *)OT_API_GetNym_MailSenderIDByIndex((char const *)arg1,arg2);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_GetNym_MailServerIDByIndex(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_GetNym_MailServerIDByIndex" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  ecode2 = SWIG_AsVal_int(argv[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "OT_API_GetNym_MailServerIDByIndex" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  result = (char *)OT_API_GetNym_MailServerIDByIndex((char const *)arg1,arg2);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_Nym_RemoveMailByIndex(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Nym_RemoveMailByIndex" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  ecode2 = SWIG_AsVal_int(argv[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "OT_API_Nym_RemoveMailByIndex" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  result = (int)OT_API_Nym_RemoveMailByIndex((char const *)arg1,arg2);
+  vresult = SWIG_From_int((int)(result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_Nym_VerifyMailByIndex(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Nym_VerifyMailByIndex" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  ecode2 = SWIG_AsVal_int(argv[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "OT_API_Nym_VerifyMailByIndex" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  result = (int)OT_API_Nym_VerifyMailByIndex((char const *)arg1,arg2);
+  vresult = SWIG_From_int((int)(result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;
 }
 
@@ -4045,7 +4274,7 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_OT_API_Pending_GetFromUserID(int argc, VALUE *argv, VALUE self) {
+_wrap_OT_API_Transaction_GetDateSigned(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -4070,25 +4299,25 @@ _wrap_OT_API_Pending_GetFromUserID(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Pending_GetFromUserID" "', argument " "1"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Transaction_GetDateSigned" "', argument " "1"" of type '" "char const *""'");
   }
   arg1 = (char *)(buf1);
   res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_Pending_GetFromUserID" "', argument " "2"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_Transaction_GetDateSigned" "', argument " "2"" of type '" "char const *""'");
   }
   arg2 = (char *)(buf2);
   res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_Pending_GetFromUserID" "', argument " "3"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_Transaction_GetDateSigned" "', argument " "3"" of type '" "char const *""'");
   }
   arg3 = (char *)(buf3);
   res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
   if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_Pending_GetFromUserID" "', argument " "4"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_Transaction_GetDateSigned" "', argument " "4"" of type '" "char const *""'");
   }
   arg4 = (char *)(buf4);
-  result = (char *)OT_API_Pending_GetFromUserID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  result = (char *)OT_API_Transaction_GetDateSigned((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   vresult = SWIG_FromCharPtr((const char *)result);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
@@ -4105,7 +4334,7 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_OT_API_Pending_GetFromAcctID(int argc, VALUE *argv, VALUE self) {
+_wrap_OT_API_Transaction_GetAmount(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -4130,25 +4359,25 @@ _wrap_OT_API_Pending_GetFromAcctID(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Pending_GetFromAcctID" "', argument " "1"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Transaction_GetAmount" "', argument " "1"" of type '" "char const *""'");
   }
   arg1 = (char *)(buf1);
   res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_Pending_GetFromAcctID" "', argument " "2"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_Transaction_GetAmount" "', argument " "2"" of type '" "char const *""'");
   }
   arg2 = (char *)(buf2);
   res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_Pending_GetFromAcctID" "', argument " "3"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_Transaction_GetAmount" "', argument " "3"" of type '" "char const *""'");
   }
   arg3 = (char *)(buf3);
   res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
   if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_Pending_GetFromAcctID" "', argument " "4"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_Transaction_GetAmount" "', argument " "4"" of type '" "char const *""'");
   }
   arg4 = (char *)(buf4);
-  result = (char *)OT_API_Pending_GetFromAcctID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  result = (char *)OT_API_Transaction_GetAmount((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   vresult = SWIG_FromCharPtr((const char *)result);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
@@ -4225,7 +4454,7 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_OT_API_Pending_GetAmount(int argc, VALUE *argv, VALUE self) {
+_wrap_OT_API_Transaction_GetSenderUserID(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -4250,25 +4479,25 @@ _wrap_OT_API_Pending_GetAmount(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Pending_GetAmount" "', argument " "1"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Transaction_GetSenderUserID" "', argument " "1"" of type '" "char const *""'");
   }
   arg1 = (char *)(buf1);
   res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_Pending_GetAmount" "', argument " "2"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_Transaction_GetSenderUserID" "', argument " "2"" of type '" "char const *""'");
   }
   arg2 = (char *)(buf2);
   res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_Pending_GetAmount" "', argument " "3"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_Transaction_GetSenderUserID" "', argument " "3"" of type '" "char const *""'");
   }
   arg3 = (char *)(buf3);
   res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
   if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_Pending_GetAmount" "', argument " "4"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_Transaction_GetSenderUserID" "', argument " "4"" of type '" "char const *""'");
   }
   arg4 = (char *)(buf4);
-  result = (char *)OT_API_Pending_GetAmount((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  result = (char *)OT_API_Transaction_GetSenderUserID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   vresult = SWIG_FromCharPtr((const char *)result);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
@@ -4285,7 +4514,7 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_OT_API_Pending_GetReferenceToNum(int argc, VALUE *argv, VALUE self) {
+_wrap_OT_API_Transaction_GetSenderAcctID(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -4310,25 +4539,205 @@ _wrap_OT_API_Pending_GetReferenceToNum(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Pending_GetReferenceToNum" "', argument " "1"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Transaction_GetSenderAcctID" "', argument " "1"" of type '" "char const *""'");
   }
   arg1 = (char *)(buf1);
   res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_Pending_GetReferenceToNum" "', argument " "2"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_Transaction_GetSenderAcctID" "', argument " "2"" of type '" "char const *""'");
   }
   arg2 = (char *)(buf2);
   res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_Pending_GetReferenceToNum" "', argument " "3"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_Transaction_GetSenderAcctID" "', argument " "3"" of type '" "char const *""'");
   }
   arg3 = (char *)(buf3);
   res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
   if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_Pending_GetReferenceToNum" "', argument " "4"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_Transaction_GetSenderAcctID" "', argument " "4"" of type '" "char const *""'");
   }
   arg4 = (char *)(buf4);
-  result = (char *)OT_API_Pending_GetReferenceToNum((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  result = (char *)OT_API_Transaction_GetSenderAcctID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_Transaction_GetRecipientUserID(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 4) || (argc > 4)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Transaction_GetRecipientUserID" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_Transaction_GetRecipientUserID" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_Transaction_GetRecipientUserID" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_Transaction_GetRecipientUserID" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  result = (char *)OT_API_Transaction_GetRecipientUserID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_Transaction_GetRecipientAcctID(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 4) || (argc > 4)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Transaction_GetRecipientAcctID" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_Transaction_GetRecipientAcctID" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_Transaction_GetRecipientAcctID" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_Transaction_GetRecipientAcctID" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  result = (char *)OT_API_Transaction_GetRecipientAcctID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_Transaction_GetDisplayReferenceToNum(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 4) || (argc > 4)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Transaction_GetDisplayReferenceToNum" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_Transaction_GetDisplayReferenceToNum" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_Transaction_GetDisplayReferenceToNum" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_Transaction_GetDisplayReferenceToNum" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  result = (char *)OT_API_Transaction_GetDisplayReferenceToNum((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   vresult = SWIG_FromCharPtr((const char *)result);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
@@ -6534,7 +6943,14 @@ SWIGEXPORT void Init_otapi(void) {
   rb_define_module_function(mOtapi, "OT_API_GetNym_TransactionNumCount", _wrap_OT_API_GetNym_TransactionNumCount, -1);
   rb_define_module_function(mOtapi, "OT_API_GetNym_ID", _wrap_OT_API_GetNym_ID, -1);
   rb_define_module_function(mOtapi, "OT_API_GetNym_Name", _wrap_OT_API_GetNym_Name, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetNym_Stats", _wrap_OT_API_GetNym_Stats, -1);
   rb_define_module_function(mOtapi, "OT_API_IsNym_RegisteredAtServer", _wrap_OT_API_IsNym_RegisteredAtServer, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetNym_MailCount", _wrap_OT_API_GetNym_MailCount, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetNym_MailContentsByIndex", _wrap_OT_API_GetNym_MailContentsByIndex, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetNym_MailSenderIDByIndex", _wrap_OT_API_GetNym_MailSenderIDByIndex, -1);
+  rb_define_module_function(mOtapi, "OT_API_GetNym_MailServerIDByIndex", _wrap_OT_API_GetNym_MailServerIDByIndex, -1);
+  rb_define_module_function(mOtapi, "OT_API_Nym_RemoveMailByIndex", _wrap_OT_API_Nym_RemoveMailByIndex, -1);
+  rb_define_module_function(mOtapi, "OT_API_Nym_VerifyMailByIndex", _wrap_OT_API_Nym_VerifyMailByIndex, -1);
   rb_define_module_function(mOtapi, "OT_API_SetNym_Name", _wrap_OT_API_SetNym_Name, -1);
   rb_define_module_function(mOtapi, "OT_API_SetAccountWallet_Name", _wrap_OT_API_SetAccountWallet_Name, -1);
   rb_define_module_function(mOtapi, "OT_API_SetAssetType_Name", _wrap_OT_API_SetAssetType_Name, -1);
@@ -6568,11 +6984,14 @@ SWIGEXPORT void Init_otapi(void) {
   rb_define_module_function(mOtapi, "OT_API_Transaction_GetType", _wrap_OT_API_Transaction_GetType, -1);
   rb_define_module_function(mOtapi, "OT_API_Transaction_GetVoucher", _wrap_OT_API_Transaction_GetVoucher, -1);
   rb_define_module_function(mOtapi, "OT_API_Transaction_GetSuccess", _wrap_OT_API_Transaction_GetSuccess, -1);
-  rb_define_module_function(mOtapi, "OT_API_Pending_GetFromUserID", _wrap_OT_API_Pending_GetFromUserID, -1);
-  rb_define_module_function(mOtapi, "OT_API_Pending_GetFromAcctID", _wrap_OT_API_Pending_GetFromAcctID, -1);
+  rb_define_module_function(mOtapi, "OT_API_Transaction_GetDateSigned", _wrap_OT_API_Transaction_GetDateSigned, -1);
+  rb_define_module_function(mOtapi, "OT_API_Transaction_GetAmount", _wrap_OT_API_Transaction_GetAmount, -1);
   rb_define_module_function(mOtapi, "OT_API_Pending_GetNote", _wrap_OT_API_Pending_GetNote, -1);
-  rb_define_module_function(mOtapi, "OT_API_Pending_GetAmount", _wrap_OT_API_Pending_GetAmount, -1);
-  rb_define_module_function(mOtapi, "OT_API_Pending_GetReferenceToNum", _wrap_OT_API_Pending_GetReferenceToNum, -1);
+  rb_define_module_function(mOtapi, "OT_API_Transaction_GetSenderUserID", _wrap_OT_API_Transaction_GetSenderUserID, -1);
+  rb_define_module_function(mOtapi, "OT_API_Transaction_GetSenderAcctID", _wrap_OT_API_Transaction_GetSenderAcctID, -1);
+  rb_define_module_function(mOtapi, "OT_API_Transaction_GetRecipientUserID", _wrap_OT_API_Transaction_GetRecipientUserID, -1);
+  rb_define_module_function(mOtapi, "OT_API_Transaction_GetRecipientAcctID", _wrap_OT_API_Transaction_GetRecipientAcctID, -1);
+  rb_define_module_function(mOtapi, "OT_API_Transaction_GetDisplayReferenceToNum", _wrap_OT_API_Transaction_GetDisplayReferenceToNum, -1);
   rb_define_module_function(mOtapi, "OT_API_Purse_GetTotalValue", _wrap_OT_API_Purse_GetTotalValue, -1);
   rb_define_module_function(mOtapi, "OT_API_checkServerID", _wrap_OT_API_checkServerID, -1);
   rb_define_module_function(mOtapi, "OT_API_createUserAccount", _wrap_OT_API_createUserAccount, -1);

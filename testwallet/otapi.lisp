@@ -113,9 +113,35 @@
 (cffi:defcfun ("OT_API_GetNym_Name" OT_API_GetNym_Name) :string
   (NYM_ID :string))
 
+(cffi:defcfun ("OT_API_GetNym_Stats" OT_API_GetNym_Stats) :string
+  (NYM_ID :string))
+
 (cffi:defcfun ("OT_API_IsNym_RegisteredAtServer" OT_API_IsNym_RegisteredAtServer) :int
   (NYM_ID :string)
   (SERVER_ID :string))
+
+(cffi:defcfun ("OT_API_GetNym_MailCount" OT_API_GetNym_MailCount) :int
+  (NYM_ID :string))
+
+(cffi:defcfun ("OT_API_GetNym_MailContentsByIndex" OT_API_GetNym_MailContentsByIndex) :string
+  (NYM_ID :string)
+  (nIndex :int))
+
+(cffi:defcfun ("OT_API_GetNym_MailSenderIDByIndex" OT_API_GetNym_MailSenderIDByIndex) :string
+  (NYM_ID :string)
+  (nIndex :int))
+
+(cffi:defcfun ("OT_API_GetNym_MailServerIDByIndex" OT_API_GetNym_MailServerIDByIndex) :string
+  (NYM_ID :string)
+  (nIndex :int))
+
+(cffi:defcfun ("OT_API_Nym_RemoveMailByIndex" OT_API_Nym_RemoveMailByIndex) :int
+  (NYM_ID :string)
+  (nIndex :int))
+
+(cffi:defcfun ("OT_API_Nym_VerifyMailByIndex" OT_API_Nym_VerifyMailByIndex) :int
+  (NYM_ID :string)
+  (nIndex :int))
 
 (cffi:defcfun ("OT_API_SetNym_Name" OT_API_SetNym_Name) :int
   (NYM_ID :string)
@@ -295,13 +321,13 @@
   (ACCOUNT_ID :string)
   (THE_TRANSACTION :string))
 
-(cffi:defcfun ("OT_API_Pending_GetFromUserID" OT_API_Pending_GetFromUserID) :string
+(cffi:defcfun ("OT_API_Transaction_GetDateSigned" OT_API_Transaction_GetDateSigned) :string
   (SERVER_ID :string)
   (USER_ID :string)
   (ACCOUNT_ID :string)
   (THE_TRANSACTION :string))
 
-(cffi:defcfun ("OT_API_Pending_GetFromAcctID" OT_API_Pending_GetFromAcctID) :string
+(cffi:defcfun ("OT_API_Transaction_GetAmount" OT_API_Transaction_GetAmount) :string
   (SERVER_ID :string)
   (USER_ID :string)
   (ACCOUNT_ID :string)
@@ -313,13 +339,31 @@
   (ACCOUNT_ID :string)
   (THE_TRANSACTION :string))
 
-(cffi:defcfun ("OT_API_Pending_GetAmount" OT_API_Pending_GetAmount) :string
+(cffi:defcfun ("OT_API_Transaction_GetSenderUserID" OT_API_Transaction_GetSenderUserID) :string
   (SERVER_ID :string)
   (USER_ID :string)
   (ACCOUNT_ID :string)
   (THE_TRANSACTION :string))
 
-(cffi:defcfun ("OT_API_Pending_GetReferenceToNum" OT_API_Pending_GetReferenceToNum) :string
+(cffi:defcfun ("OT_API_Transaction_GetSenderAcctID" OT_API_Transaction_GetSenderAcctID) :string
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (ACCOUNT_ID :string)
+  (THE_TRANSACTION :string))
+
+(cffi:defcfun ("OT_API_Transaction_GetRecipientUserID" OT_API_Transaction_GetRecipientUserID) :string
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (ACCOUNT_ID :string)
+  (THE_TRANSACTION :string))
+
+(cffi:defcfun ("OT_API_Transaction_GetRecipientAcctID" OT_API_Transaction_GetRecipientAcctID) :string
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (ACCOUNT_ID :string)
+  (THE_TRANSACTION :string))
+
+(cffi:defcfun ("OT_API_Transaction_GetDisplayReferenceToNum" OT_API_Transaction_GetDisplayReferenceToNum) :string
   (SERVER_ID :string)
   (USER_ID :string)
   (ACCOUNT_ID :string)

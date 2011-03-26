@@ -1846,8 +1846,6 @@ long OTTransaction::GetReceiptAmount()
 	GetReferenceString(strReference);
 	
 	OTItem * pOriginalItem = NULL;
-
-	listOfItems::iterator ii;
 	
 	switch (GetType()) 
 	{	// These are the types that have an amount (somehow)
@@ -1945,6 +1943,535 @@ long OTTransaction::GetReceiptAmount()
 }
 
 
+
+
+/// for display purposes. The "reference #" we show the user is not the same one we used internally.
+///
+/// The "display reference #" that we want to display for the User might be 
+/// different depending on the type.
+/// 
+/// For example, if pending, then it's in ref to the original transfer request (sender's transaction #)
+/// But if chequeReceipt, then it's in reference to the original cheque (also sender's transaction #)
+/// But if marketReceipt, then it's in reference to the original market offer (which is my own trans#)
+/// But if paymentReceipt, then it's in reference to the original "activate payment plan" request, which may or may not be mine.
+///
+/// Internally of course, a chequeReceipt is "in reference to" the depositor's deposit request.
+/// But the user doesn't care about that number -- he wants to see the original cheque # from when he first wrote it.
+/// Thus we have this function for resolving the "display reference #" in cases like that.
+/// Another example: with market trades, you want the "in reference to" to show the trans# of the original market offer request.
+/// Of course, if you load up the item within, you can get the "in reference to" showing a different trans# for EACH TRADE THAT HAS OCCURRED.
+/// We use that internally, we need to be able to reference each of those trades. But the user merely wants to see that his receipt is
+/// in reference to the original market offer, so he can line up his receipts with his offers. What else does he care?
+///
+long OTTransaction::GetReferenceNumForDisplay()
+{
+	long lReferenceNum = 0;
+	
+	OTItem * pOriginalItem = NULL;
+	OTCleanup<OTItem> theItemAngel;
+		
+	switch (GetType()) 
+	{
+			// "in ref to #" is stored on me: GetReferenceToNum()
+		case OTTransaction::pending: 
+		case OTTransaction::marketReceipt:
+		case OTTransaction::paymentReceipt:
+			lReferenceNum = GetReferenceToNum();
+			break;
+			
+		case OTTransaction::transferReceipt:
+		{
+			OTString strReference;
+			GetReferenceString(strReference);
+			
+			pOriginalItem = OTItem::CreateItemFromString(strReference, GetPurportedServerID(), GetReferenceToNum()); 
+			OT_ASSERT(NULL != pOriginalItem);
+			theItemAngel.SetCleanupTarget(*pOriginalItem);
+			
+			if (pOriginalItem->GetType() != OTItem::acceptPending) 
+			{
+				OTLog::Error("Wrong item type attached to transferReceipt\n");
+				return 0;
+			}
+			else 
+			{
+				lReferenceNum = pOriginalItem->GetReferenceToNum();				
+			}
+		}
+			break;			
+			
+			// "in ref to #" is the transaction# on the cheque (attached to depositCheque item, attached.)
+		case OTTransaction::chequeReceipt: 
+		{
+			OTString strReference;
+			GetReferenceString(strReference);
+			
+			pOriginalItem = OTItem::CreateItemFromString(strReference, GetPurportedServerID(), GetReferenceToNum()); // in this case "reference to" is the depositor's trans#, which I use here, but the User doesn't care about on the screen.
+			OT_ASSERT(NULL != pOriginalItem);
+			theItemAngel.SetCleanupTarget(*pOriginalItem);
+			
+			OTString strAttachment;
+			OTCheque theCheque; // allocated on the stack :-)
+			
+			if (pOriginalItem->GetType() != OTItem::depositCheque) // This is a deposit cheque item, signed by the depositor, presumably whomever I gave the cheque to.
+			{
+				OTLog::Error("Wrong item type attached to chequeReceipt\n");
+				return 0;
+			}
+			
+			// Get the cheque from the Item and load it up into a Cheque object.
+			pOriginalItem->GetAttachment(strAttachment);
+			bool bLoadContractFromString = theCheque.LoadContractFromString(strAttachment);
+			
+			if (!bLoadContractFromString)
+			{
+				OTString strCheque(theCheque);
+				
+				OTLog::vError("ERROR loading cheque from string in OTTransaction::CalcReferenceNum:\n%s\n",
+							  strCheque.Get());
+			}
+			else 
+			{
+				lReferenceNum = theCheque.GetTransactionNum();				
+			}
+		}
+			break;
+			
+		default: // All other types have no amount -- return 0.
+			return 0;
+	}
+	
+	
+	// -------------------------------------------------
+	
+	return lReferenceNum;
+}
+
+
+// -----------------------------------------
+
+
+
+bool OTTransaction::GetSenderUserIDForDisplay(OTIdentifier & theReturnID)
+{
+	bool bSuccess = false;
+	
+	OTString strReference;
+	GetReferenceString(strReference);
+	
+	OTItem * pOriginalItem = NULL;
+	
+	switch (GetType()) 
+	{	// These are the types that have an amount (somehow)
+		case OTTransaction::pending: // amount is stored on the transfer item, on my list of items.
+		case OTTransaction::chequeReceipt: // amount is stored on cheque (attached to depositCheque item, attached.)
+		case OTTransaction::marketReceipt: // amount is stored on marketReceipt item
+		case OTTransaction::paymentReceipt:	// amount is stored on paymentReceipt item
+			pOriginalItem = OTItem::CreateItemFromString(strReference, GetPurportedServerID(), GetReferenceToNum());
+			break;
+		default: // All other types have no amount -- return 0.
+			return false;
+	}
+	
+	OTCleanup<OTItem> theItemAngel(pOriginalItem);
+	
+	if (NULL == pOriginalItem)
+		return false; // Should never happen, since we always expect one based on the transaction type.
+	
+	// -------------------------------------------------
+	
+	OTString strAttachment;
+	
+	OTCheque theCheque; // allocated on the stack :-)
+	
+	switch (GetType()) 
+	{	// These are the types that have an amount (somehow)
+		case OTTransaction::chequeReceipt: // amount is stored on cheque (attached to depositCheque item, attached.)
+			
+		{
+			if (pOriginalItem->GetType() != OTItem::depositCheque)
+			{
+				OTLog::Error("Wrong item type attached to chequeReceipt\n");
+				return false;
+			}
+			
+			// Get the cheque from the Item and load it up into a Cheque object.
+			pOriginalItem->GetAttachment(strAttachment);
+			bool bLoadContractFromString = theCheque.LoadContractFromString(strAttachment);
+			
+			if (!bLoadContractFromString)
+			{
+				OTString strCheque(theCheque);
+				
+				OTLog::vError("ERROR loading cheque from string in OTTransaction::GetSenderUserIDForDisplay:\n%s\n",
+							  strCheque.Get());
+			}
+			else 
+			{
+				theReturnID = theCheque.GetSenderUserID(); 
+				bSuccess = true;
+			}
+		}
+			break;
+			
+		case OTTransaction::pending: // amount is stored on transfer item
+			
+			if (pOriginalItem->GetType() != OTItem::transfer)
+			{
+				OTLog::Error("Wrong item type attached to pending transfer\n");
+			}
+			else
+			{
+				theReturnID = pOriginalItem->GetUserID();	
+				bSuccess = true;
+			}
+			break;
+		case OTTransaction::marketReceipt: // amount is stored on marketReceipt item
+			
+			if (pOriginalItem->GetType() != OTItem::marketReceipt)
+			{
+				OTLog::Error("Wrong item type attached to marketReceipt\n");
+			}
+			else
+			{
+				theReturnID = pOriginalItem->GetUserID();	
+				bSuccess = true;
+			}
+			break;
+		case OTTransaction::paymentReceipt:	// amount is stored on paymentReceipt item
+			
+			if (pOriginalItem->GetType() != OTItem::paymentReceipt)
+			{
+				OTLog::Error("Wrong item type attached to paymentReceipt\n");
+			}
+			else
+			{
+				theReturnID = pOriginalItem->GetUserID();	
+				bSuccess = true;
+			}
+			
+			break;
+		default: // All other types have no amount -- return 0.
+			return false;
+	}
+	
+	return bSuccess;
+}
+
+
+
+bool OTTransaction::GetRecipientUserIDForDisplay(OTIdentifier & theReturnID)
+{
+	bool bSuccess = false;
+	
+	OTString strReference;
+	GetReferenceString(strReference);
+	
+	OTItem * pOriginalItem = NULL;
+	
+	switch (GetType()) 
+	{	
+		case OTTransaction::transferReceipt: 
+		case OTTransaction::chequeReceipt: 
+		case OTTransaction::marketReceipt:
+		case OTTransaction::paymentReceipt:	
+			pOriginalItem = OTItem::CreateItemFromString(strReference, GetPurportedServerID(), GetReferenceToNum());
+			break;
+		default: // All other types have no amount -- return 0.
+			return false;
+	}
+	
+	OTCleanup<OTItem> theItemAngel(pOriginalItem);
+	
+	if (NULL == pOriginalItem)
+		return false; // Should never happen, since we always expect one based on the transaction type.
+	
+	// -------------------------------------------------
+	
+	switch (GetType()) 
+	{	
+		case OTTransaction::transferReceipt:
+		{
+			if (pOriginalItem->GetType() != OTItem::acceptPending)
+			{
+				OTLog::Error("Wrong item type attached to transferReceipt\n");
+				return false;
+			}
+			else 
+			{
+				theReturnID = pOriginalItem->GetUserID();  // Even though a transfer has no recipient user (just a recipient acct) I still get the User ID when he accepts it!
+				bSuccess = true;
+			}
+		}
+			break;
+			
+		case OTTransaction::chequeReceipt: // amount is stored on cheque (attached to depositCheque item, attached.)
+		{
+			if (pOriginalItem->GetType() != OTItem::depositCheque)
+			{
+				OTLog::Error("Wrong item type attached to chequeReceipt\n");
+				return false;
+			}
+			else 
+			{
+				theReturnID = pOriginalItem->GetUserID();  // Even if the cheque had a blank payee, I still get his UserID when he deposits it.
+				bSuccess = true;
+			}
+		}
+			break;
+			
+		case OTTransaction::marketReceipt: // amount is stored on marketReceipt item
+			if (pOriginalItem->GetType() != OTItem::marketReceipt)
+			{
+				OTLog::Error("Wrong item type attached to marketReceipt\n");
+			}
+			else
+			{
+				theReturnID = pOriginalItem->GetUserID();	
+				bSuccess = true;
+			}
+			break;
+			
+		case OTTransaction::paymentReceipt:	// amount is stored on paymentReceipt item
+			
+			if (pOriginalItem->GetType() != OTItem::paymentReceipt)
+			{
+				OTLog::Error("Wrong item type attached to paymentReceipt\n");
+			}
+			else
+			{
+				theReturnID = pOriginalItem->GetUserID();	
+				bSuccess = true;
+			}
+			
+			break;
+			
+		default: // All other types have no amount -- return 0.
+			return false;
+	}
+	
+	return bSuccess;
+}
+
+
+bool OTTransaction::GetSenderAcctIDForDisplay(OTIdentifier & theReturnID)
+{
+	bool bSuccess = false;
+	
+	OTString strReference;
+	GetReferenceString(strReference);
+	
+	OTItem * pOriginalItem = NULL;
+	
+	switch (GetType()) 
+	{	// These are the types that have an amount (somehow)
+		case OTTransaction::pending: // amount is stored on the transfer item, on my list of items.
+		case OTTransaction::chequeReceipt: // amount is stored on cheque (attached to depositCheque item, attached.)
+		case OTTransaction::marketReceipt: // amount is stored on marketReceipt item
+		case OTTransaction::paymentReceipt:	// amount is stored on paymentReceipt item
+			pOriginalItem = OTItem::CreateItemFromString(strReference, GetPurportedServerID(), GetReferenceToNum());
+			break;
+		default: // All other types have no amount -- return 0.
+			return false;
+	}
+	
+	OTCleanup<OTItem> theItemAngel(pOriginalItem);
+	
+	if (NULL == pOriginalItem)
+		return false; // Should never happen, since we always expect one based on the transaction type.
+	
+	// -------------------------------------------------
+	
+	OTString strAttachment;
+	
+	OTCheque theCheque; // allocated on the stack :-)
+	
+	switch (GetType()) 
+	{	// These are the types that have an amount (somehow)
+		case OTTransaction::chequeReceipt: // amount is stored on cheque (attached to depositCheque item, attached.)
+			
+		{
+			if (pOriginalItem->GetType() != OTItem::depositCheque)
+			{
+				OTLog::Error("Wrong item type attached to chequeReceipt\n");
+				return false;
+			}
+			
+			// Get the cheque from the Item and load it up into a Cheque object.
+			pOriginalItem->GetAttachment(strAttachment);
+			bool bLoadContractFromString = theCheque.LoadContractFromString(strAttachment);
+			
+			if (!bLoadContractFromString)
+			{
+				OTString strCheque(theCheque);
+				
+				OTLog::vError("ERROR loading cheque from string in OTTransaction::GetSenderUserIDForDisplay:\n%s\n",
+							  strCheque.Get());
+			}
+			else 
+			{
+				theReturnID = theCheque.GetSenderAcctID(); 
+				bSuccess = true;
+			}
+		}
+			break;
+			
+		case OTTransaction::pending: // amount is stored on transfer item
+			
+			if (pOriginalItem->GetType() != OTItem::transfer)
+			{
+				OTLog::Error("Wrong item type attached to pending transfer\n");
+			}
+			else
+			{
+				theReturnID = pOriginalItem->GetPurportedAccountID();	
+				bSuccess = true;
+			}
+			break;
+		case OTTransaction::marketReceipt: // amount is stored on marketReceipt item
+			
+			if (pOriginalItem->GetType() != OTItem::marketReceipt)
+			{
+				OTLog::Error("Wrong item type attached to marketReceipt\n");
+			}
+			else
+			{
+				theReturnID = pOriginalItem->GetPurportedAccountID();	
+				bSuccess = true;
+			}
+			break;
+		case OTTransaction::paymentReceipt:	// amount is stored on paymentReceipt item
+			
+			if (pOriginalItem->GetType() != OTItem::paymentReceipt)
+			{
+				OTLog::Error("Wrong item type attached to paymentReceipt\n");
+			}
+			else
+			{
+				theReturnID = pOriginalItem->GetPurportedAccountID();	
+				bSuccess = true;
+			}
+			
+			break;
+		default: // All other types have no amount -- return 0.
+			return false;
+	}
+	
+	return bSuccess;
+}
+
+
+bool OTTransaction::GetRecipientAcctIDForDisplay(OTIdentifier & theReturnID)
+{
+	bool bSuccess = false;
+	
+	OTString strReference;
+	GetReferenceString(strReference);
+	
+	OTItem * pOriginalItem = NULL;
+	
+	switch (GetType()) 
+	{	
+		case OTTransaction::pending: 
+		case OTTransaction::transferReceipt: 
+		case OTTransaction::chequeReceipt: 
+		case OTTransaction::marketReceipt:
+		case OTTransaction::paymentReceipt:
+			pOriginalItem = OTItem::CreateItemFromString(strReference, GetPurportedServerID(), GetReferenceToNum());
+			break;
+		default: // All other types have no amount -- return 0.
+			return false;
+	}
+	
+	OTCleanup<OTItem> theItemAngel(pOriginalItem);
+	
+	if (NULL == pOriginalItem)
+		return false; // Should never happen, since we always expect one based on the transaction type.
+	
+	// -------------------------------------------------
+	
+	OTString strAttachment;
+	
+	OTCheque theCheque; // allocated on the stack :-)
+	
+	switch (GetType()) 
+	{
+		case OTTransaction::transferReceipt:
+		{
+			if (pOriginalItem->GetType() != OTItem::acceptPending)
+			{
+				OTLog::Error("Wrong item type attached to transferReceipt\n");
+				return false;
+			}
+			else 
+			{
+				theReturnID = pOriginalItem->GetPurportedAccountID();  
+				bSuccess = true;
+			}
+		}
+			break;
+			
+		case OTTransaction::chequeReceipt:
+			
+		{
+			if (pOriginalItem->GetType() != OTItem::depositCheque)
+			{
+				OTLog::Error("Wrong item type attached to chequeReceipt\n");
+				return false;
+			}
+			else 
+			{
+				theReturnID = pOriginalItem->GetPurportedAccountID(); // Here's the depositor's account ID (even though the cheque was made out to a user, not an account, it still eventually had to be DEPOSITED into an account... right?)
+				bSuccess = true;
+			}
+		}
+			break;
+			
+		case OTTransaction::pending: // amount is stored on transfer item
+			
+			if (pOriginalItem->GetType() != OTItem::transfer)
+			{
+				OTLog::Error("Wrong item type attached to pending transfer\n");
+			}
+			else
+			{
+				theReturnID = pOriginalItem->GetDestinationAcctID();	
+				bSuccess = true;
+			}
+			break;
+		case OTTransaction::marketReceipt: // amount is stored on marketReceipt item
+			
+			if (pOriginalItem->GetType() != OTItem::marketReceipt)
+			{
+				OTLog::Error("Wrong item type attached to marketReceipt\n");
+			}
+			else
+			{
+				theReturnID = pOriginalItem->GetDestinationAcctID();	
+				bSuccess = true;
+			}
+			break;
+		case OTTransaction::paymentReceipt:	// amount is stored on paymentReceipt item
+			
+			if (pOriginalItem->GetType() != OTItem::paymentReceipt)
+			{
+				OTLog::Error("Wrong item type attached to paymentReceipt\n");
+			}
+			else
+			{
+				theReturnID = pOriginalItem->GetDestinationAcctID();	
+				bSuccess = true;
+			}
+			
+			break;
+		default: // All other types have no amount -- return 0.
+			return false;
+	}
+	
+	return bSuccess;
+}
+
+ 
 
 
 

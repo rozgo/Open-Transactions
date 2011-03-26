@@ -100,8 +100,36 @@ public class otapi {
     return otapiJNI.OT_API_GetNym_Name(NYM_ID);
   }
 
+  public static String OT_API_GetNym_Stats(String NYM_ID) {
+    return otapiJNI.OT_API_GetNym_Stats(NYM_ID);
+  }
+
   public static int OT_API_IsNym_RegisteredAtServer(String NYM_ID, String SERVER_ID) {
     return otapiJNI.OT_API_IsNym_RegisteredAtServer(NYM_ID, SERVER_ID);
+  }
+
+  public static int OT_API_GetNym_MailCount(String NYM_ID) {
+    return otapiJNI.OT_API_GetNym_MailCount(NYM_ID);
+  }
+
+  public static String OT_API_GetNym_MailContentsByIndex(String NYM_ID, int nIndex) {
+    return otapiJNI.OT_API_GetNym_MailContentsByIndex(NYM_ID, nIndex);
+  }
+
+  public static String OT_API_GetNym_MailSenderIDByIndex(String NYM_ID, int nIndex) {
+    return otapiJNI.OT_API_GetNym_MailSenderIDByIndex(NYM_ID, nIndex);
+  }
+
+  public static String OT_API_GetNym_MailServerIDByIndex(String NYM_ID, int nIndex) {
+    return otapiJNI.OT_API_GetNym_MailServerIDByIndex(NYM_ID, nIndex);
+  }
+
+  public static int OT_API_Nym_RemoveMailByIndex(String NYM_ID, int nIndex) {
+    return otapiJNI.OT_API_Nym_RemoveMailByIndex(NYM_ID, nIndex);
+  }
+
+  public static int OT_API_Nym_VerifyMailByIndex(String NYM_ID, int nIndex) {
+    return otapiJNI.OT_API_Nym_VerifyMailByIndex(NYM_ID, nIndex);
   }
 
   public static int OT_API_SetNym_Name(String NYM_ID, String SIGNER_NYM_ID, String NYM_NEW_NAME) {
@@ -236,24 +264,36 @@ public class otapi {
     return otapiJNI.OT_API_Transaction_GetSuccess(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
   }
 
-  public static String OT_API_Pending_GetFromUserID(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
-    return otapiJNI.OT_API_Pending_GetFromUserID(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  public static String OT_API_Transaction_GetDateSigned(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
+    return otapiJNI.OT_API_Transaction_GetDateSigned(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
   }
 
-  public static String OT_API_Pending_GetFromAcctID(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
-    return otapiJNI.OT_API_Pending_GetFromAcctID(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  public static String OT_API_Transaction_GetAmount(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
+    return otapiJNI.OT_API_Transaction_GetAmount(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
   }
 
   public static String OT_API_Pending_GetNote(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
     return otapiJNI.OT_API_Pending_GetNote(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
   }
 
-  public static String OT_API_Pending_GetAmount(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
-    return otapiJNI.OT_API_Pending_GetAmount(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  public static String OT_API_Transaction_GetSenderUserID(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
+    return otapiJNI.OT_API_Transaction_GetSenderUserID(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
   }
 
-  public static String OT_API_Pending_GetReferenceToNum(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
-    return otapiJNI.OT_API_Pending_GetReferenceToNum(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  public static String OT_API_Transaction_GetSenderAcctID(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
+    return otapiJNI.OT_API_Transaction_GetSenderAcctID(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  }
+
+  public static String OT_API_Transaction_GetRecipientUserID(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
+    return otapiJNI.OT_API_Transaction_GetRecipientUserID(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  }
+
+  public static String OT_API_Transaction_GetRecipientAcctID(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
+    return otapiJNI.OT_API_Transaction_GetRecipientAcctID(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  }
+
+  public static String OT_API_Transaction_GetDisplayReferenceToNum(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
+    return otapiJNI.OT_API_Transaction_GetDisplayReferenceToNum(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
   }
 
   public static String OT_API_Purse_GetTotalValue(String SERVER_ID, String ASSET_TYPE_ID, String THE_PURSE) {

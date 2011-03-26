@@ -1583,6 +1583,36 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_OT_API_GetNym_Stats) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  result = (char *)OT_API_GetNym_Stats((char const *)arg1);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value,result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_OT_API_IsNym_RegisteredAtServer) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -1607,6 +1637,209 @@ ZEND_NAMED_FUNCTION(_wrap_OT_API_IsNym_RegisteredAtServer) {
     /*@SWIG@*/;
   }
   result = (int)OT_API_IsNym_RegisteredAtServer((char const *)arg1,(char const *)arg2);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_GetNym_MailCount) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  result = (int)OT_API_GetNym_MailCount((char const *)arg1);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_GetNym_MailContentsByIndex) {
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_INT_IN@*/
+    convert_to_long_ex(args[1]);
+    arg2 = (int) Z_LVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  result = (char *)OT_API_GetNym_MailContentsByIndex((char const *)arg1,arg2);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value,result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_GetNym_MailSenderIDByIndex) {
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_INT_IN@*/
+    convert_to_long_ex(args[1]);
+    arg2 = (int) Z_LVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  result = (char *)OT_API_GetNym_MailSenderIDByIndex((char const *)arg1,arg2);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value,result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_GetNym_MailServerIDByIndex) {
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_INT_IN@*/
+    convert_to_long_ex(args[1]);
+    arg2 = (int) Z_LVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  result = (char *)OT_API_GetNym_MailServerIDByIndex((char const *)arg1,arg2);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value,result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Nym_RemoveMailByIndex) {
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  int result;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_INT_IN@*/
+    convert_to_long_ex(args[1]);
+    arg2 = (int) Z_LVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  result = (int)OT_API_Nym_RemoveMailByIndex((char const *)arg1,arg2);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Nym_VerifyMailByIndex) {
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  int result;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_INT_IN@*/
+    convert_to_long_ex(args[1]);
+    arg2 = (int) Z_LVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  result = (int)OT_API_Nym_VerifyMailByIndex((char const *)arg1,arg2);
   {
     ZVAL_LONG(return_value,result);
   }
@@ -3123,7 +3356,7 @@ fail:
 }
 
 
-ZEND_NAMED_FUNCTION(_wrap_OT_API_Pending_GetFromUserID) {
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Transaction_GetDateSigned) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -3160,7 +3393,7 @@ ZEND_NAMED_FUNCTION(_wrap_OT_API_Pending_GetFromUserID) {
     arg4 = (char *) Z_STRVAL_PP(args[3]);
     /*@SWIG@*/;
   }
-  result = (char *)OT_API_Pending_GetFromUserID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  result = (char *)OT_API_Transaction_GetDateSigned((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   {
     if(!result) {
       ZVAL_NULL(return_value);
@@ -3174,7 +3407,7 @@ fail:
 }
 
 
-ZEND_NAMED_FUNCTION(_wrap_OT_API_Pending_GetFromAcctID) {
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Transaction_GetAmount) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -3211,7 +3444,7 @@ ZEND_NAMED_FUNCTION(_wrap_OT_API_Pending_GetFromAcctID) {
     arg4 = (char *) Z_STRVAL_PP(args[3]);
     /*@SWIG@*/;
   }
-  result = (char *)OT_API_Pending_GetFromAcctID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  result = (char *)OT_API_Transaction_GetAmount((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   {
     if(!result) {
       ZVAL_NULL(return_value);
@@ -3276,7 +3509,7 @@ fail:
 }
 
 
-ZEND_NAMED_FUNCTION(_wrap_OT_API_Pending_GetAmount) {
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Transaction_GetSenderUserID) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -3313,7 +3546,7 @@ ZEND_NAMED_FUNCTION(_wrap_OT_API_Pending_GetAmount) {
     arg4 = (char *) Z_STRVAL_PP(args[3]);
     /*@SWIG@*/;
   }
-  result = (char *)OT_API_Pending_GetAmount((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  result = (char *)OT_API_Transaction_GetSenderUserID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   {
     if(!result) {
       ZVAL_NULL(return_value);
@@ -3327,7 +3560,7 @@ fail:
 }
 
 
-ZEND_NAMED_FUNCTION(_wrap_OT_API_Pending_GetReferenceToNum) {
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Transaction_GetSenderAcctID) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -3364,7 +3597,160 @@ ZEND_NAMED_FUNCTION(_wrap_OT_API_Pending_GetReferenceToNum) {
     arg4 = (char *) Z_STRVAL_PP(args[3]);
     /*@SWIG@*/;
   }
-  result = (char *)OT_API_Pending_GetReferenceToNum((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  result = (char *)OT_API_Transaction_GetSenderAcctID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value,result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Transaction_GetRecipientUserID) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *result = 0 ;
+  zval **args[4];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[2]);
+    arg3 = (char *) Z_STRVAL_PP(args[2]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[3]);
+    arg4 = (char *) Z_STRVAL_PP(args[3]);
+    /*@SWIG@*/;
+  }
+  result = (char *)OT_API_Transaction_GetRecipientUserID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value,result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Transaction_GetRecipientAcctID) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *result = 0 ;
+  zval **args[4];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[2]);
+    arg3 = (char *) Z_STRVAL_PP(args[2]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[3]);
+    arg4 = (char *) Z_STRVAL_PP(args[3]);
+    /*@SWIG@*/;
+  }
+  result = (char *)OT_API_Transaction_GetRecipientAcctID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value,result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Transaction_GetDisplayReferenceToNum) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *result = 0 ;
+  zval **args[4];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[2]);
+    arg3 = (char *) Z_STRVAL_PP(args[2]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[3]);
+    arg4 = (char *) Z_STRVAL_PP(args[3]);
+    /*@SWIG@*/;
+  }
+  result = (char *)OT_API_Transaction_GetDisplayReferenceToNum((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   {
     if(!result) {
       ZVAL_NULL(return_value);
@@ -4991,7 +5377,14 @@ static function_entry otapi_functions[] = {
  ZEND_NAMED_FE(ot_api_getnym_transactionnumcount,_wrap_OT_API_GetNym_TransactionNumCount,NULL)
  ZEND_NAMED_FE(ot_api_getnym_id,_wrap_OT_API_GetNym_ID,NULL)
  ZEND_NAMED_FE(ot_api_getnym_name,_wrap_OT_API_GetNym_Name,NULL)
+ ZEND_NAMED_FE(ot_api_getnym_stats,_wrap_OT_API_GetNym_Stats,NULL)
  ZEND_NAMED_FE(ot_api_isnym_registeredatserver,_wrap_OT_API_IsNym_RegisteredAtServer,NULL)
+ ZEND_NAMED_FE(ot_api_getnym_mailcount,_wrap_OT_API_GetNym_MailCount,NULL)
+ ZEND_NAMED_FE(ot_api_getnym_mailcontentsbyindex,_wrap_OT_API_GetNym_MailContentsByIndex,NULL)
+ ZEND_NAMED_FE(ot_api_getnym_mailsenderidbyindex,_wrap_OT_API_GetNym_MailSenderIDByIndex,NULL)
+ ZEND_NAMED_FE(ot_api_getnym_mailserveridbyindex,_wrap_OT_API_GetNym_MailServerIDByIndex,NULL)
+ ZEND_NAMED_FE(ot_api_nym_removemailbyindex,_wrap_OT_API_Nym_RemoveMailByIndex,NULL)
+ ZEND_NAMED_FE(ot_api_nym_verifymailbyindex,_wrap_OT_API_Nym_VerifyMailByIndex,NULL)
  ZEND_NAMED_FE(ot_api_setnym_name,_wrap_OT_API_SetNym_Name,NULL)
  ZEND_NAMED_FE(ot_api_setaccountwallet_name,_wrap_OT_API_SetAccountWallet_Name,NULL)
  ZEND_NAMED_FE(ot_api_setassettype_name,_wrap_OT_API_SetAssetType_Name,NULL)
@@ -5025,11 +5418,14 @@ static function_entry otapi_functions[] = {
  ZEND_NAMED_FE(ot_api_transaction_gettype,_wrap_OT_API_Transaction_GetType,NULL)
  ZEND_NAMED_FE(ot_api_transaction_getvoucher,_wrap_OT_API_Transaction_GetVoucher,NULL)
  ZEND_NAMED_FE(ot_api_transaction_getsuccess,_wrap_OT_API_Transaction_GetSuccess,NULL)
- ZEND_NAMED_FE(ot_api_pending_getfromuserid,_wrap_OT_API_Pending_GetFromUserID,NULL)
- ZEND_NAMED_FE(ot_api_pending_getfromacctid,_wrap_OT_API_Pending_GetFromAcctID,NULL)
+ ZEND_NAMED_FE(ot_api_transaction_getdatesigned,_wrap_OT_API_Transaction_GetDateSigned,NULL)
+ ZEND_NAMED_FE(ot_api_transaction_getamount,_wrap_OT_API_Transaction_GetAmount,NULL)
  ZEND_NAMED_FE(ot_api_pending_getnote,_wrap_OT_API_Pending_GetNote,NULL)
- ZEND_NAMED_FE(ot_api_pending_getamount,_wrap_OT_API_Pending_GetAmount,NULL)
- ZEND_NAMED_FE(ot_api_pending_getreferencetonum,_wrap_OT_API_Pending_GetReferenceToNum,NULL)
+ ZEND_NAMED_FE(ot_api_transaction_getsenderuserid,_wrap_OT_API_Transaction_GetSenderUserID,NULL)
+ ZEND_NAMED_FE(ot_api_transaction_getsenderacctid,_wrap_OT_API_Transaction_GetSenderAcctID,NULL)
+ ZEND_NAMED_FE(ot_api_transaction_getrecipientuserid,_wrap_OT_API_Transaction_GetRecipientUserID,NULL)
+ ZEND_NAMED_FE(ot_api_transaction_getrecipientacctid,_wrap_OT_API_Transaction_GetRecipientAcctID,NULL)
+ ZEND_NAMED_FE(ot_api_transaction_getdisplayreferencetonum,_wrap_OT_API_Transaction_GetDisplayReferenceToNum,NULL)
  ZEND_NAMED_FE(ot_api_purse_gettotalvalue,_wrap_OT_API_Purse_GetTotalValue,NULL)
  ZEND_NAMED_FE(ot_api_checkserverid,_wrap_OT_API_checkServerID,NULL)
  ZEND_NAMED_FE(ot_api_createuseraccount,_wrap_OT_API_createUserAccount,NULL)

@@ -233,6 +233,14 @@ protected:
 	
 public:
 	
+	long GetReferenceNumForDisplay(); /// For display purposes. The "ref #" you actually display (versus the one you use internally) might change based on transaction type. (Like with a cheque receipt you actually have to load up the original cheque.)
+
+	bool GetSenderUserIDForDisplay(OTIdentifier & theReturnID);
+	bool GetRecipientUserIDForDisplay(OTIdentifier & theReturnID);
+
+	bool GetSenderAcctIDForDisplay(OTIdentifier & theReturnID);
+	bool GetRecipientAcctIDForDisplay(OTIdentifier & theReturnID);
+	
 	inline time_t GetDateSigned()	const { return m_DATE_SIGNED; }
 
 	bool GetSuccess(); // Tries to determine, based on items within, whether it was a success or fail.

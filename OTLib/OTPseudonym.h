@@ -109,6 +109,9 @@
 
 class OTItem;
 class OTTransaction;
+class OTMessage;
+
+typedef std::deque<OTMessage *>		dequeOfMail;
 
 typedef std::map<std::string, long>	mapOfRequestNums;
 
@@ -137,6 +140,7 @@ private:
 
 	OTAsymmetricKey *m_pkeyPrivate;	// This nym's private key
 
+	dequeOfMail		m_dequeMail;	// Any mail messages received by this Nym.
 		
 	mapOfRequestNums m_mapRequestNum;	// Whenever this user makes a request to a transaction server
 										// he must use the latest request number. Each user has a request
@@ -292,6 +296,17 @@ public:
 	
 	// -------------------------------------
 	
+	// Whenever a Nym receives a message via his Nymbox, and then the Nymbox is processed,
+	// that processing will drop all messages into this deque for safe-keeping after Nymbox is cleared.
+	//
+	void		AddMail(OTMessage & theMessage); // a mail message is the original OTMessage from the sender, transported via Nymbox of recipient (me).
+	int			GetMailCount(); // How many mail messages does this Nym currently store?
+	OTMessage *	GetMailByIndex(const int nIndex); // Get a specific piece of mail, at a specific index.
+	bool		RemoveMailByIndex(const int nIndex); // if returns false, mail index was bad (or something else must have gone seriously wrong.)
+
+	void		ClearMail(); // called by the destructor. (Not intended to erase messages from local storage.)
+	
+	// -------------------------------------
 	
 	const OTAsymmetricKey & GetPublicKey() const;
 	const OTAsymmetricKey & GetPrivateKey() const;

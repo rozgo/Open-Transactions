@@ -568,6 +568,25 @@ SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetNym_1Name(JNIEnv *jenv, jcl
 }
 
 
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetNym_1Stats(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+  jstring jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
+  }
+  result = (char *)OT_API_GetNym_Stats((char const *)arg1);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
+  return jresult;
+}
+
+
 SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1IsNym_1RegisteredAtServer(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2) {
   jint jresult = 0 ;
   char *arg1 = (char *) 0 ;
@@ -590,6 +609,130 @@ SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1IsNym_1RegisteredAtServer(JNIEnv 
   jresult = (jint)result; 
   if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1GetNym_1MailCount(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+  jint jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
+  }
+  result = (int)OT_API_GetNym_MailCount((char const *)arg1);
+  jresult = (jint)result; 
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetNym_1MailContentsByIndex(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2) {
+  jstring jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
+  }
+  arg2 = (int)jarg2; 
+  result = (char *)OT_API_GetNym_MailContentsByIndex((char const *)arg1,arg2);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetNym_1MailSenderIDByIndex(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2) {
+  jstring jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
+  }
+  arg2 = (int)jarg2; 
+  result = (char *)OT_API_GetNym_MailSenderIDByIndex((char const *)arg1,arg2);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1GetNym_1MailServerIDByIndex(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2) {
+  jstring jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
+  }
+  arg2 = (int)jarg2; 
+  result = (char *)OT_API_GetNym_MailServerIDByIndex((char const *)arg1,arg2);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1Nym_1RemoveMailByIndex(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2) {
+  jint jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
+  }
+  arg2 = (int)jarg2; 
+  result = (int)OT_API_Nym_RemoveMailByIndex((char const *)arg1,arg2);
+  jresult = (jint)result; 
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1Nym_1VerifyMailByIndex(JNIEnv *jenv, jclass jcls, jstring jarg1, jint jarg2) {
+  jint jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
+  }
+  arg2 = (int)jarg2; 
+  result = (int)OT_API_Nym_VerifyMailByIndex((char const *)arg1,arg2);
+  jresult = (jint)result; 
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
   return jresult;
 }
 
@@ -1744,7 +1887,7 @@ SWIGEXPORT jint JNICALL Java_otapiJNI_OT_1API_1Transaction_1GetSuccess(JNIEnv *j
 }
 
 
-SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Pending_1GetFromUserID(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Transaction_1GetDateSigned(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -1774,7 +1917,7 @@ SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Pending_1GetFromUserID(JNIEnv 
     arg4 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg4, 0);
     if (!arg4) return 0;
   }
-  result = (char *)OT_API_Pending_GetFromUserID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  result = (char *)OT_API_Transaction_GetDateSigned((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
   if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
@@ -1784,7 +1927,7 @@ SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Pending_1GetFromUserID(JNIEnv 
 }
 
 
-SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Pending_1GetFromAcctID(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Transaction_1GetAmount(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -1814,7 +1957,7 @@ SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Pending_1GetFromAcctID(JNIEnv 
     arg4 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg4, 0);
     if (!arg4) return 0;
   }
-  result = (char *)OT_API_Pending_GetFromAcctID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  result = (char *)OT_API_Transaction_GetAmount((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
   if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
@@ -1864,7 +2007,7 @@ SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Pending_1GetNote(JNIEnv *jenv,
 }
 
 
-SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Pending_1GetAmount(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Transaction_1GetSenderUserID(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -1894,7 +2037,7 @@ SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Pending_1GetAmount(JNIEnv *jen
     arg4 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg4, 0);
     if (!arg4) return 0;
   }
-  result = (char *)OT_API_Pending_GetAmount((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  result = (char *)OT_API_Transaction_GetSenderUserID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
   if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
@@ -1904,7 +2047,7 @@ SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Pending_1GetAmount(JNIEnv *jen
 }
 
 
-SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Pending_1GetReferenceToNum(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Transaction_1GetSenderAcctID(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
   jstring jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -1934,7 +2077,127 @@ SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Pending_1GetReferenceToNum(JNI
     arg4 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg4, 0);
     if (!arg4) return 0;
   }
-  result = (char *)OT_API_Pending_GetReferenceToNum((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  result = (char *)OT_API_Transaction_GetSenderAcctID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
+  if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
+  if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, (const char *)arg3);
+  if (arg4) (*jenv)->ReleaseStringUTFChars(jenv, jarg4, (const char *)arg4);
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Transaction_1GetRecipientUserID(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+  jstring jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
+  }
+  arg2 = 0;
+  if (jarg2) {
+    arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+    if (!arg2) return 0;
+  }
+  arg3 = 0;
+  if (jarg3) {
+    arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
+    if (!arg3) return 0;
+  }
+  arg4 = 0;
+  if (jarg4) {
+    arg4 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg4, 0);
+    if (!arg4) return 0;
+  }
+  result = (char *)OT_API_Transaction_GetRecipientUserID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
+  if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
+  if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, (const char *)arg3);
+  if (arg4) (*jenv)->ReleaseStringUTFChars(jenv, jarg4, (const char *)arg4);
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Transaction_1GetRecipientAcctID(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+  jstring jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
+  }
+  arg2 = 0;
+  if (jarg2) {
+    arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+    if (!arg2) return 0;
+  }
+  arg3 = 0;
+  if (jarg3) {
+    arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
+    if (!arg3) return 0;
+  }
+  arg4 = 0;
+  if (jarg4) {
+    arg4 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg4, 0);
+    if (!arg4) return 0;
+  }
+  result = (char *)OT_API_Transaction_GetRecipientAcctID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
+  if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
+  if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);
+  if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, (const char *)arg3);
+  if (arg4) (*jenv)->ReleaseStringUTFChars(jenv, jarg4, (const char *)arg4);
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_otapiJNI_OT_1API_1Transaction_1GetDisplayReferenceToNum(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+  jstring jresult = 0 ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = 0;
+  if (jarg1) {
+    arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
+    if (!arg1) return 0;
+  }
+  arg2 = 0;
+  if (jarg2) {
+    arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+    if (!arg2) return 0;
+  }
+  arg3 = 0;
+  if (jarg3) {
+    arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
+    if (!arg3) return 0;
+  }
+  arg4 = 0;
+  if (jarg4) {
+    arg4 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg4, 0);
+    if (!arg4) return 0;
+  }
+  result = (char *)OT_API_Transaction_GetDisplayReferenceToNum((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   if(result) jresult = (*jenv)->NewStringUTF(jenv, (const char *)result);
   if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, (const char *)arg1);
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, (const char *)arg2);

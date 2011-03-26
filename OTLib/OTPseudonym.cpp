@@ -137,10 +137,80 @@ using namespace io;
 #include "OTSignedFile.h"
 #include "OTItem.h"
 #include "OTTransaction.h"
+#include "OTMessage.h"
 
 #include "OTLog.h"
 
 
+
+
+
+/// Though the parameter is a reference (forcing you to pass a real object),
+/// the Nym DOES take ownership of the object. Therefore it MUST be allocated
+/// on the heap, NOT the stack, or you will corrupt memory with this call.
+///
+void OTPseudonym::AddMail(OTMessage & theMessage) // a mail message is a form of transaction, transported via Nymbox
+{
+	m_dequeMail.push_front(&theMessage);
+}
+
+/// return the number of mail items available for this Nym.
+//
+int OTPseudonym::GetMailCount()
+{
+	return m_dequeMail.size();
+}
+
+// Look up a transaction by transaction number and see if it is in the ledger.
+// If it is, return a pointer to it, otherwise return NULL.
+OTMessage * OTPseudonym::GetMailByIndex(const int nIndex)
+{
+	const unsigned int uIndex = nIndex;
+	
+	// Out of bounds.
+	if (m_dequeMail.empty()	||
+		(nIndex < 0)		|| (uIndex >= m_dequeMail.size()))
+		return NULL;
+	
+	return m_dequeMail.at(nIndex);	
+}
+
+
+/// If transaction #87, in reference to #74, is in the inbox, you can remove it
+/// by calling this function and passing in 87.
+///
+bool OTPseudonym::RemoveMailByIndex(const int nIndex) // if false, mail index was bad.
+{
+	const unsigned int uIndex = nIndex;
+	
+	// Out of bounds.
+	if (m_dequeMail.empty()	||
+		(nIndex < 0)		|| (uIndex >= m_dequeMail.size()))
+		return false;
+	
+	// -----------------------
+	
+	OTMessage * pMessage = m_dequeMail.at(nIndex);
+	
+	OT_ASSERT(NULL != pMessage);
+	
+	m_dequeMail.erase(m_dequeMail.begin() + nIndex);
+	
+	delete pMessage;
+	
+	return true;		
+}
+
+
+void OTPseudonym::ClearMail()
+{
+	while (GetMailCount() > 0)
+		RemoveMailByIndex(0);
+}
+
+
+
+// --------------------
 
 
 
@@ -1885,7 +1955,31 @@ bool OTPseudonym::SavePseudonym(OTString & strNym)
 	} // for
 	
 	// -------------------------------------
-	
+		
+	if (!(m_dequeMail.empty()))
+	{
+		for (unsigned i = 0; i < m_dequeMail.size(); i++)
+		{
+			OTMessage * pMessage = m_dequeMail.at(i);
+			
+			OT_ASSERT(NULL != pMessage);
+			
+			OTString strMail(*pMessage);
+			
+			OTASCIIArmor ascMail;
+			
+			if (strMail.Exists())
+				ascMail.SetString(strMail);
+			
+			if (ascMail.Exists())
+				strNym.Concatenate("<mailMessage>\n"
+								   "%s</mailMessage>\n\n", 
+								   ascMail.Get());
+		} 
+	}
+
+	// -------------------------------------
+
 	strNym.Concatenate("</OTuser>\n");	
 	
 	return true;
@@ -1988,6 +2082,52 @@ bool OTPseudonym::LoadFromString(const OTString & strNym)
 								   TransNumAvailable.Get(), TransNumServerID.Get());
 					
 					AddIssuedNum(TransNumServerID, atol(TransNumAvailable.Get())); // This version doesn't save to disk. (Why save to disk AS WE'RE LOADING?)
+				}
+				else if (!strcmp("mailMessage", xml->getNodeName()))
+				{					
+					OTASCIIArmor armorMail;
+					
+					OTString strMessage;
+					
+					xml->read();
+					
+					if (EXN_TEXT == xml->getNodeType())
+					{
+						OTString strNodeData = xml->getNodeData();
+						
+						// Sometimes the XML reads up the data with a prepended newline.
+						// This screws up my own objects which expect a consistent in/out
+						// So I'm checking here for that prepended newline, and removing it.
+						char cNewline;
+						if (strNodeData.Exists() && strNodeData.GetLength() > 2 && strNodeData.At(0, cNewline))
+						{
+							if ('\n' == cNewline)
+							{
+								armorMail.Set(strNodeData.Get() + 1);
+							}
+							else
+							{
+								armorMail.Set(strNodeData.Get());
+							}
+							
+							if (armorMail.GetLength() > 2)
+							{
+								armorMail.GetString(strMessage, true); // linebreaks == true.
+								
+								if (strMessage.GetLength() > 2)
+								{
+									OTMessage * pMessage = new OTMessage;
+									
+									OT_ASSERT(NULL != pMessage);
+									
+									if (pMessage->LoadContractFromString(strMessage))
+										m_dequeMail.push_back(pMessage); // takes ownership
+									else
+										delete pMessage;
+								}
+							}
+						}
+					}
 				}
 				else
 				{
@@ -2462,6 +2602,8 @@ OTPseudonym::~OTPseudonym()
 	m_pkeyPrivate	= NULL;
 	
 	ReleaseTransactionNumbers();
+	
+	ClearMail();
 }
 
 

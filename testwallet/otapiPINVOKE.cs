@@ -253,8 +253,29 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_Name")]
   public static extern string OT_API_GetNym_Name(string jarg1);
 
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_Stats")]
+  public static extern string OT_API_GetNym_Stats(string jarg1);
+
   [DllImport("otapi", EntryPoint="CSharp_OT_API_IsNym_RegisteredAtServer")]
   public static extern int OT_API_IsNym_RegisteredAtServer(string jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_MailCount")]
+  public static extern int OT_API_GetNym_MailCount(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_MailContentsByIndex")]
+  public static extern string OT_API_GetNym_MailContentsByIndex(string jarg1, int jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_MailSenderIDByIndex")]
+  public static extern string OT_API_GetNym_MailSenderIDByIndex(string jarg1, int jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_MailServerIDByIndex")]
+  public static extern string OT_API_GetNym_MailServerIDByIndex(string jarg1, int jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Nym_RemoveMailByIndex")]
+  public static extern int OT_API_Nym_RemoveMailByIndex(string jarg1, int jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Nym_VerifyMailByIndex")]
+  public static extern int OT_API_Nym_VerifyMailByIndex(string jarg1, int jarg2);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_SetNym_Name")]
   public static extern int OT_API_SetNym_Name(string jarg1, string jarg2, string jarg3);
@@ -355,20 +376,29 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Transaction_GetSuccess")]
   public static extern int OT_API_Transaction_GetSuccess(string jarg1, string jarg2, string jarg3, string jarg4);
 
-  [DllImport("otapi", EntryPoint="CSharp_OT_API_Pending_GetFromUserID")]
-  public static extern string OT_API_Pending_GetFromUserID(string jarg1, string jarg2, string jarg3, string jarg4);
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Transaction_GetDateSigned")]
+  public static extern string OT_API_Transaction_GetDateSigned(string jarg1, string jarg2, string jarg3, string jarg4);
 
-  [DllImport("otapi", EntryPoint="CSharp_OT_API_Pending_GetFromAcctID")]
-  public static extern string OT_API_Pending_GetFromAcctID(string jarg1, string jarg2, string jarg3, string jarg4);
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Transaction_GetAmount")]
+  public static extern string OT_API_Transaction_GetAmount(string jarg1, string jarg2, string jarg3, string jarg4);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Pending_GetNote")]
   public static extern string OT_API_Pending_GetNote(string jarg1, string jarg2, string jarg3, string jarg4);
 
-  [DllImport("otapi", EntryPoint="CSharp_OT_API_Pending_GetAmount")]
-  public static extern string OT_API_Pending_GetAmount(string jarg1, string jarg2, string jarg3, string jarg4);
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Transaction_GetSenderUserID")]
+  public static extern string OT_API_Transaction_GetSenderUserID(string jarg1, string jarg2, string jarg3, string jarg4);
 
-  [DllImport("otapi", EntryPoint="CSharp_OT_API_Pending_GetReferenceToNum")]
-  public static extern string OT_API_Pending_GetReferenceToNum(string jarg1, string jarg2, string jarg3, string jarg4);
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Transaction_GetSenderAcctID")]
+  public static extern string OT_API_Transaction_GetSenderAcctID(string jarg1, string jarg2, string jarg3, string jarg4);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Transaction_GetRecipientUserID")]
+  public static extern string OT_API_Transaction_GetRecipientUserID(string jarg1, string jarg2, string jarg3, string jarg4);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Transaction_GetRecipientAcctID")]
+  public static extern string OT_API_Transaction_GetRecipientAcctID(string jarg1, string jarg2, string jarg3, string jarg4);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Transaction_GetDisplayReferenceToNum")]
+  public static extern string OT_API_Transaction_GetDisplayReferenceToNum(string jarg1, string jarg2, string jarg3, string jarg4);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Purse_GetTotalValue")]
   public static extern string OT_API_Purse_GetTotalValue(string jarg1, string jarg2, string jarg3);

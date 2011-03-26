@@ -517,6 +517,18 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetNym_Name(char * jarg1) {
 }
 
 
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetNym_Stats(char * jarg1) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  result = (char *)OT_API_GetNym_Stats((char const *)arg1);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
 SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_IsNym_RegisteredAtServer(char * jarg1, char * jarg2) {
   int jresult ;
   char *arg1 = (char *) 0 ;
@@ -526,6 +538,88 @@ SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_IsNym_RegisteredAtServer(char * jarg1, 
   arg1 = (char *)jarg1; 
   arg2 = (char *)jarg2; 
   result = (int)OT_API_IsNym_RegisteredAtServer((char const *)arg1,(char const *)arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_GetNym_MailCount(char * jarg1) {
+  int jresult ;
+  char *arg1 = (char *) 0 ;
+  int result;
+  
+  arg1 = (char *)jarg1; 
+  result = (int)OT_API_GetNym_MailCount((char const *)arg1);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetNym_MailContentsByIndex(char * jarg1, int jarg2) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (int)jarg2; 
+  result = (char *)OT_API_GetNym_MailContentsByIndex((char const *)arg1,arg2);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetNym_MailSenderIDByIndex(char * jarg1, int jarg2) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (int)jarg2; 
+  result = (char *)OT_API_GetNym_MailSenderIDByIndex((char const *)arg1,arg2);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetNym_MailServerIDByIndex(char * jarg1, int jarg2) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (int)jarg2; 
+  result = (char *)OT_API_GetNym_MailServerIDByIndex((char const *)arg1,arg2);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_Nym_RemoveMailByIndex(char * jarg1, int jarg2) {
+  int jresult ;
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  int result;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (int)jarg2; 
+  result = (int)OT_API_Nym_RemoveMailByIndex((char const *)arg1,arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_Nym_VerifyMailByIndex(char * jarg1, int jarg2) {
+  int jresult ;
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  int result;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (int)jarg2; 
+  result = (int)OT_API_Nym_VerifyMailByIndex((char const *)arg1,arg2);
   jresult = result; 
   return jresult;
 }
@@ -1085,7 +1179,7 @@ SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_Transaction_GetSuccess(char * jarg1, ch
 }
 
 
-SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Pending_GetFromUserID(char * jarg1, char * jarg2, char * jarg3, char * jarg4) {
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Transaction_GetDateSigned(char * jarg1, char * jarg2, char * jarg3, char * jarg4) {
   char * jresult ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -1097,13 +1191,13 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Pending_GetFromUserID(char * jarg1, 
   arg2 = (char *)jarg2; 
   arg3 = (char *)jarg3; 
   arg4 = (char *)jarg4; 
-  result = (char *)OT_API_Pending_GetFromUserID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  result = (char *)OT_API_Transaction_GetDateSigned((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   jresult = SWIG_csharp_string_callback((const char *)result); 
   return jresult;
 }
 
 
-SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Pending_GetFromAcctID(char * jarg1, char * jarg2, char * jarg3, char * jarg4) {
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Transaction_GetAmount(char * jarg1, char * jarg2, char * jarg3, char * jarg4) {
   char * jresult ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -1115,7 +1209,7 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Pending_GetFromAcctID(char * jarg1, 
   arg2 = (char *)jarg2; 
   arg3 = (char *)jarg3; 
   arg4 = (char *)jarg4; 
-  result = (char *)OT_API_Pending_GetFromAcctID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  result = (char *)OT_API_Transaction_GetAmount((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   jresult = SWIG_csharp_string_callback((const char *)result); 
   return jresult;
 }
@@ -1139,7 +1233,7 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Pending_GetNote(char * jarg1, char *
 }
 
 
-SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Pending_GetAmount(char * jarg1, char * jarg2, char * jarg3, char * jarg4) {
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Transaction_GetSenderUserID(char * jarg1, char * jarg2, char * jarg3, char * jarg4) {
   char * jresult ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -1151,13 +1245,13 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Pending_GetAmount(char * jarg1, char
   arg2 = (char *)jarg2; 
   arg3 = (char *)jarg3; 
   arg4 = (char *)jarg4; 
-  result = (char *)OT_API_Pending_GetAmount((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  result = (char *)OT_API_Transaction_GetSenderUserID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   jresult = SWIG_csharp_string_callback((const char *)result); 
   return jresult;
 }
 
 
-SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Pending_GetReferenceToNum(char * jarg1, char * jarg2, char * jarg3, char * jarg4) {
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Transaction_GetSenderAcctID(char * jarg1, char * jarg2, char * jarg3, char * jarg4) {
   char * jresult ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -1169,7 +1263,61 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Pending_GetReferenceToNum(char * jar
   arg2 = (char *)jarg2; 
   arg3 = (char *)jarg3; 
   arg4 = (char *)jarg4; 
-  result = (char *)OT_API_Pending_GetReferenceToNum((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  result = (char *)OT_API_Transaction_GetSenderAcctID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Transaction_GetRecipientUserID(char * jarg1, char * jarg2, char * jarg3, char * jarg4) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (char *)jarg2; 
+  arg3 = (char *)jarg3; 
+  arg4 = (char *)jarg4; 
+  result = (char *)OT_API_Transaction_GetRecipientUserID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Transaction_GetRecipientAcctID(char * jarg1, char * jarg2, char * jarg3, char * jarg4) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (char *)jarg2; 
+  arg3 = (char *)jarg3; 
+  arg4 = (char *)jarg4; 
+  result = (char *)OT_API_Transaction_GetRecipientAcctID((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Transaction_GetDisplayReferenceToNum(char * jarg1, char * jarg2, char * jarg3, char * jarg4) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (char *)jarg2; 
+  arg3 = (char *)jarg3; 
+  arg4 = (char *)jarg4; 
+  result = (char *)OT_API_Transaction_GetDisplayReferenceToNum((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
   jresult = SWIG_csharp_string_callback((const char *)result); 
   return jresult;
 }

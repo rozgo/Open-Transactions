@@ -2,7 +2,7 @@
 
 /*************************************************************************
  *    
- * Open Transactions 0.50 -- Library, API, Protocol, Server, Test Client
+ * Open Transactions 0.51 -- Library, API, Protocol, Server, Test Client
  *    
  *    			-- Anonymous Numbered Accounts...
  *    			-- Untraceable Digital Cash...
@@ -942,16 +942,17 @@ work with the token:  "/*ChrisMorley/".  Thanks, Chris!
 /*
   It seems appropriate to mention a few other people who deserve mentioning.
 
-  A moment of silence for "Jolly Good Fellow" Bernard von NotHaus, the founder
-  of NORFED who was recently (and wrongfully) convicted of "domestic terrorism."
+  A moment of silence for "Jolly Good Fellow" Bernard von NotHaus, 
+  the founder of NORFED who was recently (and wrongfully) convicted of
+  "domestic terrorism.
   For history, I will reproduce a few gloating FBI quotes:
 
   "Attempts to undermine the legitimate currency of this country
    are simply a unique form of domestic terrorism."
    ...
   "We are determined to meet these threats through infiltration,
-   disruption, and dismantling of organizations which seek to challenge the
-   legitimacy of our democratic form of government."
+   disruption, and dismantling of organizations which seek to challenge
+   the legitimacy of our democratic form of government."
    ...
   "While these forms of anti-government activities do not involve
    violence, they are every bit as insidious and represent a clear and

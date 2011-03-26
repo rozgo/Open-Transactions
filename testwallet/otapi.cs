@@ -126,8 +126,43 @@ public class otapi {
     return ret;
   }
 
+  public static string OT_API_GetNym_Stats(string NYM_ID) {
+    string ret = otapiPINVOKE.OT_API_GetNym_Stats(NYM_ID);
+    return ret;
+  }
+
   public static int OT_API_IsNym_RegisteredAtServer(string NYM_ID, string SERVER_ID) {
     int ret = otapiPINVOKE.OT_API_IsNym_RegisteredAtServer(NYM_ID, SERVER_ID);
+    return ret;
+  }
+
+  public static int OT_API_GetNym_MailCount(string NYM_ID) {
+    int ret = otapiPINVOKE.OT_API_GetNym_MailCount(NYM_ID);
+    return ret;
+  }
+
+  public static string OT_API_GetNym_MailContentsByIndex(string NYM_ID, int nIndex) {
+    string ret = otapiPINVOKE.OT_API_GetNym_MailContentsByIndex(NYM_ID, nIndex);
+    return ret;
+  }
+
+  public static string OT_API_GetNym_MailSenderIDByIndex(string NYM_ID, int nIndex) {
+    string ret = otapiPINVOKE.OT_API_GetNym_MailSenderIDByIndex(NYM_ID, nIndex);
+    return ret;
+  }
+
+  public static string OT_API_GetNym_MailServerIDByIndex(string NYM_ID, int nIndex) {
+    string ret = otapiPINVOKE.OT_API_GetNym_MailServerIDByIndex(NYM_ID, nIndex);
+    return ret;
+  }
+
+  public static int OT_API_Nym_RemoveMailByIndex(string NYM_ID, int nIndex) {
+    int ret = otapiPINVOKE.OT_API_Nym_RemoveMailByIndex(NYM_ID, nIndex);
+    return ret;
+  }
+
+  public static int OT_API_Nym_VerifyMailByIndex(string NYM_ID, int nIndex) {
+    int ret = otapiPINVOKE.OT_API_Nym_VerifyMailByIndex(NYM_ID, nIndex);
     return ret;
   }
 
@@ -296,13 +331,13 @@ public class otapi {
     return ret;
   }
 
-  public static string OT_API_Pending_GetFromUserID(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
-    string ret = otapiPINVOKE.OT_API_Pending_GetFromUserID(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  public static string OT_API_Transaction_GetDateSigned(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
+    string ret = otapiPINVOKE.OT_API_Transaction_GetDateSigned(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
     return ret;
   }
 
-  public static string OT_API_Pending_GetFromAcctID(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
-    string ret = otapiPINVOKE.OT_API_Pending_GetFromAcctID(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  public static string OT_API_Transaction_GetAmount(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
+    string ret = otapiPINVOKE.OT_API_Transaction_GetAmount(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
     return ret;
   }
 
@@ -311,13 +346,28 @@ public class otapi {
     return ret;
   }
 
-  public static string OT_API_Pending_GetAmount(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
-    string ret = otapiPINVOKE.OT_API_Pending_GetAmount(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  public static string OT_API_Transaction_GetSenderUserID(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
+    string ret = otapiPINVOKE.OT_API_Transaction_GetSenderUserID(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
     return ret;
   }
 
-  public static string OT_API_Pending_GetReferenceToNum(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
-    string ret = otapiPINVOKE.OT_API_Pending_GetReferenceToNum(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+  public static string OT_API_Transaction_GetSenderAcctID(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
+    string ret = otapiPINVOKE.OT_API_Transaction_GetSenderAcctID(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+    return ret;
+  }
+
+  public static string OT_API_Transaction_GetRecipientUserID(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
+    string ret = otapiPINVOKE.OT_API_Transaction_GetRecipientUserID(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+    return ret;
+  }
+
+  public static string OT_API_Transaction_GetRecipientAcctID(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
+    string ret = otapiPINVOKE.OT_API_Transaction_GetRecipientAcctID(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
+    return ret;
+  }
+
+  public static string OT_API_Transaction_GetDisplayReferenceToNum(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_TRANSACTION) {
+    string ret = otapiPINVOKE.OT_API_Transaction_GetDisplayReferenceToNum(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
     return ret;
   }
 

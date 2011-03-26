@@ -145,7 +145,9 @@ bool OTClient::ProcessInBuffer(OTMessage & theServerReply)
 
 /// Without regard to WHAT those transactions ARE that are in my inbox,
 /// just process and accept them all!!!  (This is AUTO-ACCEPT functionality
-/// built into the test client and not the library itself.)
+/// built into the test client and not the library itself.) Update: this is
+/// becoming standard behavior for the Nymbox (NOT the inbox.)
+///
 void OTClient::AcceptEntireNymbox(OTLedger & theNymbox, OTServerConnection & theConnection)
 {
 	OTPseudonym * pNym	= theConnection.GetNym();
@@ -227,13 +229,35 @@ void OTClient::AcceptEntireNymbox(OTLedger & theNymbox, OTServerConnection & the
 				
 				pAcceptItem->SetReferenceToNum(pTransaction->GetTransactionNum()); // This is critical. Server needs this to look up the receipt in my nymbox.
 				// Don't need to set transaction num on item since the constructor already got it off the owner transaction.
-								
+
 				// sign the item
 				pAcceptItem->SignContract(*pNym);
 				pAcceptItem->SaveContract();
 				
-				OTLog::vOutput(0, "Received an encrypted message in your Nymbox:\n%s\n", strRespTo.Get());
+				OTLog::vOutput(2, "Received an encrypted message in your Nymbox:\n%s\n", strRespTo.Get());
 				
+				// Todo: really shouldn't do this until we get a successful REPLY from the server.
+				// That's when I do a lot of other things. But this is a no-biggie thing. It will almost
+				// always succeed and in the odd-event that it fails, I'll end up with a duplicate message
+				// in my mail. So what?
+				OTMessage * pMessage = new OTMessage;
+				
+				OT_ASSERT(NULL != pMessage);
+				
+				// The original message that was sent to me (with an encrypted envelope in the payload,
+				// and with the sender's ID and recipient IDs as m_strNymID and m_strNymID2) is stored
+				// within strRespTo. Let's load it up into an OTMessage instance, and add it to pNym's mail.
+				//
+				if (pMessage->LoadContractFromString(strRespTo))
+				{
+					pNym->AddMail(*pMessage); // Now the Nym is responsible to delete it. It's in his "mail".
+					pNym->SaveSignedNymfile(*pNym);
+				}
+				else 
+				{
+					delete pMessage; // Don't want to leak otherwise.
+					pMessage = NULL;
+				}
 			} // if message
 			
 			else if (

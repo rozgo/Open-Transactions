@@ -3,6 +3,10 @@ NOTES on the Version:
 
 // ---------------------------------------------------------------------
 
+   0.51 --- API functions for Mail and Transactions.
+
+   0.50 --- BASE-62-ENCODED IDs (much more compact.)
+
    0.45 --- Added a few API functions and updated the Windows build.
 
    0.44 --- RECEIPT VERIFICATION. Goes with the below change. Client-side

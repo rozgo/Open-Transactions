@@ -38,15 +38,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\~\Open-Transactions\OTLib\Lucre;C:\~\OpenSSL-Win32\include;$(IncludePath)</IncludePath>
-    <LibraryPath />
+    <IncludePath>C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib\irrxml;C:\~\Open-Transactions\OTLib\bigint;C:\~\Open-Transactions\OTLib\Lucre;$(IncludePath)</IncludePath>
+    <LibraryPath>
+    </LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib\bigint;C:\~\Open-Transactions\OTLib\irrxml;C:\~\Open-Transactions\OTLib\Lucre;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;OT_XMLRPC_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -56,11 +61,12 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;OT_XMLRPC_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -70,6 +76,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="..\bigint\BigInteger.hh" />
+    <None Include="..\bigint\BigIntegerAlgorithms.hh" />
+    <None Include="..\bigint\BigIntegerLibrary.hh" />
+    <None Include="..\bigint\BigIntegerUtils.hh" />
+    <None Include="..\bigint\BigUnsigned.hh" />
+    <None Include="..\bigint\BigUnsignedInABase.hh" />
+    <None Include="..\bigint\NumberlikeArray.hh" />
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -119,6 +132,11 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\bigint\BigInteger.cc" />
+    <ClCompile Include="..\bigint\BigIntegerAlgorithms.cc" />
+    <ClCompile Include="..\bigint\BigIntegerUtils.cc" />
+    <ClCompile Include="..\bigint\BigUnsigned.cc" />
+    <ClCompile Include="..\bigint\BigUnsignedInABase.cc" />
     <ClCompile Include="..\easyzlib.c" />
     <ClCompile Include="..\irrxml\irrXML.cpp" />
     <ClCompile Include="..\Lucre\bankimp.cpp" />
