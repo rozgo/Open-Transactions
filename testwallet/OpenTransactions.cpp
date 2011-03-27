@@ -183,7 +183,7 @@ void OT_XmlRpcCallback(OTServerContract & theServerContract, OTEnvelope & theEnv
 #if defined (linux)
 		XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort, 0); // serverhost, port.
 #elif defined (_WIN32) 
-		XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort, NULL); // serverhost, port.
+		XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort, "fellowtraveler"); // serverhost, port, value that crashes if NULL.
 #else
 		XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort); // serverhost, port.
 #endif

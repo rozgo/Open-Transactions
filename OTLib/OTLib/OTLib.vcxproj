@@ -39,8 +39,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib\irrxml;C:\~\Open-Transactions\OTLib\bigint;C:\~\Open-Transactions\OTLib\Lucre;$(IncludePath)</IncludePath>
-    <LibraryPath>
-    </LibraryPath>
+    <LibraryPath>C:\~\OpenSSL-Win32\lib\VC\static;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib\bigint;C:\~\Open-Transactions\OTLib\irrxml;C:\~\Open-Transactions\OTLib\Lucre;$(IncludePath)</IncludePath>
@@ -51,7 +50,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;OT_XMLRPC_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -66,7 +65,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;OT_XMLRPC_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

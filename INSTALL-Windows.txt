@@ -152,7 +152,7 @@ Notice also that OpenSSL has to be on the "Include Library" path for each projec
 
 Here are the libraries I had to link against in order to get testwallet running:
 Linker -> Input -> Additional Dependencies:
-winmm.lib;ws2_32.lib;libeay32MTd.lib;ssleay32MTd.lib;OTLib.lib;%(AdditionalDependencies)
+winmm.lib;wininet.lib;ws2_32.lib;libeay32MT.lib;ssleay32MT.lib;OTLib.lib;CPP_API_Windows.lib;%(AdditionalDependencies)
 
 - winmm.lib is a windows library and ws2_32.lib is Winsock2.
 
@@ -163,18 +163,29 @@ for all the OT calls that it makes.)
 - ssleay32 is the OpenSSL SSL lib for Windows.
 
 When you install OpenSSL, it puts a bunch of different versions of these static 
-libraries into the C:\OpenSSL-Win32\lib\VC folder. Each one is for a different 
-build...  the suffixes stand for:
+libraries into the C:\~\OpenSSL-Win32\lib\VC folder. Each one is for a different 
+build...  
 
-MT  static lib
-MD dynamic lib
-MTd static lib, debug version
-MDd dynamic lib, debug version
+The versions in C:\~\OpenSSL-Win32\lib\VC are static stubs, that actually load
+DLLs (surprise!) But you still link to them statically.
 
-As you can see, since I am linking statically, in debug mode, I currently have 
-my project configured to link THOSE specific versions of the OpenSSL libs.  
-(libeay32MTd.lib and ssleay32MTd.lib. If I linked the wrong versions, there 
-would definitely be problems.)
+The versions in C:\~\OpenSSL-Win32\lib\VC\static are the full static libs, 
+that do NOT load DLLs, and they are considerably larger.
+
+The suffixes stand for:
+
+MT  multi-threaded, standard C run-time libraries are statically linked.
+MTd multi-threaded, standard C run-time libraries are statically linked, debug version.
+MD  multi-threaded, standard C run-time libraries are dynamically linked.
+MDd multi-threaded, standard C run-time libraries are dynamically linked, debug version.
+
+These have to match your project. Remember, this has nothing to do with whether 
+your project itself is statically or dynamically linked. Rather, it has to do with
+whether the C-runtime libs used by your project are statically or dynamically linked.
+
+If your project has the /MD flag, then you must link to the MD version of OpenSSL,
+and if you project has the /MTd flag (again, for C runtime libs) then you must
+link to the MTd version of OpenSSL.
 
 
 *************

@@ -40,13 +40,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\~\Java\include\win32;C:\~\Java\include;C:\Program Files\Java\jdk1.6.0\include\win32;C:\Program Files\Java\jdk1.6.0\include;C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\~\OpenSSL-Win32\lib\VC;C:\~\Open-Transactions\OTLib\OTLib\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\~\OpenSSL-Win32\lib\VC\static;C:\~\Open-Transactions\OTLib\OTLib\Debug;C:\~\Open-Transactions\testwallet\CPP_API_Windows\Debug;$(LibraryPath)</LibraryPath>
     <TargetName>otapi</TargetName>
+    <OutDir>C:\~\Open-Transactions\testwallet\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\~\Java\include\win32;C:\~\Java\include;C:\Program Files\Java\jdk1.6.0\include\win32;C:\Program Files\Java\jdk1.6.0\include;C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\~\OpenSSL-Win32\lib\VC;C:\~\Open-Transactions\OTLib\OTLib\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\~\OpenSSL-Win32\lib\VC\static;C:\~\Open-Transactions\OTLib\OTLib\Release;C:\~\Open-Transactions\testwallet\CPP_API_Windows\Release;$(LibraryPath)</LibraryPath>
     <TargetName>otapi</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -55,12 +56,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;JNI_API_WINDOWS_EXPORTS;OT_XMLRPC_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winmm.lib;ws2_32.lib;libeay32MTd.lib;ssleay32MTd.lib;OTLib.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;wininet.lib;ws2_32.lib;libeay32MDd.lib;ssleay32MDd.lib;OTLib.lib;CPP_API_Windows.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -71,14 +73,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;JNI_API_WINDOWS_EXPORTS;OT_XMLRPC_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>winmm.lib;ws2_32.lib;libeay32MT.lib;ssleay32MT.lib;OTLib.lib;wininet.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;wininet.lib;ws2_32.lib;libeay32MT.lib;ssleay32MT.lib;OTLib.lib;CPP_API_Windows.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -88,18 +90,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\OTAPI_java.c" />
-    <ClCompile Include="applink.c" />
+    <ClCompile Include="applink.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="JNI_API_Windows.cpp" />
     <ClCompile Include="stdafx.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="..\CPP_API_Windows\Debug\CPP_API_Windows.lib">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </Library>
-    <Library Include="..\CPP_API_Windows\Release\CPP_API_Windows.lib">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </Library>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

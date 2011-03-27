@@ -130,6 +130,9 @@ void SFSocketGlobalInit (void) {
     if (!__globalInit) {
         __globalInit = 1;
 
+#ifdef _WIN32
+		CRYPTO_malloc_init();
+#endif
         SSL_library_init();
         SSL_load_error_strings();
     }
