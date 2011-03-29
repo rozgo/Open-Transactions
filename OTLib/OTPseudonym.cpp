@@ -1732,6 +1732,17 @@ bool OTPseudonym::LoadPublicKey()
 						 OTLog::PubkeyFolder(),
 						 OTLog::PathSeparator(), strID.Get());
 	
+	// See if it's even there...
+	if (false == OTLog::ConfirmExactPath(strPubKeyFile.Get()))
+	{
+		// Code will call this in order to see if there is a PublicKey to be loaded.
+		// Therefore I don't want to log a big error here since we expect that sometimes
+		// the key won't be there.
+		// Therefore I log at level 4, the same level as I log the successful outcome.
+		OTLog::Output(4, "Failure in OTPseudonym::LoadPublicKey.\n");
+		return false;
+	}
+	
 	// This loads up the ascii-armored Public Key.
 	// On the client side, the entire x509 is stored.
 	// On the server side, it's just the public key. 
@@ -2167,15 +2178,21 @@ bool OTPseudonym::LoadSignedNymfile(OTPseudonym & SIGNER_NYM)
 	// Create an OTSignedFile object, giving it the filename (the ID) and the local directory ("nyms")
 	OTSignedFile	theNymfile("nyms", nymID);
 	
+	if (false == theNymfile.LoadFile())
+	{
+		OTLog::vOutput(0, "Failed Loading a signed nymfile:\n%s\n\n", nymID.Get());
+		return false;
+	}
+	
 	// We verify:
 	//
 	// 1. That the file even exists and loads.
 	// 2. That the local subdir and filename match the versions inside the file.
 	// 3. That the signature matches for the signer nym who was passed in.
 	//
-	if (theNymfile.LoadFile()						// Also see OTWallet.cpp where it says:   //pNym->SaveSignedNymfile(*pNym); // Uncomment this if you want to generate a new nym by hand. NORMALLY LEAVE IT COMMENTED OUT!!!! IT'S DANGEROUS!!!
-		&& theNymfile.VerifyFile()					// TODO TEMP TEMPORARY RESUME  (These two lines can be commented out to allow you to load a nymfile with no sig.
-		&& theNymfile.VerifySignature(SIGNER_NYM)	// These are ONLY commented-out so I can reload a bad nymfile. UNCOMMENT THESE IF YOU SEE THIS.
+	if (						// Also see OTWallet.cpp where it says:   //pNym->SaveSignedNymfile(*pNym); // Uncomment this if you want to generate a new nym by hand. NORMALLY LEAVE IT COMMENTED OUT!!!! IT'S DANGEROUS!!!
+			theNymfile.VerifyFile()			// TODO TEMP TEMPORARY RESUME  (These two lines can be commented out to allow you to load a nymfile with no sig.
+		&&	theNymfile.VerifySignature(SIGNER_NYM)	// These are ONLY commented-out so I can reload a bad nymfile. UNCOMMENT THESE IF YOU SEE THIS.
 		)
 	{
 		OTLog::Output(4, "Loaded and verified signed nymfile. Reading from string...\n");
@@ -2191,7 +2208,7 @@ bool OTPseudonym::LoadSignedNymfile(OTPseudonym & SIGNER_NYM)
 	}
 	else 
 	{
-		OTLog::vError("Error Loading or verifying signed nymfile:\n%s\n\n", nymID.Get());
+		OTLog::vError("Error Verifying signed nymfile:\n%s\n\n", nymID.Get());
 	}
 
 	return false;
@@ -2418,6 +2435,12 @@ bool OTPseudonym::Loadx509CertAndPrivateKey()
 	m_strCertfile.Format((char *)"%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
 						 OTLog::CertFolder(),
 						 OTLog::PathSeparator(), strID.Get());
+	
+	if (false == OTLog::ConfirmExactPath(m_strCertfile.Get()))
+	{
+		OTLog::vOutput(0, "Failed loading private key from: %s\n", m_strCertfile.Get());
+		return false;
+	}
 	
 	// This loads up the ascii-armored Cert from the certfile, minus the ------ bookends.
 	// Later we will use this to create a hash and verify against the NymID that was in the wallet.

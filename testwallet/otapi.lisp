@@ -143,6 +143,30 @@
   (NYM_ID :string)
   (nIndex :int))
 
+(cffi:defcfun ("OT_API_Wallet_CanRemoveServer" OT_API_Wallet_CanRemoveServer) :int
+  (SERVER_ID :string))
+
+(cffi:defcfun ("OT_API_Wallet_RemoveServer" OT_API_Wallet_RemoveServer) :int
+  (SERVER_ID :string))
+
+(cffi:defcfun ("OT_API_Wallet_CanRemoveAssetType" OT_API_Wallet_CanRemoveAssetType) :int
+  (ASSET_ID :string))
+
+(cffi:defcfun ("OT_API_Wallet_RemoveAssetType" OT_API_Wallet_RemoveAssetType) :int
+  (ASSET_ID :string))
+
+(cffi:defcfun ("OT_API_Wallet_CanRemoveNym" OT_API_Wallet_CanRemoveNym) :int
+  (NYM_ID :string))
+
+(cffi:defcfun ("OT_API_Wallet_RemoveNym" OT_API_Wallet_RemoveNym) :int
+  (NYM_ID :string))
+
+(cffi:defcfun ("OT_API_Wallet_CanRemoveAccount" OT_API_Wallet_CanRemoveAccount) :int
+  (ACCOUNT_ID :string))
+
+(cffi:defcfun ("OT_API_Wallet_RemoveAccount" OT_API_Wallet_RemoveAccount) :int
+  (ACCOUNT_ID :string))
+
 (cffi:defcfun ("OT_API_SetNym_Name" OT_API_SetNym_Name) :int
   (NYM_ID :string)
   (SIGNER_NYM_ID :string)
@@ -561,6 +585,9 @@
   (THE_MESSAGE :string))
 
 (cffi:defcfun ("OT_API_Message_GetNewIssuerAcctID" OT_API_Message_GetNewIssuerAcctID) :string
+  (THE_MESSAGE :string))
+
+(cffi:defcfun ("OT_API_Message_GetNewAcctID" OT_API_Message_GetNewAcctID) :string
   (THE_MESSAGE :string))
 
 (cffi:defcfun ("OT_API_ConnectServer" OT_API_ConnectServer) :int

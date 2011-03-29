@@ -1287,6 +1287,17 @@ OTPurse * OT_API::LoadPurse(const OTIdentifier & SERVER_ID,
 	strPursePath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
 						strPurseUserPath.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
 	
+	// -------------------------------------------------------------
+	
+	if (false == OTLog::ConfirmExactPath(strPursePath.Get()))
+	{
+		OTLog::vOutput(2, "OT_API::LoadPurse: Purse does not exist: %s\n\n", 
+					  strPursePath.Get());
+		return NULL;
+	}
+	
+	// -------------------------------------------------------------
+
 	OTPurse * pPurse = new OTPurse(SERVER_ID, ASSET_ID);
 	
 	OT_ASSERT_MSG(NULL != pPurse, "Error allocating memory in the OT API."); // responsible to delete or return pPurse below this point.
@@ -1353,6 +1364,17 @@ OTMint * OT_API::LoadMint(const OTIdentifier & SERVER_ID,
 	strMintPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
 						strMintDirectoryPath.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
 	
+	// -------------------------------------------------------------
+
+	if (false == OTLog::ConfirmExactPath(strMintPath.Get()))
+	{
+		OTLog::vOutput(2, "OT_API::LoadMint: Mint file does not exist: %s\n\n", 
+					   strMintPath.Get());
+		return NULL;
+	}
+	
+	// -------------------------------------------------------------
+	
 	OTMint * pMint = new OTMint(strAssetTypeID, strMintPath, strAssetTypeID);
 	
 	OT_ASSERT_MSG(NULL != pMint, "Error allocating memory in the OT API"); // responsible to delete or return pMint below this point.
@@ -1403,6 +1425,17 @@ OTServerContract * OT_API::LoadServerContract(const OTIdentifier & SERVER_ID)
 						   OTLog::ContractFolder(),
 						   OTLog::PathSeparator(), strServerID.Get());
 	
+	// -------------------------------------------------------------
+	
+	if (false == OTLog::ConfirmExactPath(strContractPath.Get()))
+	{
+		OTLog::vOutput(2, "OT_API::LoadServerContract: File does not exist: %s\n\n", 
+					   strContractPath.Get());
+		return NULL;
+	}
+	
+	// -------------------------------------------------------------
+	
 	OTServerContract * pContract = new OTServerContract(strServerID, strContractPath, strServerID);
 	
 	OT_ASSERT_MSG(NULL != pContract, "Error allocating memory for Server "
@@ -1449,6 +1482,17 @@ OTAssetContract * OT_API::LoadAssetContract(const OTIdentifier & ASSET_ID)
 	strContractPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
 						   OTLog::ContractFolder(),
 						   OTLog::PathSeparator(), strAssetTypeID.Get());
+	
+	// -------------------------------------------------------------
+	
+	if (false == OTLog::ConfirmExactPath(strContractPath.Get()))
+	{
+		OTLog::vOutput(2, "OT_API::LoadAssetContract: File does not exist: %s\n\n", 
+					   strContractPath.Get());
+		return NULL;
+	}
+	
+	// -------------------------------------------------------------
 	
 	OTAssetContract * pContract = new OTAssetContract(strAssetTypeID, strContractPath, strAssetTypeID);
 	

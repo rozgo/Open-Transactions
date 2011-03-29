@@ -370,6 +370,265 @@ int OT_API_GetAccountCount(void)
 
 
 
+// ----------------------------------------------------------------
+
+
+/// *** FUNCTIONS FOR REMOVING VARIOUS CONTRACTS AND NYMS FROM THE WALLET ***
+
+/// Can I remove this server contract from my wallet?
+///
+/// You cannot remove the server contract from your wallet if there are accounts in there using it.
+/// This function tells you whether you can remove the server contract or not. (Whether there are accounts...)
+/// returns OT_BOOL
+///
+OT_BOOL	OT_API_Wallet_CanRemoveServer(const char * SERVER_ID)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in!\n");
+	
+	OTIdentifier theID(SERVER_ID);
+	
+	// ------------------------------------------
+	
+	const int nCount = OT_API_GetAccountCount();
+	
+	// Loop through all the accounts.
+	for (int i = 0; i < nCount; i++)
+	{
+		const char * pAcctID = OT_API_GetAccountWallet_ID(nCount);
+		OTString strAcctID(pAcctID);
+		
+		const char * pID = OT_API_GetAccountWallet_ServerID(strAcctID.Get());
+		OTIdentifier theCompareID(pID);
+		
+		if (theID == theCompareID)
+			return OT_FALSE;
+	}
+	
+	return OT_TRUE;
+}
+
+/// Remove this server contract from my wallet!
+///
+/// Try to remove the server contract from the wallet.
+/// This will not work if there are any accounts in the wallet for the same server ID.
+/// returns OT_BOOL
+///
+OT_BOOL	OT_API_Wallet_RemoveServer(const char * SERVER_ID)
+{
+	// Make sure there aren't any dependent accounts..
+	if (OT_FALSE == OT_API_Wallet_CanRemoveServer(SERVER_ID))
+		return OT_FALSE;
+
+	// TODO: the above call proves that there are no accounts laying around
+	// for this server ID. (No need to worry about "orphaned accounts.")
+	//
+	// However, there may still be Nyms registered at the server! Therefore,
+	// we need to loop through the Nyms, and make sure none of them has been
+	// registered at this server ID. If it has, then we need to message the server
+	// to "deregister" the Nym, which is much cleaner.  Otherwise server's only
+	// other alternative is to expire Nyms that have gone unused for some specific
+	// period of time, presumably those terms are described in the server contract.
+	//
+	OTWallet * pWallet = g_OT_API.GetWallet();
+	
+	OT_ASSERT_MSG(NULL != pWallet, "No wallet found...\n");
+	
+	OTIdentifier theID(SERVER_ID);
+	
+	if (pWallet->RemoveServerContract(theID))
+	{
+		pWallet->SaveWallet();
+		return OT_TRUE;
+	}
+	
+	return OT_FALSE;
+}
+
+
+
+/// Can I remove this asset contract from my wallet?
+///
+/// You cannot remove the asset contract from your wallet if there are accounts in there using it.
+/// This function tells you whether you can remove the asset contract or not. (Whether there are accounts...)
+/// returns OT_BOOL
+///
+OT_BOOL	OT_API_Wallet_CanRemoveAssetType(const char * ASSET_ID)
+{
+	OT_ASSERT_MSG(NULL != ASSET_ID, "Null ASSET_ID passed in!\n");
+	
+	OTIdentifier theID(ASSET_ID);
+	
+	// ------------------------------------------
+	
+	const int nCount = OT_API_GetAccountCount();
+	
+	// Loop through all the accounts.
+	for (int i = 0; i < nCount; i++)
+	{
+		const char * pAcctID = OT_API_GetAccountWallet_ID(nCount);
+		OTString strAcctID(pAcctID);
+		
+		const char * pID = OT_API_GetAccountWallet_AssetTypeID(strAcctID.Get());
+		OTIdentifier theCompareID(pID);
+		
+		if (theID == theCompareID)
+			return OT_FALSE;
+	}
+	
+	return OT_TRUE;	
+}
+
+/// Remove this asset contract from my wallet!
+///
+/// Try to remove the asset contract from the wallet.
+/// This will not work if there are any accounts in the wallet for the same asset type ID.
+/// returns OT_BOOL
+///
+OT_BOOL	OT_API_Wallet_RemoveAssetType(const char * ASSET_ID)
+{
+	// Make sure there aren't any dependent accounts..
+	if (OT_FALSE == OT_API_Wallet_CanRemoveAssetType(ASSET_ID))
+		return OT_FALSE;
+	
+	OTWallet * pWallet = g_OT_API.GetWallet();
+	
+	OT_ASSERT_MSG(NULL != pWallet, "No wallet found...\n");
+	
+	OTIdentifier theID(ASSET_ID);
+	
+	if (pWallet->RemoveAssetContract(theID))
+	{
+		pWallet->SaveWallet();
+		return OT_TRUE;
+	}
+	
+	return OT_FALSE;
+}
+
+
+
+/// Can I remove this Nym from my wallet?
+///
+/// You cannot remove the Nym from your wallet if there are accounts in there using it.
+/// This function tells you whether you can remove the Nym or not. (Whether there are accounts...)
+/// returns OT_BOOL
+///
+OT_BOOL	OT_API_Wallet_CanRemoveNym(const char * NYM_ID)
+{
+	OT_ASSERT_MSG(NULL != NYM_ID, "Null NYM_ID passed in!\n");
+	
+	OTIdentifier theID(NYM_ID);
+	
+	// ------------------------------------------
+	
+	const int nCount = OT_API_GetAccountCount();
+	
+	// Loop through all the accounts.
+	for (int i = 0; i < nCount; i++)
+	{
+		const char * pAcctID = OT_API_GetAccountWallet_ID(nCount);
+		OTString strAcctID(pAcctID);
+		
+		const char * pID = OT_API_GetAccountWallet_NymID(strAcctID.Get());
+		OTIdentifier theCompareID(pID);
+		
+		if (theID == theCompareID)
+			return OT_FALSE;
+	}
+	
+	return OT_TRUE;	
+}
+
+/// Remove this Nym from my wallet!
+///
+/// Try to remove the Nym from the wallet.
+/// This will not work if there are any nyms in the wallet for the same server ID.
+/// returns OT_BOOL
+///
+OT_BOOL	OT_API_Wallet_RemoveNym(const char * NYM_ID)
+{
+	// Make sure there aren't any dependent accounts..
+	if (OT_FALSE == OT_API_Wallet_CanRemoveNym(NYM_ID))
+		return OT_FALSE;
+	
+	// ------------------------------------------
+
+	// TODO: The above call proves already that there are no accounts laying around
+	// for this Nym. (No need to worry about "orphaned accounts.")
+	//
+	// However, the Nym might still be registered at various servers, even without asset accounts.
+	// Therefore, we need to iterate through the server contracts, and if the Nym is registered at 
+	// any of the servers, then "deregister" (before deleting the Nym entirely.) This is much
+	// cleaner for the server side, who otherwise has to expired unused nyms based on some rule
+	// presumably to be found in the server contract.
+	// ------------------------------------------
+	
+	OTWallet * pWallet = g_OT_API.GetWallet();
+	
+	OT_ASSERT_MSG(NULL != pWallet, "No wallet found...\n");
+	
+	OTIdentifier theID(NYM_ID);
+	
+	if (pWallet->RemoveNym(theID))
+	{
+		pWallet->SaveWallet();
+		return OT_TRUE;
+	}
+	
+	return OT_FALSE;
+}
+
+
+
+
+/// Can I remove this Account from my wallet?
+///
+/// You cannot remove the Account from your wallet if there are transactions still open.
+/// This function tells you whether you can remove the Account or not. (Whether there are transactions...)
+/// returns OT_BOOL
+///
+OT_BOOL	OT_API_Wallet_CanRemoveAccount(const char * ACCOUNT_ID)
+{
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "Null ACCOUNT_ID passed in!\n");
+
+	return OT_TRUE; // TODO have this do a real check for open transactions.
+}
+
+
+
+/// Remove this Account from my wallet!
+///
+/// Try to remove the Account from the wallet.
+/// This will not work if there are any transactions open for this account.
+/// returns OT_BOOL
+///
+OT_BOOL	OT_API_Wallet_RemoveAccount(const char * ACCOUNT_ID)
+{
+	// Make sure there aren't any dependent accounts..
+	if (OT_FALSE == OT_API_Wallet_CanRemoveAccount(ACCOUNT_ID))
+		return OT_FALSE;
+	
+	OTWallet * pWallet = g_OT_API.GetWallet();
+	
+	OT_ASSERT_MSG(NULL != pWallet, "No wallet found...\n");
+	
+	OTIdentifier theID(ACCOUNT_ID);
+	
+	if (pWallet->RemoveAccount(theID))
+	{
+		pWallet->SaveWallet();
+		return OT_TRUE;
+	}
+	
+	return OT_FALSE;
+}
+
+
+
+
+
+
+// ----------------------------------------------------------------
 
 // based on Index (above 4 functions) this returns the Nym's ID
 const char * OT_API_GetNym_ID(int nIndex)
@@ -5518,7 +5777,7 @@ const char * OT_API_Message_GetLedger(const char * THE_MESSAGE)
 // -----------------------------------------------------------
 // GET NEW ASSET TYPE ID 
 //
-// If you just issued a new asset type, you'l want to read the
+// If you just issued a new asset type, you'll want to read the
 // server reply and get the new asset type ID out of it.
 // Otherwise how will you ever open accounts in that new type?
 //
@@ -5570,7 +5829,7 @@ const char * OT_API_Message_GetNewAssetTypeID(const char * THE_MESSAGE)
 // -----------------------------------------------------------
 // GET NEW ISSUER ACCOUNT ID 
 //
-// If you just issued a new asset type, you'l want to read the
+// If you just issued a new asset type, you'll want to read the
 // server reply and get the new issuer acct ID out of it.
 // Otherwise how will you ever issue anything with it?
 //
@@ -5588,8 +5847,8 @@ const char * OT_API_Message_GetNewIssuerAcctID(const char * THE_MESSAGE)
 		return NULL;
 	}
 	
-	// It's not a transaction request or response, so the Payload wouldn't
-	// contain a ledger. (Don't want to pass back whatever it DOES contain
+	// It's not an issue asset type response, so the m_strAcctID wouldn't
+	// contain an issuer account ID. (Don't want to pass back whatever it DOES contain
 	// in that case, now do I?)
 	//
 	if (false == theMessage.m_strCommand.Compare("@issueAssetType"))
@@ -5604,6 +5863,62 @@ const char * OT_API_Message_GetNewIssuerAcctID(const char * THE_MESSAGE)
 	if (!strOutput.Exists())
 	{
 		OTLog::Output(0, "OT_API_Message_GetNewIssuerAcctID: No issuer account ID found on message.\n");
+		return NULL;
+	}
+	
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;
+}
+
+
+
+
+// -----------------------------------------------------------
+// GET NEW ACCOUNT ID 
+//
+// If you just created a new asset account, you'll want to read the
+// server reply and get the new acct ID out of it.
+// Otherwise how will you ever use it?
+// This function allows you to get the new account ID out of the
+// server reply message.
+//
+const char * OT_API_Message_GetNewAcctID(const char * THE_MESSAGE)
+{
+	OT_ASSERT_MSG(NULL != THE_MESSAGE, "Null THE_MESSAGE passed in.");
+	
+	OTString strMessage(THE_MESSAGE);
+	
+	OTMessage theMessage;
+	
+	if (!strMessage.Exists() || !theMessage.LoadContractFromString(strMessage))
+	{
+		OTLog::Output(0, "OT_API_Message_GetNewAcctID: Unable to load message.\n");
+		return NULL;
+	}
+	
+	// It's not a response to createAccount, so the m_strAcctID wouldn't
+	// contain a new account ID anyway, right? (Don't want to pass back whatever 
+	// it DOES contain in that case, now do I?)
+	//
+	if (false == theMessage.m_strCommand.Compare("@createAccount"))
+	{
+		OTLog::vOutput(0, "OT_API_Message_GetNewAcctID: Wrong message type: %s\n", 
+					   theMessage.m_strCommand.Get());
+		return NULL;
+	}
+	
+	OTString strOutput(theMessage.m_strAcctID);
+	
+	if (!strOutput.Exists())
+	{
+		OTLog::Output(0, "OT_API_Message_GetNewAcctID: No asset account ID found on message.\n");
 		return NULL;
 	}
 	

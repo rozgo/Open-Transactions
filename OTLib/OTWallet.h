@@ -164,6 +164,23 @@ public:
 	bool SaveWallet(const char * szFilename=NULL);
 	
 	bool SignContractWithFirstNymOnList(OTContract & theContract);
+	
+	// ----------------------------------------------------
+	
+	
+	// These functions are low-level. They don't check for dependent data before deleting,
+	// and they don't save the wallet after they do.
+	//
+	// (You have to handle that at a higher level.)
+	
+	bool RemoveAssetContract(const OTIdentifier & theTargetID);
+	bool RemoveServerContract(const OTIdentifier & theTargetID);
+	
+	// higher level version of these two will require a server message, 
+	// in addition to removing from wallet. (To delete them on server side.)
+	//
+	bool RemoveAccount(const OTIdentifier & theTargetID);
+	bool RemoveNym(const OTIdentifier & theTargetID);
 };
 
 #endif // __OTWALLET_H__

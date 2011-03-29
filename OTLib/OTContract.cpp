@@ -1551,6 +1551,16 @@ bool OTContract::LoadContract(const char * szFilename)
 	
 	m_strFilename.Set(szFilename);
 	
+	// --------------------------------------------
+	
+	if (false == OTLog::ConfirmExactPath(m_strFilename.Get()))
+	{
+		OTLog::vOutput(3, "LoadContract: File does not exist: %s\n", m_strFilename.Get());
+		return false;
+	}
+	
+	// --------------------------------------------
+	
 	// opens m_strFilename and reads into m_strRawFile
 	if (LoadContractRawFile())
 		return ParseRawFile(); // Parses m_strRawFile into the various member variables.

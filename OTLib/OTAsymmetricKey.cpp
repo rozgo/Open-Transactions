@@ -955,6 +955,14 @@ bool OTAsymmetricKey::LoadPublicKey(const OTString & strFilename)
 {
 	Release();
 	
+	if (false == OTLog::ConfirmExactPath(strFilename.Get()))
+	{
+		OTLog::vOutput(2, "Unable to open pubkey file in OTAsymmetricKey::LoadPublicKey: %s\n", strFilename.Get());
+		return false;
+	}
+	
+	// -----------------------
+	
 	OTASCIIArmor theArmor;
 	
 	if (theArmor.LoadFromFile(strFilename))
@@ -972,7 +980,8 @@ bool OTAsymmetricKey::LoadPublicKey(const OTString & strFilename)
 			return false; 			
 		}
 	}
-	else {
+	else 
+	{
 		OTLog::vError("Unable to read pubkey file in OTAsymmetricKey::LoadPublicKey: %s\n", strFilename.Get()); 
 		return false; 
 	}
@@ -1045,8 +1054,16 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertFile(const OTString & strFilename)
 {
 	Release();
 	
-	X509 *	x509	= NULL; 
+	if (false == OTLog::ConfirmExactPath(strFilename.Get()))
+	{
+		OTLog::vOutput(2, "Unable to open certfile in OTAsymmetricKey::LoadPublicKeyFromCertFile: %s\n", strFilename.Get());
+		return false;
+	}
 	
+	// -----------------------
+	
+	
+	X509 *	x509	= NULL; 
 	
 	/*
 	 // -------------------------------------------------
@@ -1121,7 +1138,15 @@ bool OTAsymmetricKey::LoadPrivateKey(const OTString & strFilename)
 {
 	Release();
 
-/*
+	if (false == OTLog::ConfirmExactPath(strFilename.Get()))
+	{
+		OTLog::vOutput(2, "Unable to open private key file in OTAsymmetricKey::LoadPrivateKey: %s\n", strFilename.Get());
+		return false;
+	}
+	
+	// -----------------------
+
+	/*
 	// ------------------------------------------------------
 	// Version 1  (works but uses fopen)
 	FILE * fp = NULL; // _WIN32 

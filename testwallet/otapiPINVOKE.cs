@@ -277,6 +277,30 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Nym_VerifyMailByIndex")]
   public static extern int OT_API_Nym_VerifyMailByIndex(string jarg1, int jarg2);
 
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Wallet_CanRemoveServer")]
+  public static extern int OT_API_Wallet_CanRemoveServer(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Wallet_RemoveServer")]
+  public static extern int OT_API_Wallet_RemoveServer(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Wallet_CanRemoveAssetType")]
+  public static extern int OT_API_Wallet_CanRemoveAssetType(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Wallet_RemoveAssetType")]
+  public static extern int OT_API_Wallet_RemoveAssetType(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Wallet_CanRemoveNym")]
+  public static extern int OT_API_Wallet_CanRemoveNym(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Wallet_RemoveNym")]
+  public static extern int OT_API_Wallet_RemoveNym(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Wallet_CanRemoveAccount")]
+  public static extern int OT_API_Wallet_CanRemoveAccount(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Wallet_RemoveAccount")]
+  public static extern int OT_API_Wallet_RemoveAccount(string jarg1);
+
   [DllImport("otapi", EntryPoint="CSharp_OT_API_SetNym_Name")]
   public static extern int OT_API_SetNym_Name(string jarg1, string jarg2, string jarg3);
 
@@ -513,6 +537,9 @@ class otapiPINVOKE {
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Message_GetNewIssuerAcctID")]
   public static extern string OT_API_Message_GetNewIssuerAcctID(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Message_GetNewAcctID")]
+  public static extern string OT_API_Message_GetNewAcctID(string jarg1);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_ConnectServer")]
   public static extern int OT_API_ConnectServer(string jarg1, string jarg2, string jarg3, string jarg4, string jarg5);

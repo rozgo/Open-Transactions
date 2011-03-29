@@ -1672,7 +1672,7 @@ int OTTransaction::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		SetTransactionNum(atol(xml->getAttributeValue("transactionNum")));
 		SetReferenceToNum(atol(xml->getAttributeValue("inReferenceTo")));
 		
-		OTLog::vOutput(0, "Loaded transaction %ld, in reference to: %ld type: %s\n",
+		OTLog::vOutput(2, "Loaded transaction %ld, in reference to: %ld type: %s\n",
 //				"accountID:\n%s\n serverID:\n%s\n----------\n", 
 				GetTransactionNum(),
 				GetReferenceToNum(), strType.Get()

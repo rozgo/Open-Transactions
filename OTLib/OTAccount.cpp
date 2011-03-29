@@ -164,7 +164,7 @@ OTLedger * OTAccount::LoadInbox(OTPseudonym & theNym)
 	{
 		OTString strUserID(GetUserID()), strAcctID(GetRealAccountID());
 		
-		OTLog::vOutput(0, "Unable to load or verify inbox:\n%s\n For user:\n%s\n",
+		OTLog::vOutput(2, "Unable to load or verify inbox:\n%s\n For user:\n%s\n",
 					   strAcctID.Get(), strUserID.Get());
 	}
 	
@@ -187,7 +187,7 @@ OTLedger * OTAccount::LoadOutbox(OTPseudonym & theNym)
 	{
 		OTString strUserID(GetUserID()), strAcctID(GetRealAccountID());
 		
-		OTLog::vOutput(0, "Unable to load or verify outbox:\n%s\n For user:\n%s\n",
+		OTLog::vOutput(2, "Unable to load or verify outbox:\n%s\n For user:\n%s\n",
 					   strAcctID.Get(), strUserID.Get());
 	}
 	
@@ -222,9 +222,7 @@ bool OTAccount::SaveAccount()
 	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
 						 OTLog::AccountFolder(),
 						 OTLog::PathSeparator(), strID.Get());
-	
-	OTLog::vOutput(2, "");
-	
+		
 	// the const char * version (used here) expects a filename.
 	// If I passed in the OTString it would try to save to that string instead of opening the file.
 	OTString strTemp(m_strFilename);
@@ -448,7 +446,8 @@ OTAccount * OTAccount::LoadExistingAccount(const OTIdentifier & theAccountID, co
 								   OTLog::AccountFolder(),
 								   OTLog::PathSeparator(), strAcctID.Get());
 	
-	if (pAccount->LoadContract() && pAccount->VerifyContractID())
+	if (OTLog::ConfirmExactPath(pAccount->m_strFilename.Get()) && 
+		pAccount->LoadContract() && pAccount->VerifyContractID())
 		return pAccount;
 	else 
 	{

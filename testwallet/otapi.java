@@ -132,6 +132,38 @@ public class otapi {
     return otapiJNI.OT_API_Nym_VerifyMailByIndex(NYM_ID, nIndex);
   }
 
+  public static int OT_API_Wallet_CanRemoveServer(String SERVER_ID) {
+    return otapiJNI.OT_API_Wallet_CanRemoveServer(SERVER_ID);
+  }
+
+  public static int OT_API_Wallet_RemoveServer(String SERVER_ID) {
+    return otapiJNI.OT_API_Wallet_RemoveServer(SERVER_ID);
+  }
+
+  public static int OT_API_Wallet_CanRemoveAssetType(String ASSET_ID) {
+    return otapiJNI.OT_API_Wallet_CanRemoveAssetType(ASSET_ID);
+  }
+
+  public static int OT_API_Wallet_RemoveAssetType(String ASSET_ID) {
+    return otapiJNI.OT_API_Wallet_RemoveAssetType(ASSET_ID);
+  }
+
+  public static int OT_API_Wallet_CanRemoveNym(String NYM_ID) {
+    return otapiJNI.OT_API_Wallet_CanRemoveNym(NYM_ID);
+  }
+
+  public static int OT_API_Wallet_RemoveNym(String NYM_ID) {
+    return otapiJNI.OT_API_Wallet_RemoveNym(NYM_ID);
+  }
+
+  public static int OT_API_Wallet_CanRemoveAccount(String ACCOUNT_ID) {
+    return otapiJNI.OT_API_Wallet_CanRemoveAccount(ACCOUNT_ID);
+  }
+
+  public static int OT_API_Wallet_RemoveAccount(String ACCOUNT_ID) {
+    return otapiJNI.OT_API_Wallet_RemoveAccount(ACCOUNT_ID);
+  }
+
   public static int OT_API_SetNym_Name(String NYM_ID, String SIGNER_NYM_ID, String NYM_NEW_NAME) {
     return otapiJNI.OT_API_SetNym_Name(NYM_ID, SIGNER_NYM_ID, NYM_NEW_NAME);
   }
@@ -446,6 +478,10 @@ public class otapi {
 
   public static String OT_API_Message_GetNewIssuerAcctID(String THE_MESSAGE) {
     return otapiJNI.OT_API_Message_GetNewIssuerAcctID(THE_MESSAGE);
+  }
+
+  public static String OT_API_Message_GetNewAcctID(String THE_MESSAGE) {
+    return otapiJNI.OT_API_Message_GetNewAcctID(THE_MESSAGE);
   }
 
   public static int OT_API_ConnectServer(String SERVER_ID, String USER_ID, String szCA_FILE, String szKEY_FILE, String szKEY_PASSWORD) {

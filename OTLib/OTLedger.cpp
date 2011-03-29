@@ -155,9 +155,11 @@ bool OTLedger::LoadGeneric(OTLedger::ledgerType theType)
 						 pszFolder,
 						 OTLog::PathSeparator(), strID.Get());
 	
+	// -------------
+	
 	if (false == OTLog::ConfirmExactPath(m_strFilename.Get()))
 	{
-		OTLog::vOutput(1, "%s does not exist in OTLedger::Load%s:\n%s\n", pszType,
+		OTLog::vOutput(3, "%s does not exist in OTLedger::Load%s:\n%s\n", pszType,
 					  pszType, m_strFilename.Get());
 		return false;
 	}

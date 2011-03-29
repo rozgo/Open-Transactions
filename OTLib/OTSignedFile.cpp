@@ -232,7 +232,10 @@ bool OTSignedFile::SaveFile()
 // Assumes SetFilename() has already been set.
 bool OTSignedFile::LoadFile()
 {
-	return LoadContract();
+	if (OTLog::ConfirmExactPath(m_strFilename.Get()))
+		return LoadContract();
+	
+	return false;
 }
 
 void OTSignedFile::SetFilename(const OTString & LOCAL_SUBDIR, const OTString & FILE_NAME)

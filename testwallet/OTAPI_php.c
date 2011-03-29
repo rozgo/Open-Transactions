@@ -1849,6 +1849,214 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Wallet_CanRemoveServer) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  result = (int)OT_API_Wallet_CanRemoveServer((char const *)arg1);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Wallet_RemoveServer) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  result = (int)OT_API_Wallet_RemoveServer((char const *)arg1);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Wallet_CanRemoveAssetType) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  result = (int)OT_API_Wallet_CanRemoveAssetType((char const *)arg1);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Wallet_RemoveAssetType) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  result = (int)OT_API_Wallet_RemoveAssetType((char const *)arg1);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Wallet_CanRemoveNym) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  result = (int)OT_API_Wallet_CanRemoveNym((char const *)arg1);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Wallet_RemoveNym) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  result = (int)OT_API_Wallet_RemoveNym((char const *)arg1);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Wallet_CanRemoveAccount) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  result = (int)OT_API_Wallet_CanRemoveAccount((char const *)arg1);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Wallet_RemoveAccount) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  result = (int)OT_API_Wallet_RemoveAccount((char const *)arg1);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_OT_API_SetNym_Name) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -5275,6 +5483,36 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Message_GetNewAcctID) {
+  char *arg1 = (char *) 0 ;
+  char *result = 0 ;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  result = (char *)OT_API_Message_GetNewAcctID((char const *)arg1);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value,result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_OT_API_ConnectServer) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -5385,6 +5623,14 @@ static function_entry otapi_functions[] = {
  ZEND_NAMED_FE(ot_api_getnym_mailserveridbyindex,_wrap_OT_API_GetNym_MailServerIDByIndex,NULL)
  ZEND_NAMED_FE(ot_api_nym_removemailbyindex,_wrap_OT_API_Nym_RemoveMailByIndex,NULL)
  ZEND_NAMED_FE(ot_api_nym_verifymailbyindex,_wrap_OT_API_Nym_VerifyMailByIndex,NULL)
+ ZEND_NAMED_FE(ot_api_wallet_canremoveserver,_wrap_OT_API_Wallet_CanRemoveServer,NULL)
+ ZEND_NAMED_FE(ot_api_wallet_removeserver,_wrap_OT_API_Wallet_RemoveServer,NULL)
+ ZEND_NAMED_FE(ot_api_wallet_canremoveassettype,_wrap_OT_API_Wallet_CanRemoveAssetType,NULL)
+ ZEND_NAMED_FE(ot_api_wallet_removeassettype,_wrap_OT_API_Wallet_RemoveAssetType,NULL)
+ ZEND_NAMED_FE(ot_api_wallet_canremovenym,_wrap_OT_API_Wallet_CanRemoveNym,NULL)
+ ZEND_NAMED_FE(ot_api_wallet_removenym,_wrap_OT_API_Wallet_RemoveNym,NULL)
+ ZEND_NAMED_FE(ot_api_wallet_canremoveaccount,_wrap_OT_API_Wallet_CanRemoveAccount,NULL)
+ ZEND_NAMED_FE(ot_api_wallet_removeaccount,_wrap_OT_API_Wallet_RemoveAccount,NULL)
  ZEND_NAMED_FE(ot_api_setnym_name,_wrap_OT_API_SetNym_Name,NULL)
  ZEND_NAMED_FE(ot_api_setaccountwallet_name,_wrap_OT_API_SetAccountWallet_Name,NULL)
  ZEND_NAMED_FE(ot_api_setassettype_name,_wrap_OT_API_SetAssetType_Name,NULL)
@@ -5464,6 +5710,7 @@ static function_entry otapi_functions[] = {
  ZEND_NAMED_FE(ot_api_message_getledger,_wrap_OT_API_Message_GetLedger,NULL)
  ZEND_NAMED_FE(ot_api_message_getnewassettypeid,_wrap_OT_API_Message_GetNewAssetTypeID,NULL)
  ZEND_NAMED_FE(ot_api_message_getnewissueracctid,_wrap_OT_API_Message_GetNewIssuerAcctID,NULL)
+ ZEND_NAMED_FE(ot_api_message_getnewacctid,_wrap_OT_API_Message_GetNewAcctID,NULL)
  ZEND_NAMED_FE(ot_api_connectserver,_wrap_OT_API_ConnectServer,NULL)
  ZEND_NAMED_FE(ot_api_processsockets,_wrap_OT_API_ProcessSockets,NULL)
 {NULL, NULL, NULL}

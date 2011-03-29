@@ -153,6 +153,9 @@ const char * OT_API_CreateNym(void);
 ///
 int OT_API_AddServerContract(const char * szContract); // returns OT_TRUE (1) or OT_FALSE(0)
 
+
+
+
 // --------------------------------------------------
 /// ADD ASSET CONTRACT
 /// If you have an asset contract that you'd like to add 
@@ -256,6 +259,91 @@ const char *	OT_API_GetNym_MailServerIDByIndex(const char * NYM_ID, int nIndex);
 
 int				OT_API_Nym_RemoveMailByIndex(const char * NYM_ID, int nIndex); /// actually returns OT_BOOL, (1 or 0.)
 int				OT_API_Nym_VerifyMailByIndex(const char * NYM_ID, int nIndex); /// actually returns OT_BOOL. OT_TRUE if signature verifies. (Sender Nym MUST be in my wallet for this to work.)
+
+
+// ---------------------------------------------------------
+
+/// *** FUNCTIONS FOR REMOVING VARIOUS CONTRACTS AND NYMS FROM THE WALLET ***
+
+/// Can I remove this server contract from my wallet?
+///
+/// You cannot remove the server contract from your wallet if there are accounts in there using it.
+/// This function tells you whether you can remove the server contract or not. (Whether there are accounts...)
+/// returns OT_BOOL
+///
+int		OT_API_Wallet_CanRemoveServer(const char * SERVER_ID);
+
+/// Remove this server contract from my wallet!
+///
+/// Try to remove the server contract from the wallet.
+/// This will not work if there are any accounts in the wallet for the same server ID.
+/// returns OT_BOOL
+///
+int		OT_API_Wallet_RemoveServer(const char * SERVER_ID);
+
+
+
+/// Can I remove this asset contract from my wallet?
+///
+/// You cannot remove the asset contract from your wallet if there are accounts in there using it.
+/// This function tells you whether you can remove the asset contract or not. (Whether there are accounts...)
+/// returns OT_BOOL
+///
+int		OT_API_Wallet_CanRemoveAssetType(const char * ASSET_ID);
+
+
+/// Remove this asset contract from my wallet!
+///
+/// Try to remove the asset contract from the wallet.
+/// This will not work if there are any accounts in the wallet for the same asset type ID.
+/// returns OT_BOOL
+///
+int		OT_API_Wallet_RemoveAssetType(const char * ASSET_ID);
+
+
+
+/// Can I remove this Nym from my wallet?
+///
+/// You cannot remove the Nym from your wallet if there are accounts in there using it.
+/// This function tells you whether you can remove the Nym or not. (Whether there are accounts...)
+/// returns OT_BOOL
+///
+int		OT_API_Wallet_CanRemoveNym(const char * NYM_ID);
+
+
+/// Remove this Nym from my wallet!
+///
+/// Try to remove the Nym from the wallet.
+/// This will not work if there are any nyms in the wallet for the same server ID.
+/// returns OT_BOOL
+///
+int		OT_API_Wallet_RemoveNym(const char * NYM_ID);
+
+
+
+/// Can I remove this Account from my wallet?
+///
+/// You cannot remove the Account from your wallet if there are transactions still open.
+/// This function tells you whether you can remove the Account or not. (Whether there are transactions...)
+/// returns OT_BOOL
+///
+int		OT_API_Wallet_CanRemoveAccount(const char * ACCOUNT_ID);
+
+
+/// Remove this Account from my wallet!
+///
+/// Try to remove the Account from the wallet.
+/// This will not work if there are any transactions open for this account.
+/// returns OT_BOOL
+///
+int		OT_API_Wallet_RemoveAccount(const char * ACCOUNT_ID);
+
+
+
+
+
+
+
 
 
 // -----------------------------------
@@ -622,7 +710,7 @@ const char * OT_API_LoadOutbox(const char * SERVER_ID,
 
 
 // --------------------------------------------------------------
-
+// Find out how many pending transactions (and receipts) are in this inbox.
 int OT_API_Ledger_GetCount(const char * SERVER_ID,
 						   const char * USER_ID,
 						   const char * ACCOUNT_ID,
@@ -1078,6 +1166,7 @@ void OT_API_getAccount(const char * SERVER_ID,
 					   const char * ACCT_ID);
 
 
+// --------------------------------------------------
 
 
 
@@ -1393,6 +1482,9 @@ void OT_API_withdrawVoucher(const char * SERVER_ID,
 							const char * RECIPIENT_USER_ID,
 							const char * CHEQUE_MEMO,
 							const char * AMOUNT);
+// --------------------------------------------------
+
+
 
 
 
@@ -1410,6 +1502,9 @@ void OT_API_depositCheque(const char * SERVER_ID,
 						  const char * USER_ID,
 						  const char * ACCT_ID,
 						  const char * THE_CHEQUE);
+// --------------------------------------------------
+
+
 
 
 
@@ -1421,6 +1516,9 @@ void OT_API_depositCheque(const char * SERVER_ID,
 void OT_API_depositPaymentPlan(const char * SERVER_ID,
 							   const char * USER_ID,
 							   const char * THE_PAYMENT_PLAN);
+// --------------------------------------------------
+
+
 
 
 
@@ -1441,6 +1539,7 @@ void OT_API_issueMarketOffer(const char * SERVER_ID,
 							 const char * TOTAL_ASSETS_ON_OFFER,	// Total assets available for sale or purchase. Will be multiplied by minimum increment.
 							 const char * PRICE_LIMIT,				// Per Minimum Increment...
 							 int	bBuyingOrSelling); // Actually OT_BOOL. SELLING == OT_TRUE, BUYING == OT_FALSE.
+
 
 // --------------------------------------------------
 
@@ -1501,20 +1600,34 @@ const char * OT_API_Message_GetLedger(const char * THE_MESSAGE);
 // -----------------------------------------------------------
 /// GET NEW ASSET TYPE ID 
 ///
-/// If you just issued a new asset type, you'l want to read the
+/// If you just issued a new asset type, you'll want to read the
 /// server reply and get the new asset type ID out of it.
 /// Otherwise how will you ever open accounts in that new type?
 ///
 const char * OT_API_Message_GetNewAssetTypeID(const char * THE_MESSAGE);
 
+
+
 // -----------------------------------------------------------
 /// GET NEW ISSUER ACCOUNT ID 
 ///
-/// If you just issued a new asset type, you'l want to read the
+/// If you just issued a new asset type, you'll want to read the
 /// server reply and get the new issuer acct ID out of it.
 /// Otherwise how will you ever issue anything with it?
 ///
 const char * OT_API_Message_GetNewIssuerAcctID(const char * THE_MESSAGE);
+
+
+// -----------------------------------------------------------
+/// GET NEW ACCOUNT ID 
+///
+/// If you just opened a new asset account, you'll want to read the
+/// server reply and get the new acct ID out of it.
+/// Otherwise how will you know which account you just created?
+/// This function allows you to get the new account ID out of the
+/// server reply message.
+///
+const char * OT_API_Message_GetNewAcctID(const char * THE_MESSAGE);
 
 
 

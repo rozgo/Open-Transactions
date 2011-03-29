@@ -166,6 +166,46 @@ public class otapi {
     return ret;
   }
 
+  public static int OT_API_Wallet_CanRemoveServer(string SERVER_ID) {
+    int ret = otapiPINVOKE.OT_API_Wallet_CanRemoveServer(SERVER_ID);
+    return ret;
+  }
+
+  public static int OT_API_Wallet_RemoveServer(string SERVER_ID) {
+    int ret = otapiPINVOKE.OT_API_Wallet_RemoveServer(SERVER_ID);
+    return ret;
+  }
+
+  public static int OT_API_Wallet_CanRemoveAssetType(string ASSET_ID) {
+    int ret = otapiPINVOKE.OT_API_Wallet_CanRemoveAssetType(ASSET_ID);
+    return ret;
+  }
+
+  public static int OT_API_Wallet_RemoveAssetType(string ASSET_ID) {
+    int ret = otapiPINVOKE.OT_API_Wallet_RemoveAssetType(ASSET_ID);
+    return ret;
+  }
+
+  public static int OT_API_Wallet_CanRemoveNym(string NYM_ID) {
+    int ret = otapiPINVOKE.OT_API_Wallet_CanRemoveNym(NYM_ID);
+    return ret;
+  }
+
+  public static int OT_API_Wallet_RemoveNym(string NYM_ID) {
+    int ret = otapiPINVOKE.OT_API_Wallet_RemoveNym(NYM_ID);
+    return ret;
+  }
+
+  public static int OT_API_Wallet_CanRemoveAccount(string ACCOUNT_ID) {
+    int ret = otapiPINVOKE.OT_API_Wallet_CanRemoveAccount(ACCOUNT_ID);
+    return ret;
+  }
+
+  public static int OT_API_Wallet_RemoveAccount(string ACCOUNT_ID) {
+    int ret = otapiPINVOKE.OT_API_Wallet_RemoveAccount(ACCOUNT_ID);
+    return ret;
+  }
+
   public static int OT_API_SetNym_Name(string NYM_ID, string SIGNER_NYM_ID, string NYM_NEW_NAME) {
     int ret = otapiPINVOKE.OT_API_SetNym_Name(NYM_ID, SIGNER_NYM_ID, NYM_NEW_NAME);
     return ret;
@@ -532,6 +572,11 @@ public class otapi {
 
   public static string OT_API_Message_GetNewIssuerAcctID(string THE_MESSAGE) {
     string ret = otapiPINVOKE.OT_API_Message_GetNewIssuerAcctID(THE_MESSAGE);
+    return ret;
+  }
+
+  public static string OT_API_Message_GetNewAcctID(string THE_MESSAGE) {
+    string ret = otapiPINVOKE.OT_API_Message_GetNewAcctID(THE_MESSAGE);
     return ret;
   }
 

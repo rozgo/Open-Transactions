@@ -724,7 +724,7 @@ void OTWallet::AddAccount(const OTAccount & theAcct)
 // If it is, return a pointer to it, otherwise return NULL.
 OTAccount * OTWallet::GetAccount(const OTIdentifier & theAccountID)
 {
-	// loop through the items that make up this transaction and print them out here, base64-encoded, of course.
+	// loop through the accounts and find one with a specific ID.
 	OTAccount * pAccount = NULL;
 	OTIdentifier anAccountID;
 	
@@ -821,6 +821,133 @@ void OTWallet::AddAssetContract(const OTAssetContract & theContract)
 		SaveWallet();
 	}
 }
+
+// --------------------------------------------
+
+// These functions are low-level. They don't check for dependent data before deleting,
+// and they don't save the wallet after they do.
+//
+// You have to handle that at a higher level.
+
+bool OTWallet::RemoveAssetContract(const OTIdentifier & theTargetID)
+{
+	// loop through the items that make up this transaction and print them out here, base64-encoded, of course.
+	OTAssetContract * pContract = NULL;
+	OTIdentifier aContractID;
+	
+	for (mapOfContracts::iterator ii = m_mapContracts.begin(); ii != m_mapContracts.end(); ++ii)
+	{
+		pContract = (*ii).second;
+		
+		OT_ASSERT(NULL != pContract);
+		
+		pContract->GetIdentifier(aContractID);
+		
+		if (aContractID == theTargetID)
+		{
+			m_mapContracts.erase(ii);
+			
+			delete pContract;
+			
+			return true;
+		}
+	}
+	
+	return false;	
+}
+
+bool OTWallet::RemoveServerContract(const OTIdentifier & theTargetID)
+{
+	OTContract * pServer = NULL;
+	
+	for (mapOfServers::iterator ii = m_mapServers.begin(); ii != m_mapServers.end(); ++ii)
+	{
+		pServer = (*ii).second;
+		
+		OT_ASSERT_MSG((NULL != pServer), "NULL server pointer in OTWallet::m_mapServers, OTWallet::RemoveServerContract");
+		
+		OTIdentifier id_CurrentContract;
+		pServer->GetIdentifier(id_CurrentContract);
+		
+		if (id_CurrentContract == theTargetID)
+		{
+			m_mapServers.erase(ii);
+			
+			OTServerContract * pServerContract = static_cast<OTServerContract*> (pServer);
+			delete pServerContract;
+			
+			return true;
+		}
+	}
+	
+	return false;	
+}
+
+// higher level version of this will require a server message, in addition to removing from wallet.
+bool OTWallet::RemoveNym(const OTIdentifier & theTargetID)
+{
+	OTPseudonym * pNym = NULL;
+	
+	for (mapOfNyms::iterator ii = m_mapNyms.begin(); ii != m_mapNyms.end(); ++ii)
+	{		
+		pNym = (*ii).second;
+		
+		OT_ASSERT_MSG((NULL != pNym), "NULL pseudonym pointer in OTWallet::RemoveNym.");
+		
+		OTIdentifier id_CurrentNym;
+		pNym->GetIdentifier(id_CurrentNym);
+		
+		if (id_CurrentNym == theTargetID)
+		{
+			m_mapNyms.erase(ii);
+			
+			// todo: temp remove the below 'if' block. for testing only.
+			// (As part of removing ALL mention of g_pTemporaryNym from the code. Otherwise leave this block :P)
+			if (pNym == g_pTemporaryNym) 
+			{
+				g_pTemporaryNym = NULL;
+			}
+			
+			delete pNym;
+			
+			return true;
+		}
+	}	
+	
+	return false;	
+}
+
+// higher level version of this will require a server message, in addition to removing from wallet.
+bool OTWallet::RemoveAccount(const OTIdentifier & theTargetID)
+{
+	// loop through the accounts and find one with a specific ID.
+	OTAccount * pAccount = NULL;
+	OTIdentifier anAccountID;
+	
+	for (mapOfAccounts::iterator ii = m_mapAccounts.begin(); ii != m_mapAccounts.end(); ++ii)
+	{
+		pAccount = (*ii).second;
+		
+		OT_ASSERT(NULL != pAccount);
+		
+		pAccount->GetIdentifier(anAccountID);
+		
+		if (anAccountID == theTargetID)
+		{
+			m_mapAccounts.erase(ii);
+			
+			delete pAccount;
+			
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+
+
+// --------------------------------------------
 
 OTAssetContract * OTWallet::GetAssetContract(const OTIdentifier & theContractID)
 {

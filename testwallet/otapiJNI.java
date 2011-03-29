@@ -39,6 +39,14 @@ class otapiJNI {
   public final static native String OT_API_GetNym_MailServerIDByIndex(String jarg1, int jarg2);
   public final static native int OT_API_Nym_RemoveMailByIndex(String jarg1, int jarg2);
   public final static native int OT_API_Nym_VerifyMailByIndex(String jarg1, int jarg2);
+  public final static native int OT_API_Wallet_CanRemoveServer(String jarg1);
+  public final static native int OT_API_Wallet_RemoveServer(String jarg1);
+  public final static native int OT_API_Wallet_CanRemoveAssetType(String jarg1);
+  public final static native int OT_API_Wallet_RemoveAssetType(String jarg1);
+  public final static native int OT_API_Wallet_CanRemoveNym(String jarg1);
+  public final static native int OT_API_Wallet_RemoveNym(String jarg1);
+  public final static native int OT_API_Wallet_CanRemoveAccount(String jarg1);
+  public final static native int OT_API_Wallet_RemoveAccount(String jarg1);
   public final static native int OT_API_SetNym_Name(String jarg1, String jarg2, String jarg3);
   public final static native int OT_API_SetAccountWallet_Name(String jarg1, String jarg2, String jarg3);
   public final static native int OT_API_SetAssetType_Name(String jarg1, String jarg2);
@@ -118,6 +126,7 @@ class otapiJNI {
   public final static native String OT_API_Message_GetLedger(String jarg1);
   public final static native String OT_API_Message_GetNewAssetTypeID(String jarg1);
   public final static native String OT_API_Message_GetNewIssuerAcctID(String jarg1);
+  public final static native String OT_API_Message_GetNewAcctID(String jarg1);
   public final static native int OT_API_ConnectServer(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5);
   public final static native int OT_API_ProcessSockets();
 }

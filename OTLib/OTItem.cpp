@@ -1060,7 +1060,7 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		
 		m_lAmount	= atol(xml->getAttributeValue("amount"));
 		
-		OTLog::vOutput(0, "Loaded transaction Item, transaction num %ld, In Reference To: %ld, type: %s, status: %s\n",
+		OTLog::vOutput(3, "Loaded transaction Item, transaction num %ld, In Reference To: %ld, type: %s, status: %s\n",
 //				"fromAccountID:\n%s\n UserID:\n%s\n toAccountID:\n%s\n serverID:\n%s\n----------\n", 
 				GetTransactionNum(),
 				GetReferenceToNum(), strType.Get(), strStatus.Get()
@@ -1137,7 +1137,7 @@ int OTItem::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 			
 			AddItem(*pItem);	// <======= adding to list.
 			
-			OTLog::vOutput(1, "Loaded transactionReport Item, transaction num %ld, In Reference To: %ld, type: %s\n",
+			OTLog::vOutput(3, "Loaded transactionReport Item, transaction num %ld, In Reference To: %ld, type: %s\n",
 						   //				"fromAccountID:\n%s\n UserID:\n%s\n toAccountID:\n%s\n serverID:\n%s\n----------\n", 
 						   pItem->GetTransactionNum(),
 						   pItem->GetReferenceToNum(), strType.Get()

@@ -3,6 +3,8 @@ NOTES on the Version:
 
 // ---------------------------------------------------------------------
 
+   0.52 --- API functions for deleting Nyms, Accounts, and Contracts.
+
    0.51 --- API functions for Mail and Transactions.
 
    0.50 --- BASE-62-ENCODED IDs (much more compact.)
