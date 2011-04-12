@@ -129,6 +129,19 @@ libotapi.jnilib
 
 -- Use otapi.java in your Java project.
 
+---------
+Note: the current OT GUI (in java) requires a slight modification 
+to one file: OTAPI_java.c
+
+Basically search for this string: Java_otapiJNI
+And replace it with this string:  Java_com_wrapper_core_jni_otapiJNI
+Replace all, it appears over a hundred times.
+
+Then go to the Open-Transactions folder and type: make clean && make java
+
+Then the OT Java GUI will work; just put the jar in the testwallet folder
+(and run it from there as well.)
+
 --------------------------------
 
 Ruby

@@ -277,6 +277,24 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Nym_VerifyMailByIndex")]
   public static extern int OT_API_Nym_VerifyMailByIndex(string jarg1, int jarg2);
 
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_OutmailCount")]
+  public static extern int OT_API_GetNym_OutmailCount(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_OutmailContentsByIndex")]
+  public static extern string OT_API_GetNym_OutmailContentsByIndex(string jarg1, int jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_OutmailRecipientIDByIndex")]
+  public static extern string OT_API_GetNym_OutmailRecipientIDByIndex(string jarg1, int jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetNym_OutmailServerIDByIndex")]
+  public static extern string OT_API_GetNym_OutmailServerIDByIndex(string jarg1, int jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Nym_RemoveOutmailByIndex")]
+  public static extern int OT_API_Nym_RemoveOutmailByIndex(string jarg1, int jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Nym_VerifyOutmailByIndex")]
+  public static extern int OT_API_Nym_VerifyOutmailByIndex(string jarg1, int jarg2);
+
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Wallet_CanRemoveServer")]
   public static extern int OT_API_Wallet_CanRemoveServer(string jarg1);
 
@@ -389,7 +407,7 @@ class otapiPINVOKE {
   public static extern string OT_API_Transaction_CreateResponse(string jarg1, string jarg2, string jarg3, string jarg4, string jarg5, int jarg6);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Ledger_FinalizeResponse")]
-  public static extern string OT_API_Ledger_FinalizeResponse(string jarg1, string jarg2, string jarg3, string jarg4, int jarg5);
+  public static extern string OT_API_Ledger_FinalizeResponse(string jarg1, string jarg2, string jarg3, string jarg4);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Transaction_GetType")]
   public static extern string OT_API_Transaction_GetType(string jarg1, string jarg2, string jarg3, string jarg4);
@@ -528,6 +546,9 @@ class otapiPINVOKE {
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Message_GetSuccess")]
   public static extern int OT_API_Message_GetSuccess(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Message_GetTransactionSuccess")]
+  public static extern int OT_API_Message_GetTransactionSuccess(string jarg1, string jarg2, string jarg3, string jarg4);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Message_GetLedger")]
   public static extern string OT_API_Message_GetLedger(string jarg1);

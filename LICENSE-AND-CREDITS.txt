@@ -2,7 +2,7 @@
 
 /*************************************************************************
  *    
- * Open Transactions 0.52 -- Library, API, Protocol, Server, Test Client
+ * Open Transactions 0.53 -- Library, API, Protocol, Server, Test Client
  *    
  *    			-- Anonymous Numbered Accounts...
  *    			-- Untraceable Digital Cash...
@@ -29,71 +29,85 @@
  *    
  *    Open Transactions was written including these libraries:
  *    
- *       Lucre          --- Copyright (C) 1999-2009 Ben Laurie.
- *                          http://anoncvs.aldigital.co.uk/lucre/
- *       irrXML         --- Copyright (C) 2002-2005 Nikolaus Gebhardt
- *                          http://irrlicht.sourceforge.net/author.html	
- *       easyzlib       --- Copyright (C) 2008 First Objective Software, Inc.
- *                          Used with permission. http://www.firstobject.com/
+ *       Lucre        --- Copyright (C) 1999-2009 Ben Laurie.
+ *                        http://anoncvs.aldigital.co.uk/lucre/
+ *       irrXML       --- Copyright (C) 2002-2005 Nikolaus Gebhardt
+ *                        http://irrlicht.sourceforge.net/author.html	
+ *       easyzlib     --- Copyright (C) 2008 First Objective Software, Inc.
+ *                        Used with permission. http://www.firstobject.com/
  *       PGP to OpenSSL --- Copyright (c) 2010 Mounir IDRASSI 
  *                          Used with permission. http://www.idrix.fr
- *       XmlRpc++       --- LGPL, Copyright (c) 2002-2003 by C. Morley
- *                          http://xmlrpcpp.sourceforge.net/
- *       SFSocket       --- Copyright (C) 2009 Matteo Bertozzi
- *                          Used with permission. http://th30z.netsons.org/
- *       strlcpy        --- Copyright (c) 1998 Todd C. Miller 
- *                          (open source) <Todd.Miller@courtesan.com>
+ *       XmlRpc++     --- LGPL, Copyright (c) 2002-2003 by C. Morley
+ *                        http://xmlrpcpp.sourceforge.net/
+ *       SFSocket     --- Copyright (C) 2009 Matteo Bertozzi
+ *                        Used with permission. http://th30z.netsons.org/
+ *       strlcpy      --- Copyright (c) 1998 Todd C. Miller 
+ *                        (open source) <Todd.Miller@courtesan.com>
  *    
  *     ----------------------------------------------------------------
  *
  *    Open Transactions links to these libraries:
  *    
- *       OpenSSL        --- (Version 1.0.0a at time of writing.) 
+ *       OpenSSL   --- (Version 1.0.0a at time of writing.) 
  *                          http://openssl.org/about/
- *       zlib           --- Copyright (C) 1995-2004 Jean-loup Gailly, Mark Adler
+ *       zlib      --- Copyright (C) 1995-2004 Jean-loup Gailly, Mark Adler
  *    
  *     ----------------------------------------------------------------
  *
- *    LICENSE:
- *        This program is free software: you can redistribute it and/or modify
- *        it under the terms of the GNU Affero General Public License as
- *        published by the Free Software Foundation, either version 3 of the
- *        License, or (at your option) any later version.
+ *    OTLib............Ñ A class library............LICENSE: LAGPLv3 
+ *    OT-API...........Ñ A Client API...............LICENSE: LAGPLv3
+ *    OT-Server........Ñ A Server Application.......LICENSE:  AGPLv3
+ *    testwallet.......Ñ A command-line client......LICENSE: LAGPLv3
+ *    OT-TestGUI.......Ñ A Java Client App..........LICENSE:   GPLv3
+ *
+ *   LICENSE:
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Affero General Public License as
+ *   published by the Free Software Foundation, either version 3 of the
+ *   License, or (at your option) any later version.
  *    
- *        You should have received a copy of the GNU Affero General Public License
- *        along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *   You should have received a copy of the GNU Affero General Public
+ *   License along with this program.  If not, see: www.gnu.org/licenses/
  *    	
- *    	  If you would like to use this software outside of the free software
- *    	  license, please contact FellowTraveler. (Unfortunately many will run
- *        anonymously and untraceably, so who could really stop them?)
+ *   If you would like to use this software outside of the free software
+ *   license, please contact FellowTraveler. (Unfortunately many will run
+ *   anonymously and untraceably, so who could really stop them?)
  *   
- *        This library is also "dual-license", meaning that Ben Laurie's license
- *        must also be included and respected, since the code for Lucre is also
- *        included with Open Transactions.
- *        The Laurie requirements are light, but if there is any problem with his
- *        license, simply remove the Lucre code. Although there are no other blind
- *        token algorithms in Open Transactions (yet), the other functionality will
- *        continue to operate.
+ *   ADDITIONAL PERMISSION under the GNU Affero GPL version 3 section 7:
+ *   If you modify this Program, or any covered work, by linking or
+ *   combining it with other code, such other code is not for that reason
+ *   alone subject to any of the requirements of the GNU Affero GPL
+ *   version 3.  (This paragraph is the "LAGPL" permission and applies
+ *   only to the components listed above as LAGPL components.)
+ *
+ *   Lucre License:
+ *   This library is also "dual-license", meaning that Ben Laurie's license
+ *   must also be included and respected, since the code for Lucre is also
+ *   included with Open Transactions.
+ *   The Laurie requirements are light, but if there is any problem with
+ *   his license, simply remove the Lucre code. Although there are no other
+ *   blind token algorithms in Open Transactions (yet), the other
+ *   functionality will continue to operate.
  *    
- *    OpenSSL / Lucre / Etc. WAIVER:
- *        This program is released under the AGPL with the additional exemption 
- *    	  that compiling, linking, and/or using OpenSSL is allowed. The same is
- *        true for any other open source libraries included in this project: 
- *        complete waiver from the AGPL is hereby granted to compile, link, and/or
- *        use them with Open Transactions, according to their own terms.
+ *   OpenSSL / Lucre / Etc. WAIVER:
+ *   This program is released under the AGPL with the additional exemption 
+ *   that compiling, linking, and/or using OpenSSL is allowed. The same is
+ *   true for any other open source libraries included in this project: 
+ *   complete waiver from the AGPL is hereby granted to compile, link,
+ *   and/or use them with Open Transactions, according to their own terms.
  *    
- *    DISCLAIMER:
- *        This program is distributed in the hope that it will be useful,
- *        but WITHOUT ANY WARRANTY; without even the implied warranty of
- *        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *        GNU Affero General Public License for more details.
+ *   DISCLAIMER:
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Affero General Public License for more details.
  *    	
- ************************************************************************************
+ *************************************************************************
  
-
+More license info:
+https://github.com/FellowTraveler/Open-Transactions/wiki/Components
 
 Public key for "FellowTraveler", author:
-
 
 -----BEGIN PGP PUBLIC KEY BLOCK-----
  Version: PGP Desktop 10.0.1
@@ -267,6 +281,10 @@ Isaiah 10:1
  They rob a man and his house,
   a man and his inheritance."
 Micah 2:1-2
+
+"Woe to those...who justify the wicked for a bribe, 
+ and take away the rights of the innocent."
+Isaiah 5:23
 
 "Then came also publicans to be baptized, and said unto Him, 
     'Master, what shall we do?' 
@@ -1020,6 +1038,19 @@ AGPL LICENSE (for OpenTransactions)
 OpenSSL WAIVER:
     This program is released under the AGPL with the additional exemption 
 	that compiling, linking, and/or using OpenSSL is allowed.
+
+ *    OTLib............Ñ A class library............LICENSE: LAGPLv3 
+ *    OT-API...........Ñ A Client API...............LICENSE: LAGPLv3
+ *    OT-Server........Ñ A Server Application.......LICENSE:  AGPLv3
+ *    testwallet.......Ñ A command-line client......LICENSE: LAGPLv3
+ *    OT-TestGUI.......Ñ A Java Client App..........LICENSE:   GPLv3
+ *   
+ *   ADDITIONAL PERMISSION under the GNU Affero GPL version 3 section 7:
+ *   If you modify this Program, or any covered work, by linking or
+ *   combining it with other code, such other code is not for that reason
+ *   alone subject to any of the requirements of the GNU Affero GPL
+ *   version 3.  (This paragraph is the "LAGPL" permission and applies
+ *   only to the components listed above as LAGPL components.)
 
 
 

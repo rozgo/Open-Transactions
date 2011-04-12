@@ -132,6 +132,30 @@ public class otapi {
     return otapiJNI.OT_API_Nym_VerifyMailByIndex(NYM_ID, nIndex);
   }
 
+  public static int OT_API_GetNym_OutmailCount(String NYM_ID) {
+    return otapiJNI.OT_API_GetNym_OutmailCount(NYM_ID);
+  }
+
+  public static String OT_API_GetNym_OutmailContentsByIndex(String NYM_ID, int nIndex) {
+    return otapiJNI.OT_API_GetNym_OutmailContentsByIndex(NYM_ID, nIndex);
+  }
+
+  public static String OT_API_GetNym_OutmailRecipientIDByIndex(String NYM_ID, int nIndex) {
+    return otapiJNI.OT_API_GetNym_OutmailRecipientIDByIndex(NYM_ID, nIndex);
+  }
+
+  public static String OT_API_GetNym_OutmailServerIDByIndex(String NYM_ID, int nIndex) {
+    return otapiJNI.OT_API_GetNym_OutmailServerIDByIndex(NYM_ID, nIndex);
+  }
+
+  public static int OT_API_Nym_RemoveOutmailByIndex(String NYM_ID, int nIndex) {
+    return otapiJNI.OT_API_Nym_RemoveOutmailByIndex(NYM_ID, nIndex);
+  }
+
+  public static int OT_API_Nym_VerifyOutmailByIndex(String NYM_ID, int nIndex) {
+    return otapiJNI.OT_API_Nym_VerifyOutmailByIndex(NYM_ID, nIndex);
+  }
+
   public static int OT_API_Wallet_CanRemoveServer(String SERVER_ID) {
     return otapiJNI.OT_API_Wallet_CanRemoveServer(SERVER_ID);
   }
@@ -280,8 +304,8 @@ public class otapi {
     return otapiJNI.OT_API_Transaction_CreateResponse(SERVER_ID, USER_ID, ACCOUNT_ID, RESPONSE_LEDGER, ORIGINAL_TRANSACTION, BOOL_DO_I_ACCEPT);
   }
 
-  public static String OT_API_Ledger_FinalizeResponse(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_LEDGER, int BOOL_DO_I_ACCEPT) {
-    return otapiJNI.OT_API_Ledger_FinalizeResponse(SERVER_ID, USER_ID, ACCOUNT_ID, THE_LEDGER, BOOL_DO_I_ACCEPT);
+  public static String OT_API_Ledger_FinalizeResponse(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_LEDGER) {
+    return otapiJNI.OT_API_Ledger_FinalizeResponse(SERVER_ID, USER_ID, ACCOUNT_ID, THE_LEDGER);
   }
 
   public static String OT_API_Transaction_GetType(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_TRANSACTION) {
@@ -466,6 +490,10 @@ public class otapi {
 
   public static int OT_API_Message_GetSuccess(String THE_MESSAGE) {
     return otapiJNI.OT_API_Message_GetSuccess(THE_MESSAGE);
+  }
+
+  public static int OT_API_Message_GetTransactionSuccess(String SERVER_ID, String USER_ID, String ACCOUNT_ID, String THE_MESSAGE) {
+    return otapiJNI.OT_API_Message_GetTransactionSuccess(SERVER_ID, USER_ID, ACCOUNT_ID, THE_MESSAGE);
   }
 
   public static String OT_API_Message_GetLedger(String THE_MESSAGE) {

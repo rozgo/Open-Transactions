@@ -956,6 +956,227 @@ OT_BOOL OT_API_Nym_VerifyMailByIndex(const char * NYM_ID, int nIndex)
 	
 	
 
+// --------------------------------------------------------------------------
+//
+// OUTMAIL!!
+
+int	OT_API_GetNym_OutmailCount(const char * NYM_ID)
+{
+	OT_ASSERT_MSG(NULL != NYM_ID, "Null NYM_ID passed to OT_API_GetNym_OutmailCount");
+	
+	OTIdentifier	theNymID(NYM_ID);
+	
+	OTPseudonym * pNym = g_OT_API.GetNym(theNymID);
+	
+	if (NULL != pNym)
+	{
+		return pNym->GetOutmailCount();
+	}
+	
+	return 0;	
+}
+
+
+// returns the message, optionally with Subject: as first line.
+const char * OT_API_GetNym_OutmailContentsByIndex(const char * NYM_ID, int nIndex)
+{
+	OT_ASSERT_MSG(NULL != NYM_ID, "Null NYM_ID passed to OT_API_GetNym_OutmailContentsByIndex");
+	
+	OTIdentifier	theNymID(NYM_ID);
+	
+	OTPseudonym * pNym = g_OT_API.GetNym(theNymID);
+	
+	if (NULL != pNym)
+	{
+		OTMessage * pMessage = pNym->GetOutmailByIndex(nIndex);
+		
+		if (NULL != pMessage)
+		{
+			// SENDER:    pMessage->m_strNymID
+			// RECIPIENT: pMessage->m_strNymID2
+			// MESSAGE:   pMessage->m_ascPayload (in an OTEnvelope)
+			
+			OTString	strMailContents;
+			
+			// Decrypt the Envelope.
+			if (pMessage->m_ascPayload.Exists() &&
+				pMessage->m_ascPayload.GetString(strMailContents))
+			{
+				const char * pBuf = strMailContents.Get();
+				
+#ifdef _WIN32
+				strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+				strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+				
+				return g_tempBuf;
+			}
+		}
+	}
+	
+	return NULL;	
+}
+
+
+
+/// returns the recipient ID for a piece of mail. (NymID).
+///
+const char * OT_API_GetNym_OutmailRecipientIDByIndex(const char * NYM_ID, int nIndex)
+{
+	OT_ASSERT_MSG(NULL != NYM_ID, "Null NYM_ID passed to OT_API_GetNym_OutmailRecipientIDByIndex");
+	
+	OTIdentifier	theNymID(NYM_ID);
+	
+	OTPseudonym * pNym = g_OT_API.GetNym(theNymID);
+	
+	if (NULL != pNym)
+	{
+		OTMessage * pMessage = pNym->GetOutmailByIndex(nIndex);
+		
+		if (NULL != pMessage)
+		{
+			// SENDER:    pMessage->m_strNymID
+			// SERVER:    pMessage->m_strServerID
+			// RECIPIENT: pMessage->m_strNymID2
+			// MESSAGE:   pMessage->m_ascPayload
+			
+			const char * pBuf = pMessage->m_strNymID2.Get();
+			
+#ifdef _WIN32
+			strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+			strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+			
+			return g_tempBuf;
+			
+		}
+	}
+	
+	return NULL;	
+}
+
+
+
+/// returns the server ID that a piece of mail came from.
+///
+const char * OT_API_GetNym_OutmailServerIDByIndex(const char * NYM_ID, int nIndex)
+{
+	OT_ASSERT_MSG(NULL != NYM_ID, "Null NYM_ID passed to OT_API_GetNym_OutmailServerIDByIndex");
+	
+	OTIdentifier	theNymID(NYM_ID);
+	
+	OTPseudonym * pNym = g_OT_API.GetNym(theNymID);
+	
+	if (NULL != pNym)
+	{
+		OTMessage * pMessage = pNym->GetOutmailByIndex(nIndex);
+		
+		if (NULL != pMessage)
+		{
+			// SENDER:    pMessage->m_strNymID
+			// SERVER:    pMessage->m_strServerID
+			// RECIPIENT: pMessage->m_strNymID2
+			// MESSAGE:   pMessage->m_ascPayload 
+			
+			const char * pBuf = pMessage->m_strServerID.Get();
+			
+#ifdef _WIN32
+			strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+			strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+			
+			return g_tempBuf;
+			
+		}
+	}
+	
+	return NULL;	
+}
+
+
+
+// --------------------------------------------------------
+
+
+OT_BOOL OT_API_Nym_RemoveOutmailByIndex(const char * NYM_ID, int nIndex)
+{
+	OT_ASSERT_MSG(NULL != NYM_ID, "Null NYM_ID passed to OT_API_Nym_RemoveOutmailByIndex");
+	
+	OTIdentifier	theNymID(NYM_ID);
+	
+	OTPseudonym * pNym = g_OT_API.GetNym(theNymID);
+	
+	if ((NULL != pNym) && 
+		pNym->RemoveOutmailByIndex(nIndex))
+	{
+		if (pNym->SaveSignedNymfile(*pNym)) // <== save Nym to local storage, since a mail was erased.
+			return OT_TRUE;
+		else 
+			OTLog::Error("Error saving Nym in OT_API_Nym_RemoveOutmailByIndex.\n");
+	}
+	
+	return OT_FALSE;	
+}
+
+
+
+/// Returns OT_TRUE (1) if the Sender ID on this piece of Mail (by index)
+/// loads a public key from my wallet, and if the signature on the message
+/// verifies with that public key.
+/// (Not only must the signature be good, but I must have added the nym to
+/// my wallet sometime in the past, since this func returns false if it's not there.)
+///
+/// A good wallet might be designed to automatically download any keys that
+/// it doesn't already have, using OT_API_checkUser(). I'll probably need to
+/// add something to OTClient where the @checkUser response auto-saves the new
+/// key into the wallet. That way you can wait for a tenth of a second and then
+/// just read the Nym (by ID) straight out of your own wallet. Nifty, eh?
+///
+/// All the wallet has to do is fire off a "check user" whenever this call fails,
+/// then come back when that succeeds and try this again. If STILL failure, then 
+/// you've got a signature problem. Otherwise it'll usually download the nym
+/// and verify the signature all in an instant, without the user even noticing
+/// what happened.
+///
+OT_BOOL OT_API_Nym_VerifyOutmailByIndex(const char * NYM_ID, int nIndex)
+{
+	OT_ASSERT_MSG(NULL != NYM_ID, "Null NYM_ID passed to OT_API_Nym_VerifyOutmailByIndex");
+	
+	OTIdentifier	theNymID(NYM_ID);
+	
+	OTPseudonym * pNym = g_OT_API.GetNym(theNymID);
+	
+	if (NULL != pNym)
+	{
+		OTMessage * pMessage = pNym->GetOutmailByIndex(nIndex);
+		
+		if (NULL != pMessage)
+		{
+			// Grab the NymID of the sender.
+			const OTIdentifier theSenderNymID(pMessage->m_strNymID);
+			
+			// Grab a pointer to that Nym (if its public key is in my wallet.)
+			OTPseudonym * pSenderNym = g_OT_API.GetNym(theSenderNymID);
+			
+			// If it's there, use it to verify the signature on the message.
+			// return OT_TRUE if successful signature verification.
+			//
+			if (NULL != pSenderNym)
+			{
+				if (pMessage->VerifySignature(*pSenderNym))
+					return OT_TRUE;
+			}
+		}
+	}
+	
+	return OT_FALSE;	
+}
+
+
+
 
 
 // -----------------------------------
@@ -1837,11 +2058,11 @@ const char * OT_API_WritePaymentPlan(const char * SERVER_ID,
 
 
 
-
-
 // -----------------------------------------------------------------
-// LOAD PUBLIC KEY (of other users, where no private key is available) 
-//
+// LOAD PUBLIC KEY (of other users, where no private key is available)
+// This is the "address book" versus the private Nym.
+// If nothing found in the address book, it still tries to load
+// a Private Nym (just to get the pubkey from it.)
 // -- from local storage
 //
 // (return as STRING)
@@ -1855,11 +2076,20 @@ const char * OT_API_LoadPubkey(const char * USER_ID) // returns NULL, or a publi
 	
 	OTString strPubkey; // For the output
 	
+	// ---------------------------------------------------------
+	
 	OTIdentifier	NYM_ID(USER_ID);
 	
 	// There is an OT_ASSERT in here for memory failure,
 	// but it still might return NULL if various verification fails.
-	OTPseudonym *	pNym = g_OT_API.LoadPublicNym(NYM_ID); 
+	OTPseudonym *	pNym = g_OT_API.LoadPublicNym(NYM_ID);
+	
+	if (NULL == pNym) // If he's not in the "address book" then let's see if this is a private Nym.
+	{
+		pNym = g_OT_API.LoadPrivateNym(NYM_ID);
+	}
+	
+	// ---------------------------------------------------------
 	
 	// Make sure it gets cleaned up when this goes out of scope.
 	OTCleanup<OTPseudonym>	theNymAngel(pNym); // I pass the pointer, in case it's NULL.
@@ -1867,18 +2097,18 @@ const char * OT_API_LoadPubkey(const char * USER_ID) // returns NULL, or a publi
 	if (NULL == pNym)
 	{
 		OTString strNymID(NYM_ID);
-		OTLog::vOutput(0, "Failure calling OT_API::LoadPublicNym in OT_API_LoadUserPubkey: %s\n", 
+		OTLog::vOutput(0, "Failure in OT_API_LoadUserPubkey: %s\n",
 					   strNymID.Get());
 	}
 	else if (false == pNym->GetPublicKey().GetPublicKey(strPubkey))
 	{
 		OTString strNymID(NYM_ID);
-		OTLog::vOutput(0, "Failure retrieving pubkey from Nym in OT_API_LoadUserPubkey: %s\n", 
+		OTLog::vOutput(0, "Failure retrieving pubkey from Nym in OT_API_LoadUserPubkey: %s\n",
 					   strNymID.Get());
 	}
-	else // success 
+	else // success
 	{
-		const char * pBuf = strPubkey.Get(); 
+		const char * pBuf = strPubkey.Get();
 		
 #ifdef _WIN32
 		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
@@ -1891,6 +2121,8 @@ const char * OT_API_LoadPubkey(const char * USER_ID) // returns NULL, or a publi
 	
 	return NULL;
 }
+
+
 
 
 
@@ -3184,8 +3416,7 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 const char * OT_API_Ledger_FinalizeResponse(const char * SERVER_ID,
 											const char * USER_ID,
 											const char * ACCOUNT_ID,
-											const char * THE_LEDGER, // 'Response' ledger be sent to the server...
-											OT_BOOL BOOL_DO_I_ACCEPT)   // 0 or 1  (OT_TRUE or OT_FALSE.)
+											const char * THE_LEDGER) // 'Response' ledger be sent to the server...
 {
 	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
 	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
@@ -5960,6 +6191,93 @@ OT_BOOL OT_API_Message_GetSuccess(const char * THE_MESSAGE)
 }
 
 
+
+// -----------------------------------------------------------
+/// GET MESSAGE TRANSACTION SUCCESS (True or False)
+/// 
+/// Returns OT_TRUE (1) for Success and OT_FALSE (0) for Failure.
+/// Also returns OT_FALSE for error.
+///
+OT_BOOL OT_API_Message_GetTransactionSuccess(const char * SERVER_ID,
+											 const char * USER_ID,
+											 const char * ACCOUNT_ID,
+											 const char * THE_MESSAGE)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCOUNT_ID, "NULL ACCOUNT_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_MESSAGE, "Null THE_MESSAGE passed in.");
+	
+	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAccountID(ACCOUNT_ID);
+
+	OTString strMessage(THE_MESSAGE);
+	
+	OTMessage theMessage;
+	
+	if (!strMessage.Exists() || !theMessage.LoadContractFromString(strMessage))
+	{
+		OTLog::Output(0, "OT_API_Message_GetTransactionSuccess: Unable to load message.\n");
+		return OT_FALSE;
+	}
+	
+	// It's not a transaction request or response, so the Payload wouldn't
+	// contain a ledger. (Don't want to pass back whatever it DOES contain
+	// in that case, now do I?)
+	//
+	if ((false == theMessage.m_strCommand.Compare("notarizeTransactions")) &&
+		(false == theMessage.m_strCommand.Compare("@notarizeTransactions")))
+	{
+		OTLog::vOutput(0, "OT_API_Message_GetTransactionSuccess: Wrong message type: %s\n", theMessage.m_strCommand.Get());
+		return OT_FALSE;
+	}
+	
+	// The ledger is stored in the Payload, we'll grab it into the String.
+	OTString strLedger(theMessage.m_ascPayload);
+	
+	if (!strLedger.Exists())
+	{
+		OTLog::Output(0, "OT_API_Message_GetTransactionSuccess: No ledger found on message.\n");
+		return OT_FALSE;
+	}
+	
+	// ------------------------------------
+	
+	OTLedger theLedger(theUserID, theAccountID, theServerID);
+	
+	if (false == theLedger.LoadContractFromString(strLedger))
+	{
+		OTString strAcctID(theAccountID);
+		OTLog::vError("Error loading ledger from string in OT_API_Message_GetTransactionSuccess. Acct ID:\n%s\n",
+					  strAcctID.Get());
+		return OT_FALSE;
+	}
+	
+	// At this point, I know theLedger loaded successfully.
+	
+	if (theLedger.GetTransactionCount() <= 0)
+	{
+		OTLog::vError("OT_API_Message_GetTransactionSuccess bad count in message ledger: %d\n", theLedger.GetTransactionCount());
+		return OT_FALSE; // out of bounds. I'm saving from an OT_ASSERT_MSG() happening here. (Maybe I shouldn't.)
+	}
+	
+	OTTransaction * pTransaction = theLedger.GetTransactionByIndex(0); // Right now this is a defacto standard. (only 1 transaction per message ledger, excepting process inbox.)
+	//	OTCleanup<OTTransaction> theAngel(pTransaction); // THE LEDGER CLEANS THIS ALREADY.
+	
+	if (NULL == pTransaction)
+	{
+		OTLog::vError("OT_API_Message_GetTransactionSuccess good index but uncovered NULL pointer: %d\n", 
+					  0);
+		return OT_FALSE; // Weird.
+	}
+	
+	// At this point, I actually have the transaction pointer, so let's return its success status
+	
+	
+	if (pTransaction->GetSuccess())
+		return OT_TRUE;
+	
+	return OT_FALSE;
+}
 
 
 

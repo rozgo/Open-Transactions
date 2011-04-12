@@ -166,6 +166,36 @@ public class otapi {
     return ret;
   }
 
+  public static int OT_API_GetNym_OutmailCount(string NYM_ID) {
+    int ret = otapiPINVOKE.OT_API_GetNym_OutmailCount(NYM_ID);
+    return ret;
+  }
+
+  public static string OT_API_GetNym_OutmailContentsByIndex(string NYM_ID, int nIndex) {
+    string ret = otapiPINVOKE.OT_API_GetNym_OutmailContentsByIndex(NYM_ID, nIndex);
+    return ret;
+  }
+
+  public static string OT_API_GetNym_OutmailRecipientIDByIndex(string NYM_ID, int nIndex) {
+    string ret = otapiPINVOKE.OT_API_GetNym_OutmailRecipientIDByIndex(NYM_ID, nIndex);
+    return ret;
+  }
+
+  public static string OT_API_GetNym_OutmailServerIDByIndex(string NYM_ID, int nIndex) {
+    string ret = otapiPINVOKE.OT_API_GetNym_OutmailServerIDByIndex(NYM_ID, nIndex);
+    return ret;
+  }
+
+  public static int OT_API_Nym_RemoveOutmailByIndex(string NYM_ID, int nIndex) {
+    int ret = otapiPINVOKE.OT_API_Nym_RemoveOutmailByIndex(NYM_ID, nIndex);
+    return ret;
+  }
+
+  public static int OT_API_Nym_VerifyOutmailByIndex(string NYM_ID, int nIndex) {
+    int ret = otapiPINVOKE.OT_API_Nym_VerifyOutmailByIndex(NYM_ID, nIndex);
+    return ret;
+  }
+
   public static int OT_API_Wallet_CanRemoveServer(string SERVER_ID) {
     int ret = otapiPINVOKE.OT_API_Wallet_CanRemoveServer(SERVER_ID);
     return ret;
@@ -351,8 +381,8 @@ public class otapi {
     return ret;
   }
 
-  public static string OT_API_Ledger_FinalizeResponse(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_LEDGER, int BOOL_DO_I_ACCEPT) {
-    string ret = otapiPINVOKE.OT_API_Ledger_FinalizeResponse(SERVER_ID, USER_ID, ACCOUNT_ID, THE_LEDGER, BOOL_DO_I_ACCEPT);
+  public static string OT_API_Ledger_FinalizeResponse(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_LEDGER) {
+    string ret = otapiPINVOKE.OT_API_Ledger_FinalizeResponse(SERVER_ID, USER_ID, ACCOUNT_ID, THE_LEDGER);
     return ret;
   }
 
@@ -557,6 +587,11 @@ public class otapi {
 
   public static int OT_API_Message_GetSuccess(string THE_MESSAGE) {
     int ret = otapiPINVOKE.OT_API_Message_GetSuccess(THE_MESSAGE);
+    return ret;
+  }
+
+  public static int OT_API_Message_GetTransactionSuccess(string SERVER_ID, string USER_ID, string ACCOUNT_ID, string THE_MESSAGE) {
+    int ret = otapiPINVOKE.OT_API_Message_GetTransactionSuccess(SERVER_ID, USER_ID, ACCOUNT_ID, THE_MESSAGE);
     return ret;
   }
 

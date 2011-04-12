@@ -5610,6 +5610,28 @@ void OT_API::sendUserMessage(OTIdentifier	& SERVER_ID,
 		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
 #endif	
 		m_pClient->ProcessMessageOut(theMessage);
+		
+		
+		// ----------------------------------------------
+		// store a copy in the outmail.
+		// (not encrypted, since the Nymfile will be encrypted anyway.
+		//
+		OTMessage * pMessage = new OTMessage;
+		
+		OT_ASSERT(NULL != pMessage);
+		
+		pMessage->m_strCommand		= "outmail";
+		pMessage->m_strNymID		= strNymID;
+		pMessage->m_strNymID2		= strNymID2;
+		pMessage->m_strServerID		= strServerID;			
+		
+		pMessage->m_ascPayload.SetString(THE_MESSAGE);
+		
+		pMessage->SignContract(*pNym);		
+		pMessage->SaveContract();
+		
+		pNym->AddOutmail(*pMessage); // Now the Nym is responsible to delete it. It's in his "outmail".
+		pNym->SaveSignedNymfile(*pNym);
 	}
 	else
 	{

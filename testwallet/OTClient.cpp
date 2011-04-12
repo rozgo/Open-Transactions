@@ -2702,6 +2702,27 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			
 			// (Send it)
 			bSendCommand = true;
+			
+			// -----------------------------------
+			// store a copy in the outmail.
+			// (not encrypted, since the Nymfile will be encrypted anyway.
+			//
+			OTMessage * pMessage = new OTMessage;
+			
+			OT_ASSERT(NULL != pMessage);
+			
+			pMessage->m_strCommand		= "outmail";
+			pMessage->m_strNymID		= strNymID;
+			pMessage->m_strNymID2		= strNymID2;
+			pMessage->m_strServerID		= strServerID;			
+			
+			pMessage->m_ascPayload.SetString(strPlaintext);
+			
+			pMessage->SignContract(theNym);		
+			pMessage->SaveContract();
+			
+			theNym.AddOutmail(*pMessage); // Now the Nym is responsible to delete it. It's in his "outmail".
+			theNym.SaveSignedNymfile(theNym);
 		}
 		else
 		{

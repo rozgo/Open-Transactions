@@ -260,6 +260,17 @@ const char *	OT_API_GetNym_MailServerIDByIndex(const char * NYM_ID, int nIndex);
 int				OT_API_Nym_RemoveMailByIndex(const char * NYM_ID, int nIndex); /// actually returns OT_BOOL, (1 or 0.)
 int				OT_API_Nym_VerifyMailByIndex(const char * NYM_ID, int nIndex); /// actually returns OT_BOOL. OT_TRUE if signature verifies. (Sender Nym MUST be in my wallet for this to work.)
 
+// ---------------------------------------------------------
+
+int				OT_API_GetNym_OutmailCount(const char * NYM_ID);
+
+const char *	OT_API_GetNym_OutmailContentsByIndex(const char * NYM_ID, int nIndex); /// returns the message itself (Subject: optionally as first line)
+
+const char *	OT_API_GetNym_OutmailRecipientIDByIndex(const char * NYM_ID, int nIndex); /// returns the NymID of the recipient.
+const char *	OT_API_GetNym_OutmailServerIDByIndex(const char * NYM_ID, int nIndex); /// returns the ServerID where the message came from.
+
+int				OT_API_Nym_RemoveOutmailByIndex(const char * NYM_ID, int nIndex); /// actually returns OT_BOOL, (1 or 0.)
+int				OT_API_Nym_VerifyOutmailByIndex(const char * NYM_ID, int nIndex); /// actually returns OT_BOOL. OT_TRUE if signature verifies. (Sender Nym MUST be in my wallet for this to work.)
 
 // ---------------------------------------------------------
 
@@ -794,8 +805,8 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 const char * OT_API_Ledger_FinalizeResponse(const char * SERVER_ID,
 											const char * USER_ID,
 											const char * ACCOUNT_ID,
-											const char * THE_LEDGER, // 'Response' ledger be sent to the server...
-											int BOOL_DO_I_ACCEPT);   // 0 or 1  (OT_TRUE or OT_FALSE.)
+											const char * THE_LEDGER); // 'Response' ledger be sent to the server...
+										
 
 
 // --------------------------------------------------------------------
@@ -1582,6 +1593,18 @@ const char * OT_API_Message_GetCommand(const char * THE_MESSAGE);
 /// Also returns OT_FALSE for error.
 ///
 int OT_API_Message_GetSuccess(const char * THE_MESSAGE);
+
+
+// -----------------------------------------------------------
+/// GET MESSAGE TRANSACTION SUCCESS (True or False)
+/// 
+/// Returns OT_TRUE (1) for Success and OT_FALSE (0) for Failure.
+/// Also returns OT_FALSE for error.
+///
+int OT_API_Message_GetTransactionSuccess(const char * SERVER_ID,
+										 const char * USER_ID,
+										 const char * ACCOUNT_ID,
+										 const char * THE_MESSAGE);
 
 
 

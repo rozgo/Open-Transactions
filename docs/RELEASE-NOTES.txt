@@ -3,6 +3,10 @@ NOTES on the Version:
 
 // ---------------------------------------------------------------------
 
+   0.53 --- API functions for Nym outbox, and for checking success status
+            of a transaction message. Various other API fixes preparing
+            for the upcoming test GUI.
+
    0.52 --- API functions for deleting Nyms, Accounts, and Contracts.
 
    0.51 --- API functions for Mail and Transactions.

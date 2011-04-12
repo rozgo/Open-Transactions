@@ -124,10 +124,18 @@ extern "C"
 
 // ---------------------------------------------------------------------------
 
-#include "XmlRpc.h"
+#if defined(OT_XMLRPC_MODE)
 
+// If you build in tcp/ssl mode, this file will build even if you don't have this library.
+// But if you build in xml/rpc/http mode, 
+#ifdef _WIN32
+#include "timxmlrpc.h" // XmlRpcC4Win
+#else
+#include "XmlRpc.h"  // xmlrpcpp
 using namespace XmlRpc;
+#endif
 
+#endif
 // ---------------------------------------------------------------------------
 
 #ifdef _WIN32
@@ -263,7 +271,9 @@ int main(int argc, char* argv[])
 	
 	
 	// Set the logging level for the network transport code.
+#ifndef _WIN32
 	XmlRpc::setVerbosity(1);
+#endif
 	
 	// -----------------------------------------------------------------------
 	
@@ -436,7 +446,7 @@ int main(int argc, char* argv[])
 				
 				// IF FAILED, ADD TRANSACTION NUMBER BACK TO LIST OF AVAILABLE NUMBERS.
 				g_pTemporaryNym->AddTransactionNum(*g_pTemporaryNym, strServerID, lTransactionNumber, true); // bSave=true								
-
+				
 				continue;
 			}
 			
@@ -815,7 +825,7 @@ int main(int argc, char* argv[])
 			OTLog::Output(0, "User has instructed to display the help file...\n");
 			
 			system("more ../docs/CLIENT-COMMANDS.txt");
-						
+			
 			continue;
 		}
 		
@@ -1121,7 +1131,7 @@ int main(int argc, char* argv[])
 				{
 					//					bSendCommand = true; // No message needed. Local data only.
 				}
-
+				
 				// ------------------------------------------------------------------------
 			}
 			
@@ -1504,8 +1514,8 @@ int main(int argc, char* argv[])
 					// if successful setting up the command payload...
 					
 					if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::getTransactionNum, theMessage, 
-													  *g_pTemporaryNym,  *pServerContract,
-													  NULL)) // NULL pAccount on this command.
+																 *g_pTemporaryNym,  *pServerContract,
+																 NULL)) // NULL pAccount on this command.
 					{
 						bSendCommand = true;
 					}
@@ -1555,9 +1565,12 @@ int main(int argc, char* argv[])
 				// Here's our connection...
 #if defined (linux)
 				XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort, 0); // serverhost, port.
+#elif defined (_WIN32) 
+				XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort, "fellowtraveler"); // serverhost, port, value that crashes if NULL.
 #else
 				XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort); // serverhost, port.
 #endif
+				
 				// -----------------------------------------------------------
 				//
 				// Call the OT_XML_RPC method (thus passing the message to the server.)

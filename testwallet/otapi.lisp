@@ -143,6 +143,29 @@
   (NYM_ID :string)
   (nIndex :int))
 
+(cffi:defcfun ("OT_API_GetNym_OutmailCount" OT_API_GetNym_OutmailCount) :int
+  (NYM_ID :string))
+
+(cffi:defcfun ("OT_API_GetNym_OutmailContentsByIndex" OT_API_GetNym_OutmailContentsByIndex) :string
+  (NYM_ID :string)
+  (nIndex :int))
+
+(cffi:defcfun ("OT_API_GetNym_OutmailRecipientIDByIndex" OT_API_GetNym_OutmailRecipientIDByIndex) :string
+  (NYM_ID :string)
+  (nIndex :int))
+
+(cffi:defcfun ("OT_API_GetNym_OutmailServerIDByIndex" OT_API_GetNym_OutmailServerIDByIndex) :string
+  (NYM_ID :string)
+  (nIndex :int))
+
+(cffi:defcfun ("OT_API_Nym_RemoveOutmailByIndex" OT_API_Nym_RemoveOutmailByIndex) :int
+  (NYM_ID :string)
+  (nIndex :int))
+
+(cffi:defcfun ("OT_API_Nym_VerifyOutmailByIndex" OT_API_Nym_VerifyOutmailByIndex) :int
+  (NYM_ID :string)
+  (nIndex :int))
+
 (cffi:defcfun ("OT_API_Wallet_CanRemoveServer" OT_API_Wallet_CanRemoveServer) :int
   (SERVER_ID :string))
 
@@ -324,8 +347,7 @@
   (SERVER_ID :string)
   (USER_ID :string)
   (ACCOUNT_ID :string)
-  (THE_LEDGER :string)
-  (BOOL_DO_I_ACCEPT :int))
+  (THE_LEDGER :string))
 
 (cffi:defcfun ("OT_API_Transaction_GetType" OT_API_Transaction_GetType) :string
   (SERVER_ID :string)
@@ -576,6 +598,12 @@
   (THE_MESSAGE :string))
 
 (cffi:defcfun ("OT_API_Message_GetSuccess" OT_API_Message_GetSuccess) :int
+  (THE_MESSAGE :string))
+
+(cffi:defcfun ("OT_API_Message_GetTransactionSuccess" OT_API_Message_GetTransactionSuccess) :int
+  (SERVER_ID :string)
+  (USER_ID :string)
+  (ACCOUNT_ID :string)
   (THE_MESSAGE :string))
 
 (cffi:defcfun ("OT_API_Message_GetLedger" OT_API_Message_GetLedger) :string

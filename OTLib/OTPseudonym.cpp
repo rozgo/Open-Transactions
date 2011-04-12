@@ -161,7 +161,7 @@ int OTPseudonym::GetMailCount()
 	return m_dequeMail.size();
 }
 
-// Look up a transaction by transaction number and see if it is in the ledger.
+// Look up a piece of mail by index.
 // If it is, return a pointer to it, otherwise return NULL.
 OTMessage * OTPseudonym::GetMailByIndex(const int nIndex)
 {
@@ -176,9 +176,6 @@ OTMessage * OTPseudonym::GetMailByIndex(const int nIndex)
 }
 
 
-/// If transaction #87, in reference to #74, is in the inbox, you can remove it
-/// by calling this function and passing in 87.
-///
 bool OTPseudonym::RemoveMailByIndex(const int nIndex) // if false, mail index was bad.
 {
 	const unsigned int uIndex = nIndex;
@@ -206,6 +203,72 @@ void OTPseudonym::ClearMail()
 {
 	while (GetMailCount() > 0)
 		RemoveMailByIndex(0);
+}
+
+
+
+// --------------------
+
+
+
+/// Though the parameter is a reference (forcing you to pass a real object),
+/// the Nym DOES take ownership of the object. Therefore it MUST be allocated
+/// on the heap, NOT the stack, or you will corrupt memory with this call.
+///
+void OTPseudonym::AddOutmail(OTMessage & theMessage) // a mail message is a form of transaction, transported via Nymbox
+{
+	m_dequeOutmail.push_front(&theMessage);
+}
+
+/// return the number of mail items available for this Nym.
+//
+int OTPseudonym::GetOutmailCount()
+{
+	return m_dequeOutmail.size();
+}
+
+// Look up a transaction by transaction number and see if it is in the ledger.
+// If it is, return a pointer to it, otherwise return NULL.
+OTMessage * OTPseudonym::GetOutmailByIndex(const int nIndex)
+{
+	const unsigned int uIndex = nIndex;
+	
+	// Out of bounds.
+	if (m_dequeOutmail.empty()	||
+		(nIndex < 0)		|| (uIndex >= m_dequeOutmail.size()))
+		return NULL;
+	
+	return m_dequeOutmail.at(nIndex);	
+}
+
+
+bool OTPseudonym::RemoveOutmailByIndex(const int nIndex) // if false, outmail index was bad.
+{
+	const unsigned int uIndex = nIndex;
+	
+	// Out of bounds.
+	if (m_dequeOutmail.empty()	||
+		(nIndex < 0)		|| (uIndex >= m_dequeOutmail.size()))
+		return false;
+	
+	// -----------------------
+	
+	OTMessage * pMessage = m_dequeOutmail.at(nIndex);
+	
+	OT_ASSERT(NULL != pMessage);
+	
+	m_dequeOutmail.erase(m_dequeOutmail.begin() + nIndex);
+	
+	delete pMessage;
+	
+	return true;		
+}
+
+
+void OTPseudonym::ClearOutmail()
+{
+	while (GetOutmailCount() > 0)
+		RemoveOutmailByIndex(0);
 }
 
 
@@ -1966,7 +2029,7 @@ bool OTPseudonym::SavePseudonym(OTString & strNym)
 	} // for
 	
 	// -------------------------------------
-		
+	
 	if (!(m_dequeMail.empty()))
 	{
 		for (unsigned i = 0; i < m_dequeMail.size(); i++)
@@ -1988,9 +2051,34 @@ bool OTPseudonym::SavePseudonym(OTString & strNym)
 								   ascMail.Get());
 		} 
 	}
-
+	
 	// -------------------------------------
-
+	
+	
+	if (!(m_dequeOutmail.empty()))
+	{
+		for (unsigned i = 0; i < m_dequeOutmail.size(); i++)
+		{
+			OTMessage * pMessage = m_dequeOutmail.at(i);
+			
+			OT_ASSERT(NULL != pMessage);
+			
+			OTString strOutmail(*pMessage);
+			
+			OTASCIIArmor ascOutmail;
+			
+			if (strOutmail.Exists())
+				ascOutmail.SetString(strOutmail);
+			
+			if (ascOutmail.Exists())
+				strNym.Concatenate("<outmailMessage>\n"
+								   "%s</outmailMessage>\n\n", 
+								   ascOutmail.Get());
+		} 
+	}
+	
+	// -------------------------------------
+	
 	strNym.Concatenate("</OTuser>\n");	
 	
 	return true;
@@ -2114,6 +2202,52 @@ bool OTPseudonym::LoadFromString(const OTString & strNym)
 						{
 							if ('\n' == cNewline)
 							{
+								armorMail.Set(strNodeData.Get() + 1); // I know all this shit is ugly. I refactored this in OTContract.
+							}
+							else										// unfortunately OTNym is like a "basic type" and isn't derived from OTContract.
+							{
+								armorMail.Set(strNodeData.Get());
+							}
+							
+							if (armorMail.GetLength() > 2)
+							{
+								armorMail.GetString(strMessage, true); // linebreaks == true.
+								
+								if (strMessage.GetLength() > 2)
+								{
+									OTMessage * pMessage = new OTMessage;
+									
+									OT_ASSERT(NULL != pMessage);
+									
+									if (pMessage->LoadContractFromString(strMessage))
+										m_dequeMail.push_back(pMessage); // takes ownership
+									else
+										delete pMessage;
+								}
+							}
+						}
+					}
+				}
+				else if (!strcmp("outmailMessage", xml->getNodeName()))
+				{					
+					OTASCIIArmor armorMail;
+					
+					OTString strMessage;
+					
+					xml->read();
+					
+					if (EXN_TEXT == xml->getNodeType())
+					{
+						OTString strNodeData = xml->getNodeData();
+						
+						// Sometimes the XML reads up the data with a prepended newline.
+						// This screws up my own objects which expect a consistent in/out
+						// So I'm checking here for that prepended newline, and removing it.
+						char cNewline;
+						if (strNodeData.Exists() && strNodeData.GetLength() > 2 && strNodeData.At(0, cNewline))
+						{
+							if ('\n' == cNewline)
+							{
 								armorMail.Set(strNodeData.Get() + 1);
 							}
 							else
@@ -2132,7 +2266,7 @@ bool OTPseudonym::LoadFromString(const OTString & strNym)
 									OT_ASSERT(NULL != pMessage);
 									
 									if (pMessage->LoadContractFromString(strMessage))
-										m_dequeMail.push_back(pMessage); // takes ownership
+										m_dequeOutmail.push_back(pMessage); // takes ownership
 									else
 										delete pMessage;
 								}
@@ -2627,6 +2761,7 @@ OTPseudonym::~OTPseudonym()
 	ReleaseTransactionNumbers();
 	
 	ClearMail();
+	ClearOutmail();
 }
 
 

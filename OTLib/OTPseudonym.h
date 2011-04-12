@@ -140,7 +140,8 @@ private:
 
 	OTAsymmetricKey *m_pkeyPrivate;	// This nym's private key
 
-	dequeOfMail		m_dequeMail;	// Any mail messages received by this Nym.
+	dequeOfMail		m_dequeMail;	// Any mail messages received by this Nym. (And not yet deleted.)
+	dequeOfMail		m_dequeOutmail;	// Any mail messages sent by this Nym. (And not yet deleted.)
 		
 	mapOfRequestNums m_mapRequestNum;	// Whenever this user makes a request to a transaction server
 										// he must use the latest request number. Each user has a request
@@ -296,15 +297,26 @@ public:
 	
 	// -------------------------------------
 	
-	// Whenever a Nym receives a message via his Nymbox, and then the Nymbox is processed,
-	// that processing will drop all messages into this deque for safe-keeping after Nymbox is cleared.
+	// Whenever a Nym receives a message via his Nymbox, and then the Nymbox is processed, (which happens automatically)
+	// that processing will drop all mail messages into this deque for safe-keeping, after Nymbox is cleared.
 	//
 	void		AddMail(OTMessage & theMessage); // a mail message is the original OTMessage from the sender, transported via Nymbox of recipient (me).
 	int			GetMailCount(); // How many mail messages does this Nym currently store?
 	OTMessage *	GetMailByIndex(const int nIndex); // Get a specific piece of mail, at a specific index.
 	bool		RemoveMailByIndex(const int nIndex); // if returns false, mail index was bad (or something else must have gone seriously wrong.)
-
+	
 	void		ClearMail(); // called by the destructor. (Not intended to erase messages from local storage.)
+	
+	// -------------------------------------
+	
+	// Whenever a Nym sends a message, a copy is dropped into his Outmail.
+	//
+	void		AddOutmail(OTMessage & theMessage); // a mail message is the original OTMessage that this Nym sent.
+	int			GetOutmailCount(); // How many outmail messages does this Nym currently store?
+	OTMessage *	GetOutmailByIndex(const int nIndex); // Get a specific piece of outmail, at a specific index.
+	bool		RemoveOutmailByIndex(const int nIndex); // if returns false, outmail index was bad (or something else must have gone seriously wrong.)
+	
+	void		ClearOutmail(); // called by the destructor. (Not intended to erase messages from local storage.)
 	
 	// -------------------------------------
 	
