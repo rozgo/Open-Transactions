@@ -3,6 +3,9 @@ NOTES on the Version:
 
 // ---------------------------------------------------------------------
 
+   0.54 --- OT now stores the last 1024 logs internally, and makes them
+            available via the API. Various other API debugging was done.
+
    0.53 --- API functions for Nym outbox, and for checking success status
             of a transaction message. Various other API fixes preparing
             for the upcoming test GUI.

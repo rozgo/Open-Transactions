@@ -92,8 +92,12 @@
 #define    OT_ASSERT(x)			( (false == (x)) ? OTLog::Assert(__FILE__, __LINE__)		: (1))
 #define    OT_ASSERT_MSG(x, s)	( (false == (x)) ? OTLog::Assert(__FILE__, __LINE__, (s))	: (1))
 
+
+#include <deque>
+
 #include "OTString.h"
 
+typedef std::deque <OTString *> dequeOfStrings;
 
 class OTLog
 {
@@ -122,8 +126,28 @@ private:
 	static OTString __OTPurseFolder;	// Just the folder name
 	static OTString __OTMarketFolder;	// Just the folder name
 	
+	static dequeOfStrings __logDeque; // Stores the last 1024 logs in memory.
+	
 public:	
 	~OTLog();
+	
+	// --------------------------------------------------
+	// We keep 1024 logs in memory, to make them available via the API.
+	
+	static int GetMemlogSize();
+	
+	static const char * GetMemlogAtIndex(int nIndex);
+
+	static const char * PeekMemlogFront();
+	static const char * PeekMemlogBack();
+	
+	static bool PopMemlogFront();
+	static bool PopMemlogBack();
+	
+	static bool PushMemlogFront(const char * szLog);
+	static bool PushMemlogBack(const char * szLog);
+	
+	// --------------------------------------------------
 	
 	static void SleepSeconds(long lSeconds);
 	static void SleepMilliseconds(long lMilliseconds);
@@ -133,7 +157,6 @@ public:
 	static bool ConfirmOrCreateFolder(const char * szFolderName);
 	static bool ConfirmFile(const char * szFileName);
 	static bool ConfirmExactPath(const char * szFileName);
-
 	
 	// OTPath is where all the subdirectories can be found.
 	// If the server is what's running, then it's the server folder.

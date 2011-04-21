@@ -1268,8 +1268,8 @@ OTPurse * OT_API::LoadPurse(const OTIdentifier & SERVER_ID,
 	
 	OTString strPurseUserPath;
 	strPurseUserPath.Format("%s%s%s", 
-								 strPurseDirectoryPath.Get(), OTLog::PathSeparator(),
-								 strUserID.Get());
+							strPurseDirectoryPath.Get(), OTLog::PathSeparator(),
+							strUserID.Get());
 	
 	bool bConfirmPurseUserFolder = OTLog::ConfirmOrCreateFolder(strPurseUserPath.Get());
 	
@@ -1292,23 +1292,97 @@ OTPurse * OT_API::LoadPurse(const OTIdentifier & SERVER_ID,
 	if (false == OTLog::ConfirmExactPath(strPursePath.Get()))
 	{
 		OTLog::vOutput(2, "OT_API::LoadPurse: Purse does not exist: %s\n\n", 
-					  strPursePath.Get());
+					   strPursePath.Get());
 		return NULL;
 	}
 	
 	// -------------------------------------------------------------
-
+	
 	OTPurse * pPurse = new OTPurse(SERVER_ID, ASSET_ID);
 	
 	OT_ASSERT_MSG(NULL != pPurse, "Error allocating memory in the OT API."); // responsible to delete or return pPurse below this point.
 	
 	if (pPurse->LoadContract(strPursePath.Get()))
 		return pPurse;
-
+	
 	delete pPurse; 
 	pPurse = NULL;
 	
 	return NULL;
+}
+
+
+bool OT_API::SavePurse(const OTIdentifier & SERVER_ID,
+					   const OTIdentifier & ASSET_ID,
+					   const OTIdentifier & USER_ID,
+					   OTPurse & THE_PURSE)
+{	
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	const OTString strAssetTypeID(ASSET_ID);
+	const OTString strUserID(USER_ID);
+	
+	// -----------------------------------------------------------------
+	
+	bool bConfirmPurseMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::PurseFolder());
+	
+	if (!bConfirmPurseMAINFolder)
+	{
+		OTLog::vError("OT_API::SavePurse: Unable to find or "
+					  "create main purse directory: %s%s%s\n", 
+					  OTLog::Path(), OTLog::PathSeparator(), OTLog::PurseFolder());
+		
+		return false;
+	}
+	
+	// -----------------------------------------------------------------
+	
+	OTString strServerID(SERVER_ID);
+	
+	OTString strPurseDirectoryPath;
+	strPurseDirectoryPath.Format("%s%s%s", 
+								 OTLog::PurseFolder(), OTLog::PathSeparator(),
+								 strServerID.Get());
+	
+	bool bConfirmPurseFolder = OTLog::ConfirmOrCreateFolder(strPurseDirectoryPath.Get());
+	
+	if (!bConfirmPurseFolder)
+	{
+		OTLog::vError("OT_API::SavePurse: Unable to find or create purse subdir "
+					  "for server ID: %s\n\n", 
+					  strPurseDirectoryPath.Get());
+		return false;
+	}
+	
+	// ----------------------------------------------------------------------------
+	
+	OTString strPurseUserPath;
+	strPurseUserPath.Format("%s%s%s", 
+							strPurseDirectoryPath.Get(), OTLog::PathSeparator(),
+							strUserID.Get());
+	
+	bool bConfirmPurseUserFolder = OTLog::ConfirmOrCreateFolder(strPurseUserPath.Get());
+	
+	if (!bConfirmPurseUserFolder)
+	{
+		OTLog::vError("OT_API::SavePurse: Unable to find or create purse subdir "
+					  "for user ID: %s\n\n", 
+					  strPurseUserPath.Get());
+		return false;
+	}
+	
+	// ----------------------------------------------------------------------------
+	
+	OTString strPursePath;
+	strPursePath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
+						strPurseUserPath.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
+	
+	// -------------------------------------------------------------	
+		
+	if (THE_PURSE.SaveContract(strPursePath.Get()))
+		return true;
+	
+	return false;
 }
 
 
@@ -5620,7 +5694,7 @@ void OT_API::sendUserMessage(OTIdentifier	& SERVER_ID,
 		
 		OT_ASSERT(NULL != pMessage);
 		
-		pMessage->m_strCommand		= "outmail";
+		pMessage->m_strCommand		= "sendUserMessage";
 		pMessage->m_strNymID		= strNymID;
 		pMessage->m_strNymID2		= strNymID2;
 		pMessage->m_strServerID		= strServerID;			
@@ -5631,7 +5705,8 @@ void OT_API::sendUserMessage(OTIdentifier	& SERVER_ID,
 		pMessage->SaveContract();
 		
 		pNym->AddOutmail(*pMessage); // Now the Nym is responsible to delete it. It's in his "outmail".
-		pNym->SaveSignedNymfile(*pNym);
+		OTPseudonym * pSignerNym = pNym;
+		pNym->SaveSignedNymfile(*pSignerNym); // commented out temp for testing. 
 	}
 	else
 	{

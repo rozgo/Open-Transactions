@@ -16,6 +16,34 @@ public class otapi {
     return otapiJNI.OT_API_LoadWallet(szPath);
   }
 
+  public static int OT_API_SwitchWallet(String szDataFolderPath, String szWalletFilename) {
+    return otapiJNI.OT_API_SwitchWallet(szDataFolderPath, szWalletFilename);
+  }
+
+  public static int OT_API_GetMemlogSize() {
+    return otapiJNI.OT_API_GetMemlogSize();
+  }
+
+  public static String OT_API_GetMemlogAtIndex(int nIndex) {
+    return otapiJNI.OT_API_GetMemlogAtIndex(nIndex);
+  }
+
+  public static String OT_API_PeekMemlogFront() {
+    return otapiJNI.OT_API_PeekMemlogFront();
+  }
+
+  public static String OT_API_PeekMemlogBack() {
+    return otapiJNI.OT_API_PeekMemlogBack();
+  }
+
+  public static int OT_API_PopMemlogFront() {
+    return otapiJNI.OT_API_PopMemlogFront();
+  }
+
+  public static int OT_API_PopMemlogBack() {
+    return otapiJNI.OT_API_PopMemlogBack();
+  }
+
   public static String OT_API_CreateNym() {
     return otapiJNI.OT_API_CreateNym();
   }
@@ -352,8 +380,68 @@ public class otapi {
     return otapiJNI.OT_API_Transaction_GetDisplayReferenceToNum(SERVER_ID, USER_ID, ACCOUNT_ID, THE_TRANSACTION);
   }
 
+  public static String OT_API_CreatePurse(String SERVER_ID, String ASSET_TYPE_ID, String USER_ID) {
+    return otapiJNI.OT_API_CreatePurse(SERVER_ID, ASSET_TYPE_ID, USER_ID);
+  }
+
+  public static int OT_API_SavePurse(String SERVER_ID, String ASSET_TYPE_ID, String USER_ID, String THE_PURSE) {
+    return otapiJNI.OT_API_SavePurse(SERVER_ID, ASSET_TYPE_ID, USER_ID, THE_PURSE);
+  }
+
   public static String OT_API_Purse_GetTotalValue(String SERVER_ID, String ASSET_TYPE_ID, String THE_PURSE) {
     return otapiJNI.OT_API_Purse_GetTotalValue(SERVER_ID, ASSET_TYPE_ID, THE_PURSE);
+  }
+
+  public static int OT_API_Purse_Count(String SERVER_ID, String ASSET_TYPE_ID, String THE_PURSE) {
+    return otapiJNI.OT_API_Purse_Count(SERVER_ID, ASSET_TYPE_ID, THE_PURSE);
+  }
+
+  public static String OT_API_Purse_Peek(String SERVER_ID, String ASSET_TYPE_ID, String USER_ID, String THE_PURSE) {
+    return otapiJNI.OT_API_Purse_Peek(SERVER_ID, ASSET_TYPE_ID, USER_ID, THE_PURSE);
+  }
+
+  public static String OT_API_Purse_Pop(String SERVER_ID, String ASSET_TYPE_ID, String USER_ID, String THE_PURSE) {
+    return otapiJNI.OT_API_Purse_Pop(SERVER_ID, ASSET_TYPE_ID, USER_ID, THE_PURSE);
+  }
+
+  public static String OT_API_Purse_Push(String SERVER_ID, String ASSET_TYPE_ID, String USER_ID, String THE_PURSE, String THE_TOKEN) {
+    return otapiJNI.OT_API_Purse_Push(SERVER_ID, ASSET_TYPE_ID, USER_ID, THE_PURSE, THE_TOKEN);
+  }
+
+  public static int OT_API_Wallet_ImportPurse(String SERVER_ID, String ASSET_TYPE_ID, String USER_ID, String THE_PURSE) {
+    return otapiJNI.OT_API_Wallet_ImportPurse(SERVER_ID, ASSET_TYPE_ID, USER_ID, THE_PURSE);
+  }
+
+  public static void OT_API_exchangePurse(String SERVER_ID, String ASSET_TYPE_ID, String USER_ID, String THE_PURSE) {
+    otapiJNI.OT_API_exchangePurse(SERVER_ID, ASSET_TYPE_ID, USER_ID, THE_PURSE);
+  }
+
+  public static String OT_API_Token_GetID(String SERVER_ID, String ASSET_TYPE_ID, String THE_TOKEN) {
+    return otapiJNI.OT_API_Token_GetID(SERVER_ID, ASSET_TYPE_ID, THE_TOKEN);
+  }
+
+  public static String OT_API_Token_GetDenomination(String SERVER_ID, String ASSET_TYPE_ID, String THE_TOKEN) {
+    return otapiJNI.OT_API_Token_GetDenomination(SERVER_ID, ASSET_TYPE_ID, THE_TOKEN);
+  }
+
+  public static int OT_API_Token_GetSeries(String SERVER_ID, String ASSET_TYPE_ID, String THE_TOKEN) {
+    return otapiJNI.OT_API_Token_GetSeries(SERVER_ID, ASSET_TYPE_ID, THE_TOKEN);
+  }
+
+  public static String OT_API_Token_GetValidFrom(String SERVER_ID, String ASSET_TYPE_ID, String THE_TOKEN) {
+    return otapiJNI.OT_API_Token_GetValidFrom(SERVER_ID, ASSET_TYPE_ID, THE_TOKEN);
+  }
+
+  public static String OT_API_Token_GetValidTo(String SERVER_ID, String ASSET_TYPE_ID, String THE_TOKEN) {
+    return otapiJNI.OT_API_Token_GetValidTo(SERVER_ID, ASSET_TYPE_ID, THE_TOKEN);
+  }
+
+  public static String OT_API_Token_GetAssetID(String THE_TOKEN) {
+    return otapiJNI.OT_API_Token_GetAssetID(THE_TOKEN);
+  }
+
+  public static String OT_API_Token_GetServerID(String THE_TOKEN) {
+    return otapiJNI.OT_API_Token_GetServerID(THE_TOKEN);
   }
 
   public static void OT_API_checkServerID(String SERVER_ID, String USER_ID) {

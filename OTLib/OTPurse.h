@@ -86,11 +86,15 @@
 #define __OTPURSE_H__
 
 #include <deque>
+#include <map>
+#include <string>
 #include <fstream>
 
 #include "OTContract.h"
 #include "OTToken.h"
 #include "OTASCIIArmor.h"
+
+class OTPurse;
 
 // A token has no User ID, or Account ID, or even a traceable TokenID (the tokenID only becomes relevant
 // after it is spent.)
@@ -107,6 +111,7 @@
 // Imagine a stack of poker chips.
 
 typedef std::deque <OTASCIIArmor *> dequeOfTokens;
+typedef std::map<std::string, OTToken *>	mapOfTokenPointers;
 
 class OTPurse : public OTContract 
 {
@@ -132,6 +137,8 @@ public:
 	bool		IsEmpty() const;
 	
 	inline long	GetTotalValue() const { return m_lTotalValue; }
+	
+	bool Merge(OTPseudonym & theNym, OTPurse & theNewPurse);
 	
 	OTPurse(const OTPurse & thePurse); // just for copy another purse's Server and Asset ID
 	OTPurse(const OTIdentifier & SERVER_ID, const OTIdentifier & ASSET_ID); // similar thing

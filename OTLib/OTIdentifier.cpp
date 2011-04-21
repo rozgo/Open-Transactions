@@ -166,6 +166,8 @@ OTIdentifier::OTIdentifier() : OTData()
 
 OTIdentifier::OTIdentifier(const char * szStr) : OTData()
 {
+	OT_ASSERT(NULL != szStr);
+	
 	SetString(szStr);
 }
 

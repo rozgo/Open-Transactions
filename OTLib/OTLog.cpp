@@ -144,7 +144,7 @@ int OTLog::__CurrentLogLevel = -1;	// If you build with DSP=1, it assumes a spec
 int OTLog::__CurrentLogLevel = 3;
 #endif
 
-OTString OTLog::__Version = "0.53";
+OTString OTLog::__Version = "0.54";
 
 
 
@@ -186,7 +186,136 @@ OTString OTLog::__OTMarketFolder	= "markets";
 
 
 
+// --------------------------------------------------
 
+dequeOfStrings OTLog::__logDeque; // Stores the last 1024 logs in memory.
+
+
+const char * OTLog::GetMemlogAtIndex(int nIndex)
+{
+	if ((nIndex < 0) || (nIndex >= __logDeque.size()))
+	{
+		OTLog::vError("OTLog::GetMemlogAtIndex: index out of bounds: %d\n", nIndex);
+		return NULL;
+	}
+	
+	OTString * pStr = __logDeque.at(nIndex);
+	
+	if ((NULL != pStr) && (pStr->Exists()))
+		return pStr->Get();
+	
+	return NULL;
+}
+
+
+// --------------------------------------------------
+// We keep 1024 logs in memory, to make them available via the API.
+
+int OTLog::GetMemlogSize() 
+{
+	return __logDeque.size();
+}
+
+
+const char * OTLog::PeekMemlogFront()
+{
+	if (__logDeque.size() <= 0)
+		return NULL;
+	
+	OTString * pStr = __logDeque.front();
+	
+	if ((NULL != pStr) && (pStr->Exists()))
+		return pStr->Get();
+	
+	return NULL;
+}
+
+
+const char * OTLog::PeekMemlogBack()
+{
+	if (__logDeque.size() <= 0)
+		return NULL;
+	
+	OTString * pStr = __logDeque.back();
+	
+	if ((NULL != pStr) && (pStr->Exists()))
+		return pStr->Get();
+	
+	return NULL;	
+}
+
+
+bool OTLog::PopMemlogFront()
+{
+	if (__logDeque.size() <= 0)
+		return false;
+	
+	OTString * pStr = __logDeque.front();
+	
+	if (NULL != pStr)
+	{
+		delete pStr;
+		pStr = NULL;
+	}
+	
+	__logDeque.pop_front();
+	
+	return true;		
+}
+
+
+bool OTLog::PopMemlogBack()
+{
+	if (__logDeque.size() <= 0)
+		return false;
+	
+	OTString * pStr = __logDeque.back();
+	
+	if (NULL != pStr)
+	{
+		delete pStr;
+		pStr = NULL;
+	}
+	
+	__logDeque.pop_back();
+	
+	return true;			
+}
+
+
+bool OTLog::PushMemlogFront(const char * szLog)
+{
+	OT_ASSERT(NULL != szLog);
+	
+	OTString * pStr = new OTString(szLog);
+	
+	OT_ASSERT(NULL != pStr);
+
+	__logDeque.push_front(pStr);
+	
+	if (__logDeque.size() > 1024) // todo: stop hardcoding.
+	{
+		OTLog::PopMemlogBack(); // We start removing from the back when it reaches this size.
+	}
+	
+	return true;
+}
+
+bool OTLog::PushMemlogBack(const char * szLog)
+{
+	OT_ASSERT(NULL != szLog);
+	
+	OTString * pStr = new OTString(szLog);
+	
+	OT_ASSERT(NULL != pStr);
+	
+	__logDeque.push_back(pStr);
+	
+	return true;	
+}
+
+
+// --------------------------------------------------
 
 
 /*
@@ -288,9 +417,13 @@ void OTLog::Output(int nVerbosity, const char *szOutput)
 //	if (nVerbosity > OTLog::__CurrentLogLevel || (NULL == szOutput))
 	if ((nVerbosity > OTLog::__CurrentLogLevel) || (NULL == szOutput) || (OTLog::__CurrentLogLevel == (-1)))		
 		return; 
+
+	// We store the last 1024 logs so programmers can access them via the API.
+	OTLog::PushMemlogFront(szOutput);
 	
 #ifndef ANDROID // if NOT android
 	std::cout << szOutput;
+
 	//	printf(szOutput); // Right now this goes to stdout, but could be changed to a file.
 #else // if Android
 	/*
@@ -381,6 +514,9 @@ void OTLog::Error(const char *szError)
 	if ((NULL == szError))
 		return; 
 	
+	// We store the last 1024 logs so programmers can access them via the API.
+	OTLog::PushMemlogFront(szError);
+
 #ifndef ANDROID // if NOT android
 	std::cerr << szError;
 	//	fprintf(stderr, szError); // Right now this goes to stderr, but could be changed to a file.

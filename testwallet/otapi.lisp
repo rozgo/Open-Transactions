@@ -54,6 +54,23 @@
 (cffi:defcfun ("OT_API_LoadWallet" OT_API_LoadWallet) :int
   (szPath :string))
 
+(cffi:defcfun ("OT_API_SwitchWallet" OT_API_SwitchWallet) :int
+  (szDataFolderPath :string)
+  (szWalletFilename :string))
+
+(cffi:defcfun ("OT_API_GetMemlogSize" OT_API_GetMemlogSize) :int)
+
+(cffi:defcfun ("OT_API_GetMemlogAtIndex" OT_API_GetMemlogAtIndex) :string
+  (nIndex :int))
+
+(cffi:defcfun ("OT_API_PeekMemlogFront" OT_API_PeekMemlogFront) :string)
+
+(cffi:defcfun ("OT_API_PeekMemlogBack" OT_API_PeekMemlogBack) :string)
+
+(cffi:defcfun ("OT_API_PopMemlogFront" OT_API_PopMemlogFront) :int)
+
+(cffi:defcfun ("OT_API_PopMemlogBack" OT_API_PopMemlogBack) :int)
+
 (cffi:defcfun ("OT_API_CreateNym" OT_API_CreateNym) :string)
 
 (cffi:defcfun ("OT_API_AddServerContract" OT_API_AddServerContract) :int
@@ -415,10 +432,88 @@
   (ACCOUNT_ID :string)
   (THE_TRANSACTION :string))
 
+(cffi:defcfun ("OT_API_CreatePurse" OT_API_CreatePurse) :string
+  (SERVER_ID :string)
+  (ASSET_TYPE_ID :string)
+  (USER_ID :string))
+
+(cffi:defcfun ("OT_API_SavePurse" OT_API_SavePurse) :int
+  (SERVER_ID :string)
+  (ASSET_TYPE_ID :string)
+  (USER_ID :string)
+  (THE_PURSE :string))
+
 (cffi:defcfun ("OT_API_Purse_GetTotalValue" OT_API_Purse_GetTotalValue) :string
   (SERVER_ID :string)
   (ASSET_TYPE_ID :string)
   (THE_PURSE :string))
+
+(cffi:defcfun ("OT_API_Purse_Count" OT_API_Purse_Count) :int
+  (SERVER_ID :string)
+  (ASSET_TYPE_ID :string)
+  (THE_PURSE :string))
+
+(cffi:defcfun ("OT_API_Purse_Peek" OT_API_Purse_Peek) :string
+  (SERVER_ID :string)
+  (ASSET_TYPE_ID :string)
+  (USER_ID :string)
+  (THE_PURSE :string))
+
+(cffi:defcfun ("OT_API_Purse_Pop" OT_API_Purse_Pop) :string
+  (SERVER_ID :string)
+  (ASSET_TYPE_ID :string)
+  (USER_ID :string)
+  (THE_PURSE :string))
+
+(cffi:defcfun ("OT_API_Purse_Push" OT_API_Purse_Push) :string
+  (SERVER_ID :string)
+  (ASSET_TYPE_ID :string)
+  (USER_ID :string)
+  (THE_PURSE :string)
+  (THE_TOKEN :string))
+
+(cffi:defcfun ("OT_API_Wallet_ImportPurse" OT_API_Wallet_ImportPurse) :int
+  (SERVER_ID :string)
+  (ASSET_TYPE_ID :string)
+  (USER_ID :string)
+  (THE_PURSE :string))
+
+(cffi:defcfun ("OT_API_exchangePurse" OT_API_exchangePurse) :void
+  (SERVER_ID :string)
+  (ASSET_TYPE_ID :string)
+  (USER_ID :string)
+  (THE_PURSE :string))
+
+(cffi:defcfun ("OT_API_Token_GetID" OT_API_Token_GetID) :string
+  (SERVER_ID :string)
+  (ASSET_TYPE_ID :string)
+  (THE_TOKEN :string))
+
+(cffi:defcfun ("OT_API_Token_GetDenomination" OT_API_Token_GetDenomination) :string
+  (SERVER_ID :string)
+  (ASSET_TYPE_ID :string)
+  (THE_TOKEN :string))
+
+(cffi:defcfun ("OT_API_Token_GetSeries" OT_API_Token_GetSeries) :int
+  (SERVER_ID :string)
+  (ASSET_TYPE_ID :string)
+  (THE_TOKEN :string))
+
+(cffi:defcfun ("OT_API_Token_GetValidFrom" OT_API_Token_GetValidFrom) :string
+  (SERVER_ID :string)
+  (ASSET_TYPE_ID :string)
+  (THE_TOKEN :string))
+
+(cffi:defcfun ("OT_API_Token_GetValidTo" OT_API_Token_GetValidTo) :string
+  (SERVER_ID :string)
+  (ASSET_TYPE_ID :string)
+  (THE_TOKEN :string))
+
+(cffi:defcfun ("OT_API_Token_GetAssetID" OT_API_Token_GetAssetID) :string
+  (THE_TOKEN :string))
+
+(cffi:defcfun ("OT_API_Token_GetServerID" OT_API_Token_GetServerID) :string
+  (THE_TOKEN :string))
 
 (cffi:defcfun ("OT_API_checkServerID" OT_API_checkServerID) :void
   (SERVER_ID :string)

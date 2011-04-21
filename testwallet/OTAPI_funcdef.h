@@ -121,11 +121,40 @@ int OT_API_Init(const char * szClientPath); // actually returns BOOL
  Just pass in the filename.  Like this:
  
  OT_API_LoadWallet("wallet.xml");
-  
+ 
  */
 int OT_API_LoadWallet(const char * szPath); // actually returns BOOL
 
 
+
+
+// --------------------------------------------------------------------
+/**
+ SWITCH WALLET
+ 
+ Experimental.
+ If you want to switch to a completely different wallet, at a completely
+ different path, then call this function.
+  
+ OT_API_SwitchWallet("/absolute-path-goes-here/Open-Transactions/testwallet/data_folder",
+                     "wallet.xml");
+ 
+ */
+int OT_API_SwitchWallet(const char * szDataFolderPath, const char * szWalletFilename); // actually returns OT_BOOL
+
+
+// ----------------------------------------------------
+// The below functions are for retrieving log data programatically.
+
+int OT_API_GetMemlogSize();
+
+const char * OT_API_GetMemlogAtIndex(int nIndex);
+
+const char * OT_API_PeekMemlogFront();
+const char * OT_API_PeekMemlogBack();
+
+int OT_API_PopMemlogFront(); // actually returns OT_BOOL
+int OT_API_PopMemlogBack(); // actually returns OT_BOOL
 
 
 
@@ -937,6 +966,32 @@ const char * OT_API_Transaction_GetDisplayReferenceToNum(const char * SERVER_ID,
 
 
 
+// ---------------------------------------------------------
+
+
+
+/*
+ const char * OT_API_LoadPurse(	const char * SERVER_ID,
+								const char * ASSET_TYPE_ID,
+								const char * USER_ID); // returns NULL, or a purse. 
+ */
+
+/// This should, if USER_ID is NULL, create a Nym to encrypt the tokens to, and just attach 
+/// it (the dummy nym) as a parameter on the purse, along with its ID.
+/// Otherwise use the User ID that's there.
+///
+const char * OT_API_CreatePurse(const char * SERVER_ID,
+								const char * ASSET_TYPE_ID,
+								const char * USER_ID); // returns NULL, or a purse. UserID optional.
+
+/// Warning! This will overwrite whatever purse is there.
+/// The proper way to use this function is, LOAD the purse,
+/// then IMPORT whatever other purse you want into it, then
+/// SAVE it again.
+int OT_API_SavePurse(const char * SERVER_ID,
+					 const char * ASSET_TYPE_ID,
+					 const char * USER_ID,
+					 const char * THE_PURSE); // returns OT_BOOL
 
 // --------------------------------------------------------------------
 /// Get Purse Total Value  (internally uses GetTotalValue().)
@@ -947,10 +1002,105 @@ const char * OT_API_Purse_GetTotalValue(const char * SERVER_ID,
 										const char * ASSET_TYPE_ID,
 										const char * THE_PURSE);
 
+// ---
+
+int OT_API_Purse_Count(const char * SERVER_ID,
+					   const char * ASSET_TYPE_ID,
+					   const char * THE_PURSE);
+
+/// Returns the TOKEN on top of the stock (LEAVING it on top of the stack,
+/// but giving you a string copy of it.)
+/// returns NULL if failure.
+///
+const char * OT_API_Purse_Peek(const char * SERVER_ID,
+							   const char * ASSET_TYPE_ID,
+							   const char * USER_ID,
+							   const char * THE_PURSE);
+
+/// Removes the token from the top of the stock and DESTROYS IT,
+/// and RETURNS THE UPDATED PURSE (with the token now missing from it.)
+/// WARNING: Do not call this function unless you have PEEK()d FIRST!!
+/// Otherwise you will lose the token and get left "holding the bag".
+/// returns NULL if failure.
+const char * OT_API_Purse_Pop(const char * SERVER_ID,
+							  const char * ASSET_TYPE_ID,
+							  const char * USER_ID,
+							  const char * THE_PURSE);
+
+/// Pushes a token onto the stack (of the purse.)
+/// Returns the updated purse (now including the token.)
+/// Returns NULL if failure.
+const char * OT_API_Purse_Push(const char * SERVER_ID,
+							   const char * ASSET_TYPE_ID,
+							   const char * USER_ID,
+							   const char * THE_PURSE,
+							   const char * THE_TOKEN);
 
 
+// ------------------
 
 
+/// Returns OT_BOOL
+/// Should handle duplicates. Should load, merge, and save.
+int OT_API_Wallet_ImportPurse(const char * SERVER_ID,
+							  const char * ASSET_TYPE_ID,
+							  const char * USER_ID, // you pass in the purse you're trying to import
+							  const char * THE_PURSE); // It should either have your User ID on it, or the key should be inside so you can import.
+						  
+/// Messages the server. If failure, make sure you didn't lose that purse!!
+/// If success, the new tokens will be returned shortly and saved into the appropriate purse.
+/// Note that an asset account isn't necessary to do this... just a nym operating cash-only.
+/// The same as exchanging a 20-dollar bill at the teller window for a replacement bill.
+///
+void OT_API_exchangePurse(const char * SERVER_ID,
+						  const char * ASSET_TYPE_ID,
+						  const char * USER_ID,
+						  const char * THE_PURSE);
+
+// --------------
+
+
+/// Returns an encrypted form of the actual blinded token ID.
+/// (There's no need to decrypt the ID until redeeming the token, when
+/// you re-encrypt it to the server's public key, or until spending it,
+/// when you re-encrypt it to the recipient's public key, or exporting
+/// it, when you create a dummy recipient and attach it to the purse.)
+///
+const char * OT_API_Token_GetID(const char * SERVER_ID,
+								const char * ASSET_TYPE_ID,
+								const char * THE_TOKEN);
+
+/// The actual cash value of the token. Returns a long int as a string.
+///
+const char * OT_API_Token_GetDenomination(const char * SERVER_ID,
+										  const char * ASSET_TYPE_ID,
+										  const char * THE_TOKEN);
+
+int OT_API_Token_GetSeries(const char * SERVER_ID,
+						   const char * ASSET_TYPE_ID,
+						   const char * THE_TOKEN);
+
+
+/// the date is seconds since Jan 1970, but returned as a string.
+///
+const char * OT_API_Token_GetValidFrom(const char * SERVER_ID,
+									   const char * ASSET_TYPE_ID,
+									   const char * THE_TOKEN);
+
+/// the date is seconds since Jan 1970, but returned as a string.
+///
+const char * OT_API_Token_GetValidTo(const char * SERVER_ID,
+									 const char * ASSET_TYPE_ID,
+									 const char * THE_TOKEN);
+						  
+
+// ---------
+
+const char * OT_API_Token_GetAssetID(const char * THE_TOKEN);
+
+const char * OT_API_Token_GetServerID(const char * THE_TOKEN);
+
+						  
 
 // --------------------------------------------------------------------
 

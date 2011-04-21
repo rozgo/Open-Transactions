@@ -251,7 +251,8 @@ void OTClient::AcceptEntireNymbox(OTLedger & theNymbox, OTServerConnection & the
 				if (pMessage->LoadContractFromString(strRespTo))
 				{
 					pNym->AddMail(*pMessage); // Now the Nym is responsible to delete it. It's in his "mail".
-					pNym->SaveSignedNymfile(*pNym);
+					OTPseudonym * pSignerNym = pNym;
+					pNym->SaveSignedNymfile(*pSignerNym);
 				}
 				else 
 				{
@@ -1238,7 +1239,9 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 				strPursePath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
 									strPurseUserPath.Get(), OTLog::PathSeparator(), strAssetID.Get());
 				
-								
+				// -------------------------------------------------------------
+				
+				
 				// Unlike the purse which we read out of a message,
 				// now we try to open a purse as a file on the client side,
 				// keyed by Asset ID.  (The client should already have one
@@ -1255,8 +1258,14 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 				// HOWEVER need to make sure the wallet software has good backup
 				// strategy.  In the event that tokens are overwritten here, it
 				// shouldn't be a problem since they would be in the archive somewhere.
-				theWalletPurse.LoadContract(strPursePath.Get());
+				
+				if ( OTLog::ConfirmExactPath(strPursePath.Get()))
+				{
+					theWalletPurse.LoadContract(strPursePath.Get());
 //					if Load, theWalletPurse.VerifySignature();
+				}
+				
+				// -------------------------------------------------------------
 
 				bool bSuccess = false;
 				
@@ -1416,6 +1425,42 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		
 		theConnection.OnServerResponseToGetRequestNumber(lNewRequestNumber);
 		
+		return true;
+	}
+	if (theReply.m_bSuccess && theReply.m_strCommand.Compare("@checkUser"))
+	{
+		const OTString strNymID2(theReply.m_strNymID2), strPubkey(theReply.m_strNymPublicKey.Get());
+				
+		// ----------------------------------
+
+		bool bConfirmPubkeyFolder = OTLog::ConfirmOrCreateFolder(OTLog::PubkeyFolder());
+		
+		if (!bConfirmPubkeyFolder)
+		{
+			OTLog::vError("ProcessServerReply: Unable to find or "
+						  "create main pubkey directory: %s%s%s\n", 
+						  OTLog::Path(), OTLog::PathSeparator(), OTLog::PubkeyFolder());
+			
+			return true;
+		}
+
+		// ----------------------------------
+		
+		OTString strPath;
+		strPath.Format((char*)"%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), OTLog::PubkeyFolder(),
+					   OTLog::PathSeparator(), strNymID2.Get());
+								
+		// ----------------------------------
+		// Next we save the public key in the pubkeys folder...
+		
+		OTPseudonym thePubkeyNym(strNymID2);
+		
+		if (thePubkeyNym.SetPublicKey(strPubkey) && thePubkeyNym.VerifyPseudonym())
+		{
+			if (thePubkeyNym.SavePublicKey(strPath))
+				OTLog::vOutput(0, "@checkUser: Success saving public key file for Nym: %s\n", strNymID2.Get());
+		}
+
 		return true;
 	}
 	else if (theReply.m_bSuccess && theReply.m_strCommand.Compare("@notarizeTransactions"))

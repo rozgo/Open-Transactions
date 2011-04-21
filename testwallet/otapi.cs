@@ -21,6 +21,41 @@ public class otapi {
     return ret;
   }
 
+  public static int OT_API_SwitchWallet(string szDataFolderPath, string szWalletFilename) {
+    int ret = otapiPINVOKE.OT_API_SwitchWallet(szDataFolderPath, szWalletFilename);
+    return ret;
+  }
+
+  public static int OT_API_GetMemlogSize() {
+    int ret = otapiPINVOKE.OT_API_GetMemlogSize();
+    return ret;
+  }
+
+  public static string OT_API_GetMemlogAtIndex(int nIndex) {
+    string ret = otapiPINVOKE.OT_API_GetMemlogAtIndex(nIndex);
+    return ret;
+  }
+
+  public static string OT_API_PeekMemlogFront() {
+    string ret = otapiPINVOKE.OT_API_PeekMemlogFront();
+    return ret;
+  }
+
+  public static string OT_API_PeekMemlogBack() {
+    string ret = otapiPINVOKE.OT_API_PeekMemlogBack();
+    return ret;
+  }
+
+  public static int OT_API_PopMemlogFront() {
+    int ret = otapiPINVOKE.OT_API_PopMemlogFront();
+    return ret;
+  }
+
+  public static int OT_API_PopMemlogBack() {
+    int ret = otapiPINVOKE.OT_API_PopMemlogBack();
+    return ret;
+  }
+
   public static string OT_API_CreateNym() {
     string ret = otapiPINVOKE.OT_API_CreateNym();
     return ret;
@@ -441,8 +476,82 @@ public class otapi {
     return ret;
   }
 
+  public static string OT_API_CreatePurse(string SERVER_ID, string ASSET_TYPE_ID, string USER_ID) {
+    string ret = otapiPINVOKE.OT_API_CreatePurse(SERVER_ID, ASSET_TYPE_ID, USER_ID);
+    return ret;
+  }
+
+  public static int OT_API_SavePurse(string SERVER_ID, string ASSET_TYPE_ID, string USER_ID, string THE_PURSE) {
+    int ret = otapiPINVOKE.OT_API_SavePurse(SERVER_ID, ASSET_TYPE_ID, USER_ID, THE_PURSE);
+    return ret;
+  }
+
   public static string OT_API_Purse_GetTotalValue(string SERVER_ID, string ASSET_TYPE_ID, string THE_PURSE) {
     string ret = otapiPINVOKE.OT_API_Purse_GetTotalValue(SERVER_ID, ASSET_TYPE_ID, THE_PURSE);
+    return ret;
+  }
+
+  public static int OT_API_Purse_Count(string SERVER_ID, string ASSET_TYPE_ID, string THE_PURSE) {
+    int ret = otapiPINVOKE.OT_API_Purse_Count(SERVER_ID, ASSET_TYPE_ID, THE_PURSE);
+    return ret;
+  }
+
+  public static string OT_API_Purse_Peek(string SERVER_ID, string ASSET_TYPE_ID, string USER_ID, string THE_PURSE) {
+    string ret = otapiPINVOKE.OT_API_Purse_Peek(SERVER_ID, ASSET_TYPE_ID, USER_ID, THE_PURSE);
+    return ret;
+  }
+
+  public static string OT_API_Purse_Pop(string SERVER_ID, string ASSET_TYPE_ID, string USER_ID, string THE_PURSE) {
+    string ret = otapiPINVOKE.OT_API_Purse_Pop(SERVER_ID, ASSET_TYPE_ID, USER_ID, THE_PURSE);
+    return ret;
+  }
+
+  public static string OT_API_Purse_Push(string SERVER_ID, string ASSET_TYPE_ID, string USER_ID, string THE_PURSE, string THE_TOKEN) {
+    string ret = otapiPINVOKE.OT_API_Purse_Push(SERVER_ID, ASSET_TYPE_ID, USER_ID, THE_PURSE, THE_TOKEN);
+    return ret;
+  }
+
+  public static int OT_API_Wallet_ImportPurse(string SERVER_ID, string ASSET_TYPE_ID, string USER_ID, string THE_PURSE) {
+    int ret = otapiPINVOKE.OT_API_Wallet_ImportPurse(SERVER_ID, ASSET_TYPE_ID, USER_ID, THE_PURSE);
+    return ret;
+  }
+
+  public static void OT_API_exchangePurse(string SERVER_ID, string ASSET_TYPE_ID, string USER_ID, string THE_PURSE) {
+    otapiPINVOKE.OT_API_exchangePurse(SERVER_ID, ASSET_TYPE_ID, USER_ID, THE_PURSE);
+  }
+
+  public static string OT_API_Token_GetID(string SERVER_ID, string ASSET_TYPE_ID, string THE_TOKEN) {
+    string ret = otapiPINVOKE.OT_API_Token_GetID(SERVER_ID, ASSET_TYPE_ID, THE_TOKEN);
+    return ret;
+  }
+
+  public static string OT_API_Token_GetDenomination(string SERVER_ID, string ASSET_TYPE_ID, string THE_TOKEN) {
+    string ret = otapiPINVOKE.OT_API_Token_GetDenomination(SERVER_ID, ASSET_TYPE_ID, THE_TOKEN);
+    return ret;
+  }
+
+  public static int OT_API_Token_GetSeries(string SERVER_ID, string ASSET_TYPE_ID, string THE_TOKEN) {
+    int ret = otapiPINVOKE.OT_API_Token_GetSeries(SERVER_ID, ASSET_TYPE_ID, THE_TOKEN);
+    return ret;
+  }
+
+  public static string OT_API_Token_GetValidFrom(string SERVER_ID, string ASSET_TYPE_ID, string THE_TOKEN) {
+    string ret = otapiPINVOKE.OT_API_Token_GetValidFrom(SERVER_ID, ASSET_TYPE_ID, THE_TOKEN);
+    return ret;
+  }
+
+  public static string OT_API_Token_GetValidTo(string SERVER_ID, string ASSET_TYPE_ID, string THE_TOKEN) {
+    string ret = otapiPINVOKE.OT_API_Token_GetValidTo(SERVER_ID, ASSET_TYPE_ID, THE_TOKEN);
+    return ret;
+  }
+
+  public static string OT_API_Token_GetAssetID(string THE_TOKEN) {
+    string ret = otapiPINVOKE.OT_API_Token_GetAssetID(THE_TOKEN);
+    return ret;
+  }
+
+  public static string OT_API_Token_GetServerID(string THE_TOKEN) {
+    string ret = otapiPINVOKE.OT_API_Token_GetServerID(THE_TOKEN);
     return ret;
   }
 

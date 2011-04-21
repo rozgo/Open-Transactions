@@ -10,6 +10,13 @@
 class otapiJNI {
   public final static native int OT_API_Init(String jarg1);
   public final static native int OT_API_LoadWallet(String jarg1);
+  public final static native int OT_API_SwitchWallet(String jarg1, String jarg2);
+  public final static native int OT_API_GetMemlogSize();
+  public final static native String OT_API_GetMemlogAtIndex(int jarg1);
+  public final static native String OT_API_PeekMemlogFront();
+  public final static native String OT_API_PeekMemlogBack();
+  public final static native int OT_API_PopMemlogFront();
+  public final static native int OT_API_PopMemlogBack();
   public final static native String OT_API_CreateNym();
   public final static native int OT_API_AddServerContract(String jarg1);
   public final static native int OT_API_AddAssetContract(String jarg1);
@@ -94,7 +101,22 @@ class otapiJNI {
   public final static native String OT_API_Transaction_GetRecipientUserID(String jarg1, String jarg2, String jarg3, String jarg4);
   public final static native String OT_API_Transaction_GetRecipientAcctID(String jarg1, String jarg2, String jarg3, String jarg4);
   public final static native String OT_API_Transaction_GetDisplayReferenceToNum(String jarg1, String jarg2, String jarg3, String jarg4);
+  public final static native String OT_API_CreatePurse(String jarg1, String jarg2, String jarg3);
+  public final static native int OT_API_SavePurse(String jarg1, String jarg2, String jarg3, String jarg4);
   public final static native String OT_API_Purse_GetTotalValue(String jarg1, String jarg2, String jarg3);
+  public final static native int OT_API_Purse_Count(String jarg1, String jarg2, String jarg3);
+  public final static native String OT_API_Purse_Peek(String jarg1, String jarg2, String jarg3, String jarg4);
+  public final static native String OT_API_Purse_Pop(String jarg1, String jarg2, String jarg3, String jarg4);
+  public final static native String OT_API_Purse_Push(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5);
+  public final static native int OT_API_Wallet_ImportPurse(String jarg1, String jarg2, String jarg3, String jarg4);
+  public final static native void OT_API_exchangePurse(String jarg1, String jarg2, String jarg3, String jarg4);
+  public final static native String OT_API_Token_GetID(String jarg1, String jarg2, String jarg3);
+  public final static native String OT_API_Token_GetDenomination(String jarg1, String jarg2, String jarg3);
+  public final static native int OT_API_Token_GetSeries(String jarg1, String jarg2, String jarg3);
+  public final static native String OT_API_Token_GetValidFrom(String jarg1, String jarg2, String jarg3);
+  public final static native String OT_API_Token_GetValidTo(String jarg1, String jarg2, String jarg3);
+  public final static native String OT_API_Token_GetAssetID(String jarg1);
+  public final static native String OT_API_Token_GetServerID(String jarg1);
   public final static native void OT_API_checkServerID(String jarg1, String jarg2);
   public final static native void OT_API_createUserAccount(String jarg1, String jarg2);
   public final static native void OT_API_checkUser(String jarg1, String jarg2, String jarg3);

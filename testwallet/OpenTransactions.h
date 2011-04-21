@@ -132,6 +132,8 @@ public:
 			bool Init(OTString & strClientPath);	// Per instance.
 	static	bool InitOTAPI();						// Once per run.
 
+	bool IsInitialized() const { return m_bInitialized; }
+	
 	bool LoadWallet(OTString & strPath);
 	
 	// Note: these two functions are NOT used in XmlRpc Mode
@@ -256,6 +258,11 @@ public:
 	OTPurse * LoadPurse(const OTIdentifier & SERVER_ID,
 						const OTIdentifier & ASSET_ID,
 						const OTIdentifier & USER_ID);
+	
+	bool SavePurse(const OTIdentifier & SERVER_ID,
+				   const OTIdentifier & ASSET_ID,
+				   const OTIdentifier & USER_ID,
+				   OTPurse & THE_PURSE);
 	
 	OTMint * LoadMint(const OTIdentifier & SERVER_ID,
 					  const OTIdentifier & ASSET_ID);

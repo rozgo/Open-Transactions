@@ -84,6 +84,7 @@
 
 #include <cstring>
 
+#include <string>
 
 #include "irrxml/irrXML.h"
 
@@ -98,6 +99,129 @@ using namespace io;
 #include "OTASCIIArmor.h"
 #include "OTLog.h"
 
+
+
+// Take all the tokens from a purse and add them to this purse.
+// Don't allow duplicates.
+//
+bool OTPurse::Merge(OTPseudonym & theNym, OTPurse & theNewPurse)
+{
+	mapOfTokenPointers theMap;
+	
+	while (this->Count() > 0) 
+	{
+		OTToken * pToken = this->Pop(theNym);
+		
+		OT_ASSERT(NULL != pToken);
+				
+		const OTASCIIArmor & ascTokenID = pToken->GetSpendable();
+		
+		// I just popped a Token off of *this. Let's see if it's in my temporary map...
+		// If it's already there, then just delete it (duplicate).
+		for (mapOfTokenPointers::iterator ii = theMap.begin(); ii != theMap.end(); ++ii) 
+		{
+			OTToken * pTempToken = (*ii).second;
+			
+			OT_ASSERT(NULL != pTempToken);
+			
+			const OTASCIIArmor & ascTempTokenID = pTempToken->GetSpendable();
+			
+			// --------------------------------
+			// It's already there. Delete the one that's already there.
+			// (That way we can add it after, whether it was there originally or not.)
+			if (ascTempTokenID == ascTokenID)
+			{
+				theMap.erase(ii);
+				delete pTempToken;
+				//break; // In case there are multiple duplicates, not just one.
+			}
+		}
+		
+		// Now we know there aren't any duplicates on the temporary map, let's add the token to it.
+		std::string theKey = ascTokenID.Get();		
+		theMap.insert(std::pair<std::string, OTToken*>(theKey, pToken));
+	}
+	
+	// At this point, all of the tokens on *this have been popped, and added
+	// to the temporary map as token pointers, with any duplicates removed.
+	
+	// -----------------------------------------------------------
+
+	// Basically now I just want to do the exact same thing with the other purse.
+	
+	while (theNewPurse.Count() > 0) 
+	{
+		OTToken * pToken = theNewPurse.Pop(theNym); // TODO:  This isn't necessarily the right nym. Need to fix purse to allow dummy nyms.
+		
+		OT_ASSERT(NULL != pToken);
+		
+		const OTASCIIArmor & ascTokenID = pToken->GetSpendable();
+		
+		// I just popped a Token off of theNewPurse. Let's see if it's in my temporary map...
+		// If it's already there, then just delete it (duplicate).
+		for (mapOfTokenPointers::iterator ii = theMap.begin(); ii != theMap.end(); ++ii) 
+		{
+			OTToken * pTempToken = (*ii).second;
+			
+			OT_ASSERT(NULL != pTempToken);
+			
+			const OTASCIIArmor & ascTempTokenID = pTempToken->GetSpendable();
+			
+			// --------------------------------
+			// It's already there. Delete the one that's already there.
+			// (That way we can add it after, whether it was there originally or not.)
+			if (ascTempTokenID == ascTokenID)
+			{
+				theMap.erase(ii);
+				delete pTempToken;
+				//break; // In case there are multiple duplicates, not just one.
+			}
+		}
+		
+		// Now we know there aren't any duplicates on the temporary map, let's add the token to it.
+		std::string theKey = ascTokenID.Get();		
+		theMap.insert(std::pair<std::string, OTToken*>(theKey, pToken));
+	}
+	
+	// -----------------------------------------------------------
+	
+	// At this point, all of the tokens on *this AND theNewPurse have been popped, and added
+	// to the temporary map as token pointers, with any duplicates removed.
+
+	// Now I just loop through that same map, and Push ALL of those tokens back onto *this.
+	
+	for (mapOfTokenPointers::iterator ii = theMap.begin(); ii != theMap.end(); ++ii) 
+	{
+		OTToken * pToken = (*ii).second;
+		
+		OT_ASSERT(NULL != pToken);
+				
+		bool bPush = this->Push(theNym, *pToken); // purse makes it's own copy of the token into string form.
+		
+		if (!bPush)
+			OTLog::Error("Failure pushing token in OTPurse::Merge.\n");
+	}
+	
+	// -----------------------------------------------------
+	
+	// Next I clean up all the tokens out of the temporary map, since they will leak otherwise.
+	
+	while (!theMap.empty())
+	{		
+		OTToken * pToken = theMap.begin()->second;
+		
+		OT_ASSERT(NULL != pToken);
+		
+		delete pToken;
+		pToken = NULL;
+		
+		theMap.erase(theMap.begin());
+	}
+	
+	// -----------------------------------------------------
+	
+	return true;
+}
 
 
 

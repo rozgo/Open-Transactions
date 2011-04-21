@@ -190,6 +190,27 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_LoadWallet")]
   public static extern int OT_API_LoadWallet(string jarg1);
 
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_SwitchWallet")]
+  public static extern int OT_API_SwitchWallet(string jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetMemlogSize")]
+  public static extern int OT_API_GetMemlogSize();
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_GetMemlogAtIndex")]
+  public static extern string OT_API_GetMemlogAtIndex(int jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_PeekMemlogFront")]
+  public static extern string OT_API_PeekMemlogFront();
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_PeekMemlogBack")]
+  public static extern string OT_API_PeekMemlogBack();
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_PopMemlogFront")]
+  public static extern int OT_API_PopMemlogFront();
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_PopMemlogBack")]
+  public static extern int OT_API_PopMemlogBack();
+
   [DllImport("otapi", EntryPoint="CSharp_OT_API_CreateNym")]
   public static extern string OT_API_CreateNym();
 
@@ -442,8 +463,53 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Transaction_GetDisplayReferenceToNum")]
   public static extern string OT_API_Transaction_GetDisplayReferenceToNum(string jarg1, string jarg2, string jarg3, string jarg4);
 
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_CreatePurse")]
+  public static extern string OT_API_CreatePurse(string jarg1, string jarg2, string jarg3);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_SavePurse")]
+  public static extern int OT_API_SavePurse(string jarg1, string jarg2, string jarg3, string jarg4);
+
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Purse_GetTotalValue")]
   public static extern string OT_API_Purse_GetTotalValue(string jarg1, string jarg2, string jarg3);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Purse_Count")]
+  public static extern int OT_API_Purse_Count(string jarg1, string jarg2, string jarg3);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Purse_Peek")]
+  public static extern string OT_API_Purse_Peek(string jarg1, string jarg2, string jarg3, string jarg4);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Purse_Pop")]
+  public static extern string OT_API_Purse_Pop(string jarg1, string jarg2, string jarg3, string jarg4);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Purse_Push")]
+  public static extern string OT_API_Purse_Push(string jarg1, string jarg2, string jarg3, string jarg4, string jarg5);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Wallet_ImportPurse")]
+  public static extern int OT_API_Wallet_ImportPurse(string jarg1, string jarg2, string jarg3, string jarg4);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_exchangePurse")]
+  public static extern void OT_API_exchangePurse(string jarg1, string jarg2, string jarg3, string jarg4);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Token_GetID")]
+  public static extern string OT_API_Token_GetID(string jarg1, string jarg2, string jarg3);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Token_GetDenomination")]
+  public static extern string OT_API_Token_GetDenomination(string jarg1, string jarg2, string jarg3);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Token_GetSeries")]
+  public static extern int OT_API_Token_GetSeries(string jarg1, string jarg2, string jarg3);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Token_GetValidFrom")]
+  public static extern string OT_API_Token_GetValidFrom(string jarg1, string jarg2, string jarg3);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Token_GetValidTo")]
+  public static extern string OT_API_Token_GetValidTo(string jarg1, string jarg2, string jarg3);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Token_GetAssetID")]
+  public static extern string OT_API_Token_GetAssetID(string jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Token_GetServerID")]
+  public static extern string OT_API_Token_GetServerID(string jarg1);
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_checkServerID")]
   public static extern void OT_API_checkServerID(string jarg1, string jarg2);
