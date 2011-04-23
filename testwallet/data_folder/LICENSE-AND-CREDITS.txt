@@ -1,130 +1,241 @@
+Moneychanger v0.01
+/************************************************************
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
 
-
-/*************************************************************************
- *    
- * Open Transactions 0.54 -- Financial Cryptography and Digital Cash
- *                           (Library, Protocol, API, Server, and GUI)
- *    
- *    		-- Anonymous Numbered Accounts...
- *    		-- Untraceable Digital Cash...
- *    		-- Triple-Signed Receipts...
- *    		-- Cheques, Vouchers, Transfers, Inboxes...
- *    		-- Basket Currencies, Markets, Payment Plans...
- *    		-- Signed, XML, Ricardian-style Contracts...
- *    
- *    COMPONENTS:
+ *                 M O N E Y C H A N G E R
  *
- *    Moneychanger.....Ñ A Java Client App..........LICENSE:   GPLv3
- *    OTLib............Ñ A class library............LICENSE: LAGPLv3 
- *    OT-API...........Ñ A Client API...............LICENSE: LAGPLv3
- *    testwallet.......Ñ A command-line client......LICENSE: LAGPLv3
- *    OT-Server........Ñ A Server Application.......LICENSE:  AGPLv3
+ *   http://wiki.github.com/FellowTraveler/Moneychanger/wiki
  *
- *    All of the above OT components were designed and written by
- *    Fellow Traveler, with the exception of Moneychanger, which was
- *    written by Vicky C (livewire_3001@yahoo.com) under contract.
- *    https://github.com/FellowTraveler/Open-Transactions/wiki/Components
+ *  Open Transactions:
+ *       Financial Cryptography and Digital Cash
+ *       Library, Protocol, API, Server, and GUI 
+ *    
+ *    	 -- Anonymous Numbered Accounts.
+ *    	 -- Untraceable Digital Cash.
+ *    	 -- Triple-Signed Receipts.
+ *    	 -- Cheques, Vouchers, Transfers, Inboxes.
+ *    	 -- Basket Currencies, Markets, Payment Plans.
+ *    	 -- Signed, XML, Ricardian-style Contracts.
+ *    
+ *  Copyright (C) 2010-2011 by "Fellow Traveler" (A pseudonym)
  *
- *    Copyright (C) 2010-2011 by "Fellow Traveler" (A pseudonym)
- *    
- *    EMAIL:
- *    FellowTraveler@rayservers.net --- SEE PGP PUBLIC KEY BELOW.
- *    F3llowTraveler@gmail.com (not preferred.)
+ *  EMAIL:
+ *  FellowTraveler@rayservers.net --- SEE PGP KEY BELOW.
+ *  F3llowTraveler@gmail.com --- (not preferred.)
+ *  
+ *  FINGERPRINT:
+ *  9DD5 90EB 9292 4B48 0484  7910 0308 00ED F951 BB8E
  *
- *    KEY FINGERPRINT:
- *    9DD5 90EB 9292 4B48 0484  7910 0308 00ED F951 BB8E
- *    
- *    OFFICIAL PROJECT WIKI(s):
- *    http://wiki.github.com/FellowTraveler/Open-Transactions/wiki 
- *    
- *    http://wiki.github.com/FellowTraveler/Moneychanger/wiki 
- *    
- *    WEBSITE:
- *    http://www.OpenTransactions.org/
- *    
- *     ----------------------------------------------------------------
- *    
- *    Open Transactions was written including these libraries:
- *    
- *       Lucre        --- Copyright (C) 1999-2009 Ben Laurie.
- *                        http://anoncvs.aldigital.co.uk/lucre/
- *       irrXML       --- Copyright (C) 2002-2005 Nikolaus Gebhardt
- *                        http://irrlicht.sourceforge.net/author.html	
- *       easyzlib     --- Copyright (C) 2008 First Objective Software, Inc.
- *                        Used with permission. http://www.firstobject.com/
- *       PGP to OpenSSL --- Copyright (c) 2010 Mounir IDRASSI 
- *                          Used with permission. http://www.idrix.fr
- *       XmlRpc++     --- LGPL, Copyright (c) 2002-2003 by C. Morley
- *                        http://xmlrpcpp.sourceforge.net/
- *       SFSocket     --- Copyright (C) 2009 Matteo Bertozzi
- *                        Used with permission. http://th30z.netsons.org/
- *       strlcpy      --- Copyright (c) 1998 Todd C. Miller 
- *                        (open source) <Todd.Miller@courtesan.com>
- *       BigInteger   --- By Matt McCutchen <matt@mattmccutchen.net>
- *                        (open source) http://mattmccutchen.net/bigint/
- *    
- *     ----------------------------------------------------------------
+ *  BITCOIN:  1NtTPVVjDsUfDWybS4BwvHpG2pdS9RnYyQ
  *
- *    Open Transactions links to these libraries:
+ *  OFFICIAL PROJECT WIKI:
+ *  http://wiki.github.com/FellowTraveler/Open-Transactions/wiki 
+ *
+ *  WEBSITE:
+ *  http://www.OpenTransactions.org/
  *    
- *       OpenSSL   --- (Version 1.0.0a at time of writing.) 
- *                          http://openssl.org/about/
- *       zlib      --- Copyright (C) 1995-2004 Jean-loup Gailly, Mark Adler
- *    
- *     ----------------------------------------------------------------
+ *  Components and licensing:
+ *   -- Moneychanger..A Java client GUI.....LICENSE:.....GPLv3
+ *   -- OTLib.........A class library.......LICENSE:...LAGPLv3 
+ *   -- OT-API........A client API..........LICENSE:...LAGPLv3
+ *   -- testwallet....Command-line client...LICENSE:...LAGPLv3
+ *   -- OT-Server.....Server Application....LICENSE:....AGPLv3
+ *  Github.com/FellowTraveler/Open-Transactions/wiki/Components
+ *
+ *  All of the above OT components were designed and written by
+ *  Fellow Traveler, with the exception of Moneychanger, which
+ *  was contracted out to Vicky C (livewire_3001@yahoo.com).
+ *
+ *  -----------------------------------------------------
  *
  *   LICENSE:
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU Affero General Public License as
- *   published by the Free Software Foundation, either version 3 of the
- *   License, or (at your option) any later version.
- *    
- *   ADDITIONAL PERMISSION under the GNU Affero GPL version 3 section 7:
- *   (This paragraph applies only to the LAGPL components listed above.)
- *   If you modify this Program, or any covered work, by linking or
- *   combining it with other code, such other code is not for that reason
- *   alone subject to any of the requirements of the GNU Affero GPL
- *   version 3. (THIS MEANS IF YOU ARE ONLY USING THE API, YOU DON'T HAVE
- *   TO OPEN-SOURCE YOUR OWN CODE, JUST YOUR IMPROVEMENTS TO OT ITSELF.)
+ *   This program is free software: you can redistribute it
+ *   and/or modify it under the terms of the GNU General
+ *   Public License as published by the Free Software
+ *   Foundation, either version 3 of the License, or (at your
+ *   option) any later version.
  *
- *   Extra WAIVER for OpenSSL, Lucre, and all other libraries used by OT:
- *   This program is released under the AGPL with the additional exemption 
- *   that compiling, linking, and/or using OpenSSL is allowed. The same is
- *   true for any other open source libraries included in this project: 
- *   complete waiver from the AGPL is hereby granted to compile, link,
- *   and/or use them with Open Transactions, according to their own terms,
- *   as long as the rest of the Open Transactions terms remain respected,
- *   with regard to the Open Transactions code itself.
- *    
- *   Lucre License:
- *   This library is also "dual-license", meaning that Ben Laurie's license
- *   must also be included and respected, since the code for Lucre is also
- *   included with Open Transactions. See Open-Transactions/OTLib/Lucre.
- *   The Laurie requirements are light, but if there is any problem with
- *   his license, simply remove the Lucre code. Although there are no other
- *   blind token algorithms in Open Transactions (yet. credlib is coming),
- *   the other functionality will continue to operate.
- *   -----------------------------------------------------------------
- *   You should have received a copy of the GNU Affero General Public
- *   License along with this program.  If not, see: www.gnu.org/licenses/
- *   (Scroll to the bottom of this file to see the AGPL.)
+ *   You should have received a copy of the GNU General
+ *   Public License along with this program.  If not, see:
+ *   http://www.gnu.org/licenses/
  *
- *   If you would like to use this software outside of the free software
- *   license, please contact FellowTraveler. (Unfortunately many will run
- *   anonymously and untraceably, so who could really stop them?)
+ *   If you would like to use this software outside of the free
+ *   software license, please contact FellowTraveler.
+ *   (Unfortunately many will run anonymously and untraceably,
+ *   so who could really stop them?)
  *   
  *   DISCLAIMER:
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Affero General Public License for more details.
- *    	
- *************************************************************************
+ *   This program is distributed in the hope that it will be
+ *   useful, but WITHOUT ANY WARRANTY; without even the implied
+ *   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ *   PURPOSE.  See the GNU General Public License for more
+ *   details.
+
+-----BEGIN PGP SIGNATURE-----
+wsFVAwUBTbFZUwMIAO35UbuOAQjDRBAAmIUJBi5/WC1KpI4TNAWdQNh6g59qYS6w
+SI6mTMbnP0DUVOrmJdNR7/n1sRlnWzyjKLcKkRtXwRWGC+jE16jijxek9Ome5Qid
+bDqjHSuFvqnsD3+0tbENf+kVrbAReU3YvWk+xFvVc6I2NpS+lEIdjHIWm85jSmew
+Ydx+4KpELkO59thkcKgSYsTSyTP3l9GOTtJlq45XiamoEvso4jFUC1y5KMQsz1KH
+DTE32m5FPZqJqUw9loAmrni3dIMpXKC5yLhdqSMXHK0MAPEIexsuaZjrjKJQSjwV
+eDjwJcMn2WZVvcIr9IEoKEU/2j9wHNZv5Xuj78A/78AkjqEUwrY1M9ht0r/QbusW
+ZT7MlxNCq4DFstrjyKi03yZQGR+m8eJFHE7GvF8Vzg/ap0/CUJzeoXg5wACXGfJj
+k6y8ZBriQO08JECki2sy6oTitDoi7FmzgAIxPGB1qA4HMur/LuzrxAj2V7XkZQlk
+VfAda6Ff9bmStNut+zbsQ0pnIeL/URwWifI8Wq81c7DEIvA5SH/bU9Hws1FMO8PU
+BcDmzadU+syJBTxoP/mHZcLfwHDhcZyBeHX7sHfpHweEunzWjcHjqVCutQMO4dii
+yrsc64WTfAqd4s12SfKMgVFLeL/FUYH7MNqpfgjgwX5co817m9VvCntU6njIuYtV
+6+G/TuSViH8=
+=/jIC
+-----END PGP SIGNATURE-----
+ **************************************************************/
+
+
+
+
+
+
+
+
+
+Open Transactions v0.55
+(Scroll to the bottom to see the complete AGPLv3.)
+
+/************************************************************
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
+
+ *                 OPEN TRANSACTIONS
+ *
+ *       Financial Cryptography and Digital Cash
+ *       Library, Protocol, API, Server, and GUI 
+ *    
+ *    	 -- Anonymous Numbered Accounts.
+ *    	 -- Untraceable Digital Cash.
+ *    	 -- Triple-Signed Receipts.
+ *    	 -- Cheques, Vouchers, Transfers, Inboxes.
+ *    	 -- Basket Currencies, Markets, Payment Plans.
+ *    	 -- Signed, XML, Ricardian-style Contracts.
+ *    
+ *  Copyright (C) 2010-2011 by "Fellow Traveler" (A pseudonym)
+ *
+ *  EMAIL:
+ *  FellowTraveler@rayservers.net --- SEE PGP KEY BELOW.
+ *  F3llowTraveler@gmail.com --- (not preferred.)
+ *  
+ *  BITCOIN:  1NtTPVVjDsUfDWybS4BwvHpG2pdS9RnYyQ
+ *
+ *  KEY FINGERPRINT:
+ *  9DD5 90EB 9292 4B48 0484  7910 0308 00ED F951 BB8E
+ *
+ *  OFFICIAL PROJECT WIKI(s):
+ *  http://wiki.github.com/FellowTraveler/Open-Transactions/wiki 
+ *  http://wiki.github.com/FellowTraveler/Moneychanger/wiki 
+ *
+ *  WEBSITE:
+ *  http://www.OpenTransactions.org/
+ *    
+ *  Components and licensing:
+ *   -- Moneychanger..A Java client GUI.....LICENSE:.....GPLv3
+ *   -- OTLib.........A class library.......LICENSE:...LAGPLv3 
+ *   -- OT-API........A client API..........LICENSE:...LAGPLv3
+ *   -- testwallet....Command-line client...LICENSE:...LAGPLv3
+ *   -- OT-Server.....Server Application....LICENSE:....AGPLv3
+ *  Github.com/FellowTraveler/Open-Transactions/wiki/Components
+ *
+ *  All of the above OT components were designed and written by
+ *  Fellow Traveler, with the exception of Moneychanger, which
+ *  was contracted out to Vicky C (livewire_3001@yahoo.com).
+ *
+ *  -----------------------------------------------------
+ *
+ *   LICENSE:
+ *   This program is free software: you can redistribute it
+ *   and/or modify it under the terms of the GNU Affero
+ *   General Public License as published by the Free Software
+ *   Foundation, either version 3 of the License, or (at your
+ *   option) any later version.
+ *    
+ *   ADDITIONAL PERMISSION under the GNU Affero GPL version 3
+ *   section 7: (This paragraph applies only to the LAGPLv3
+ *   components listed above.) If you modify this Program, or
+ *   any covered work, by linking or combining it with other
+ *   code, such other code is not for that reason alone subject
+ *   to any of the requirements of the GNU Affero GPL version 3.
+ *   (==> This means if you are only using the OT-API, then you
+ *   don't have to open-source your code--only your changes to
+ *   Open Transactions itself must be open source. Similar to
+ *   LGPLv3, except it applies to software-as-a-service, not
+ *   just to distributing binaries.)
+ *
+ *   Extra WAIVER for OpenSSL, Lucre, and all other libraries
+ *   used by Open Transactions: This program is released under
+ *   the AGPL with the additional exemption that compiling,
+ *   linking, and/or using OpenSSL is allowed. The same is true
+ *   for any other open source libraries included in this
+ *   project: complete waiver from the AGPL is hereby granted to
+ *   compile, link, and/or use them with Open Transactions,
+ *   according to their own terms, as long as the rest of the
+ *   Open Transactions terms remain respected, with regard to
+ *   the Open Transactions code itself.
+ *    
+ *   Lucre License:
+ *   This code is also "dual-license", meaning that Ben Lau-
+ *   rie's license must also be included and respected, since
+ *   the code for Lucre is also included with Open Transactions.
+ *   See Open-Transactions/OTLib/Lucre/LUCRE_LICENSE.txt
+ *   The Laurie requirements are light, but if there is any
+ *   problem with his license, simply remove the Lucre code.
+ *   Although there are no other blind token algorithms in Open
+ *   Transactions (yet. credlib is coming), the other functions
+ *   will continue to operate.
+ *   -----------------------------------------------------
+ *   You should have received a copy of the GNU Affero General
+ *   Public License along with this program.  If not, see:
+ *   http://www.gnu.org/licenses/
+ *
+ *   If you would like to use this software outside of the free
+ *   software license, please contact FellowTraveler.
+ *   (Unfortunately many will run anonymously and untraceably,
+ *   so who could really stop them?)
+ *   
+ *   DISCLAIMER:
+ *   This program is distributed in the hope that it will be
+ *   useful, but WITHOUT ANY WARRANTY; without even the implied
+ *   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ *   PURPOSE.  See the GNU Affero General Public License for
+ *   more details.
  
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (Darwin)
+
+iQIcBAEBCAAGBQJNsV9NAAoJEAMIAO35UbuOB3IP/12THBedTYrR2F2hkhYKK+0H
+YlVwRJyFnX3uKjDkYx2fpB2yNaMPPyiQRFpQBpiUxB2wSMHelM+m4YxVegx7h15s
+nD+jMLeVnlhgfKYsVZZiCKT58HXVsuGDc/iycXBBIQYBjCzbeCCG0vyEapR+sCwF
+eGR5l7yGbcMWaVqjPawqSMe/5Ie0wstWMrNAkLlWHRn/ISXb8vMusaxCe9kSeUX8
+7ZSZ0ojy3gLTZnUHFFZ2RaMepVB9jVoMSdVG89mEHX383foTuaxedjI2Wsw6J8YR
+D7PFp6PLGhm1eqArmotCj5NeV9lleULdnvR7T4QwzOZjI65kMwi/e1W6GyvzT3RZ
+RrLaZwiagcyKTXyEX5qSBQfSVNwC761rgNTG0fCBrBmDbQxet4A6Y+ZMxZmE0QXb
+Xch/g4g9Lki0TrSOx0zSAAcpLCIrqdvGX2jcmmJ/Ex4ZhzVhMvtkGfui9bUaY2bU
+bdu1GY0CfmElZ7+wXh2AutkMscRtnu62VSdGjrqry3KJMBWbtxNA9Q+U+NipWnYN
+yisBlQBADkXNtkL3EXEqX6OnjGfHNZ3G1bwuELcZjoOL+K0aQKCojRf8Ii5DW0A3
+niqzq/dwpt45VaQ+uYSG7Sg19FNvADg+WILdFcyszfS8Wks6BsKYzHUc5zbf3SFc
+JaOXLV9Ss58mj57JpNp8
+=VjLJ
+-----END PGP SIGNATURE-----
+ **************************************************************/
+ 
+
+
+
+
+SIGNED PUBLIC KEY FOR AUTHOR:
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
 
 Public key for "FellowTraveler", author:
 
------BEGIN PGP PUBLIC KEY BLOCK-----
+- -----BEGIN PGP PUBLIC KEY BLOCK-----
  Version: PGP Desktop 10.0.1
  
  mQINBExGapYBEACm9Qjd1rl6UoXFx/1ccUZ54LJwpBLJC55sZC7owl3yTKVtklxX
@@ -188,6 +299,23 @@ Public key for "FellowTraveler", author:
  B+djl7t/g2GIz2q2JeuxWBjvYWclRhPs8xx1D97Kb+3pUUU=
  =6+N5
  -----END PGP PUBLIC KEY BLOCK-----
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (Darwin)
+
+iQIcBAEBCAAGBQJNsWCWAAoJEAMIAO35UbuOv3kP/Rd6UekX27+rHiMPfo8vN1Iz
+cjXg3o7J4BWsppZQppT4r1ZmZ6ftVXDxfSeR22kWQeU7IjNjDKcQ8Vh0P1x/DHva
+YczzHzQsiGGCWVzCyJyh8ENreS0mFAM6RqAP7HwOE+5iJstSatN5EHd0Om+QQvKJ
+xdSe8pct6y4NjhfjXm1bfIV4suadQodFw4qp3h3LfVypPEeiGD0ohAJ2l7zO/bE3
+xNxvvj/WLfqyxVVc1pip7CzNNJTr+bQI1hh3nFXTElH+zu/YXvob4NPySruh98wE
+PxzFnZ+Nl0n13+sfUW/tdI2xYWo7IZ34Ft2SjCy3He9rSLE5keke3loT8r50tu3J
+pfpwDUHXAJO6nQFMbiAIEc/n+B42s8AvQ/PNmQA1/JcdlQaeBA2+k/ursOPSajDb
+sTjsqsBsp5AYXAIJUbvzDDIz/2gzRcZjXaj+P9YfH00gJ2ZmKM1gTLWFrYRURIW7
+dRLUMY6HvDtyjAlO9LnvuwbdBU6jQb9EaE7FOQuO4LG62Rh9irHo3j7/FjJZkllj
+g7Ypjamz9+U/5Jt2V7ivvmPbZ/IGu5dA2bw3Pqf0LtTMGqiLQWFmXLRlZ44DPv6Q
+MvrCHCsSZB/Dgb4A8vZYFLbY2kzqf+g1ra4qWkKQFyNkwCbSU1p1xj2rnrRmWwSf
+kLZLksZLPzcxEHdPh6YV
+=/Nb5
+-----END PGP SIGNATURE-----
 
 
 
@@ -917,39 +1045,39 @@ work in the code.
 
  irrXML  ---  (XML Parser)
 
-	The irrXML license is based on the zlib license. Basically, this means you 
-        can do with irrXML whatever you want:
+The irrXML license is based on the zlib license. Basically, this means you 
+can do with irrXML whatever you want:
 
-	Copyright (C) 2002-2005 Nikolaus Gebhardt
+Copyright (C) 2002-2005 Nikolaus Gebhardt
 
-	http://www.ambiera.com/irrxml/
+http://www.ambiera.com/irrxml/
 
-	This software is provided 'as-is', without any express or implied
-	warranty.  In no event will the authors be held liable for any damages
-	arising from the use of this software.
+This software is provided 'as-is', without any express or implied
+warranty.  In no event will the authors be held liable for any damages
+arising from the use of this software.
 
-	Permission is granted to anyone to use this software for any purpose,
-	including commercial applications, and to alter it and redistribute it
-	freely, subject to the following restrictions:
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
 
-	1. The origin of this software must not be misrepresented; you must not
-		claim that you wrote the original software. If you use this software
-		in a product, an acknowledgment in the product documentation would be
-		appreciated but is not required.
+1. The origin of this software must not be misrepresented; you must not
+	claim that you wrote the original software. If you use this software
+	in a product, an acknowledgment in the product documentation would be
+	appreciated but is not required.
 
-	2. Altered source versions must be plainly marked as such, and must not be
-		misrepresented as being the original software.
+2. Altered source versions must be plainly marked as such, and must not be
+	misrepresented as being the original software.
 
-	3. This notice may not be removed or altered from any source distribution.
+3. This notice may not be removed or altered from any source distribution.
 
-	History
+History
 
-	As lots of references in this documentation and the source show, this xml 
-	parser has originally been a part of the 
-	<A HREF="http://irrlicht.sourceforge.net" >Irrlicht Engine</A>. But because
-	the parser has become very useful with the latest release, people asked for a 
-	separate version of it, to be able to use it in non Irrlicht projects. With
-	irrXML 1.0, this has now been done.
+As lots of references in this documentation and the source show, this xml 
+parser has originally been a part of the 
+<A HREF="http://irrlicht.sourceforge.net" >Irrlicht Engine</A>. But because
+the parser has become very useful with the latest release, people asked for a 
+separate version of it, to be able to use it in non Irrlicht projects. With
+irrXML 1.0, this has now been done.
 
 */
 
@@ -1055,29 +1183,54 @@ work in the code.
 
 /**************************************************************************
 
-AGPL LICENSE (for OpenTransactions)
+    ==================> OPEN TRANSACTIONS LICENSE <==================
 
 
-"OpenSSL, etc" WAIVER (OpenSSL and any other libraries I used):
-    This program is released under the AGPL with the additional exemption 
-	that compiling, linking, and/or using OpenSSL, etc is allowed.
-
- *    Moneychanger.....Ñ A Java Client App..........LICENSE:   GPLv3
- *    OTLib............Ñ A class library............LICENSE: LAGPLv3 
- *    OT-API...........Ñ A Client API...............LICENSE: LAGPLv3
- *    testwallet.......Ñ A command-line client......LICENSE: LAGPLv3
- *    OT-Server........Ñ A Server Application.......LICENSE:  AGPLv3
- *   
+ *    Components:
+ *      Moneychanger..... A Java Client App..........LICENSE:   GPLv3
+ *      OTLib............ A class library............LICENSE: LAGPLv3 
+ *      OT-API........... A Client API...............LICENSE: LAGPLv3
+ *      testwallet....... A command-line client......LICENSE: LAGPLv3
+ *      OT-Server........ A Server Application.......LICENSE:  AGPLv3
+ *    http://github.com/FellowTraveler/Open-Transactions/wiki/Components
  *
- *   LAGPLv3
- *   ADDITIONAL PERMISSION under the GNU Affero GPL version 3,
- *   section 7 (This paragraph is the "LAGPL" permission and applies
- *   only to the components listed above as LAGPL components):  If
- *   you modify this Program, or any covered work, by linking or
- *   combining it with other code, such other code is not for that
- *   reason alone subject to any of the requirements of the GNU
- *   Affero GPL version 3.
-
+ *    All of the above OT components were designed and written by
+ *    Fellow Traveler, with the exception of Moneychanger, which was
+ *    written by Vicky C (livewire_3001@yahoo.com) under contract.
+ *
+ *   LICENSE:
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Affero General Public License as
+ *   published by the Free Software Foundation, either version 3 of the
+ *   License, or (at your option) any later version.
+ *    
+ *   ADDITIONAL PERMISSION under the GNU Affero GPL version 3 section 7:
+ *   This paragraph applies only to the LAGPLv3 components listed above.
+ *   If you modify this Program, or any covered work, by linking or
+ *   combining it with other code, such other code is not for that reason
+ *   alone subject to any of the requirements of the GNU Affero GPL
+ *   version 3. (This means if you are only using the OT-API, then you
+ *   don't have to open-source your code--only your changes to Open
+ *   Transactions itself must be open source. Similar to LGPLv3, except
+ *   it applies to software-as-a-service, not just distributing binaries.)
+ *
+ *   Extra WAIVER for OpenSSL, Lucre, and all other libraries used by OT:
+ *   This program is released under the AGPL with the additional exemption 
+ *   that compiling, linking, and/or using OpenSSL is allowed. The same is
+ *   true for any other open source libraries included in this project: 
+ *   complete waiver from the AGPL is hereby granted to compile, link,
+ *   and/or use them with Open Transactions, according to their own terms,
+ *   as long as the rest of the Open Transactions terms remain respected,
+ *   with regard to the Open Transactions code itself.
+ *    
+ *   Lucre License:
+ *   This library is also "dual-license", meaning that Ben Laurie's license
+ *   must also be included and respected, since the code for Lucre is also
+ *   included with Open Transactions. See Open-Transactions/OTLib/Lucre.
+ *   The Laurie requirements are light, but if there is any problem with
+ *   his license, simply remove the Lucre code. Although there are no other
+ *   blind token algorithms in Open Transactions (yet. credlib is coming),
+ *   the other functionality will continue to operate.
 
 
                     GNU AFFERO GENERAL PUBLIC LICENSE
@@ -1715,8 +1868,8 @@ the "copyright" line and a pointer to where the full notice is found.
     Copyright (C) <year>  <name of author>
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
@@ -1738,9 +1891,10 @@ of the code.  There are many ways you could offer source, and different
 solutions will be better for different programs; see section 13 for the
 specific requirements.
 
-  You should also get your employer (if you work as a programmer) or school, if any, to sign a "copyright disclaimer" for the program, if
-necessary. For more information on this, and how to apply and follow the
-GNU AGPL, see <http://www.gnu.org/licenses/>.
+  You should also get your employer (if you work as a programmer) or
+school, if any, to sign a "copyright disclaimer" for the program, if
+necessary. For more information on this, and how to apply and follow
+the GNU AGPL, see <http://www.gnu.org/licenses/>.
 
 */
 

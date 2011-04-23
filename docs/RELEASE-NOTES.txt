@@ -1,7 +1,9 @@
 
 NOTES on the Version:
 
-// ---------------------------------------------------------------------
+// --------------------------------------------------------------------
+ 
+   0.55 --- Minor release, goes along with Moneychanger (new Java GUI.)
 
    0.54 --- OT now stores the last 1024 logs internally, and makes them
             available via the API. Various other API debugging was done.

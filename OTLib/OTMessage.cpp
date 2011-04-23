@@ -2,84 +2,131 @@
  *    
  *  OTMessage.cpp
  *  
- *		Open Transactions:  Library, Protocol, Server, and Test Client
- *    
- *    			-- Anonymous Numbered Accounts
- *    			-- Untraceable Digital Cash
- *    			-- Triple-Signed Receipts
- *    			-- Basket Currencies
- *    			-- Signed XML Contracts
- *    
- *    Copyright (C) 2010 by "Fellow Traveler" (A pseudonym)
- *    
- *    EMAIL:
- *    F3llowTraveler@gmail.com --- SEE PGP PUBLIC KEY IN CREDITS FILE.
- *    
- *    KEY FINGERPRINT:
- *    9DD5 90EB 9292 4B48 0484  7910 0308 00ED F951 BB8E
- *    
- *    WEBSITE:
- *    http://www.OpenTransactions.org
- *    
- *    OFFICIAL PROJECT WIKI:
- *    http://wiki.github.com/FellowTraveler/Open-Transactions/
- *    
- *     ----------------------------------------------------------------
- *    
- *    Open Transactions was written including these libraries:
- *    
- *       Lucre          --- Copyright (C) 1999-2009 Ben Laurie.
- *                          http://anoncvs.aldigital.co.uk/lucre/
- *       irrXML         --- Copyright (C) 2002-2005 Nikolaus Gebhardt
- *                          http://irrlicht.sourceforge.net/author.html	
- *       easyzlib       --- Copyright (C) 2008 First Objective Software, Inc.
- *                          Used with permission. http://www.firstobject.com/
- *       PGP to OpenSSL --- Copyright (c) 2010 Mounir IDRASSI 
- *                          Used with permission. http://www.idrix.fr
- *       SFSocket       --- Copyright (C) 2009 Matteo Bertozzi
- *                          Used with permission. http://th30z.netsons.org/
- *    
- *     ----------------------------------------------------------------
+ */
+
+/************************************************************
+ -----BEGIN PGP SIGNED MESSAGE-----
+ Hash: SHA256
+ 
+ *                 OPEN TRANSACTIONS
  *
- *    Open Transactions links to these libraries:
+ *       Financial Cryptography and Digital Cash
+ *       Library, Protocol, API, Server, and GUI 
  *    
- *       OpenSSL        --- (Version 1.0.0a at time of writing.) 
- *                          http://openssl.org/about/
- *       zlib           --- Copyright (C) 1995-2004 Jean-loup Gailly and Mark Adler
+ *    	 -- Anonymous Numbered Accounts.
+ *    	 -- Untraceable Digital Cash.
+ *    	 -- Triple-Signed Receipts.
+ *    	 -- Cheques, Vouchers, Transfers, Inboxes.
+ *    	 -- Basket Currencies, Markets, Payment Plans.
+ *    	 -- Signed, XML, Ricardian-style Contracts.
  *    
- *     ----------------------------------------------------------------
+ *  Copyright (C) 2010-2011 by "Fellow Traveler" (A pseudonym)
  *
- *    LICENSE:
- *        This program is free software: you can redistribute it and/or modify
- *        it under the terms of the GNU Affero General Public License as
- *        published by the Free Software Foundation, either version 3 of the
- *        License, or (at your option) any later version.
+ *  EMAIL:
+ *  FellowTraveler@rayservers.net --- SEE PGP KEY BELOW.
+ *  F3llowTraveler@gmail.com --- (not preferred.)
+ *  
+ *  BITCOIN:  1NtTPVVjDsUfDWybS4BwvHpG2pdS9RnYyQ
+ *
+ *  KEY FINGERPRINT:
+ *  9DD5 90EB 9292 4B48 0484  7910 0308 00ED F951 BB8E
+ *
+ *  OFFICIAL PROJECT WIKI(s):
+ *  http://wiki.github.com/FellowTraveler/Open-Transactions/wiki 
+ *  http://wiki.github.com/FellowTraveler/Moneychanger/wiki 
+ *
+ *  WEBSITE:
+ *  http://www.OpenTransactions.org/
  *    
- *        You should have received a copy of the GNU Affero General Public License
- *        along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *    	
- *    	  If you would like to use this software outside of the free software
- *    	  license, please contact FellowTraveler.
+ *  Components and licensing:
+ *   -- Moneychanger..A Java client GUI.....LICENSE:.....GPLv3
+ *   -- OTLib.........A class library.......LICENSE:...LAGPLv3 
+ *   -- OT-API........A client API..........LICENSE:...LAGPLv3
+ *   -- testwallet....Command-line client...LICENSE:...LAGPLv3
+ *   -- OT-Server.....Server Application....LICENSE:....AGPLv3
+ *  Github.com/FellowTraveler/Open-Transactions/wiki/Components
+ *
+ *  All of the above OT components were designed and written by
+ *  Fellow Traveler, with the exception of Moneychanger, which
+ *  was contracted out to Vicky C (livewire_3001@yahoo.com).
+ *
+ *  -----------------------------------------------------
+ *
+ *   LICENSE:
+ *   This program is free software: you can redistribute it
+ *   and/or modify it under the terms of the GNU Affero
+ *   General Public License as published by the Free Software
+ *   Foundation, either version 3 of the License, or (at your
+ *   option) any later version.
+ *    
+ *   ADDITIONAL PERMISSION under the GNU Affero GPL version 3
+ *   section 7: (This paragraph applies only to the LAGPLv3
+ *   components listed above.) If you modify this Program, or
+ *   any covered work, by linking or combining it with other
+ *   code, such other code is not for that reason alone subject
+ *   to any of the requirements of the GNU Affero GPL version 3.
+ *   (==> This means if you are only using the OT-API, then you
+ *   don't have to open-source your code--only your changes to
+ *   Open Transactions itself must be open source. Similar to
+ *   LGPLv3, except it applies to software-as-a-service, not
+ *   just to distributing binaries.)
+ *
+ *   Extra WAIVER for OpenSSL, Lucre, and all other libraries
+ *   used by Open Transactions: This program is released under
+ *   the AGPL with the additional exemption that compiling,
+ *   linking, and/or using OpenSSL is allowed. The same is true
+ *   for any other open source libraries included in this
+ *   project: complete waiver from the AGPL is hereby granted to
+ *   compile, link, and/or use them with Open Transactions,
+ *   according to their own terms, as long as the rest of the
+ *   Open Transactions terms remain respected, with regard to
+ *   the Open Transactions code itself.
+ *    
+ *   Lucre License:
+ *   This code is also "dual-license", meaning that Ben Lau-
+ *   rie's license must also be included and respected, since
+ *   the code for Lucre is also included with Open Transactions.
+ *   See Open-Transactions/OTLib/Lucre/LUCRE_LICENSE.txt
+ *   The Laurie requirements are light, but if there is any
+ *   problem with his license, simply remove the Lucre code.
+ *   Although there are no other blind token algorithms in Open
+ *   Transactions (yet. credlib is coming), the other functions
+ *   will continue to operate.
+ *   -----------------------------------------------------
+ *   You should have received a copy of the GNU Affero General
+ *   Public License along with this program.  If not, see:
+ *   http://www.gnu.org/licenses/
+ *
+ *   If you would like to use this software outside of the free
+ *   software license, please contact FellowTraveler.
+ *   (Unfortunately many will run anonymously and untraceably,
+ *   so who could really stop them?)
  *   
- *        This library is also "dual-license", meaning that Ben Laurie's license
- *        must also be included and respected, since the code for Lucre is also
- *        included with Open Transactions.
- *        The Laurie requirements are light, but if there is any problem with his
- *        license, simply remove the Lucre code. Although there are no other blind
- *        token algorithms in Open Transactions (yet), the other functionality will
- *        continue to operate .
- *    
- *    OpenSSL WAIVER:
- *        This program is released under the AGPL with the additional exemption 
- *    	  that compiling, linking, and/or using OpenSSL is allowed.
- *    
- *    DISCLAIMER:
- *        This program is distributed in the hope that it will be useful,
- *        but WITHOUT ANY WARRANTY; without even the implied warranty of
- *        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *        GNU Affero General Public License for more details.
- *    	
- ************************************************************************************/
+ *   DISCLAIMER:
+ *   This program is distributed in the hope that it will be
+ *   useful, but WITHOUT ANY WARRANTY; without even the implied
+ *   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ *   PURPOSE.  See the GNU Affero General Public License for
+ *   more details.
+ 
+ -----BEGIN PGP SIGNATURE-----
+ Version: GnuPG v1.4.10 (Darwin)
+ 
+ iQIcBAEBCAAGBQJNsV9NAAoJEAMIAO35UbuOB3IP/12THBedTYrR2F2hkhYKK+0H
+ YlVwRJyFnX3uKjDkYx2fpB2yNaMPPyiQRFpQBpiUxB2wSMHelM+m4YxVegx7h15s
+ nD+jMLeVnlhgfKYsVZZiCKT58HXVsuGDc/iycXBBIQYBjCzbeCCG0vyEapR+sCwF
+ eGR5l7yGbcMWaVqjPawqSMe/5Ie0wstWMrNAkLlWHRn/ISXb8vMusaxCe9kSeUX8
+ 7ZSZ0ojy3gLTZnUHFFZ2RaMepVB9jVoMSdVG89mEHX383foTuaxedjI2Wsw6J8YR
+ D7PFp6PLGhm1eqArmotCj5NeV9lleULdnvR7T4QwzOZjI65kMwi/e1W6GyvzT3RZ
+ RrLaZwiagcyKTXyEX5qSBQfSVNwC761rgNTG0fCBrBmDbQxet4A6Y+ZMxZmE0QXb
+ Xch/g4g9Lki0TrSOx0zSAAcpLCIrqdvGX2jcmmJ/Ex4ZhzVhMvtkGfui9bUaY2bU
+ bdu1GY0CfmElZ7+wXh2AutkMscRtnu62VSdGjrqry3KJMBWbtxNA9Q+U+NipWnYN
+ yisBlQBADkXNtkL3EXEqX6OnjGfHNZ3G1bwuELcZjoOL+K0aQKCojRf8Ii5DW0A3
+ niqzq/dwpt45VaQ+uYSG7Sg19FNvADg+WILdFcyszfS8Wks6BsKYzHUc5zbf3SFc
+ JaOXLV9Ss58mj57JpNp8
+ =VjLJ
+ -----END PGP SIGNATURE-----
+ **************************************************************/
 
 
 #include <cstring>
@@ -96,7 +143,9 @@ using namespace irr;
 using namespace io;
 
 #include "OTMessage.h"
+#include "OTString.h"
 #include "OTStringXML.h"
+#include "OTASCIIArmor.h"
 
 #include "OTLog.h"
 
@@ -247,6 +296,32 @@ void OTMessage::UpdateContents()
 	
 	
 	// ------------------------------------------------------------------------
+	// This one isn't part of the message protocol, but is used for outmail storage.
+	// (Because outmail isn't encrypted like the inmail is, since the Nymfile itself
+	// will soon be encrypted, and there's no need to be redundant also as well in addition on top of that.
+	//
+	if (m_strCommand.Compare("outmailMessage"))
+	{		
+		m_xmlUnsigned.Concatenate("<%s\n"
+								  " nymID=\"%s\"\n"
+								  " nymID2=\"%s\"\n"
+								  " requestNum=\"%s\"\n"
+								  " serverID=\"%s\""
+								  ">\n\n",
+								  m_strCommand.Get(),
+								  m_strNymID.Get(),
+								  m_strNymID2.Get(),
+								  m_strRequestNum.Get(),
+								  m_strServerID.Get()
+								  );
+		
+		if (m_ascPayload.GetLength() > 2)
+			m_xmlUnsigned.Concatenate("<messagePayload>\n%s</messagePayload>\n\n", m_ascPayload.Get());
+		
+		m_xmlUnsigned.Concatenate("</%s>\n\n", m_strCommand.Get());
+	} // ------------------------------------------------------------------------	
+	
+	// ------------------------------------------------------------------------
 	
 	if (m_strCommand.Compare("sendUserMessage"))
 	{		
@@ -265,7 +340,7 @@ void OTMessage::UpdateContents()
 		
 		if (m_ascPayload.GetLength() > 2)
 			m_xmlUnsigned.Concatenate("<messagePayload>\n%s</messagePayload>\n\n", m_ascPayload.Get());
-
+		
 		m_xmlUnsigned.Concatenate("</%s>\n\n", m_strCommand.Get());
 	} // ------------------------------------------------------------------------
 	
@@ -284,7 +359,7 @@ void OTMessage::UpdateContents()
 								  m_strNymID2.Get(),
 								  m_strServerID.Get()
 								  );
-				
+		
 		m_xmlUnsigned.Concatenate("</%s>\n\n", m_strCommand.Get());
 	} // ------------------------------------------------------------------------
 	
@@ -1098,41 +1173,22 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strNymID		= xml->getAttributeValue("nymID");
 		m_strServerID	= xml->getAttributeValue("serverID");
 		
-		// move to the next node which SHOULD be the nymPublicKey element field
-		xml->read();
+		// -----------------------------------------------------
 		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		const char *	pElementExpected	= "nymPublicKey";
+		OTASCIIArmor 	ascTextExpected;
+		
+		if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 		{
-			if (!strcmp("nymPublicKey", xml->getNodeName()))
-			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					m_strNymPublicKey = xml->getNodeData();
-					
-				}
-				else
-				{
-					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-							"Expected nymPublicKey text field in checkServerID command\n");
-					return (-1); // error condition
-				}				
-			}
-			else 
-			{
-				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-						"checkServerID without nymPublicKey element.\n");
-				return (-1); // error condition
-			}
-			
-		}
-		else
-		{
-			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-					"Expected nymPublicKey element with text field in checkServerID command\n");
+			OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+						  "Expected %s element with text field, for %s.\n", 
+						  pElementExpected, m_strCommand.Get());
 			return (-1); // error condition
 		}
+		
+		m_strNymPublicKey = ascTextExpected;
+		
+		// -----------------------------------------------------
 		
 		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nServerID: %s\n\nPublic Key:\n%s\n", 
 				m_strCommand.Get(), m_strNymID.Get(), m_strServerID.Get(), m_strNymPublicKey.Get());
@@ -1155,7 +1211,6 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strNymID		= xml->getAttributeValue("nymID");
 		m_strServerID	= xml->getAttributeValue("serverID");
 		
-		
 		OTLog::vOutput(1, "\nCommand: %s\nSuccess: %s\nNymID:    %s\n"
 				"ServerID: %s\n\n", 
 				m_strCommand.Get(), strSuccess.Get(), m_strNymID.Get(), 
@@ -1172,40 +1227,22 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strNymID		= xml->getAttributeValue("nymID");
 		m_strServerID	= xml->getAttributeValue("serverID");
 		
-		// move to the next node which SHOULD be the nymPublicKey element field
-		xml->read();
+		// -----------------------------------------------------
 		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		const char *	pElementExpected	= "nymPublicKey";
+		OTASCIIArmor 	ascTextExpected;
+		
+		if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 		{
-			if (!strcmp("nymPublicKey", xml->getNodeName()))
-			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					m_strNymPublicKey = xml->getNodeData();
-				}
-				else
-				{
-					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-							"Expected nymPublicKey text field in createUserAccount command\n");
-					return (-1); // error condition
-				}				
-			}
-			else 
-			{
-				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-						"createUserAccount without nymPublicKey element.\n");
-				return (-1); // error condition
-			}
-			
-		}
-		else
-		{
-			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-					"Expected nymPublicKey element with text field in createUserAccount command\n");
+			OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+						  "Expected %s element with text field, for %s.\n", 
+						  pElementExpected, m_strCommand.Get());
 			return (-1); // error condition
 		}
+		
+		m_strNymPublicKey = ascTextExpected;
+		
+		// -----------------------------------------------------
 		
 		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nServerID: %s\n\nPublic Key:\n%s\n", 
 				m_strCommand.Get(), m_strNymID.Get(), m_strServerID.Get(), m_strNymPublicKey.Get());
@@ -1229,42 +1266,21 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strNymID		= xml->getAttributeValue("nymID");
 		m_strServerID	= xml->getAttributeValue("serverID");
 		
-		// move to the next node which SHOULD be the inReferenceTo element field
-		xml->read();
+		// -----------------------------------------------------
 		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		const char *	pElementExpected	= "inReferenceTo";
+		OTASCIIArmor &	ascTextExpected		= m_ascInReferenceTo;
+		
+		if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 		{
-			if (!strcmp("inReferenceTo", xml->getNodeName()))
-			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					m_ascInReferenceTo.Set(xml->getNodeData());
-				}
-				else
-				{
-					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-							"Expected inReferenceTo text field in createUserAccount command\n");
-					return (-1); // error condition
-				}				
-			}
-			else 
-			{
-				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-						"createUserAccount without inReferenceTo element.\n");
-				return (-1); // error condition
-			}
-			
-		}
-		else
-		{
-			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-					"Expected inReferenceTo element with text field in createUserAccount command\n");
+			OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+						  "Expected %s element with text field, for %s.\n", 
+						  pElementExpected, m_strCommand.Get());
 			return (-1); // error condition
 		}
 		
-		OTString oldMessage(m_ascInReferenceTo);
+		// -----------------------------------------------------
+		
 		OTLog::vOutput(1, "\nCommand: %s  %s\nNymID:    %s\nServerID: %s\n\n\n", 
 				m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"), m_strNymID.Get(), 
 				m_strServerID.Get());
@@ -1314,6 +1330,37 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 	
 	// -------------------------------------------------------------------------------------------
 	
+	else if (!strcmp("outmailMessage", xml->getNodeName())) 
+	{		
+		m_strCommand	= xml->getNodeName();  // Command
+		m_strNymID		= xml->getAttributeValue("nymID");
+		m_strNymID2		= xml->getAttributeValue("nymID2");
+		m_strServerID	= xml->getAttributeValue("serverID");
+		m_strRequestNum = xml->getAttributeValue("requestNum");
+		
+		// ----------------------------------------------------
+		
+		const char *	pElementExpected	= "messagePayload";
+		OTASCIIArmor &	ascTextExpected		= m_ascPayload;
+		
+		if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
+		{
+			OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+						  "Expected %s element with text field, for %s.\n", 
+						  pElementExpected, m_strCommand.Get());
+			return (-1); // error condition
+		}
+		
+		// ---------------------------------------------------
+		
+		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nNymID2:    %s\nServerID: %s\nRequest #: %s\n", 
+					   m_strCommand.Get(), m_strNymID.Get(), m_strNymID2.Get(), m_strServerID.Get(), m_strRequestNum.Get());
+		
+		nReturnVal = 1;
+	}
+	
+	// -------------------------------------------------------------------------------------------
+	
 	
 	else if (!strcmp("sendUserMessage", xml->getNodeName())) 
 	{		
@@ -1323,44 +1370,17 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strServerID	= xml->getAttributeValue("serverID");
 		m_strRequestNum = xml->getAttributeValue("requestNum");
 		
-		// move to the next node which SHOULD be the nymPublicKey element field
-		xml->read();
+		const char *	pElementExpected	= "messagePayload";
+		OTASCIIArmor &	ascTextExpected		= m_ascPayload;
 		
-		const char * pElementExpected = "messagePayload";
-		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 		{
-			if (!strcmp(pElementExpected, xml->getNodeName()))
-			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					m_ascPayload.Set(xml->getNodeData());				
-				}
-				else
-				{
-					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-								  "Expected %s text field in sendUserMessage message\n", 
-								  pElementExpected);
-					return (-1); // error condition
-				}				
-			}
-			else 
-			{
-				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-							  "sendUserMessage without %s element.\n", pElementExpected);
-				return (-1); // error condition
-			}
-		}
-		else
-		{
-			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-						  "Expected %s element with text field in sendUserMessage response\n", 
-						  pElementExpected);
+			OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+						  "Expected %s element with text field, for %s.\n", 
+						  pElementExpected, m_strCommand.Get());
 			return (-1); // error condition
 		}
-				
+		
 		OTLog::vOutput(1, "\nCommand: %s\nNymID:    %s\nNymID2:    %s\nServerID: %s\nRequest #: %s\n", 
 					   m_strCommand.Get(), m_strNymID.Get(), m_strNymID2.Get(), m_strServerID.Get(), m_strRequestNum.Get());
 		
@@ -1427,50 +1447,30 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strNymID2		= xml->getAttributeValue("nymID2");
 		m_strServerID	= xml->getAttributeValue("serverID");
 		
-		// move to the next node which SHOULD be the nymPublicKey element field
-		xml->read();
+		// -----------------------------------------------------
 		
 		const char * pElementExpected;
 		if (m_bSuccess)
 			pElementExpected = "nymPublicKey";
 		else
 			pElementExpected = "inReferenceTo";
+
+		OTASCIIArmor 	ascTextExpected;
 		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 		{
-			if (!strcmp(pElementExpected, xml->getNodeName()))
-			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					if (m_bSuccess)
-						m_strNymPublicKey = xml->getNodeData();
-					else
-						m_ascInReferenceTo.Set(xml->getNodeData());				
-				}
-				else
-				{
-					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-								  "Expected %s text field in @checkUser response\n", 
-								  pElementExpected);
-					return (-1); // error condition
-				}				
-			}
-			else 
-			{
-				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-							  "@checkUser without %s element.\n", pElementExpected);
-				return (-1); // error condition
-			}
-		}
-		else
-		{
-			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-						  "Expected %s element with text field in @checkUser response\n", 
-						  pElementExpected);
+			OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+						  "Expected %s element with text field, for %s.\n", 
+						  pElementExpected, m_strCommand.Get());
 			return (-1); // error condition
 		}
+		
+		if (m_bSuccess)
+			m_strNymPublicKey = ascTextExpected;
+		else
+			m_ascInReferenceTo = ascTextExpected;				
+
+		// -----------------------------------------------------
 		
 		if (m_bSuccess)
 			OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nNymID2:    %s\n"
@@ -1499,40 +1499,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strAssetID	= xml->getAttributeValue("assetType");
 		m_strRequestNum	= xml->getAttributeValue("requestNum");
 		
-		// move to the next node 
-		xml->read();
+		// ----------------------------------------------------
 		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		const char *	pElementExpected	= "assetContract";
+		OTASCIIArmor &	ascTextExpected		= m_ascPayload;
+		
+		if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 		{
-			if (!strcmp("assetContract", xml->getNodeName()))
-			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					m_ascPayload.Set(xml->getNodeData());
-					xml->read(); // This puts us onto the closing tag
-				}
-				else
-				{
-					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-							"Expected assetContract text field in issueAssetType message\n");
-					return (-1); // error condition
-				}				
-			}
-			else {
-				OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
-				return (-1);
-			}
-			
-		}
-		else
-		{
-			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-					"Unexpected text field in issueAssetType message\n");
+			OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+						  "Expected %s element with text field, for %s.\n", 
+						  pElementExpected, m_strCommand.Get());
 			return (-1); // error condition
 		}
-
+		
+		// ---------------------------------------------------
 		
 		OTLog::vOutput(1, "\nCommand: %s \nNymID:    %s\n"
 				"ServerID: %s\nRequest#: %s\nAsset Type:\n%s\n\n", 
@@ -1559,61 +1539,38 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strAssetID	= xml->getAttributeValue("assetType");
 		m_strAcctID		= xml->getAttributeValue("accountID");
 		
-		// If successful, we need to read 2 more things: inReferenceTo and newAccount payload.
+		// If successful, we need to read 2 more things: inReferenceTo and issuerAccount payload.
 		// If failure, then we only need to read 1 thing: inReferenceTo
 		// At this point, we do not send the REASON WHY if it failed.
-		for (int i = 0; i < (m_bSuccess ? 2 : 1); i++)
+		
+		// ----------------------------------------------------
 		{
-			// move to the next node 
-			xml->read();
+			const char *	pElementExpected	= "inReferenceTo";
+			OTASCIIArmor &	ascTextExpected		= m_ascInReferenceTo;
 			
-			if (EXN_ELEMENT == xml->getNodeType())  
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 			{
-				if (!strcmp("issuerAccount", xml->getNodeName()))
-				{
-					xml->read();
-					
-					if (EXN_TEXT == xml->getNodeType()) 
-					{
-						m_ascPayload.Set(xml->getNodeData());	
-						xml->read(); // This puts us onto the closing tag
-					}
-					else
-					{
-						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-								"Expected issuerAccount text field in @issueAssetType reply\n");
-						return (-1); // error condition
-					}				
-				}
-				else if (!strcmp("inReferenceTo", xml->getNodeName()))
-				{
-					xml->read();
-					
-					if (EXN_TEXT == xml->getNodeType()) 
-					{
-						m_ascInReferenceTo.Set(xml->getNodeData());	
-						xml->read(); // This puts us onto the closing tag
-					}
-					else
-					{
-						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-								"Expected inReferenceTo text field in @issueAssetType reply\n");
-						return (-1); // error condition
-					}				
-				}
-				else {
-					OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
-					return (-1);
-				}
-				
-			}
-			else
-			{
-				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-						"Unexpected text field in @issueAssetType reply\n");
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
 				return (-1); // error condition
 			}
 		}
+		// ----------------------------------------------------
+		if (m_bSuccess)
+		{
+			const char *	pElementExpected	= "issuerAccount";
+			OTASCIIArmor &	ascTextExpected		= m_ascPayload;
+			
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
+			{
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
+				return (-1); // error condition
+			}
+		}
+		// ---------------------------------------------------
 		
 		// Did we find everything we were looking for?
 		// If the "command responding to" isn't there, 
@@ -1677,62 +1634,40 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strServerID	= xml->getAttributeValue("serverID");
 		m_strAcctID		= xml->getAttributeValue("accountID");
 		
-		// If successful, we need to read 2 more things: inReferenceTo and newAccount payload.
+		
+		// If successful, we need to read 2 more things: inReferenceTo and issuerAccount payload.
 		// If failure, then we only need to read 1 thing: inReferenceTo
 		// At this point, we do not send the REASON WHY if it failed.
-		for (int i = 0; i < (m_bSuccess ? 2 : 1); i++)
+		
+		// ----------------------------------------------------
 		{
-			// move to the next node 
-			xml->read();
+			const char *	pElementExpected	= "inReferenceTo";
+			OTASCIIArmor &	ascTextExpected		= m_ascInReferenceTo;
 			
-			if (EXN_ELEMENT == xml->getNodeType())  
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 			{
-				if (!strcmp("newAccount", xml->getNodeName()))
-				{
-					xml->read();
-					
-					if (EXN_TEXT == xml->getNodeType()) 
-					{
-						m_ascPayload.Set(xml->getNodeData());	
-						xml->read(); // This puts us onto the closing tag
-					}
-					else
-					{
-						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-								"Expected newAccount text field in @createAccount reply\n");
-						return (-1); // error condition
-					}				
-				}
-				else if (!strcmp("inReferenceTo", xml->getNodeName()))
-				{
-					xml->read();
-					
-					if (EXN_TEXT == xml->getNodeType()) 
-					{
-						m_ascInReferenceTo.Set(xml->getNodeData());	
-						xml->read(); // This puts us onto the closing tag
-					}
-					else
-					{
-						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-								"Expected inReferenceTo text field in @createAccount reply\n");
-						return (-1); // error condition
-					}				
-				}
-				else {
-					OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
-					return (-1);
-				}
-				
-			}
-			else
-			{
-				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-						"Unexpected text field in @createAccount reply\n");
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
 				return (-1); // error condition
 			}
 		}
-		
+		// ----------------------------------------------------
+		if (m_bSuccess)
+		{
+			const char *	pElementExpected	= "newAccount";
+			OTASCIIArmor &	ascTextExpected		= m_ascPayload;
+			
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
+			{
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
+				return (-1); // error condition
+			}
+		}
+		// ---------------------------------------------------
+				
 		// Did we find everything we were looking for?
 		// If the "command responding to" isn't there, 
 		// OR if it was successful but the Payload isn't there, then failure.
@@ -1777,39 +1712,21 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strAssetID	= xml->getAttributeValue("assetType");
 		m_strRequestNum	= xml->getAttributeValue("requestNum");
 		
-		// move to the next node 
-		xml->read();
-		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		// ----------------------------------------------------
 		{
-			if (!strcmp("exchangeRequest", xml->getNodeName()))
+			const char *	pElementExpected	= "exchangeRequest";
+			OTASCIIArmor &	ascTextExpected		= m_ascPayload;
+			
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 			{
-				xml->read();
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
+				return (-1); // error condition
+			}
+		}
+		// ----------------------------------------------------
 				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					m_ascPayload.Set(xml->getNodeData());	
-					xml->read(); // This puts us onto the closing tag
-				}
-				else
-				{
-					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-							"Expected exchangeRequest text field in exchangeBasket message\n");
-					return (-1); // error condition
-				}				
-			}
-			else {
-				OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
-				return (-1);
-			}
-		}
-		else
-		{
-			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-					"Unexpected text field in exchangeBasket message\n");
-			return (-1); // error condition
-		}
-		
 		// Did we find everything we were looking for?
 		// If the Payload isn't there, then failure.
 		if (!m_ascPayload.GetLength())
@@ -1853,38 +1770,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strServerID	= xml->getAttributeValue("serverID");
 		m_strAssetID	= xml->getAttributeValue("assetType");
 		
-		// move to the next node 
-		xml->read();
-		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		// ----------------------------------------------------
 		{
-			if (!strcmp("inReferenceTo", xml->getNodeName()))
+			const char *	pElementExpected	= "inReferenceTo";
+			OTASCIIArmor &	ascTextExpected		= m_ascInReferenceTo;
+			
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					m_ascInReferenceTo.Set(xml->getNodeData());	
-					xml->read(); // This puts us onto the closing tag
-				}
-				else
-				{
-					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-							"Expected inReferenceTo text field in @exchangeBasket reply\n");
-					return (-1); // error condition
-				}				
-			}
-			else {
-				OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
-				return (-1);
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
+				return (-1); // error condition
 			}
 		}
-		else
-		{
-			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-					"Unexpected text field in @exchangeBasket reply\n");
-			return (-1); // error condition
-		}
+		// ----------------------------------------------------
 		
 		// Did we find everything we were looking for?
 		// If the "command responding to" isn't there, 
@@ -1922,38 +1821,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strServerID	= xml->getAttributeValue("serverID");
 		m_strRequestNum	= xml->getAttributeValue("requestNum");
 		
-		// move to the next node 
-		xml->read();
-		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		// ----------------------------------------------------
 		{
-			if (!strcmp("currencyBasket", xml->getNodeName()))
+			const char *	pElementExpected	= "currencyBasket";
+			OTASCIIArmor &	ascTextExpected		= m_ascPayload;
+			
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					m_ascPayload.Set(xml->getNodeData());	
-					xml->read(); // This puts us onto the closing tag
-				}
-				else
-				{
-					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-							"Expected currencyBasket text field in issueBasket message\n");
-					return (-1); // error condition
-				}				
-			}
-			else {
-				OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
-				return (-1);
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
+				return (-1); // error condition
 			}
 		}
-		else
-		{
-			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-					"Unexpected text field in issueBasket message\n");
-			return (-1); // error condition
-		}
+		// ----------------------------------------------------
 		
 		// Did we find everything we were looking for?
 		// If the Payload isn't there, then failure.
@@ -1990,38 +1871,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strServerID	= xml->getAttributeValue("serverID");
 		m_strAcctID		= xml->getAttributeValue("accountID");
 		
-		// move to the next node 
-		xml->read();
-		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		// ----------------------------------------------------
 		{
-			if (!strcmp("inReferenceTo", xml->getNodeName()))
+			const char *	pElementExpected	= "inReferenceTo";
+			OTASCIIArmor &	ascTextExpected		= m_ascInReferenceTo;
+			
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					m_ascInReferenceTo.Set(xml->getNodeData());	
-					xml->read(); // This puts us onto the closing tag
-				}
-				else
-				{
-					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-							"Expected inReferenceTo text field in @issueBasket reply\n");
-					return (-1); // error condition
-				}				
-			}
-			else {
-				OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
-				return (-1);
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
+				return (-1); // error condition
 			}
 		}
-		else
-		{
-			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-					"Unexpected text field in @issueBasket reply\n");
-			return (-1); // error condition
-		}
+		// ----------------------------------------------------
 		
 		// Did we find everything we were looking for?
 		// If the "command responding to" isn't there, 
@@ -2083,56 +1946,10 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strNymID		= xml->getAttributeValue("nymID");
 		m_strServerID	= xml->getAttributeValue("serverID");
 		
-		// move to the next node 
-//		xml->read();
-//		
-//		if (EXN_ELEMENT == xml->getNodeType())  
-//		{
-//			if (!strcmp("responseNym", xml->getNodeName())) 
-//			{		
-//				if (false == LoadEncodedTextField(xml, m_ascPayload))
-//				{
-//					OTLog::Error("Error in OTMessage::ProcessXMLNode: Expected responseNym text field in @getTransactionNum.\n");
-//					return (-1); // error condition
-//				}
-//				
-//				xml->read(); // This puts us onto the closing tag
-//
-//				return 1;
-//			}
-//			else 
-//			{
-//				OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
-//				return (-1);
-//			}
-//			
-//		}
-//		else
-//		{
-//			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-//					"Unexpected text field in @getTransactionNum reply: %s   %s\n",
-//					xml->getNodeName(), xml->getNodeData());
-//			return (-1); // error condition
-//		}
-//		
-//		// Did we find everything we were looking for?
-//		// If the "command responding to" isn't there, or the Payload isn't there, then failure.
-//		if (m_bSuccess && !m_ascPayload.GetLength())
-//		{
-//			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-//					"Expected responseNym element with text field in "
-//					"@getTransactionNum reply\n");
-//			return (-1); // error condition			
-//		}
-		
-		//		OTString acctContents(m_ascPayload);
 		OTLog::vOutput(1, "\n Command: %s   %s\n NymID:    %s\n"
 				" ServerID: %s\n\n",
-				//	"****New Account****:\n%s\n", 
 				m_strCommand.Get(), (m_bSuccess?"SUCCESS":"FAILED"), 
 				m_strNymID.Get(), m_strServerID.Get()
-				//	m_ascInReferenceTo.Get(), 
-				//acctContents.Get()
 				);
 		
 		nReturnVal = 1;
@@ -2149,42 +1966,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strAcctID		= xml->getAttributeValue("accountID");
 		m_strRequestNum	= xml->getAttributeValue("requestNum");
 		
-		
-		// move to the next node which SHOULD be the accountLedger element field
-		xml->read();
-		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		// ----------------------------------------------------
 		{
-			if (!strcmp("accountLedger", xml->getNodeName()))
+			const char *	pElementExpected	= "accountLedger";
+			OTASCIIArmor &	ascTextExpected		= m_ascPayload;
+			
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					m_ascPayload.Set(xml->getNodeData());
-				}
-				else
-				{
-					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-							"Expected accountLedger text field in notarizeTransactions command\n");
-					return (-1); // error condition
-				}				
-			}
-			else 
-			{
-				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-						"notarizeTransactions without accountLedger element.\n");
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
 				return (-1); // error condition
 			}
-			
 		}
-		else
-		{
-			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-					"Expected accountLedger element with text field in notarizeTransactions command\n");
-			return (-1); // error condition
-		}
-		
+		// ----------------------------------------------------
 		
 		OTLog::vOutput(1, "\n Command: %s \n NymID:    %s\n AccountID:    %s\n"
 				" ServerID: %s\n Request#: %s\n\n", 
@@ -2213,60 +2008,35 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		// If successful or failure, we need to read 2 more things: 
 		// inReferenceTo and the responseLedger payload.
 		// At this point, we do not send the REASON WHY if it failed.
-		for (int i = 0; i < 2; i++)
+		
+		// ----------------------------------------------------
 		{
-			// move to the next node 
-			xml->read();
+			const char *	pElementExpected	= "inReferenceTo";
+			OTASCIIArmor &	ascTextExpected		= m_ascInReferenceTo;
 			
-			if (EXN_ELEMENT == xml->getNodeType())  
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 			{
-				if (!strcmp("responseLedger", xml->getNodeName()))
-				{
-					xml->read();
-					
-					if (EXN_TEXT == xml->getNodeType()) 
-					{
-						m_ascPayload.Set(xml->getNodeData());	
-						xml->read(); // This puts us onto the closing tag
-					}
-					else
-					{
-						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-								"Expected responseLedger text field in @notarizeTransactions reply\n");
-						return (-1); // error condition
-					}				
-				}
-				else if (!strcmp("inReferenceTo", xml->getNodeName()))
-				{
-					xml->read();
-					
-					if (EXN_TEXT == xml->getNodeType()) 
-					{
-						m_ascInReferenceTo.Set(xml->getNodeData());	
-						xml->read(); // This puts us onto the closing tag
-					}
-					else
-					{
-						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-								"Expected inReferenceTo text field in @notarizeTransactions reply\n");
-						return (-1); // error condition
-					}				
-				}
-				else {
-					OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
-					return (-1);
-				}
-				
-			}
-			else
-			{
-				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-						"Unexpected text field in @notarizeTransactions reply: %s   %s\n",
-						xml->getNodeName(), xml->getNodeData());
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
 				return (-1); // error condition
 			}
 		}
-		
+		// ----------------------------------------------------
+		{
+			const char *	pElementExpected	= "responseLedger";
+			OTASCIIArmor &	ascTextExpected		= m_ascPayload;
+			
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
+			{
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
+				return (-1); // error condition
+			}
+		}
+		// ----------------------------------------------------
+
 		// Did we find everything we were looking for?
 		// If the "command responding to" isn't there, or the Payload isn't there, then failure.
 		if (!m_ascInReferenceTo.GetLength() || (!m_ascPayload.GetLength()))
@@ -2342,8 +2112,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strServerID	= xml->getAttributeValue("serverID");
 		m_strAcctID		= xml->getAttributeValue("accountID");
 		
-		// move to the next node which SHOULD be the inboxLedger element field
-		xml->read();
+		// -----------------------------------------------------
 		
 		const char * pElementExpected;
 		if (m_bSuccess)
@@ -2351,42 +2120,23 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		else
 			pElementExpected = "inReferenceTo";
 		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		OTASCIIArmor 	ascTextExpected;
+		
+		if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 		{
-			if (!strcmp(pElementExpected, xml->getNodeName()))
-			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					if (m_bSuccess)
-						m_ascPayload.Set(xml->getNodeData());
-					else
-						m_ascInReferenceTo.Set(xml->getNodeData());				
-				}
-				else
-				{
-					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-								  "Expected %s text field in @getInbox response\n", 
-								  pElementExpected);
-					return (-1); // error condition
-				}				
-			}
-			else 
-			{
-				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-							  "@getInbox without %s element.\n", pElementExpected);
-				return (-1); // error condition
-			}
-		}
-		else
-		{
-			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-						  "Expected %s element with text field in @getInbox response\n", 
-						  pElementExpected);
+			OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+						  "Expected %s element with text field, for %s.\n", 
+						  pElementExpected, m_strCommand.Get());
 			return (-1); // error condition
 		}
 		
+		if (m_bSuccess)
+			m_ascPayload = ascTextExpected;
+		else
+			m_ascInReferenceTo = ascTextExpected;				
+		
+		// -----------------------------------------------------
+				
 		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nAccountID:    %s\n"
 					   "ServerID: %s\n\n", 
 					   m_strCommand.Get(), (m_bSuccess ? "SUCCESS" : "FAILED"),
@@ -2412,8 +2162,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strNymID		= xml->getAttributeValue("nymID");
 		m_strServerID	= xml->getAttributeValue("serverID");
 		
-		// move to the next node which SHOULD be the inboxLedger element field
-		xml->read();
+		// -----------------------------------------------------
 		
 		const char * pElementExpected;
 		if (m_bSuccess)
@@ -2421,41 +2170,22 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		else
 			pElementExpected = "inReferenceTo";
 		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		OTASCIIArmor 	ascTextExpected;
+		
+		if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 		{
-			if (!strcmp(pElementExpected, xml->getNodeName()))
-			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					if (m_bSuccess)
-						m_ascPayload.Set(xml->getNodeData());
-					else
-						m_ascInReferenceTo.Set(xml->getNodeData());				
-				}
-				else
-				{
-					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-								  "Expected %s text field in @getNymbox response\n", 
-								  pElementExpected);
-					return (-1); // error condition
-				}				
-			}
-			else 
-			{
-				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-							  "@getNymbox without %s element.\n", pElementExpected);
-				return (-1); // error condition
-			}
-		}
-		else
-		{
-			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-						  "Expected %s element with text field in @getNymbox response\n", 
-						  pElementExpected);
+			OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+						  "Expected %s element with text field, for %s.\n", 
+						  pElementExpected, m_strCommand.Get());
 			return (-1); // error condition
 		}
+		
+		if (m_bSuccess)
+			m_ascPayload = ascTextExpected;
+		else
+			m_ascInReferenceTo = ascTextExpected;				
+		
+		// -----------------------------------------------------
 		
 		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\n"
 					   "ServerID: %s\n\n", 
@@ -2501,8 +2231,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strServerID	= xml->getAttributeValue("serverID");
 		m_strAcctID		= xml->getAttributeValue("accountID");
 		
-		// move to the next node which SHOULD be the outboxLedger element field
-		xml->read();
+		// -----------------------------------------------------
 		
 		const char * pElementExpected;
 		if (m_bSuccess)
@@ -2510,41 +2239,22 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		else
 			pElementExpected = "inReferenceTo";
 		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		OTASCIIArmor 	ascTextExpected;
+		
+		if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 		{
-			if (!strcmp(pElementExpected, xml->getNodeName()))
-			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					if (m_bSuccess)
-						m_ascPayload.Set(xml->getNodeData());
-					else
-						m_ascInReferenceTo.Set(xml->getNodeData());				
-				}
-				else
-				{
-					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-								  "Expected %s text field in @getOutbox response\n", 
-								  pElementExpected);
-					return (-1); // error condition
-				}				
-			}
-			else 
-			{
-				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-							  "@getOutbox without %s element.\n", pElementExpected);
-				return (-1); // error condition
-			}
-		}
-		else
-		{
-			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-						  "Expected %s element with text field in @getOutbox response\n", 
-						  pElementExpected);
+			OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+						  "Expected %s element with text field, for %s.\n", 
+						  pElementExpected, m_strCommand.Get());
 			return (-1); // error condition
 		}
+		
+		if (m_bSuccess)
+			m_ascPayload = ascTextExpected;
+		else
+			m_ascInReferenceTo = ascTextExpected;				
+		
+		// -----------------------------------------------------
 		
 		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nAccountID:    %s\n"
 					   "ServerID: %s\n\n", 
@@ -2697,7 +2407,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strServerID	= xml->getAttributeValue("serverID");
 		m_strAcctID		= xml->getAttributeValue("accountID");
 		
-		xml->read();
+		// -----------------------------------------------------
 		
 		const char * pElementExpected;
 		if (m_bSuccess)
@@ -2705,41 +2415,22 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		else
 			pElementExpected = "inReferenceTo";
 		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		OTASCIIArmor 	ascTextExpected;
+		
+		if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 		{
-			if (!strcmp(pElementExpected, xml->getNodeName()))
-			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					if (m_bSuccess)
-						m_ascPayload.Set(xml->getNodeData());
-					else
-						m_ascInReferenceTo.Set(xml->getNodeData());				
-				}
-				else
-				{
-					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-							"Expected %s text field in @getAccount response\n", 
-							pElementExpected);
-					return (-1); // error condition
-				}				
-			}
-			else 
-			{
-				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-						"@getAccount without %s element.\n", pElementExpected);
-				return (-1); // error condition
-			}
-		}
-		else
-		{
-			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-					"Expected %s element with text field in @getAccount response\n", 
-					pElementExpected);
+			OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+						  "Expected %s element with text field, for %s.\n", 
+						  pElementExpected, m_strCommand.Get());
 			return (-1); // error condition
 		}
+		
+		if (m_bSuccess)
+			m_ascPayload = ascTextExpected;
+		else
+			m_ascInReferenceTo = ascTextExpected;				
+		
+		// -----------------------------------------------------
 		
 		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nAccountID:    %s\n"
 				"ServerID: %s\n\n", 
@@ -2786,7 +2477,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strServerID	= xml->getAttributeValue("serverID");
 		m_strAssetID	= xml->getAttributeValue("assetType");
 		
-		xml->read();
+		// -----------------------------------------------------
 		
 		const char * pElementExpected;
 		if (m_bSuccess)
@@ -2794,41 +2485,22 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		else
 			pElementExpected = "inReferenceTo";
 		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		OTASCIIArmor 	ascTextExpected;
+		
+		if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 		{
-			if (!strcmp(pElementExpected, xml->getNodeName()))
-			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					if (m_bSuccess)
-						m_ascPayload.Set(xml->getNodeData());
-					else
-						m_ascInReferenceTo.Set(xml->getNodeData());				
-				}
-				else
-				{
-					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-							"Expected %s text field in @getContract response\n", 
-							pElementExpected);
-					return (-1); // error condition
-				}				
-			}
-			else 
-			{
-				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-						"@getContract without %s element.\n", pElementExpected);
-				return (-1); // error condition
-			}
-		}
-		else
-		{
-			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-					"Expected %s element with text field in @getContract response\n", 
-					pElementExpected);
+			OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+						  "Expected %s element with text field, for %s.\n", 
+						  pElementExpected, m_strCommand.Get());
 			return (-1); // error condition
 		}
+		
+		if (m_bSuccess)
+			m_ascPayload = ascTextExpected;
+		else
+			m_ascInReferenceTo = ascTextExpected;				
+		
+		// -----------------------------------------------------
 		
 		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nAsset Type ID:    %s\n"
 				"ServerID: %s\n\n", 
@@ -2875,7 +2547,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strServerID	= xml->getAttributeValue("serverID");
 		m_strAssetID	= xml->getAttributeValue("assetType");
 		
-		xml->read();
+		// -----------------------------------------------------
 		
 		const char * pElementExpected;
 		if (m_bSuccess)
@@ -2883,41 +2555,22 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		else
 			pElementExpected = "inReferenceTo";
 		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		OTASCIIArmor 	ascTextExpected;
+		
+		if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 		{
-			if (!strcmp(pElementExpected, xml->getNodeName()))
-			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					if (m_bSuccess)
-						m_ascPayload.Set(xml->getNodeData());
-					else
-						m_ascInReferenceTo.Set(xml->getNodeData());				
-				}
-				else
-				{
-					OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-							"Expected %s text field in @getMint response\n", 
-							pElementExpected);
-					return (-1); // error condition
-				}				
-			}
-			else 
-			{
-				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-						"@getMint without %s element.\n", pElementExpected);
-				return (-1); // error condition
-			}
-		}
-		else
-		{
-			OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-					"Expected %s element with text field in @getMint response\n", 
-					pElementExpected);
+			OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+						  "Expected %s element with text field, for %s.\n", 
+						  pElementExpected, m_strCommand.Get());
 			return (-1); // error condition
 		}
+		
+		if (m_bSuccess)
+			m_ascPayload = ascTextExpected;
+		else
+			m_ascInReferenceTo = ascTextExpected;				
+		
+		// -----------------------------------------------------
 		
 		OTLog::vOutput(1, "\nCommand: %s   %s\nNymID:    %s\nAsset Type ID:    %s\n"
 				"ServerID: %s\n\n", 
@@ -2942,42 +2595,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strAcctID		= xml->getAttributeValue("accountID");
 		m_strRequestNum	= xml->getAttributeValue("requestNum");
 		
-		
-		// move to the next node which SHOULD be the nymPublicKey element field
-		xml->read();
-		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		// ----------------------------------------------------
 		{
-			if (!strcmp("processLedger", xml->getNodeName()))
+			const char *	pElementExpected	= "processLedger";
+			OTASCIIArmor &	ascTextExpected		= m_ascPayload;
+			
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					m_ascPayload.Set(xml->getNodeData());
-				}
-				else
-				{
-					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-								 "Expected processLedger text field in processInbox command\n");
-					return (-1); // error condition
-				}				
-			}
-			else 
-			{
-				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-							 "processInbox without processLedger element.\n");
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
 				return (-1); // error condition
 			}
-			
 		}
-		else
-		{
-			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-						 "Expected processLedger element with text field in processInbox command\n");
-			return (-1); // error condition
-		}
-		
+		// ---------------------------------------------------		
 		
 		OTLog::vOutput(1, "\n Command: %s \n NymID:    %s\n AccountID:    %s\n"
 					   " ServerID: %s\n Request#: %s\n\n", 
@@ -2998,42 +2629,20 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		m_strServerID	= xml->getAttributeValue("serverID");
 		m_strRequestNum	= xml->getAttributeValue("requestNum");
 		
-		
-		// move to the next node which SHOULD be the nymPublicKey element field
-		xml->read();
-		
-		if (EXN_ELEMENT == xml->getNodeType())  
+		// ----------------------------------------------------
 		{
-			if (!strcmp("processLedger", xml->getNodeName()))
+			const char *	pElementExpected	= "processLedger";
+			OTASCIIArmor &	ascTextExpected		= m_ascPayload;
+			
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 			{
-				xml->read();
-				
-				if (EXN_TEXT == xml->getNodeType()) 
-				{
-					m_ascPayload.Set(xml->getNodeData());
-				}
-				else
-				{
-					OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-								 "Expected processLedger text field in processNymbox command\n");
-					return (-1); // error condition
-				}				
-			}
-			else 
-			{
-				OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-							 "processNymbox without processLedger element.\n");
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
 				return (-1); // error condition
 			}
-			
 		}
-		else
-		{
-			OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-						 "Expected processLedger element with text field in processNymbox command\n");
-			return (-1); // error condition
-		}
-		
+		// ---------------------------------------------------		
 		
 		OTLog::vOutput(1, "\n Command: %s \n NymID:    %s\n"
 					   " ServerID: %s\n Request#: %s\n\n", 
@@ -3062,60 +2671,35 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		// If successful or failure, we need to read 2 more things: 
 		// inReferenceTo and the responseLedger payload.
 		// At this point, we do not send the REASON WHY if it failed.
-		for (int i = 0; i < 2; i++)
+		
+		// ----------------------------------------------------
 		{
-			// move to the next node 
-			xml->read();
+			const char *	pElementExpected	= "inReferenceTo";
+			OTASCIIArmor &	ascTextExpected		= m_ascInReferenceTo;
 			
-			if (EXN_ELEMENT == xml->getNodeType())  
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 			{
-				if (!strcmp("responseLedger", xml->getNodeName()))
-				{
-					xml->read();
-					
-					if (EXN_TEXT == xml->getNodeType()) 
-					{
-						m_ascPayload.Set(xml->getNodeData());	
-						xml->read(); // This puts us onto the closing tag
-					}
-					else
-					{
-						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-								"Expected responseLedger text field in @processInbox reply\n");
-						return (-1); // error condition
-					}				
-				}
-				else if (!strcmp("inReferenceTo", xml->getNodeName()))
-				{
-					xml->read();
-					
-					if (EXN_TEXT == xml->getNodeType()) 
-					{
-						m_ascInReferenceTo.Set(xml->getNodeData());	
-						xml->read(); // This puts us onto the closing tag
-					}
-					else
-					{
-						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-								"Expected inReferenceTo text field in @processInbox reply\n");
-						return (-1); // error condition
-					}				
-				}
-				else {
-					OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
-					return (-1);
-				}
-				
-			}
-			else
-			{
-				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-						"Unexpected text field in @processInbox reply: %s   %s\n",
-						xml->getNodeName(), xml->getNodeData());
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
 				return (-1); // error condition
 			}
 		}
-		
+		// ----------------------------------------------------
+		{
+			const char *	pElementExpected	= "responseLedger";
+			OTASCIIArmor &	ascTextExpected		= m_ascPayload;
+			
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
+			{
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
+				return (-1); // error condition
+			}
+		}
+		// ----------------------------------------------------
+				
 		// Did we find everything we were looking for?
 		// If the "command responding to" isn't there, or the Payload isn't there, then failure.
 		if (!m_ascInReferenceTo.GetLength() || (!m_ascPayload.GetLength()))
@@ -3156,60 +2740,35 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		// If successful or failure, we need to read 2 more things: 
 		// inReferenceTo and the responseLedger payload.
 		// At this point, we do not send the REASON WHY if it failed.
-		for (int i = 0; i < 2; i++)
+		
+		// ----------------------------------------------------
 		{
-			// move to the next node 
-			xml->read();
+			const char *	pElementExpected	= "inReferenceTo";
+			OTASCIIArmor &	ascTextExpected		= m_ascInReferenceTo;
 			
-			if (EXN_ELEMENT == xml->getNodeType())  
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
 			{
-				if (!strcmp("responseLedger", xml->getNodeName()))
-				{
-					xml->read();
-					
-					if (EXN_TEXT == xml->getNodeType()) 
-					{
-						m_ascPayload.Set(xml->getNodeData());	
-						xml->read(); // This puts us onto the closing tag
-					}
-					else
-					{
-						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-									 "Expected responseLedger text field in @processNymbox reply\n");
-						return (-1); // error condition
-					}				
-				}
-				else if (!strcmp("inReferenceTo", xml->getNodeName()))
-				{
-					xml->read();
-					
-					if (EXN_TEXT == xml->getNodeType()) 
-					{
-						m_ascInReferenceTo.Set(xml->getNodeData());	
-						xml->read(); // This puts us onto the closing tag
-					}
-					else
-					{
-						OTLog::Error("Error in OTMessage::ProcessXMLNode:\n"
-									 "Expected inReferenceTo text field in @processNymbox reply\n");
-						return (-1); // error condition
-					}				
-				}
-				else {
-					OTLog::vError("Unexpected node name: %s\n", xml->getNodeName());
-					return (-1);
-				}
-				
-			}
-			else
-			{
-				OTLog::vError("Error in OTMessage::ProcessXMLNode:\n"
-							  "Unexpected text field in @processNymbox reply: %s   %s\n",
-							  xml->getNodeName(), xml->getNodeData());
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
 				return (-1); // error condition
 			}
 		}
-		
+		// ----------------------------------------------------
+		{
+			const char *	pElementExpected	= "responseLedger";
+			OTASCIIArmor &	ascTextExpected		= m_ascPayload;
+			
+			if (false == LoadEncodedTextFieldByName(xml, ascTextExpected, pElementExpected))
+			{
+				OTLog::vError("Error in OTMessage::ProcessXMLNode: "
+							  "Expected %s element with text field, for %s.\n", 
+							  pElementExpected, m_strCommand.Get());
+				return (-1); // error condition
+			}
+		}
+		// ----------------------------------------------------
+				
 		// Did we find everything we were looking for?
 		// If the "command responding to" isn't there, or the Payload isn't there, then failure.
 		if (!m_ascInReferenceTo.GetLength() || (!m_ascPayload.GetLength()))
