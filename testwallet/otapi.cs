@@ -146,6 +146,11 @@ public class otapi {
     return ret;
   }
 
+  public static int OT_API_VerifyAccountReceipt(string SERVER_ID, string NYM_ID, string ACCT_ID) {
+    int ret = otapiPINVOKE.OT_API_VerifyAccountReceipt(SERVER_ID, NYM_ID, ACCT_ID);
+    return ret;
+  }
+
   public static int OT_API_GetNym_TransactionNumCount(string SERVER_ID, string NYM_ID) {
     int ret = otapiPINVOKE.OT_API_GetNym_TransactionNumCount(SERVER_ID, NYM_ID);
     return ret;
@@ -518,6 +523,11 @@ public class otapi {
 
   public static void OT_API_exchangePurse(string SERVER_ID, string ASSET_TYPE_ID, string USER_ID, string THE_PURSE) {
     otapiPINVOKE.OT_API_exchangePurse(SERVER_ID, ASSET_TYPE_ID, USER_ID, THE_PURSE);
+  }
+
+  public static string OT_API_Token_ChangeOwner(string SERVER_ID, string ASSET_TYPE_ID, string THE_TOKEN, string OLD_OWNER_NYM_ID, string NEW_OWNER_NYM_ID) {
+    string ret = otapiPINVOKE.OT_API_Token_ChangeOwner(SERVER_ID, ASSET_TYPE_ID, THE_TOKEN, OLD_OWNER_NYM_ID, NEW_OWNER_NYM_ID);
+    return ret;
   }
 
   public static string OT_API_Token_GetID(string SERVER_ID, string ASSET_TYPE_ID, string THE_TOKEN) {

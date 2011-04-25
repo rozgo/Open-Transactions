@@ -553,6 +553,9 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 				// because I already reference it by transaction num of the receipt,
 				// and the server can look it up in my inbox from there.
 				
+				// This just makes it convenient later.
+				pAcceptItem->SetAmount(pTransaction->GetReceiptAmount()); // The server will verify this actually matches, or reject the message.
+
 				// sign the item
 				pAcceptItem->SignContract(*pNym);
 				pAcceptItem->SaveContract();
@@ -586,6 +589,9 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 						pAcceptItem->SetNote(strNote);
 						pAcceptItem->SetReferenceToNum(pOriginalItem->GetTransactionNum()); // This is critical. Server needs this to look up the original.
 						// Don't need to set transaction num on item since the constructor already got it off the owner transaction.
+						
+						// This just makes it convenient later.
+						pAcceptItem->SetAmount(pTransaction->GetReceiptAmount()); // The server will verify this actually matches, or reject the message.
 						
 						lAdjustment += (pOriginalItem->GetAmount()); // Bob transferred me 50 clams. If my account was 100, it WILL be 150. Therefore, adjustment is +50. 
 						
@@ -640,7 +646,7 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 						  )  
 						 || 
 						 (
-						  (OTItem::depositCheque			== pOriginalItem->GetType()) &&	 // I'm accepting a notice that someone cashed my cheque.
+						  (OTItem::depositCheque		== pOriginalItem->GetType()) &&	 // I'm accepting a notice that someone cashed my cheque.
 						  (OTTransaction::chequeReceipt	== pTransaction->GetType())
 						  )
 						 )
@@ -682,11 +688,18 @@ void OTClient::AcceptEntireInbox(OTLedger & theInbox, OTServerConnection & theCo
 											  strCheque.Get());
 							}
 							else
+							{
 								theIssuedNym.AddIssuedNum(strServerID, theCheque.GetTransactionNum());
+								
+								// Server rejects the message if these don't match.
+								pAcceptItem->SetAmount(pTransaction->GetReceiptAmount());
+							}
 						}
 						else if (OTItem::acceptPending == pOriginalItem->GetType())
 						{
 							theIssuedNym.AddIssuedNum(strServerID, pOriginalItem->GetReferenceToNum());
+						
+							pAcceptItem->SetAmount(pTransaction->GetReceiptAmount());
 						}
 						else 
 						{
@@ -1870,13 +1883,11 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 											
 											if (NULL == pServerTransaction)
 											{
-												OTLog::Output(0, "NOT found!\n"); // temp remove
+	
 												break;
 											}
 											else 
 											{
-												OTLog::Output(0, "FOUND!\n"); // temp remove
-												
 												// ---------------------------------------------------------------
 												// In the case of item receipt (not cron receipt or pending) I need to
 												// remove the issued num from my list of responsibility. (Since I finally

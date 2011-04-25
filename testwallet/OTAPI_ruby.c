@@ -2318,6 +2318,55 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_OT_API_VerifyAccountReceipt(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 3) || (argc > 3)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_VerifyAccountReceipt" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_VerifyAccountReceipt" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_VerifyAccountReceipt" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  result = (int)OT_API_VerifyAccountReceipt((char const *)arg1,(char const *)arg2,(char const *)arg3);
+  vresult = SWIG_From_int((int)(result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_OT_API_GetNym_TransactionNumCount(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -5821,6 +5870,77 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_OT_API_Token_ChangeOwner(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 5) || (argc > 5)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 5)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Token_ChangeOwner" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_Token_ChangeOwner" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "OT_API_Token_ChangeOwner" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  res4 = SWIG_AsCharPtrAndSize(argv[3], &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "OT_API_Token_ChangeOwner" "', argument " "4"" of type '" "char const *""'");
+  }
+  arg4 = (char *)(buf4);
+  res5 = SWIG_AsCharPtrAndSize(argv[4], &buf5, NULL, &alloc5);
+  if (!SWIG_IsOK(res5)) {
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "OT_API_Token_ChangeOwner" "', argument " "5"" of type '" "char const *""'");
+  }
+  arg5 = (char *)(buf5);
+  result = (char *)OT_API_Token_ChangeOwner((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
+  vresult = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_OT_API_Token_GetID(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -8351,6 +8471,7 @@ SWIGEXPORT void Init_otapi(void) {
   rb_define_module_function(mOtapi, "OT_API_GetAccountWallet_AssetTypeID", _wrap_OT_API_GetAccountWallet_AssetTypeID, -1);
   rb_define_module_function(mOtapi, "OT_API_GetAccountWallet_ServerID", _wrap_OT_API_GetAccountWallet_ServerID, -1);
   rb_define_module_function(mOtapi, "OT_API_GetAccountWallet_NymID", _wrap_OT_API_GetAccountWallet_NymID, -1);
+  rb_define_module_function(mOtapi, "OT_API_VerifyAccountReceipt", _wrap_OT_API_VerifyAccountReceipt, -1);
   rb_define_module_function(mOtapi, "OT_API_GetNym_TransactionNumCount", _wrap_OT_API_GetNym_TransactionNumCount, -1);
   rb_define_module_function(mOtapi, "OT_API_GetNym_ID", _wrap_OT_API_GetNym_ID, -1);
   rb_define_module_function(mOtapi, "OT_API_GetNym_Name", _wrap_OT_API_GetNym_Name, -1);
@@ -8426,6 +8547,7 @@ SWIGEXPORT void Init_otapi(void) {
   rb_define_module_function(mOtapi, "OT_API_Purse_Push", _wrap_OT_API_Purse_Push, -1);
   rb_define_module_function(mOtapi, "OT_API_Wallet_ImportPurse", _wrap_OT_API_Wallet_ImportPurse, -1);
   rb_define_module_function(mOtapi, "OT_API_exchangePurse", _wrap_OT_API_exchangePurse, -1);
+  rb_define_module_function(mOtapi, "OT_API_Token_ChangeOwner", _wrap_OT_API_Token_ChangeOwner, -1);
   rb_define_module_function(mOtapi, "OT_API_Token_GetID", _wrap_OT_API_Token_GetID, -1);
   rb_define_module_function(mOtapi, "OT_API_Token_GetDenomination", _wrap_OT_API_Token_GetDenomination, -1);
   rb_define_module_function(mOtapi, "OT_API_Token_GetSeries", _wrap_OT_API_Token_GetSeries, -1);

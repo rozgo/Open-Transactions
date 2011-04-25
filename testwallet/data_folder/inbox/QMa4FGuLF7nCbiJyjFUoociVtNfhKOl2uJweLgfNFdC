@@ -1,0 +1,45 @@
+-----BEGIN SIGNED LEDGER-----
+Hash: SAMY
+
+<accountLedger version="1.0"
+ type="inbox"
+ accountID="QMa4FGuLF7nCbiJyjFUoociVtNfhKOl2uJweLgfNFdC"
+ userID="Bg2QrSTomOEU5ICfvhfYfBYxQZPktDSnaVPpMLYxUnz"
+serverID="44FmyPAgrmGu671RywGnhrt8aR6tzmNFn9WKQ92BXn" >
+
+<transaction>
+eJx9lEmPo0gQhefMr7DqalUDNhi71NUSq23Mvhm4sSSQ7GAMmF/fdPeha+YweXwR
+35MiFPne39fH8OersjGvZ4XnNpZBKybNWldV+VV7Ry7BI/vYmLTsIcj3oQ/qRxAN
+sKk3w6sFn2+/lQT0BogAbIc3ZBMHAzBhWoP48w3fY3uKwMgjuRaCKGqe9XDlPt90
+OSCE81MSqJoNofjKBbtpIugMSpLd1HL3FCcgpYkixOwKPh+g/0Ux6U7vTaupVN4m
+r2wyZomXMN6s+1oxcGYdOForS95s18tKrdD4hyMIoXppdNpX5+eBwo3XdK6zfjgG
+xmFYKkWoT/ebftoxbr1iX0ZUntU6wgnDVhnWBljHBHUErGZVjyfqbfNjXcm/Cj8Q
+IM5lUeJjU9B2NoLAxc6EYviCbTE9T5pamjn6xEtjQRPJbVG4bLoYLrVtKspq635Y
+kGNO1lFLyZGSu2auyBXqyNPJt/Hh2A8deCSxOt9jzR36hC4ulXjYLwx4NDuvzRNG
+v+tI60c3SSoI02YE16O3bGvMnDBaFRfiBdTSx8TjlAns+QZVHm9Tn4unl4eVwCUk
+eriyiNe1Upj3DhE5jpzeFD/3Eup1quntnTdHYWt0qI63l+Mw1OIEW16LQ5vbQYe1
+Rrg10gNyh2xwoCwFe2WxEe+fews3cFubp2C363Hebc6D1uoGJ9rllG7z0+yVAS8d
+MVRm5uysOIh7D+IdWylnuTFQT9Ng2/q6O/AsfSHjlNtmo39KEy9ldDNltJxIGtS2
+dgoBUWs4CKcZoS7qCPstCarg7JItuu1xykHntF9w+TKxLcAjCe8K2huxESw2BTJR
+8BssY67pcycuJhI8LsvdvizkCG1PzvuGXeanHQc2LbH72ZPHF5oux3vriZlz59Ep
+YNhdgxv262J1ta7kSHByl1lMbHhoOr0xRykLBfwiZIfecFR3nPNUPhywxoVK7M9X
+cxbs2ExzVDaadL/NSxwRS6Iqt3jErwfo6dGuWG1V/EjHAU3DbjnRtp+fSJ0KsUA8
+diQkIRfxHqYyYrX3BU1BpE4WQ93k7i3K7K9btQlImVLpuIzt9p5TUZCEqIaqtQpC
+18X113own8h39D/3vCpffsQP5P1vYnyJit/pQVu2wf8JDQf0j7X9Y6O2oN5Yfw0e
+G+wbSSJsU1WgHj422TC0HyiawiF7ht+ipkIFUJbNtCIjKEGP/jJ4/2qATrCACCJ7
+441Q1GDrR8LNi4fRMeIwRC+4uOdf4W1nNRL/oNGsnEwNHeGVp7u+ix+FBTktIUaI
+JItruVl16aeSTYRLe362tYai3tLlWjMfO+xKqWG74N2kgZ4Pr4VvWzdVDO9Aol9J
+JCN5tSdwd3s6MCcTg37xiiJ9cagOg0W36KVRH2ZjOGoAo5vPP2vjFe7/lob88xMl
+Os6w
+</transaction>
+
+</accountLedger>
+-----BEGIN LEDGER SIGNATURE-----
+Version: Open Transactions 0.55
+Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
+
+qlPmCLMO86ICXw2sfCxTkX7Q2hZSn47w82pHUaP2pVYY2cHpxH380cA533he0Fya
+bDxeXyIpfw2r5Hxh5LTO1UFPlgh+c0RyeVzA53aZv3+zEru98oZIuIvMAgCCtpkK
+yML69AUaSG+TCOYxw8q4Ffny3RBGqeP2T4OdcE8tpMk=
+-----END LEDGER SIGNATURE-----
+

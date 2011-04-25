@@ -3,6 +3,12 @@ NOTES on the Version:
 
 // --------------------------------------------------------------------
  
+   0.56 --- "Verify Last Signed Receipt against intermediary files" has
+            officially been added to the API. Also added more ability to
+            manipulate Tokens through the API. Also some debugging in 
+            balance agreement (cleaned up an old bug that prevented
+            transactions while certain receipt types were in the inbox.) 
+
    0.55 --- Minor release, goes along with Moneychanger (new Java GUI.)
 
    0.54 --- OT now stores the last 1024 logs internally, and makes them

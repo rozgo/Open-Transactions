@@ -280,6 +280,9 @@ const char * OT_API_GetAccountWallet_AssetTypeID(const char * ACCOUNT_ID);	 // r
 const char * OT_API_GetAccountWallet_ServerID(const char * ACCOUNT_ID);	 // returns Server ID of the account
 const char * OT_API_GetAccountWallet_NymID(const char * ACCOUNT_ID);	 // returns Nym ID of the account
 
+/// Returns OT_BOOL. Verifies any asset account (intermediary files) against its own last signed receipt.
+/// Obviously this will fail for any new account that hasn't done any transactions yet, and thus has no receipts.
+int OT_API_VerifyAccountReceipt(const char * SERVER_ID, const char * NYM_ID, const char * ACCT_ID);
 
 
 //----------------------------------------------------------
@@ -1105,6 +1108,15 @@ void OT_API_exchangePurse(const char * SERVER_ID,
 
 // --------------
 
+/// Tokens are stored in an encrypted state for security reasons.
+/// This function is used for exporting those tokens to another Nym,
+/// such as a Dummy nym, or another user's Nym.
+///
+const char * OT_API_Token_ChangeOwner(const char * SERVER_ID,
+									  const char * ASSET_TYPE_ID,
+									  const char * THE_TOKEN,
+									  const char * OLD_OWNER_NYM_ID,
+									  const char * NEW_OWNER_NYM_ID);
 
 /// Returns an encrypted form of the actual blinded token ID.
 /// (There's no need to decrypt the ID until redeeming the token, when

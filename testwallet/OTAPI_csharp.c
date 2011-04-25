@@ -555,6 +555,22 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_GetAccountWallet_NymID(char * jarg1)
 }
 
 
+SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_VerifyAccountReceipt(char * jarg1, char * jarg2, char * jarg3) {
+  int jresult ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  int result;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (char *)jarg2; 
+  arg3 = (char *)jarg3; 
+  result = (int)OT_API_VerifyAccountReceipt((char const *)arg1,(char const *)arg2,(char const *)arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
 SWIGEXPORT int SWIGSTDCALL CSharp_OT_API_GetNym_TransactionNumCount(char * jarg1, char * jarg2) {
   int jresult ;
   char *arg1 = (char *) 0 ;
@@ -1726,6 +1742,26 @@ SWIGEXPORT void SWIGSTDCALL CSharp_OT_API_exchangePurse(char * jarg1, char * jar
   arg3 = (char *)jarg3; 
   arg4 = (char *)jarg4; 
   OT_API_exchangePurse((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_OT_API_Token_ChangeOwner(char * jarg1, char * jarg2, char * jarg3, char * jarg4, char * jarg5) {
+  char * jresult ;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
+  char *result = 0 ;
+  
+  arg1 = (char *)jarg1; 
+  arg2 = (char *)jarg2; 
+  arg3 = (char *)jarg3; 
+  arg4 = (char *)jarg4; 
+  arg5 = (char *)jarg5; 
+  result = (char *)OT_API_Token_ChangeOwner((char const *)arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,(char const *)arg5);
+  jresult = SWIG_csharp_string_callback((const char *)result); 
+  return jresult;
 }
 
 

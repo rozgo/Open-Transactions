@@ -120,6 +120,11 @@
 (cffi:defcfun ("OT_API_GetAccountWallet_NymID" OT_API_GetAccountWallet_NymID) :string
   (ACCOUNT_ID :string))
 
+(cffi:defcfun ("OT_API_VerifyAccountReceipt" OT_API_VerifyAccountReceipt) :int
+  (SERVER_ID :string)
+  (NYM_ID :string)
+  (ACCT_ID :string))
+
 (cffi:defcfun ("OT_API_GetNym_TransactionNumCount" OT_API_GetNym_TransactionNumCount) :int
   (SERVER_ID :string)
   (NYM_ID :string))
@@ -483,6 +488,13 @@
   (ASSET_TYPE_ID :string)
   (USER_ID :string)
   (THE_PURSE :string))
+
+(cffi:defcfun ("OT_API_Token_ChangeOwner" OT_API_Token_ChangeOwner) :string
+  (SERVER_ID :string)
+  (ASSET_TYPE_ID :string)
+  (THE_TOKEN :string)
+  (OLD_OWNER_NYM_ID :string)
+  (NEW_OWNER_NYM_ID :string))
 
 (cffi:defcfun ("OT_API_Token_GetID" OT_API_Token_GetID) :string
   (SERVER_ID :string)

@@ -249,6 +249,7 @@ public:
 		// clear those transaction types out of my inbox.)
 		marketReceipt,	// server receipt dropped into inbox as result of market trading.
 		paymentReceipt,	// server receipt dropped into an inbox as result of payment occuring.
+		transferReceipt,	// server receipt dropped into an inbox as result of transfer being accepted.
 // ------------------------------------------------------------------------------
 		error_state // error state versus error status
 	};

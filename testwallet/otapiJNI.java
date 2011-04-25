@@ -35,6 +35,7 @@ class otapiJNI {
   public final static native String OT_API_GetAccountWallet_AssetTypeID(String jarg1);
   public final static native String OT_API_GetAccountWallet_ServerID(String jarg1);
   public final static native String OT_API_GetAccountWallet_NymID(String jarg1);
+  public final static native int OT_API_VerifyAccountReceipt(String jarg1, String jarg2, String jarg3);
   public final static native int OT_API_GetNym_TransactionNumCount(String jarg1, String jarg2);
   public final static native String OT_API_GetNym_ID(int jarg1);
   public final static native String OT_API_GetNym_Name(String jarg1);
@@ -110,6 +111,7 @@ class otapiJNI {
   public final static native String OT_API_Purse_Push(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5);
   public final static native int OT_API_Wallet_ImportPurse(String jarg1, String jarg2, String jarg3, String jarg4);
   public final static native void OT_API_exchangePurse(String jarg1, String jarg2, String jarg3, String jarg4);
+  public final static native String OT_API_Token_ChangeOwner(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5);
   public final static native String OT_API_Token_GetID(String jarg1, String jarg2, String jarg3);
   public final static native String OT_API_Token_GetDenomination(String jarg1, String jarg2, String jarg3);
   public final static native int OT_API_Token_GetSeries(String jarg1, String jarg2, String jarg3);

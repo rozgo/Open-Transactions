@@ -5809,13 +5809,18 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 				if (NULL == pServerTransaction)
 				{
 					bSuccessFindingAllTransactions = false;
-					OTLog::Output(0, "NOT found!\n"); // temp remove
+					break;
+				}
+				else if (pServerTransaction->GetReceiptAmount() != pItem->GetAmount())
+				{
+					OTLog::vError("OTServer::NotarizeProcessInbox: Receipt amounts don't match: %ld and %ld\n", 
+								  pServerTransaction->GetReceiptAmount(), pItem->GetAmount());
+					
+					bSuccessFindingAllTransactions = false;
 					break;
 				}
 				else 
 				{
-					OTLog::Output(0, "FOUND!\n"); // temp remove
-					
 					bSuccessFindingAllTransactions = true;
 					
 					pInbox->RemoveTransaction(pServerTransaction->GetTransactionNum());					
@@ -5832,13 +5837,20 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 				if (NULL == pServerTransaction)
 				{
 					bSuccessFindingAllTransactions = false;
-					OTLog::Output(0, "NOT found!\n"); // temp remove
+
+					break;
+				}
+				else if (pServerTransaction->GetReceiptAmount() != pItem->GetAmount())
+				{
+					OTLog::vError("OTServer::NotarizeProcessInbox: Amounts don't match: %ld and %ld, trans#s: %ld and %ld\n", 
+								  pServerTransaction->GetReceiptAmount(), pItem->GetAmount(),
+								  pItem->GetTransactionNum(), pServerTransaction->GetTransactionNum());
+					
+					bSuccessFindingAllTransactions = false;
 					break;
 				}
 				else 
 				{
-					OTLog::Output(0, "FOUND!\n"); // temp remove
-					
 					bSuccessFindingAllTransactions = true;
 					
 					// IF I'm accepting a pending transfer, then add the amount to my counter of total amount being accepted.
@@ -5849,7 +5861,9 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 					// Statement AS IF they were already removed. Add them 
 					//
 					if (pItem->GetType() == OTItem::acceptPending) // acceptPending
+					{
 						lTotalBeingAccepted += pServerTransaction->GetReceiptAmount();
+					}
 					else if (pItem->GetType() == OTItem::acceptItemReceipt) // acceptItemReceipt
 					{
 						// What number do I remove here? the user is accepting a transfer receipt, which

@@ -15,19 +15,22 @@ rm pubkeys/*
 rm useraccounts/*
 rm -R spent/*
 rm nymbox/*
+rm markets/*
+rm cron/*
+rm -rf receipts/*
 
 Do NOT touch the certs folder.
 
 In the nyms folder (Open-Transactions/transaction/nyms), remove EVERY FILE EXCEPT THE SERVER NYM, WHICH IS THIS ONE (IN THE TEST DATA):
-2b6909e3b21cbaaeebbf4900280a8506c683361590f67ace8c71742201337e7074c000144b97372983bc01f011a368bc2df389a6d89f5668ed7a188e8e7844f8
+LG4bi40PAw6vlkU5TXiphXqmEELf3k1gjMsKQVjw7SE
 
 Then edit notaryServer.xml and remove all of the extra user data such as asset types, etc. It should look like this when you're done:
 
 <?xml version="1.0"?>
 <notaryServer version="1.0"
- serverID="4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de"
- serverUserID="2b6909e3b21cbaaeebbf4900280a8506c683361590f67ace8c71742201337e7074c000144b97372983bc01f011a368bc2df389a6d89f5668ed7a188e8e7844f8"
- transactionNum="1" >
+ serverID="44FmyPAgrmGu671RywGnhrt8aR6tzmNFn9WKQ92BXn"
+ serverUserID="LG4bi40PAw6vlkU5TXiphXqmEELf3k1gjMsKQVjw7SE"
+ transactionNum="1876" >
 
 </notaryServer>
 
@@ -45,8 +48,8 @@ rm inbox/*
 rm outbox/*
 rm nymbox/*
 
-In the testwallet/data_folder/contracts folder, do NOT remove 4cc4dd50cb6a7d9c7d05240e09daf2befcd189331d69a07f7dd11ed86967de12c9ffd4e3c2d70d0d7a02891e280f2df1fdf05543586840f2bf7b37d4299ad6de which is actually transactionscom.xml, since that is your server contract. (It's the test server contract that tries to connect to a server on localhost.) There is a backup of this file in the sample-contracts directory.
-Remove all the other files in the contracts folder, except transactionscom.xml as just described.
+In the testwallet/data_folder/contracts folder, do NOT remove 44FmyPAgrmGu671RywGnhrt8aR6tzmNFn9WKQ92BXn which is actually your server contract. (It's the test server contract that tries to connect to a server on localhost.) There is a backup of this file in the sample-contracts directory.
+Remove all the other files in the contracts folder, except 44FmyPAgrmGu671RywGnhrt8aR6tzmNFn9WKQ92BXn as just described.
 
 Do NOT touch the certs folder.
 
@@ -55,6 +58,7 @@ rm -rf mints/*
 Do NOT touch the nyms folder.  You keep your nym on the client side, and use it to create your user account on the server. If you erase your own nym, then you cannot use it to create your user account when you connect to the Open Transactions server.
 
 rm -rf purse/*
+rm -rf receipts/*
 
 edit wallet.xml with your favorite editor...
 -- keep the pseudonym.
@@ -64,19 +68,17 @@ edit wallet.xml with your favorite editor...
 
 It will look like this when you are done:
 
+
 <?xml version="1.0"?>
 <wallet name="Fellow Traveler's test wallet" version="1.0">
 
-<pseudonym name="Test User"
- nymID="aa4c73aa4b2658a195fb7ecb1bd242fd1759eaeab0bbd6d0b51f835373b7e5088eb57e804c98e9529a79792d022c3689f1f8d40b5daaf4edb20c64e5b838d0ca" />
+<pseudonym name="eJxzc/Xx8Q9XCAlyDHP1cQ1SD1YIcQ0OUfCL9GUAAGlbBz0="
+ nymID="Bg2QrSTomOEU5ICfvhfYfBYxQZPktDSnaVPpMLYxUnz" />
 
-<notaryProvider name="Transactions.com"
- serverID="6147e7dead777e4671020f5ae7d8abb1b84d8c2dae630f7557778129beb5b2bb082c813af3412e77cb865cd91eb213df5cc979367528b7634453113d77fd5953" /> 
+<notaryProvider name="eJzzyU9OzMnILy5RcM7PKylKTC5hAABIywcI"
+ serverID="44FmyPAgrmGu671RywGnhrt8aR6tzmNFn9WKQ92BXn" />
 
 </wallet>
-
-
-Make sure the path in the above wallet.xml file is correct based on your own system.
 
 ----------------------------------------------------------
 

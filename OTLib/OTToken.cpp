@@ -421,7 +421,8 @@ bool OTToken::ReassignOwnership(const OTPseudonym & oldOwner, const OTPseudonym 
 	// Decrypt the Envelope into strContents    
 	if (!theEnvelope.Open(oldOwner, theString))
 		bSuccess = false;
-	else {
+	else 
+	{
 		bSuccess = true;
 	}
 	

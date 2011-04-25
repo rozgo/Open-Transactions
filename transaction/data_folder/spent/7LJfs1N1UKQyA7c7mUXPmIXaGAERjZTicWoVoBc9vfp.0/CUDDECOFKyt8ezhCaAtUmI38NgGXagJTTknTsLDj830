@@ -1,0 +1,39 @@
+-----BEGIN SIGNED CASH-----
+Hash: SAMY
+
+<?xml version="1.0"?>
+
+<token
+ version="1.0"
+ state="spendableToken"
+ denomination="1"
+ assetTypeID="7LJfs1N1UKQyA7c7mUXPmIXaGAERjZTicWoVoBc9vfp"
+ serverID="44FmyPAgrmGu671RywGnhrt8aR6tzmNFn9WKQ92BXn"
+ series="0"
+ validFrom="1303740770"
+ validTo="1319292770" >
+
+<tokenID>
+AAAAgJxxVI8dMWCI3abZZ6u/dSSgGbKUAHc8ubOld82jFDiWn9tMr0t6j3QMv7FO
+kny+9l6+IZqpD3kqMVyA7LiwCmIhf/anzpnEvf4wiWZwnx60XfWodwF+c4mX5ZwG
+Ya01/mIqTTnCk74KPt4x04pQxq+oUvK1Jh8pVyON84dAzlNeOAKWPMiiXZZBQKl1
+L1FZCHUd9dqvCK810/hUsG7/plX2AfoRPX+NY+dFSNowTzZivrNtfSoeLdOWmUpW
+0wlVh/Abgs0+pKFcZpsd1EgnegDzFvx706piQq2s38wkmSkHydYepmLd7vQpcGml
+LigOTCTZVp6fD/ujo+DDTZCmHKwlxZYtwd7YOov2B+gIyRSKhkJeIimHNqp45tVA
+eRob7CVA0zFnZiFjRzOIqU79qJrlst3u+Y2RNne+Q3iYuH+5l/tVCL7JdgYwWA16
+Psu6PBOV39gEwELnSUBzdaF9UfNsSANVp42zOVACzA6Wt6fZ4P3loxfKp3+HpaLP
+eGV6SOzpuTMYCOsjE7Ntv/Qx+IyAizAjmTDSyC6xyDFLh9jpGHMB6zczVmDQwnkI
+M5QGXQ9Bvchf5vd55N4JKEIp+KjroFC2OzvTSQDJfPvTg86X/FgHFkAdFzwnffAH
+j2xO8w==
+</tokenID>
+
+</token>
+-----BEGIN CASH SIGNATURE-----
+Version: Open Transactions 0.55
+Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
+
+YY+Kf1xtqDYFSuzRptChTuTMmvLJvXjTVFmTJ6sGwUPv7f1sMkUZZDXOvofI+esH
+EJzPX/P41sZo1e9HlaetVNheJcpHw/gdAAX8CN1IQaO7wAqv+dEMhEVgFOTa1lhe
+FbNVb7FOVyxwdlJUSgNmqN7smUr1LfOOfcrIZ1HBgiE=
+-----END CASH SIGNATURE-----
+

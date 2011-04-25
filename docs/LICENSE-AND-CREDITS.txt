@@ -97,7 +97,7 @@ yrsc64WTfAqd4s12SfKMgVFLeL/FUYH7MNqpfgjgwX5co817m9VvCntU6njIuYtV
 
 
 
-Open Transactions v0.55
+Open Transactions v0.56
 (Scroll to the bottom to see the complete AGPLv3.)
 
 /************************************************************

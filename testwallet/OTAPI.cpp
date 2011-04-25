@@ -149,6 +149,7 @@
 #include "OTPurse.h"
 #include "OTBasket.h"
 #include "OTMessage.h"
+#include "OTTransaction.h"
 
 
 // A C++ class, high-level interface to OT. The class-based API.
@@ -1544,6 +1545,8 @@ const char * OT_API_GetAssetType_Name(const char * THE_ID)
 }
 
 
+// -------------------------------------------------------------
+
 
 // returns a string containing the account ID, based on index.
 const char * OT_API_GetAccountWallet_ID(int nIndex)
@@ -1598,6 +1601,85 @@ const char * OT_API_GetAccountWallet_Name(const char * THE_ID)
 	}
 	
 	return NULL;
+}
+
+
+
+
+/// === Verify Account Receipt ===
+/// Returns OT_BOOL. Verifies any asset account (intermediary files) against its own last signed receipt.
+/// Obviously this will fail for any new account that hasn't done any transactions yet, and thus has no receipts.
+///
+OT_BOOL OT_API_VerifyAccountReceipt(const char * SERVER_ID, const char * NYM_ID, const char * ACCT_ID)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != NYM_ID, "Null NYM_ID passed in.");
+	OT_ASSERT_MSG(NULL != ACCT_ID, "Null ACCT_ID passed in.");
+	
+	OTIdentifier theServerID(SERVER_ID), theNymID(NYM_ID), theAcctID(ACCT_ID);
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = g_OT_API.GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return OT_FALSE;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(theNymID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = g_OT_API.LoadPrivateNym(theNymID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			return OT_FALSE;
+		}
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------------------
+	
+	OTServerContract * pServer = pWallet->GetServerContract(theServerID);
+	
+	if (NULL == pServer)
+	{
+		OTLog::Output(0, "No Server Contract found with that Server ID.\n");
+		return OT_FALSE;
+	}
+	
+	// By this point, pServer is a good pointer.  (No need to cleanup.)
+	
+	OTPseudonym * pServerNym = (OTPseudonym *)pServer->GetContractPublicNym();
+	
+	if (NULL == pServerNym)
+	{
+		OTLog::Output(0, "No Contract Nym found in that Server Contract.\n");
+		return OT_FALSE;
+	}
+	
+	// By this point, pServerNym is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+
+	const bool bVerified = OTTransaction::VerifyBalanceReceipt(*pServerNym,
+															   *pNym,
+															   theServerID,
+															   theAcctID);
+	return bVerified ? OT_TRUE : OT_FALSE;
 }
 
 
@@ -3534,6 +3616,8 @@ const char * OT_API_Transaction_CreateResponse(const char * SERVER_ID,
 	pAcceptItem->SetReferenceToNum(lReferenceTransactionNum); // This is critical. Server needs this to look up the original.
 	// Don't need to set transaction num on item since the constructor already got it off the owner transaction.
 
+	pAcceptItem->SetAmount(theTransaction.GetReceiptAmount()); // Server validates this, so make sure it's right.
+	
 	// the transaction will handle cleaning up the transaction item.
 	pTransaction->AddItem(*pAcceptItem);
 		
@@ -3781,8 +3865,6 @@ const char * OT_API_Ledger_FinalizeResponse(const char * SERVER_ID,
 			}
 			else 
 			{
-				OTLog::Output(0, "FOUND!\n"); // temp remove
-				
 				bSuccessFindingAllTransactions = true;
 				
 				// IF I'm accepting a pending transfer, then add the amount to my counter of total amount being accepted.
@@ -5913,6 +5995,133 @@ const char * OT_API_Token_GetValidTo(const char * SERVER_ID,
 		const long l_Date = t_Date;
 		
 		strOutput.Format("%ld", l_Date);
+	}
+	
+	const char * pBuf = strOutput.Get(); 
+	
+#ifdef _WIN32
+	strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+	
+	return g_tempBuf;		
+}
+
+
+// The actual Token ID inside of each token is encrypted to a Nym at all times.
+// You can use a dummy Nym (which Purses will soon do automatically for password cash)
+// This is a storage mechanism only.
+// If you really wish a purse to be public, you would export it to a dummy Nym,
+// with the private key included inside the purse, and with the password added as
+// a data member or comment within the text.
+// 
+// In this case, the GUI needs to be able to export cash from one Nym to another,
+// so a function has been provided for doing so to the actual Token IDs (not just the purse.
+// Understand that even when you decrypt a token out of a purse, the token ID itself is still
+// encrypted within that token. That is what this function is for.
+//
+/// returns: the updated token itself in string form.
+//
+const char * OT_API_Token_ChangeOwner(const char * SERVER_ID,
+									  const char * ASSET_TYPE_ID,
+									  const char * THE_TOKEN,
+									  const char * OLD_OWNER_NYM_ID,
+									  const char * NEW_OWNER_NYM_ID)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != ASSET_TYPE_ID, "Null ASSET_TYPE_ID passed in.");
+	OT_ASSERT_MSG(NULL != THE_TOKEN, "Null THE_TOKEN passed in."); 
+	OT_ASSERT_MSG(NULL != OLD_OWNER_NYM_ID, "Null OLD_OWNER_NYM_ID passed in."); 
+	OT_ASSERT_MSG(NULL != NEW_OWNER_NYM_ID, "Null NEW_OWNER_NYM_ID passed in."); 
+	
+	const OTIdentifier	theServerID(SERVER_ID), theAssetTypeID(ASSET_TYPE_ID),
+						oldOwnerID(OLD_OWNER_NYM_ID), newOwnerID(NEW_OWNER_NYM_ID);
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = g_OT_API.GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return NULL;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pOldNym = pWallet->GetNymByID(oldOwnerID);
+	
+	if (NULL == pOldNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pOldNym = g_OT_API.LoadPrivateNym(oldOwnerID);
+		
+		if (NULL == pOldNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			return NULL; // I don't bother loading a public nym here since I need to decrypt tokens. (Need private.)
+		}
+		
+		pWallet->AddNym(*pOldNym);
+	}
+	
+	// By this point, pOldNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNewNym = pWallet->GetNymByID(newOwnerID);
+	
+	if (NULL == pNewNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no Nym already loaded with that ID. Loading...\n");
+		
+		pNewNym = g_OT_API.LoadPrivateNym(newOwnerID);
+		
+		if (NULL == pNewNym) // LoadPrivateNym has plenty of error logging already.	
+		{
+			pNewNym = g_OT_API.LoadPublicNym(newOwnerID);
+			
+			if (NULL == pNewNym) // LoadPublicNym has plenty of error logging already.	
+			{
+				// I try to load the private Nym first in case that's what it really is --
+				// might as well have it that way correctly in the wallet.
+				// Failing that, I try to load the public nym. If I'm exporting some
+				// cash to someone, I at LEAST need his public key. (And after that, can't re-import...)
+				// Failing that, we have to return NULL. Sorry, we tried.
+				return NULL;
+			}
+		}
+		
+		pWallet->AddNym(*pNewNym);
+	}
+	
+	// By this point, pNewNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------
+	
+	OTToken theToken(theServerID, theAssetTypeID);
+	
+	OTString strOutput, strToken(THE_TOKEN);	
+	
+	if (strToken.Exists() && theToken.LoadContractFromString(strToken))
+	{
+		if (false == theToken.ReassignOwnership(*pOldNym, *pNewNym))
+		{
+			OTLog::Error("Error re-assigning ownership of token in OT_API_Token_ChangeOwner\n");
+		}
+		else 
+		{
+			OTLog::Output(3, "Success re-assigning ownership of token in OT_API_Token_ChangeOwner.\n");
+						
+			theToken.ReleaseSignatures();
+			theToken.SignContract(*pNewNym);
+			theToken.SaveContract();
+			
+			theToken.SaveContract(strOutput);
+		}
 	}
 	
 	const char * pBuf = strOutput.Get(); 

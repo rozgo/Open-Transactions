@@ -905,6 +905,8 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 	
 	for (int i=0; i < pBalanceItem->GetItemCount(); i++)
 	{
+		long lReceiptAmountMultiplier = 1; // for outbox calculations. (It's the only case where GetReceiptAmount() is wrong and needs -1 multiplication.)
+
 		OTItem * pSubItem = pBalanceItem->GetItem(i);
 		
 		OT_ASSERT(NULL != pSubItem);
@@ -917,6 +919,7 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 			case OTItem::marketReceipt: 
 			case OTItem::paymentReceipt:
 				lReceiptBalanceChange += pSubItem->GetAmount();
+			case OTItem::transferReceipt: 
 				nInboxItemCount++;
 				pLedger = pInbox;
 				pszLedgerType = szInbox;
@@ -937,19 +940,24 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 			case OTItem::transfer:
 				if (pSubItem->GetAmount() < 0) // it's an outbox item
 				{
+					lReceiptAmountMultiplier = -1; // transfers out always reduce your balance.
 					nOutboxItemCount++;
 					pLedger = pOutbox;
 					pszLedgerType = szOutbox;
 				}
 				else
 				{
+					lReceiptAmountMultiplier = 1; // transfers in always increase your balance.
 					nInboxItemCount++;
 					pLedger = pInbox;
 					pszLedgerType = szInbox;
 				}
+				break;
+			case OTItem::transferReceipt: 
 			case OTItem::chequeReceipt: 
 			case OTItem::marketReceipt: 
 			case OTItem::paymentReceipt:
+				lReceiptAmountMultiplier = 1;
 				break;
 			default:
 				continue; // This will never happen, due to the first continue above in the first switch.
@@ -995,12 +1003,15 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 			return false;
 		}
 		
-		if (pSubItem->GetAmount()			!= (pTransaction->GetReceiptAmount() * (-1)))
+		long lTransactionAmount	=	pTransaction->GetReceiptAmount();
+		lTransactionAmount		*=	lReceiptAmountMultiplier;
+		
+		if (pSubItem->GetAmount()	!= lTransactionAmount)
 		{
 			OTLog::vOutput(0, "OTTransaction::VerifyBalanceReceipt: %s transaction (%ld) "
-						   "amounts don't match: %ld, expected %ld. (pBalanceItem->GetAmount() == %ld.)\n",
+						   "amounts don't match: Report says %ld, but expected %ld. Trans recpt amt: %ld, (pBalanceItem->GetAmount() == %ld.)\n",
 						   pszLedgerType, lTempTransactionNum,
-						   pSubItem->GetAmount(), pTransaction->GetReceiptAmount(),
+						   pSubItem->GetAmount(), lTransactionAmount, pTransaction->GetReceiptAmount(),
 						   pBalanceItem->GetAmount());
 			return false;
 		}
@@ -1031,6 +1042,14 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 		
 		if ((pSubItem->GetType()		== OTItem::paymentReceipt) && 
 			(pTransaction->GetType()	!= OTTransaction::paymentReceipt))
+		{
+			OTLog::vOutput(0, "OTTransaction::VerifyBalanceReceipt: %s transaction (%ld) wrong type.\n",
+						   pszLedgerType, lTempTransactionNum);
+			return false;
+		}
+		
+		if ((pSubItem->GetType()		== OTItem::transferReceipt) && 
+			(pTransaction->GetType()	!= OTTransaction::transferReceipt))
 		{
 			OTLog::vOutput(0, "OTTransaction::VerifyBalanceReceipt: %s transaction (%ld) wrong type.\n",
 						   pszLedgerType, lTempTransactionNum);
@@ -1080,6 +1099,7 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 			case OTTransaction::paymentReceipt:
 				lInboxBalanceChange += pTransaction->GetReceiptAmount(); // Here I total ALL relevant receipts.
 			case OTTransaction::pending:
+			case OTTransaction::transferReceipt: // transferReceipt has an amount, but it already came out of the account and thus isn't figured in here.
 				break;
 			default:
 			{
@@ -1104,7 +1124,8 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 				case OTTransaction::marketReceipt: 
 				case OTTransaction::paymentReceipt:
 					lInboxSupposedDifference += pTransaction->GetReceiptAmount(); // Here I only total the NEW receipts (not found in old receipt inbox but found in current inbox.)
-				case OTTransaction::pending:
+				case OTTransaction::pending: // pending has value, why aren't we adding it? Because it hasn't changed the balance yet.
+				case OTTransaction::transferReceipt:  // transferReceipt has an amount, but it already came out of the account and thus isn't figured in here.
 					break;
 				default:
 					break; // this should never happen due to above switch.
@@ -1121,7 +1142,9 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 				return false;
 			}
 			
-			if (pSubItem->GetAmount()			!= (pTransaction->GetReceiptAmount() * (-1)))
+			// We're looping through the inbox here, so no multiplier is needed for the amount 
+			// (that was only for outbox items.)
+			if (pSubItem->GetAmount()	!= (pTransaction->GetReceiptAmount() ))
 			{
 				OTLog::vOutput(0, "OTTransaction::VerifyBalanceReceipt: Inbox transaction (%ld) "
 							   "amounts don't match: %ld, expected %ld. (pBalanceItem->GetAmount() == %ld.)\n",
@@ -1162,6 +1185,14 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 							   pSubItem->GetTransactionNum());
 				return false;
 			}
+
+			if ((pSubItem->GetType()		== OTItem::transferReceipt) && 
+				(pTransaction->GetType()	!= OTTransaction::transferReceipt))
+			{
+				OTLog::vOutput(0, "OTTransaction::VerifyBalanceReceipt: Inbox transaction (%ld) wrong type.\n",
+							   pSubItem->GetTransactionNum());
+				return false;
+			}
 		} // else pSubItem WAS found on the old receipt		
 		
 		// ---------------
@@ -1173,6 +1204,49 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 	
 		switch (pTransaction->GetType()) 
 		{
+			case OTTransaction::transferReceipt: // a transfer receipt is in reference to some guy's acceptPending
+				
+				pTransaction->GetReferenceString(strRespTo);
+				
+				if (!strRespTo.Exists())
+				{					
+					OTLog::vOutput(0, "OTTransaction::VerifyBalanceReceipt: Inbox transaction (%ld) refers to another (%ld) but the ref string is missing.\n",
+								   pTransaction->GetTransactionNum(), pTransaction->GetReferenceToNum());
+					return false;
+				}
+				else
+				{				
+					OTItem * pOriginalItem = OTItem::CreateItemFromString(strRespTo, GetRealServerID(), pTransaction->GetReferenceToNum());
+					OTCleanup<OTItem> theAngel(pOriginalItem);
+					
+					// This item was attached as the "in reference to" item. Perhaps Bob sent it to me.
+					// Since that item was initiated by him, HIS would be the account ID on it, not mine.
+					// So I DON'T want to create it with my account ID on it. I use above special function to instantiate it.
+					//
+					if (NULL == pOriginalItem)
+					{
+						OTLog::vError("Error loading original transaction item from string in OTTransaction::VerifyBalanceReceipt.\n");
+						return false;
+					}				
+					else 
+					{
+						if ((OTItem::request == pOriginalItem->GetStatus())
+							&&
+							(OTItem::acceptPending	== pOriginalItem->GetType()))
+						{
+							lIssuedNum = pOriginalItem->GetReferenceToNum();	// <========= The whole reason we did all this crap.
+						}
+						else 
+						{
+							const int nOriginalType = pOriginalItem->GetType();
+							OTLog::vError( "Unrecognized item type (%d) OTTransaction::VerifyBalanceReceipt (expected acceptPending request).\n", 
+										  nOriginalType);
+							return false;
+						}
+					}
+				} // if strRespTo.Exists()
+				break;
+				
 			case OTTransaction::marketReceipt: 
 			case OTTransaction::paymentReceipt:		// a payment receipt #92 is IN REFERENCE TO my payment plan #13, which I am still signed out for until the plan closes for good.
 				lIssuedNum = pTransaction->GetReferenceToNum();	// Same concept is true for market receipts.
@@ -1557,6 +1631,7 @@ bool OTTransaction::GetSuccess()
 			case OTItem::chequeReceipt: // but it's here anyway for dual use reasons (balance agreement sub-items)
 			case OTItem::marketReceipt:
 			case OTItem::paymentReceipt:
+			case OTItem::transferReceipt:
 				
 				if (OTItem::acknowledgement == pItem->GetStatus())
 				{
@@ -1806,13 +1881,19 @@ void OTTransaction::ProduceInboxReportItem(OTItem & theBalanceItem)
 		case OTTransaction::paymentReceipt:	// amount is stored on paymentReceipt item
 			theItemType = OTItem::paymentReceipt;			
 			break;
+		case OTTransaction::transferReceipt:	// amount is 0 according to GetReceiptAmount()
+			theItemType = OTItem::transferReceipt;			
+			break;
 		default: // All other types are irrelevant for inbox reports
 		{
 			OTLog::vOutput(1, "OTTransaction::ProduceInboxReportItem: Ignoring %s transaction "
 						   "in inbox while making balance statement.\n", GetTypeString());
 		}
 			return;
-	}	// why not transfer receipt? presumably because the number was already cleared when you first sent it?
+	}	// why not transfer receipt? Because the amount was already removed from your account when you transferred it,
+	    // and you already signed a balance agreement at that time. Thus, nothing in your inbox is necessary to prove
+	    // the change in balance -- you already signed off on it. UPDATE: that's okay since the below GetReceiptAmount()
+	    // will return 0 for a transfer receipt anyway.
 	
 	// the item will represent THIS TRANSACTION, and will be added to theBalanceItem.
 	
@@ -1862,7 +1943,7 @@ void OTTransaction::ProduceOutboxReportItem(OTItem & theBalanceItem)
 	
 	if (NULL != pReportItem) // above line will assert if mem allocation fails.
 	{		
-		long lAmount = GetReceiptAmount()*(-1); // in outbox, a transfer is leaving my account. Balance gets smaller.
+		const long lAmount = GetReceiptAmount()*(-1); // in outbox, a transfer is leaving my account. Balance gets smaller.
 		pReportItem->SetAmount(lAmount);
 		
 		pReportItem->SetTransactionNum(GetTransactionNum()); // Just making sure these both get set.
@@ -1899,6 +1980,7 @@ long OTTransaction::GetReceiptAmount()
 		case OTTransaction::pending: // amount is stored on the transfer item, on my list of items.
 		case OTTransaction::chequeReceipt: // amount is stored on cheque (attached to depositCheque item, attached.)
 		case OTTransaction::marketReceipt: // amount is stored on marketReceipt item
+		case OTTransaction::transferReceipt:	// amount is stored on acceptPending item
 		case OTTransaction::paymentReceipt:	// amount is stored on paymentReceipt item
 			pOriginalItem = OTItem::CreateItemFromString(strReference, GetPurportedServerID(), GetReferenceToNum());
 			break;
@@ -1942,10 +2024,23 @@ long OTTransaction::GetReceiptAmount()
 			else 
 			{
 				lAdjustment = (theCheque.GetAmount()*(-1)); // a cheque reduces my balance, unless it's negative.
-			}												// So -100 means 100 came out, and +100 means 100 went in.
+			}												// So if I wrote a 100clam cheque, that  means -100 hit my account when I got the
+															// chequeReceipt, and writing a -100c cheque means 100 went in when I got the chequeReceipt.
 		}
 			break;
 			
+		case OTTransaction::transferReceipt: // amount is stored on acceptPending item. (Server refuses acceptPendings with wrong amount on them.)
+			
+			if (pOriginalItem->GetType() != OTItem::acceptPending)
+			{
+				OTLog::Error("Wrong item type attached to transferReceipt\n");
+			}
+			else
+			{	// If I transfer 100 clams to someone, then my account is smaller by 100 clams. -100 has hit my account.
+				// So it will show as -100 in my outbox, not 100, because that is the adjustment actually made to my account.
+				lAdjustment = (pOriginalItem->GetAmount()*(-1));	
+			}
+			break;
 		case OTTransaction::pending: // amount is stored on transfer item
 			
 			if (pOriginalItem->GetType() != OTItem::transfer)
@@ -1956,6 +2051,7 @@ long OTTransaction::GetReceiptAmount()
 			{
 				// Pending transfer adds to my account if this is inbox, and removes if outbox. 
 				// I'll let the caller multiply by (-1) or not. His choice.
+				// Note: Indeed, if you look in ProduceOutboxReportItem(), it is multiplying by (-1).
 				lAdjustment = pOriginalItem->GetAmount();	
 			}
 			break;

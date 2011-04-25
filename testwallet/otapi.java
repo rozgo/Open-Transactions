@@ -116,6 +116,10 @@ public class otapi {
     return otapiJNI.OT_API_GetAccountWallet_NymID(ACCOUNT_ID);
   }
 
+  public static int OT_API_VerifyAccountReceipt(String SERVER_ID, String NYM_ID, String ACCT_ID) {
+    return otapiJNI.OT_API_VerifyAccountReceipt(SERVER_ID, NYM_ID, ACCT_ID);
+  }
+
   public static int OT_API_GetNym_TransactionNumCount(String SERVER_ID, String NYM_ID) {
     return otapiJNI.OT_API_GetNym_TransactionNumCount(SERVER_ID, NYM_ID);
   }
@@ -414,6 +418,10 @@ public class otapi {
 
   public static void OT_API_exchangePurse(String SERVER_ID, String ASSET_TYPE_ID, String USER_ID, String THE_PURSE) {
     otapiJNI.OT_API_exchangePurse(SERVER_ID, ASSET_TYPE_ID, USER_ID, THE_PURSE);
+  }
+
+  public static String OT_API_Token_ChangeOwner(String SERVER_ID, String ASSET_TYPE_ID, String THE_TOKEN, String OLD_OWNER_NYM_ID, String NEW_OWNER_NYM_ID) {
+    return otapiJNI.OT_API_Token_ChangeOwner(SERVER_ID, ASSET_TYPE_ID, THE_TOKEN, OLD_OWNER_NYM_ID, NEW_OWNER_NYM_ID);
   }
 
   public static String OT_API_Token_GetID(String SERVER_ID, String ASSET_TYPE_ID, String THE_TOKEN) {

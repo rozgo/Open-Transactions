@@ -322,6 +322,8 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 		
 		OT_ASSERT(NULL != pSubItem);
 		
+		long lReceiptAmountMultiplier = 1; // needed for outbox items.
+		
 		OTLedger * pLedger = NULL;
 		
 		switch (pSubItem->GetType()) 
@@ -329,6 +331,8 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 			case OTItem::chequeReceipt: 
 			case OTItem::marketReceipt: 
 			case OTItem::paymentReceipt:
+
+			case OTItem::transferReceipt: 
 				nInboxItemCount++;
 				pLedger = &THE_INBOX;
 				pszLedgerType = szInbox;
@@ -349,19 +353,24 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 			case OTItem::transfer:
 				if (pSubItem->GetAmount() < 0) // it's an outbox item
 				{
+					lReceiptAmountMultiplier = -1; // transfers out always reduce your balance.
 					nOutboxItemCount++;
 					pLedger = &THE_OUTBOX;
 					pszLedgerType = szOutbox;
 				}
 				else
 				{
+					lReceiptAmountMultiplier = 1; // transfers in always increase your balance.
 					nInboxItemCount++;
 					pLedger = &THE_INBOX;
 					pszLedgerType = szInbox;
 				}
+				break;
+			case OTItem::transferReceipt: 
 			case OTItem::chequeReceipt: 
 			case OTItem::marketReceipt: 
 			case OTItem::paymentReceipt:
+				lReceiptAmountMultiplier = 1;
 				break;
 			default:
 				continue; // This will never happen, due to the first continue above in the first switch.
@@ -412,12 +421,15 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 			return false;
 		}
 		
-		if (pSubItem->GetAmount()		!= (pTransaction->GetReceiptAmount() * (-1)))
+		long lTransactionAmount	=	pTransaction->GetReceiptAmount();
+		lTransactionAmount		*=	lReceiptAmountMultiplier;
+		
+		if (pSubItem->GetAmount()	!= lTransactionAmount)
 		{
 			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) "
-						   "amounts don't match: %ld, expected %ld. (this->GetAmount() == %ld.)\n",
+						   "amounts don't match: report amount is %ld, but expected %ld. Trans Receipt Amt: %ld (this->GetAmount() == %ld.)\n",
 						   pszLedgerType, pSubItem->GetTransactionNum(),
-						   pSubItem->GetAmount(), pTransaction->GetReceiptAmount(),
+						   pSubItem->GetAmount(), lTransactionAmount, pTransaction->GetReceiptAmount(),
 						   this->GetAmount());
 			return false;
 		}
@@ -448,6 +460,14 @@ bool OTItem::VerifyBalanceStatement(const long lActualAdjustment,
 		
 		if ((pSubItem->GetType()		== OTItem::paymentReceipt) && 
 			(pTransaction->GetType()	!= OTTransaction::paymentReceipt))
+		{
+			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) wrong type.\n",
+						   pszLedgerType, pSubItem->GetTransactionNum());
+			return false;
+		}
+
+		if ((pSubItem->GetType()		== OTItem::transferReceipt) && 
+			(pTransaction->GetType()	!= OTTransaction::transferReceipt))
 		{
 			OTLog::vOutput(0, "OTItem::VerifyBalanceStatement: %s transaction (%ld) wrong type.\n",
 						   pszLedgerType, pSubItem->GetTransactionNum());
@@ -1071,6 +1091,8 @@ OTItem::itemType GetItemTypeFromString(const OTString & strType)
 		theType = OTItem::marketReceipt;
 	else if (strType.Compare("paymentReceipt"))
 		theType = OTItem::paymentReceipt;
+	else if (strType.Compare("transferReceipt"))
+		theType = OTItem::transferReceipt;
 	// --------------------------------------------------------------
 	else
 		theType = OTItem::error_state;
@@ -1301,6 +1323,9 @@ void OTItem::GetStringFromType(OTItem::itemType theType, OTString & strType)
 			break;
 		case OTItem::paymentReceipt:		// used as payment receipt, also used in inbox statement as payment receipt.
 			strType.Set("paymentReceipt");
+			break;
+		case OTItem::transferReceipt:		// used in inbox statement as transfer receipt.
+			strType.Set("transferReceipt");
 			break;
 			
 			
