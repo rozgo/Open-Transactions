@@ -938,6 +938,7 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 		switch (pSubItem->GetType()) 
 		{
 			case OTItem::transfer:
+				
 				if (pSubItem->GetAmount() < 0) // it's an outbox item
 				{
 					lReceiptAmountMultiplier = -1; // transfers out always reduce your balance.
@@ -966,6 +967,7 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 		OTTransaction * pTransaction = NULL;
 		
 		long lTempTransactionNum = 0; // Used for the below block.
+		long lTempReferenceToNum = 0; // Used for the below block.
 		
 		// What's going on here? In the original balance statement, ONLY IN CASES OF OUTOING TRANSFER, the user has put transaction # "1" in his outbox, in anticipation that
 		// the server, upon success, will actually put a real pending transfer into his outbox, and issue a number for it (like "34").
@@ -973,19 +975,79 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 			(pSubItem->GetTransactionNum() == 1) &&	// server chose) as the GetNewOutboxTransNum member on the atBalanceStatement. Now here, when verifying the receipt,
 			(pResponseBalanceItem->GetNewOutboxTransNum() > 0)) // this allows me to verify the outbox request '1' against the actual '34' that resulted.
 		{
-			pTransaction = pLedger->GetTransaction(pResponseBalanceItem->GetNewOutboxTransNum());
-			lTempTransactionNum = pResponseBalanceItem->GetNewOutboxTransNum();
-
-			OTLog::Output(1, "OTTransaction::VerifyBalanceReceipt: (This iteration, I'm handling an item listed as '1' in the outbox.)\n");
+			lTempTransactionNum	= pResponseBalanceItem->GetNewOutboxTransNum();
+			pTransaction		= pLedger->GetTransaction(lTempTransactionNum);
+			
+			OTLog::Output(2, "OTTransaction::VerifyBalanceReceipt: (This iteration, I'm handling an item listed as '1' in the outbox.)\n");
 		}
 		else
 		{
-			pTransaction = pLedger->GetTransaction(pSubItem->GetTransactionNum());
-			lTempTransactionNum = pSubItem->GetTransactionNum();
+			// Make sure that the transaction number of each sub-item is found
+			// on the appropriate ledger (inbox or outbox).
+
+			lTempTransactionNum	= pSubItem->GetTransactionNum();
+			pTransaction		= pLedger->GetTransaction(lTempTransactionNum);
 		}
 
-		// Make sure that the transaction number of each sub-item is found
-		// on the appropriate ledger (inbox or outbox).
+		if (NULL != pTransaction)
+			lTempReferenceToNum	= pTransaction->GetReferenceToNum();
+
+		bool bSwitchedBoxes = false; // In the event that an outbox pending transforms into an inbox transferReceipt, I set this true.
+		
+		// Let's say I sign a balance receipt showing a 100 clam pending transfer, sitting in my outbox.
+		// That means someday when I VERIFY that receipt, the 100 clam pending better still be in that
+		// outbox, or verification will fail. BUT WAIT -- if the receipient accepts the transfer, then it
+		// will disappear out of my outbox, and show up in my inbox as a transferReceipt. So when I go to
+		// verify my balance receipt, I have to expect that any outbox item might be missing, but if that is
+		// the case, there had better be a matching transferReceipt in the inbox. (That wouldn't disappear
+		// unless I processed my inbox, and signed a new balance agreement to get rid of it, so I know it
+		// has to be there in the inbox if the pending wasn't in the outbox. (If the receipt is any good.)
+		//
+		// Therefore the code has to specifically allow for this case, for outbox items...
+		if ((NULL == pTransaction) && (pOutbox == pLedger))
+		{
+			OTLog::Output(2, "OTTransaction::VerifyBalanceReceipt: Outbox pending found as inbox transferReceipt. (Normal.)\n");
+
+			// We didn't find the transaction that was expected to be in the outbox. (A pending.)
+			// Therefore maybe it is now a transfer receipt in the Inbox. We allow for this case.
+
+			pTransaction = pInbox->GetTransferReceipt(pSubItem->GetReferenceToNum());
+			
+			if (NULL != pTransaction)
+			{
+				lTempTransactionNum	= pTransaction->GetTransactionNum();
+				lTempReferenceToNum	= pSubItem->GetReferenceToNum();
+				
+				lReceiptAmountMultiplier = 1;
+
+				nInboxItemCount++;
+				nOutboxItemCount--;
+				
+				pLedger = pInbox;
+				pszLedgerType = szInbox;
+				
+				bSwitchedBoxes = true; // We need to know this in one place below.
+			}
+						
+			/*
+			 Pending:
+			 Outbox: 1901, referencing 1884
+			 Inbox:  1901, referencing 1884
+			 
+			 
+			 transfer receipt:
+			 Trans 1902, referencing 1884 (That's just the display, however. Really 1902 refs 781, which refs 1884.)
+		
+			 
+			 The pending in the outbox REFERENCES the right number.
+			 
+			 The transfer receipt includes (ref string) an acceptPending that references the right number.
+			 
+			 So for pending in outbox, when failure, get ReferenceNum(), and use that to find item in Inbox using GetTransferReceipt().
+			 */
+		}
+			
+		// STILL not found?? 
 		if (NULL == pTransaction)
 		{
 			OTLog::vOutput(0, "OTTransaction::VerifyBalanceReceipt: Expected %s transaction (%ld) "
@@ -995,11 +1057,11 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 		}
 		
 		// subItem is from the balance statement, and pTransaction is from the inbox/outbox
-		if (pSubItem->GetReferenceToNum()	!= pTransaction->GetReferenceToNum())
+		if (pSubItem->GetReferenceToNum()	!= lTempReferenceToNum)
 		{
 			OTLog::vOutput(0, "OTTransaction::VerifyBalanceReceipt: %s transaction (%ld) mismatch Reference Num: %ld, expected %ld\n",
 						   pszLedgerType, lTempTransactionNum, pSubItem->GetReferenceToNum(),
-						   pTransaction->GetReferenceToNum());
+						   lTempReferenceToNum);
 			return false;
 		}
 		
@@ -1016,8 +1078,16 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 			return false;
 		}
 		
-		if ((pSubItem->GetType()		== OTItem::transfer) && 
-			(pTransaction->GetType()	!= OTTransaction::pending))
+		if (
+			(pSubItem->GetType() == OTItem::transfer)	&& 
+				(
+				 ((bSwitchedBoxes == true) && (pTransaction->GetType() != OTTransaction::transferReceipt))
+				 ||
+				 ((pLedger == pOutbox)	&& (pTransaction->GetType() != OTTransaction::pending))
+				 ||
+				 ((pLedger == pInbox)	&& (pTransaction->GetType() != OTTransaction::pending) && (pTransaction->GetType()	!= OTTransaction::transferReceipt))
+				)
+		   )
 		{
 			OTLog::vOutput(0, "OTTransaction::VerifyBalanceReceipt: %s transaction (%ld) wrong type.\n",
 						   pszLedgerType, lTempTransactionNum);
@@ -1070,7 +1140,7 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 	{
 		OTLog::vOutput(0, "OTTransaction::VerifyBalanceReceipt: Outbox mismatch in expected transaction count.\n"
 					   " --- THE_INBOX count: %d --- THE_OUTBOX count: %d\n"
-					   "--- nInboxItemCount count: %d --- nOutboxItemCount count: %d\n\n", 
+					   "--- nInboxItemCount: %d --- nOutboxItemCount: %d\n\n", 
 					   pInbox->GetTransactionCount(), pOutbox->GetTransactionCount(), 
 					   nInboxItemCount, nOutboxItemCount);
 		
@@ -2088,6 +2158,10 @@ long OTTransaction::GetReceiptAmount()
 
 
 
+
+
+
+
 /// for display purposes. The "reference #" we show the user is not the same one we used internally.
 ///
 /// The "display reference #" that we want to display for the User might be 
@@ -2122,6 +2196,9 @@ long OTTransaction::GetReferenceNumForDisplay()
 			lReferenceNum = GetReferenceToNum();
 			break;
 			
+			// A transferReceipt ACTUALLY references the acceptPending (recipient's trans#) that accepted it.
+			// But I don't care about the recipient's transaction #s! I am the sender, and I want to see a
+			// reference to my original transfer that I sent.  This receipt, as far as I care, is for THAT TRANSFER.
 		case OTTransaction::transferReceipt:
 		{
 			OTString strReference;

@@ -697,6 +697,60 @@ OTTransaction * OTLedger::GetPendingTransaction(long lTransactionNum)
 	return NULL;
 }
 
+// If my outbox has a pending transfer, #1901, referencing 1884, and then the 
+// recipient accepts it with his #781, referencing 1884, then it will pop into my inbox
+// as a transfer receipt, #1902 (say) and referencing 781. Attached to that
+// transfer receipt is a copy of the actual #781, which is in reference to 1884.
+//
+// Why does this matter? Because when I am verifying a balance agreement, and an
+// outbox item 1901/1884 is missing, that means there is probably a corresponding 
+// transferReceipt in the Inbox. In that case, I START with #1901 referencing 1884 (from
+// the outbox) and I need to FIND #1902, in reference to 781, referencing 1884 in the inbox.
+//
+// Therefore, loop through all items and filter by transfer receipt. For each, load its
+// Reference string (containing the acceptPending) and get ITS ReferenceNum() to compare
+// to the one passed in.
+//
+// Therefore 1884 would be passed in, and the appropriate transferReceipt will be returned.
+//
+OTTransaction * OTLedger::GetTransferReceipt(long lTransactionNum)
+{
+	// loop through the items that make up this transaction.
+	OTTransaction * pTransaction = NULL;
+	
+	for (mapOfTransactions::iterator ii = m_mapTransactions.begin(); ii != m_mapTransactions.end(); ++ii)
+	{
+		pTransaction = (*ii).second;
+		
+		OT_ASSERT(NULL != pTransaction);
+		
+		if (OTTransaction::transferReceipt == pTransaction->GetType())
+		{
+			OTString strReference;
+			pTransaction->GetReferenceString(strReference);
+			
+			OTItem * pOriginalItem = OTItem::CreateItemFromString(strReference, 
+																  pTransaction->GetPurportedServerID(), 
+																  pTransaction->GetReferenceToNum()); 
+			OT_ASSERT(NULL != pOriginalItem);
+			OTCleanup<OTItem> theItemAngel(*pOriginalItem);
+			
+			if (pOriginalItem->GetType() != OTItem::acceptPending) 
+			{
+				OTLog::Error("OTLedger::GetTransferReceipt: Wrong item type attached to transferReceipt!\n");
+				return NULL;
+			}
+			else 
+			{
+				if (pOriginalItem->GetReferenceToNum() == lTransactionNum)
+					return pTransaction; // FOUND IT!
+			}
+		}
+	}
+	
+	return NULL;
+}
+
 
 /// Only if it is an inbox, a ledger will loop through the transactions
 /// and produce the XML output for the report that's necessary during

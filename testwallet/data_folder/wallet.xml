@@ -5,23 +5,23 @@
  nymID="Bg2QrSTomOEU5ICfvhfYfBYxQZPktDSnaVPpMLYxUnz" />
 
 <assetType name="eJwrzswpSy1SSC9KzC1mAAAkYgTQ"
- assetTypeID="7LJfs1N1UKQyA7c7mUXPmIXaGAERjZTicWoVoBc9vfp" />
+ assetTypeID="Af32L91Pk5ApsGKiXx6SeUKRBTRVgd5h7eAvqFXSoPo" />
 
 <notaryProvider name="eJzzyU9OzMnILy5RcM7PKylKTC5hAABIywcI"
  serverID="44FmyPAgrmGu671RywGnhrt8aR6tzmNFn9WKQ92BXn" />
 
-<!-- Last retrieved balance: 99999937 on date: 1303741160 -->
+<!-- Last retrieved balance: 9999884 on date: 1303843055 -->
 <!-- Account type: simple --><assetAccount name="eJxzC1EvVihJLS5RSExOLmEAACabBNA="
- accountID="43DirTlGTUOO2bppy6x5xAu5X9YtjowADgJUvbnnne9"
+ accountID="O4jrMngN5U8w21zap3IcYJJJPeBgt3gXyhaKCV0ZHPe"
  userID="Bg2QrSTomOEU5ICfvhfYfBYxQZPktDSnaVPpMLYxUnz"
  serverID="44FmyPAgrmGu671RywGnhrt8aR6tzmNFn9WKQ92BXn" />
-<!-- assetTypeID: 7LJfs1N1UKQyA7c7mUXPmIXaGAERjZTicWoVoBc9vfp -->
+<!-- assetTypeID: Af32L91Pk5ApsGKiXx6SeUKRBTRVgd5h7eAvqFXSoPo -->
 
-<!-- Last retrieved balance: -100000062 on date: 1303741076 -->
-<!-- Account type: issuer --><assetAccount name="eJzzDA4OdQ1ScExOLmEAABdMA3c="
- accountID="QMa4FGuLF7nCbiJyjFUoociVtNfhKOl2uJweLgfNFdC"
+<!-- Last retrieved balance: -9999995 on date: 1303843034 -->
+<!-- Account type: issuer --><assetAccount name="eJzzLC4uTS1ScExOLmEAABzsBBc="
+ accountID="sjD4u91QAGcklsoQrd6hSzWJnt4yTJYN7P8UuX9zRbr"
  userID="Bg2QrSTomOEU5ICfvhfYfBYxQZPktDSnaVPpMLYxUnz"
  serverID="44FmyPAgrmGu671RywGnhrt8aR6tzmNFn9WKQ92BXn" />
-<!-- assetTypeID: 7LJfs1N1UKQyA7c7mUXPmIXaGAERjZTicWoVoBc9vfp -->
+<!-- assetTypeID: Af32L91Pk5ApsGKiXx6SeUKRBTRVgd5h7eAvqFXSoPo -->
 
 </wallet>

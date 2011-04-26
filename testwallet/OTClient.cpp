@@ -2438,7 +2438,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 				// that's stored in the strPath variable. (Opens that file.)
 				
 				// Need to consider other security considerations.
-				// What if I wasn't EXPECTING a @createAccount message?
+				// What if I wasn't EXPECTING a @issueAssetType message?
 				// Well actually, in that case, the server wouldn't have a
 				// copy of my request to send back to me, would he? So I should
 				// check that request to make sure it's good.

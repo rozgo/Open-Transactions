@@ -204,6 +204,7 @@ public:
 	OTTransaction * GetTransaction(long lTransactionNum);	
 	OTTransaction * GetTransactionByIndex(int nIndex);
 	OTTransaction * GetPendingTransaction(long lTransactionNum);
+	OTTransaction * GetTransferReceipt(long lTransactionNum);
 
 	bool SaveInbox();
 	bool LoadInbox();

@@ -2,7 +2,9 @@
 NOTES on the Version:
 
 // --------------------------------------------------------------------
- 
+
+   0.57 --- Fixed an old bug in receipt verification.
+
    0.56 --- "Verify Last Signed Receipt against intermediary files" has
             officially been added to the API. Also added more ability to
             manipulate Tokens through the API. Also some debugging in 
