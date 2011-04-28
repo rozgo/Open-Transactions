@@ -61,6 +61,7 @@ class otapiJNI {
   public final static native int OT_API_Wallet_RemoveNym(String jarg1);
   public final static native int OT_API_Wallet_CanRemoveAccount(String jarg1);
   public final static native int OT_API_Wallet_RemoveAccount(String jarg1);
+  public final static native String OT_API_Wallet_ImportNym(String jarg1, String jarg2);
   public final static native int OT_API_SetNym_Name(String jarg1, String jarg2, String jarg3);
   public final static native int OT_API_SetAccountWallet_Name(String jarg1, String jarg2, String jarg3);
   public final static native int OT_API_SetAssetType_Name(String jarg1, String jarg2);

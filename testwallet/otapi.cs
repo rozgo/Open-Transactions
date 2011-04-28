@@ -276,6 +276,11 @@ public class otapi {
     return ret;
   }
 
+  public static string OT_API_Wallet_ImportNym(string DISPLAY_NAME, string KEY_FILE_CONTENTS) {
+    string ret = otapiPINVOKE.OT_API_Wallet_ImportNym(DISPLAY_NAME, KEY_FILE_CONTENTS);
+    return ret;
+  }
+
   public static int OT_API_SetNym_Name(string NYM_ID, string SIGNER_NYM_ID, string NYM_NEW_NAME) {
     int ret = otapiPINVOKE.OT_API_SetNym_Name(NYM_ID, SIGNER_NYM_ID, NYM_NEW_NAME);
     return ret;

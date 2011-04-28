@@ -3,6 +3,8 @@ NOTES on the Version:
 
 // --------------------------------------------------------------------
 
+   0.58 --- Added API stub for Import Nym
+
    0.57 --- Fixed an old bug in receipt verification.
 
    0.56 --- "Verify Last Signed Receipt against intermediary files" has

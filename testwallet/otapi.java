@@ -220,6 +220,10 @@ public class otapi {
     return otapiJNI.OT_API_Wallet_RemoveAccount(ACCOUNT_ID);
   }
 
+  public static String OT_API_Wallet_ImportNym(String DISPLAY_NAME, String KEY_FILE_CONTENTS) {
+    return otapiJNI.OT_API_Wallet_ImportNym(DISPLAY_NAME, KEY_FILE_CONTENTS);
+  }
+
   public static int OT_API_SetNym_Name(String NYM_ID, String SIGNER_NYM_ID, String NYM_NEW_NAME) {
     return otapiJNI.OT_API_SetNym_Name(NYM_ID, SIGNER_NYM_ID, NYM_NEW_NAME);
   }

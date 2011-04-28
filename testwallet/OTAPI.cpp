@@ -763,6 +763,51 @@ OT_BOOL	OT_API_Wallet_RemoveAccount(const char * ACCOUNT_ID)
 
 
 
+/// OT_API_Wallet_ImportNym   INCOMPLETE
+///
+/// Parameters are the display name (wallet only) and the public key.
+/// I'll probably also have the private key come in this way as well.
+/// (Should be able to import public nyms as well as private.)
+///
+/// Returns the NymID (once it is actually coded.)
+///
+const char * OT_API_Wallet_ImportNym(const char * DISPLAY_NAME, const char * KEY_FILE_CONTENTS)
+{
+	OT_ASSERT_MSG(g_OT_API.IsInitialized(), "Not initialized; call OT_API::Init first.");
+	
+	OT_ASSERT_MSG(NULL != DISPLAY_NAME, "Null DISPLAY_NAME passed in.");
+	OT_ASSERT_MSG(NULL != KEY_FILE_CONTENTS, "Null KEY_FILE_CONTENTS passed in.");
+
+	OTString	strName(DISPLAY_NAME), strKeyfile(KEY_FILE_CONTENTS);
+	
+	
+	// Calculate the NymID for the PUBLIC_KEY
+	
+	// 
+	
+	OTLog::Error("OT_API_Wallet_ImportNym is not functional yet. Sorry.\n");
+	
+	
+	if (0)
+	{
+		OTString strNymID("OT_API_Wallet_ImportNym is not functional yet. Sorry.\n");
+		
+		
+		
+		const char * pBuf = strNymID.Get();
+		
+#ifdef _WIN32
+		strcpy_s(g_tempBuf, MAX_STRING_LENGTH, pBuf);
+#else
+		strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
+#endif
+		
+		return g_tempBuf;
+	}
+	
+	return NULL;
+}
+
 
 
 

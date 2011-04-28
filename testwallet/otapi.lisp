@@ -212,6 +212,10 @@
 (cffi:defcfun ("OT_API_Wallet_RemoveAccount" OT_API_Wallet_RemoveAccount) :int
   (ACCOUNT_ID :string))
 
+(cffi:defcfun ("OT_API_Wallet_ImportNym" OT_API_Wallet_ImportNym) :string
+  (DISPLAY_NAME :string)
+  (KEY_FILE_CONTENTS :string))
+
 (cffi:defcfun ("OT_API_SetNym_Name" OT_API_SetNym_Name) :int
   (NYM_ID :string)
   (SIGNER_NYM_ID :string)

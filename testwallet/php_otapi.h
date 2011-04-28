@@ -103,6 +103,7 @@ ZEND_NAMED_FUNCTION(_wrap_OT_API_Wallet_CanRemoveNym);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_Wallet_RemoveNym);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_Wallet_CanRemoveAccount);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_Wallet_RemoveAccount);
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Wallet_ImportNym);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_SetNym_Name);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_SetAccountWallet_Name);
 ZEND_NAMED_FUNCTION(_wrap_OT_API_SetAssetType_Name);

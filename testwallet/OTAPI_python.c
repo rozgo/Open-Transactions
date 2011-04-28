@@ -4071,6 +4071,43 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_OT_API_Wallet_ImportNym(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *result = 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:OT_API_Wallet_ImportNym",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Wallet_ImportNym" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OT_API_Wallet_ImportNym" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  result = (char *)OT_API_Wallet_ImportNym((char const *)arg1,(char const *)arg2);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_OT_API_SetNym_Name(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   char *arg1 = (char *) 0 ;
@@ -9249,6 +9286,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"OT_API_Wallet_RemoveNym", _wrap_OT_API_Wallet_RemoveNym, METH_VARARGS, NULL},
 	 { (char *)"OT_API_Wallet_CanRemoveAccount", _wrap_OT_API_Wallet_CanRemoveAccount, METH_VARARGS, NULL},
 	 { (char *)"OT_API_Wallet_RemoveAccount", _wrap_OT_API_Wallet_RemoveAccount, METH_VARARGS, NULL},
+	 { (char *)"OT_API_Wallet_ImportNym", _wrap_OT_API_Wallet_ImportNym, METH_VARARGS, NULL},
 	 { (char *)"OT_API_SetNym_Name", _wrap_OT_API_SetNym_Name, METH_VARARGS, NULL},
 	 { (char *)"OT_API_SetAccountWallet_Name", _wrap_OT_API_SetAccountWallet_Name, METH_VARARGS, NULL},
 	 { (char *)"OT_API_SetAssetType_Name", _wrap_OT_API_SetAssetType_Name, METH_VARARGS, NULL},

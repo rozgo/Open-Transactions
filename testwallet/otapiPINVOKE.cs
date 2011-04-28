@@ -343,6 +343,9 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Wallet_RemoveAccount")]
   public static extern int OT_API_Wallet_RemoveAccount(string jarg1);
 
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Wallet_ImportNym")]
+  public static extern string OT_API_Wallet_ImportNym(string jarg1, string jarg2);
+
   [DllImport("otapi", EntryPoint="CSharp_OT_API_SetNym_Name")]
   public static extern int OT_API_SetNym_Name(string jarg1, string jarg2, string jarg3);
 

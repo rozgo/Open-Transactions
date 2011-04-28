@@ -102,6 +102,7 @@ package otapi;
 *OT_API_Wallet_RemoveNym = *otapic::OT_API_Wallet_RemoveNym;
 *OT_API_Wallet_CanRemoveAccount = *otapic::OT_API_Wallet_CanRemoveAccount;
 *OT_API_Wallet_RemoveAccount = *otapic::OT_API_Wallet_RemoveAccount;
+*OT_API_Wallet_ImportNym = *otapic::OT_API_Wallet_ImportNym;
 *OT_API_SetNym_Name = *otapic::OT_API_SetNym_Name;
 *OT_API_SetAccountWallet_Name = *otapic::OT_API_SetAccountWallet_Name;
 *OT_API_SetAssetType_Name = *otapic::OT_API_SetAssetType_Name;

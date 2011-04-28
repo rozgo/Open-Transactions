@@ -2461,6 +2461,43 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Wallet_ImportNym) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *result = 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  result = (char *)OT_API_Wallet_ImportNym((char const *)arg1,(char const *)arg2);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value,result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),SWIG_ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_OT_API_SetNym_Name) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -6805,6 +6842,7 @@ static function_entry otapi_functions[] = {
  ZEND_NAMED_FE(ot_api_wallet_removenym,_wrap_OT_API_Wallet_RemoveNym,NULL)
  ZEND_NAMED_FE(ot_api_wallet_canremoveaccount,_wrap_OT_API_Wallet_CanRemoveAccount,NULL)
  ZEND_NAMED_FE(ot_api_wallet_removeaccount,_wrap_OT_API_Wallet_RemoveAccount,NULL)
+ ZEND_NAMED_FE(ot_api_wallet_importnym,_wrap_OT_API_Wallet_ImportNym,NULL)
  ZEND_NAMED_FE(ot_api_setnym_name,_wrap_OT_API_SetNym_Name,NULL)
  ZEND_NAMED_FE(ot_api_setaccountwallet_name,_wrap_OT_API_SetAccountWallet_Name,NULL)
  ZEND_NAMED_FE(ot_api_setassettype_name,_wrap_OT_API_SetAssetType_Name,NULL)

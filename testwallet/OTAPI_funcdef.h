@@ -430,6 +430,7 @@ int		OT_API_Wallet_RemoveAccount(const char * ACCOUNT_ID);
 
 
 
+const char * OT_API_Wallet_ImportNym(const char * DISPLAY_NAME, const char * KEY_FILE_CONTENTS);
 
 
 
