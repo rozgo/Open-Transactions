@@ -4369,6 +4369,7 @@ const char * OT_API_Transaction_GetRecipientUserID(const char * SERVER_ID,
 		
 		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
 		{
+			OTLog::Output(0, "Unable to load nym, sorry.\n");
 			return NULL;
 		}
 		
@@ -4394,6 +4395,20 @@ const char * OT_API_Transaction_GetRecipientUserID(const char * SERVER_ID,
 	OTIdentifier theOutput;
 	
 	bool bSuccess = theTransaction.GetRecipientUserIDForDisplay(theOutput);
+	
+	// -----------------------------------------------------
+
+	// Normally, there IS NO recipient user ID for a transfer (only a recipient acct ID.)
+	// But here, as a special trick, I'll see if the account is in my address book.
+	// THIS MEANS THE ADDRESS BOOK needs to store nyms (for other people, their public nym)
+	// as well as a list of acct IDs that I have associated with each Nym. That way, I can
+	// later look up the Nym ID based on the acct ID, and then look up my display label for
+	// that Nym.
+	//
+//	if (!bSuccess && (theTransaction.GetType() == OTTransaction::pending))
+//	{
+//		// AS SOON AS ADDRESS BOOK FEATURE IS ADDED, THEN THIS CAN BE COMPLETED HERE.
+//	}
 	
 	// -----------------------------------------------------
 	

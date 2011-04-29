@@ -893,6 +893,9 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 	
 	int nInboxItemCount = 0, nOutboxItemCount = 0;
 	
+	
+	OTLog::vError("BEFORE LOOP nInboxItemCount: %d  nOutboxItemCount: %d\n", nInboxItemCount, nOutboxItemCount);
+	
 	const char * szInbox = "Inbox";
 	const char * szOutbox = "Outbox";
 	
@@ -913,6 +916,34 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 		
 		OTLedger * pLedger	= NULL;
 		
+		// todo remove this debug switch block.
+		/*
+		switch (pSubItem->GetType()) 
+		{
+			case OTItem::chequeReceipt: 
+				OTLog::Error("Subitem type is: chequeReceipt\n");
+				break;
+			case OTItem::marketReceipt: 
+				OTLog::Error("Subitem type is: marketReceipt\n");
+				break;
+			case OTItem::paymentReceipt:
+				OTLog::Error("Subitem type is: paymentReceipt\n");
+				break;
+			case OTItem::transferReceipt: 
+				OTLog::Error("Subitem type is: transferReceipt\n");
+				break;
+			case OTItem::transfer:
+				OTLog::Error("Subitem type is: transfer\n");
+				break;
+			default:
+			{
+				OTLog::Error("Subitem type is: fucked up\n");
+				break;
+			}				
+				continue;
+		}
+		*/
+		
 		switch (pSubItem->GetType()) 
 		{
 			case OTItem::chequeReceipt: 
@@ -921,6 +952,7 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 				lReceiptBalanceChange += pSubItem->GetAmount();
 			case OTItem::transferReceipt: 
 				nInboxItemCount++;
+//				OTLog::vError("RECEIPT: nInboxItemCount: %d  nOutboxItemCount: %d\n", nInboxItemCount, nOutboxItemCount);
 				pLedger = pInbox;
 				pszLedgerType = szInbox;
 			case OTItem::transfer:
@@ -943,6 +975,9 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 				{
 					lReceiptAmountMultiplier = -1; // transfers out always reduce your balance.
 					nOutboxItemCount++;
+
+//					OTLog::vError("GetAmount() negative, OUTBOX ITEM: nInboxItemCount: %d  nOutboxItemCount: %d\n", nInboxItemCount, nOutboxItemCount);
+
 					pLedger = pOutbox;
 					pszLedgerType = szOutbox;
 				}
@@ -952,6 +987,9 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 					nInboxItemCount++;
 					pLedger = pInbox;
 					pszLedgerType = szInbox;
+
+//					OTLog::vError("GetAmount() POSITIVE, INBOX ITEM: nInboxItemCount: %d  nOutboxItemCount: %d\n", nInboxItemCount, nOutboxItemCount);
+
 				}
 				break;
 			case OTItem::transferReceipt: 
@@ -1006,7 +1044,7 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 		// Therefore the code has to specifically allow for this case, for outbox items...
 		if ((NULL == pTransaction) && (pOutbox == pLedger))
 		{
-			OTLog::Output(2, "OTTransaction::VerifyBalanceReceipt: Outbox pending found as inbox transferReceipt. (Normal.)\n");
+			OTLog::Output(1, "OTTransaction::VerifyBalanceReceipt: Outbox pending found as inbox transferReceipt. (Normal.)\n");
 
 			// We didn't find the transaction that was expected to be in the outbox. (A pending.)
 			// Therefore maybe it is now a transfer receipt in the Inbox. We allow for this case.
@@ -1023,6 +1061,8 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 				nInboxItemCount++;
 				nOutboxItemCount--;
 				
+//				OTLog::vError("PENDING->TransferReceipt. nInboxItemCount: %d  nOutboxItemCount: %d\n", nInboxItemCount, nOutboxItemCount);
+
 				pLedger = pInbox;
 				pszLedgerType = szInbox;
 				
@@ -1135,6 +1175,8 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 	
 	//-----------------------------------------------------------------
 	
+	
+//	OTLog::vError("BEFORE COUNT MATCH. nInboxItemCount: %d  nOutboxItemCount: %d\n", nInboxItemCount, nOutboxItemCount);
 	
 	if (nOutboxItemCount	!= pOutbox->GetTransactionCount())
 	{
@@ -2004,6 +2046,7 @@ void OTTransaction::ProduceOutboxReportItem(OTItem & theBalanceItem)
 			theItemType = OTItem::transfer;
 			break;
 		default: // All other types are irrelevant for outbox reports.
+			OTLog::Error("ProduceOutboxReportItem: Error, wrong item type. Returning.\n");
 			return;
 	}
 	
@@ -2020,6 +2063,11 @@ void OTTransaction::ProduceOutboxReportItem(OTItem & theBalanceItem)
 		pReportItem->SetReferenceToNum(GetReferenceToNum()); // Especially this one.
 		
 		theBalanceItem.AddItem(*pReportItem); // Now theBalanceItem will handle cleaning it up.
+		
+		
+		// debugging remove this
+//		OTLog::vError("PRODUCING OUTBOX REPORT ITEM: lAmount: %ld  Trans# %ld  Ref# %ld \n", lAmount, pReportItem->GetTransactionNum(),
+//					  pReportItem->GetReferenceToNum());
 		
 		// No need to sign/save pReportItem, since it is just used for in-memory storage, and is
 		// otherwise saved as part of its owner's data, as part of its owner. (As long as theBalanceItem
@@ -2463,7 +2511,7 @@ bool OTTransaction::GetRecipientUserIDForDisplay(OTIdentifier & theReturnID)
 				theReturnID = pOriginalItem->GetUserID();	
 				bSuccess = true;
 			}
-			
+									
 			break;
 			
 		default: // All other types have no amount -- return 0.
