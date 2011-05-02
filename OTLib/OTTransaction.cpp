@@ -137,6 +137,7 @@
 #include <string>
 #include <iomanip>
 #include <cstring>
+#include <cmath>
 
 #include "irrxml/irrXML.h"
 
@@ -894,7 +895,7 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 	int nInboxItemCount = 0, nOutboxItemCount = 0;
 	
 	
-	OTLog::vError("BEFORE LOOP nInboxItemCount: %d  nOutboxItemCount: %d\n", nInboxItemCount, nOutboxItemCount);
+//	OTLog::vError("BEFORE LOOP nInboxItemCount: %d  nOutboxItemCount: %d\n", nInboxItemCount, nOutboxItemCount);
 	
 	const char * szInbox = "Inbox";
 	const char * szOutbox = "Outbox";
@@ -950,6 +951,7 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 			case OTItem::marketReceipt: 
 			case OTItem::paymentReceipt:
 				lReceiptBalanceChange += pSubItem->GetAmount();
+//				OTLog::vError("RECEIPT: lReceiptBalanceChange: %ld  pSubItem->GetAmount()  %ld\n", lReceiptBalanceChange, pSubItem->GetAmount());
 			case OTItem::transferReceipt: 
 				nInboxItemCount++;
 //				OTLog::vError("RECEIPT: nInboxItemCount: %d  nOutboxItemCount: %d\n", nInboxItemCount, nOutboxItemCount);
@@ -1210,7 +1212,11 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 			case OTTransaction::marketReceipt: 
 			case OTTransaction::paymentReceipt:
 				lInboxBalanceChange += pTransaction->GetReceiptAmount(); // Here I total ALL relevant receipts.
-			case OTTransaction::pending:
+				
+//				OTLog::vError("ON INBOX:  lInboxBalanceChange: %ld  pTransaction->GetReceiptAmount(): %ld\n", // temp remove debugging todo
+//							  lInboxBalanceChange, pTransaction->GetReceiptAmount());
+				
+			case OTTransaction::pending:			// pending has an amount, but it already came out of the account and thus isn't figured here.
 			case OTTransaction::transferReceipt: // transferReceipt has an amount, but it already came out of the account and thus isn't figured in here.
 				break;
 			default:
@@ -1230,12 +1236,16 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 		//
 		if (NULL == pSubItem)
 		{
-			switch (pTransaction->GetType()) 
+			switch (pTransaction->GetType())
 			{
 				case OTTransaction::chequeReceipt:  // Every one of these, we have to add up the total and reconcile against the latest balance.
 				case OTTransaction::marketReceipt: 
 				case OTTransaction::paymentReceipt:
 					lInboxSupposedDifference += pTransaction->GetReceiptAmount(); // Here I only total the NEW receipts (not found in old receipt inbox but found in current inbox.)
+					
+//					OTLog::vError("NOT ON RECEIPT:  lInboxSupposedDifference: %ld  pTransaction->GetReceiptAmount(): %ld\n", // temp remove debugging todo
+//								  lInboxSupposedDifference, pTransaction->GetReceiptAmount());
+					
 				case OTTransaction::pending: // pending has value, why aren't we adding it? Because it hasn't changed the balance yet.
 				case OTTransaction::transferReceipt:  // transferReceipt has an amount, but it already came out of the account and thus isn't figured in here.
 					break;
@@ -1456,36 +1466,197 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 	
 	// VERIFY ACCOUNT BALANCE (RECONCILING WITH NEW INBOX RECEIPTS)
 
+	// lReceiptBalanceChange	-- The balance of all the inbox items on the receipt (at least, the items that change the balance.)
+	// lInboxBalanceChange		-- The balance of all the inbox items in the inbox (at least, the items that change the balance.)
+	// lInboxSupposedDifference	-- The balance of all the inbox items in the inbox that were NOT found in the receipt (that change balance.)
+	// lAbsoluteDifference		-- The absolute difference between the inbox balance and the receipt balance. (Always positive.)
+	// lAbsoluteDifference		-- The balance of all the inbox items (including new items) minus the old ones that were on the receipt.
 	
-	const long lActualDifference = (lReceiptBalanceChange - lInboxBalanceChange); // How much money came out? (Or went in, if the chequeReceipt was for an invoice...)
+	// (Helping me to visualize lInboxBalanceChange and lReceiptBalanceChange)
+	//				ACTUAL			SIMPLE ADD/SUBTRACT		ADD/ABS
+	// -5 -100  difference == 95    (-5 + -100 == -105)		105
+	// 5   100  difference == 95    ( 5 +  100 ==  105)		105
+	// -5  100  difference == 105	(-5 +  100 ==   95)		 95
+	// 5  -100  difference == 105   ( 5 + -100 ==  -95)		 95
+	
+	// -100 -5  difference == 95	(-100 + -5 == -105)		105
+	// 100  -5  difference == 105	( 100 + -5 ==   95)		 95
+	// -100  5  difference == 105	(-100 +  5 ==  -95)		 95
+	// 100   5  difference == 95	( 100 +  5 ==  105)		105
+	
+	// Above == wrong, Below == right.
+	
+	//													***SUBTRACT/ABS***
+	// -5 -100  difference == 95    (-5 - -100 ==   95)		 95 *
+	// 5   100  difference == 95    ( 5 -  100 ==  -95)		 95 *
+	// -5  100  difference == 105	(-5 -  100 == -105)		105 *
+	// 5  -100  difference == 105   ( 5 - -100 ==  105)		105 *
+	
+	// -100 -5  difference == 95	(-100 - -5 ==  -95)		 95 *
+	// 100  -5  difference == 105	( 100 - -5 ==  105)		105 *
+	// -100  5  difference == 105	(-100 -  5 == -105)		105 *
+	// 100   5  difference == 95	( 100 -  5 ==   95)		 95 *
+	
+	// Based on the above table, the solution is to subtract one value from the other,
+	// and then take the absolute of that to get the actual difference. Then use an 
+	// 'if' statement to see which was larger, and based on that, calculate whether the
+	// balance is what would be expected.
+	//
+									// -1099					// -99 (example of 1000 absolute difference)
+	const long lAbsoluteDifference	= abs(lInboxBalanceChange - lReceiptBalanceChange); // How much money came out? (Or went in, if the chequeReceipt was for an invoice...)
+									// 901						// -99 (example of 1000 absolute difference)
+	const long lNegativeDifference	= (lAbsoluteDifference*(-1));
+	
+	// The new (current) inbox has a larger overall value than the balance in the old (receipt) inbox. (As shown by subitem.)
+	const bool bNewInboxWasBigger		= ((lInboxBalanceChange > lReceiptBalanceChange) ? true : false);
+	const bool bNewInboxWasSmaller		= ((lInboxBalanceChange < lReceiptBalanceChange) ? true : false);
+	
+	// --------------------------------
+	
+	long lActualDifference;
+	
+	if (bNewInboxWasBigger)
+		lActualDifference = lAbsoluteDifference;
+	else if (bNewInboxWasSmaller)
+		lActualDifference = lNegativeDifference;
+	else
+		lActualDifference = 0;
+
+	// --------------------------------
+
+	/*
+	 Example for logic:
+	 
+	 Old Inbox on Receipt:
+	 10
+	 15
+	 40
+	 lReceiptBalanceChange: 65
+	 Old Balance (in addition to these inbox items): 1000 (total 1065)
+	 
+	 New Inbox scenario A:
+	 10
+	 15
+	 40
+	 20		(lInboxSupposedDifference==(20))      20
+	 lInboxBalanceChange: 85
+	 
+	 New Inbox scenario B:
+	 10
+	 15
+	 40
+	 -20	(lInboxSupposedDifference==(-20))    -20
+	 lInboxBalanceChange: 45
+	 
+	 
+	 Inbox A: lAbsoluteDifference=abs(85-65)==abs( 20)==20
+	 Inbox B: lAbsoluteDifference=abs(45-65)==abs(-20)==20
+	 
+	 Inbox A: lNegativeDifference == -20
+	 Inbox B: lNegativeDifference == -20
+	 	 
+	 Inbox A:	bNewInboxWasBigger == TRUE,	
+				bNewInboxWasSmaller == FALSE
+
+	 Inbox B:	bNewInboxWasBigger == FALSE,	
+				bNewInboxWasSmaller == TRUE
+	 
+	 // --------------------------
+	 
+	 if (
+	 (bNewInboxWasBigger	&& (lAbsoluteDifference	!= lInboxSupposedDifference))	||	// lInboxSupposedDifference should be positive here.
+	 (bNewInboxWasSmaller	&& (lNegativeDifference	!= lInboxSupposedDifference))		// lInboxSupposedDifference should be negative here.
+	 )
+
+	 Inbox A:
+	 if (
+	 (TRUE	&& (20	!= 20))	||	// lInboxSupposedDifference should be positive here. ***
+	 (FALSE	&& (-20	!= 20))		// lInboxSupposedDifference should be negative here.
+	 )
+
+	 Inbox B:
+	 if (
+	 (FALSE	&& (20	!= -20))	||	// lInboxSupposedDifference should be positive here.
+	 (TRUE	&& (-20	!= -20))		// lInboxSupposedDifference should be negative here. ***
+	 )
+	 
+	 ---------------
+	 if (
+	 (lActualDifference	!= lInboxSupposedDifference)
+	 )
+	 
+	 Inbox A (bigger): (lActualDifference is lAbsoluteDifference)
+	 if ( 20	!= 20)
+
+	 Inbox B (smaller): (lActualDifference is lNegativeDifference)
+	 if (-20	!= -20)
+
+	 */
 	
 	// If the actual difference between the two totals is not equal to the supposed difference from adding up just the new receipts,
 	// (Which is probably impossible anyway) then return false.
-	//
-	if (lActualDifference != lInboxSupposedDifference)
+	if (lActualDifference	!=	lInboxSupposedDifference)
 	{
-		OTLog::vError("OTTransaction::VerifyBalanceReceipt: lActualDifference (%ld) is not equal to lInboxSupposedDifference (%ld)\n",
-						lActualDifference, lInboxSupposedDifference);
+		OTLog::vError("OTTransaction::VerifyBalanceReceipt: lActualDifference (%ld) is not equal to lInboxSupposedDifference (%ld)\n"
+					  "FYI, Inbox balance on old receipt: %ld  Inbox balance on current inbox: %ld\n",
+						lActualDifference, lInboxSupposedDifference,
+					  lReceiptBalanceChange, lInboxBalanceChange);
 		return false;
 	}
 	
+	// ---------------------------------------------
+	// if, according to the two inboxes, they are different (in terms of how they would impact balance),
+	// then therefore, they must have impacted my balance. THEREFORE, my old balance MUST be equivalent to
+	// the current (apparently new) balance, PLUS OR MINUS THE DIFFERENCE, ACCORDING TO THE DIFFERENCE BETWEEN THE INBOXES.
 	// If the actual difference (according to inbox receipts) + actual account balance (according to newest copy of account)
 	// is not equal to the last signed balance agreement, then return false.
 	//
-	if ((lActualDifference + THE_ACCOUNT.GetBalance())	// Let's say ActualDifference == 10-3 (prev balance minus current balance) == 7.
-			!= 											// If that's the case, then 7 + THE_ACCT.Balance should equal 10 again from the last balance statement!
-		pBalanceItem->GetAmount()) // the balance according to the last valid balance statement.
+	/*
+	 if (
+	 (bNewInboxWasBigger	&& (pBalanceItem->GetAmount()	!= (THE_ACCOUNT.GetBalance() + lNegativeDifference)))	||
+	 (bNewInboxWasSmaller	&& (pBalanceItem->GetAmount()	!= (THE_ACCOUNT.GetBalance() + lAbsoluteDifference)))
+	 )
+
+	 Inbox A (bigger):
+	 if (
+	 (TRUE	&& (1000	!= (1020 + -20)))	||
+	 (FALSE	&& (1000	!= (1020 +  20)))
+	 )
+	 ---
+	 Inbox B (smaller):
+	 if (
+	 (FALSE	&& (1000	!= (980 + -20)))	||
+	 (TRUE	&& (1000	!= (980 +  20)))
+	 )
+	 ---------------------------------------------------------------------
+	 
+	 if (pBalanceItem->GetAmount() != (THE_ACCOUNT.GetBalance() + (lActualDifference*(-1))))
+	 
+	 Inbox A (bigger):
+	 if (1000 != (1020 + -20))
+
+	 Inbox B (smaller):
+	 if (1000 != (980 + 20))
+	 */
+	
+	if (pBalanceItem->GetAmount() != (THE_ACCOUNT.GetBalance() + (lActualDifference*(-1))))
 	{
-		OTLog::vError("OTTransaction::VerifyBalanceReceipt: lActualDifference in receipts (%ld) plus current acct balance (%ld) is NOT equal to last signed balance (%ld)\n",
+		// Let's say ActualDifference == 10-3 (prev balance minus current balance) == 7.
+		// If that's the case, then 7 + THE_ACCT.Balance should equal 10 again from the last balance statement!
+
+		OTLog::vError("OTTransaction::VerifyBalanceReceipt: lActualDifference in receipts (%ld) "
+					  "plus current acct balance (%ld) is NOT equal to last signed balance (%ld)\n",
 					  lActualDifference, THE_ACCOUNT.GetBalance(), pBalanceItem->GetAmount());
 		return false;		
-	}
+	}	
 	
 	// At this point: all good!
 	// 
 	
 	return true;
 }
+
+
 
 
 

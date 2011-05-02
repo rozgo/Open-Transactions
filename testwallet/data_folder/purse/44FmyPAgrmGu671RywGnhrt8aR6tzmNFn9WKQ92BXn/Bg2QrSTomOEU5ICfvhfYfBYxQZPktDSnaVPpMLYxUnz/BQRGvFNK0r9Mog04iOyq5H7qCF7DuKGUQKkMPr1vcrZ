@@ -1,0 +1,55 @@
+-----BEGIN SIGNED PURSE-----
+Hash: SAMY
+
+<?xml version="1.0"?>
+
+<purse version="1.0"
+ totalValue="5"
+ userID=""
+ assetTypeID="BQRGvFNK0r9Mog04iOyq5H7qCF7DuKGUQKkMPr1vcrZ"
+ serverID="44FmyPAgrmGu671RywGnhrt8aR6tzmNFn9WKQ92BXn">
+
+<token>
+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
+</token>
+
+</purse>
+-----BEGIN PURSE SIGNATURE-----
+Version: Open Transactions 0.58
+Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
+
+xL8lG+75OHbdWuxtFgojott0Qi3JqIVngY1EEz4tMlvJTRuZmQtURnocsnzqeLX8
+NRJlBLdElK4oAOJ0/E6M2Jc+mkskCiYWj9OHGLSzwwlonL7ug6qLaB1IGJuWWXlw
+8HuNvtcIq4CogooC6+8cbkppqReRkSu5uIye4mxGxOY=
+-----END PURSE SIGNATURE-----
+
