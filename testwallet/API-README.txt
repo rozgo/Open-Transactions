@@ -129,13 +129,36 @@ libotapi.jnilib
 
 -- Use otapi.java in your Java project.
 
+For Linux, MAKE SURE that the "JAVA_HOME" environment variable is set properly,
+since the Makefile depends on it! The value is usually something like /usr/lib/jvm/default-java
+or /usr/lib/jvm/java-6-openjdk.
+
+Instructions to set it in linux:
+
+-- For your current user,
+Open up a shell / terminal window
+vi ~/.profile (replace vi with your favourite text editor)
+Add export JAVA_HOME=/path/to/java/home/dir on its own line at the end of the file
+Add export PATH=$JAVA_HOME/bin:$PATH on its own line immediately after
+Save, and restart your shell
+Running java -version should give you the desired results
+
+-- For all users in the system,
+Open up a shell / terminal window
+vi /etc/profile (replace vi with your favourite text editor)
+Add export JAVA_HOME=/path/to/java/home/dir on its own line at the end of the file
+Add export PATH=$JAVA_HOME/bin:$PATH on its own line immediately after
+Save, and restart your shell
+Running java -version should give you the desired results
+
+
 ---------
-Note: the current OT GUI (in java) requires a slight modification 
+Note: the current OT GUI ("Moneychanger", in java) requires a slight modification 
 to one file: OTAPI_java.c
 
 Basically search for this string: Java_otapiJNI
 And replace it with this string:  Java_com_wrapper_core_jni_otapiJNI
-Replace all, it appears over a hundred times.
+Replace all, it appears over a hundred times. (It's probably already done for you.)
 
 Then go to the Open-Transactions folder and type: make clean && make java
 

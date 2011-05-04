@@ -158,7 +158,8 @@
 // This is for an extern "C" (though written in C++) wrapper for a global instance of the above.
 // (In order to be able to call Open Transactions from C, as well as use SWIG and call it from
 // php, perl, ruby, python, tcl, java, lisp, etc.)
-#include "OTAPI.h"
+//#include "OTAPI.h"
+#include "OTAPI_funcdef.h"  // Trying to compile as C++ now, due to the new Password Callback, which requires it.
 
 #include "OTLog.h"
 

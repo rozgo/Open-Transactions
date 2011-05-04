@@ -86,6 +86,7 @@ PLATFORM_LIBDIRS = # empty
 PLATFORM_INCLUDEDIRS = #empty
 
 API_CSOURCES = ./SSL-Example/SFSocket.c
+API_CPPSOURCES = #empty
 API_CFLAGS = #empty
 API_LDFLAGS = #empty
 
@@ -266,7 +267,7 @@ CSHARP_LDFLAGS = -shared
 # --- JAVA
 JAVA_PROGRAM = libotapi.so
 JAVA_DEBUG_PROGRAM = libotapid.so 
-JAVA_INCLUDEDIRS = -I/usr/$(LINUX_LIBDIR)/jvm/java-6-openjdk/include
+JAVA_INCLUDEDIRS = -I$(JAVA_HOME)/include
 JAVA_LDFLAGS = -shared
 
 
@@ -455,7 +456,7 @@ endif
 ifeq ($(LANGUAGE), csharp)
 PROGRAM = $(CSHARP_PROGRAM)  
 DEBUG_PROGRAM = $(CSHARP_DEBUG_PROGRAM) 
-API_CSOURCES += OTAPI_csharp.c
+API_CPPSOURCES += OTAPI_csharp.cpp
 API_LDFLAGS += $(CSHARP_LDFLAGS)
 BOOL_DYNAMIC_OTLIB = 1
 endif
@@ -465,7 +466,7 @@ endif
 ifeq ($(LANGUAGE), java)
 PROGRAM = $(JAVA_PROGRAM)  
 DEBUG_PROGRAM = $(JAVA_DEBUG_PROGRAM) 
-API_CSOURCES += OTAPI_java.c
+API_CPPSOURCES += OTAPI_java.cpp
 PLATFORM_INCLUDEDIRS += $(JAVA_INCLUDEDIRS)
 API_LDFLAGS += $(JAVA_LDFLAGS)
 BOOL_DYNAMIC_OTLIB = 1
@@ -478,7 +479,7 @@ ifeq ($(LANGUAGE), perl5)
 PROGRAM = $(PERL5_PROGRAM) 
 DEBUG_PROGRAM = $(PERL5_DEBUG_PROGRAM) 
 PLATFORM_INCLUDEDIRS += $(PERL5_INCLUDEDIRS)
-API_CSOURCES += OTAPI_perl5.c
+API_CPPSOURCES += OTAPI_perl5.cpp
 API_CFLAGS += $(PERL5_CFLAGS)
 API_LDFLAGS += $(PERL5_LDFLAGS)
 BOOL_DYNAMIC_OTLIB = 1
@@ -487,7 +488,7 @@ endif
 
 # --- PHP5
 ifeq ($(LANGUAGE), php5)
-API_CSOURCES += OTAPI_php.c
+API_CPPSOURCES += OTAPI_php.cpp
 PLATFORM_INCLUDEDIRS += $(PHP5_INCLUDEDIRS) 
 PROGRAM = $(PHP5_PROGRAM)
 DEBUG_PROGRAM = $(PHP5_DEBUG_PROGRAM)
@@ -502,7 +503,7 @@ PROGRAM = $(PYTHON_PROGRAM)
 DEBUG_PROGRAM = $(PYTHON_DEBUG_PROGRAM)
 PLATFORM_INCLUDEDIRS += $(PYTHON_INCLUDEDIRS)
 PLATFORM_LIBDIRS += $(PYTHON_LIBDIRS)
-API_CSOURCES += OTAPI_python.c
+API_CPPSOURCES += OTAPI_python.cpp
 API_LDFLAGS += $(PYTHON_LDFLAGS)
 BOOL_DYNAMIC_OTLIB = 1
 endif
@@ -510,7 +511,7 @@ endif
 
 # --- RUBY!
 ifeq ($(LANGUAGE), ruby)
-API_CSOURCES += OTAPI_ruby.c
+API_CPPSOURCES += OTAPI_ruby.cpp
 PLATFORM_INCLUDEDIRS += $(RUBY_INCLUDEDIRS)
 PROGRAM = $(RUBY_PROGRAM)
 DEBUG_PROGRAM = $(RUBY_DEBUG_PROGRAM)
@@ -521,7 +522,7 @@ endif
 
 # --- TCL
 ifeq ($(LANGUAGE), tcl)
-API_CSOURCES += OTAPI_tcl.c
+API_CPPSOURCES += OTAPI_tcl.cpp
 PROGRAM = $(TCL_PROGRAM)
 DEBUG_PROGRAM = $(TCL_DEBUG_PROGRAM)
 PLATFORM_INCLUDEDIRS += $(TCL_INCLUDEDIRS)
@@ -585,7 +586,7 @@ LIBDIRS = $(PLATFORM_LIBDIRS) $(OT_LIBDIRS)
 
 CSOURCES = $(API_CSOURCES)
 
-CXXSOURCES = \
+CXXSOURCES = $(API_CPPSOURCES) \
 			 OpenTransactions.cpp \
 			 OTServerConnection.cpp \
 			 OTClient.cpp \
@@ -700,27 +701,27 @@ OTAPI_cffi.o: OTAPI_cffi.c
 	$(CC) $(CFLAGS) -o OTAPI_cffi.o OTAPI_cffi.c
 
 # C-Sharp
-OTAPI_csharp.o: OTAPI_csharp.c 
-	$(CC) $(CFLAGS) -o OTAPI_csharp.o OTAPI_csharp.c
+OTAPI_csharp.o: OTAPI_csharp.cpp 
+	$(CXX) $(CFLAGS) -o OTAPI_csharp.o OTAPI_csharp.cpp
 
 
-OTAPI_java.o: OTAPI_java.c 
-	$(CC) $(CFLAGS) -o OTAPI_java.o OTAPI_java.c
+OTAPI_java.o: OTAPI_java.cpp
+	$(CXX) $(CFLAGS) -o OTAPI_java.o OTAPI_java.cpp
 
-OTAPI_perl5.o: OTAPI_perl5.c
-	$(CC) $(CFLAGS) -o OTAPI_perl5.o OTAPI_perl5.c
+OTAPI_perl5.o: OTAPI_perl5.cpp
+	$(CXX) $(CFLAGS) -o OTAPI_perl5.o OTAPI_perl5.cpp
 
-OTAPI_php.o: OTAPI_php.c 
-	$(CC) $(CFLAGS) -o OTAPI_php.o OTAPI_php.c
+OTAPI_php.o: OTAPI_php.cpp 
+	$(CXX) $(CFLAGS) -o OTAPI_php.o OTAPI_php.cpp
 
-OTAPI_python.o: OTAPI_python.c 
-	$(CC) $(CFLAGS) -o OTAPI_python.o OTAPI_python.c
+OTAPI_python.o: OTAPI_python.cpp
+	$(CXX) $(CFLAGS) -o OTAPI_python.o OTAPI_python.cpp
 
-OTAPI_ruby.o: OTAPI_ruby.c 
-	$(CC) $(CFLAGS) -o OTAPI_ruby.o OTAPI_ruby.c
+OTAPI_ruby.o: OTAPI_ruby.cpp
+	$(CXX) $(CFLAGS) -o OTAPI_ruby.o OTAPI_ruby.cpp
 
-OTAPI_tcl.o: OTAPI_tcl.c 
-	$(CC) $(CFLAGS) -o OTAPI_tcl.o OTAPI_tcl.c
+OTAPI_tcl.o: OTAPI_tcl.cpp
+	$(CXX) $(CFLAGS) -o OTAPI_tcl.o OTAPI_tcl.cpp
 
 #
 # Clean target: "make -f Makefile.API clean" to remove unwanted objects and executables.

@@ -128,6 +128,8 @@
  -----END PGP SIGNATURE-----
  **************************************************************/
 
+#include <string>
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>

@@ -160,6 +160,7 @@ void OT_XmlRpcCallback(OTServerContract & theServerContract, OTEnvelope & theEnv
 #endif
 
 
+
 // --------------------------------------------------------------------
 
 class OT_API // The C++ high-level interface to the Open Transactions client-side.

@@ -160,7 +160,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\OTAPI_java.c" />
+    <ClCompile Include="..\OTAPI_java.cpp" />
     <ClCompile Include="applink.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TCP Release|Win32'">true</ExcludedFromBuild>

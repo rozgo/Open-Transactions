@@ -3,6 +3,8 @@ NOTES on the Version:
 
 // --------------------------------------------------------------------
 
+   0.60 --- Added password callback! Works in the API, in Java, etc.
+
    0.59 --- Fixed ANOTHER old bug in receipt verification.
 
    0.58 --- Added API stub for Import Nym

@@ -132,20 +132,92 @@
 #ifndef __OT_ASYMMETRIC_KEY_H__
 #define __OT_ASYMMETRIC_KEY_H__
 
+#include <string>
+
 extern "C"
 {
 #include <openssl/evp.h>	
 }
 
+// ------------------------------------------------
+
+
+class OTCallback 
+{
+public:
+	OTCallback() {}
+	virtual ~OTCallback();
+	virtual std::string run1(); // Asks for password once.
+	virtual std::string run2(); // Asks for password twice. (For verification.)
+};
+
+
+class OTCaller 
+{
+protected:
+	std::string m_strPW;
+	OTCallback *_callback;
+	
+public:
+	OTCaller() : _callback(NULL) { }
+	~OTCaller();
+	
+	const char * GetPassword();
+	
+	void delCallback();
+	void setCallback(OTCallback *cb);
+	bool isCallbackSet();
+	
+	void call1(); // Asks for password once.
+	void call2(); // Asks for password twice. (For verification.)
+};
+
+
+// This is the only part of the API that actually accepts objects as parameters,
+// since the above objects have SWIG C++ wrappers. 
+//
+bool OT_API_Set_PasswordCallback(OTCaller & theCaller); // Caller must have Callback attached already.
+
+
+// ------------------------------------------------
+
+// For getting the password from the user, for using his private key.
+//
+extern "C"
+{
+typedef int OT_OPENSSL_CALLBACK(char *buf, int size, int rwflag, void *u); // <== Callback type, used for declaring.
+	
+	OT_OPENSSL_CALLBACK default_pass_cb;
+	OT_OPENSSL_CALLBACK souped_up_pass_cb;
+}
+
+// Used for the actual function definition (in the .cpp file).
+#define OPENSSL_CALLBACK_FUNC(name) extern "C" int (name)(char *buf, int size, int rwflag, void *u)
+
+// ------------------------------------------------
+
 class OTString;
 class OTASCIIArmor;
+
 
 class OTAsymmetricKey
 {
 private:
 	EVP_PKEY * m_pKey; 
-
+	
+	static OT_OPENSSL_CALLBACK * s_pwCallback; 
+	
+	static OTCaller * s_pCaller;
+	
 public:
+	
+	static void SetPasswordCallback(OT_OPENSSL_CALLBACK * pCallback);
+	static OT_OPENSSL_CALLBACK * GetPasswordCallback();
+	static bool IsPasswordCallbackSet() { return (NULL == s_pwCallback) ? false : true; }
+	
+	static bool SetPasswordCaller(OTCaller & theCaller);
+	static OTCaller * GetPasswordCaller();
+	
 	OTAsymmetricKey();
 	virtual ~OTAsymmetricKey();
 	

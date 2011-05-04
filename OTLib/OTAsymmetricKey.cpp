@@ -129,7 +129,6 @@
  **************************************************************/
 
 
-
 extern "C" 
 {
 #include <memory.h>
@@ -172,7 +171,273 @@ typedef struct
 
 
 
+// --------------------------------------------------------
 
+// static
+OT_OPENSSL_CALLBACK * OTAsymmetricKey::s_pwCallback = NULL;
+
+//static void SetPasswordCallback(p_OT_OPENSSL_CALLBACK pCallback);
+//static p_OT_OPENSSL_CALLBACK GetPasswordCallback();
+//static bool IsPasswordCallbackSet() { (NULL == s_pwCallback) ? false : true; }
+
+
+void OTAsymmetricKey::SetPasswordCallback(OT_OPENSSL_CALLBACK * pCallback)
+{
+	s_pwCallback = pCallback; // no need to delete function pointer that came before this function pointer.
+}
+
+OT_OPENSSL_CALLBACK * OTAsymmetricKey::GetPasswordCallback()
+{
+	if (IsPasswordCallbackSet())
+		return s_pwCallback;
+	else
+		return &default_pass_cb;
+	
+}
+
+
+
+// --------------------------------------------------------
+
+OTCaller * OTAsymmetricKey::s_pCaller = NULL;
+
+
+// Takes ownership. UPDATE: doesn't, since he assumes the Java side
+// created it and will therefore delete it when the time comes.
+// I keep a pointer, but I don't delete the thing. Let Java do it.
+//
+bool OTAsymmetricKey::SetPasswordCaller(OTCaller & theCaller)
+{
+	if (!theCaller.isCallbackSet())
+	{
+		OTLog::Error("Error in OTAsymmetricKey::SetPasswordCaller:\nOTCaller::setCallback() "
+					 "MUST be called first, with an OTCallback-extended object passed to it,\n"
+					 "before calling this function with that OTCaller.\n");
+		return false;
+	}
+	
+	if (NULL != s_pCaller)
+	{
+//		delete s_pCaller; // Let Java delete it.
+	}
+	
+	s_pCaller = &theCaller;
+	
+	// ---------------------------
+	
+	SetPasswordCallback(&souped_up_pass_cb);
+	
+	return true;
+}
+
+OTCaller * OTAsymmetricKey::GetPasswordCaller()
+{
+	return s_pCaller;
+}
+
+// --------------------------------------------------------
+
+// OTCallback CLASS
+
+OTCallback::~OTCallback() 
+{ 
+//	std::cout << "OTCallback::~OTCallback()" << std:: endl; 
+}
+
+std::string OTCallback::run1() // child class will override.
+{ 
+	//	std::cout << "OTCallback::run()" << std::endl; 
+	
+	std::string blah("test"); 
+	
+	return blah; 
+}
+
+std::string OTCallback::run2() // child class will override.
+{ 
+	//	std::cout << "OTCallback::run()" << std::endl; 
+	
+	std::string blah("test"); 
+	
+	return blah; 
+}
+
+
+// ------------------------------------------------
+
+// OTCaller CLASS
+
+OTCaller::~OTCaller() 
+{ 
+	delCallback(); 
+}
+
+const char * OTCaller::GetPassword() 
+{ 
+	if (m_strPW.size() > 0)
+		return m_strPW.c_str(); 
+	
+	return NULL;
+}
+
+void OTCaller::delCallback() 
+{ 
+//	if (NULL != _callback)  // TODO this may be a memory leak.
+//		delete _callback;	// But I know we're currently crashing from deleting same object twice.
+							// And since the object comes from Java, who am I to delete it? Let Java clean it up.
+	_callback = NULL; 
+}
+
+void OTCaller::setCallback(OTCallback *cb) 
+{ 
+	delCallback(); 
+	_callback = cb; 
+}
+
+void OTCaller::call1() 
+{ 
+	if (NULL != _callback) 
+	{ 
+		m_strPW = _callback->run1(); 
+		//		std::cout << "RESULT!!!: " << m_strPW << std::endl; 
+	} 
+}
+
+void OTCaller::call2() 
+{ 
+	if (NULL != _callback) 
+	{ 
+		m_strPW = _callback->run2(); 
+		//		std::cout << "RESULT!!!: " << m_strPW << std::endl; 
+	} 
+}
+
+bool OTCaller::isCallbackSet() 
+{ 
+	return (NULL == _callback) ? false : true; 
+}
+
+bool OT_API_Set_PasswordCallback(OTCaller & theCaller) // Caller must have Callback attached already.
+{
+	if (!theCaller.isCallbackSet())
+	{
+		OTLog::Error("Error in OT_API_Set_PasswordCallback:\nOTCaller::setCallback() "
+					 "MUST be called first, with an OTCallback-extended class passed to it,\n"
+					 "before calling this function with that OTCaller.\n");
+		return false;
+	}
+	
+	return OTAsymmetricKey::SetPasswordCaller(theCaller);
+}
+
+// --------------------------------------------------------
+
+/*
+ extern "C"
+ {
+ typedef int OT_OPENSSL_CALLBACK(char *buf, int size, int rwflag, void *u); // <== Callback type, used for declaring.
+ }
+ 
+ // Used for the actual function definition (in the .cpp file).
+ #define OPENSSL_CALLBACK_FUNC(name) extern \"C\" int (name)(char *buf, int size, int rwflag, void *u)
+ */
+
+
+// If the password callback isn't set, then it uses the default ("test") password.
+//
+OPENSSL_CALLBACK_FUNC(default_pass_cb)
+{
+	int len=0;
+	char *tmp=NULL;
+	
+	// We'd probably do something else if 'rwflag' is 1
+	
+	OTLog::vOutput(0, "Using 'test' pass phrase for \"%s\"\n", (char *)u);
+	
+	// get pass phrase, length 'len' into 'tmp'
+	
+	tmp = "test";
+	len = strlen(tmp);
+	
+	if (len <= 0) 
+		return 0;
+	
+	// if too long, truncate
+	if (len > size) 
+		len = size;
+	
+	memcpy(buf, tmp, len);
+	return len;
+}
+
+
+// --------------------------------------------------------
+
+
+//typedef int OT_OPENSSL_CALLBACK(char *buf, int size, int rwflag, void *u); // <== Callback type, used for declaring.
+
+OPENSSL_CALLBACK_FUNC(souped_up_pass_cb)
+{
+	int len=0;
+	char *tmp=NULL;
+	
+	// We'd probably do something else if 'rwflag' is 1
+	
+	OTLog::vOutput(0, "Using OT Password Callback for \"%s\"\n", (char *)u);
+	
+	OTCaller * pCaller = OTAsymmetricKey::GetPasswordCaller();
+	
+	if (NULL == pCaller)
+	{
+		OTLog::Error("OTCaller is NULL. Try calling OT_API_Set_PasswordCallback() first.\n");
+		
+		OT_ASSERT(0); // This will never actually happen, since SetPasswordCaller() and souped_up_pass_cb are activated in same place.
+		
+		// get pass phrase, length 'len' into 'tmp'
+		/*
+		 tmp = "test";
+		len = strlen(tmp);
+		
+		if (len <= 0) 
+			return 0;
+		
+		// if too long, truncate
+		if (len > size) 
+			len = size;
+		
+		memcpy(buf, tmp, len);
+		return len;		
+		 */
+	}
+		
+	if (1 == rwflag)
+		pCaller->call2(); // This is where Java pops up a modal dialog and asks for password twice...
+	else
+		pCaller->call1(); // This is where Java pops up a modal dialog and asks for password...
+
+	// get pass phrase, length 'len' into 'tmp'
+	const char * pPassword = pCaller->GetPassword();
+	
+	if (NULL == pPassword)
+		return 0;
+	
+	OTString strPassword(pPassword);
+	tmp = (char*)strPassword.Get();
+	len = strlen(tmp);
+	
+	if (len <= 0) 
+		return 0;
+	
+	// if too long, truncate
+	if (len > size) 
+		len = size;
+	
+	memcpy(buf, tmp, len);
+	return len;
+}
+
+
+// --------------------------------------------------------
 
 void OTAsymmetricKey::SetKey(EVP_PKEY * pKey) 
 { 
@@ -182,8 +447,6 @@ void OTAsymmetricKey::SetKey(EVP_PKEY * pKey)
 	
 	m_pKey = pKey; 
 }
-
-
 
 
 
@@ -1067,32 +1330,6 @@ bool OTAsymmetricKey::LoadPublicKey(OTString & strFilename)
 }
 */
 
-// TODO this is just for testing.
-int pass_cb(char *buf, int size, int rwflag, void *u)
-{
-	int len;
-	char *tmp;
-	
-	// We'd probably do something else if 'rwflag' is 1
-	
-	OTLog::vOutput(0, "Using 'test' pass phrase for \"%s\"\n", (char *)u);
-	
-	// get pass phrase, length 'len' into 'tmp'
-	
-	tmp = "test";
-	len = strlen(tmp);
-	
-	if (len <= 0) 
-		return 0;
-	
-	// if too long, truncate
-	if (len > size) 
-		len = size;
-	
-	memcpy(buf, tmp, len);
-		return len;
-}
-
 
 
 
@@ -1227,7 +1464,7 @@ bool OTAsymmetricKey::LoadPrivateKey(const OTString & strFilename)
 	
 	BIO_read_filename( bio, strFilename.Get() );
 	
-	m_pKey = PEM_read_bio_PrivateKey( bio, NULL, pass_cb, NULL );
+	m_pKey = PEM_read_bio_PrivateKey( bio, NULL, GetPasswordCallback(), NULL );
 	
 	BIO_free_all(bio);
 	bio = NULL;
