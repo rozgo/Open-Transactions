@@ -188,6 +188,54 @@ class otapiPINVOKE {
   }
 
 
+  [DllImport("otapi", EntryPoint="CSharp_new_OTCallback")]
+  public static extern IntPtr new_OTCallback();
+
+  [DllImport("otapi", EntryPoint="CSharp_delete_OTCallback")]
+  public static extern void delete_OTCallback(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OTCallback_runOne")]
+  public static extern string OTCallback_runOne(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OTCallback_runOneSwigExplicitOTCallback")]
+  public static extern string OTCallback_runOneSwigExplicitOTCallback(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OTCallback_runTwo")]
+  public static extern string OTCallback_runTwo(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OTCallback_runTwoSwigExplicitOTCallback")]
+  public static extern string OTCallback_runTwoSwigExplicitOTCallback(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OTCallback_director_connect")]
+  public static extern void OTCallback_director_connect(HandleRef jarg1, OTCallback.SwigDelegateOTCallback_0 delegate0, OTCallback.SwigDelegateOTCallback_1 delegate1);
+
+  [DllImport("otapi", EntryPoint="CSharp_new_OTCaller")]
+  public static extern IntPtr new_OTCaller();
+
+  [DllImport("otapi", EntryPoint="CSharp_delete_OTCaller")]
+  public static extern void delete_OTCaller(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OTCaller_GetPassword")]
+  public static extern string OTCaller_GetPassword(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OTCaller_delCallback")]
+  public static extern void OTCaller_delCallback(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OTCaller_setCallback")]
+  public static extern void OTCaller_setCallback(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_OTCaller_isCallbackSet")]
+  public static extern bool OTCaller_isCallbackSet(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OTCaller_callOne")]
+  public static extern void OTCaller_callOne(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OTCaller_callTwo")]
+  public static extern void OTCaller_callTwo(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_OT_API_Set_PasswordCallback")]
+  public static extern bool OT_API_Set_PasswordCallback(HandleRef jarg1);
+
   [DllImport("otapi", EntryPoint="CSharp_OT_API_Init")]
   public static extern int OT_API_Init(string jarg1);
 
@@ -646,52 +694,4 @@ class otapiPINVOKE {
 
   [DllImport("otapi", EntryPoint="CSharp_OT_API_ProcessSockets")]
   public static extern int OT_API_ProcessSockets();
-
-  [DllImport("otapi", EntryPoint="CSharp_new_OTCallback")]
-  public static extern IntPtr new_OTCallback();
-
-  [DllImport("otapi", EntryPoint="CSharp_delete_OTCallback")]
-  public static extern void delete_OTCallback(HandleRef jarg1);
-
-  [DllImport("otapi", EntryPoint="CSharp_OTCallback_run1")]
-  public static extern string OTCallback_run1(HandleRef jarg1);
-
-  [DllImport("otapi", EntryPoint="CSharp_OTCallback_run1SwigExplicitOTCallback")]
-  public static extern string OTCallback_run1SwigExplicitOTCallback(HandleRef jarg1);
-
-  [DllImport("otapi", EntryPoint="CSharp_OTCallback_run2")]
-  public static extern string OTCallback_run2(HandleRef jarg1);
-
-  [DllImport("otapi", EntryPoint="CSharp_OTCallback_run2SwigExplicitOTCallback")]
-  public static extern string OTCallback_run2SwigExplicitOTCallback(HandleRef jarg1);
-
-  [DllImport("otapi", EntryPoint="CSharp_OTCallback_director_connect")]
-  public static extern void OTCallback_director_connect(HandleRef jarg1, OTCallback.SwigDelegateOTCallback_0 delegate0, OTCallback.SwigDelegateOTCallback_1 delegate1);
-
-  [DllImport("otapi", EntryPoint="CSharp_new_OTCaller")]
-  public static extern IntPtr new_OTCaller();
-
-  [DllImport("otapi", EntryPoint="CSharp_delete_OTCaller")]
-  public static extern void delete_OTCaller(HandleRef jarg1);
-
-  [DllImport("otapi", EntryPoint="CSharp_OTCaller_GetPassword")]
-  public static extern string OTCaller_GetPassword(HandleRef jarg1);
-
-  [DllImport("otapi", EntryPoint="CSharp_OTCaller_delCallback")]
-  public static extern void OTCaller_delCallback(HandleRef jarg1);
-
-  [DllImport("otapi", EntryPoint="CSharp_OTCaller_setCallback")]
-  public static extern void OTCaller_setCallback(HandleRef jarg1, HandleRef jarg2);
-
-  [DllImport("otapi", EntryPoint="CSharp_OTCaller_isCallbackSet")]
-  public static extern bool OTCaller_isCallbackSet(HandleRef jarg1);
-
-  [DllImport("otapi", EntryPoint="CSharp_OTCaller_call1")]
-  public static extern void OTCaller_call1(HandleRef jarg1);
-
-  [DllImport("otapi", EntryPoint="CSharp_OTCaller_call2")]
-  public static extern void OTCaller_call2(HandleRef jarg1);
-
-  [DllImport("otapi", EntryPoint="CSharp_OT_API_Set_PasswordCallback")]
-  public static extern bool OT_API_Set_PasswordCallback(HandleRef jarg1);
 }

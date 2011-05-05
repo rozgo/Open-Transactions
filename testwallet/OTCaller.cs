@@ -61,12 +61,12 @@ public class OTCaller : IDisposable {
     return ret;
   }
 
-  public void call1() {
-    otapiPINVOKE.OTCaller_call1(swigCPtr);
+  public void callOne() {
+    otapiPINVOKE.OTCaller_callOne(swigCPtr);
   }
 
-  public void call2() {
-    otapiPINVOKE.OTCaller_call2(swigCPtr);
+  public void callTwo() {
+    otapiPINVOKE.OTCaller_callTwo(swigCPtr);
   }
 
 }

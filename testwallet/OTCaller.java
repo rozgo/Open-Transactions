@@ -55,12 +55,12 @@ public class OTCaller {
     return otapiJNI.OTCaller_isCallbackSet(swigCPtr, this);
   }
 
-  public void call1() {
-    otapiJNI.OTCaller_call1(swigCPtr, this);
+  public void callOne() {
+    otapiJNI.OTCaller_callOne(swigCPtr, this);
   }
 
-  public void call2() {
-    otapiJNI.OTCaller_call2(swigCPtr, this);
+  public void callTwo() {
+    otapiJNI.OTCaller_callTwo(swigCPtr, this);
   }
 
 }

@@ -1687,11 +1687,46 @@ SWIGEXPORT int SWIG_init(Tcl_Interp *);
 
 
 
-#include "OTAPI_funcdef.h"
+#include <string>
 #include "../OTLib/OTAsymmetricKey.h"
+#include "OTAPI_funcdef.h"
 
 
 #include <string>
+
+
+#include <limits.h>
+#if !defined(SWIG_NO_LLONG_MAX)
+# if !defined(LLONG_MAX) && defined(__GNUC__) && defined (__LONG_LONG_MAX__)
+#   define LLONG_MAX __LONG_LONG_MAX__
+#   define LLONG_MIN (-LLONG_MAX - 1LL)
+#   define ULLONG_MAX (LLONG_MAX * 2ULL + 1ULL)
+# endif
+#endif
+
+
+SWIGINTERNINLINE Tcl_Obj *
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+{
+  return (size < INT_MAX) ? Tcl_NewStringObj(carray, static_cast< int >(size)) : NULL;
+}
+
+
+SWIGINTERNINLINE Tcl_Obj *
+SWIG_From_std_string  (const std::string& s)
+{
+  return SWIG_FromCharPtrAndSize(s.data(), s.size());
+}
+
+
+SWIGINTERNINLINE Tcl_Obj * 
+SWIG_FromCharPtr(const char *cptr)
+{ 
+  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
+}
+
+
+  #define SWIG_From_bool   Tcl_NewBooleanObj 
 
 
 SWIGINTERN int
@@ -1710,16 +1745,6 @@ SWIG_AsCharPtrAndSize(Tcl_Obj *obj, char** cptr, size_t* psize, int *alloc)
 
 
 
-
-
-#include <limits.h>
-#if !defined(SWIG_NO_LLONG_MAX)
-# if !defined(LLONG_MAX) && defined(__GNUC__) && defined (__LONG_LONG_MAX__)
-#   define LLONG_MAX __LONG_LONG_MAX__
-#   define LLONG_MIN (-LLONG_MAX - 1LL)
-#   define ULLONG_MAX (LLONG_MAX * 2ULL + 1ULL)
-# endif
-#endif
 
 
 SWIGINTERNINLINE Tcl_Obj* 
@@ -1767,33 +1792,305 @@ SWIG_AsVal_int SWIG_TCL_DECL_ARGS_2(Tcl_Obj * obj, int *val)
   return res;
 }
 
-
-SWIGINTERNINLINE Tcl_Obj *
-SWIG_FromCharPtrAndSize(const char* carray, size_t size)
-{
-  return (size < INT_MAX) ? Tcl_NewStringObj(carray, static_cast< int >(size)) : NULL;
-}
-
-
-SWIGINTERNINLINE Tcl_Obj * 
-SWIG_FromCharPtr(const char *cptr)
-{ 
-  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
-}
-
-
-SWIGINTERNINLINE Tcl_Obj *
-SWIG_From_std_string  (const std::string& s)
-{
-  return SWIG_FromCharPtrAndSize(s.data(), s.size());
-}
-
-
-  #define SWIG_From_bool   Tcl_NewBooleanObj 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+SWIGINTERN int
+_wrap_new_OTCallback(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTCallback *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,":new_OTCallback ") == TCL_ERROR) SWIG_fail;
+  result = (OTCallback *)new OTCallback();
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTCallback,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_delete_OTCallback(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTCallback *arg1 = (OTCallback *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:delete_OTCallback self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCallback, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_OTCallback" "', argument " "1"" of type '" "OTCallback *""'"); 
+  }
+  arg1 = reinterpret_cast< OTCallback * >(argp1);
+  delete arg1;
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OTCallback_runOne(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTCallback *arg1 = (OTCallback *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:OTCallback_runOne self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCallback, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCallback_runOne" "', argument " "1"" of type '" "OTCallback *""'"); 
+  }
+  arg1 = reinterpret_cast< OTCallback * >(argp1);
+  result = (arg1)->runOne();
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OTCallback_runTwo(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTCallback *arg1 = (OTCallback *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:OTCallback_runTwo self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCallback, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCallback_runTwo" "', argument " "1"" of type '" "OTCallback *""'"); 
+  }
+  arg1 = reinterpret_cast< OTCallback * >(argp1);
+  result = (arg1)->runTwo();
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN void swig_delete_OTCallback(void *obj) {
+OTCallback *arg1 = (OTCallback *) obj;
+delete arg1;
+}
+static swig_method swig_OTCallback_methods[] = {
+    {"runOne", _wrap_OTCallback_runOne}, 
+    {"runTwo", _wrap_OTCallback_runTwo}, 
+    {0,0}
+};
+static swig_attribute swig_OTCallback_attributes[] = {
+    {0,0,0}
+};
+static swig_class *swig_OTCallback_bases[] = {0};
+static const char * swig_OTCallback_base_names[] = {0};
+static swig_class _wrap_class_OTCallback = { "OTCallback", &SWIGTYPE_p_OTCallback,_wrap_new_OTCallback, swig_delete_OTCallback, swig_OTCallback_methods, swig_OTCallback_attributes, swig_OTCallback_bases,swig_OTCallback_base_names, &swig_module };
+SWIGINTERN int
+_wrap_new_OTCaller(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTCaller *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,":new_OTCaller ") == TCL_ERROR) SWIG_fail;
+  result = (OTCaller *)new OTCaller();
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTCaller,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_delete_OTCaller(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:delete_OTCaller self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCaller, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_OTCaller" "', argument " "1"" of type '" "OTCaller *""'"); 
+  }
+  arg1 = reinterpret_cast< OTCaller * >(argp1);
+  delete arg1;
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OTCaller_GetPassword(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:OTCaller_GetPassword self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_GetPassword" "', argument " "1"" of type '" "OTCaller *""'"); 
+  }
+  arg1 = reinterpret_cast< OTCaller * >(argp1);
+  result = (char *)(arg1)->GetPassword();
+  Tcl_SetObjResult(interp,SWIG_FromCharPtr((const char *)result));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OTCaller_delCallback(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:OTCaller_delCallback self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_delCallback" "', argument " "1"" of type '" "OTCaller *""'"); 
+  }
+  arg1 = reinterpret_cast< OTCaller * >(argp1);
+  (arg1)->delCallback();
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OTCaller_setCallback(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  OTCallback *arg2 = (OTCallback *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:OTCaller_setCallback self cb ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_setCallback" "', argument " "1"" of type '" "OTCaller *""'"); 
+  }
+  arg1 = reinterpret_cast< OTCaller * >(argp1);
+  res2 = SWIG_ConvertPtr(objv[2], &argp2,SWIGTYPE_p_OTCallback, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OTCaller_setCallback" "', argument " "2"" of type '" "OTCallback *""'"); 
+  }
+  arg2 = reinterpret_cast< OTCallback * >(argp2);
+  (arg1)->setCallback(arg2);
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OTCaller_isCallbackSet(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:OTCaller_isCallbackSet self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_isCallbackSet" "', argument " "1"" of type '" "OTCaller *""'"); 
+  }
+  arg1 = reinterpret_cast< OTCaller * >(argp1);
+  result = (bool)(arg1)->isCallbackSet();
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OTCaller_callOne(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:OTCaller_callOne self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_callOne" "', argument " "1"" of type '" "OTCaller *""'"); 
+  }
+  arg1 = reinterpret_cast< OTCaller * >(argp1);
+  (arg1)->callOne();
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_OTCaller_callTwo(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:OTCaller_callTwo self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_callTwo" "', argument " "1"" of type '" "OTCaller *""'"); 
+  }
+  arg1 = reinterpret_cast< OTCaller * >(argp1);
+  (arg1)->callTwo();
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN void swig_delete_OTCaller(void *obj) {
+OTCaller *arg1 = (OTCaller *) obj;
+delete arg1;
+}
+static swig_method swig_OTCaller_methods[] = {
+    {"GetPassword", _wrap_OTCaller_GetPassword}, 
+    {"delCallback", _wrap_OTCaller_delCallback}, 
+    {"setCallback", _wrap_OTCaller_setCallback}, 
+    {"isCallbackSet", _wrap_OTCaller_isCallbackSet}, 
+    {"callOne", _wrap_OTCaller_callOne}, 
+    {"callTwo", _wrap_OTCaller_callTwo}, 
+    {0,0}
+};
+static swig_attribute swig_OTCaller_attributes[] = {
+    {0,0,0}
+};
+static swig_class *swig_OTCaller_bases[] = {0};
+static const char * swig_OTCaller_base_names[] = {0};
+static swig_class _wrap_class_OTCaller = { "OTCaller", &SWIGTYPE_p_OTCaller,_wrap_new_OTCaller, swig_delete_OTCaller, swig_OTCaller_methods, swig_OTCaller_attributes, swig_OTCaller_bases,swig_OTCaller_base_names, &swig_module };
+SWIGINTERN int
+_wrap_OT_API_Set_PasswordCallback(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTCaller *arg1 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:OT_API_Set_PasswordCallback theCaller ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1, SWIGTYPE_p_OTCaller,  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Set_PasswordCallback" "', argument " "1"" of type '" "OTCaller &""'"); 
+  }
+  if (!argp1) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "OT_API_Set_PasswordCallback" "', argument " "1"" of type '" "OTCaller &""'"); 
+  }
+  arg1 = reinterpret_cast< OTCaller * >(argp1);
+  result = (bool)OT_API_Set_PasswordCallback(*arg1);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
 SWIGINTERN int
 _wrap_OT_API_Init(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   char *arg1 = (char *) 0 ;
@@ -7910,304 +8207,23 @@ fail:
 }
 
 
-SWIGINTERN int
-_wrap_new_OTCallback(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTCallback *result = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,":new_OTCallback ") == TCL_ERROR) SWIG_fail;
-  result = (OTCallback *)new OTCallback();
-  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTCallback,0));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_delete_OTCallback(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTCallback *arg1 = (OTCallback *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:delete_OTCallback self ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCallback, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_OTCallback" "', argument " "1"" of type '" "OTCallback *""'"); 
-  }
-  arg1 = reinterpret_cast< OTCallback * >(argp1);
-  delete arg1;
-  
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_OTCallback_run1(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTCallback *arg1 = (OTCallback *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  std::string result;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:OTCallback_run1 self ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCallback, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCallback_run1" "', argument " "1"" of type '" "OTCallback *""'"); 
-  }
-  arg1 = reinterpret_cast< OTCallback * >(argp1);
-  result = (arg1)->run1();
-  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(result)));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_OTCallback_run2(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTCallback *arg1 = (OTCallback *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  std::string result;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:OTCallback_run2 self ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCallback, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCallback_run2" "', argument " "1"" of type '" "OTCallback *""'"); 
-  }
-  arg1 = reinterpret_cast< OTCallback * >(argp1);
-  result = (arg1)->run2();
-  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(result)));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN void swig_delete_OTCallback(void *obj) {
-OTCallback *arg1 = (OTCallback *) obj;
-delete arg1;
-}
-static swig_method swig_OTCallback_methods[] = {
-    {"run1", _wrap_OTCallback_run1}, 
-    {"run2", _wrap_OTCallback_run2}, 
-    {0,0}
-};
-static swig_attribute swig_OTCallback_attributes[] = {
-    {0,0,0}
-};
-static swig_class *swig_OTCallback_bases[] = {0};
-static const char * swig_OTCallback_base_names[] = {0};
-static swig_class _wrap_class_OTCallback = { "OTCallback", &SWIGTYPE_p_OTCallback,_wrap_new_OTCallback, swig_delete_OTCallback, swig_OTCallback_methods, swig_OTCallback_attributes, swig_OTCallback_bases,swig_OTCallback_base_names, &swig_module };
-SWIGINTERN int
-_wrap_new_OTCaller(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTCaller *result = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,":new_OTCaller ") == TCL_ERROR) SWIG_fail;
-  result = (OTCaller *)new OTCaller();
-  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTCaller,0));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_delete_OTCaller(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:delete_OTCaller self ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCaller, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_OTCaller" "', argument " "1"" of type '" "OTCaller *""'"); 
-  }
-  arg1 = reinterpret_cast< OTCaller * >(argp1);
-  delete arg1;
-  
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_OTCaller_GetPassword(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  char *result = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:OTCaller_GetPassword self ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_GetPassword" "', argument " "1"" of type '" "OTCaller *""'"); 
-  }
-  arg1 = reinterpret_cast< OTCaller * >(argp1);
-  result = (char *)(arg1)->GetPassword();
-  Tcl_SetObjResult(interp,SWIG_FromCharPtr((const char *)result));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_OTCaller_delCallback(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:OTCaller_delCallback self ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_delCallback" "', argument " "1"" of type '" "OTCaller *""'"); 
-  }
-  arg1 = reinterpret_cast< OTCaller * >(argp1);
-  (arg1)->delCallback();
-  
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_OTCaller_setCallback(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  OTCallback *arg2 = (OTCallback *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"oo:OTCaller_setCallback self cb ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_setCallback" "', argument " "1"" of type '" "OTCaller *""'"); 
-  }
-  arg1 = reinterpret_cast< OTCaller * >(argp1);
-  res2 = SWIG_ConvertPtr(objv[2], &argp2,SWIGTYPE_p_OTCallback, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OTCaller_setCallback" "', argument " "2"" of type '" "OTCallback *""'"); 
-  }
-  arg2 = reinterpret_cast< OTCallback * >(argp2);
-  (arg1)->setCallback(arg2);
-  
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_OTCaller_isCallbackSet(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  bool result;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:OTCaller_isCallbackSet self ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_isCallbackSet" "', argument " "1"" of type '" "OTCaller *""'"); 
-  }
-  arg1 = reinterpret_cast< OTCaller * >(argp1);
-  result = (bool)(arg1)->isCallbackSet();
-  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_OTCaller_call1(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:OTCaller_call1 self ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_call1" "', argument " "1"" of type '" "OTCaller *""'"); 
-  }
-  arg1 = reinterpret_cast< OTCaller * >(argp1);
-  (arg1)->call1();
-  
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_OTCaller_call2(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:OTCaller_call2 self ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_call2" "', argument " "1"" of type '" "OTCaller *""'"); 
-  }
-  arg1 = reinterpret_cast< OTCaller * >(argp1);
-  (arg1)->call2();
-  
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN void swig_delete_OTCaller(void *obj) {
-OTCaller *arg1 = (OTCaller *) obj;
-delete arg1;
-}
-static swig_method swig_OTCaller_methods[] = {
-    {"GetPassword", _wrap_OTCaller_GetPassword}, 
-    {"delCallback", _wrap_OTCaller_delCallback}, 
-    {"setCallback", _wrap_OTCaller_setCallback}, 
-    {"isCallbackSet", _wrap_OTCaller_isCallbackSet}, 
-    {"call1", _wrap_OTCaller_call1}, 
-    {"call2", _wrap_OTCaller_call2}, 
-    {0,0}
-};
-static swig_attribute swig_OTCaller_attributes[] = {
-    {0,0,0}
-};
-static swig_class *swig_OTCaller_bases[] = {0};
-static const char * swig_OTCaller_base_names[] = {0};
-static swig_class _wrap_class_OTCaller = { "OTCaller", &SWIGTYPE_p_OTCaller,_wrap_new_OTCaller, swig_delete_OTCaller, swig_OTCaller_methods, swig_OTCaller_attributes, swig_OTCaller_bases,swig_OTCaller_base_names, &swig_module };
-SWIGINTERN int
-_wrap_OT_API_Set_PasswordCallback(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTCaller *arg1 = 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  bool result;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:OT_API_Set_PasswordCallback theCaller ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1, SWIGTYPE_p_OTCaller,  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Set_PasswordCallback" "', argument " "1"" of type '" "OTCaller &""'"); 
-  }
-  if (!argp1) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "OT_API_Set_PasswordCallback" "', argument " "1"" of type '" "OTCaller &""'"); 
-  }
-  arg1 = reinterpret_cast< OTCaller * >(argp1);
-  result = (bool)OT_API_Set_PasswordCallback(*arg1);
-  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
 
 static swig_command_info swig_commands[] = {
+    { SWIG_prefix "new_OTCallback", (swig_wrapper_func) _wrap_new_OTCallback, NULL},
+    { SWIG_prefix "delete_OTCallback", (swig_wrapper_func) _wrap_delete_OTCallback, NULL},
+    { SWIG_prefix "OTCallback_runOne", (swig_wrapper_func) _wrap_OTCallback_runOne, NULL},
+    { SWIG_prefix "OTCallback_runTwo", (swig_wrapper_func) _wrap_OTCallback_runTwo, NULL},
+    { SWIG_prefix "OTCallback", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTCallback},
+    { SWIG_prefix "new_OTCaller", (swig_wrapper_func) _wrap_new_OTCaller, NULL},
+    { SWIG_prefix "delete_OTCaller", (swig_wrapper_func) _wrap_delete_OTCaller, NULL},
+    { SWIG_prefix "OTCaller_GetPassword", (swig_wrapper_func) _wrap_OTCaller_GetPassword, NULL},
+    { SWIG_prefix "OTCaller_delCallback", (swig_wrapper_func) _wrap_OTCaller_delCallback, NULL},
+    { SWIG_prefix "OTCaller_setCallback", (swig_wrapper_func) _wrap_OTCaller_setCallback, NULL},
+    { SWIG_prefix "OTCaller_isCallbackSet", (swig_wrapper_func) _wrap_OTCaller_isCallbackSet, NULL},
+    { SWIG_prefix "OTCaller_callOne", (swig_wrapper_func) _wrap_OTCaller_callOne, NULL},
+    { SWIG_prefix "OTCaller_callTwo", (swig_wrapper_func) _wrap_OTCaller_callTwo, NULL},
+    { SWIG_prefix "OTCaller", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTCaller},
+    { SWIG_prefix "OT_API_Set_PasswordCallback", (swig_wrapper_func) _wrap_OT_API_Set_PasswordCallback, NULL},
     { SWIG_prefix "OT_API_Init", (swig_wrapper_func) _wrap_OT_API_Init, NULL},
     { SWIG_prefix "OT_API_LoadWallet", (swig_wrapper_func) _wrap_OT_API_LoadWallet, NULL},
     { SWIG_prefix "OT_API_SwitchWallet", (swig_wrapper_func) _wrap_OT_API_SwitchWallet, NULL},
@@ -8361,21 +8377,6 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "OT_API_Message_GetNewAcctID", (swig_wrapper_func) _wrap_OT_API_Message_GetNewAcctID, NULL},
     { SWIG_prefix "OT_API_ConnectServer", (swig_wrapper_func) _wrap_OT_API_ConnectServer, NULL},
     { SWIG_prefix "OT_API_ProcessSockets", (swig_wrapper_func) _wrap_OT_API_ProcessSockets, NULL},
-    { SWIG_prefix "new_OTCallback", (swig_wrapper_func) _wrap_new_OTCallback, NULL},
-    { SWIG_prefix "delete_OTCallback", (swig_wrapper_func) _wrap_delete_OTCallback, NULL},
-    { SWIG_prefix "OTCallback_run1", (swig_wrapper_func) _wrap_OTCallback_run1, NULL},
-    { SWIG_prefix "OTCallback_run2", (swig_wrapper_func) _wrap_OTCallback_run2, NULL},
-    { SWIG_prefix "OTCallback", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTCallback},
-    { SWIG_prefix "new_OTCaller", (swig_wrapper_func) _wrap_new_OTCaller, NULL},
-    { SWIG_prefix "delete_OTCaller", (swig_wrapper_func) _wrap_delete_OTCaller, NULL},
-    { SWIG_prefix "OTCaller_GetPassword", (swig_wrapper_func) _wrap_OTCaller_GetPassword, NULL},
-    { SWIG_prefix "OTCaller_delCallback", (swig_wrapper_func) _wrap_OTCaller_delCallback, NULL},
-    { SWIG_prefix "OTCaller_setCallback", (swig_wrapper_func) _wrap_OTCaller_setCallback, NULL},
-    { SWIG_prefix "OTCaller_isCallbackSet", (swig_wrapper_func) _wrap_OTCaller_isCallbackSet, NULL},
-    { SWIG_prefix "OTCaller_call1", (swig_wrapper_func) _wrap_OTCaller_call1, NULL},
-    { SWIG_prefix "OTCaller_call2", (swig_wrapper_func) _wrap_OTCaller_call2, NULL},
-    { SWIG_prefix "OTCaller", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTCaller},
-    { SWIG_prefix "OT_API_Set_PasswordCallback", (swig_wrapper_func) _wrap_OT_API_Set_PasswordCallback, NULL},
     {0, 0, 0}
 };
 

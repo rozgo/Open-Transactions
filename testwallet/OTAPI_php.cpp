@@ -1284,8 +1284,9 @@ namespace Swig {
 
 #endif
 
-#include "OTAPI_funcdef.h"
+#include <string>
 #include "../OTLib/OTAsymmetricKey.h"
+#include "OTAPI_funcdef.h"
 
 
 #if PHP_MAJOR_VERSION < 5
@@ -1336,12 +1337,12 @@ SwigDirector_OTCallback::SwigDirector_OTCallback(zval *self): OTCallback(), Swig
 SwigDirector_OTCallback::~SwigDirector_OTCallback() {
 }
 
-std::string SwigDirector_OTCallback::run1() {
+std::string SwigDirector_OTCallback::runOne() {
   std::string c_result;
   zval **args = NULL;
   zval *result, funcname;
   MAKE_STD_ZVAL(result);
-  ZVAL_STRING(&funcname, (char *)"run1", 0);
+  ZVAL_STRING(&funcname, (char *)"runOne", 0);
   if (!swig_self) {
     SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
   }
@@ -1359,12 +1360,12 @@ fail:
 }
 
 
-std::string SwigDirector_OTCallback::run2() {
+std::string SwigDirector_OTCallback::runTwo() {
   std::string c_result;
   zval **args = NULL;
   zval *result, funcname;
   MAKE_STD_ZVAL(result);
-  ZVAL_STRING(&funcname, (char *)"run2", 0);
+  ZVAL_STRING(&funcname, (char *)"runTwo", 0);
   if (!swig_self) {
     SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
   }
@@ -1387,6 +1388,337 @@ static int le_swig__p_OTCaller=0; /* handle for OTCaller */
 static int le_swig__p_OTCallback=0; /* handle for OTCallback */
 /* end vdecl subsection */
 /* wrapper section */
+ZEND_NAMED_FUNCTION(_wrap_new_OTCallback) {
+  zval *arg0;
+  zval **args[1];
+  OTCallback *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  arg0 = *args[0];
+  
+  if ( arg0->type == IS_NULL ) {
+    /* not subclassed */
+    result = (OTCallback *)new OTCallback();
+  } else {
+    result = (OTCallback *)new SwigDirector_OTCallback(arg0);
+  }
+  
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTCallback, 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
+static void __wrap_delete_OTCallback(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  OTCallback *arg1 = (OTCallback *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (OTCallback *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_OTCallback TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "OTCallback resource already free'd");
+  delete arg1;
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OTCallback_runOne) {
+  OTCallback *arg1 = (OTCallback *) 0 ;
+  zval **args[1];
+  Swig::Director *director = 0;
+  bool upcall = false;
+  std::string result;
+  
+  director = dynamic_cast<Swig::Director*>(arg1);
+  upcall = !director->swig_is_overridden_method((char *)"OTCallback", (char *)"runOne");
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCallback, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OTCallback_runOne. Expected SWIGTYPE_p_OTCallback");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  if (upcall) {
+    result = (arg1)->OTCallback::runOne();
+  } else {
+    result = (arg1)->runOne();
+  }
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>((&result)->data()), (&result)->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OTCallback_runTwo) {
+  OTCallback *arg1 = (OTCallback *) 0 ;
+  zval **args[1];
+  Swig::Director *director = 0;
+  bool upcall = false;
+  std::string result;
+  
+  director = dynamic_cast<Swig::Director*>(arg1);
+  upcall = !director->swig_is_overridden_method((char *)"OTCallback", (char *)"runTwo");
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCallback, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OTCallback_runTwo. Expected SWIGTYPE_p_OTCallback");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  if (upcall) {
+    result = (arg1)->OTCallback::runTwo();
+  } else {
+    result = (arg1)->runTwo();
+  }
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>((&result)->data()), (&result)->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_new_OTCaller) {
+  OTCaller *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 0) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  result = (OTCaller *)new OTCaller();
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTCaller, 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
+static void __wrap_delete_OTCaller(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (OTCaller *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_OTCaller TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "OTCaller resource already free'd");
+  delete arg1;
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OTCaller_GetPassword) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCaller, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OTCaller_GetPassword. Expected SWIGTYPE_p_OTCaller");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *)(arg1)->GetPassword();
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OTCaller_delCallback) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCaller, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OTCaller_delCallback. Expected SWIGTYPE_p_OTCaller");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  (arg1)->delCallback();
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OTCaller_setCallback) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  OTCallback *arg2 = (OTCallback *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCaller, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OTCaller_setCallback. Expected SWIGTYPE_p_OTCaller");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_OTCallback, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of OTCaller_setCallback. Expected SWIGTYPE_p_OTCallback");
+    }
+  }
+  (arg1)->setCallback(arg2);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OTCaller_isCallbackSet) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  zval **args[1];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCaller, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OTCaller_isCallbackSet. Expected SWIGTYPE_p_OTCaller");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (bool)(arg1)->isCallbackSet();
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OTCaller_callOne) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCaller, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OTCaller_callOne. Expected SWIGTYPE_p_OTCaller");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  (arg1)->callOne();
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OTCaller_callTwo) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCaller, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OTCaller_callTwo. Expected SWIGTYPE_p_OTCaller");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  (arg1)->callTwo();
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_OT_API_Set_PasswordCallback) {
+  OTCaller *arg1 = 0 ;
+  zval **args[1];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCaller, 0) < 0 || arg1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OT_API_Set_PasswordCallback. Expected SWIGTYPE_p_OTCaller");
+    }
+  }
+  result = (bool)OT_API_Set_PasswordCallback(*arg1);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_OT_API_Init) {
   char *arg1 = (char *) 0 ;
   zval **args[1];
@@ -8651,337 +8983,6 @@ fail:
 }
 
 
-ZEND_NAMED_FUNCTION(_wrap_new_OTCallback) {
-  zval *arg0;
-  zval **args[1];
-  OTCallback *result = 0 ;
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  arg0 = *args[0];
-  
-  if ( arg0->type == IS_NULL ) {
-    /* not subclassed */
-    result = (OTCallback *)new OTCallback();
-  } else {
-    result = (OTCallback *)new SwigDirector_OTCallback(arg0);
-  }
-  
-  
-  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTCallback, 1);
-  
-  return;
-fail:
-  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-/* This function is designed to be called by the zend list destructors */
-/* to typecast and do the actual destruction */
-static void __wrap_delete_OTCallback(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
-  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
-  void *ptr=value->ptr ;
-  int newobject=value->newobject ;
-  OTCallback *arg1 = (OTCallback *) 0 ;
-  
-  efree(value);
-  if (! newobject) return; /* can't delete it! */
-  arg1 = (OTCallback *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_OTCallback TSRMLS_CC);
-  if (! arg1) zend_error(E_ERROR, "OTCallback resource already free'd");
-  delete arg1;
-  return;
-fail:
-  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_OTCallback_run1) {
-  OTCallback *arg1 = (OTCallback *) 0 ;
-  zval **args[1];
-  Swig::Director *director = 0;
-  bool upcall = false;
-  std::string result;
-  
-  director = dynamic_cast<Swig::Director*>(arg1);
-  upcall = !director->swig_is_overridden_method((char *)"OTCallback", (char *)"run1");
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCallback, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OTCallback_run1. Expected SWIGTYPE_p_OTCallback");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  if (upcall) {
-    result = (arg1)->OTCallback::run1();
-  } else {
-    result = (arg1)->run1();
-  }
-  
-  ZVAL_STRINGL(return_value, const_cast<char*>((&result)->data()), (&result)->size(), 1);
-  
-  return;
-fail:
-  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_OTCallback_run2) {
-  OTCallback *arg1 = (OTCallback *) 0 ;
-  zval **args[1];
-  Swig::Director *director = 0;
-  bool upcall = false;
-  std::string result;
-  
-  director = dynamic_cast<Swig::Director*>(arg1);
-  upcall = !director->swig_is_overridden_method((char *)"OTCallback", (char *)"run2");
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCallback, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OTCallback_run2. Expected SWIGTYPE_p_OTCallback");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  if (upcall) {
-    result = (arg1)->OTCallback::run2();
-  } else {
-    result = (arg1)->run2();
-  }
-  
-  ZVAL_STRINGL(return_value, const_cast<char*>((&result)->data()), (&result)->size(), 1);
-  
-  return;
-fail:
-  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_new_OTCaller) {
-  OTCaller *result = 0 ;
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 0) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  result = (OTCaller *)new OTCaller();
-  
-  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTCaller, 1);
-  
-  return;
-fail:
-  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-/* This function is designed to be called by the zend list destructors */
-/* to typecast and do the actual destruction */
-static void __wrap_delete_OTCaller(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
-  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
-  void *ptr=value->ptr ;
-  int newobject=value->newobject ;
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  
-  efree(value);
-  if (! newobject) return; /* can't delete it! */
-  arg1 = (OTCaller *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_OTCaller TSRMLS_CC);
-  if (! arg1) zend_error(E_ERROR, "OTCaller resource already free'd");
-  delete arg1;
-  return;
-fail:
-  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_OTCaller_GetPassword) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  zval **args[1];
-  char *result = 0 ;
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCaller, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OTCaller_GetPassword. Expected SWIGTYPE_p_OTCaller");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  result = (char *)(arg1)->GetPassword();
-  {
-    if(!result) {
-      ZVAL_NULL(return_value);
-    } else {
-      ZVAL_STRING(return_value, (char *)result, 1);
-    }
-  }
-  return;
-fail:
-  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_OTCaller_delCallback) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  zval **args[1];
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCaller, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OTCaller_delCallback. Expected SWIGTYPE_p_OTCaller");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  (arg1)->delCallback();
-  
-  return;
-fail:
-  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_OTCaller_setCallback) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  OTCallback *arg2 = (OTCallback *) 0 ;
-  zval **args[2];
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCaller, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OTCaller_setCallback. Expected SWIGTYPE_p_OTCaller");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  {
-    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_OTCallback, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of OTCaller_setCallback. Expected SWIGTYPE_p_OTCallback");
-    }
-  }
-  (arg1)->setCallback(arg2);
-  
-  return;
-fail:
-  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_OTCaller_isCallbackSet) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  zval **args[1];
-  bool result;
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCaller, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OTCaller_isCallbackSet. Expected SWIGTYPE_p_OTCaller");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  result = (bool)(arg1)->isCallbackSet();
-  {
-    ZVAL_BOOL(return_value,(result)?1:0);
-  }
-  return;
-fail:
-  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_OTCaller_call1) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  zval **args[1];
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCaller, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OTCaller_call1. Expected SWIGTYPE_p_OTCaller");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  (arg1)->call1();
-  
-  return;
-fail:
-  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_OTCaller_call2) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  zval **args[1];
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCaller, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OTCaller_call2. Expected SWIGTYPE_p_OTCaller");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  (arg1)->call2();
-  
-  return;
-fail:
-  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_OT_API_Set_PasswordCallback) {
-  OTCaller *arg1 = 0 ;
-  zval **args[1];
-  bool result;
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTCaller, 0) < 0 || arg1 == NULL) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of OT_API_Set_PasswordCallback. Expected SWIGTYPE_p_OTCaller");
-    }
-  }
-  result = (bool)OT_API_Set_PasswordCallback(*arg1);
-  {
-    ZVAL_BOOL(return_value,(result)?1:0);
-  }
-  return;
-fail:
-  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTCaller) {
   __wrap_delete_OTCaller(rsrc, SWIGTYPE_p_OTCaller->name TSRMLS_CC);
 }
@@ -8995,6 +8996,17 @@ static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTCallback) {
 /* entry subsection */
 /* Every non-class user visible function must have an entry here */
 static zend_function_entry otapi_functions[] = {
+ SWIG_ZEND_NAMED_FE(new_otcallback,_wrap_new_OTCallback,NULL)
+ SWIG_ZEND_NAMED_FE(otcallback_runone,_wrap_OTCallback_runOne,NULL)
+ SWIG_ZEND_NAMED_FE(otcallback_runtwo,_wrap_OTCallback_runTwo,NULL)
+ SWIG_ZEND_NAMED_FE(new_otcaller,_wrap_new_OTCaller,NULL)
+ SWIG_ZEND_NAMED_FE(otcaller_getpassword,_wrap_OTCaller_GetPassword,NULL)
+ SWIG_ZEND_NAMED_FE(otcaller_delcallback,_wrap_OTCaller_delCallback,NULL)
+ SWIG_ZEND_NAMED_FE(otcaller_setcallback,_wrap_OTCaller_setCallback,NULL)
+ SWIG_ZEND_NAMED_FE(otcaller_iscallbackset,_wrap_OTCaller_isCallbackSet,NULL)
+ SWIG_ZEND_NAMED_FE(otcaller_callone,_wrap_OTCaller_callOne,NULL)
+ SWIG_ZEND_NAMED_FE(otcaller_calltwo,_wrap_OTCaller_callTwo,NULL)
+ SWIG_ZEND_NAMED_FE(ot_api_set_passwordcallback,_wrap_OT_API_Set_PasswordCallback,NULL)
  SWIG_ZEND_NAMED_FE(ot_api_init,_wrap_OT_API_Init,NULL)
  SWIG_ZEND_NAMED_FE(ot_api_loadwallet,_wrap_OT_API_LoadWallet,NULL)
  SWIG_ZEND_NAMED_FE(ot_api_switchwallet,_wrap_OT_API_SwitchWallet,NULL)
@@ -9148,17 +9160,6 @@ static zend_function_entry otapi_functions[] = {
  SWIG_ZEND_NAMED_FE(ot_api_message_getnewacctid,_wrap_OT_API_Message_GetNewAcctID,NULL)
  SWIG_ZEND_NAMED_FE(ot_api_connectserver,_wrap_OT_API_ConnectServer,NULL)
  SWIG_ZEND_NAMED_FE(ot_api_processsockets,_wrap_OT_API_ProcessSockets,NULL)
- SWIG_ZEND_NAMED_FE(new_otcallback,_wrap_new_OTCallback,NULL)
- SWIG_ZEND_NAMED_FE(otcallback_run1,_wrap_OTCallback_run1,NULL)
- SWIG_ZEND_NAMED_FE(otcallback_run2,_wrap_OTCallback_run2,NULL)
- SWIG_ZEND_NAMED_FE(new_otcaller,_wrap_new_OTCaller,NULL)
- SWIG_ZEND_NAMED_FE(otcaller_getpassword,_wrap_OTCaller_GetPassword,NULL)
- SWIG_ZEND_NAMED_FE(otcaller_delcallback,_wrap_OTCaller_delCallback,NULL)
- SWIG_ZEND_NAMED_FE(otcaller_setcallback,_wrap_OTCaller_setCallback,NULL)
- SWIG_ZEND_NAMED_FE(otcaller_iscallbackset,_wrap_OTCaller_isCallbackSet,NULL)
- SWIG_ZEND_NAMED_FE(otcaller_call1,_wrap_OTCaller_call1,NULL)
- SWIG_ZEND_NAMED_FE(otcaller_call2,_wrap_OTCaller_call2,NULL)
- SWIG_ZEND_NAMED_FE(ot_api_set_passwordcallback,_wrap_OT_API_Set_PasswordCallback,NULL)
  SWIG_ZEND_NAMED_FE(swig_otapi_alter_newobject,_wrap_swig_otapi_alter_newobject,NULL)
  SWIG_ZEND_NAMED_FE(swig_otapi_get_newobject,_wrap_swig_otapi_get_newobject,NULL)
 {NULL, NULL, NULL}

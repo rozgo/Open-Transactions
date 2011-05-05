@@ -9,6 +9,10 @@
 package com.wrapper.core.jni;
 
 public class otapi {
+  public static boolean OT_API_Set_PasswordCallback(OTCaller theCaller) {
+    return otapiJNI.OT_API_Set_PasswordCallback(OTCaller.getCPtr(theCaller), theCaller);
+  }
+
   public static int OT_API_Init(String szClientPath) {
     return otapiJNI.OT_API_Init(szClientPath);
   }
@@ -619,10 +623,6 @@ public class otapi {
 
   public static int OT_API_ProcessSockets() {
     return otapiJNI.OT_API_ProcessSockets();
-  }
-
-  public static boolean OT_API_Set_PasswordCallback(OTCaller theCaller) {
-    return otapiJNI.OT_API_Set_PasswordCallback(OTCaller.getCPtr(theCaller), theCaller);
   }
 
 }

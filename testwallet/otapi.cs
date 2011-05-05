@@ -11,6 +11,12 @@ using System;
 using System.Runtime.InteropServices;
 
 public class otapi {
+  public static bool OT_API_Set_PasswordCallback(OTCaller theCaller) {
+    bool ret = otapiPINVOKE.OT_API_Set_PasswordCallback(OTCaller.getCPtr(theCaller));
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
   public static int OT_API_Init(string szClientPath) {
     int ret = otapiPINVOKE.OT_API_Init(szClientPath);
     return ret;
@@ -746,12 +752,6 @@ public class otapi {
 
   public static int OT_API_ProcessSockets() {
     int ret = otapiPINVOKE.OT_API_ProcessSockets();
-    return ret;
-  }
-
-  public static bool OT_API_Set_PasswordCallback(OTCaller theCaller) {
-    bool ret = otapiPINVOKE.OT_API_Set_PasswordCallback(OTCaller.getCPtr(theCaller));
-    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 

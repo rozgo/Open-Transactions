@@ -147,8 +147,8 @@ class OTCallback
 public:
 	OTCallback() {}
 	virtual ~OTCallback();
-	virtual std::string run1(); // Asks for password once.
-	virtual std::string run2(); // Asks for password twice. (For verification.)
+	virtual std::string runOne(); // Asks for password once.
+	virtual std::string runTwo(); // Asks for password twice. (For verification.)
 };
 
 
@@ -168,8 +168,8 @@ public:
 	void setCallback(OTCallback *cb);
 	bool isCallbackSet();
 	
-	void call1(); // Asks for password once.
-	void call2(); // Asks for password twice. (For verification.)
+	void callOne(); // Asks for password once.
+	void callTwo(); // Asks for password twice. (For verification.)
 };
 
 

@@ -49,6 +49,7 @@ sub this {
 
 package otapi;
 
+*OT_API_Set_PasswordCallback = *otapic::OT_API_Set_PasswordCallback;
 *OT_API_Init = *otapic::OT_API_Init;
 *OT_API_LoadWallet = *otapic::OT_API_LoadWallet;
 *OT_API_SwitchWallet = *otapic::OT_API_SwitchWallet;
@@ -202,7 +203,6 @@ package otapi;
 *OT_API_Message_GetNewAcctID = *otapic::OT_API_Message_GetNewAcctID;
 *OT_API_ConnectServer = *otapic::OT_API_ConnectServer;
 *OT_API_ProcessSockets = *otapic::OT_API_ProcessSockets;
-*OT_API_Set_PasswordCallback = *otapic::OT_API_Set_PasswordCallback;
 
 ############# Class : otapi::OTCallback ##############
 
@@ -228,8 +228,8 @@ sub DESTROY {
     }
 }
 
-*run1 = *otapic::OTCallback_run1;
-*run2 = *otapic::OTCallback_run2;
+*runOne = *otapic::OTCallback_runOne;
+*runTwo = *otapic::OTCallback_runTwo;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -271,8 +271,8 @@ sub DESTROY {
 *delCallback = *otapic::OTCaller_delCallback;
 *setCallback = *otapic::OTCaller_setCallback;
 *isCallbackSet = *otapic::OTCaller_isCallbackSet;
-*call1 = *otapic::OTCaller_call1;
-*call2 = *otapic::OTCaller_call2;
+*callOne = *otapic::OTCaller_callOne;
+*callTwo = *otapic::OTCaller_callTwo;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);

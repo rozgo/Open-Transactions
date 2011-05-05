@@ -2225,8 +2225,9 @@ static VALUE mOtapi;
 #include <stdexcept>
 
 
-#include "OTAPI_funcdef.h"
+#include <string>
 #include "../OTLib/OTAsymmetricKey.h"
+#include "OTAPI_funcdef.h"
 
 
 #include <string>
@@ -2280,6 +2281,75 @@ SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
     }
   }  
   return SWIG_TypeError;
+}
+
+
+SWIGINTERN int
+SWIG_AsPtr_std_string (VALUE obj, std::string **val) 
+{
+  char* buf = 0 ; size_t size = 0; int alloc = SWIG_OLDOBJ;
+  if (SWIG_IsOK((SWIG_AsCharPtrAndSize(obj, &buf, &size, &alloc)))) {
+    if (buf) {
+      if (val) *val = new std::string(buf, size - 1);
+      if (alloc == SWIG_NEWOBJ) delete[] buf;
+      return SWIG_NEWOBJ;
+    } else {
+      if (val) *val = 0;
+      return SWIG_OLDOBJ;
+    }
+  } else {
+    static int init = 0;
+    static swig_type_info* descriptor = 0;
+    if (!init) {
+      descriptor = SWIG_TypeQuery("std::string" " *");
+      init = 1;
+    }
+    if (descriptor) {
+      std::string *vptr;
+      int res = SWIG_ConvertPtr(obj, (void**)&vptr, descriptor, 0);
+      if (SWIG_IsOK(res) && val) *val = vptr;
+      return res;
+    }
+  }
+  return SWIG_ERROR;
+}
+
+
+SWIGINTERNINLINE VALUE 
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+{
+  if (carray) {
+    if (size > LONG_MAX) {
+      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+      return pchar_descriptor ? 
+	SWIG_NewPointerObj(const_cast< char * >(carray), pchar_descriptor, 0) : Qnil;
+    } else {
+      return rb_str_new(carray, static_cast< long >(size));
+    }
+  } else {
+    return Qnil;
+  }
+}
+
+
+SWIGINTERNINLINE VALUE
+SWIG_From_std_string  (const std::string& s)
+{
+  return SWIG_FromCharPtrAndSize(s.data(), s.size());
+}
+
+
+SWIGINTERNINLINE VALUE 
+SWIG_FromCharPtr(const char *cptr)
+{ 
+  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
+}
+
+
+SWIGINTERNINLINE VALUE
+SWIG_From_bool  (bool value)
+{
+  return value ? Qtrue : Qfalse;
 }
 
 
@@ -2357,75 +2427,6 @@ SWIG_AsVal_int (VALUE obj, int *val)
   return res;
 }
 
-
-SWIGINTERNINLINE VALUE 
-SWIG_FromCharPtrAndSize(const char* carray, size_t size)
-{
-  if (carray) {
-    if (size > LONG_MAX) {
-      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
-      return pchar_descriptor ? 
-	SWIG_NewPointerObj(const_cast< char * >(carray), pchar_descriptor, 0) : Qnil;
-    } else {
-      return rb_str_new(carray, static_cast< long >(size));
-    }
-  } else {
-    return Qnil;
-  }
-}
-
-
-SWIGINTERNINLINE VALUE 
-SWIG_FromCharPtr(const char *cptr)
-{ 
-  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
-}
-
-
-SWIGINTERN int
-SWIG_AsPtr_std_string (VALUE obj, std::string **val) 
-{
-  char* buf = 0 ; size_t size = 0; int alloc = SWIG_OLDOBJ;
-  if (SWIG_IsOK((SWIG_AsCharPtrAndSize(obj, &buf, &size, &alloc)))) {
-    if (buf) {
-      if (val) *val = new std::string(buf, size - 1);
-      if (alloc == SWIG_NEWOBJ) delete[] buf;
-      return SWIG_NEWOBJ;
-    } else {
-      if (val) *val = 0;
-      return SWIG_OLDOBJ;
-    }
-  } else {
-    static int init = 0;
-    static swig_type_info* descriptor = 0;
-    if (!init) {
-      descriptor = SWIG_TypeQuery("std::string" " *");
-      init = 1;
-    }
-    if (descriptor) {
-      std::string *vptr;
-      int res = SWIG_ConvertPtr(obj, (void**)&vptr, descriptor, 0);
-      if (SWIG_IsOK(res) && val) *val = vptr;
-      return res;
-    }
-  }
-  return SWIG_ERROR;
-}
-
-
-SWIGINTERNINLINE VALUE
-SWIG_From_std_string  (const std::string& s)
-{
-  return SWIG_FromCharPtrAndSize(s.data(), s.size());
-}
-
-
-SWIGINTERNINLINE VALUE
-SWIG_From_bool  (bool value)
-{
-  return value ? Qtrue : Qfalse;
-}
-
 /* ---------------------------------------------------
  * C++ director class helpers
  * --------------------------------------------------- */
@@ -2447,11 +2448,11 @@ SwigDirector_OTCallback::SwigDirector_OTCallback(VALUE self): OTCallback(), Swig
 SwigDirector_OTCallback::~SwigDirector_OTCallback() {
 }
 
-std::string SwigDirector_OTCallback::run1() {
+std::string SwigDirector_OTCallback::runOne() {
   std::string c_result ;
   VALUE result;
   
-  result = rb_funcall(swig_get_self(), rb_intern("run1"), 0, NULL);
+  result = rb_funcall(swig_get_self(), rb_intern("runOne"), 0, NULL);
   std::string *swig_optr = 0;
   int swig_ores = SWIG_AsPtr_std_string(result, &swig_optr);
   if (!SWIG_IsOK(swig_ores) || !swig_optr) {
@@ -2463,11 +2464,11 @@ std::string SwigDirector_OTCallback::run1() {
 }
 
 
-std::string SwigDirector_OTCallback::run2() {
+std::string SwigDirector_OTCallback::runTwo() {
   std::string c_result ;
   VALUE result;
   
-  result = rb_funcall(swig_get_self(), rb_intern("run2"), 0, NULL);
+  result = rb_funcall(swig_get_self(), rb_intern("runTwo"), 0, NULL);
   std::string *swig_optr = 0;
   int swig_ores = SWIG_AsPtr_std_string(result, &swig_optr);
   if (!SWIG_IsOK(swig_ores) || !swig_optr) {
@@ -2476,6 +2477,360 @@ std::string SwigDirector_OTCallback::run2() {
   c_result = *swig_optr;
   if (SWIG_IsNewObj(swig_ores)) delete swig_optr;
   return (std::string) c_result;
+}
+
+
+swig_class SwigClassOTCallback;
+
+#ifdef HAVE_RB_DEFINE_ALLOC_FUNC
+SWIGINTERN VALUE
+_wrap_OTCallback_allocate(VALUE self) {
+#else
+  SWIGINTERN VALUE
+  _wrap_OTCallback_allocate(int argc, VALUE *argv, VALUE self) {
+#endif
+    
+    
+    VALUE vresult = SWIG_NewClassInstance(self, SWIGTYPE_p_OTCallback);
+#ifndef HAVE_RB_DEFINE_ALLOC_FUNC
+    rb_obj_call_init(vresult, argc, argv);
+#endif
+    return vresult;
+  }
+  
+
+SWIGINTERN VALUE
+_wrap_new_OTCallback(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  const char *classname SWIGUNUSED = "Otapi::OTCallback";
+  OTCallback *result = 0 ;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  arg1 = self;
+  if ( strcmp(rb_obj_classname(self), classname) != 0 ) {
+    /* subclassed */
+    result = (OTCallback *)new SwigDirector_OTCallback(arg1); 
+  } else {
+    result = (OTCallback *)new OTCallback(); 
+  }
+  
+  DATA_PTR(self) = result;
+  return self;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN void
+free_OTCallback(OTCallback *arg1) {
+    delete arg1;
+}
+
+SWIGINTERN VALUE
+_wrap_OTCallback_runOne(int argc, VALUE *argv, VALUE self) {
+  OTCallback *arg1 = (OTCallback *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  Swig::Director *director = 0;
+  bool upcall = false;
+  std::string result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTCallback, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCallback *","runOne", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTCallback * >(argp1);
+  director = dynamic_cast<Swig::Director *>(arg1);
+  upcall = (director && (director->swig_get_self() == self));
+  try {
+    if (upcall) {
+      result = (arg1)->OTCallback::runOne();
+    } else {
+      result = (arg1)->runOne();
+    }
+  } catch (Swig::DirectorException& e) {
+    rb_exc_raise(e.getError());
+    SWIG_fail;
+  }
+  vresult = SWIG_From_std_string(static_cast< std::string >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OTCallback_runTwo(int argc, VALUE *argv, VALUE self) {
+  OTCallback *arg1 = (OTCallback *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  Swig::Director *director = 0;
+  bool upcall = false;
+  std::string result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTCallback, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCallback *","runTwo", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTCallback * >(argp1);
+  director = dynamic_cast<Swig::Director *>(arg1);
+  upcall = (director && (director->swig_get_self() == self));
+  try {
+    if (upcall) {
+      result = (arg1)->OTCallback::runTwo();
+    } else {
+      result = (arg1)->runTwo();
+    }
+  } catch (Swig::DirectorException& e) {
+    rb_exc_raise(e.getError());
+    SWIG_fail;
+  }
+  vresult = SWIG_From_std_string(static_cast< std::string >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_disown_OTCallback(int argc, VALUE *argv, VALUE self) {
+  OTCallback *arg1 = (OTCallback *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(argv[0], &argp1,SWIGTYPE_p_OTCallback, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCallback *","disown_OTCallback", 1, argv[0] )); 
+  }
+  arg1 = reinterpret_cast< OTCallback * >(argp1);
+  {
+    Swig::Director *director = SWIG_DIRECTOR_CAST(arg1);
+    if (director) director->swig_disown();
+  }
+  
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+swig_class SwigClassOTCaller;
+
+#ifdef HAVE_RB_DEFINE_ALLOC_FUNC
+SWIGINTERN VALUE
+_wrap_OTCaller_allocate(VALUE self) {
+#else
+  SWIGINTERN VALUE
+  _wrap_OTCaller_allocate(int argc, VALUE *argv, VALUE self) {
+#endif
+    
+    
+    VALUE vresult = SWIG_NewClassInstance(self, SWIGTYPE_p_OTCaller);
+#ifndef HAVE_RB_DEFINE_ALLOC_FUNC
+    rb_obj_call_init(vresult, argc, argv);
+#endif
+    return vresult;
+  }
+  
+
+SWIGINTERN VALUE
+_wrap_new_OTCaller(int argc, VALUE *argv, VALUE self) {
+  const char *classname SWIGUNUSED = "Otapi::OTCaller";
+  OTCaller *result = 0 ;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (OTCaller *)new OTCaller();
+  DATA_PTR(self) = result;
+  return self;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN void
+free_OTCaller(OTCaller *arg1) {
+    delete arg1;
+}
+
+SWIGINTERN VALUE
+_wrap_OTCaller_GetPassword(int argc, VALUE *argv, VALUE self) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCaller *","GetPassword", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTCaller * >(argp1);
+  result = (char *)(arg1)->GetPassword();
+  vresult = SWIG_FromCharPtr((const char *)result);
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OTCaller_delCallback(int argc, VALUE *argv, VALUE self) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCaller *","delCallback", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTCaller * >(argp1);
+  (arg1)->delCallback();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OTCaller_setCallback(int argc, VALUE *argv, VALUE self) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  OTCallback *arg2 = (OTCallback *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCaller *","setCallback", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTCaller * >(argp1);
+  res2 = SWIG_ConvertPtr(argv[0], &argp2,SWIGTYPE_p_OTCallback, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "OTCallback *","setCallback", 2, argv[0] )); 
+  }
+  arg2 = reinterpret_cast< OTCallback * >(argp2);
+  (arg1)->setCallback(arg2);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OTCaller_isCallbackSet(int argc, VALUE *argv, VALUE self) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCaller *","isCallbackSet", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTCaller * >(argp1);
+  result = (bool)(arg1)->isCallbackSet();
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OTCaller_callOne(int argc, VALUE *argv, VALUE self) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCaller *","callOne", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTCaller * >(argp1);
+  (arg1)->callOne();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OTCaller_callTwo(int argc, VALUE *argv, VALUE self) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCaller *","callTwo", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTCaller * >(argp1);
+  (arg1)->callTwo();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_OT_API_Set_PasswordCallback(int argc, VALUE *argv, VALUE self) {
+  OTCaller *arg1 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_OTCaller,  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCaller &","OT_API_Set_PasswordCallback", 1, argv[0] )); 
+  }
+  if (!argp1) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "OTCaller &","OT_API_Set_PasswordCallback", 1, argv[0])); 
+  }
+  arg1 = reinterpret_cast< OTCaller * >(argp1);
+  result = (bool)OT_API_Set_PasswordCallback(*arg1);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
 }
 
 
@@ -9000,360 +9355,6 @@ fail:
 }
 
 
-swig_class SwigClassOTCallback;
-
-#ifdef HAVE_RB_DEFINE_ALLOC_FUNC
-SWIGINTERN VALUE
-_wrap_OTCallback_allocate(VALUE self) {
-#else
-  SWIGINTERN VALUE
-  _wrap_OTCallback_allocate(int argc, VALUE *argv, VALUE self) {
-#endif
-    
-    
-    VALUE vresult = SWIG_NewClassInstance(self, SWIGTYPE_p_OTCallback);
-#ifndef HAVE_RB_DEFINE_ALLOC_FUNC
-    rb_obj_call_init(vresult, argc, argv);
-#endif
-    return vresult;
-  }
-  
-
-SWIGINTERN VALUE
-_wrap_new_OTCallback(int argc, VALUE *argv, VALUE self) {
-  VALUE arg1 = (VALUE) 0 ;
-  const char *classname SWIGUNUSED = "Otapi::OTCallback";
-  OTCallback *result = 0 ;
-  
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
-  }
-  arg1 = self;
-  if ( strcmp(rb_obj_classname(self), classname) != 0 ) {
-    /* subclassed */
-    result = (OTCallback *)new SwigDirector_OTCallback(arg1); 
-  } else {
-    result = (OTCallback *)new OTCallback(); 
-  }
-  
-  DATA_PTR(self) = result;
-  return self;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN void
-free_OTCallback(OTCallback *arg1) {
-    delete arg1;
-}
-
-SWIGINTERN VALUE
-_wrap_OTCallback_run1(int argc, VALUE *argv, VALUE self) {
-  OTCallback *arg1 = (OTCallback *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  Swig::Director *director = 0;
-  bool upcall = false;
-  std::string result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTCallback, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCallback *","run1", 1, self )); 
-  }
-  arg1 = reinterpret_cast< OTCallback * >(argp1);
-  director = dynamic_cast<Swig::Director *>(arg1);
-  upcall = (director && (director->swig_get_self() == self));
-  try {
-    if (upcall) {
-      result = (arg1)->OTCallback::run1();
-    } else {
-      result = (arg1)->run1();
-    }
-  } catch (Swig::DirectorException& e) {
-    rb_exc_raise(e.getError());
-    SWIG_fail;
-  }
-  vresult = SWIG_From_std_string(static_cast< std::string >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_OTCallback_run2(int argc, VALUE *argv, VALUE self) {
-  OTCallback *arg1 = (OTCallback *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  Swig::Director *director = 0;
-  bool upcall = false;
-  std::string result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTCallback, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCallback *","run2", 1, self )); 
-  }
-  arg1 = reinterpret_cast< OTCallback * >(argp1);
-  director = dynamic_cast<Swig::Director *>(arg1);
-  upcall = (director && (director->swig_get_self() == self));
-  try {
-    if (upcall) {
-      result = (arg1)->OTCallback::run2();
-    } else {
-      result = (arg1)->run2();
-    }
-  } catch (Swig::DirectorException& e) {
-    rb_exc_raise(e.getError());
-    SWIG_fail;
-  }
-  vresult = SWIG_From_std_string(static_cast< std::string >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_disown_OTCallback(int argc, VALUE *argv, VALUE self) {
-  OTCallback *arg1 = (OTCallback *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(argv[0], &argp1,SWIGTYPE_p_OTCallback, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCallback *","disown_OTCallback", 1, argv[0] )); 
-  }
-  arg1 = reinterpret_cast< OTCallback * >(argp1);
-  {
-    Swig::Director *director = SWIG_DIRECTOR_CAST(arg1);
-    if (director) director->swig_disown();
-  }
-  
-  return Qnil;
-fail:
-  return Qnil;
-}
-
-
-swig_class SwigClassOTCaller;
-
-#ifdef HAVE_RB_DEFINE_ALLOC_FUNC
-SWIGINTERN VALUE
-_wrap_OTCaller_allocate(VALUE self) {
-#else
-  SWIGINTERN VALUE
-  _wrap_OTCaller_allocate(int argc, VALUE *argv, VALUE self) {
-#endif
-    
-    
-    VALUE vresult = SWIG_NewClassInstance(self, SWIGTYPE_p_OTCaller);
-#ifndef HAVE_RB_DEFINE_ALLOC_FUNC
-    rb_obj_call_init(vresult, argc, argv);
-#endif
-    return vresult;
-  }
-  
-
-SWIGINTERN VALUE
-_wrap_new_OTCaller(int argc, VALUE *argv, VALUE self) {
-  const char *classname SWIGUNUSED = "Otapi::OTCaller";
-  OTCaller *result = 0 ;
-  
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
-  }
-  result = (OTCaller *)new OTCaller();
-  DATA_PTR(self) = result;
-  return self;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN void
-free_OTCaller(OTCaller *arg1) {
-    delete arg1;
-}
-
-SWIGINTERN VALUE
-_wrap_OTCaller_GetPassword(int argc, VALUE *argv, VALUE self) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  char *result = 0 ;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCaller *","GetPassword", 1, self )); 
-  }
-  arg1 = reinterpret_cast< OTCaller * >(argp1);
-  result = (char *)(arg1)->GetPassword();
-  vresult = SWIG_FromCharPtr((const char *)result);
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_OTCaller_delCallback(int argc, VALUE *argv, VALUE self) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCaller *","delCallback", 1, self )); 
-  }
-  arg1 = reinterpret_cast< OTCaller * >(argp1);
-  (arg1)->delCallback();
-  return Qnil;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_OTCaller_setCallback(int argc, VALUE *argv, VALUE self) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  OTCallback *arg2 = (OTCallback *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCaller *","setCallback", 1, self )); 
-  }
-  arg1 = reinterpret_cast< OTCaller * >(argp1);
-  res2 = SWIG_ConvertPtr(argv[0], &argp2,SWIGTYPE_p_OTCallback, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "OTCallback *","setCallback", 2, argv[0] )); 
-  }
-  arg2 = reinterpret_cast< OTCallback * >(argp2);
-  (arg1)->setCallback(arg2);
-  return Qnil;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_OTCaller_isCallbackSet(int argc, VALUE *argv, VALUE self) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  bool result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCaller *","isCallbackSet", 1, self )); 
-  }
-  arg1 = reinterpret_cast< OTCaller * >(argp1);
-  result = (bool)(arg1)->isCallbackSet();
-  vresult = SWIG_From_bool(static_cast< bool >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_OTCaller_call1(int argc, VALUE *argv, VALUE self) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCaller *","call1", 1, self )); 
-  }
-  arg1 = reinterpret_cast< OTCaller * >(argp1);
-  (arg1)->call1();
-  return Qnil;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_OTCaller_call2(int argc, VALUE *argv, VALUE self) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  if ((argc < 0) || (argc > 0)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCaller *","call2", 1, self )); 
-  }
-  arg1 = reinterpret_cast< OTCaller * >(argp1);
-  (arg1)->call2();
-  return Qnil;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_OT_API_Set_PasswordCallback(int argc, VALUE *argv, VALUE self) {
-  OTCaller *arg1 = 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  bool result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_OTCaller,  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTCaller &","OT_API_Set_PasswordCallback", 1, argv[0] )); 
-  }
-  if (!argp1) {
-    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "OTCaller &","OT_API_Set_PasswordCallback", 1, argv[0])); 
-  }
-  arg1 = reinterpret_cast< OTCaller * >(argp1);
-  result = (bool)OT_API_Set_PasswordCallback(*arg1);
-  vresult = SWIG_From_bool(static_cast< bool >(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -9635,6 +9636,32 @@ SWIGEXPORT void Init_otapi(void) {
   }
   
   SWIG_RubyInitializeTrackings();
+  rb_define_module_function(mOtapi, "disown_OTCallback", VALUEFUNC(_wrap_disown_OTCallback), -1);
+  
+  SwigClassOTCallback.klass = rb_define_class_under(mOtapi, "OTCallback", rb_cObject);
+  SWIG_TypeClientData(SWIGTYPE_p_OTCallback, (void *) &SwigClassOTCallback);
+  rb_define_alloc_func(SwigClassOTCallback.klass, _wrap_OTCallback_allocate);
+  rb_define_method(SwigClassOTCallback.klass, "initialize", VALUEFUNC(_wrap_new_OTCallback), -1);
+  rb_define_method(SwigClassOTCallback.klass, "runOne", VALUEFUNC(_wrap_OTCallback_runOne), -1);
+  rb_define_method(SwigClassOTCallback.klass, "runTwo", VALUEFUNC(_wrap_OTCallback_runTwo), -1);
+  SwigClassOTCallback.mark = 0;
+  SwigClassOTCallback.destroy = (void (*)(void *)) free_OTCallback;
+  SwigClassOTCallback.trackObjects = 0;
+  
+  SwigClassOTCaller.klass = rb_define_class_under(mOtapi, "OTCaller", rb_cObject);
+  SWIG_TypeClientData(SWIGTYPE_p_OTCaller, (void *) &SwigClassOTCaller);
+  rb_define_alloc_func(SwigClassOTCaller.klass, _wrap_OTCaller_allocate);
+  rb_define_method(SwigClassOTCaller.klass, "initialize", VALUEFUNC(_wrap_new_OTCaller), -1);
+  rb_define_method(SwigClassOTCaller.klass, "GetPassword", VALUEFUNC(_wrap_OTCaller_GetPassword), -1);
+  rb_define_method(SwigClassOTCaller.klass, "delCallback", VALUEFUNC(_wrap_OTCaller_delCallback), -1);
+  rb_define_method(SwigClassOTCaller.klass, "setCallback", VALUEFUNC(_wrap_OTCaller_setCallback), -1);
+  rb_define_method(SwigClassOTCaller.klass, "isCallbackSet", VALUEFUNC(_wrap_OTCaller_isCallbackSet), -1);
+  rb_define_method(SwigClassOTCaller.klass, "callOne", VALUEFUNC(_wrap_OTCaller_callOne), -1);
+  rb_define_method(SwigClassOTCaller.klass, "callTwo", VALUEFUNC(_wrap_OTCaller_callTwo), -1);
+  SwigClassOTCaller.mark = 0;
+  SwigClassOTCaller.destroy = (void (*)(void *)) free_OTCaller;
+  SwigClassOTCaller.trackObjects = 0;
+  rb_define_module_function(mOtapi, "OT_API_Set_PasswordCallback", VALUEFUNC(_wrap_OT_API_Set_PasswordCallback), -1);
   rb_define_module_function(mOtapi, "OT_API_Init", VALUEFUNC(_wrap_OT_API_Init), -1);
   rb_define_module_function(mOtapi, "OT_API_LoadWallet", VALUEFUNC(_wrap_OT_API_LoadWallet), -1);
   rb_define_module_function(mOtapi, "OT_API_SwitchWallet", VALUEFUNC(_wrap_OT_API_SwitchWallet), -1);
@@ -9788,31 +9815,5 @@ SWIGEXPORT void Init_otapi(void) {
   rb_define_module_function(mOtapi, "OT_API_Message_GetNewAcctID", VALUEFUNC(_wrap_OT_API_Message_GetNewAcctID), -1);
   rb_define_module_function(mOtapi, "OT_API_ConnectServer", VALUEFUNC(_wrap_OT_API_ConnectServer), -1);
   rb_define_module_function(mOtapi, "OT_API_ProcessSockets", VALUEFUNC(_wrap_OT_API_ProcessSockets), -1);
-  rb_define_module_function(mOtapi, "disown_OTCallback", VALUEFUNC(_wrap_disown_OTCallback), -1);
-  
-  SwigClassOTCallback.klass = rb_define_class_under(mOtapi, "OTCallback", rb_cObject);
-  SWIG_TypeClientData(SWIGTYPE_p_OTCallback, (void *) &SwigClassOTCallback);
-  rb_define_alloc_func(SwigClassOTCallback.klass, _wrap_OTCallback_allocate);
-  rb_define_method(SwigClassOTCallback.klass, "initialize", VALUEFUNC(_wrap_new_OTCallback), -1);
-  rb_define_method(SwigClassOTCallback.klass, "run1", VALUEFUNC(_wrap_OTCallback_run1), -1);
-  rb_define_method(SwigClassOTCallback.klass, "run2", VALUEFUNC(_wrap_OTCallback_run2), -1);
-  SwigClassOTCallback.mark = 0;
-  SwigClassOTCallback.destroy = (void (*)(void *)) free_OTCallback;
-  SwigClassOTCallback.trackObjects = 0;
-  
-  SwigClassOTCaller.klass = rb_define_class_under(mOtapi, "OTCaller", rb_cObject);
-  SWIG_TypeClientData(SWIGTYPE_p_OTCaller, (void *) &SwigClassOTCaller);
-  rb_define_alloc_func(SwigClassOTCaller.klass, _wrap_OTCaller_allocate);
-  rb_define_method(SwigClassOTCaller.klass, "initialize", VALUEFUNC(_wrap_new_OTCaller), -1);
-  rb_define_method(SwigClassOTCaller.klass, "GetPassword", VALUEFUNC(_wrap_OTCaller_GetPassword), -1);
-  rb_define_method(SwigClassOTCaller.klass, "delCallback", VALUEFUNC(_wrap_OTCaller_delCallback), -1);
-  rb_define_method(SwigClassOTCaller.klass, "setCallback", VALUEFUNC(_wrap_OTCaller_setCallback), -1);
-  rb_define_method(SwigClassOTCaller.klass, "isCallbackSet", VALUEFUNC(_wrap_OTCaller_isCallbackSet), -1);
-  rb_define_method(SwigClassOTCaller.klass, "call1", VALUEFUNC(_wrap_OTCaller_call1), -1);
-  rb_define_method(SwigClassOTCaller.klass, "call2", VALUEFUNC(_wrap_OTCaller_call2), -1);
-  SwigClassOTCaller.mark = 0;
-  SwigClassOTCaller.destroy = (void (*)(void *)) free_OTCaller;
-  SwigClassOTCaller.trackObjects = 0;
-  rb_define_module_function(mOtapi, "OT_API_Set_PasswordCallback", VALUEFUNC(_wrap_OT_API_Set_PasswordCallback), -1);
 }
 

@@ -44,21 +44,21 @@ public class OTCallback : IDisposable {
     SwigDirectorConnect();
   }
 
-  public virtual string run1() {
-    string ret = (SwigDerivedClassHasMethod("run1", swigMethodTypes0) ? otapiPINVOKE.OTCallback_run1SwigExplicitOTCallback(swigCPtr) : otapiPINVOKE.OTCallback_run1(swigCPtr));
+  public virtual string runOne() {
+    string ret = (SwigDerivedClassHasMethod("runOne", swigMethodTypes0) ? otapiPINVOKE.OTCallback_runOneSwigExplicitOTCallback(swigCPtr) : otapiPINVOKE.OTCallback_runOne(swigCPtr));
     return ret;
   }
 
-  public virtual string run2() {
-    string ret = (SwigDerivedClassHasMethod("run2", swigMethodTypes1) ? otapiPINVOKE.OTCallback_run2SwigExplicitOTCallback(swigCPtr) : otapiPINVOKE.OTCallback_run2(swigCPtr));
+  public virtual string runTwo() {
+    string ret = (SwigDerivedClassHasMethod("runTwo", swigMethodTypes1) ? otapiPINVOKE.OTCallback_runTwoSwigExplicitOTCallback(swigCPtr) : otapiPINVOKE.OTCallback_runTwo(swigCPtr));
     return ret;
   }
 
   private void SwigDirectorConnect() {
-    if (SwigDerivedClassHasMethod("run1", swigMethodTypes0))
-      swigDelegate0 = new SwigDelegateOTCallback_0(SwigDirectorrun1);
-    if (SwigDerivedClassHasMethod("run2", swigMethodTypes1))
-      swigDelegate1 = new SwigDelegateOTCallback_1(SwigDirectorrun2);
+    if (SwigDerivedClassHasMethod("runOne", swigMethodTypes0))
+      swigDelegate0 = new SwigDelegateOTCallback_0(SwigDirectorrunOne);
+    if (SwigDerivedClassHasMethod("runTwo", swigMethodTypes1))
+      swigDelegate1 = new SwigDelegateOTCallback_1(SwigDirectorrunTwo);
     otapiPINVOKE.OTCallback_director_connect(swigCPtr, swigDelegate0, swigDelegate1);
   }
 
@@ -68,12 +68,12 @@ public class OTCallback : IDisposable {
     return hasDerivedMethod;
   }
 
-  private string SwigDirectorrun1() {
-    return run1();
+  private string SwigDirectorrunOne() {
+    return runOne();
   }
 
-  private string SwigDirectorrun2() {
-    return run2();
+  private string SwigDirectorrunTwo() {
+    return runTwo();
   }
 
   public delegate string SwigDelegateOTCallback_0();

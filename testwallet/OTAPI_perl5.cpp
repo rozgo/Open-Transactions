@@ -1558,11 +1558,52 @@ SWIGEXPORT void SWIG_init (CV *cv, CPerlObj *);
 #endif
 
 
-#include "OTAPI_funcdef.h"
+#include <string>
 #include "../OTLib/OTAsymmetricKey.h"
+#include "OTAPI_funcdef.h"
 
 
 #include <string>
+
+
+SWIGINTERNINLINE SV *
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+{
+  SV *obj = sv_newmortal();
+  if (carray) {
+    sv_setpvn(obj, carray, size);
+  } else {
+    sv_setsv(obj, &PL_sv_undef);
+  }
+  return obj;
+}
+
+
+SWIGINTERNINLINE SV *
+SWIG_From_std_string  SWIG_PERL_DECL_ARGS_1(const std::string& s)
+{
+  return SWIG_FromCharPtrAndSize(s.data(), s.size());
+}
+
+
+SWIGINTERNINLINE SV * 
+SWIG_FromCharPtr(const char *cptr)
+{ 
+  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
+}
+
+
+SWIGINTERNINLINE SV *
+SWIG_From_bool  SWIG_PERL_DECL_ARGS_1(bool value)
+{    
+  SV *obj = sv_newmortal();
+  if (value) {
+    sv_setsv(obj, &PL_sv_yes);
+  } else {
+    sv_setsv(obj, &PL_sv_no); 
+  }
+  return obj;
+}
 
 
 SWIGINTERN swig_type_info*
@@ -1766,46 +1807,6 @@ SWIG_AsVal_int SWIG_PERL_DECL_ARGS_2(SV * obj, int *val)
   return res;
 }
 
-
-SWIGINTERNINLINE SV *
-SWIG_FromCharPtrAndSize(const char* carray, size_t size)
-{
-  SV *obj = sv_newmortal();
-  if (carray) {
-    sv_setpvn(obj, carray, size);
-  } else {
-    sv_setsv(obj, &PL_sv_undef);
-  }
-  return obj;
-}
-
-
-SWIGINTERNINLINE SV * 
-SWIG_FromCharPtr(const char *cptr)
-{ 
-  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
-}
-
-
-SWIGINTERNINLINE SV *
-SWIG_From_std_string  SWIG_PERL_DECL_ARGS_1(const std::string& s)
-{
-  return SWIG_FromCharPtrAndSize(s.data(), s.size());
-}
-
-
-SWIGINTERNINLINE SV *
-SWIG_From_bool  SWIG_PERL_DECL_ARGS_1(bool value)
-{    
-  SV *obj = sv_newmortal();
-  if (value) {
-    sv_setsv(obj, &PL_sv_yes);
-  } else {
-    sv_setsv(obj, &PL_sv_no); 
-  }
-  return obj;
-}
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -1835,6 +1836,357 @@ SWIGCLASS_STATIC int swig_magic_readonly(pTHX_ SV *SWIGUNUSEDPARM(sv), MAGIC *SW
 #ifdef __cplusplus
 extern "C" {
 #endif
+XS(_wrap_new_OTCallback) {
+  {
+    int argvi = 0;
+    OTCallback *result = 0 ;
+    dXSARGS;
+    
+    if ((items < 0) || (items > 0)) {
+      SWIG_croak("Usage: new_OTCallback();");
+    }
+    result = (OTCallback *)new OTCallback();
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTCallback, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    XSRETURN(argvi);
+  fail:
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_delete_OTCallback) {
+  {
+    OTCallback *arg1 = (OTCallback *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: delete_OTCallback(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCallback, SWIG_POINTER_DISOWN |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_OTCallback" "', argument " "1"" of type '" "OTCallback *""'"); 
+    }
+    arg1 = reinterpret_cast< OTCallback * >(argp1);
+    delete arg1;
+    ST(argvi) = sv_newmortal();
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OTCallback_runOne) {
+  {
+    OTCallback *arg1 = (OTCallback *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    std::string result;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OTCallback_runOne(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCallback, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCallback_runOne" "', argument " "1"" of type '" "OTCallback *""'"); 
+    }
+    arg1 = reinterpret_cast< OTCallback * >(argp1);
+    result = (arg1)->runOne();
+    ST(argvi) = SWIG_From_std_string  SWIG_PERL_CALL_ARGS_1(static_cast< std::string >(result)); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OTCallback_runTwo) {
+  {
+    OTCallback *arg1 = (OTCallback *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    std::string result;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OTCallback_runTwo(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCallback, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCallback_runTwo" "', argument " "1"" of type '" "OTCallback *""'"); 
+    }
+    arg1 = reinterpret_cast< OTCallback * >(argp1);
+    result = (arg1)->runTwo();
+    ST(argvi) = SWIG_From_std_string  SWIG_PERL_CALL_ARGS_1(static_cast< std::string >(result)); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_new_OTCaller) {
+  {
+    int argvi = 0;
+    OTCaller *result = 0 ;
+    dXSARGS;
+    
+    if ((items < 0) || (items > 0)) {
+      SWIG_croak("Usage: new_OTCaller();");
+    }
+    result = (OTCaller *)new OTCaller();
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTCaller, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    XSRETURN(argvi);
+  fail:
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_delete_OTCaller) {
+  {
+    OTCaller *arg1 = (OTCaller *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: delete_OTCaller(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCaller, SWIG_POINTER_DISOWN |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_OTCaller" "', argument " "1"" of type '" "OTCaller *""'"); 
+    }
+    arg1 = reinterpret_cast< OTCaller * >(argp1);
+    delete arg1;
+    ST(argvi) = sv_newmortal();
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OTCaller_GetPassword) {
+  {
+    OTCaller *arg1 = (OTCaller *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    char *result = 0 ;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OTCaller_GetPassword(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_GetPassword" "', argument " "1"" of type '" "OTCaller *""'"); 
+    }
+    arg1 = reinterpret_cast< OTCaller * >(argp1);
+    result = (char *)(arg1)->GetPassword();
+    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OTCaller_delCallback) {
+  {
+    OTCaller *arg1 = (OTCaller *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OTCaller_delCallback(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_delCallback" "', argument " "1"" of type '" "OTCaller *""'"); 
+    }
+    arg1 = reinterpret_cast< OTCaller * >(argp1);
+    (arg1)->delCallback();
+    ST(argvi) = sv_newmortal();
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OTCaller_setCallback) {
+  {
+    OTCaller *arg1 = (OTCaller *) 0 ;
+    OTCallback *arg2 = (OTCallback *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    void *argp2 = 0 ;
+    int res2 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: OTCaller_setCallback(self,cb);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_setCallback" "', argument " "1"" of type '" "OTCaller *""'"); 
+    }
+    arg1 = reinterpret_cast< OTCaller * >(argp1);
+    res2 = SWIG_ConvertPtr(ST(1), &argp2,SWIGTYPE_p_OTCallback, 0 |  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OTCaller_setCallback" "', argument " "2"" of type '" "OTCallback *""'"); 
+    }
+    arg2 = reinterpret_cast< OTCallback * >(argp2);
+    (arg1)->setCallback(arg2);
+    ST(argvi) = sv_newmortal();
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OTCaller_isCallbackSet) {
+  {
+    OTCaller *arg1 = (OTCaller *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    bool result;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OTCaller_isCallbackSet(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_isCallbackSet" "', argument " "1"" of type '" "OTCaller *""'"); 
+    }
+    arg1 = reinterpret_cast< OTCaller * >(argp1);
+    result = (bool)(arg1)->isCallbackSet();
+    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OTCaller_callOne) {
+  {
+    OTCaller *arg1 = (OTCaller *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OTCaller_callOne(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_callOne" "', argument " "1"" of type '" "OTCaller *""'"); 
+    }
+    arg1 = reinterpret_cast< OTCaller * >(argp1);
+    (arg1)->callOne();
+    ST(argvi) = sv_newmortal();
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OTCaller_callTwo) {
+  {
+    OTCaller *arg1 = (OTCaller *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OTCaller_callTwo(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_callTwo" "', argument " "1"" of type '" "OTCaller *""'"); 
+    }
+    arg1 = reinterpret_cast< OTCaller * >(argp1);
+    (arg1)->callTwo();
+    ST(argvi) = sv_newmortal();
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_OT_API_Set_PasswordCallback) {
+  {
+    OTCaller *arg1 = 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    bool result;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: OT_API_Set_PasswordCallback(theCaller);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1, SWIGTYPE_p_OTCaller,  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Set_PasswordCallback" "', argument " "1"" of type '" "OTCaller &""'"); 
+    }
+    if (!argp1) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "OT_API_Set_PasswordCallback" "', argument " "1"" of type '" "OTCaller &""'"); 
+    }
+    arg1 = reinterpret_cast< OTCaller * >(argp1);
+    result = (bool)OT_API_Set_PasswordCallback(*arg1);
+    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
 XS(_wrap_OT_API_Init) {
   {
     char *arg1 = (char *) 0 ;
@@ -8763,357 +9115,6 @@ XS(_wrap_OT_API_ProcessSockets) {
 }
 
 
-XS(_wrap_new_OTCallback) {
-  {
-    int argvi = 0;
-    OTCallback *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 0) || (items > 0)) {
-      SWIG_croak("Usage: new_OTCallback();");
-    }
-    result = (OTCallback *)new OTCallback();
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTCallback, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
-    XSRETURN(argvi);
-  fail:
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_delete_OTCallback) {
-  {
-    OTCallback *arg1 = (OTCallback *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: delete_OTCallback(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCallback, SWIG_POINTER_DISOWN |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_OTCallback" "', argument " "1"" of type '" "OTCallback *""'"); 
-    }
-    arg1 = reinterpret_cast< OTCallback * >(argp1);
-    delete arg1;
-    ST(argvi) = sv_newmortal();
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_OTCallback_run1) {
-  {
-    OTCallback *arg1 = (OTCallback *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    std::string result;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: OTCallback_run1(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCallback, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCallback_run1" "', argument " "1"" of type '" "OTCallback *""'"); 
-    }
-    arg1 = reinterpret_cast< OTCallback * >(argp1);
-    result = (arg1)->run1();
-    ST(argvi) = SWIG_From_std_string  SWIG_PERL_CALL_ARGS_1(static_cast< std::string >(result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_OTCallback_run2) {
-  {
-    OTCallback *arg1 = (OTCallback *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    std::string result;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: OTCallback_run2(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCallback, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCallback_run2" "', argument " "1"" of type '" "OTCallback *""'"); 
-    }
-    arg1 = reinterpret_cast< OTCallback * >(argp1);
-    result = (arg1)->run2();
-    ST(argvi) = SWIG_From_std_string  SWIG_PERL_CALL_ARGS_1(static_cast< std::string >(result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_new_OTCaller) {
-  {
-    int argvi = 0;
-    OTCaller *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 0) || (items > 0)) {
-      SWIG_croak("Usage: new_OTCaller();");
-    }
-    result = (OTCaller *)new OTCaller();
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTCaller, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
-    XSRETURN(argvi);
-  fail:
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_delete_OTCaller) {
-  {
-    OTCaller *arg1 = (OTCaller *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: delete_OTCaller(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCaller, SWIG_POINTER_DISOWN |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_OTCaller" "', argument " "1"" of type '" "OTCaller *""'"); 
-    }
-    arg1 = reinterpret_cast< OTCaller * >(argp1);
-    delete arg1;
-    ST(argvi) = sv_newmortal();
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_OTCaller_GetPassword) {
-  {
-    OTCaller *arg1 = (OTCaller *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    char *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: OTCaller_GetPassword(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_GetPassword" "', argument " "1"" of type '" "OTCaller *""'"); 
-    }
-    arg1 = reinterpret_cast< OTCaller * >(argp1);
-    result = (char *)(arg1)->GetPassword();
-    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_OTCaller_delCallback) {
-  {
-    OTCaller *arg1 = (OTCaller *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: OTCaller_delCallback(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_delCallback" "', argument " "1"" of type '" "OTCaller *""'"); 
-    }
-    arg1 = reinterpret_cast< OTCaller * >(argp1);
-    (arg1)->delCallback();
-    ST(argvi) = sv_newmortal();
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_OTCaller_setCallback) {
-  {
-    OTCaller *arg1 = (OTCaller *) 0 ;
-    OTCallback *arg2 = (OTCallback *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    void *argp2 = 0 ;
-    int res2 = 0 ;
-    int argvi = 0;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: OTCaller_setCallback(self,cb);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_setCallback" "', argument " "1"" of type '" "OTCaller *""'"); 
-    }
-    arg1 = reinterpret_cast< OTCaller * >(argp1);
-    res2 = SWIG_ConvertPtr(ST(1), &argp2,SWIGTYPE_p_OTCallback, 0 |  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OTCaller_setCallback" "', argument " "2"" of type '" "OTCallback *""'"); 
-    }
-    arg2 = reinterpret_cast< OTCallback * >(argp2);
-    (arg1)->setCallback(arg2);
-    ST(argvi) = sv_newmortal();
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_OTCaller_isCallbackSet) {
-  {
-    OTCaller *arg1 = (OTCaller *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: OTCaller_isCallbackSet(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_isCallbackSet" "', argument " "1"" of type '" "OTCaller *""'"); 
-    }
-    arg1 = reinterpret_cast< OTCaller * >(argp1);
-    result = (bool)(arg1)->isCallbackSet();
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_OTCaller_call1) {
-  {
-    OTCaller *arg1 = (OTCaller *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: OTCaller_call1(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_call1" "', argument " "1"" of type '" "OTCaller *""'"); 
-    }
-    arg1 = reinterpret_cast< OTCaller * >(argp1);
-    (arg1)->call1();
-    ST(argvi) = sv_newmortal();
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_OTCaller_call2) {
-  {
-    OTCaller *arg1 = (OTCaller *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: OTCaller_call2(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTCaller, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTCaller_call2" "', argument " "1"" of type '" "OTCaller *""'"); 
-    }
-    arg1 = reinterpret_cast< OTCaller * >(argp1);
-    (arg1)->call2();
-    ST(argvi) = sv_newmortal();
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_OT_API_Set_PasswordCallback) {
-  {
-    OTCaller *arg1 = 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: OT_API_Set_PasswordCallback(theCaller);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1, SWIGTYPE_p_OTCaller,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OT_API_Set_PasswordCallback" "', argument " "1"" of type '" "OTCaller &""'"); 
-    }
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "OT_API_Set_PasswordCallback" "', argument " "1"" of type '" "OTCaller &""'"); 
-    }
-    arg1 = reinterpret_cast< OTCaller * >(argp1);
-    result = (bool)OT_API_Set_PasswordCallback(*arg1);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -9150,6 +9151,19 @@ static swig_variable_info swig_variables[] = {
 {0,0,0,0}
 };
 static swig_command_info swig_commands[] = {
+{"otapic::new_OTCallback", _wrap_new_OTCallback},
+{"otapic::delete_OTCallback", _wrap_delete_OTCallback},
+{"otapic::OTCallback_runOne", _wrap_OTCallback_runOne},
+{"otapic::OTCallback_runTwo", _wrap_OTCallback_runTwo},
+{"otapic::new_OTCaller", _wrap_new_OTCaller},
+{"otapic::delete_OTCaller", _wrap_delete_OTCaller},
+{"otapic::OTCaller_GetPassword", _wrap_OTCaller_GetPassword},
+{"otapic::OTCaller_delCallback", _wrap_OTCaller_delCallback},
+{"otapic::OTCaller_setCallback", _wrap_OTCaller_setCallback},
+{"otapic::OTCaller_isCallbackSet", _wrap_OTCaller_isCallbackSet},
+{"otapic::OTCaller_callOne", _wrap_OTCaller_callOne},
+{"otapic::OTCaller_callTwo", _wrap_OTCaller_callTwo},
+{"otapic::OT_API_Set_PasswordCallback", _wrap_OT_API_Set_PasswordCallback},
 {"otapic::OT_API_Init", _wrap_OT_API_Init},
 {"otapic::OT_API_LoadWallet", _wrap_OT_API_LoadWallet},
 {"otapic::OT_API_SwitchWallet", _wrap_OT_API_SwitchWallet},
@@ -9303,19 +9317,6 @@ static swig_command_info swig_commands[] = {
 {"otapic::OT_API_Message_GetNewAcctID", _wrap_OT_API_Message_GetNewAcctID},
 {"otapic::OT_API_ConnectServer", _wrap_OT_API_ConnectServer},
 {"otapic::OT_API_ProcessSockets", _wrap_OT_API_ProcessSockets},
-{"otapic::new_OTCallback", _wrap_new_OTCallback},
-{"otapic::delete_OTCallback", _wrap_delete_OTCallback},
-{"otapic::OTCallback_run1", _wrap_OTCallback_run1},
-{"otapic::OTCallback_run2", _wrap_OTCallback_run2},
-{"otapic::new_OTCaller", _wrap_new_OTCaller},
-{"otapic::delete_OTCaller", _wrap_delete_OTCaller},
-{"otapic::OTCaller_GetPassword", _wrap_OTCaller_GetPassword},
-{"otapic::OTCaller_delCallback", _wrap_OTCaller_delCallback},
-{"otapic::OTCaller_setCallback", _wrap_OTCaller_setCallback},
-{"otapic::OTCaller_isCallbackSet", _wrap_OTCaller_isCallbackSet},
-{"otapic::OTCaller_call1", _wrap_OTCaller_call1},
-{"otapic::OTCaller_call2", _wrap_OTCaller_call2},
-{"otapic::OT_API_Set_PasswordCallback", _wrap_OT_API_Set_PasswordCallback},
 {0,0}
 };
 /* -----------------------------------------------------------------------------

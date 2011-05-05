@@ -27,6 +27,10 @@ if (!extension_loaded('otapi')) {
 
 
 abstract class otapi {
+	static function OT_API_Set_PasswordCallback($theCaller) {
+		return OT_API_Set_PasswordCallback($theCaller);
+	}
+
 	static function OT_API_Init($szClientPath) {
 		return OT_API_Init($szClientPath);
 	}
@@ -638,10 +642,6 @@ abstract class otapi {
 	static function OT_API_ProcessSockets() {
 		return OT_API_ProcessSockets();
 	}
-
-	static function OT_API_Set_PasswordCallback($theCaller) {
-		return OT_API_Set_PasswordCallback($theCaller);
-	}
 }
 
 /* PHP Proxy Classes */
@@ -677,12 +677,12 @@ class OTCallback {
 		$this->_cPtr=new_OTCallback($_this);
 	}
 
-	function run1() {
-		return OTCallback_run1($this->_cPtr);
+	function runOne() {
+		return OTCallback_runOne($this->_cPtr);
 	}
 
-	function run2() {
-		return OTCallback_run2($this->_cPtr);
+	function runTwo() {
+		return OTCallback_runTwo($this->_cPtr);
 	}
 }
 
@@ -729,12 +729,12 @@ class OTCaller {
 		return OTCaller_isCallbackSet($this->_cPtr);
 	}
 
-	function call1() {
-		OTCaller_call1($this->_cPtr);
+	function callOne() {
+		OTCaller_callOne($this->_cPtr);
 	}
 
-	function call2() {
-		OTCaller_call2($this->_cPtr);
+	function callTwo() {
+		OTCaller_callTwo($this->_cPtr);
 	}
 }
 

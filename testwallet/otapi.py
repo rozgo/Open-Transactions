@@ -73,6 +73,56 @@ except:
     weakref_proxy = lambda x: x
 
 
+class OTCallback(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, OTCallback, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, OTCallback, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        if self.__class__ == OTCallback:
+            _self = None
+        else:
+            _self = self
+        this = _otapi.new_OTCallback(_self, )
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _otapi.delete_OTCallback
+    __del__ = lambda self : None;
+    def runOne(self): return _otapi.OTCallback_runOne(self)
+    def runTwo(self): return _otapi.OTCallback_runTwo(self)
+    def __disown__(self):
+        self.this.disown()
+        _otapi.disown_OTCallback(self)
+        return weakref_proxy(self)
+OTCallback_swigregister = _otapi.OTCallback_swigregister
+OTCallback_swigregister(OTCallback)
+
+class OTCaller(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, OTCaller, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, OTCaller, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _otapi.new_OTCaller()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _otapi.delete_OTCaller
+    __del__ = lambda self : None;
+    def GetPassword(self): return _otapi.OTCaller_GetPassword(self)
+    def delCallback(self): return _otapi.OTCaller_delCallback(self)
+    def setCallback(self, *args): return _otapi.OTCaller_setCallback(self, *args)
+    def isCallbackSet(self): return _otapi.OTCaller_isCallbackSet(self)
+    def callOne(self): return _otapi.OTCaller_callOne(self)
+    def callTwo(self): return _otapi.OTCaller_callTwo(self)
+OTCaller_swigregister = _otapi.OTCaller_swigregister
+OTCaller_swigregister(OTCaller)
+
+
+def OT_API_Set_PasswordCallback(*args):
+  return _otapi.OT_API_Set_PasswordCallback(*args)
+OT_API_Set_PasswordCallback = _otapi.OT_API_Set_PasswordCallback
 
 def OT_API_Init(*args):
   return _otapi.OT_API_Init(*args)
@@ -685,55 +735,5 @@ OT_API_ConnectServer = _otapi.OT_API_ConnectServer
 def OT_API_ProcessSockets():
   return _otapi.OT_API_ProcessSockets()
 OT_API_ProcessSockets = _otapi.OT_API_ProcessSockets
-class OTCallback(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, OTCallback, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, OTCallback, name)
-    __repr__ = _swig_repr
-    def __init__(self): 
-        if self.__class__ == OTCallback:
-            _self = None
-        else:
-            _self = self
-        this = _otapi.new_OTCallback(_self, )
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _otapi.delete_OTCallback
-    __del__ = lambda self : None;
-    def run1(self): return _otapi.OTCallback_run1(self)
-    def run2(self): return _otapi.OTCallback_run2(self)
-    def __disown__(self):
-        self.this.disown()
-        _otapi.disown_OTCallback(self)
-        return weakref_proxy(self)
-OTCallback_swigregister = _otapi.OTCallback_swigregister
-OTCallback_swigregister(OTCallback)
-
-class OTCaller(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, OTCaller, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, OTCaller, name)
-    __repr__ = _swig_repr
-    def __init__(self): 
-        this = _otapi.new_OTCaller()
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _otapi.delete_OTCaller
-    __del__ = lambda self : None;
-    def GetPassword(self): return _otapi.OTCaller_GetPassword(self)
-    def delCallback(self): return _otapi.OTCaller_delCallback(self)
-    def setCallback(self, *args): return _otapi.OTCaller_setCallback(self, *args)
-    def isCallbackSet(self): return _otapi.OTCaller_isCallbackSet(self)
-    def call1(self): return _otapi.OTCaller_call1(self)
-    def call2(self): return _otapi.OTCaller_call2(self)
-OTCaller_swigregister = _otapi.OTCaller_swigregister
-OTCaller_swigregister(OTCaller)
-
-
-def OT_API_Set_PasswordCallback(*args):
-  return _otapi.OT_API_Set_PasswordCallback(*args)
-OT_API_Set_PasswordCallback = _otapi.OT_API_Set_PasswordCallback
 
 

@@ -244,7 +244,7 @@ OTCallback::~OTCallback()
 //	std::cout << "OTCallback::~OTCallback()" << std:: endl; 
 }
 
-std::string OTCallback::run1() // child class will override.
+std::string OTCallback::runOne() // child class will override.
 { 
 	//	std::cout << "OTCallback::run()" << std::endl; 
 	
@@ -253,7 +253,7 @@ std::string OTCallback::run1() // child class will override.
 	return blah; 
 }
 
-std::string OTCallback::run2() // child class will override.
+std::string OTCallback::runTwo() // child class will override.
 { 
 	//	std::cout << "OTCallback::run()" << std::endl; 
 	
@@ -294,20 +294,20 @@ void OTCaller::setCallback(OTCallback *cb)
 	_callback = cb; 
 }
 
-void OTCaller::call1() 
+void OTCaller::callOne() 
 { 
 	if (NULL != _callback) 
 	{ 
-		m_strPW = _callback->run1(); 
+		m_strPW = _callback->runOne(); 
 		//		std::cout << "RESULT!!!: " << m_strPW << std::endl; 
 	} 
 }
 
-void OTCaller::call2() 
+void OTCaller::callTwo() 
 { 
 	if (NULL != _callback) 
 	{ 
-		m_strPW = _callback->run2(); 
+		m_strPW = _callback->runTwo(); 
 		//		std::cout << "RESULT!!!: " << m_strPW << std::endl; 
 	} 
 }
@@ -411,9 +411,9 @@ OPENSSL_CALLBACK_FUNC(souped_up_pass_cb)
 	}
 		
 	if (1 == rwflag)
-		pCaller->call2(); // This is where Java pops up a modal dialog and asks for password twice...
+		pCaller->callTwo(); // This is where Java pops up a modal dialog and asks for password twice...
 	else
-		pCaller->call1(); // This is where Java pops up a modal dialog and asks for password...
+		pCaller->callOne(); // This is where Java pops up a modal dialog and asks for password...
 
 	// get pass phrase, length 'len' into 'tmp'
 	const char * pPassword = pCaller->GetPassword();

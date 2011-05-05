@@ -17,8 +17,8 @@ public:
     void swig_connect_director(JNIEnv *jenv, jobject jself, jclass jcls, bool swig_mem_own, bool weak_global);
     SwigDirector_OTCallback(JNIEnv *jenv);
     virtual ~SwigDirector_OTCallback();
-    virtual std::string run1();
-    virtual std::string run2();
+    virtual std::string runOne();
+    virtual std::string runTwo();
 public:
     bool swig_overrides(int n) {
       return (n < 2 ? swig_override[n] : false);

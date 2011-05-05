@@ -9,6 +9,23 @@
 package com.wrapper.core.jni;
 
 public class otapiJNI {
+  public final static native long new_OTCallback();
+  public final static native void delete_OTCallback(long jarg1);
+  public final static native String OTCallback_runOne(long jarg1, OTCallback jarg1_);
+  public final static native String OTCallback_runOneSwigExplicitOTCallback(long jarg1, OTCallback jarg1_);
+  public final static native String OTCallback_runTwo(long jarg1, OTCallback jarg1_);
+  public final static native String OTCallback_runTwoSwigExplicitOTCallback(long jarg1, OTCallback jarg1_);
+  public final static native void OTCallback_director_connect(OTCallback obj, long cptr, boolean mem_own, boolean weak_global);
+  public final static native void OTCallback_change_ownership(OTCallback obj, long cptr, boolean take_or_release);
+  public final static native long new_OTCaller();
+  public final static native void delete_OTCaller(long jarg1);
+  public final static native String OTCaller_GetPassword(long jarg1, OTCaller jarg1_);
+  public final static native void OTCaller_delCallback(long jarg1, OTCaller jarg1_);
+  public final static native void OTCaller_setCallback(long jarg1, OTCaller jarg1_, long jarg2, OTCallback jarg2_);
+  public final static native boolean OTCaller_isCallbackSet(long jarg1, OTCaller jarg1_);
+  public final static native void OTCaller_callOne(long jarg1, OTCaller jarg1_);
+  public final static native void OTCaller_callTwo(long jarg1, OTCaller jarg1_);
+  public final static native boolean OT_API_Set_PasswordCallback(long jarg1, OTCaller jarg1_);
   public final static native int OT_API_Init(String jarg1);
   public final static native int OT_API_LoadWallet(String jarg1);
   public final static native int OT_API_SwitchWallet(String jarg1, String jarg2);
@@ -162,29 +179,12 @@ public class otapiJNI {
   public final static native String OT_API_Message_GetNewAcctID(String jarg1);
   public final static native int OT_API_ConnectServer(String jarg1, String jarg2, String jarg3, String jarg4, String jarg5);
   public final static native int OT_API_ProcessSockets();
-  public final static native long new_OTCallback();
-  public final static native void delete_OTCallback(long jarg1);
-  public final static native String OTCallback_run1(long jarg1, OTCallback jarg1_);
-  public final static native String OTCallback_run1SwigExplicitOTCallback(long jarg1, OTCallback jarg1_);
-  public final static native String OTCallback_run2(long jarg1, OTCallback jarg1_);
-  public final static native String OTCallback_run2SwigExplicitOTCallback(long jarg1, OTCallback jarg1_);
-  public final static native void OTCallback_director_connect(OTCallback obj, long cptr, boolean mem_own, boolean weak_global);
-  public final static native void OTCallback_change_ownership(OTCallback obj, long cptr, boolean take_or_release);
-  public final static native long new_OTCaller();
-  public final static native void delete_OTCaller(long jarg1);
-  public final static native String OTCaller_GetPassword(long jarg1, OTCaller jarg1_);
-  public final static native void OTCaller_delCallback(long jarg1, OTCaller jarg1_);
-  public final static native void OTCaller_setCallback(long jarg1, OTCaller jarg1_, long jarg2, OTCallback jarg2_);
-  public final static native boolean OTCaller_isCallbackSet(long jarg1, OTCaller jarg1_);
-  public final static native void OTCaller_call1(long jarg1, OTCaller jarg1_);
-  public final static native void OTCaller_call2(long jarg1, OTCaller jarg1_);
-  public final static native boolean OT_API_Set_PasswordCallback(long jarg1, OTCaller jarg1_);
 
-  public static String SwigDirector_OTCallback_run1(OTCallback self) {
-    return self.run1();
+  public static String SwigDirector_OTCallback_runOne(OTCallback self) {
+    return self.runOne();
   }
-  public static String SwigDirector_OTCallback_run2(OTCallback self) {
-    return self.run2();
+  public static String SwigDirector_OTCallback_runTwo(OTCallback self) {
+    return self.runTwo();
   }
 
   private final static native void swig_module_init();

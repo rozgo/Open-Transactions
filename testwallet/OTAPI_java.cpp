@@ -406,8 +406,9 @@ namespace Swig {
   }
 }
 
-#include "OTAPI_funcdef.h"
+#include <string>
 #include "../OTLib/OTAsymmetricKey.h"
+#include "OTAPI_funcdef.h"
 
 
 #include <string>
@@ -428,7 +429,7 @@ SwigDirector_OTCallback::~SwigDirector_OTCallback() {
 }
 
 
-std::string SwigDirector_OTCallback::run1() {
+std::string SwigDirector_OTCallback::runOne() {
   std::string c_result ;
   jstring jresult = 0 ;
   JNIEnvWrapper swigjnienv(this) ;
@@ -436,7 +437,7 @@ std::string SwigDirector_OTCallback::run1() {
   jobject swigjobj = (jobject) NULL ;
   
   if (!swig_override[0]) {
-    return OTCallback::run1();
+    return OTCallback::runOne();
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
@@ -457,7 +458,7 @@ std::string SwigDirector_OTCallback::run1() {
   return c_result;
 }
 
-std::string SwigDirector_OTCallback::run2() {
+std::string SwigDirector_OTCallback::runTwo() {
   std::string c_result ;
   jstring jresult = 0 ;
   JNIEnvWrapper swigjnienv(this) ;
@@ -465,7 +466,7 @@ std::string SwigDirector_OTCallback::run2() {
   jobject swigjobj = (jobject) NULL ;
   
   if (!swig_override[1]) {
-    return OTCallback::run2();
+    return OTCallback::runTwo();
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
@@ -493,10 +494,10 @@ void SwigDirector_OTCallback::swig_connect_director(JNIEnv *jenv, jobject jself,
     jmethodID base_methid;
   } methods[] = {
     {
-      "run1", "()Ljava/lang/String;", NULL 
+      "runOne", "()Ljava/lang/String;", NULL 
     },
     {
-      "run2", "()Ljava/lang/String;", NULL 
+      "runTwo", "()Ljava/lang/String;", NULL 
     }
   };
   
@@ -529,6 +530,226 @@ void SwigDirector_OTCallback::swig_connect_director(JNIEnv *jenv, jobject jself,
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_new_1OTCallback(JNIEnv *jenv, jclass jcls) {
+  jlong jresult = 0 ;
+  OTCallback *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTCallback *)new SwigDirector_OTCallback(jenv);
+  *(OTCallback **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1OTCallback(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  OTCallback *arg1 = (OTCallback *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(OTCallback **)&jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCallback_1runOne(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTCallback *arg1 = (OTCallback *) 0 ;
+  std::string result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTCallback **)&jarg1; 
+  result = (arg1)->runOne();
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCallback_1runOneSwigExplicitOTCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTCallback *arg1 = (OTCallback *) 0 ;
+  std::string result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTCallback **)&jarg1; 
+  result = (arg1)->OTCallback::runOne();
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCallback_1runTwo(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTCallback *arg1 = (OTCallback *) 0 ;
+  std::string result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTCallback **)&jarg1; 
+  result = (arg1)->runTwo();
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCallback_1runTwoSwigExplicitOTCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTCallback *arg1 = (OTCallback *) 0 ;
+  std::string result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTCallback **)&jarg1; 
+  result = (arg1)->OTCallback::runTwo();
+  jresult = jenv->NewStringUTF((&result)->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCallback_1director_1connect(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jswig_mem_own, jboolean jweak_global) {
+  OTCallback *obj = *((OTCallback **)&objarg);
+  (void)jcls;
+  SwigDirector_OTCallback *director = dynamic_cast<SwigDirector_OTCallback *>(obj);
+  if (director) {
+    director->swig_connect_director(jenv, jself, jenv->GetObjectClass(jself), (jswig_mem_own == JNI_TRUE), (jweak_global == JNI_TRUE));
+  }
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCallback_1change_1ownership(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jtake_or_release) {
+  OTCallback *obj = *((OTCallback **)&objarg);
+  SwigDirector_OTCallback *director = dynamic_cast<SwigDirector_OTCallback *>(obj);
+  (void)jcls;
+  if (director) {
+    director->swig_java_change_ownership(jenv, jself, jtake_or_release ? true : false);
+  }
+}
+
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_new_1OTCaller(JNIEnv *jenv, jclass jcls) {
+  jlong jresult = 0 ;
+  OTCaller *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTCaller *)new OTCaller();
+  *(OTCaller **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1OTCaller(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(OTCaller **)&jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCaller_1GetPassword(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTCaller **)&jarg1; 
+  result = (char *)(arg1)->GetPassword();
+  if (result) jresult = jenv->NewStringUTF((const char *)result);
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCaller_1delCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTCaller **)&jarg1; 
+  (arg1)->delCallback();
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCaller_1setCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  OTCallback *arg2 = (OTCallback *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(OTCaller **)&jarg1; 
+  arg2 = *(OTCallback **)&jarg2; 
+  (arg1)->setCallback(arg2);
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCaller_1isCallbackSet(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTCaller **)&jarg1; 
+  result = (bool)(arg1)->isCallbackSet();
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCaller_1callOne(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTCaller **)&jarg1; 
+  (arg1)->callOne();
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCaller_1callTwo(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  OTCaller *arg1 = (OTCaller *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTCaller **)&jarg1; 
+  (arg1)->callTwo();
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_OT_1API_1Set_1PasswordCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jboolean jresult = 0 ;
+  OTCaller *arg1 = 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTCaller **)&jarg1;
+  if (!arg1) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "OTCaller & reference is null");
+    return 0;
+  } 
+  result = (bool)OT_API_Set_PasswordCallback(*arg1);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
 
 SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_OT_1API_1Init(JNIEnv *jenv, jclass jcls, jstring jarg1) {
   jint jresult = 0 ;
@@ -4830,226 +5051,6 @@ SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_OT_1API_1ProcessSocke
 }
 
 
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_new_1OTCallback(JNIEnv *jenv, jclass jcls) {
-  jlong jresult = 0 ;
-  OTCallback *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  result = (OTCallback *)new SwigDirector_OTCallback(jenv);
-  *(OTCallback **)&jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1OTCallback(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  OTCallback *arg1 = (OTCallback *) 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  arg1 = *(OTCallback **)&jarg1; 
-  delete arg1;
-}
-
-
-SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCallback_1run1(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jstring jresult = 0 ;
-  OTCallback *arg1 = (OTCallback *) 0 ;
-  std::string result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(OTCallback **)&jarg1; 
-  result = (arg1)->run1();
-  jresult = jenv->NewStringUTF((&result)->c_str()); 
-  return jresult;
-}
-
-
-SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCallback_1run1SwigExplicitOTCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jstring jresult = 0 ;
-  OTCallback *arg1 = (OTCallback *) 0 ;
-  std::string result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(OTCallback **)&jarg1; 
-  result = (arg1)->OTCallback::run1();
-  jresult = jenv->NewStringUTF((&result)->c_str()); 
-  return jresult;
-}
-
-
-SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCallback_1run2(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jstring jresult = 0 ;
-  OTCallback *arg1 = (OTCallback *) 0 ;
-  std::string result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(OTCallback **)&jarg1; 
-  result = (arg1)->run2();
-  jresult = jenv->NewStringUTF((&result)->c_str()); 
-  return jresult;
-}
-
-
-SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCallback_1run2SwigExplicitOTCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jstring jresult = 0 ;
-  OTCallback *arg1 = (OTCallback *) 0 ;
-  std::string result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(OTCallback **)&jarg1; 
-  result = (arg1)->OTCallback::run2();
-  jresult = jenv->NewStringUTF((&result)->c_str()); 
-  return jresult;
-}
-
-
-SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCallback_1director_1connect(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jswig_mem_own, jboolean jweak_global) {
-  OTCallback *obj = *((OTCallback **)&objarg);
-  (void)jcls;
-  SwigDirector_OTCallback *director = dynamic_cast<SwigDirector_OTCallback *>(obj);
-  if (director) {
-    director->swig_connect_director(jenv, jself, jenv->GetObjectClass(jself), (jswig_mem_own == JNI_TRUE), (jweak_global == JNI_TRUE));
-  }
-}
-
-
-SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCallback_1change_1ownership(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jtake_or_release) {
-  OTCallback *obj = *((OTCallback **)&objarg);
-  SwigDirector_OTCallback *director = dynamic_cast<SwigDirector_OTCallback *>(obj);
-  (void)jcls;
-  if (director) {
-    director->swig_java_change_ownership(jenv, jself, jtake_or_release ? true : false);
-  }
-}
-
-
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_new_1OTCaller(JNIEnv *jenv, jclass jcls) {
-  jlong jresult = 0 ;
-  OTCaller *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  result = (OTCaller *)new OTCaller();
-  *(OTCaller **)&jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1OTCaller(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  arg1 = *(OTCaller **)&jarg1; 
-  delete arg1;
-}
-
-
-SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCaller_1GetPassword(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jstring jresult = 0 ;
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  char *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(OTCaller **)&jarg1; 
-  result = (char *)(arg1)->GetPassword();
-  if (result) jresult = jenv->NewStringUTF((const char *)result);
-  return jresult;
-}
-
-
-SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCaller_1delCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(OTCaller **)&jarg1; 
-  (arg1)->delCallback();
-}
-
-
-SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCaller_1setCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  OTCallback *arg2 = (OTCallback *) 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  (void)jarg2_;
-  arg1 = *(OTCaller **)&jarg1; 
-  arg2 = *(OTCallback **)&jarg2; 
-  (arg1)->setCallback(arg2);
-}
-
-
-SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCaller_1isCallbackSet(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jboolean jresult = 0 ;
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  bool result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(OTCaller **)&jarg1; 
-  result = (bool)(arg1)->isCallbackSet();
-  jresult = (jboolean)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCaller_1call1(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(OTCaller **)&jarg1; 
-  (arg1)->call1();
-}
-
-
-SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_OTCaller_1call2(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  OTCaller *arg1 = (OTCaller *) 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(OTCaller **)&jarg1; 
-  (arg1)->call2();
-}
-
-
-SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_OT_1API_1Set_1PasswordCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jboolean jresult = 0 ;
-  OTCaller *arg1 = 0 ;
-  bool result;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(OTCaller **)&jarg1;
-  if (!arg1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "OTCaller & reference is null");
-    return 0;
-  } 
-  result = (bool)OT_API_Set_PasswordCallback(*arg1);
-  jresult = (jboolean)result; 
-  return jresult;
-}
-
-
 SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_swig_1module_1init(JNIEnv *jenv, jclass jcls) {
   int i;
   
@@ -5058,10 +5059,10 @@ SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_swig_1module_1init(JN
     const char *signature;
   } methods[2] = {
     {
-      "SwigDirector_OTCallback_run1", "(Lcom/wrapper/core/jni/OTCallback;)Ljava/lang/String;" 
+      "SwigDirector_OTCallback_runOne", "(Lcom/wrapper/core/jni/OTCallback;)Ljava/lang/String;" 
     },
     {
-      "SwigDirector_OTCallback_run2", "(Lcom/wrapper/core/jni/OTCallback;)Ljava/lang/String;" 
+      "SwigDirector_OTCallback_runTwo", "(Lcom/wrapper/core/jni/OTCallback;)Ljava/lang/String;" 
     }
   };
   Swig::jclass_otapiJNI = (jclass) jenv->NewGlobalRef(jcls);
