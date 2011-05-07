@@ -252,21 +252,21 @@ public:
 		// -----------------------------------------
 		// Store/Retrieve a string.
 		
-		virtual bool Store(std::string strContents, std::string strFolder, 
-						   std::string oneStr="", std::string twoStr="", std::string threeStr="")=NULL;
+		virtual bool StoreString(std::string strContents, std::string strFolder, 
+								 std::string oneStr="", std::string twoStr="", std::string threeStr="")=NULL;
 		
-		virtual std::string Query(std::string strFolder, std::string oneStr="",
-								  std::string twoStr="", std::string threeStr="")=NULL;
+		virtual std::string QueryString(std::string strFolder, std::string oneStr="",
+										std::string twoStr="", std::string threeStr="")=NULL;
 				
 		// -----------------------------------------
 		// Store/Retrieve an object. (Storable.)
 		
-		virtual bool Store(Storable & theContents, std::string strFolder, 
-						   std::string oneStr="", std::string twoStr="", std::string threeStr="")=NULL;
+		virtual bool StoreObject(Storable & theContents, std::string strFolder, 
+								 std::string oneStr="", std::string twoStr="", std::string threeStr="")=NULL;
 		
 		// Use %newobject OTDB::Storage::Query();
-		virtual Storable * Query(std::string strFolder, std::string oneStr="",
-								 std::string twoStr="", std::string threeStr="")=NULL;
+		virtual Storable * QueryObject(std::string strFolder, std::string oneStr="",
+									   std::string twoStr="", std::string threeStr="")=NULL;
 		
 		// --------------------------
 		// Note:
@@ -308,21 +308,21 @@ public:
 		// -----------------------------------------
 		// Store/Retrieve a string.
 		
-		virtual bool Store(std::string strContents, std::string strFolder, 
-						   std::string oneStr="", std::string twoStr="", std::string threeStr="");
+		virtual bool StoreString(std::string strContents, std::string strFolder, 
+								 std::string oneStr="", std::string twoStr="", std::string threeStr="");
 		
-		virtual std::string Query(std::string strFolder, std::string oneStr="",
-								  std::string twoStr="", std::string threeStr="");
+		virtual std::string QueryString(std::string strFolder, std::string oneStr="",
+										std::string twoStr="", std::string threeStr="");
 		
 		// -----------------------------------------
 		// Store/Retrieve an object. (Storable.)
 		
-		virtual bool Store(Storable & theContents, std::string strFolder, 
-						   std::string oneStr="", std::string twoStr="", std::string threeStr="");
+		virtual bool StoreObject(Storable & theContents, std::string strFolder, 
+								 std::string oneStr="", std::string twoStr="", std::string threeStr="");
 		
 		// Use %newobject OTDB::Storage::Query();
-		virtual Storable * Query(std::string strFolder, std::string oneStr="",
-								 std::string twoStr="", std::string threeStr="");		
+		virtual Storable * QueryObject(std::string strFolder, std::string oneStr="",
+									   std::string twoStr="", std::string threeStr="");		
 	};
 
 	// Other subclasses may go here, for storing in SQL lite,
@@ -345,9 +345,7 @@ public:
 	Storage * GetDefaultStorage() { return details::s_pStorage; }
 	
 	// %newobject Factory::createObj();
-	Storage * CreateStorageContext(StorageType eStoreType, PackType ePackType,
-								   std::string oneStr="", std::string twoStr="", std::string threeStr="", 
-								   std::string fourStr="", std::string fiveStr="", std::string sixStr="");
+	Storage * CreateStorageContext(StorageType eStoreType, PackType ePackType);
 	
 	// bool bSuccess = OTDB::Store(strInbox, "inbox", "lkjsdf908w345ljkvd");
 	// bool bSuccess = OTDB::Store(strMint,  "mints", SERVER_ID, ASSET_ID);
@@ -363,21 +361,21 @@ public:
 	// -----------------------------------------
 	// Store/Retrieve a string.
 	
-	bool Store(std::string strContents, std::string strFolder, 
-			   std::string oneStr="", std::string twoStr="", std::string threeStr="");
+	bool StoreString(std::string strContents, std::string strFolder, 
+					 std::string oneStr="", std::string twoStr="", std::string threeStr="");
 	
-	std::string Query(std::string strFolder, std::string oneStr="",
-					  std::string twoStr="", std::string threeStr="");
+	std::string QueryString(std::string strFolder, std::string oneStr="",
+							std::string twoStr="", std::string threeStr="");
 	
 	// -----------------------------------------
 	// Store/Retrieve an object. (Storable.)
 	
-	bool Store(Storable & theContents, std::string strFolder, 
-			   std::string oneStr="", std::string twoStr="", std::string threeStr="");
+	bool StoreObject(Storable & theContents, std::string strFolder, 
+					 std::string oneStr="", std::string twoStr="", std::string threeStr="");
 	
 	// Use %newobject OTDB::Storage::Query();
-	Storable * Query(std::string strFolder, std::string oneStr="",
-					 std::string twoStr="", std::string threeStr="");		
+	Storable * QueryObject(std::string strFolder, std::string oneStr="",
+						   std::string twoStr="", std::string threeStr="");		
 	
 	// ********************************************************************
 	

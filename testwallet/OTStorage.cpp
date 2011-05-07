@@ -191,11 +191,11 @@ bool OTDB::InitDefaultStorage(OTDB::StorageType eStoreType, OTDB::PackType ePack
 
 
 // %newobject Factory::createObj();
-Storage * OTDB::CreateStorageContext(StorageType eStoreType, PackType ePackType,
-									 std::string oneStr/*=""*/,  std::string twoStr/*=""*/,  std::string threeStr/*=""*/, 
-									 std::string fourStr/*=""*/, std::string fiveStr/*=""*/, std::string sixStr/*=""*/)
+Storage * OTDB::CreateStorageContext(StorageType eStoreType, PackType ePackType)
 {
+	Storage * pStorage = OTDB::Storage::Create(eStoreType, ePackType);
 	
+	return pStorage;	// caller responsible to delete
 }
 
 // bool bSuccess = OTDB::Store(strInbox, "inbox", "lkjsdf908w345ljkvd");
@@ -209,38 +209,73 @@ Storage * OTDB::CreateStorageContext(StorageType eStoreType, PackType ePackType,
 bool OTDB::Exists(std::string strFolder, std::string oneStr/*=""*/,  
 				  std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
 {
+	Storage * pStorage = OTDB::details::s_pStorage;
+
+	if (NULL == pStorage) 
+	{
+		return false;
+	}
 	
+	return pStorage->Exists(strFolder, oneStr, twoStr, threeStr);
 }
 
 // -----------------------------------------
 // Store/Retrieve a string.
 
-bool OTDB::Store(std::string strContents, std::string strFolder, std::string oneStr/*=""*/,  
-				 std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
+bool OTDB::StoreString(std::string strContents, std::string strFolder, std::string oneStr/*=""*/,  
+					   std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
 {
+	Storage * pStorage = OTDB::details::s_pStorage;
 	
+	if (NULL == pStorage) 
+	{
+		return false;
+	}
+	
+	return pStorage->StoreString(strContents, strFolder, oneStr, twoStr, threeStr);
 }
 
-std::string OTDB::Query(std::string strFolder, std::string oneStr/*=""*/,  std::string twoStr/*=""*/,  
-						std::string threeStr/*=""*/)
+std::string OTDB::QueryString(std::string strFolder, std::string oneStr/*=""*/,  std::string twoStr/*=""*/,  
+							  std::string threeStr/*=""*/)
 {
+	Storage * pStorage = OTDB::details::s_pStorage;
 	
+	if (NULL == pStorage) 
+	{
+		return std::string("");
+	}
+	
+	return pStorage->QueryString(strFolder, oneStr, twoStr, threeStr);
 }
 
 // -----------------------------------------
 // Store/Retrieve an object. (Storable.)
 
-bool OTDB::Store(Storable & theContents, std::string strFolder, std::string oneStr/*=""*/,  
-				 std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
+bool OTDB::StoreObject(Storable & theContents, std::string strFolder, std::string oneStr/*=""*/,  
+					   std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
 {
+	Storage * pStorage = OTDB::details::s_pStorage;
 	
+	if (NULL == pStorage) 
+	{
+		return false;
+	}
+	
+	return pStorage->StoreObject(theContents, strFolder, oneStr, twoStr, threeStr);
 }
 
 // Use %newobject OTDB::Storage::Query();
-Storable * OTDB::Query(std::string strFolder, std::string oneStr/*=""*/,  std::string twoStr/*=""*/,  
-					   std::string threeStr/*=""*/)
+Storable * OTDB::QueryObject(std::string strFolder, std::string oneStr/*=""*/,  std::string twoStr/*=""*/,  
+							 std::string threeStr/*=""*/)
 {
+	Storage * pStorage = OTDB::details::s_pStorage;
 	
+	if (NULL == pStorage) 
+	{
+		return NULL;
+	}
+	
+	return pStorage->QueryObject(strFolder, oneStr, twoStr, threeStr);
 }
 
 
@@ -581,14 +616,14 @@ bool OTDB::StorageFS::Exists(std::string strFolder, std::string oneStr/*=""*/,
 // -----------------------------------------
 // Store/Retrieve a string.
 
-bool OTDB::StorageFS::Store(std::string strContents, std::string strFolder, std::string oneStr/*=""*/,  
-							std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
+bool OTDB::StorageFS::StoreString(std::string strContents, std::string strFolder, std::string oneStr/*=""*/,  
+								  std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
 {
 	
 }
 
-std::string OTDB::StorageFS::Query(std::string strFolder, std::string oneStr/*=""*/,  
-								   std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
+std::string OTDB::StorageFS::QueryString(std::string strFolder, std::string oneStr/*=""*/,  
+										 std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
 {
 	
 }
@@ -596,15 +631,15 @@ std::string OTDB::StorageFS::Query(std::string strFolder, std::string oneStr/*="
 // -----------------------------------------
 // Store/Retrieve an object. (Storable.)
 
-bool OTDB::StorageFS::Store(Storable & theContents, std::string strFolder, std::string oneStr/*=""*/,  
-							std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
+bool OTDB::StorageFS::StoreObject(Storable & theContents, std::string strFolder, std::string oneStr/*=""*/,  
+								  std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
 {
 	
 }
 
 // Use %newobject OTDB::Storage::Query();
-Storable * OTDB::StorageFS::Query(std::string strFolder, std::string oneStr/*=""*/,  
-								  std::string twoStr/*=""*/, std::string threeStr/*=""*/)
+Storable * OTDB::StorageFS::QueryObject(std::string strFolder, std::string oneStr/*=""*/,  
+										std::string twoStr/*=""*/, std::string threeStr/*=""*/)
 {
 	
 }
