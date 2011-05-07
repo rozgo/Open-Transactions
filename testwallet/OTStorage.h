@@ -73,6 +73,27 @@ public:
 	
 	// -------------------------------------
 	
+	typedef Storable * (InstantiateFunc)();
+	typedef std::pair<PackType, StoredObjectType> InstantiateFuncKey;
+	
+	typedef std::map<InstantiateFuncKey, InstantiateFunc*> mapOfFunctions;
+
+	mapOfFunctions mapInstantiation;
+	
+	//This will go in C++ file in an Init section:
+#if defined (OTDB_MESSAGE_PACK)
+	mapInstantiation[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_BITCOIN_ACCT)]	= &BitcoinAcctMsgpack::Instantiate;
+	mapInstantiation[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_BITCOIN_SERVER)]	= &BitcoinAcctMsgpack::Instantiate; // FIX THIS LINE! (should create server but none exists yet)
+#endif
+	
+#if defined (OTDB_PROTOCOL_BUFFERS)
+	mapInstantiation[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_BITCOIN_ACCT)]	= &BitcoinAcctPB::Instantiate;
+	mapInstantiation[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_BITCOIN_SERVER)]	= &BitcoinAcctPB::Instantiate; // FIX THIS LINE! (should create server but none exists yet)
+#endif
+		
+	
+	
+	
 	// abstract base class for object types being serialized.
 	class Storable
 	{
@@ -84,9 +105,16 @@ public:
 	public:
 		virtual ~Storable() {}
 
-		static Storable * Create(StoredObjectType eType, Storage & theStorage)
+		static Storable * Create(StoredObjectType eType, Packer & thePacker)
 		{
 			Storable * pStorable = NULL;
+			
+			InstantiateFuncKey theKey(thePacker.GetType(), eType);
+			
+			mapOfFunctions::iterator ii = mapInstantiation.find(theKey);
+			
+			if (mapInstantiation.end() == ii)
+				return NULL;
 			
 			switch (eType) 
 			{
@@ -105,9 +133,12 @@ public:
 	// ----------------------------------------------------------
 	
 	
+#if defined (OTDB_MESSAGE_PACK)
 	class PackerMsgpack;
+#endif
+#if defined (OTDB_PROTOCOL_BUFFERS)
 	class PackerPB;
-	
+#endif
 	
 	// abstract base class for packer
 	class Packer 
@@ -124,15 +155,35 @@ public:
 			
 			switch (ePackType) 
 			{
+#if defined (OTDB_MESSAGE_PACK)
 				case PACK_MESSAGE_PACK:
 					pPacker = new PackerMsgpack; OT_ASSERT(NULL != pPacker); break;
+#endif  
+#if defined (OTDB_PROTOCOL_BUFFERS)
 				case PACK_PROTOCOL_BUFFERS:
 					pPacker = new PackerPB; OT_ASSERT(NULL != pPacker); break;
+#endif
 				default:
 					break;
 			}
 			
 			return pPacker; // May return NULL...
+		}
+		
+		PackType GetType() const
+		{
+			if (0)
+			{}
+#if defined (OTDB_MESSAGE_PACK)
+			else if (typeid(*this) == typeid(PackerMsgpack))
+				return PACK_MESSAGE_PACK;
+#endif
+#if defined (OTDB_PROTOCOL_BUFFERS)
+			else if (typeid(*this) == typeid(PackerPB))
+				return PACK_PROTOCOL_BUFFERS;
+#endif
+			else
+				return PACK_TYPE_ERROR; 
 		}
 		
 		virtual Pack(const Storable& inObj)	= NULL;
@@ -213,9 +264,16 @@ public:
 		virtual bool Store();
 		virtual bool Query();
 		
-		Storable * Create(StoredObjectType eType) // Factory
+		Storable * CreateObject(StoredObjectType eType) // Factory
 		{
+			Packer * pPacker = GetPacker();
 			
+			if (NULL == pPacker)
+				return NULL;
+			
+			Storable * pStorable = Storable::Create(eType, *pPacker);
+			
+			return pStorable; // May return NULL.
 		}
 		
 		// --------------------------
@@ -318,7 +376,12 @@ public:
 		BitcoinAcct() : Storable() : bitcoin_address(""), bitcoin_name(""), gui_label("") { }
 		
 	public:
-		static BitcoinAcct * Create() { return new BitcoinAcctMsgpack; }
+		static BitcoinAcct * Create(Packer & thePacker) 
+		{
+			
+			return new BitcoinAcctMsgpack; 
+		}
+		
 #if defined(OTDB_PROTOCOL_BUFFERS)
 		static BitcoinAcct * Create() { return new BitcoinAcctPB; }
 #endif
@@ -341,6 +404,8 @@ public:
 		BitcoinAcctMsgpack() : BitcoinAcct() { }
 		virtual ~BitcoinAcctMsgpack() { }
 		
+		static Storable * Instantiate() { return new BitcoinAcctMsgpack(); }
+		
 		MSGPACK_DEFINE(bitcoin_address, bitcoin_name, gui_label); // <===== Using MessagePack
 	};
 #endif
@@ -353,6 +418,8 @@ public:
 	public:
 		BitcoinAcctPB() : BitcoinAcct() { }
 		virtual ~BitcoinAcctPB() { }
+		
+		static Storable * Instantiate() { return new BitcoinAcctPB(); }
 	};
 #endif
 
