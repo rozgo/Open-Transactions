@@ -33,6 +33,14 @@
 namespace OTDB
 {
 public:
+	class InitOTDBDetails // Constructor for the namespace.
+	{
+	public:
+		InitOTDBDetails(); 
+		~InitOTDBDetails();
+	};
+
+	// ---------------------------------------------------
 	// Currently supporting MsgPack and Protocol Buffers.  
 	// 
 	enum PackType
@@ -61,7 +69,7 @@ public:
 		STORED_OBJ_ERROR				// (Should never be.)
 	};
 	
-	// -------------------------------------
+	// ********************************************************************
 	
 	
 	// abstract base classes.
@@ -70,31 +78,20 @@ public:
 	class Packer;
 	class Storage;		
 
+	// Namespace types and members
 	
-	// -------------------------------------
+	typedef Storable * (InstantiateFunc)(); // Each storable has one of these as a static method.
+	typedef std::pair<PackType, StoredObjectType> InstantiateFuncKey; // Those methods are stored as function pointers here,
+																	// indexed by Pack Type and Stored Object Type.
+	typedef std::map<InstantiateFuncKey, InstantiateFunc*> mapOfFunctions; //...basically implementing my own vtable, eh?
 	
-	typedef Storable * (InstantiateFunc)();
-	typedef std::pair<PackType, StoredObjectType> InstantiateFuncKey;
-	
-	typedef std::map<InstantiateFuncKey, InstantiateFunc*> mapOfFunctions;
-
-	mapOfFunctions mapInstantiation;
-	
-	//This will go in C++ file in an Init section:
-#if defined (OTDB_MESSAGE_PACK)
-	mapInstantiation[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_BITCOIN_ACCT)]	= &BitcoinAcctMsgpack::Instantiate;
-	mapInstantiation[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_BITCOIN_SERVER)]	= &BitcoinAcctMsgpack::Instantiate; // FIX THIS LINE! (should create server but none exists yet)
-#endif
-	
-#if defined (OTDB_PROTOCOL_BUFFERS)
-	mapInstantiation[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_BITCOIN_ACCT)]	= &BitcoinAcctPB::Instantiate;
-	mapInstantiation[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_BITCOIN_SERVER)]	= &BitcoinAcctPB::Instantiate; // FIX THIS LINE! (should create server but none exists yet)
-#endif
-		
+	mapOfFunctions * pFunctionMap;
 	
 	
+	// ********************************************************************
 	
-	// abstract base class for object types being serialized.
+	// abstract base class for OT object types being serialized.
+	
 	class Storable
 	{
 		friend class Storage; // for instantiation of storable objects.
@@ -105,33 +102,50 @@ public:
 	public:
 		virtual ~Storable() {}
 
-		static Storable * Create(StoredObjectType eType, Packer & thePacker)
-		{
-			Storable * pStorable = NULL;
-			
-			InstantiateFuncKey theKey(thePacker.GetType(), eType);
-			
-			mapOfFunctions::iterator ii = mapInstantiation.find(theKey);
-			
-			if (mapInstantiation.end() == ii)
-				return NULL;
-			
-			switch (eType) 
-			{
-				case STORED_OBJ_BITCOIN_ACCT:
-					pStorable = new BitcoinAcct; OT_ASSERT(NULL != pStorable); break;
-				case STORED_OBJ_BITCOIN_SERVER:
-					pStorable = new BitcoinServer; OT_ASSERT(NULL != pStorable); break;
-				default:
-					break;
-			}
-			
-			return pStorable; // May return NULL...
-		}
+		// %ignore spam(unsigned short); API users don't need this function, it's for internal purposes.
+		static Storable * Create(StoredObjectType eType, Packer & thePacker);
 	}
 	
-	// ----------------------------------------------------------
 	
+	// ********************************************************************
+	
+	
+	// %ignore these classes
+	
+	class PackedBuffer 
+	{
+	protected:
+		PackedBuffer();
+	public:
+		virtual ~PackedBuffer();
+	};
+	
+	// ---------------------------------
+#if defined (OTDB_MESSAGE_PACK)
+	class BufferMsgpack : public PackedBuffer
+	{
+		friend class PackerMsgpack;
+		
+		msgpack::sbuffer m_buffer;
+		
+	public:
+		BufferMsgpack() : PackedBuffer() {}
+		virtual ~BufferMsgpack(); 
+	};
+#endif
+	
+#if defined (OTDB_PROTOCOL_BUFFERS)
+	class BufferPB : public PackedBuffer
+	{
+		friend class PackerPB;
+		
+	public:
+		BufferPB() : PackedBuffer() {}
+		virtual ~BufferPB(); 
+	};
+#endif
+	// ---------------------------------
+
 	
 #if defined (OTDB_MESSAGE_PACK)
 	class PackerMsgpack;
@@ -140,6 +154,9 @@ public:
 	class PackerPB;
 #endif
 	
+	// ---------------------------------
+
+	// %ignore spam(unsigned short);
 	// abstract base class for packer
 	class Packer 
 	{
@@ -149,74 +166,57 @@ public:
 	public:
 		virtual ~Packer() {}
 		
-		static Packer * Create(PackType ePackType) // Factory.
-		{
-			Packer * pPacker = NULL;
-			
-			switch (ePackType) 
-			{
-#if defined (OTDB_MESSAGE_PACK)
-				case PACK_MESSAGE_PACK:
-					pPacker = new PackerMsgpack; OT_ASSERT(NULL != pPacker); break;
-#endif  
-#if defined (OTDB_PROTOCOL_BUFFERS)
-				case PACK_PROTOCOL_BUFFERS:
-					pPacker = new PackerPB; OT_ASSERT(NULL != pPacker); break;
-#endif
-				default:
-					break;
-			}
-			
-			return pPacker; // May return NULL...
-		}
+		static Packer * Create(PackType ePackType); // Factory.
 		
-		PackType GetType() const
-		{
-			if (0)
-			{}
-#if defined (OTDB_MESSAGE_PACK)
-			else if (typeid(*this) == typeid(PackerMsgpack))
-				return PACK_MESSAGE_PACK;
-#endif
-#if defined (OTDB_PROTOCOL_BUFFERS)
-			else if (typeid(*this) == typeid(PackerPB))
-				return PACK_PROTOCOL_BUFFERS;
-#endif
-			else
-				return PACK_TYPE_ERROR; 
-		}
+		PackType GetType() const;
 		
-		virtual Pack(const Storable& inObj)	= NULL;
-		virtual Unpack(Storable& outObj)	= NULL;
+		virtual PackedBuffer * CreateBuffer()=NULL;
+		
+		virtual PackedBuffer *	Pack(Storable& inObj)=NULL;
+		virtual bool			Unpack(PackedBuffer& inBuf, Storable& outObj)=NULL;
 	};
 	
 	// ---------------
 	// Msgpack packer.
 	
+#if defined (OTDB_MESSAGE_PACK)
+	// %ignore spam(unsigned short);
 	class PackerMsgpack : public Packer 
 	{
 	public:
 		PackerMsgpack() : Packer() {}
 		virtual ~PackerMsgpack() {}
 		//------------------------
-		virtual Pack(const Storable& inObj);
-		virtual Unpack(Storable& outObj);
+		
+		virtual PackedBuffer * CreateBuffer() { return new BufferMsgpack; }
+
+		virtual PackedBuffer *	Pack(Storable& inObj);
+		virtual bool			Unpack(PackedBuffer& inBuf, Storable& outObj);
 	};
+#endif
 	
 	// ---------------
 	// Protocol Buffers packer.
 	
+#if defined (OTDB_PROTOCOL_BUFFERS)
+	// %ignore spam(unsigned short);
 	class PackerPB : public Packer 
 	{
 	public:
 		PackerPB() : Packer() {}
 		virtual ~PackerPB() {}
 		//------------------------
-		virtual Pack(const Storable& inObj);
-		virtual Unpack(Storable& outObj);
+		
+		virtual PackedBuffer * CreateBuffer() { return new BufferPB; }
+		
+		virtual PackedBuffer *	Pack(Storable& inObj);
+		virtual bool			Unpack(PackedBuffer& inBuf, Storable& outObj);
 	};
+#endif
 	
-	// ----------------------------------------------------------
+	
+	// ********************************************************************
+	
 	
 	class StorageFS;	// storage is filesystem
 						// More coming soon...
@@ -232,25 +232,8 @@ public:
 
 		// Use this to access the Packer, throughout duration of this Storage object.
 		// If it doesn't exist yet, this function will create it on the first call. (The 
-		// parameter allows you the choose what type will be created, other than default.
-		// You probably won't use it. But if you do, you'll only call it once per instance
-		// of OTDB::Storage.)
-		Packer * GetPacker(PackType ePackType=OTDB_DEFAULT_PACKER) 
-		{
-			// Normally if you use Create(), the packer is created at that time.
-			// However, in the future, coders using the API may create subclasses of
-			// Storage through SWIG, which Create could not anticipate. This mechanism
-			// makes sure that in those cases, the packer still gets set (on the first
-			// Get() call), and the coder using the API still has the ability to choose
-			// what type of packer will be used.
-			//
-			if (NULL == m_pPacker)
-			{
-				m_pPacker = Packer::Create(ePackType);
-			}
-			
-			return m_pPacker; // May return NULL.
-		}
+		// parameter allows you the choose what type will be created, other than default.)
+		Packer * GetPacker(PackType ePackType=OTDB_DEFAULT_PACKER);
 
 		// This is called once, in the factory.
 		void SetPacker(Packer & thePacker) { OT_ASSERT(NULL == m_pPacker); m_pPacker =  &thePacker; }
@@ -261,86 +244,91 @@ public:
 		virtual bool Init(std::string oneStr="", std::string twoStr="", std::string threeStr="", 
 						  std::string fourStr="", std::string fiveStr="", std::string sixStr="")=NULL;
 		
-		virtual bool Store();
-		virtual bool Query();
+		// -----------------------------------------
+		// See if the file is there.
+		virtual bool Exists(std::string strFolder, 
+							std::string oneStr="", std::string twoStr="", std::string threeStr="")=NULL;
+
+		// -----------------------------------------
+		// Store/Retrieve a string.
 		
-		Storable * CreateObject(StoredObjectType eType) // Factory
-		{
-			Packer * pPacker = GetPacker();
-			
-			if (NULL == pPacker)
-				return NULL;
-			
-			Storable * pStorable = Storable::Create(eType, *pPacker);
-			
-			return pStorable; // May return NULL.
-		}
+		virtual bool Store(std::string strContents, std::string strFolder, 
+						   std::string oneStr="", std::string twoStr="", std::string threeStr="")=NULL;
+		
+		virtual std::string Query(std::string strFolder, std::string oneStr="",
+								  std::string twoStr="", std::string threeStr="")=NULL;
+				
+		// -----------------------------------------
+		// Store/Retrieve an object. (Storable.)
+		
+		virtual bool Store(Storable & theContents, std::string strFolder, 
+						   std::string oneStr="", std::string twoStr="", std::string threeStr="")=NULL;
+		
+		// Use %newobject OTDB::Storage::Query();
+		virtual Storable * Query(std::string strFolder, std::string oneStr="",
+								 std::string twoStr="", std::string threeStr="")=NULL;
+		
+		// --------------------------
+		// Note:
+		// Make sure to use: %newobject Factory::createObj();  IN OTAPI.i file!
+		//
+		// That way, Java garbage cleanup will handle object after this.
+		// (Instead of leaking because it thinks C++ will clean it up.)
+		//
+		// Factory for Storable objects.   %newobject Factory::createObj();
+		Storable * CreateObject(StoredObjectType eType);
 		
 		// --------------------------
 		
-		static Storage * Create(StorageType eStorageType, PackType ePackType) // FACTORY
-		{ 
-			Storage * pStore = NULL;
-			
-			switch (eStorageType) 
-			{
-				case STORE_FILESYSTEM:
-					pStore = new StorageFS; OT_ASSERT(NULL != pStore); break;
-//				case STORE_COUCH_DB:
-//					pStore = new StorageCouchDB; OT_ASSERT(NULL != pStore); break;
-				default:
-					break;
-			}
-			
-			if (NULL != pStore)
-			{
-				Packer * pPacker = Packer::Create(ePackType);
-				
-				if (NULL == pPacker)
-				{
-					// For whatever reason, we failed. Memory issues or whatever.
-					delete pStore;
-					return NULL;
-				}
-				
-				// Now they're married.
-				pStore->SetPacker(*pPacker);
-			}
-				
-			return pStore; // Possible to return NULL.
-		}
+		// Factory for Storage itself.  %ignore this in OTAPI.i  (It's accessed through 
+		// a namespace-level function.)
+		//
+		static Storage * Create(StorageType eStorageType, PackType ePackType); // FACTORY
 		
-		StorageType GetType() const
-		{
-			if (typeid(*this) == typeid(StorageFS))
-				return STORE_FILESYSTEM;
-//			else if (typeid(*this) == typeid(StorageCouchDB))
-//				return STORE_COUCH_DB;
-			else
-				return STORE_TYPE_SUBCLASS; // The Java coder using API must have subclassed Storage himself.
-		}
-		
-	}
+		StorageType GetType() const;
+	};
+	
+	// -----------------
 	
 	// Uses the filesystem for storage.
 	class StorageFS : public Storage 
 	{
 	public:
-		StorageFS() : Storage() {}
-		virtual ~StorageFS() {}
-		//------------------------
+		StorageFS();
+		virtual ~StorageFS();
+		
 		virtual bool Init(std::string oneStr="", std::string twoStr="", std::string threeStr="", 
 						  std::string fourStr="", std::string fiveStr="", std::string sixStr="");
 		
-		virtual bool Store();
-		virtual bool Query();
+		// -----------------------------------------
+		// See if the file is there.
+		virtual bool Exists(std::string strFolder, 
+							std::string oneStr="", std::string twoStr="", std::string threeStr="");
 		
+		// -----------------------------------------
+		// Store/Retrieve a string.
+		
+		virtual bool Store(std::string strContents, std::string strFolder, 
+						   std::string oneStr="", std::string twoStr="", std::string threeStr="");
+		
+		virtual std::string Query(std::string strFolder, std::string oneStr="",
+								  std::string twoStr="", std::string threeStr="");
+		
+		// -----------------------------------------
+		// Store/Retrieve an object. (Storable.)
+		
+		virtual bool Store(Storable & theContents, std::string strFolder, 
+						   std::string oneStr="", std::string twoStr="", std::string threeStr="");
+		
+		// Use %newobject OTDB::Storage::Query();
+		virtual Storable * Query(std::string strFolder, std::string oneStr="",
+								 std::string twoStr="", std::string threeStr="");		
 	};
 
 	// Other subclasses may go here, for storing in SQL lite,
 	// or couchDB, mongoDB, distributed DB, etc...
 	
-	// ---------------------------------------------------------------------------
+	// ********************************************************************
 	
 	// this details naming is a common C++ idiom for "private" in a namespace.
 	namespace details 
@@ -348,26 +336,53 @@ public:
 		Storage * s_pStorage;
 	}
 	
-	// Default Storage instance:
-	Storage * GetDefaultStorage()
-	{
-		return details::s_pStorage;
-	}
-	
-	bool Store();
-	bool Query();
 	
 	bool InitDefaultStorage(StorageType eStoreType, PackType ePackType,
 							std::string oneStr="", std::string twoStr="", std::string threeStr="", 
 							std::string fourStr="", std::string fiveStr="", std::string sixStr="");
-
-	// ---------------------------------------------------------------------------
+	
+	// Default Storage instance:
+	Storage * GetDefaultStorage() { return details::s_pStorage; }
+	
+	// %newobject Factory::createObj();
+	Storage * CreateStorageContext(StorageType eStoreType, PackType ePackType,
+								   std::string oneStr="", std::string twoStr="", std::string threeStr="", 
+								   std::string fourStr="", std::string fiveStr="", std::string sixStr="");
+	
+	// bool bSuccess = OTDB::Store(strInbox, "inbox", "lkjsdf908w345ljkvd");
+	// bool bSuccess = OTDB::Store(strMint,  "mints", SERVER_ID, ASSET_ID);
+	// bool bSuccess = OTDB::Store(strPurse, "purse", SERVER_ID, USER_ID, ASSET_ID);
+	
+	// BELOW FUNCTIONS use the DEFAULT Storage context.
+	
+	// -----------------------------------------
+	// See if the file is there.
+	bool Exists(std::string strFolder, 
+				std::string oneStr="", std::string twoStr="", std::string threeStr="");
+	
+	// -----------------------------------------
+	// Store/Retrieve a string.
+	
+	bool Store(std::string strContents, std::string strFolder, 
+			   std::string oneStr="", std::string twoStr="", std::string threeStr="");
+	
+	std::string Query(std::string strFolder, std::string oneStr="",
+					  std::string twoStr="", std::string threeStr="");
+	
+	// -----------------------------------------
+	// Store/Retrieve an object. (Storable.)
+	
+	bool Store(Storable & theContents, std::string strFolder, 
+			   std::string oneStr="", std::string twoStr="", std::string threeStr="");
+	
+	// Use %newobject OTDB::Storage::Query();
+	Storable * Query(std::string strFolder, std::string oneStr="",
+					 std::string twoStr="", std::string threeStr="");		
+	
+	// ********************************************************************
 	
 	// Serialized types...
-	
-	class BitcoinAcctMsgpack;
-	class BitcoinAcctPB;
-	
+		
 	class BitcoinAcct : public Storable
 	{
 		// You never actually get an instance of this, only its subclasses.
@@ -376,15 +391,6 @@ public:
 		BitcoinAcct() : Storable() : bitcoin_address(""), bitcoin_name(""), gui_label("") { }
 		
 	public:
-		static BitcoinAcct * Create(Packer & thePacker) 
-		{
-			
-			return new BitcoinAcctMsgpack; 
-		}
-		
-#if defined(OTDB_PROTOCOL_BUFFERS)
-		static BitcoinAcct * Create() { return new BitcoinAcctPB; }
-#endif
 		virtual ~BitcoinAcct() { }
 		
 		std::string bitcoin_address;
@@ -395,17 +401,17 @@ public:
 	
 	// -----------------------------------------
 	
-	// Serialized objects are separate in implementation based on how they are packed.
+	// Serialized objects are separate in implementation, based on how they are packed.
 	
 #if defined (OTDB_MESSAGE_PACK)
 	class BitcoinAcctMsgpack : public BitcoinAcct
 	{
-	public:
+	protected:
 		BitcoinAcctMsgpack() : BitcoinAcct() { }
-		virtual ~BitcoinAcctMsgpack() { }
-		
+	public:
 		static Storable * Instantiate() { return new BitcoinAcctMsgpack(); }
-		
+		virtual ~BitcoinAcctMsgpack() { }
+				
 		MSGPACK_DEFINE(bitcoin_address, bitcoin_name, gui_label); // <===== Using MessagePack
 	};
 #endif
@@ -414,12 +420,12 @@ public:
 	class BitcoinAcctPB : public BitcoinAcct 
 	{
 		BitcoinAcct_InternalPB pb_obj; // <========== Using Google's "Protocol Buffers"
-		
-	public:
+
+	protected:
 		BitcoinAcctPB() : BitcoinAcct() { }
-		virtual ~BitcoinAcctPB() { }
-		
+	public:
 		static Storable * Instantiate() { return new BitcoinAcctPB(); }
+		virtual ~BitcoinAcctPB() { }
 	};
 #endif
 
