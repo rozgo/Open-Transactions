@@ -144,6 +144,7 @@ OTDB::InitOTDBDetails::InitOTDBDetails() // Constructor for namespace
 #endif
 	
 #if defined (OTDB_PROTOCOL_BUFFERS)
+	GOOGLE_PROTOBUF_VERIFY_VERSION; 
 	OTDB::theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_BITCOIN_ACCT)]	= &BitcoinAcctPB::Instantiate;
 	OTDB::theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_BITCOIN_SERVER)]	= &BitcoinAcctPB::Instantiate; // FIX THIS LINE! (should create server but none exists yet)
 #endif
@@ -157,6 +158,12 @@ OTDB::InitOTDBDetails::~InitOTDBDetails() // Destructor for namespace
 	delete OTDB::pFunctionMap;
 	
 	OTDB::pFunctionMap = NULL;
+	
+	// ------------------------------------------
+	
+#if defined (OTDB_PROTOCOL_BUFFERS)
+	google::protobuf::ShutdownProtobufLibrary();
+#endif
 }
 
 // ********************************************************************
@@ -350,8 +357,8 @@ Storable * OTDB::Storable:Create(StoredObjectType eType, Packer & thePacker)
 // ********************************************************************
 
 
-
-Packer * OTDB::Packer::Create(PackType ePackType) // Factory.
+// static. Packer Factory.
+Packer * OTDB::Packer::Create(PackType ePackType)
 {
 	Packer * pPacker = NULL;
 	
@@ -365,6 +372,7 @@ Packer * OTDB::Packer::Create(PackType ePackType) // Factory.
 		case PACK_PROTOCOL_BUFFERS:
 			pPacker = new PackerPB; OT_ASSERT(NULL != pPacker); break;
 #endif
+		case PACK_TYPE_ERROR:
 		default:
 			break;
 	}
@@ -388,14 +396,125 @@ PackType OTDB::Packer::GetType() const
 	else
 		return PACK_TYPE_ERROR; 
 }
+
+
+// Basically, ALL of the Storables have to implement the IStorable interface 
+// (or one of its subclasses).  They can override hookBeforePack(), and they
+// can override onPack(). Those two methods will be where all the action is,
+// for each subclass of Packer.
+//
+PackedBuffer * OTDB::Packer::Pack(Storable& inObj)
+{
+	IStorable * pStorable = dynamic_cast<IStorable *> (&inObj);
 	
+	if (NULL == pStorable)
+		return NULL;
+	
+	// --------------------------------
+	
+	PackedBuffer * pBuffer = CreateBuffer();
+	OT_ASSERT(NULL != pBuffer);
+	
+	// Must delete pBuffer, or return it, below this point.
+	
+	// -------------------------------------
+	
+	pStorable->hookBeforePack(); // Give the subclass a chance to prepare its data for packing...
+	
+	// I ended up using polymorphic templates, but not in this func. This line
+	// (commented out) shows how the line below it would have looked otherwise.
+	//	if (false == makeTStorable(*pStorable).pack(*pBuffer))
+	
+	if (false == pStorable->onPack(*pBuffer))
+	{
+		delete pBuffer;
+		return NULL;
+	}
+	
+	return pBuffer;
+}
+
+// Similar to Pack, above.
+// Unpack takes the contents of the PackedBuffer and unpacks them into
+// the Storable. ASSUMES that the PackedBuffer is the right type for
+// the Packer, usually because the Packer is the one who instantiated
+// it.  Also assumes that the Storable's actual object type is the
+// appropriate one for the data that is sitting in that buffer.
+//
+bool OTDB::Packer::Unpack(PackedBuffer& inBuf, Storable& outObj)
+{
+	IStorable * pStorable = dynamic_cast<IStorable *> (&outObj);
+	
+	if (NULL == pStorable)
+		return false;
+	
+	// --------------------------------
+	// pStorable is the OUTPUT OBJECT.
+	// If we're unable to unpack the contents of inBuf
+	// into pStorable, return false.
+	//
+	if (false == pStorable->onUnpack(inBuf))
+	{
+		return false;
+	}
+	
+	// ---------------------------
+	
+	pStorable->hookAfterUnpack(); // Give the subclass a chance to settle its data after unpacking...
+	
+	return true;	
+}
+
+// --------------------------------------------------------------------------
 
 
 
 
-// ---------------
+
+
+
+// ---------------------------------------------
 // Msgpack packer.
 #if defined (OTDB_MESSAGE_PACK)
+
+bool OTDB::IStorableMsgpack::onPack(PackedBuffer& theBuffer)  // buffer is OUTPUT.
+{
+	// check here to make sure theBuffer is the right TYPE.
+	BufferMsgpack * pBuffer = dynamic_cast<BufferMsgpack *> (&theBuffer);
+	
+	if (NULL == pBuffer) // Buffer is wrong type!!
+		return false;
+	
+	
+	msgpack::pack(pBuffer->m_buffer, inObj);
+	
+	
+	if (false == getPBMessage().SerializeToString(&(pBuffer->m_strBuffer)))
+		return false;
+	
+	return true;
+}
+
+bool OTDB::IStorableMsgpack::onUnpack(PackedBuffer& theBuffer, Storable& outObj) // buffer is INPUT, Storable is OUTPUT.
+{
+	// check here to make sure theBuffer is the right TYPE.
+	BufferMsgpack * pBuffer = dynamic_cast<BufferMsgpack *> (&theBuffer);
+	
+	if (NULL == pBuffer) // Buffer is wrong type!!
+		return false;
+	
+	
+	
+	
+	
+	
+	if (false == getPBMessage().ParseFromString(pBuffer->m_strBuffer))
+		return false;
+	
+	return true;
+}
+
+// ---------------------------------------------
 
 // caller is responsible to delete.
 PackedBuffer * OTDB::PackerMsgpack::Pack(Storable& inObj)
@@ -408,12 +527,12 @@ PackedBuffer * OTDB::PackerMsgpack::Pack(Storable& inObj)
 		msgpack::pack(sbuf, m);
 	 }
 	 */
-	
+
 	BufferMsgpack * pBuffer = CreateBuffer();
 	OT_ASSERT(NULL != pBuffer);
-	
+
 	// Must delete pBuffer, or return it, below this point.
-	
+
 	msgpack::pack(pBuffer->m_buffer, inObj);
 
 	return pBuffer;
@@ -465,26 +584,219 @@ bool OTDB::PackerMsgpack::Unpack(PackedBuffer& inBuf, Storable& outObj)
 	return false;
 }
 
-#endif
+#endif  // defined (OTDB_MESSAGE_PACK)
+// -------------------------------------------
+
+
+
+
+
 // ---------------
 
+/* Protocol Buffers notes.
+ 
+ // optional string bitcoin_id = 1;
+ inline bool has_bitcoin_id() const;
+ inline void clear_bitcoin_id();
+ static const int kBitcoinIdFieldNumber = 1;
+ inline const ::std::string& bitcoin_id() const;
+ inline void set_bitcoin_id(const ::std::string& value);
+ inline void set_bitcoin_id(const char* value);
+ inline void set_bitcoin_id(const char* value, size_t size);
+ inline ::std::string* mutable_bitcoin_id();
+ inline ::std::string* release_bitcoin_id();
+ 
+ // optional string bitcoin_name = 2;
+ inline bool has_bitcoin_name() const;
+ inline void clear_bitcoin_name();
+ static const int kBitcoinNameFieldNumber = 2;
+ inline const ::std::string& bitcoin_name() const;
+ inline void set_bitcoin_name(const ::std::string& value);
+ inline void set_bitcoin_name(const char* value);
+ inline void set_bitcoin_name(const char* value, size_t size);
+ inline ::std::string* mutable_bitcoin_name();
+ inline ::std::string* release_bitcoin_name();
+ 
+ // optional string gui_label = 3;
+ inline bool has_gui_label() const;
+ inline void clear_gui_label();
+ static const int kGuiLabelFieldNumber = 3;
+ inline const ::std::string& gui_label() const;
+ inline void set_gui_label(const ::std::string& value);
+ inline void set_gui_label(const char* value);
+ inline void set_gui_label(const char* value, size_t size);
+ inline ::std::string* mutable_gui_label();
+ inline ::std::string* release_gui_label(); 
+ */
+/*
+ bool SerializeToString(string* output) const; serializes the message and stores the bytes in the given string. 
+				(Note that the bytes are binary, not text; we only use the string class as a convenient container.)
+ bool ParseFromString(const string& data); parses a message from the given string.
+ 
+ bool SerializeToOstream(ostream* output) const; writes the message to the given C++ ostream.
+ bool ParseFromIstream(istream* input); parses a message from the given C++ istream.
+ */
 
-// ---------------------------
+// This is a case for template polymorphism.
+// See this article:  http://accu.org/index.php/articles/471
+//
+/*
+template <class T>	// TStorable...
+class TStorable		// a "template subclass" of Storable. This is like a version of java
+{					// interfaces, which C++ normally implements via pure virtual base classes
+	T const & t;	// and multiple inheritance. But in this case, I need to have a consistent
+public:				// interface across disparate classes (in various circumstances including
+	TStorable(T const & obj) : t(obj) { }	// here with protocol buffers) and template interfaces
+	bool pack(PackedBuffer& theBuffer)	// allow me to do that even with classes in a different hierarchy.
+	{ return t.onPack(theBuffer); }			
+};
+
+template <class T> 
+TStorable<T> makeTStorable( T& obj )
+{
+	return TStorable<T>( obj ); 
+}
+*/
+
+/* // Specialization:
+ template<>
+ void TStorable<BigBenClock>::talk() 
+ {
+	t.playBongs(); 
+ }
+ 
+ // Passing and returning as parameter:
+ 
+ template <class T> 
+ void makeItTalk( TStorable<T> t )
+ { 
+	t.talk(); 
+ }
+ 
+ template <class T> 
+ TStorable<T> makeTalkative( T& obj )
+ {
+	return TStorable<T>( obj ); 
+ }
+ */
+
+// Why have IStorablePB::onPack? What is this all about?
+//
+// Because normally, packing is done by Packer. I have a packer subclass for
+// the protocol buffers library, but notice that I don't have a packer for EVERY
+// SINGLE STORABLE OT OBJECT, for the protocol buffers library. So when Packer::Pack() 
+// is called, the subclass being activated is PackerPB, not PackerForBitcoinAccountOnPB.
+// 
+// With MsgPack, that would be the end of it, since the MsgPack Storables all derive from
+// the same base class (due to the msgPack define) and a single call handles all of them.
+// But with Protocol Buffers (and probably with custom objects, which are coming next), EACH
+// PB-Storable has to wrap an instance of the PB-derived serializable object generated by
+// protoc. Each instance thus has a PB member of a slightly different type, and there is no
+// common base class between them that will give me a reference to that member, without
+// overriding some virtual function IN ALL OF THE PB-SERIALIZABLE OBJECTS so that each can
+// individually pass back the reference to its unique PB-derived member.
+//
+// Even if there were, LET US REMEMBER that all of the various Storables (instantiated for
+// various specific packers), such as BitcoinAcctPB for example, are supposed to be derived
+// from a data class such as BitcoinAcct. That way, BitcoinAcct can focus on the data itself,
+// regardless of packer type, and OT can deal with its data in a pure way, meanwhile the
+// actual object used can be one of 5 different subclasses of that, depending on which 
+// packer was employed. All of those subclasses (for protocol buffers, for msgpack, for json,
+// etc) must be derived from the data class, BitcoinAcct. 
+// 
+// Remember, if ALL of the protocol-buffers wrapper classes, such as BitcoinAcctPB,
+// BitcoinServerPB, LoomAcctPB, LoomServerPB, etc, are all derived from some StorablePB object,
+// so they can all share a virtual function and thereby return a reference to their internally-
+// wrapped object, then how are all of those classes supposed to ALSO be derived from their
+// DATA classes, such as BitcoinAcct, BitcoinServer, LoomAcct, LoomServer, etc??
+//
+// The answer is multiple inheritance. Or INTERFACES, to be more specific. I have implemented
+// Java-style interfaces as well as polymorphism-by-template to resolve these issues.
+//
+// The Storable (parameter to Pack) is actually the object that somehow has to
+// override--or implement--the actual packing. Only it really knows. Therefore I have decided
+// to add an INTERFACE, which is OPTIONAL, which makes it possible to hook and override the
+// packing/unpacking, but such that things are otherwise handled in a broad stroke, without
+// having to override EVERY LITTLE THING to accomplish it.
+//
+// Storables, as I said, will all be derived from their respective data objects, no matter
+// which packer is being employed. When packing one, the framework will check to see if IStorable
+// is present. It it is, then the framework will use it instead of continuing with the normal
+// Pack procedure. It will also call the hook (first) so values can be copied where appropriate,
+// before the actual packing occurs, or after (for unpacking.)
+//
+// This means, first, that few of the storables will ever actually have to override Pack() or
+// Unpack(), as long as they override onPack() as necessary. AND, when onPack() IS overridden,
+// it will be able to handle many different objects (via the Interface, templates, etc), instead
+// of each having to provide a separate Pack() implementation for EVERY SINGLE PB object. For
+// example, the IStorablePB interface handles ALL of the PB objects, without ANY of them having
+// to override some special pack function.
+//
+// It WOULD have been possible to add this interface to Storable itself. Functions such as 
+// Pack(), Unpack(), hookBeforePack(), onPack(), etc could have been added there and then passed
+// down to all the subclasses. But that is not as elegant, for these reasons:
+// 1) Remember that BitcoinAcct is purely data-oriented, and is not a packing-related class.
+//    (though its subclasses are.) So the members would be out of context, except for some lame
+//    explanation that the subclasses use them for other purposes unrelated to this class.
+// 2) EVERY SINGLE class would be forced to provide its own implementation of those functions,
+//    since a common base class for groups of them is already discounted, since they are derived
+//    from their data classes, not their packer classes.
+//
+//
+//
+//
+
+// --------------------------------------------
 // Protocol Buffers packer.
 #if defined (OTDB_PROTOCOL_BUFFERS)
 
-PackedBuffer * OTDB::PackerPB::Pack(Storable& inObj)
+//	if (false == makeTStorable(*pStorable).pack(*pBuffer))
+::google::protobuf::Message	&	OTDB::IStorablePB::getPBMessage() 
 {
-	
+	return makeTStorablePB(*this).getPBMessage();
 }
 
-bool OTDB::PackerPB::Unpack(PackedBuffer& inBuf, Storable& outObj)
+bool OTDB::IStorablePB::onPack(PackedBuffer& theBuffer)  // buffer is OUTPUT.
 {
+	// check here to make sure theBuffer is the right TYPE.
+	BufferPB * pBuffer = dynamic_cast<BufferPB *> (&theBuffer);
 	
+	if (NULL == pBuffer) // Buffer is wrong type!!
+		return false;
+	
+	if (false == getPBMessage().SerializeToString(&(pBuffer->m_strBuffer)))
+		return false;
+	
+	return true;
 }
 
+bool OTDB::IStorablePB::onUnpack(PackedBuffer& theBuffer, Storable& outObj) // buffer is INPUT.
+{
+	// check here to make sure theBuffer is the right TYPE.
+	BufferPB * pBuffer = dynamic_cast<BufferPB *> (&theBuffer);
+	
+	if (NULL == pBuffer) // Buffer is wrong type!!
+		return false;
+	
+	// bool ParseFromString(const string& data); parses a message from the given string.
+
+	if (false == getPBMessage().ParseFromString(pBuffer->m_strBuffer))
+		return false;
+	
+	return true;
+}
+
+
+// ADD THE HOOK HERE FOR "AFTER UNPACK" <=====  TODO
+// Actually... this might have to be in the individual subclasses...
+// (For protocol buffers anyway, though I think I can come up with a #define for this...)
+// At least that's now possible :-)
 #endif
 // ----------------------------------------
+
+
+
+
 
 
 

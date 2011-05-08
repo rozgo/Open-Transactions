@@ -25,10 +25,87 @@
 #include "BitcoinAcct.pb.h"
 #endif
 
+#if defined (OTDB_JSON_PACKING)
+//#include "JSON - LIBRARY . h"
+#endif
+
 
 #define OTDB_DEFAULT_PACKER		PACK_MESSAGE_PACK
 
 
+// ----------------------------------------------------
+// I'm doing some crazy stuff in this file.
+// What you see below is a set of preprocessor definitions that
+// allow me to use "Java-Style Interfaces" here in C++.
+//
+// Elsewhere in OTStorage, I am also using "template polymorphism".
+// It turns out that Storable needed a normal class hierarchy, AND Java-
+// style interfaces, AND template polymorphism, to do everything I wanted
+// it to do!
+//
+// I will probably create a more general-purpose header file for OT
+// and these sorts of #defines will probably end up there long-term.
+// Much of OT might be separable out into a more general-purpose utility
+// lib, which I will get to whenever it is more important than anything else.
+//
+#define Interface class
+
+#define DeclareInterface(name) Interface name { \
+public: \
+virtual ~name() {}
+
+#define DeclareBasedInterface(name, base) class name : public base { \
+public: \
+virtual ~name() {}
+
+#define EndInterface };
+
+#define implements public
+
+// ----------------------------------------------------
+
+
+/* 
+// Then you can declare a class that implements this interface with something like:
+ 
+ // Foo.h
+ // 
+ 
+ #include "BasicFoo.h"
+ 
+ #include "IBar.h"
+ 
+ 
+ class Foo : public BasicFoo, implements IBar
+ {
+	// Construction & Destruction
+ 
+ public:
+	Foo(int x) : BasicFoo(x)
+	{
+	}
+ 
+	~Foo();
+ 
+	// IBar implementation
+ 
+ public:
+	virtual int GetBarData() const
+	{
+	// stuff...
+ 
+	}
+ 
+	virtual void SetBarData(int nData)
+	{
+		// stuff...
+ 
+	}
+ };
+ 
+ */
+
+// ----------------------------------------------------
 
 namespace OTDB
 {
@@ -78,6 +155,8 @@ public:
 	class Packer;
 	class Storage;		
 
+	class PackedBuffer;
+
 	// Namespace types and members
 	
 	typedef Storable * (InstantiateFunc)(); // Each storable has one of these as a static method.
@@ -104,7 +183,90 @@ public:
 
 		// %ignore spam(unsigned short); API users don't need this function, it's for internal purposes.
 		static Storable * Create(StoredObjectType eType, Packer & thePacker);
+		
 	}
+	
+	/*
+	 #if defined(OTDB_PROTOCOL_BUFFERS)
+	 class BitcoinAcctPB : public BitcoinAcct, implements IStorablePB
+	 {
+		BitcoinAcct_InternalPB __pb_obj; // <========== Using Google's "Protocol Buffers"
+	 
+	 protected:
+		BitcoinAcctPB() : BitcoinAcct() { }
+	 public:
+		static Storable * Instantiate() { return new BitcoinAcctPB(); }
+		virtual ~BitcoinAcctPB() { }
+	 };
+	 #endif	 
+	 */
+	
+	 
+	// ----------------------------------------------------
+
+	// IStorable INTERFACE
+	//
+	// 
+	//
+	DeclareInterface(IStorable)
+		virtual bool onPack(PackedBuffer& theBuffer) = NULL; // buffer is output, *this is input.
+		virtual bool onUnpack(PackedBuffer& theBuffer, Storable& outObj) = NULL; // buffer is input, outObj is output.
+		// ------------------------------------------
+		virtual void hookBeforePack() {} // This is called just before packing. (Opportunity to copy values...)
+		virtual void hookAfterUnpack() {} // This is called just after unpacking. (Opportunity to copy values...)
+	EndInterface
+	
+	
+	
+// ----------------------------------------------------
+#if defined (OTDB_MESSAGE_PACK)
+	DeclareBasedInterface(IStorableMsgpack, IStorable)
+		virtual bool onPack(PackedBuffer& theBuffer);
+		virtual bool onUnpack(PackedBuffer& theBuffer, Storable& outObj);
+	EndInterface	
+#endif
+// ----------------------------------------------------
+
+	
+	
+	
+// ----------------------------------------------------
+#if defined (OTDB_PROTOCOL_BUFFERS)
+	template <class T>	
+	class TStorablePB	
+	{					
+		T const & t;	
+	public:				
+		TStorablePB(T const & obj) : t(obj) { }
+		
+		::google::protobuf::Message & getPBMessage()
+		{ return t.__pb_obj; }			
+	};
+	
+	// -------------------
+	
+	template <class T> 
+	TStorablePB<T> makeTStorablePB( T& obj )
+	{
+		return TStorablePB<T>( obj ); 
+	}
+
+	// *********************
+	
+	DeclareBasedInterface(IStorablePB, IStorable)
+		template<class T> friend class TStorablePB; 
+		::google::protobuf::Message & getPBMessage();
+		// ------------------------------------------
+		virtual bool onPack(PackedBuffer& theBuffer);
+		virtual bool onUnpack(PackedBuffer& theBuffer, Storable& outObj);
+		// ------------------------------------------
+		virtual void hookBeforePack() {} // This is called just before packing. (Opportunity to copy values...)
+		virtual void hookAfterUnpack() {} // This is called just after unpacking. (Opportunity to copy values...)
+	EndInterface
+	
+#endif
+// ----------------------------------------------------
+	
 	
 	
 	// ********************************************************************
@@ -125,7 +287,8 @@ public:
 	class BufferMsgpack : public PackedBuffer
 	{
 		friend class PackerMsgpack;
-		
+		friend class IStorableMsgpack;
+
 		msgpack::sbuffer m_buffer;
 		
 	public:
@@ -138,6 +301,10 @@ public:
 	class BufferPB : public PackedBuffer
 	{
 		friend class PackerPB;
+		friend class IStorablePB;
+		
+		// Google's protocol buffers serializes to std::strings and streams. How conveeeeeenient. 
+		std::string m_strBuffer; 
 		
 	public:
 		BufferPB() : PackedBuffer() {}
@@ -161,7 +328,7 @@ public:
 	class Packer 
 	{
 	protected:
-		Packer() {}
+		Packer() { }
 
 	public:
 		virtual ~Packer() {}
@@ -172,8 +339,8 @@ public:
 		
 		virtual PackedBuffer * CreateBuffer()=NULL;
 		
-		virtual PackedBuffer *	Pack(Storable& inObj)=NULL;
-		virtual bool			Unpack(PackedBuffer& inBuf, Storable& outObj)=NULL;
+		virtual PackedBuffer *	Pack(Storable& inObj);
+		virtual bool			Unpack(PackedBuffer& inBuf, Storable& outObj);
 	};
 	
 	// ---------------
@@ -203,7 +370,7 @@ public:
 	class PackerPB : public Packer 
 	{
 	public:
-		PackerPB() : Packer() {}
+		PackerPB() : Packer() { }
 		virtual ~PackerPB() {}
 		//------------------------
 		
@@ -230,9 +397,15 @@ public:
 	protected:
 		Storage() : m_pPacker(NULL) {}
 
-		// Use this to access the Packer, throughout duration of this Storage object.
+		// Use GetPacker() to access the Packer, throughout duration of this Storage object.
 		// If it doesn't exist yet, this function will create it on the first call. (The 
 		// parameter allows you the choose what type will be created, other than default.)
+		// This way, whenever using an OT Storage, you KNOW the packer is always the right
+		// one, and that you don't have to fiddle with it at all. You can also therefore use
+		// it for creating instances of various Storables and PackedBuffers, and knowing
+		// that the right types will be instantiated, with the buffer being the appropriate
+		// subclass for the packer.
+		//
 		Packer * GetPacker(PackType ePackType=OTDB_DEFAULT_PACKER);
 
 		// This is called once, in the factory.
@@ -402,7 +575,7 @@ public:
 	// Serialized objects are separate in implementation, based on how they are packed.
 	
 #if defined (OTDB_MESSAGE_PACK)
-	class BitcoinAcctMsgpack : public BitcoinAcct
+	class BitcoinAcctMsgpack : public BitcoinAcct, implements IStorableMsgpack
 	{
 	protected:
 		BitcoinAcctMsgpack() : BitcoinAcct() { }
@@ -414,10 +587,11 @@ public:
 	};
 #endif
 
+	
 #if defined(OTDB_PROTOCOL_BUFFERS)
-	class BitcoinAcctPB : public BitcoinAcct 
-	{
-		BitcoinAcct_InternalPB pb_obj; // <========== Using Google's "Protocol Buffers"
+	class BitcoinAcctPB : public BitcoinAcct, implements IStorablePB
+	{		
+		BitcoinAcct_InternalPB __pb_obj; // <========== Using Google's "Protocol Buffers"
 
 	protected:
 		BitcoinAcctPB() : BitcoinAcct() { }
