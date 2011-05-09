@@ -453,7 +453,7 @@ bool OTDB::Packer::Unpack(PackedBuffer& inBuf, Storable& outObj)
 	// If we're unable to unpack the contents of inBuf
 	// into pStorable, return false.
 	//
-	if (false == pStorable->onUnpack(inBuf))
+	if (false == pStorable->onUnpack(inBuf, outObj))
 	{
 		return false;
 	}
@@ -751,10 +751,10 @@ TStorable<T> makeTStorable( T& obj )
 #if defined (OTDB_PROTOCOL_BUFFERS)
 
 //	if (false == makeTStorable(*pStorable).pack(*pBuffer))
-::google::protobuf::Message	&	OTDB::IStorablePB::getPBMessage() 
-{
-	return makeTStorablePB(*this).getPBMessage();
-}
+//::google::protobuf::Message	&	OTDB::IStorablePB::getPBMessage() 
+//{
+//	return makeTStorablePB(*this).getPBMessage();
+//}
 
 bool OTDB::IStorablePB::onPack(PackedBuffer& theBuffer)  // buffer is OUTPUT.
 {

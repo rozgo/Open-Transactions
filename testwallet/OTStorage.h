@@ -255,13 +255,10 @@ public:
 	
 	DeclareBasedInterface(IStorablePB, IStorable)
 		template<class T> friend class TStorablePB; 
-		::google::protobuf::Message & getPBMessage();
+		::google::protobuf::Message & getPBMessage()=NULL;
 		// ------------------------------------------
 		virtual bool onPack(PackedBuffer& theBuffer);
 		virtual bool onUnpack(PackedBuffer& theBuffer, Storable& outObj);
-		// ------------------------------------------
-		virtual void hookBeforePack() {} // This is called just before packing. (Opportunity to copy values...)
-		virtual void hookAfterUnpack() {} // This is called just after unpacking. (Opportunity to copy values...)
 	EndInterface
 	
 #endif
@@ -570,36 +567,67 @@ public:
 	};
 
 	
-	// -----------------------------------------
+// -----------------------------------------
+#if defined (OTDB_MESSAGE_PACK)
 	
 	// Serialized objects are separate in implementation, based on how they are packed.
 	
-#if defined (OTDB_MESSAGE_PACK)
-	class BitcoinAcctMsgpack : public BitcoinAcct, implements IStorableMsgpack
-	{
-	protected:
-		BitcoinAcctMsgpack() : BitcoinAcct() { }
-	public:
-		static Storable * Instantiate() { return new BitcoinAcctMsgpack(); }
-		virtual ~BitcoinAcctMsgpack() { }
-				
-		MSGPACK_DEFINE(bitcoin_address, bitcoin_name, gui_label); // <===== Using MessagePack
-	};
+	// Don't use a semicolon after the first macro. (BEGIN.)
+	// DO put a semicolon after the END macro.
+#define OT_MSGPACK_BEGIN(theType, theParentType) \
+class theType : public theParentType, implements IStorableMsgpack \
+{		\
+protected: \
+	theType() : theParentType() { } \
+public: \
+	static Storable * Instantiate() { return dynamic_cast<Storable *>(new theType()); } \
+	virtual ~ ## theType() { }
+//	MSGPACK_DEFINE(bitcoin_address, bitcoin_name, gui_label);
+#define OT_MSGPACK_END    }
+//-----------------------------------------------
+// Don't use a semicolon after the first macro. (BEGIN.)
+// DO put a semicolon after the END macro.
+
+OT_MSGPACK_BEGIN(BitcoinAcctMsgpack, BitcoinAcct)
+	MSGPACK_DEFINE(bitcoin_address, bitcoin_name, gui_label);
+OT_MSGPACK_END;
+
 #endif
+//-----------------------------------------------
 
 	
+	
+// --------------------------------------------------------------
 #if defined(OTDB_PROTOCOL_BUFFERS)
-	class BitcoinAcctPB : public BitcoinAcct, implements IStorablePB
-	{		
-		BitcoinAcct_InternalPB __pb_obj; // <========== Using Google's "Protocol Buffers"
-
-	protected:
-		BitcoinAcctPB() : BitcoinAcct() { }
-	public:
-		static Storable * Instantiate() { return new BitcoinAcctPB(); }
-		virtual ~BitcoinAcctPB() { }
-	};
+	/*
+DeclareBasedInterface(IStorablePB, IStorable)
+	 template<class T> friend class TStorablePB; 
+	 ::google::protobuf::Message & getPBMessage()=NULL;
+	 // ------------------------------------------
+	 virtual bool onPack(PackedBuffer& theBuffer);
+	 virtual bool onUnpack(PackedBuffer& theBuffer, Storable& outObj);
+EndInterface
+	 */
+#define OT_PROTOBUF_DECLARE(theType, theParentType, theInternalType) \
+class theType : public theParentType, implements IStorablePB \
+{		\
+private: \
+	theInternalType __pb_obj; \
+protected: \
+	theType() : theParentType() { } \
+public: \
+	::google::protobuf::Message & getPBMessage() { return __pb_obj; } \
+	static Storable * Instantiate() { return dynamic_cast<Storable *>(new theType()); } \
+	virtual ~ ## theType() { } \
+	virtual void hookBeforePack(); \
+	virtual void hookAfterUnpack(); \
+}
+//------------------------
+	
+	OT_PROTOBUF_DECLARE(BitcoinAcctPB, BitcoinAcct, BitcoinAcct_InternalPB);
+	
 #endif
+//-----------------------------------------------
 
 }
 
