@@ -735,5 +735,227 @@ OT_API_ConnectServer = _otapi.OT_API_ConnectServer
 def OT_API_ProcessSockets():
   return _otapi.OT_API_ProcessSockets()
 OT_API_ProcessSockets = _otapi.OT_API_ProcessSockets
+class Storable(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Storable, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Storable, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_Storable
+    __del__ = lambda self : None;
+    __swig_getmethods__["Create"] = lambda x: _otapi.Storable_Create
+    if _newclass:Create = staticmethod(_otapi.Storable_Create)
+Storable_swigregister = _otapi.Storable_swigregister
+Storable_swigregister(Storable)
+
+def Storable_Create(*args):
+  return _otapi.Storable_Create(*args)
+Storable_Create = _otapi.Storable_Create
+
+class Storage(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Storage, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Storage, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined - class is abstract")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_Storage
+    __del__ = lambda self : None;
+    def Init(self, oneStr = "", twoStr = "", threeStr = "", fourStr = "", 
+    fiveStr = "", sixStr = ""): return _otapi.Storage_Init(self, oneStr, twoStr, threeStr, fourStr, fiveStr, sixStr)
+    def Exists(self, *args): return _otapi.Storage_Exists(self, *args)
+    def StoreString(self, *args): return _otapi.Storage_StoreString(self, *args)
+    def QueryString(self, *args): return _otapi.Storage_QueryString(self, *args)
+    def StoreObject(self, *args): return _otapi.Storage_StoreObject(self, *args)
+    def QueryObject(self, *args): return _otapi.Storage_QueryObject(self, *args)
+    def CreateObject(self, *args): return _otapi.Storage_CreateObject(self, *args)
+    __swig_getmethods__["Create"] = lambda x: _otapi.Storage_Create
+    if _newclass:Create = staticmethod(_otapi.Storage_Create)
+    def GetType(self): return _otapi.Storage_GetType(self)
+Storage_swigregister = _otapi.Storage_swigregister
+Storage_swigregister(Storage)
+
+def Storage_Create(*args):
+  return _otapi.Storage_Create(*args)
+Storage_Create = _otapi.Storage_Create
+
+
+def GetDefaultStorage():
+  return _otapi.GetDefaultStorage()
+GetDefaultStorage = _otapi.GetDefaultStorage
+
+def CreateObject(*args):
+  return _otapi.CreateObject(*args)
+CreateObject = _otapi.CreateObject
+class StringMap(Storable):
+    __swig_setmethods__ = {}
+    for _s in [Storable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, StringMap, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Storable]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, StringMap, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_StringMap
+    __del__ = lambda self : None;
+    __swig_setmethods__["the_map"] = _otapi.StringMap_the_map_set
+    __swig_getmethods__["the_map"] = _otapi.StringMap_the_map_get
+    if _newclass:the_map = _swig_property(_otapi.StringMap_the_map_get, _otapi.StringMap_the_map_set)
+    def SetValue(self, *args): return _otapi.StringMap_SetValue(self, *args)
+    def GetValue(self, *args): return _otapi.StringMap_GetValue(self, *args)
+StringMap_swigregister = _otapi.StringMap_swigregister
+StringMap_swigregister(StringMap)
+
+def InitDefaultStorage(*args):
+  return _otapi.InitDefaultStorage(*args)
+InitDefaultStorage = _otapi.InitDefaultStorage
+
+def CreateStorageContext(*args):
+  return _otapi.CreateStorageContext(*args)
+CreateStorageContext = _otapi.CreateStorageContext
+
+def Exists(*args):
+  return _otapi.Exists(*args)
+Exists = _otapi.Exists
+
+def StoreString(*args):
+  return _otapi.StoreString(*args)
+StoreString = _otapi.StoreString
+
+def QueryString(*args):
+  return _otapi.QueryString(*args)
+QueryString = _otapi.QueryString
+
+def StoreObject(*args):
+  return _otapi.StoreObject(*args)
+StoreObject = _otapi.StoreObject
+
+def QueryObject(*args):
+  return _otapi.QueryObject(*args)
+QueryObject = _otapi.QueryObject
+
+class Displayable(Storable):
+    __swig_setmethods__ = {}
+    for _s in [Storable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Displayable, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Storable]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, Displayable, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_Displayable
+    __del__ = lambda self : None;
+    __swig_setmethods__["gui_label"] = _otapi.Displayable_gui_label_set
+    __swig_getmethods__["gui_label"] = _otapi.Displayable_gui_label_get
+    if _newclass:gui_label = _swig_property(_otapi.Displayable_gui_label_get, _otapi.Displayable_gui_label_set)
+Displayable_swigregister = _otapi.Displayable_swigregister
+Displayable_swigregister(Displayable)
+
+class Acct(Displayable):
+    __swig_setmethods__ = {}
+    for _s in [Displayable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Acct, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Displayable]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, Acct, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_Acct
+    __del__ = lambda self : None;
+    __swig_setmethods__["acct_id"] = _otapi.Acct_acct_id_set
+    __swig_getmethods__["acct_id"] = _otapi.Acct_acct_id_get
+    if _newclass:acct_id = _swig_property(_otapi.Acct_acct_id_get, _otapi.Acct_acct_id_set)
+    __swig_setmethods__["server_id"] = _otapi.Acct_server_id_set
+    __swig_getmethods__["server_id"] = _otapi.Acct_server_id_get
+    if _newclass:server_id = _swig_property(_otapi.Acct_server_id_get, _otapi.Acct_server_id_set)
+Acct_swigregister = _otapi.Acct_swigregister
+Acct_swigregister(Acct)
+
+class BitcoinAcct(Acct):
+    __swig_setmethods__ = {}
+    for _s in [Acct]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, BitcoinAcct, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Acct]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, BitcoinAcct, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_BitcoinAcct
+    __del__ = lambda self : None;
+    __swig_setmethods__["bitcoin_acct_name"] = _otapi.BitcoinAcct_bitcoin_acct_name_set
+    __swig_getmethods__["bitcoin_acct_name"] = _otapi.BitcoinAcct_bitcoin_acct_name_get
+    if _newclass:bitcoin_acct_name = _swig_property(_otapi.BitcoinAcct_bitcoin_acct_name_get, _otapi.BitcoinAcct_bitcoin_acct_name_set)
+BitcoinAcct_swigregister = _otapi.BitcoinAcct_swigregister
+BitcoinAcct_swigregister(BitcoinAcct)
+
+class Server(Displayable):
+    __swig_setmethods__ = {}
+    for _s in [Displayable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Server, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Displayable]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, Server, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_Server
+    __del__ = lambda self : None;
+    __swig_setmethods__["server_id"] = _otapi.Server_server_id_set
+    __swig_getmethods__["server_id"] = _otapi.Server_server_id_get
+    if _newclass:server_id = _swig_property(_otapi.Server_server_id_get, _otapi.Server_server_id_set)
+    __swig_setmethods__["server_type"] = _otapi.Server_server_type_set
+    __swig_getmethods__["server_type"] = _otapi.Server_server_type_get
+    if _newclass:server_type = _swig_property(_otapi.Server_server_type_get, _otapi.Server_server_type_set)
+    __swig_setmethods__["server_host"] = _otapi.Server_server_host_set
+    __swig_getmethods__["server_host"] = _otapi.Server_server_host_get
+    if _newclass:server_host = _swig_property(_otapi.Server_server_host_get, _otapi.Server_server_host_set)
+    __swig_setmethods__["server_port"] = _otapi.Server_server_port_set
+    __swig_getmethods__["server_port"] = _otapi.Server_server_port_get
+    if _newclass:server_port = _swig_property(_otapi.Server_server_port_get, _otapi.Server_server_port_set)
+Server_swigregister = _otapi.Server_swigregister
+Server_swigregister(Server)
+
+class BitcoinServer(Server):
+    __swig_setmethods__ = {}
+    for _s in [Server]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, BitcoinServer, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Server]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, BitcoinServer, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_BitcoinServer
+    __del__ = lambda self : None;
+    __swig_setmethods__["bitcoin_username"] = _otapi.BitcoinServer_bitcoin_username_set
+    __swig_getmethods__["bitcoin_username"] = _otapi.BitcoinServer_bitcoin_username_get
+    if _newclass:bitcoin_username = _swig_property(_otapi.BitcoinServer_bitcoin_username_get, _otapi.BitcoinServer_bitcoin_username_set)
+    __swig_setmethods__["bitcoin_password"] = _otapi.BitcoinServer_bitcoin_password_set
+    __swig_getmethods__["bitcoin_password"] = _otapi.BitcoinServer_bitcoin_password_get
+    if _newclass:bitcoin_password = _swig_property(_otapi.BitcoinServer_bitcoin_password_get, _otapi.BitcoinServer_bitcoin_password_set)
+BitcoinServer_swigregister = _otapi.BitcoinServer_swigregister
+BitcoinServer_swigregister(BitcoinServer)
+
+class WalletData(Storable):
+    __swig_setmethods__ = {}
+    for _s in [Storable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, WalletData, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Storable]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, WalletData, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_WalletData
+    __del__ = lambda self : None;
+    def GetBitcoinServerCount(self): return _otapi.WalletData_GetBitcoinServerCount(self)
+    def GetBitcoinServer(self, *args): return _otapi.WalletData_GetBitcoinServer(self, *args)
+    def RemoveBitcoinServer(self, *args): return _otapi.WalletData_RemoveBitcoinServer(self, *args)
+    def AddBitcoinServer(self, *args): return _otapi.WalletData_AddBitcoinServer(self, *args)
+    def GetBitcoinAcctCount(self): return _otapi.WalletData_GetBitcoinAcctCount(self)
+    def GetBitcoinAcct(self, *args): return _otapi.WalletData_GetBitcoinAcct(self, *args)
+    def RemoveBitcoinAcct(self, *args): return _otapi.WalletData_RemoveBitcoinAcct(self, *args)
+    def AddBitcoinAcct(self, *args): return _otapi.WalletData_AddBitcoinAcct(self, *args)
+WalletData_swigregister = _otapi.WalletData_swigregister
+WalletData_swigregister(WalletData)
+
 
 

@@ -193,6 +193,16 @@ java:
 	$(EXTRA_RPC_TARGETS1)
 	$(EXTRA_RPC_TARGETS2)
 
+csharp:
+	cd xmlrpcpp && $(OT_MAKE) $(DYNAMIC_FLAG)
+	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) $(DYNAMIC_FLAG)
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=csharp clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=csharp
+	$(EXTRA_RPC_TARGETS1)
+	$(EXTRA_RPC_TARGETS2)
+
 ruby:
 	cd xmlrpcpp && $(OT_MAKE) $(DYNAMIC_FLAG)
 	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) $(DYNAMIC_FLAG)
@@ -266,10 +276,4 @@ clean:
 	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc clean
 	$(EXTRA_CLEAN_TARGETS1)
 	$(EXTRA_CLEAN_TARGETS2)
-	
 
-
-
-
-
- 

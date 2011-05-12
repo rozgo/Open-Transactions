@@ -755,4 +755,197 @@ public class otapi {
     return ret;
   }
 
+  public static bool InitDefaultStorage(SWIGTYPE_p_StorageType eStoreType, SWIGTYPE_p_PackType ePackType, string oneStr, string twoStr, string threeStr, string fourStr, string fiveStr, string sixStr) {
+    bool ret = otapiPINVOKE.InitDefaultStorage__SWIG_0(SWIGTYPE_p_StorageType.getCPtr(eStoreType), SWIGTYPE_p_PackType.getCPtr(ePackType), oneStr, twoStr, threeStr, fourStr, fiveStr, sixStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool InitDefaultStorage(SWIGTYPE_p_StorageType eStoreType, SWIGTYPE_p_PackType ePackType, string oneStr, string twoStr, string threeStr, string fourStr, string fiveStr) {
+    bool ret = otapiPINVOKE.InitDefaultStorage__SWIG_1(SWIGTYPE_p_StorageType.getCPtr(eStoreType), SWIGTYPE_p_PackType.getCPtr(ePackType), oneStr, twoStr, threeStr, fourStr, fiveStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool InitDefaultStorage(SWIGTYPE_p_StorageType eStoreType, SWIGTYPE_p_PackType ePackType, string oneStr, string twoStr, string threeStr, string fourStr) {
+    bool ret = otapiPINVOKE.InitDefaultStorage__SWIG_2(SWIGTYPE_p_StorageType.getCPtr(eStoreType), SWIGTYPE_p_PackType.getCPtr(ePackType), oneStr, twoStr, threeStr, fourStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool InitDefaultStorage(SWIGTYPE_p_StorageType eStoreType, SWIGTYPE_p_PackType ePackType, string oneStr, string twoStr, string threeStr) {
+    bool ret = otapiPINVOKE.InitDefaultStorage__SWIG_3(SWIGTYPE_p_StorageType.getCPtr(eStoreType), SWIGTYPE_p_PackType.getCPtr(ePackType), oneStr, twoStr, threeStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool InitDefaultStorage(SWIGTYPE_p_StorageType eStoreType, SWIGTYPE_p_PackType ePackType, string oneStr, string twoStr) {
+    bool ret = otapiPINVOKE.InitDefaultStorage__SWIG_4(SWIGTYPE_p_StorageType.getCPtr(eStoreType), SWIGTYPE_p_PackType.getCPtr(ePackType), oneStr, twoStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool InitDefaultStorage(SWIGTYPE_p_StorageType eStoreType, SWIGTYPE_p_PackType ePackType, string oneStr) {
+    bool ret = otapiPINVOKE.InitDefaultStorage__SWIG_5(SWIGTYPE_p_StorageType.getCPtr(eStoreType), SWIGTYPE_p_PackType.getCPtr(ePackType), oneStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool InitDefaultStorage(SWIGTYPE_p_StorageType eStoreType, SWIGTYPE_p_PackType ePackType) {
+    bool ret = otapiPINVOKE.InitDefaultStorage__SWIG_6(SWIGTYPE_p_StorageType.getCPtr(eStoreType), SWIGTYPE_p_PackType.getCPtr(ePackType));
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static Storage GetDefaultStorage() {
+    IntPtr cPtr = otapiPINVOKE.GetDefaultStorage();
+    Storage ret = (cPtr == IntPtr.Zero) ? null : new Storage(cPtr, false);
+    return ret;
+  }
+
+  public static Storage CreateStorageContext(SWIGTYPE_p_StorageType eStoreType, SWIGTYPE_p_PackType ePackType) {
+    IntPtr cPtr = otapiPINVOKE.CreateStorageContext__SWIG_0(SWIGTYPE_p_StorageType.getCPtr(eStoreType), SWIGTYPE_p_PackType.getCPtr(ePackType));
+    Storage ret = (cPtr == IntPtr.Zero) ? null : new Storage(cPtr, true);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static Storage CreateStorageContext(SWIGTYPE_p_StorageType eStoreType) {
+    IntPtr cPtr = otapiPINVOKE.CreateStorageContext__SWIG_1(SWIGTYPE_p_StorageType.getCPtr(eStoreType));
+    Storage ret = (cPtr == IntPtr.Zero) ? null : new Storage(cPtr, true);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static Storable CreateObject(SWIGTYPE_p_StoredObjectType eType) {
+    IntPtr cPtr = otapiPINVOKE.CreateObject(SWIGTYPE_p_StoredObjectType.getCPtr(eType));
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, false);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool Exists(string strFolder, string oneStr, string twoStr, string threeStr) {
+    bool ret = otapiPINVOKE.Exists__SWIG_0(strFolder, oneStr, twoStr, threeStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool Exists(string strFolder, string oneStr, string twoStr) {
+    bool ret = otapiPINVOKE.Exists__SWIG_1(strFolder, oneStr, twoStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool Exists(string strFolder, string oneStr) {
+    bool ret = otapiPINVOKE.Exists__SWIG_2(strFolder, oneStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool Exists(string strFolder) {
+    bool ret = otapiPINVOKE.Exists__SWIG_3(strFolder);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool StoreString(string strContents, string strFolder, string oneStr, string twoStr, string threeStr) {
+    bool ret = otapiPINVOKE.StoreString__SWIG_0(strContents, strFolder, oneStr, twoStr, threeStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool StoreString(string strContents, string strFolder, string oneStr, string twoStr) {
+    bool ret = otapiPINVOKE.StoreString__SWIG_1(strContents, strFolder, oneStr, twoStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool StoreString(string strContents, string strFolder, string oneStr) {
+    bool ret = otapiPINVOKE.StoreString__SWIG_2(strContents, strFolder, oneStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool StoreString(string strContents, string strFolder) {
+    bool ret = otapiPINVOKE.StoreString__SWIG_3(strContents, strFolder);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static string QueryString(string strFolder, string oneStr, string twoStr, string threeStr) {
+    string ret = otapiPINVOKE.QueryString__SWIG_0(strFolder, oneStr, twoStr, threeStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static string QueryString(string strFolder, string oneStr, string twoStr) {
+    string ret = otapiPINVOKE.QueryString__SWIG_1(strFolder, oneStr, twoStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static string QueryString(string strFolder, string oneStr) {
+    string ret = otapiPINVOKE.QueryString__SWIG_2(strFolder, oneStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static string QueryString(string strFolder) {
+    string ret = otapiPINVOKE.QueryString__SWIG_3(strFolder);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool StoreObject(Storable theContents, string strFolder, string oneStr, string twoStr, string threeStr) {
+    bool ret = otapiPINVOKE.StoreObject__SWIG_0(Storable.getCPtr(theContents), strFolder, oneStr, twoStr, threeStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool StoreObject(Storable theContents, string strFolder, string oneStr, string twoStr) {
+    bool ret = otapiPINVOKE.StoreObject__SWIG_1(Storable.getCPtr(theContents), strFolder, oneStr, twoStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool StoreObject(Storable theContents, string strFolder, string oneStr) {
+    bool ret = otapiPINVOKE.StoreObject__SWIG_2(Storable.getCPtr(theContents), strFolder, oneStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool StoreObject(Storable theContents, string strFolder) {
+    bool ret = otapiPINVOKE.StoreObject__SWIG_3(Storable.getCPtr(theContents), strFolder);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static Storable QueryObject(SWIGTYPE_p_StoredObjectType theObjectType, string strFolder, string oneStr, string twoStr, string threeStr) {
+    IntPtr cPtr = otapiPINVOKE.QueryObject__SWIG_0(SWIGTYPE_p_StoredObjectType.getCPtr(theObjectType), strFolder, oneStr, twoStr, threeStr);
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static Storable QueryObject(SWIGTYPE_p_StoredObjectType theObjectType, string strFolder, string oneStr, string twoStr) {
+    IntPtr cPtr = otapiPINVOKE.QueryObject__SWIG_1(SWIGTYPE_p_StoredObjectType.getCPtr(theObjectType), strFolder, oneStr, twoStr);
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static Storable QueryObject(SWIGTYPE_p_StoredObjectType theObjectType, string strFolder, string oneStr) {
+    IntPtr cPtr = otapiPINVOKE.QueryObject__SWIG_2(SWIGTYPE_p_StoredObjectType.getCPtr(theObjectType), strFolder, oneStr);
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static Storable QueryObject(SWIGTYPE_p_StoredObjectType theObjectType, string strFolder) {
+    IntPtr cPtr = otapiPINVOKE.QueryObject__SWIG_3(SWIGTYPE_p_StoredObjectType.getCPtr(theObjectType), strFolder);
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
 }

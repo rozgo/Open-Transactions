@@ -203,6 +203,15 @@ package otapi;
 *OT_API_Message_GetNewAcctID = *otapic::OT_API_Message_GetNewAcctID;
 *OT_API_ConnectServer = *otapic::OT_API_ConnectServer;
 *OT_API_ProcessSockets = *otapic::OT_API_ProcessSockets;
+*InitDefaultStorage = *otapic::InitDefaultStorage;
+*GetDefaultStorage = *otapic::GetDefaultStorage;
+*CreateStorageContext = *otapic::CreateStorageContext;
+*CreateObject = *otapic::CreateObject;
+*Exists = *otapic::Exists;
+*StoreString = *otapic::StoreString;
+*QueryString = *otapic::QueryString;
+*StoreObject = *otapic::StoreObject;
+*QueryObject = *otapic::QueryObject;
 
 ############# Class : otapi::OTCallback ##############
 
@@ -273,6 +282,327 @@ sub DESTROY {
 *isCallbackSet = *otapic::OTCaller_isCallbackSet;
 *callOne = *otapic::OTCaller_callOne;
 *callTwo = *otapic::OTCaller_callTwo;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : otapi::Storable ##############
+
+package otapi::Storable;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_Storable($self);
+        delete $OWNER{$self};
+    }
+}
+
+*Create = *otapic::Storable_Create;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : otapi::Storage ##############
+
+package otapi::Storage;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_Storage($self);
+        delete $OWNER{$self};
+    }
+}
+
+*Init = *otapic::Storage_Init;
+*Exists = *otapic::Storage_Exists;
+*StoreString = *otapic::Storage_StoreString;
+*QueryString = *otapic::Storage_QueryString;
+*StoreObject = *otapic::Storage_StoreObject;
+*QueryObject = *otapic::Storage_QueryObject;
+*CreateObject = *otapic::Storage_CreateObject;
+*Create = *otapic::Storage_Create;
+*GetType = *otapic::Storage_GetType;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : otapi::StringMap ##############
+
+package otapi::StringMap;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi::Storable otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_StringMap($self);
+        delete $OWNER{$self};
+    }
+}
+
+*swig_the_map_get = *otapic::StringMap_the_map_get;
+*swig_the_map_set = *otapic::StringMap_the_map_set;
+*SetValue = *otapic::StringMap_SetValue;
+*GetValue = *otapic::StringMap_GetValue;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : otapi::Displayable ##############
+
+package otapi::Displayable;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi::Storable otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_Displayable($self);
+        delete $OWNER{$self};
+    }
+}
+
+*swig_gui_label_get = *otapic::Displayable_gui_label_get;
+*swig_gui_label_set = *otapic::Displayable_gui_label_set;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : otapi::Acct ##############
+
+package otapi::Acct;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi::Displayable otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_Acct($self);
+        delete $OWNER{$self};
+    }
+}
+
+*swig_acct_id_get = *otapic::Acct_acct_id_get;
+*swig_acct_id_set = *otapic::Acct_acct_id_set;
+*swig_server_id_get = *otapic::Acct_server_id_get;
+*swig_server_id_set = *otapic::Acct_server_id_set;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : otapi::BitcoinAcct ##############
+
+package otapi::BitcoinAcct;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi::Acct otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_BitcoinAcct($self);
+        delete $OWNER{$self};
+    }
+}
+
+*swig_bitcoin_acct_name_get = *otapic::BitcoinAcct_bitcoin_acct_name_get;
+*swig_bitcoin_acct_name_set = *otapic::BitcoinAcct_bitcoin_acct_name_set;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : otapi::Server ##############
+
+package otapi::Server;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi::Displayable otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_Server($self);
+        delete $OWNER{$self};
+    }
+}
+
+*swig_server_id_get = *otapic::Server_server_id_get;
+*swig_server_id_set = *otapic::Server_server_id_set;
+*swig_server_type_get = *otapic::Server_server_type_get;
+*swig_server_type_set = *otapic::Server_server_type_set;
+*swig_server_host_get = *otapic::Server_server_host_get;
+*swig_server_host_set = *otapic::Server_server_host_set;
+*swig_server_port_get = *otapic::Server_server_port_get;
+*swig_server_port_set = *otapic::Server_server_port_set;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : otapi::BitcoinServer ##############
+
+package otapi::BitcoinServer;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi::Server otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_BitcoinServer($self);
+        delete $OWNER{$self};
+    }
+}
+
+*swig_bitcoin_username_get = *otapic::BitcoinServer_bitcoin_username_get;
+*swig_bitcoin_username_set = *otapic::BitcoinServer_bitcoin_username_set;
+*swig_bitcoin_password_get = *otapic::BitcoinServer_bitcoin_password_get;
+*swig_bitcoin_password_set = *otapic::BitcoinServer_bitcoin_password_set;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : otapi::WalletData ##############
+
+package otapi::WalletData;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi::Storable otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_WalletData($self);
+        delete $OWNER{$self};
+    }
+}
+
+*GetBitcoinServerCount = *otapic::WalletData_GetBitcoinServerCount;
+*GetBitcoinServer = *otapic::WalletData_GetBitcoinServer;
+*RemoveBitcoinServer = *otapic::WalletData_RemoveBitcoinServer;
+*AddBitcoinServer = *otapic::WalletData_AddBitcoinServer;
+*GetBitcoinAcctCount = *otapic::WalletData_GetBitcoinAcctCount;
+*GetBitcoinAcct = *otapic::WalletData_GetBitcoinAcct;
+*RemoveBitcoinAcct = *otapic::WalletData_RemoveBitcoinAcct;
+*AddBitcoinAcct = *otapic::WalletData_AddBitcoinAcct;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);

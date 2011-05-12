@@ -48,7 +48,26 @@ THEREFORE, make sure you install OpenSSL to that folder, again: C:\~\OpenSSL-Win
 
 ...since that is where the project will assume that it can be found. If you prefer to install to the default location, be warned that you need to update the path in various project files in order for it to work.
 
-------------
+---------------------------------------------------------------
+
+INSTALL:  MsgPack Library (data packing library now used by OT.)
+
+Available here:  msgpack.org
+To install from command line:  port install msgpack
+(OR) brew install msgpack
+
+Install instructions for all platforms:
+http://wiki.msgpack.org/display/MSGPACK/QuickStart+for+C+Language
+
+---------------------------------------------------------------
+
+INSTALL: Google's Protocol Buffers library (another data packer.)
+
+Available here: 
+http://code.google.com/p/protobuf/downloads/list
+
+---------------------------------------------------------------
+
 
 4) Then I had to download these header files:
 http://code.google.com/p/msinttypes/downloads/detail?name=msinttypes-r26.zip&can=2&q=

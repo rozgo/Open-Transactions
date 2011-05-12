@@ -202,6 +202,7 @@ void OT_Sleep(int nMS);
 #include "OpenTransactions.h"
 #include "OTPaymentPlan.h"
 #include "OTLog.h"
+#include "OTStorage.h"
 
 // ---------------------------------------------------------------------------
 
@@ -362,13 +363,98 @@ int main(int argc, char* argv[])
 		}
 		else if (strLine.compare(0,4,"test") == 0)
 		{
-			OTString strtestID("LG4bi40PAw6vlkU5TXiphXqmEELf3k1gjMsKQVjw7SE");
-			
-			OTIdentifier theTestID(strtestID);
-			
-			OTString strBlahFoo(theTestID);
-			
-			OTLog::vOutput(0, "Input:  %s\nOutput: %s\n", strtestID.Get(), strBlahFoo.Get());
+			{
+				OTDB::Storage * pStorage = OTDB::CreateStorageContext(OTDB::STORE_FILESYSTEM, OTDB::PACK_MESSAGE_PACK);
+				OT_ASSERT(NULL!=pStorage);
+				
+				bool bSuccessInit  = pStorage->Init("/Users/Chris/Projects/Open-Transactions/testwallet/data_folder", "wallet.xml");
+				
+				if (bSuccessInit)
+				{
+					std::string strContents("JUST TESTING OUT THE NEW MessagePack CODE!!!!");
+					std::string strRetrieved("");
+					bool bSuccessStore = pStorage->StoreString(strContents, "temp", "msgpack.tst");
+					strRetrieved = pStorage->QueryString("temp", "msgpack.tst");
+					OTLog::vOutput(0, "Success Store:  %s\nQuery:  %s\n", 
+								   bSuccessStore ? "TRUE" : "FALSE", strRetrieved.c_str());
+					
+					// --------------------------------------------------
+					
+					OTDB::BitcoinAcct * pAcct = dynamic_cast<OTDB::BitcoinAcct *>(pStorage->CreateObject(OTDB::STORED_OBJ_BITCOIN_ACCT));
+					OT_ASSERT(NULL != pAcct);
+					
+					pAcct->acct_id		= "jkhsdf987345kjhf8lkjhwef987345";
+					pAcct->server_id		= "87345kjhdfs987sfwertwelkj340598t";
+					pAcct->bitcoin_acct_name	= "Read-Only Label (Bitcoin Internal acct)";
+					pAcct->gui_label			= "Editable Label (Moneychanger)";
+
+					bSuccessStore = pStorage->StoreObject(*pAcct, "temp", "msgpack-obj.tst");
+					
+					OTDB::BitcoinAcct * pAcct2 = 
+					dynamic_cast<OTDB::BitcoinAcct *>(pStorage->QueryObject(OTDB::STORED_OBJ_BITCOIN_ACCT,"temp", "msgpack-obj.tst"));
+					OTLog::vOutput(0, "Success Store:  %s\n Success Retrieved:  %s\n Address:  %s\n Name:  %s\n Label:  %s\n", 
+								   bSuccessStore ? "TRUE" : "FALSE", 
+								   (pAcct2 != NULL) ? "TRUE" : "FALSE", 
+								   (pAcct2 != NULL) ? pAcct->acct_id.c_str() : "FALSE", 
+								   (pAcct2 != NULL) ? pAcct->bitcoin_acct_name.c_str() : "FALSE", 
+								   (pAcct2 != NULL) ? pAcct->gui_label.c_str() : "FALSE");					
+				}
+				
+				delete pStorage;
+			}
+			{
+				OTDB::Storage * pStorage = OTDB::CreateStorageContext(OTDB::STORE_FILESYSTEM, OTDB::PACK_PROTOCOL_BUFFERS);
+				OT_ASSERT(NULL!=pStorage);
+				
+				bool bSuccessInit  = pStorage->Init("/Users/Chris/Projects/Open-Transactions/testwallet/data_folder", "wallet.xml");
+				
+				if (bSuccessInit)
+				{
+					std::string strContents("JUST TESTING OUT THE NEW Protobuf CODE!!!!");
+					std::string strRetrieved("");
+					bool bSuccessStore = pStorage->StoreString(strContents, "temp", "protobuf.tst");
+					strRetrieved = pStorage->QueryString("temp", "protobuf.tst");
+					OTLog::vOutput(0, "Success Store:  %s\nQuery:  %s\n", 
+								   bSuccessStore ? "TRUE" : "FALSE", strRetrieved.c_str());
+
+					// --------------------------------------------------
+					
+					OTDB::WalletData * pWallet = dynamic_cast<OTDB::WalletData *>(pStorage->CreateObject(OTDB::STORED_OBJ_WALLET_DATA));
+					OT_ASSERT(NULL != pWallet);
+					
+					// --------------------------------------------------
+					
+					OTDB::BitcoinAcct * pAcct = dynamic_cast<OTDB::BitcoinAcct *>(pStorage->CreateObject(OTDB::STORED_OBJ_BITCOIN_ACCT));
+					OT_ASSERT(NULL != pAcct);
+					
+					pAcct->acct_id		= "jkhsdf987345kjhf8lkjhwef987345";
+					pAcct->server_id		= "87345kjhdfs987sfwertwelkj340598t";
+					pAcct->bitcoin_acct_name	= "Read-Only Label (Bitcoin Internal acct)";
+					pAcct->gui_label			= "Editable Label (Moneychanger)";
+					
+					pWallet->AddBitcoinAcct(*pAcct);
+					
+					bSuccessStore = pStorage->StoreObject(*pWallet, "temp", "protobuf-obj.tst");
+					
+					// --------------------------
+					
+					OTDB::WalletData * pWallet2 = dynamic_cast<OTDB::WalletData *>(pStorage->QueryObject(OTDB::STORED_OBJ_WALLET_DATA, "temp", "protobuf-obj.tst"));
+					OT_ASSERT(NULL != pWallet2);					
+
+					OTDB::BitcoinAcct * pAcct2 = pWallet2->GetBitcoinAcct(0);
+					OT_ASSERT(NULL != pAcct2);
+
+					
+					OTLog::vOutput(0, "Storing WALLET, with a Bitcoin Acct INSIDE it:  %s\n Success Retrieved:  %s\n AcctID:  %s\n Name:  %s\n Label:  %s\n", 
+								   bSuccessStore ? "TRUE" : "FALSE", 
+								   (pAcct2 != NULL) ? "TRUE" : "FALSE", 
+								   (pAcct2 != NULL) ? pAcct->acct_id.c_str() : "FALSE", 
+								   (pAcct2 != NULL) ? pAcct->bitcoin_acct_name.c_str() : "FALSE", 
+								   (pAcct2 != NULL) ? pAcct->gui_label.c_str() : "FALSE");					
+				}
+				
+				delete pStorage;
+			}
 			continue;
 		}			
 		else if (strLine.compare(0,5,"clear") == 0)

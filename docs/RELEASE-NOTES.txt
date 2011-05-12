@@ -3,6 +3,18 @@ NOTES on the Version:
 
 // --------------------------------------------------------------------
 
+   0.61 --- Added new Storage context class! Currently filesystem supported
+            only BUT you can now add any new storage you want simply by
+            subclassing OTDB::Storage and implementing 4 methods!! Many
+            other storage methods can now quickly and easily be added!
+
+            Furthermore, the Storage object was designed to make it easy to
+            swap Packing libraries. OT now supports MsgPack IN ADDITION TO
+            Google's Protobuf library. Soon these will also be used to
+            clear up any binary incompatibilities between different
+            systems running OT. (So the contracts work on all systems
+            equally.)
+
    0.60 --- Added password callback! Works in the API, in Java, etc.
 
    0.59 --- Fixed ANOTHER old bug in receipt verification.

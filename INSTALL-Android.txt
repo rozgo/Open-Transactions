@@ -20,6 +20,29 @@ OpenTransactions for ANDROID
  --- Let me know if there are any problems, since this is new software;
      this will be a living document.
  
+NOTE: the Android build and instructions have not been updated for a while, and since then the packing libraries have been added to OT. So I'm adding the packing notes here:
+
+---------------------------------------------------------------
+
+
+INSTALL:  MsgPack Library (data packing library now used by OT.)
+
+Available here:  msgpack.org
+To install from command line:  port install msgpack
+(OR) brew install msgpack
+
+Install instructions for all platforms:
+http://wiki.msgpack.org/display/MSGPACK/QuickStart+for+C+Language
+
+---------------------------------------------------------------
+
+INSTALL: Google's Protocol Buffers library (another data packer.)
+
+Available here: 
+http://code.google.com/p/protobuf/downloads/list
+
+---------------------------------------------------------------
+
 
 
 PRE-BUILD:

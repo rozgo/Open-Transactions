@@ -131,6 +131,7 @@
  -----END PGP SIGNATURE-----
  **************************************************************/
 
+#include <string>
 
 #include <cstring>
 
@@ -162,6 +163,7 @@
 #include "OTAPI_funcdef.h"  // Trying to compile as C++ now, due to the new Password Callback, which requires it.
 
 #include "OTLog.h"
+#include "OTStorage.h"
 
 
 // These functions are in C, so they can't return bool. But they can return BOOL!
@@ -213,7 +215,15 @@ OT_BOOL OT_API_Init(const char * szClientPath)
 			bool bInit = g_OT_API.Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
 			
 			if (bInit)
+			{
+				std::string strPath = szClientPath;
+				
+				// This way, everywhere else I can use the default storage context (for now) and it will work
+				// everywhere I put it. (Because it's now set up...)
+				bool bDefaultStore = OTDB::InitDefaultStorage(OTDB::STORE_FILESYSTEM, OTDB_DEFAULT_PACKER, strPath);
+				
 				return OT_TRUE;
+			}
 		}
 	}
 	

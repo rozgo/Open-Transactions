@@ -642,6 +642,99 @@ abstract class otapi {
 	static function OT_API_ProcessSockets() {
 		return OT_API_ProcessSockets();
 	}
+
+	static function InitDefaultStorage($eStoreType,$ePackType,$oneStr=null,$twoStr=null,$threeStr=null,$fourStr=null,$fiveStr=null,$sixStr=null) {
+		switch (func_num_args()) {
+		case 2: $r=InitDefaultStorage($eStoreType,$ePackType); break;
+		case 3: $r=InitDefaultStorage($eStoreType,$ePackType,$oneStr); break;
+		case 4: $r=InitDefaultStorage($eStoreType,$ePackType,$oneStr,$twoStr); break;
+		case 5: $r=InitDefaultStorage($eStoreType,$ePackType,$oneStr,$twoStr,$threeStr); break;
+		case 6: $r=InitDefaultStorage($eStoreType,$ePackType,$oneStr,$twoStr,$threeStr,$fourStr); break;
+		case 7: $r=InitDefaultStorage($eStoreType,$ePackType,$oneStr,$twoStr,$threeStr,$fourStr,$fiveStr); break;
+		default: $r=InitDefaultStorage($eStoreType,$ePackType,$oneStr,$twoStr,$threeStr,$fourStr,$fiveStr,$sixStr);
+		}
+		return $r;
+	}
+
+	static function GetDefaultStorage() {
+		$r=GetDefaultStorage();
+		if (is_resource($r)) {
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			if (!class_exists($c)) {
+				return new Storage($r);
+			}
+			return new $c($r);
+		}
+		return $r;
+	}
+
+	static function CreateStorageContext($eStoreType,$ePackType=null) {
+		if (!is_resource($r)) return $r;
+		switch (get_resource_type($r)) {
+		case '_p_OTDB__Storage': return new Storage($r);
+		default: return new Storage($r);
+		}
+	}
+
+	static function CreateObject($eType) {
+		$r=CreateObject($eType);
+		if (is_resource($r)) {
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			if (!class_exists($c)) {
+				return new Storable($r);
+			}
+			return new $c($r);
+		}
+		return $r;
+	}
+
+	static function Exists($strFolder,$oneStr=null,$twoStr=null,$threeStr=null) {
+		switch (func_num_args()) {
+		case 1: $r=Exists($strFolder); break;
+		case 2: $r=Exists($strFolder,$oneStr); break;
+		case 3: $r=Exists($strFolder,$oneStr,$twoStr); break;
+		default: $r=Exists($strFolder,$oneStr,$twoStr,$threeStr);
+		}
+		return $r;
+	}
+
+	static function StoreString($strContents,$strFolder,$oneStr=null,$twoStr=null,$threeStr=null) {
+		switch (func_num_args()) {
+		case 2: $r=StoreString($strContents,$strFolder); break;
+		case 3: $r=StoreString($strContents,$strFolder,$oneStr); break;
+		case 4: $r=StoreString($strContents,$strFolder,$oneStr,$twoStr); break;
+		default: $r=StoreString($strContents,$strFolder,$oneStr,$twoStr,$threeStr);
+		}
+		return $r;
+	}
+
+	static function QueryString($strFolder,$oneStr=null,$twoStr=null,$threeStr=null) {
+		switch (func_num_args()) {
+		case 1: $r=QueryString($strFolder); break;
+		case 2: $r=QueryString($strFolder,$oneStr); break;
+		case 3: $r=QueryString($strFolder,$oneStr,$twoStr); break;
+		default: $r=QueryString($strFolder,$oneStr,$twoStr,$threeStr);
+		}
+		return $r;
+	}
+
+	static function StoreObject($theContents,$strFolder,$oneStr=null,$twoStr=null,$threeStr=null) {
+		switch (func_num_args()) {
+		case 2: $r=StoreObject($theContents,$strFolder); break;
+		case 3: $r=StoreObject($theContents,$strFolder,$oneStr); break;
+		case 4: $r=StoreObject($theContents,$strFolder,$oneStr,$twoStr); break;
+		default: $r=StoreObject($theContents,$strFolder,$oneStr,$twoStr,$threeStr);
+		}
+		return $r;
+	}
+
+	static function QueryObject($theObjectType,$strFolder,$oneStr=null,$twoStr=null,$threeStr=null) {
+		if (!is_resource($r)) return $r;
+		switch (get_resource_type($r)) {
+		case '_p_OTDB__Storable': return new Storable($r);
+		default: return new Storable($r);
+		}
+	}
 }
 
 /* PHP Proxy Classes */
@@ -735,6 +828,420 @@ class OTCaller {
 
 	function callTwo() {
 		OTCaller_callTwo($this->_cPtr);
+	}
+}
+
+class Storable {
+	public $_cPtr=null;
+	protected $_pData=array();
+
+	function __set($var,$value) {
+		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
+		$this->_pData[$var] = $value;
+	}
+
+	function __isset($var) {
+		if ($var === 'thisown') return true;
+		return array_key_exists($var, $this->_pData);
+	}
+
+	function __get($var) {
+		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
+		return $this->_pData[$var];
+	}
+	function __construct($h) {
+		$this->_cPtr=$h;
+	}
+
+	static function Create($eType,$thePackType) {
+		$r=Storable_Create($eType,$thePackType);
+		if (is_resource($r)) {
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			if (!class_exists($c)) {
+				return new Storable($r);
+			}
+			return new $c($r);
+		}
+		return $r;
+	}
+}
+
+abstract class Storage {
+	public $_cPtr=null;
+	protected $_pData=array();
+
+	function __set($var,$value) {
+		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
+		$this->_pData[$var] = $value;
+	}
+
+	function __isset($var) {
+		if ($var === 'thisown') return true;
+		return array_key_exists($var, $this->_pData);
+	}
+
+	function __get($var) {
+		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
+		return $this->_pData[$var];
+	}
+	function __construct($h) {
+		$this->_cPtr=$h;
+	}
+
+	function Init($oneStr=null,$twoStr=null,$threeStr=null,$fourStr=null,$fiveStr=null,$sixStr=null) {
+		switch (func_num_args()) {
+		case 0: $r=Storage_Init($this->_cPtr); break;
+		case 1: $r=Storage_Init($this->_cPtr,$oneStr); break;
+		case 2: $r=Storage_Init($this->_cPtr,$oneStr,$twoStr); break;
+		case 3: $r=Storage_Init($this->_cPtr,$oneStr,$twoStr,$threeStr); break;
+		case 4: $r=Storage_Init($this->_cPtr,$oneStr,$twoStr,$threeStr,$fourStr); break;
+		case 5: $r=Storage_Init($this->_cPtr,$oneStr,$twoStr,$threeStr,$fourStr,$fiveStr); break;
+		default: $r=Storage_Init($this->_cPtr,$oneStr,$twoStr,$threeStr,$fourStr,$fiveStr,$sixStr);
+		}
+		return $r;
+	}
+
+	function Exists($strFolder,$oneStr=null,$twoStr=null,$threeStr=null) {
+		switch (func_num_args()) {
+		case 1: $r=Storage_Exists($this->_cPtr,$strFolder); break;
+		case 2: $r=Storage_Exists($this->_cPtr,$strFolder,$oneStr); break;
+		case 3: $r=Storage_Exists($this->_cPtr,$strFolder,$oneStr,$twoStr); break;
+		default: $r=Storage_Exists($this->_cPtr,$strFolder,$oneStr,$twoStr,$threeStr);
+		}
+		return $r;
+	}
+
+	function StoreString($strContents,$strFolder,$oneStr=null,$twoStr=null,$threeStr=null) {
+		switch (func_num_args()) {
+		case 2: $r=Storage_StoreString($this->_cPtr,$strContents,$strFolder); break;
+		case 3: $r=Storage_StoreString($this->_cPtr,$strContents,$strFolder,$oneStr); break;
+		case 4: $r=Storage_StoreString($this->_cPtr,$strContents,$strFolder,$oneStr,$twoStr); break;
+		default: $r=Storage_StoreString($this->_cPtr,$strContents,$strFolder,$oneStr,$twoStr,$threeStr);
+		}
+		return $r;
+	}
+
+	function QueryString($strFolder,$oneStr=null,$twoStr=null,$threeStr=null) {
+		switch (func_num_args()) {
+		case 1: $r=Storage_QueryString($this->_cPtr,$strFolder); break;
+		case 2: $r=Storage_QueryString($this->_cPtr,$strFolder,$oneStr); break;
+		case 3: $r=Storage_QueryString($this->_cPtr,$strFolder,$oneStr,$twoStr); break;
+		default: $r=Storage_QueryString($this->_cPtr,$strFolder,$oneStr,$twoStr,$threeStr);
+		}
+		return $r;
+	}
+
+	function StoreObject($theContents,$strFolder,$oneStr=null,$twoStr=null,$threeStr=null) {
+		switch (func_num_args()) {
+		case 2: $r=Storage_StoreObject($this->_cPtr,$theContents,$strFolder); break;
+		case 3: $r=Storage_StoreObject($this->_cPtr,$theContents,$strFolder,$oneStr); break;
+		case 4: $r=Storage_StoreObject($this->_cPtr,$theContents,$strFolder,$oneStr,$twoStr); break;
+		default: $r=Storage_StoreObject($this->_cPtr,$theContents,$strFolder,$oneStr,$twoStr,$threeStr);
+		}
+		return $r;
+	}
+
+	function QueryObject($theObjectType,$strFolder,$oneStr=null,$twoStr=null,$threeStr=null) {
+		if (!is_resource($r)) return $r;
+		switch (get_resource_type($r)) {
+		case '_p_OTDB__Storable': return new Storable($r);
+		default: return new Storable($r);
+		}
+	}
+
+	function CreateObject($eType) {
+		$r=Storage_CreateObject($this->_cPtr,$eType);
+		if (is_resource($r)) {
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			if (!class_exists($c)) {
+				return new Storable($r);
+			}
+			return new $c($r);
+		}
+		return $r;
+	}
+
+	static function Create($eStorageType,$ePackType) {
+		$r=Storage_Create($eStorageType,$ePackType);
+		if (is_resource($r)) {
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			if (!class_exists($c)) {
+				return new Storage($r);
+			}
+			return new $c($r);
+		}
+		return $r;
+	}
+
+	function GetType() {
+		return Storage_GetType($this->_cPtr);
+	}
+}
+
+class StringMap extends Storable {
+	public $_cPtr=null;
+
+	function __set($var,$value) {
+		if ($var === 'the_map') return StringMap_the_map_set($this->_cPtr,$value);
+		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
+		Storable::__set($var,$value);
+	}
+
+	function __isset($var) {
+		if (function_exists('StringMap_'.$var.'_set')) return true;
+		if ($var === 'thisown') return true;
+		return Storable::__isset($var);
+	}
+
+	function __get($var) {
+		$func = 'StringMap_'.$var.'_get';
+		if (function_exists($func)) {
+			$r = call_user_func($func,$this->_cPtr);
+			if (!is_resource($r)) return $r;
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			return new $c($r);
+		}
+		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
+		return Storable::__get($var);
+	}
+	function __construct($h) {
+		$this->_cPtr=$h;
+	}
+
+	function SetValue($strKey,$strValue) {
+		return StringMap_SetValue($this->_cPtr,$strKey,$strValue);
+	}
+
+	function GetValue($strKey) {
+		return StringMap_GetValue($this->_cPtr,$strKey);
+	}
+}
+
+class Displayable extends Storable {
+	public $_cPtr=null;
+
+	function __set($var,$value) {
+		if ($var === 'gui_label') return Displayable_gui_label_set($this->_cPtr,$value);
+		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
+		Storable::__set($var,$value);
+	}
+
+	function __isset($var) {
+		if (function_exists('Displayable_'.$var.'_set')) return true;
+		if ($var === 'thisown') return true;
+		return Storable::__isset($var);
+	}
+
+	function __get($var) {
+		$func = 'Displayable_'.$var.'_get';
+		if (function_exists($func)) {
+			$r = call_user_func($func,$this->_cPtr);
+			if (!is_resource($r)) return $r;
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			return new $c($r);
+		}
+		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
+		return Storable::__get($var);
+	}
+	function __construct($h) {
+		$this->_cPtr=$h;
+	}
+}
+
+class Acct extends Displayable {
+	public $_cPtr=null;
+
+	function __set($var,$value) {
+		if ($var === 'acct_id') return Acct_acct_id_set($this->_cPtr,$value);
+		if ($var === 'server_id') return Acct_server_id_set($this->_cPtr,$value);
+		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
+		Displayable::__set($var,$value);
+	}
+
+	function __isset($var) {
+		if (function_exists('Acct_'.$var.'_set')) return true;
+		if ($var === 'thisown') return true;
+		return Displayable::__isset($var);
+	}
+
+	function __get($var) {
+		$func = 'Acct_'.$var.'_get';
+		if (function_exists($func)) {
+			$r = call_user_func($func,$this->_cPtr);
+			if (!is_resource($r)) return $r;
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			return new $c($r);
+		}
+		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
+		return Displayable::__get($var);
+	}
+	function __construct($h) {
+		$this->_cPtr=$h;
+	}
+}
+
+class BitcoinAcct extends Acct {
+	public $_cPtr=null;
+
+	function __set($var,$value) {
+		if ($var === 'bitcoin_acct_name') return BitcoinAcct_bitcoin_acct_name_set($this->_cPtr,$value);
+		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
+		Acct::__set($var,$value);
+	}
+
+	function __isset($var) {
+		if (function_exists('BitcoinAcct_'.$var.'_set')) return true;
+		if ($var === 'thisown') return true;
+		return Acct::__isset($var);
+	}
+
+	function __get($var) {
+		$func = 'BitcoinAcct_'.$var.'_get';
+		if (function_exists($func)) {
+			$r = call_user_func($func,$this->_cPtr);
+			if (!is_resource($r)) return $r;
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			return new $c($r);
+		}
+		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
+		return Acct::__get($var);
+	}
+	function __construct($h) {
+		$this->_cPtr=$h;
+	}
+}
+
+class Server extends Displayable {
+	public $_cPtr=null;
+
+	function __set($var,$value) {
+		$func = 'Server_'.$var.'_set';
+		if (function_exists($func)) return call_user_func($func,$this->_cPtr,$value);
+		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
+		Displayable::__set($var,$value);
+	}
+
+	function __isset($var) {
+		if (function_exists('Server_'.$var.'_set')) return true;
+		if ($var === 'thisown') return true;
+		return Displayable::__isset($var);
+	}
+
+	function __get($var) {
+		$func = 'Server_'.$var.'_get';
+		if (function_exists($func)) {
+			$r = call_user_func($func,$this->_cPtr);
+			if (!is_resource($r)) return $r;
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			return new $c($r);
+		}
+		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
+		return Displayable::__get($var);
+	}
+	function __construct($h) {
+		$this->_cPtr=$h;
+	}
+}
+
+class BitcoinServer extends Server {
+	public $_cPtr=null;
+
+	function __set($var,$value) {
+		if ($var === 'bitcoin_password') return BitcoinServer_bitcoin_password_set($this->_cPtr,$value);
+		if ($var === 'bitcoin_username') return BitcoinServer_bitcoin_username_set($this->_cPtr,$value);
+		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
+		Server::__set($var,$value);
+	}
+
+	function __isset($var) {
+		if (function_exists('BitcoinServer_'.$var.'_set')) return true;
+		if ($var === 'thisown') return true;
+		return Server::__isset($var);
+	}
+
+	function __get($var) {
+		$func = 'BitcoinServer_'.$var.'_get';
+		if (function_exists($func)) {
+			$r = call_user_func($func,$this->_cPtr);
+			if (!is_resource($r)) return $r;
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			return new $c($r);
+		}
+		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
+		return Server::__get($var);
+	}
+	function __construct($h) {
+		$this->_cPtr=$h;
+	}
+}
+
+class WalletData extends Storable {
+	public $_cPtr=null;
+
+	function __set($var,$value) {
+		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
+		Storable::__set($var,$value);
+	}
+
+	function __isset($var) {
+		if ($var === 'thisown') return true;
+		return Storable::__isset($var);
+	}
+
+	function __get($var) {
+		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
+		return Storable::__get($var);
+	}
+	function __construct($h) {
+		$this->_cPtr=$h;
+	}
+
+	function GetBitcoinServerCount() {
+		return WalletData_GetBitcoinServerCount($this->_cPtr);
+	}
+
+	function GetBitcoinServer($nIndex) {
+		$r=WalletData_GetBitcoinServer($this->_cPtr,$nIndex);
+		if (is_resource($r)) {
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			if (!class_exists($c)) {
+				return new BitcoinServer($r);
+			}
+			return new $c($r);
+		}
+		return $r;
+	}
+
+	function RemoveBitcoinServer($nIndex) {
+		return WalletData_RemoveBitcoinServer($this->_cPtr,$nIndex);
+	}
+
+	function AddBitcoinServer($disownObject) {
+		return WalletData_AddBitcoinServer($this->_cPtr,$disownObject);
+	}
+
+	function GetBitcoinAcctCount() {
+		return WalletData_GetBitcoinAcctCount($this->_cPtr);
+	}
+
+	function GetBitcoinAcct($nIndex) {
+		$r=WalletData_GetBitcoinAcct($this->_cPtr,$nIndex);
+		if (is_resource($r)) {
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			if (!class_exists($c)) {
+				return new BitcoinAcct($r);
+			}
+			return new $c($r);
+		}
+		return $r;
+	}
+
+	function RemoveBitcoinAcct($nIndex) {
+		return WalletData_RemoveBitcoinAcct($this->_cPtr,$nIndex);
+	}
+
+	function AddBitcoinAcct($disownObject) {
+		return WalletData_AddBitcoinAcct($this->_cPtr,$disownObject);
 	}
 }
 

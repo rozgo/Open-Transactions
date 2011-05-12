@@ -11,7 +11,7 @@ OpenTransactions for Mac OS X, Linux, and FreeBSD
  
  --- OpenSSL version 1.0.0a (at least) is necessary, since the SAMY hash 
      uses WHRLPOOL. (XOR'd with SHA-512.) WHIRLPOOL is a new addition to 
-     OpenSSL. (Current build is tested with 1.0.0c)
+     OpenSSL. (Current build is tested with 1.0.0d)
  
  --- Let me know if there are any problems, since this is new software;
      this will be a living document.
@@ -21,7 +21,7 @@ OpenTransactions for Mac OS X, Linux, and FreeBSD
 
 PRE-BUILD:
 
---- Make sure OpenSSL 1.0.0b is installed, since earlier versions don't
+--- Make sure OpenSSL 1.0.0d is installed, since earlier versions don't
     have WHIRLPOOL and the software won't work without it.
 
     To check current version:  openssl version
@@ -30,9 +30,9 @@ PRE-BUILD:
       If that doesn't work: sudo port install openssl-devel
 
     * On Linux: 
-          wget http://www.openssl.org/source/openssl-1.0.0c.tar.gz
-          tar -xf openssl-1.0.0c.tar.gz
-          cd openssl-1.0.0c
+          wget http://www.openssl.org/source/openssl-1.0.0d.tar.gz
+          tar -xf openssl-1.0.0d.tar.gz
+          cd openssl-1.0.0d
           ./config
           make
           sudo make install
@@ -41,6 +41,23 @@ PRE-BUILD:
 
 
 --- cd (change directory) to the Open-Transactions folder. <=== ("THE MAIN FOLDER")
+
+---------------------------------------------------------------
+
+INSTALL:  MsgPack Library (data packing library now used by OT.)
+
+Available here:  msgpack.org
+To install from command line:  port install msgpack
+(OR) brew install msgpack
+
+Install instructions for all platforms:
+http://wiki.msgpack.org/display/MSGPACK/QuickStart+for+C+Language
+---------------------------------------------------------------
+
+INSTALL: Google's Protocol Buffers library (another data packer.)
+
+Available here: 
+http://code.google.com/p/protobuf/downloads/list
 
 
 ------------------------------------------------------------------------

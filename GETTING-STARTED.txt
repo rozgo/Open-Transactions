@@ -12,7 +12,7 @@ https://github.com/FellowTraveler/Open-Transactions/wiki/Install
 GETTING STARTED:
 
 
-1) For most users, you just type this:
+1) For most, assuming you have all the necessary libraries installed already, then you just type this:
    
     make rpc
 
@@ -48,15 +48,34 @@ Open Transactions requires OpenSSL version 1.0.0.
 	  If that doesn't work: sudo port install openssl-devel
 
 	* On Linux: 
-		wget http://www.openssl.org/source/openssl-1.0.0c.tar.gz
-		tar -xf openssl-1.0.0c.tar.gz
-		cd openssl-1.0.0c
+		wget http://www.openssl.org/source/openssl-1.0.0d.tar.gz
+		tar -xf openssl-1.0.0d.tar.gz
+		cd openssl-1.0.0d
 		./config
 		make
 		sudo make install
 
 	* On FreeBSD (as root):  
 	  cd /usr/ports/security/openssl/ && make install clean
+
+---------------------------------------------------------------
+
+
+INSTALL:  MsgPack Library (data packing library now used by OT.)
+
+Available here:  msgpack.org
+To install from command line:  port install msgpack
+(OR) brew install msgpack
+
+Install instructions for all platforms:
+http://wiki.msgpack.org/display/MSGPACK/QuickStart+for+C+Language
+
+---------------------------------------------------------------
+
+INSTALL: Google's Protocol Buffers library (another data packer.)
+
+Available here: 
+http://code.google.com/p/protobuf/downloads/list
 
 ---------------------------------------------------------------
 

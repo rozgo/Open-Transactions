@@ -123,8 +123,8 @@ INCLUDEDIRS = $(PLATFORM_INCLUDEDIRS) $(SSL_INCLUDEDIRS) $(OT_INCLUDEDIRS)
 LIBDIRS = $(PLATFORM_LIBDIRS)  $(SSL_LIBDIRS) $(OT_LIBDIRS)
 
 
-LIBS = -lssl -lcrypto
-DEBUG_LIBS = -lssl -lcrypto
+LIBS = -lssl -lcrypto -lprotobuf -lmsgpack
+DEBUG_LIBS = -lssl -lcrypto -lprotobuf -lmsgpack
 
 #
 # The CXXSOURCES macro contains a list of source files.
@@ -193,7 +193,10 @@ CXXSOURCES = $(BIGINTSOURCES) $(LUCRESOURCES) $(IRRXMLSOURCES) \
 			 OTIdentifier.cpp \
 			 OTAsymmetricKey.cpp \
 			 OTSignature.cpp \
-			 OTDataCheck.cpp
+			 OTStorage.cpp \
+			 OTDataCheck.cpp \
+			 Generics.pb.cpp \
+			 Bitcoin.pb.cpp
 
 CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
 COBJECTS   = $(CSOURCES:.c=.o)
@@ -338,6 +341,12 @@ OTTrade.o: OTTrade.cpp OTTrade.h
 	$(CXX) $(CXXFLAGS) -c -o OTTrade.o OTTrade.cpp
 OTPaymentPlan.o: OTPaymentPlan.cpp OTPaymentPlan.h
 	$(CXX) $(CXXFLAGS) -c -o OTPaymentPlan.o OTPaymentPlan.cpp
+OTStorage.o: OTStorage.cpp OTStorage.h
+	$(CXX) $(CXXFLAGS) -c -o OTStorage.o OTStorage.cpp
+Generics.pb.o: Generics.pb.cpp Generics.pb.h
+	$(CXX) $(CXXFLAGS) -c -o Generics.pb.o Generics.pb.cpp
+Bitcoin.pb.o: Bitcoin.pb.cpp Bitcoin.pb.h
+	$(CXX) $(CXXFLAGS) -c -o Bitcoin.pb.o Bitcoin.pb.cpp
 
 #
 # Clean target: "make -f Makefile.Linux clean" to remove unwanted objects and executables.

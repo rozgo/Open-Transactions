@@ -1012,8 +1012,21 @@ static void SWIG_Php_SetModule(swig_module_info *pointer) {
 
 #define SWIGTYPE_p_OTCallback swig_types[0]
 #define SWIGTYPE_p_OTCaller swig_types[1]
-static swig_type_info *swig_types[3];
-static swig_module_info swig_module = {swig_types, 2, 0, 0, 0, 0};
+#define SWIGTYPE_p_OTDB__Acct swig_types[2]
+#define SWIGTYPE_p_OTDB__BitcoinAcct swig_types[3]
+#define SWIGTYPE_p_OTDB__BitcoinServer swig_types[4]
+#define SWIGTYPE_p_OTDB__Displayable swig_types[5]
+#define SWIGTYPE_p_OTDB__Server swig_types[6]
+#define SWIGTYPE_p_OTDB__Storable swig_types[7]
+#define SWIGTYPE_p_OTDB__Storage swig_types[8]
+#define SWIGTYPE_p_OTDB__StringMap swig_types[9]
+#define SWIGTYPE_p_OTDB__WalletData swig_types[10]
+#define SWIGTYPE_p_PackType swig_types[11]
+#define SWIGTYPE_p_StorageType swig_types[12]
+#define SWIGTYPE_p_StoredObjectType swig_types[13]
+#define SWIGTYPE_p_std__mapT_std__string_std__string_t swig_types[14]
+static swig_type_info *swig_types[16];
+static swig_module_info swig_module = {swig_types, 15, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1285,8 +1298,13 @@ namespace Swig {
 #endif
 
 #include <string>
+#include <map>
+#include <msgpack.hpp>
 #include "../OTLib/OTAsymmetricKey.h"
 #include "OTAPI_funcdef.h"
+#include "../OTLib/OTStorage.h"
+//#include "../OTLib/Generics.pb.h"
+//#include "../OTLib/Bitcoin.pb.h"
 
 
 #if PHP_MAJOR_VERSION < 5
@@ -1303,22 +1321,116 @@ namespace Swig {
 #include <string>
 
 
+using namespace OTDB;
+
+
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
+static void *_p_OTDB__BitcoinServerTo_p_OTDB__Server(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Server *)  ((OTDB::BitcoinServer *) x));
+}
+static void *_p_OTDB__BitcoinAcctTo_p_OTDB__Acct(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Acct *)  ((OTDB::BitcoinAcct *) x));
+}
+static void *_p_OTDB__BitcoinAcctTo_p_OTDB__Displayable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Displayable *) (OTDB::Acct *) ((OTDB::BitcoinAcct *) x));
+}
+static void *_p_OTDB__ServerTo_p_OTDB__Displayable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Displayable *)  ((OTDB::Server *) x));
+}
+static void *_p_OTDB__BitcoinServerTo_p_OTDB__Displayable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Displayable *) (OTDB::Server *) ((OTDB::BitcoinServer *) x));
+}
+static void *_p_OTDB__AcctTo_p_OTDB__Displayable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Displayable *)  ((OTDB::Acct *) x));
+}
+static void *_p_OTDB__BitcoinAcctTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *) (OTDB::Displayable *)(OTDB::Acct *) ((OTDB::BitcoinAcct *) x));
+}
+static void *_p_OTDB__ServerTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *) (OTDB::Displayable *) ((OTDB::Server *) x));
+}
+static void *_p_OTDB__BitcoinServerTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *) (OTDB::Displayable *)(OTDB::Server *) ((OTDB::BitcoinServer *) x));
+}
+static void *_p_OTDB__AcctTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *) (OTDB::Displayable *) ((OTDB::Acct *) x));
+}
+static void *_p_OTDB__WalletDataTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *)  ((OTDB::WalletData *) x));
+}
+static void *_p_OTDB__DisplayableTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *)  ((OTDB::Displayable *) x));
+}
+static void *_p_OTDB__StringMapTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *)  ((OTDB::StringMap *) x));
+}
 static swig_type_info _swigt__p_OTCallback = {"_p_OTCallback", "OTCallback *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTCaller = {"_p_OTCaller", "OTCaller *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OTDB__Acct = {"_p_OTDB__Acct", "OTDB::Acct *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OTDB__BitcoinAcct = {"_p_OTDB__BitcoinAcct", "OTDB::BitcoinAcct *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OTDB__BitcoinServer = {"_p_OTDB__BitcoinServer", "OTDB::BitcoinServer *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OTDB__Displayable = {"_p_OTDB__Displayable", "OTDB::Displayable *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OTDB__Server = {"_p_OTDB__Server", "OTDB::Server *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OTDB__Storable = {"_p_OTDB__Storable", "OTDB::Storable *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OTDB__Storage = {"_p_OTDB__Storage", "OTDB::Storage *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OTDB__StringMap = {"_p_OTDB__StringMap", "OTDB::StringMap *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OTDB__WalletData = {"_p_OTDB__WalletData", "OTDB::WalletData *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_PackType = {"_p_PackType", "PackType *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_StorageType = {"_p_StorageType", "StorageType *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_StoredObjectType = {"_p_StoredObjectType", "StoredObjectType *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__mapT_std__string_std__string_t = {"_p_std__mapT_std__string_std__string_t", "std::map< std::string,std::string > *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_OTCallback,
   &_swigt__p_OTCaller,
+  &_swigt__p_OTDB__Acct,
+  &_swigt__p_OTDB__BitcoinAcct,
+  &_swigt__p_OTDB__BitcoinServer,
+  &_swigt__p_OTDB__Displayable,
+  &_swigt__p_OTDB__Server,
+  &_swigt__p_OTDB__Storable,
+  &_swigt__p_OTDB__Storage,
+  &_swigt__p_OTDB__StringMap,
+  &_swigt__p_OTDB__WalletData,
+  &_swigt__p_PackType,
+  &_swigt__p_StorageType,
+  &_swigt__p_StoredObjectType,
+  &_swigt__p_std__mapT_std__string_std__string_t,
 };
 
 static swig_cast_info _swigc__p_OTCallback[] = {  {&_swigt__p_OTCallback, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTCaller[] = {  {&_swigt__p_OTCaller, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__Acct[] = {  {&_swigt__p_OTDB__BitcoinAcct, _p_OTDB__BitcoinAcctTo_p_OTDB__Acct, 0, 0},  {&_swigt__p_OTDB__Acct, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__BitcoinAcct[] = {  {&_swigt__p_OTDB__BitcoinAcct, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__BitcoinServer[] = {  {&_swigt__p_OTDB__BitcoinServer, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__Displayable[] = {  {&_swigt__p_OTDB__BitcoinAcct, _p_OTDB__BitcoinAcctTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__Displayable, 0, 0, 0},  {&_swigt__p_OTDB__Acct, _p_OTDB__AcctTo_p_OTDB__Displayable, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__Server[] = {  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Server, 0, 0},  {&_swigt__p_OTDB__Server, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__Storable[] = {  {&_swigt__p_OTDB__BitcoinAcct, _p_OTDB__BitcoinAcctTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__WalletData, _p_OTDB__WalletDataTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Storable, 0, 0, 0},  {&_swigt__p_OTDB__Displayable, _p_OTDB__DisplayableTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__StringMap, _p_OTDB__StringMapTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Acct, _p_OTDB__AcctTo_p_OTDB__Storable, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__Storage[] = {  {&_swigt__p_OTDB__Storage, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__StringMap[] = {  {&_swigt__p_OTDB__StringMap, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__WalletData[] = {  {&_swigt__p_OTDB__WalletData, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_PackType[] = {  {&_swigt__p_PackType, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_StorageType[] = {  {&_swigt__p_StorageType, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_StoredObjectType[] = {  {&_swigt__p_StoredObjectType, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__mapT_std__string_std__string_t[] = {  {&_swigt__p_std__mapT_std__string_std__string_t, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_OTCallback,
   _swigc__p_OTCaller,
+  _swigc__p_OTDB__Acct,
+  _swigc__p_OTDB__BitcoinAcct,
+  _swigc__p_OTDB__BitcoinServer,
+  _swigc__p_OTDB__Displayable,
+  _swigc__p_OTDB__Server,
+  _swigc__p_OTDB__Storable,
+  _swigc__p_OTDB__Storage,
+  _swigc__p_OTDB__StringMap,
+  _swigc__p_OTDB__WalletData,
+  _swigc__p_PackType,
+  _swigc__p_StorageType,
+  _swigc__p_StoredObjectType,
+  _swigc__p_std__mapT_std__string_std__string_t,
 };
 
 
@@ -1384,8 +1496,21 @@ fail:
 
 
 /* vdecl subsection */
+static int le_swig__p_OTDB__Server=0; /* handle for Server */
 static int le_swig__p_OTCaller=0; /* handle for OTCaller */
+static int le_swig__p_OTDB__StringMap=0; /* handle for StringMap */
+static int le_swig__p_OTDB__BitcoinServer=0; /* handle for BitcoinServer */
+static int le_swig__p_StoredObjectType=0; /* handle for _p_StoredObjectType */
 static int le_swig__p_OTCallback=0; /* handle for OTCallback */
+static int le_swig__p_OTDB__Displayable=0; /* handle for Displayable */
+static int le_swig__p_OTDB__WalletData=0; /* handle for WalletData */
+static int le_swig__p_OTDB__Storable=0; /* handle for Storable */
+static int le_swig__p_OTDB__BitcoinAcct=0; /* handle for BitcoinAcct */
+static int le_swig__p_StorageType=0; /* handle for _p_StorageType */
+static int le_swig__p_PackType=0; /* handle for _p_PackType */
+static int le_swig__p_OTDB__Storage=0; /* handle for Storage */
+static int le_swig__p_std__mapT_std__string_std__string_t=0; /* handle for _p_std__mapT_std__string_std__string_t */
+static int le_swig__p_OTDB__Acct=0; /* handle for Acct */
 /* end vdecl subsection */
 /* wrapper section */
 ZEND_NAMED_FUNCTION(_wrap_new_OTCallback) {
@@ -8983,11 +9108,4963 @@ fail:
 }
 
 
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
+static void __wrap_delete_Storable(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (OTDB::Storable *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_OTDB__Storable TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "OTDB::Storable resource already free'd");
+  delete arg1;
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storable_Create) {
+  StoredObjectType arg1 ;
+  PackType arg2 ;
+  StoredObjectType *tmp1 ;
+  PackType *tmp2 ;
+  zval **args[2];
+  OTDB::Storable *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &tmp1, SWIGTYPE_p_StoredObjectType, 0) < 0 || tmp1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storable_Create. Expected SWIGTYPE_p_StoredObjectType");
+    }
+    arg1 = *tmp1;
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_PackType, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of Storable_Create. Expected SWIGTYPE_p_PackType");
+    }
+    arg2 = *tmp2;
+  }
+  result = (OTDB::Storable *)OTDB::Storable::Create(arg1,arg2);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 0);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
+static void __wrap_delete_Storage(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (OTDB::Storage *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_OTDB__Storage TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "OTDB::Storage resource already free'd");
+  delete arg1;
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_Init__SWIG_0) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  std::string arg6 ;
+  std::string arg7 ;
+  zval **args[7];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 7 || zend_get_parameters_array_ex(7, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_Init. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  
+  convert_to_string_ex(args[5]);
+  (&arg6)->assign(Z_STRVAL_PP(args[5]), Z_STRLEN_PP(args[5]));
+  
+  
+  convert_to_string_ex(args[6]);
+  (&arg7)->assign(Z_STRVAL_PP(args[6]), Z_STRLEN_PP(args[6]));
+  
+  result = (bool)(arg1)->Init(arg2,arg3,arg4,arg5,arg6,arg7);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_Init__SWIG_1) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  std::string arg6 ;
+  zval **args[6];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 6 || zend_get_parameters_array_ex(6, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_Init. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  
+  convert_to_string_ex(args[5]);
+  (&arg6)->assign(Z_STRVAL_PP(args[5]), Z_STRLEN_PP(args[5]));
+  
+  result = (bool)(arg1)->Init(arg2,arg3,arg4,arg5,arg6);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_Init__SWIG_2) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  zval **args[5];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 5 || zend_get_parameters_array_ex(5, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_Init. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  result = (bool)(arg1)->Init(arg2,arg3,arg4,arg5);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_Init__SWIG_3) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  zval **args[4];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_Init. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  result = (bool)(arg1)->Init(arg2,arg3,arg4);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_Init__SWIG_4) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  zval **args[3];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_Init. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  result = (bool)(arg1)->Init(arg2,arg3);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_Init__SWIG_5) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  zval **args[2];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_Init. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  result = (bool)(arg1)->Init(arg2);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_Init__SWIG_6) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  zval **args[1];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_Init. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (bool)(arg1)->Init();
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_Init) {
+  int argc;
+  zval **argv[7];
+  
+  argc = ZEND_NUM_ARGS();
+  zend_get_parameters_array_ex(argc,argv);
+  if (argc == 1) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _wrap_Storage_Init__SWIG_6(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _wrap_Storage_Init__SWIG_5(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _wrap_Storage_Init__SWIG_4(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _wrap_Storage_Init__SWIG_3(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+          }
+        }
+      }
+    }
+  }
+  if (argc == 5) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _wrap_Storage_Init__SWIG_2(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+            }
+          }
+        }
+      }
+    }
+  }
+  if (argc == 6) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _v = ( Z_TYPE_PP(argv[5]) == IS_STRING ) ? 1 : 0;
+              
+              if (_v) {
+                _wrap_Storage_Init__SWIG_1(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  if (argc == 7) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _v = ( Z_TYPE_PP(argv[5]) == IS_STRING ) ? 1 : 0;
+              
+              if (_v) {
+                _v = ( Z_TYPE_PP(argv[6]) == IS_STRING ) ? 1 : 0;
+                
+                if (_v) {
+                  _wrap_Storage_Init__SWIG_0(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  SWIG_ErrorCode() = E_ERROR;
+  SWIG_ErrorMsg() = "No matching function for overloaded 'Storage_Init'";
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_Exists__SWIG_0) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  zval **args[5];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 5 || zend_get_parameters_array_ex(5, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_Exists. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  result = (bool)(arg1)->Exists(arg2,arg3,arg4,arg5);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_Exists__SWIG_1) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  zval **args[4];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_Exists. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  result = (bool)(arg1)->Exists(arg2,arg3,arg4);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_Exists__SWIG_2) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  zval **args[3];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_Exists. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  result = (bool)(arg1)->Exists(arg2,arg3);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_Exists__SWIG_3) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  zval **args[2];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_Exists. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  result = (bool)(arg1)->Exists(arg2);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_Exists) {
+  int argc;
+  zval **argv[5];
+  
+  argc = ZEND_NUM_ARGS();
+  zend_get_parameters_array_ex(argc,argv);
+  if (argc == 2) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _wrap_Storage_Exists__SWIG_3(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _wrap_Storage_Exists__SWIG_2(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _wrap_Storage_Exists__SWIG_1(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+          }
+        }
+      }
+    }
+  }
+  if (argc == 5) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _wrap_Storage_Exists__SWIG_0(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  SWIG_ErrorCode() = E_ERROR;
+  SWIG_ErrorMsg() = "No matching function for overloaded 'Storage_Exists'";
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_StoreString__SWIG_0) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  std::string arg6 ;
+  zval **args[6];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 6 || zend_get_parameters_array_ex(6, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_StoreString. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  
+  convert_to_string_ex(args[5]);
+  (&arg6)->assign(Z_STRVAL_PP(args[5]), Z_STRLEN_PP(args[5]));
+  
+  result = (bool)(arg1)->StoreString(arg2,arg3,arg4,arg5,arg6);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_StoreString__SWIG_1) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  zval **args[5];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 5 || zend_get_parameters_array_ex(5, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_StoreString. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  result = (bool)(arg1)->StoreString(arg2,arg3,arg4,arg5);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_StoreString__SWIG_2) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  zval **args[4];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_StoreString. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  result = (bool)(arg1)->StoreString(arg2,arg3,arg4);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_StoreString__SWIG_3) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  zval **args[3];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_StoreString. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  result = (bool)(arg1)->StoreString(arg2,arg3);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_StoreString) {
+  int argc;
+  zval **argv[6];
+  
+  argc = ZEND_NUM_ARGS();
+  zend_get_parameters_array_ex(argc,argv);
+  if (argc == 3) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _wrap_Storage_StoreString__SWIG_3(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _wrap_Storage_StoreString__SWIG_2(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+          }
+        }
+      }
+    }
+  }
+  if (argc == 5) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _wrap_Storage_StoreString__SWIG_1(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+            }
+          }
+        }
+      }
+    }
+  }
+  if (argc == 6) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _v = ( Z_TYPE_PP(argv[5]) == IS_STRING ) ? 1 : 0;
+              
+              if (_v) {
+                _wrap_Storage_StoreString__SWIG_0(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  SWIG_ErrorCode() = E_ERROR;
+  SWIG_ErrorMsg() = "No matching function for overloaded 'Storage_StoreString'";
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_QueryString__SWIG_0) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  zval **args[5];
+  std::string result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 5 || zend_get_parameters_array_ex(5, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_QueryString. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  result = (arg1)->QueryString(arg2,arg3,arg4,arg5);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>((&result)->data()), (&result)->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_QueryString__SWIG_1) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  zval **args[4];
+  std::string result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_QueryString. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  result = (arg1)->QueryString(arg2,arg3,arg4);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>((&result)->data()), (&result)->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_QueryString__SWIG_2) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  zval **args[3];
+  std::string result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_QueryString. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  result = (arg1)->QueryString(arg2,arg3);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>((&result)->data()), (&result)->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_QueryString__SWIG_3) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  std::string arg2 ;
+  zval **args[2];
+  std::string result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_QueryString. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  result = (arg1)->QueryString(arg2);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>((&result)->data()), (&result)->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_QueryString) {
+  int argc;
+  zval **argv[5];
+  
+  argc = ZEND_NUM_ARGS();
+  zend_get_parameters_array_ex(argc,argv);
+  if (argc == 2) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _wrap_Storage_QueryString__SWIG_3(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _wrap_Storage_QueryString__SWIG_2(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _wrap_Storage_QueryString__SWIG_1(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+          }
+        }
+      }
+    }
+  }
+  if (argc == 5) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _wrap_Storage_QueryString__SWIG_0(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  SWIG_ErrorCode() = E_ERROR;
+  SWIG_ErrorMsg() = "No matching function for overloaded 'Storage_QueryString'";
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_StoreObject__SWIG_0) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  OTDB::Storable *arg2 = 0 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  std::string arg6 ;
+  zval **args[6];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 6 || zend_get_parameters_array_ex(6, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_StoreObject. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_OTDB__Storable, 0) < 0 || arg2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of Storage_StoreObject. Expected SWIGTYPE_p_OTDB__Storable");
+    }
+  }
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  
+  convert_to_string_ex(args[5]);
+  (&arg6)->assign(Z_STRVAL_PP(args[5]), Z_STRLEN_PP(args[5]));
+  
+  result = (bool)(arg1)->StoreObject(*arg2,arg3,arg4,arg5,arg6);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_StoreObject__SWIG_1) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  OTDB::Storable *arg2 = 0 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  zval **args[5];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 5 || zend_get_parameters_array_ex(5, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_StoreObject. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_OTDB__Storable, 0) < 0 || arg2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of Storage_StoreObject. Expected SWIGTYPE_p_OTDB__Storable");
+    }
+  }
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  result = (bool)(arg1)->StoreObject(*arg2,arg3,arg4,arg5);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_StoreObject__SWIG_2) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  OTDB::Storable *arg2 = 0 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  zval **args[4];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_StoreObject. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_OTDB__Storable, 0) < 0 || arg2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of Storage_StoreObject. Expected SWIGTYPE_p_OTDB__Storable");
+    }
+  }
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  result = (bool)(arg1)->StoreObject(*arg2,arg3,arg4);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_StoreObject__SWIG_3) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  OTDB::Storable *arg2 = 0 ;
+  std::string arg3 ;
+  zval **args[3];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_StoreObject. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_OTDB__Storable, 0) < 0 || arg2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of Storage_StoreObject. Expected SWIGTYPE_p_OTDB__Storable");
+    }
+  }
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  result = (bool)(arg1)->StoreObject(*arg2,arg3);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_StoreObject) {
+  int argc;
+  zval **argv[6];
+  
+  argc = ZEND_NUM_ARGS();
+  zend_get_parameters_array_ex(argc,argv);
+  if (argc == 3) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      {
+        void *tmp;
+        _v = (SWIG_ConvertPtr(*argv[1], (void**)&tmp, SWIGTYPE_p_OTDB__Storable, 0) >= 0);
+      }
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _wrap_Storage_StoreObject__SWIG_3(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      {
+        void *tmp;
+        _v = (SWIG_ConvertPtr(*argv[1], (void**)&tmp, SWIGTYPE_p_OTDB__Storable, 0) >= 0);
+      }
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _wrap_Storage_StoreObject__SWIG_2(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+          }
+        }
+      }
+    }
+  }
+  if (argc == 5) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      {
+        void *tmp;
+        _v = (SWIG_ConvertPtr(*argv[1], (void**)&tmp, SWIGTYPE_p_OTDB__Storable, 0) >= 0);
+      }
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _wrap_Storage_StoreObject__SWIG_1(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+            }
+          }
+        }
+      }
+    }
+  }
+  if (argc == 6) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      {
+        void *tmp;
+        _v = (SWIG_ConvertPtr(*argv[1], (void**)&tmp, SWIGTYPE_p_OTDB__Storable, 0) >= 0);
+      }
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _v = ( Z_TYPE_PP(argv[5]) == IS_STRING ) ? 1 : 0;
+              
+              if (_v) {
+                _wrap_Storage_StoreObject__SWIG_0(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  SWIG_ErrorCode() = E_ERROR;
+  SWIG_ErrorMsg() = "No matching function for overloaded 'Storage_StoreObject'";
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_QueryObject__SWIG_0) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  StoredObjectType arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  std::string arg6 ;
+  StoredObjectType *tmp2 ;
+  zval **args[6];
+  OTDB::Storable *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 6 || zend_get_parameters_array_ex(6, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_QueryObject. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_StoredObjectType, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of Storage_QueryObject. Expected SWIGTYPE_p_StoredObjectType");
+    }
+    arg2 = *tmp2;
+  }
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  
+  convert_to_string_ex(args[5]);
+  (&arg6)->assign(Z_STRVAL_PP(args[5]), Z_STRLEN_PP(args[5]));
+  
+  result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4,arg5,arg6);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_QueryObject__SWIG_1) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  StoredObjectType arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  StoredObjectType *tmp2 ;
+  zval **args[5];
+  OTDB::Storable *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 5 || zend_get_parameters_array_ex(5, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_QueryObject. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_StoredObjectType, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of Storage_QueryObject. Expected SWIGTYPE_p_StoredObjectType");
+    }
+    arg2 = *tmp2;
+  }
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4,arg5);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_QueryObject__SWIG_2) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  StoredObjectType arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  StoredObjectType *tmp2 ;
+  zval **args[4];
+  OTDB::Storable *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_QueryObject. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_StoredObjectType, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of Storage_QueryObject. Expected SWIGTYPE_p_StoredObjectType");
+    }
+    arg2 = *tmp2;
+  }
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_QueryObject__SWIG_3) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  StoredObjectType arg2 ;
+  std::string arg3 ;
+  StoredObjectType *tmp2 ;
+  zval **args[3];
+  OTDB::Storable *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_QueryObject. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_StoredObjectType, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of Storage_QueryObject. Expected SWIGTYPE_p_StoredObjectType");
+    }
+    arg2 = *tmp2;
+  }
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_QueryObject) {
+  int argc;
+  zval **argv[6];
+  
+  argc = ZEND_NUM_ARGS();
+  zend_get_parameters_array_ex(argc,argv);
+  if (argc == 3) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      {
+        void *tmp;
+        _v = (SWIG_ConvertPtr(*argv[1], (void **)&tmp, SWIGTYPE_p_StoredObjectType, 0) >= 0);
+      }
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _wrap_Storage_QueryObject__SWIG_3(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      {
+        void *tmp;
+        _v = (SWIG_ConvertPtr(*argv[1], (void **)&tmp, SWIGTYPE_p_StoredObjectType, 0) >= 0);
+      }
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _wrap_Storage_QueryObject__SWIG_2(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+          }
+        }
+      }
+    }
+  }
+  if (argc == 5) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      {
+        void *tmp;
+        _v = (SWIG_ConvertPtr(*argv[1], (void **)&tmp, SWIGTYPE_p_StoredObjectType, 0) >= 0);
+      }
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _wrap_Storage_QueryObject__SWIG_1(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+            }
+          }
+        }
+      }
+    }
+  }
+  if (argc == 6) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storage, 0) >= 0);
+    }
+    if (_v) {
+      {
+        void *tmp;
+        _v = (SWIG_ConvertPtr(*argv[1], (void **)&tmp, SWIGTYPE_p_StoredObjectType, 0) >= 0);
+      }
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _v = ( Z_TYPE_PP(argv[5]) == IS_STRING ) ? 1 : 0;
+              
+              if (_v) {
+                _wrap_Storage_QueryObject__SWIG_0(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  SWIG_ErrorCode() = E_ERROR;
+  SWIG_ErrorMsg() = "No matching function for overloaded 'Storage_QueryObject'";
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_CreateObject) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  StoredObjectType arg2 ;
+  StoredObjectType *tmp2 ;
+  zval **args[2];
+  OTDB::Storable *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_CreateObject. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_StoredObjectType, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of Storage_CreateObject. Expected SWIGTYPE_p_StoredObjectType");
+    }
+    arg2 = *tmp2;
+  }
+  result = (OTDB::Storable *)(arg1)->CreateObject(arg2);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 0);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_Create) {
+  StorageType arg1 ;
+  PackType arg2 ;
+  StorageType *tmp1 ;
+  PackType *tmp2 ;
+  zval **args[2];
+  OTDB::Storage *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &tmp1, SWIGTYPE_p_StorageType, 0) < 0 || tmp1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_Create. Expected SWIGTYPE_p_StorageType");
+    }
+    arg1 = *tmp1;
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_PackType, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of Storage_Create. Expected SWIGTYPE_p_PackType");
+    }
+    arg2 = *tmp2;
+  }
+  result = (OTDB::Storage *)OTDB::Storage::Create(arg1,arg2);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storage, 0);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Storage_GetType) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  zval **args[1];
+  StorageType result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storage, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Storage_GetType. Expected SWIGTYPE_p_OTDB__Storage");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = ((OTDB::Storage const *)arg1)->GetType();
+  {
+    StorageType * resultobj = new StorageType((const StorageType &) result);
+    SWIG_SetPointerZval(return_value, (void *)resultobj, SWIGTYPE_p_StorageType, 1);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_InitDefaultStorage__SWIG_0) {
+  StorageType arg1 ;
+  PackType arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  std::string arg6 ;
+  std::string arg7 ;
+  std::string arg8 ;
+  StorageType *tmp1 ;
+  PackType *tmp2 ;
+  zval **args[8];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 8 || zend_get_parameters_array_ex(8, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &tmp1, SWIGTYPE_p_StorageType, 0) < 0 || tmp1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of InitDefaultStorage. Expected SWIGTYPE_p_StorageType");
+    }
+    arg1 = *tmp1;
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_PackType, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of InitDefaultStorage. Expected SWIGTYPE_p_PackType");
+    }
+    arg2 = *tmp2;
+  }
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  
+  convert_to_string_ex(args[5]);
+  (&arg6)->assign(Z_STRVAL_PP(args[5]), Z_STRLEN_PP(args[5]));
+  
+  
+  convert_to_string_ex(args[6]);
+  (&arg7)->assign(Z_STRVAL_PP(args[6]), Z_STRLEN_PP(args[6]));
+  
+  
+  convert_to_string_ex(args[7]);
+  (&arg8)->assign(Z_STRVAL_PP(args[7]), Z_STRLEN_PP(args[7]));
+  
+  result = (bool)OTDB::InitDefaultStorage(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_InitDefaultStorage__SWIG_1) {
+  StorageType arg1 ;
+  PackType arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  std::string arg6 ;
+  std::string arg7 ;
+  StorageType *tmp1 ;
+  PackType *tmp2 ;
+  zval **args[7];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 7 || zend_get_parameters_array_ex(7, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &tmp1, SWIGTYPE_p_StorageType, 0) < 0 || tmp1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of InitDefaultStorage. Expected SWIGTYPE_p_StorageType");
+    }
+    arg1 = *tmp1;
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_PackType, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of InitDefaultStorage. Expected SWIGTYPE_p_PackType");
+    }
+    arg2 = *tmp2;
+  }
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  
+  convert_to_string_ex(args[5]);
+  (&arg6)->assign(Z_STRVAL_PP(args[5]), Z_STRLEN_PP(args[5]));
+  
+  
+  convert_to_string_ex(args[6]);
+  (&arg7)->assign(Z_STRVAL_PP(args[6]), Z_STRLEN_PP(args[6]));
+  
+  result = (bool)OTDB::InitDefaultStorage(arg1,arg2,arg3,arg4,arg5,arg6,arg7);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_InitDefaultStorage__SWIG_2) {
+  StorageType arg1 ;
+  PackType arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  std::string arg6 ;
+  StorageType *tmp1 ;
+  PackType *tmp2 ;
+  zval **args[6];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 6 || zend_get_parameters_array_ex(6, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &tmp1, SWIGTYPE_p_StorageType, 0) < 0 || tmp1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of InitDefaultStorage. Expected SWIGTYPE_p_StorageType");
+    }
+    arg1 = *tmp1;
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_PackType, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of InitDefaultStorage. Expected SWIGTYPE_p_PackType");
+    }
+    arg2 = *tmp2;
+  }
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  
+  convert_to_string_ex(args[5]);
+  (&arg6)->assign(Z_STRVAL_PP(args[5]), Z_STRLEN_PP(args[5]));
+  
+  result = (bool)OTDB::InitDefaultStorage(arg1,arg2,arg3,arg4,arg5,arg6);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_InitDefaultStorage__SWIG_3) {
+  StorageType arg1 ;
+  PackType arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  StorageType *tmp1 ;
+  PackType *tmp2 ;
+  zval **args[5];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 5 || zend_get_parameters_array_ex(5, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &tmp1, SWIGTYPE_p_StorageType, 0) < 0 || tmp1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of InitDefaultStorage. Expected SWIGTYPE_p_StorageType");
+    }
+    arg1 = *tmp1;
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_PackType, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of InitDefaultStorage. Expected SWIGTYPE_p_PackType");
+    }
+    arg2 = *tmp2;
+  }
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  result = (bool)OTDB::InitDefaultStorage(arg1,arg2,arg3,arg4,arg5);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_InitDefaultStorage__SWIG_4) {
+  StorageType arg1 ;
+  PackType arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  StorageType *tmp1 ;
+  PackType *tmp2 ;
+  zval **args[4];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &tmp1, SWIGTYPE_p_StorageType, 0) < 0 || tmp1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of InitDefaultStorage. Expected SWIGTYPE_p_StorageType");
+    }
+    arg1 = *tmp1;
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_PackType, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of InitDefaultStorage. Expected SWIGTYPE_p_PackType");
+    }
+    arg2 = *tmp2;
+  }
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  result = (bool)OTDB::InitDefaultStorage(arg1,arg2,arg3,arg4);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_InitDefaultStorage__SWIG_5) {
+  StorageType arg1 ;
+  PackType arg2 ;
+  std::string arg3 ;
+  StorageType *tmp1 ;
+  PackType *tmp2 ;
+  zval **args[3];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &tmp1, SWIGTYPE_p_StorageType, 0) < 0 || tmp1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of InitDefaultStorage. Expected SWIGTYPE_p_StorageType");
+    }
+    arg1 = *tmp1;
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_PackType, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of InitDefaultStorage. Expected SWIGTYPE_p_PackType");
+    }
+    arg2 = *tmp2;
+  }
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  result = (bool)OTDB::InitDefaultStorage(arg1,arg2,arg3);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_InitDefaultStorage__SWIG_6) {
+  StorageType arg1 ;
+  PackType arg2 ;
+  StorageType *tmp1 ;
+  PackType *tmp2 ;
+  zval **args[2];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &tmp1, SWIGTYPE_p_StorageType, 0) < 0 || tmp1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of InitDefaultStorage. Expected SWIGTYPE_p_StorageType");
+    }
+    arg1 = *tmp1;
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_PackType, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of InitDefaultStorage. Expected SWIGTYPE_p_PackType");
+    }
+    arg2 = *tmp2;
+  }
+  result = (bool)OTDB::InitDefaultStorage(arg1,arg2);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_InitDefaultStorage) {
+  int argc;
+  zval **argv[8];
+  
+  argc = ZEND_NUM_ARGS();
+  zend_get_parameters_array_ex(argc,argv);
+  if (argc == 2) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void **)&tmp, SWIGTYPE_p_StorageType, 0) >= 0);
+    }
+    if (_v) {
+      {
+        void *tmp;
+        _v = (SWIG_ConvertPtr(*argv[1], (void **)&tmp, SWIGTYPE_p_PackType, 0) >= 0);
+      }
+      if (_v) {
+        _wrap_InitDefaultStorage__SWIG_6(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void **)&tmp, SWIGTYPE_p_StorageType, 0) >= 0);
+    }
+    if (_v) {
+      {
+        void *tmp;
+        _v = (SWIG_ConvertPtr(*argv[1], (void **)&tmp, SWIGTYPE_p_PackType, 0) >= 0);
+      }
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _wrap_InitDefaultStorage__SWIG_5(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void **)&tmp, SWIGTYPE_p_StorageType, 0) >= 0);
+    }
+    if (_v) {
+      {
+        void *tmp;
+        _v = (SWIG_ConvertPtr(*argv[1], (void **)&tmp, SWIGTYPE_p_PackType, 0) >= 0);
+      }
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _wrap_InitDefaultStorage__SWIG_4(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+          }
+        }
+      }
+    }
+  }
+  if (argc == 5) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void **)&tmp, SWIGTYPE_p_StorageType, 0) >= 0);
+    }
+    if (_v) {
+      {
+        void *tmp;
+        _v = (SWIG_ConvertPtr(*argv[1], (void **)&tmp, SWIGTYPE_p_PackType, 0) >= 0);
+      }
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _wrap_InitDefaultStorage__SWIG_3(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+            }
+          }
+        }
+      }
+    }
+  }
+  if (argc == 6) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void **)&tmp, SWIGTYPE_p_StorageType, 0) >= 0);
+    }
+    if (_v) {
+      {
+        void *tmp;
+        _v = (SWIG_ConvertPtr(*argv[1], (void **)&tmp, SWIGTYPE_p_PackType, 0) >= 0);
+      }
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _v = ( Z_TYPE_PP(argv[5]) == IS_STRING ) ? 1 : 0;
+              
+              if (_v) {
+                _wrap_InitDefaultStorage__SWIG_2(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  if (argc == 7) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void **)&tmp, SWIGTYPE_p_StorageType, 0) >= 0);
+    }
+    if (_v) {
+      {
+        void *tmp;
+        _v = (SWIG_ConvertPtr(*argv[1], (void **)&tmp, SWIGTYPE_p_PackType, 0) >= 0);
+      }
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _v = ( Z_TYPE_PP(argv[5]) == IS_STRING ) ? 1 : 0;
+              
+              if (_v) {
+                _v = ( Z_TYPE_PP(argv[6]) == IS_STRING ) ? 1 : 0;
+                
+                if (_v) {
+                  _wrap_InitDefaultStorage__SWIG_1(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  if (argc == 8) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void **)&tmp, SWIGTYPE_p_StorageType, 0) >= 0);
+    }
+    if (_v) {
+      {
+        void *tmp;
+        _v = (SWIG_ConvertPtr(*argv[1], (void **)&tmp, SWIGTYPE_p_PackType, 0) >= 0);
+      }
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _v = ( Z_TYPE_PP(argv[5]) == IS_STRING ) ? 1 : 0;
+              
+              if (_v) {
+                _v = ( Z_TYPE_PP(argv[6]) == IS_STRING ) ? 1 : 0;
+                
+                if (_v) {
+                  _v = ( Z_TYPE_PP(argv[7]) == IS_STRING ) ? 1 : 0;
+                  
+                  if (_v) {
+                    _wrap_InitDefaultStorage__SWIG_0(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  SWIG_ErrorCode() = E_ERROR;
+  SWIG_ErrorMsg() = "No matching function for overloaded 'InitDefaultStorage'";
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_GetDefaultStorage) {
+  OTDB::Storage *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 0) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  result = (OTDB::Storage *)OTDB::GetDefaultStorage();
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storage, 0);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_CreateStorageContext__SWIG_0) {
+  StorageType arg1 ;
+  PackType arg2 ;
+  StorageType *tmp1 ;
+  PackType *tmp2 ;
+  zval **args[2];
+  OTDB::Storage *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &tmp1, SWIGTYPE_p_StorageType, 0) < 0 || tmp1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of CreateStorageContext. Expected SWIGTYPE_p_StorageType");
+    }
+    arg1 = *tmp1;
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_PackType, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of CreateStorageContext. Expected SWIGTYPE_p_PackType");
+    }
+    arg2 = *tmp2;
+  }
+  result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1,arg2);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storage, 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_CreateStorageContext__SWIG_1) {
+  StorageType arg1 ;
+  StorageType *tmp1 ;
+  zval **args[1];
+  OTDB::Storage *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &tmp1, SWIGTYPE_p_StorageType, 0) < 0 || tmp1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of CreateStorageContext. Expected SWIGTYPE_p_StorageType");
+    }
+    arg1 = *tmp1;
+  }
+  result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storage, 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_CreateStorageContext) {
+  int argc;
+  zval **argv[2];
+  
+  argc = ZEND_NUM_ARGS();
+  zend_get_parameters_array_ex(argc,argv);
+  if (argc == 1) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void **)&tmp, SWIGTYPE_p_StorageType, 0) >= 0);
+    }
+    if (_v) {
+      _wrap_CreateStorageContext__SWIG_1(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void **)&tmp, SWIGTYPE_p_StorageType, 0) >= 0);
+    }
+    if (_v) {
+      {
+        void *tmp;
+        _v = (SWIG_ConvertPtr(*argv[1], (void **)&tmp, SWIGTYPE_p_PackType, 0) >= 0);
+      }
+      if (_v) {
+        _wrap_CreateStorageContext__SWIG_0(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+      }
+    }
+  }
+  
+  SWIG_ErrorCode() = E_ERROR;
+  SWIG_ErrorMsg() = "No matching function for overloaded 'CreateStorageContext'";
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_CreateObject) {
+  StoredObjectType arg1 ;
+  StoredObjectType *tmp1 ;
+  zval **args[1];
+  OTDB::Storable *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &tmp1, SWIGTYPE_p_StoredObjectType, 0) < 0 || tmp1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of CreateObject. Expected SWIGTYPE_p_StoredObjectType");
+    }
+    arg1 = *tmp1;
+  }
+  result = (OTDB::Storable *)OTDB::CreateObject(arg1);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 0);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Exists__SWIG_0) {
+  std::string arg1 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  zval **args[4];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  
+  convert_to_string_ex(args[0]);
+  (&arg1)->assign(Z_STRVAL_PP(args[0]), Z_STRLEN_PP(args[0]));
+  
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  result = (bool)OTDB::Exists(arg1,arg2,arg3,arg4);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Exists__SWIG_1) {
+  std::string arg1 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  zval **args[3];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  
+  convert_to_string_ex(args[0]);
+  (&arg1)->assign(Z_STRVAL_PP(args[0]), Z_STRLEN_PP(args[0]));
+  
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  result = (bool)OTDB::Exists(arg1,arg2,arg3);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Exists__SWIG_2) {
+  std::string arg1 ;
+  std::string arg2 ;
+  zval **args[2];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  
+  convert_to_string_ex(args[0]);
+  (&arg1)->assign(Z_STRVAL_PP(args[0]), Z_STRLEN_PP(args[0]));
+  
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  result = (bool)OTDB::Exists(arg1,arg2);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Exists__SWIG_3) {
+  std::string arg1 ;
+  zval **args[1];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  
+  convert_to_string_ex(args[0]);
+  (&arg1)->assign(Z_STRVAL_PP(args[0]), Z_STRLEN_PP(args[0]));
+  
+  result = (bool)OTDB::Exists(arg1);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Exists) {
+  int argc;
+  zval **argv[4];
+  
+  argc = ZEND_NUM_ARGS();
+  zend_get_parameters_array_ex(argc,argv);
+  if (argc == 1) {
+    int _v;
+    
+    _v = ( Z_TYPE_PP(argv[0]) == IS_STRING ) ? 1 : 0;
+    
+    if (_v) {
+      _wrap_Exists__SWIG_3(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    
+    _v = ( Z_TYPE_PP(argv[0]) == IS_STRING ) ? 1 : 0;
+    
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _wrap_Exists__SWIG_2(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    
+    _v = ( Z_TYPE_PP(argv[0]) == IS_STRING ) ? 1 : 0;
+    
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _wrap_Exists__SWIG_1(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    
+    _v = ( Z_TYPE_PP(argv[0]) == IS_STRING ) ? 1 : 0;
+    
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _wrap_Exists__SWIG_0(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+          }
+        }
+      }
+    }
+  }
+  
+  SWIG_ErrorCode() = E_ERROR;
+  SWIG_ErrorMsg() = "No matching function for overloaded 'Exists'";
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_StoreString__SWIG_0) {
+  std::string arg1 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  zval **args[5];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 5 || zend_get_parameters_array_ex(5, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  
+  convert_to_string_ex(args[0]);
+  (&arg1)->assign(Z_STRVAL_PP(args[0]), Z_STRLEN_PP(args[0]));
+  
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  result = (bool)OTDB::StoreString(arg1,arg2,arg3,arg4,arg5);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_StoreString__SWIG_1) {
+  std::string arg1 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  zval **args[4];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  
+  convert_to_string_ex(args[0]);
+  (&arg1)->assign(Z_STRVAL_PP(args[0]), Z_STRLEN_PP(args[0]));
+  
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  result = (bool)OTDB::StoreString(arg1,arg2,arg3,arg4);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_StoreString__SWIG_2) {
+  std::string arg1 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  zval **args[3];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  
+  convert_to_string_ex(args[0]);
+  (&arg1)->assign(Z_STRVAL_PP(args[0]), Z_STRLEN_PP(args[0]));
+  
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  result = (bool)OTDB::StoreString(arg1,arg2,arg3);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_StoreString__SWIG_3) {
+  std::string arg1 ;
+  std::string arg2 ;
+  zval **args[2];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  
+  convert_to_string_ex(args[0]);
+  (&arg1)->assign(Z_STRVAL_PP(args[0]), Z_STRLEN_PP(args[0]));
+  
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  result = (bool)OTDB::StoreString(arg1,arg2);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_StoreString) {
+  int argc;
+  zval **argv[5];
+  
+  argc = ZEND_NUM_ARGS();
+  zend_get_parameters_array_ex(argc,argv);
+  if (argc == 2) {
+    int _v;
+    
+    _v = ( Z_TYPE_PP(argv[0]) == IS_STRING ) ? 1 : 0;
+    
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _wrap_StoreString__SWIG_3(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    
+    _v = ( Z_TYPE_PP(argv[0]) == IS_STRING ) ? 1 : 0;
+    
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _wrap_StoreString__SWIG_2(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    
+    _v = ( Z_TYPE_PP(argv[0]) == IS_STRING ) ? 1 : 0;
+    
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _wrap_StoreString__SWIG_1(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+          }
+        }
+      }
+    }
+  }
+  if (argc == 5) {
+    int _v;
+    
+    _v = ( Z_TYPE_PP(argv[0]) == IS_STRING ) ? 1 : 0;
+    
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _wrap_StoreString__SWIG_0(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  SWIG_ErrorCode() = E_ERROR;
+  SWIG_ErrorMsg() = "No matching function for overloaded 'StoreString'";
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_QueryString__SWIG_0) {
+  std::string arg1 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  zval **args[4];
+  std::string result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  
+  convert_to_string_ex(args[0]);
+  (&arg1)->assign(Z_STRVAL_PP(args[0]), Z_STRLEN_PP(args[0]));
+  
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  result = OTDB::QueryString(arg1,arg2,arg3,arg4);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>((&result)->data()), (&result)->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_QueryString__SWIG_1) {
+  std::string arg1 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  zval **args[3];
+  std::string result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  
+  convert_to_string_ex(args[0]);
+  (&arg1)->assign(Z_STRVAL_PP(args[0]), Z_STRLEN_PP(args[0]));
+  
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  result = OTDB::QueryString(arg1,arg2,arg3);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>((&result)->data()), (&result)->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_QueryString__SWIG_2) {
+  std::string arg1 ;
+  std::string arg2 ;
+  zval **args[2];
+  std::string result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  
+  convert_to_string_ex(args[0]);
+  (&arg1)->assign(Z_STRVAL_PP(args[0]), Z_STRLEN_PP(args[0]));
+  
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  result = OTDB::QueryString(arg1,arg2);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>((&result)->data()), (&result)->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_QueryString__SWIG_3) {
+  std::string arg1 ;
+  zval **args[1];
+  std::string result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  
+  convert_to_string_ex(args[0]);
+  (&arg1)->assign(Z_STRVAL_PP(args[0]), Z_STRLEN_PP(args[0]));
+  
+  result = OTDB::QueryString(arg1);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>((&result)->data()), (&result)->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_QueryString) {
+  int argc;
+  zval **argv[4];
+  
+  argc = ZEND_NUM_ARGS();
+  zend_get_parameters_array_ex(argc,argv);
+  if (argc == 1) {
+    int _v;
+    
+    _v = ( Z_TYPE_PP(argv[0]) == IS_STRING ) ? 1 : 0;
+    
+    if (_v) {
+      _wrap_QueryString__SWIG_3(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    
+    _v = ( Z_TYPE_PP(argv[0]) == IS_STRING ) ? 1 : 0;
+    
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _wrap_QueryString__SWIG_2(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    
+    _v = ( Z_TYPE_PP(argv[0]) == IS_STRING ) ? 1 : 0;
+    
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _wrap_QueryString__SWIG_1(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    
+    _v = ( Z_TYPE_PP(argv[0]) == IS_STRING ) ? 1 : 0;
+    
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _wrap_QueryString__SWIG_0(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+          }
+        }
+      }
+    }
+  }
+  
+  SWIG_ErrorCode() = E_ERROR;
+  SWIG_ErrorMsg() = "No matching function for overloaded 'QueryString'";
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_StoreObject__SWIG_0) {
+  OTDB::Storable *arg1 = 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  zval **args[5];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 5 || zend_get_parameters_array_ex(5, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storable, 0) < 0 || arg1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of StoreObject. Expected SWIGTYPE_p_OTDB__Storable");
+    }
+  }
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  result = (bool)OTDB::StoreObject(*arg1,arg2,arg3,arg4,arg5);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_StoreObject__SWIG_1) {
+  OTDB::Storable *arg1 = 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  zval **args[4];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storable, 0) < 0 || arg1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of StoreObject. Expected SWIGTYPE_p_OTDB__Storable");
+    }
+  }
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  result = (bool)OTDB::StoreObject(*arg1,arg2,arg3,arg4);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_StoreObject__SWIG_2) {
+  OTDB::Storable *arg1 = 0 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  zval **args[3];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storable, 0) < 0 || arg1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of StoreObject. Expected SWIGTYPE_p_OTDB__Storable");
+    }
+  }
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  result = (bool)OTDB::StoreObject(*arg1,arg2,arg3);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_StoreObject__SWIG_3) {
+  OTDB::Storable *arg1 = 0 ;
+  std::string arg2 ;
+  zval **args[2];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storable, 0) < 0 || arg1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of StoreObject. Expected SWIGTYPE_p_OTDB__Storable");
+    }
+  }
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  result = (bool)OTDB::StoreObject(*arg1,arg2);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_StoreObject) {
+  int argc;
+  zval **argv[5];
+  
+  argc = ZEND_NUM_ARGS();
+  zend_get_parameters_array_ex(argc,argv);
+  if (argc == 2) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storable, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _wrap_StoreObject__SWIG_3(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storable, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _wrap_StoreObject__SWIG_2(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storable, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _wrap_StoreObject__SWIG_1(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+          }
+        }
+      }
+    }
+  }
+  if (argc == 5) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void**)&tmp, SWIGTYPE_p_OTDB__Storable, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _wrap_StoreObject__SWIG_0(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  SWIG_ErrorCode() = E_ERROR;
+  SWIG_ErrorMsg() = "No matching function for overloaded 'StoreObject'";
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_QueryObject__SWIG_0) {
+  StoredObjectType arg1 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  std::string arg5 ;
+  StoredObjectType *tmp1 ;
+  zval **args[5];
+  OTDB::Storable *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 5 || zend_get_parameters_array_ex(5, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &tmp1, SWIGTYPE_p_StoredObjectType, 0) < 0 || tmp1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of QueryObject. Expected SWIGTYPE_p_StoredObjectType");
+    }
+    arg1 = *tmp1;
+  }
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  
+  convert_to_string_ex(args[4]);
+  (&arg5)->assign(Z_STRVAL_PP(args[4]), Z_STRLEN_PP(args[4]));
+  
+  result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3,arg4,arg5);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_QueryObject__SWIG_1) {
+  StoredObjectType arg1 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  std::string arg4 ;
+  StoredObjectType *tmp1 ;
+  zval **args[4];
+  OTDB::Storable *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &tmp1, SWIGTYPE_p_StoredObjectType, 0) < 0 || tmp1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of QueryObject. Expected SWIGTYPE_p_StoredObjectType");
+    }
+    arg1 = *tmp1;
+  }
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  
+  convert_to_string_ex(args[3]);
+  (&arg4)->assign(Z_STRVAL_PP(args[3]), Z_STRLEN_PP(args[3]));
+  
+  result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3,arg4);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_QueryObject__SWIG_2) {
+  StoredObjectType arg1 ;
+  std::string arg2 ;
+  std::string arg3 ;
+  StoredObjectType *tmp1 ;
+  zval **args[3];
+  OTDB::Storable *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &tmp1, SWIGTYPE_p_StoredObjectType, 0) < 0 || tmp1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of QueryObject. Expected SWIGTYPE_p_StoredObjectType");
+    }
+    arg1 = *tmp1;
+  }
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  
+  convert_to_string_ex(args[2]);
+  (&arg3)->assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  
+  result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_QueryObject__SWIG_3) {
+  StoredObjectType arg1 ;
+  std::string arg2 ;
+  StoredObjectType *tmp1 ;
+  zval **args[2];
+  OTDB::Storable *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &tmp1, SWIGTYPE_p_StoredObjectType, 0) < 0 || tmp1 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of QueryObject. Expected SWIGTYPE_p_StoredObjectType");
+    }
+    arg1 = *tmp1;
+  }
+  
+  convert_to_string_ex(args[1]);
+  (&arg2)->assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  
+  result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_QueryObject) {
+  int argc;
+  zval **argv[5];
+  
+  argc = ZEND_NUM_ARGS();
+  zend_get_parameters_array_ex(argc,argv);
+  if (argc == 2) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void **)&tmp, SWIGTYPE_p_StoredObjectType, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _wrap_QueryObject__SWIG_3(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void **)&tmp, SWIGTYPE_p_StoredObjectType, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _wrap_QueryObject__SWIG_2(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+        }
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void **)&tmp, SWIGTYPE_p_StoredObjectType, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _wrap_QueryObject__SWIG_1(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+          }
+        }
+      }
+    }
+  }
+  if (argc == 5) {
+    int _v;
+    {
+      void *tmp;
+      _v = (SWIG_ConvertPtr(*argv[0], (void **)&tmp, SWIGTYPE_p_StoredObjectType, 0) >= 0);
+    }
+    if (_v) {
+      _v = ( Z_TYPE_PP(argv[1]) == IS_STRING ) ? 1 : 0;
+      
+      if (_v) {
+        _v = ( Z_TYPE_PP(argv[2]) == IS_STRING ) ? 1 : 0;
+        
+        if (_v) {
+          _v = ( Z_TYPE_PP(argv[3]) == IS_STRING ) ? 1 : 0;
+          
+          if (_v) {
+            _v = ( Z_TYPE_PP(argv[4]) == IS_STRING ) ? 1 : 0;
+            
+            if (_v) {
+              _wrap_QueryObject__SWIG_0(INTERNAL_FUNCTION_PARAM_PASSTHRU); return;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  SWIG_ErrorCode() = E_ERROR;
+  SWIG_ErrorMsg() = "No matching function for overloaded 'QueryObject'";
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
+static void __wrap_delete_StringMap(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  OTDB::StringMap *arg1 = (OTDB::StringMap *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (OTDB::StringMap *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_OTDB__StringMap TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "OTDB::StringMap resource already free'd");
+  delete arg1;
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_StringMap_the_map_set) {
+  OTDB::StringMap *arg1 = (OTDB::StringMap *) 0 ;
+  std::map< std::string,std::string > *arg2 = (std::map< std::string,std::string > *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__StringMap, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of StringMap_the_map_set. Expected SWIGTYPE_p_OTDB__StringMap");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_std__mapT_std__string_std__string_t, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of StringMap_the_map_set. Expected SWIGTYPE_p_std__mapT_std__string_std__string_t");
+    }
+  }
+  if (arg1) (arg1)->the_map = *arg2;
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_StringMap_the_map_get) {
+  OTDB::StringMap *arg1 = (OTDB::StringMap *) 0 ;
+  zval **args[1];
+  std::map< std::string,std::string > *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__StringMap, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of StringMap_the_map_get. Expected SWIGTYPE_p_OTDB__StringMap");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (std::map< std::string,std::string > *)& ((arg1)->the_map);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_std__mapT_std__string_std__string_t, 0);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_StringMap_SetValue) {
+  OTDB::StringMap *arg1 = (OTDB::StringMap *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string *arg3 = 0 ;
+  std::string temp2 ;
+  std::string temp3 ;
+  zval **args[3];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__StringMap, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of StringMap_SetValue. Expected SWIGTYPE_p_OTDB__StringMap");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  temp2.assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  arg2 = &temp2;
+  
+  
+  convert_to_string_ex(args[2]);
+  temp3.assign(Z_STRVAL_PP(args[2]), Z_STRLEN_PP(args[2]));
+  arg3 = &temp3;
+  
+  (arg1)->SetValue((std::string const &)*arg2,(std::string const &)*arg3);
+  
+  
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_StringMap_GetValue) {
+  OTDB::StringMap *arg1 = (OTDB::StringMap *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  zval **args[2];
+  std::string result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__StringMap, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of StringMap_GetValue. Expected SWIGTYPE_p_OTDB__StringMap");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  temp2.assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  arg2 = &temp2;
+  
+  result = (arg1)->GetValue((std::string const &)*arg2);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>((&result)->data()), (&result)->size(), 1);
+  
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
+static void __wrap_delete_Displayable(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  OTDB::Displayable *arg1 = (OTDB::Displayable *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (OTDB::Displayable *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_OTDB__Displayable TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "OTDB::Displayable resource already free'd");
+  delete arg1;
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Displayable_gui_label_set) {
+  OTDB::Displayable *arg1 = (OTDB::Displayable *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Displayable, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Displayable_gui_label_set. Expected SWIGTYPE_p_OTDB__Displayable");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  temp2.assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  arg2 = &temp2;
+  
+  if (arg1) (arg1)->gui_label = *arg2;
+  
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Displayable_gui_label_get) {
+  OTDB::Displayable *arg1 = (OTDB::Displayable *) 0 ;
+  zval **args[1];
+  std::string *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Displayable, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Displayable_gui_label_get. Expected SWIGTYPE_p_OTDB__Displayable");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (std::string *) & ((arg1)->gui_label);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>(result->data()), result->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
+static void __wrap_delete_Acct(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  OTDB::Acct *arg1 = (OTDB::Acct *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (OTDB::Acct *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_OTDB__Acct TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "OTDB::Acct resource already free'd");
+  delete arg1;
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Acct_acct_id_set) {
+  OTDB::Acct *arg1 = (OTDB::Acct *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Acct, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Acct_acct_id_set. Expected SWIGTYPE_p_OTDB__Acct");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  temp2.assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  arg2 = &temp2;
+  
+  if (arg1) (arg1)->acct_id = *arg2;
+  
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Acct_acct_id_get) {
+  OTDB::Acct *arg1 = (OTDB::Acct *) 0 ;
+  zval **args[1];
+  std::string *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Acct, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Acct_acct_id_get. Expected SWIGTYPE_p_OTDB__Acct");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (std::string *) & ((arg1)->acct_id);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>(result->data()), result->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Acct_server_id_set) {
+  OTDB::Acct *arg1 = (OTDB::Acct *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Acct, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Acct_server_id_set. Expected SWIGTYPE_p_OTDB__Acct");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  temp2.assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  arg2 = &temp2;
+  
+  if (arg1) (arg1)->server_id = *arg2;
+  
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Acct_server_id_get) {
+  OTDB::Acct *arg1 = (OTDB::Acct *) 0 ;
+  zval **args[1];
+  std::string *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Acct, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Acct_server_id_get. Expected SWIGTYPE_p_OTDB__Acct");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (std::string *) & ((arg1)->server_id);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>(result->data()), result->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
+static void __wrap_delete_BitcoinAcct(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (OTDB::BitcoinAcct *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_OTDB__BitcoinAcct TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "OTDB::BitcoinAcct resource already free'd");
+  delete arg1;
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_BitcoinAcct_bitcoin_acct_name_set) {
+  OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__BitcoinAcct, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of BitcoinAcct_bitcoin_acct_name_set. Expected SWIGTYPE_p_OTDB__BitcoinAcct");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  temp2.assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  arg2 = &temp2;
+  
+  if (arg1) (arg1)->bitcoin_acct_name = *arg2;
+  
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_BitcoinAcct_bitcoin_acct_name_get) {
+  OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) 0 ;
+  zval **args[1];
+  std::string *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__BitcoinAcct, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of BitcoinAcct_bitcoin_acct_name_get. Expected SWIGTYPE_p_OTDB__BitcoinAcct");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (std::string *) & ((arg1)->bitcoin_acct_name);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>(result->data()), result->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
+static void __wrap_delete_Server(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (OTDB::Server *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_OTDB__Server TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "OTDB::Server resource already free'd");
+  delete arg1;
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Server_server_id_set) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Server, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Server_server_id_set. Expected SWIGTYPE_p_OTDB__Server");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  temp2.assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  arg2 = &temp2;
+  
+  if (arg1) (arg1)->server_id = *arg2;
+  
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Server_server_id_get) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  zval **args[1];
+  std::string *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Server, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Server_server_id_get. Expected SWIGTYPE_p_OTDB__Server");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (std::string *) & ((arg1)->server_id);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>(result->data()), result->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Server_server_type_set) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Server, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Server_server_type_set. Expected SWIGTYPE_p_OTDB__Server");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  temp2.assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  arg2 = &temp2;
+  
+  if (arg1) (arg1)->server_type = *arg2;
+  
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Server_server_type_get) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  zval **args[1];
+  std::string *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Server, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Server_server_type_get. Expected SWIGTYPE_p_OTDB__Server");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (std::string *) & ((arg1)->server_type);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>(result->data()), result->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Server_server_host_set) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Server, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Server_server_host_set. Expected SWIGTYPE_p_OTDB__Server");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  temp2.assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  arg2 = &temp2;
+  
+  if (arg1) (arg1)->server_host = *arg2;
+  
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Server_server_host_get) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  zval **args[1];
+  std::string *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Server, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Server_server_host_get. Expected SWIGTYPE_p_OTDB__Server");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (std::string *) & ((arg1)->server_host);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>(result->data()), result->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Server_server_port_set) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Server, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Server_server_port_set. Expected SWIGTYPE_p_OTDB__Server");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  temp2.assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  arg2 = &temp2;
+  
+  if (arg1) (arg1)->server_port = *arg2;
+  
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Server_server_port_get) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  zval **args[1];
+  std::string *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Server, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Server_server_port_get. Expected SWIGTYPE_p_OTDB__Server");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (std::string *) & ((arg1)->server_port);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>(result->data()), result->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
+static void __wrap_delete_BitcoinServer(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (OTDB::BitcoinServer *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_OTDB__BitcoinServer TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "OTDB::BitcoinServer resource already free'd");
+  delete arg1;
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_BitcoinServer_bitcoin_username_set) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__BitcoinServer, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of BitcoinServer_bitcoin_username_set. Expected SWIGTYPE_p_OTDB__BitcoinServer");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  temp2.assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  arg2 = &temp2;
+  
+  if (arg1) (arg1)->bitcoin_username = *arg2;
+  
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_BitcoinServer_bitcoin_username_get) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  zval **args[1];
+  std::string *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__BitcoinServer, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of BitcoinServer_bitcoin_username_get. Expected SWIGTYPE_p_OTDB__BitcoinServer");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (std::string *) & ((arg1)->bitcoin_username);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>(result->data()), result->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_BitcoinServer_bitcoin_password_set) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *arg2 = 0 ;
+  std::string temp2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__BitcoinServer, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of BitcoinServer_bitcoin_password_set. Expected SWIGTYPE_p_OTDB__BitcoinServer");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  convert_to_string_ex(args[1]);
+  temp2.assign(Z_STRVAL_PP(args[1]), Z_STRLEN_PP(args[1]));
+  arg2 = &temp2;
+  
+  if (arg1) (arg1)->bitcoin_password = *arg2;
+  
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_BitcoinServer_bitcoin_password_get) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  zval **args[1];
+  std::string *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__BitcoinServer, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of BitcoinServer_bitcoin_password_get. Expected SWIGTYPE_p_OTDB__BitcoinServer");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (std::string *) & ((arg1)->bitcoin_password);
+  
+  ZVAL_STRINGL(return_value, const_cast<char*>(result->data()), result->size(), 1);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
+static void __wrap_delete_WalletData(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (OTDB::WalletData *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_OTDB__WalletData TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "OTDB::WalletData resource already free'd");
+  delete arg1;
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_WalletData_GetBitcoinServerCount) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  zval **args[1];
+  size_t result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__WalletData, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of WalletData_GetBitcoinServerCount. Expected SWIGTYPE_p_OTDB__WalletData");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (arg1)->GetBitcoinServerCount();
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_WalletData_GetBitcoinServer) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  zval **args[2];
+  OTDB::BitcoinServer *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__WalletData, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of WalletData_GetBitcoinServer. Expected SWIGTYPE_p_OTDB__WalletData");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/usr/local/share/swig/2.0.3/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[1]);
+  arg2 = (size_t) Z_LVAL_PP(args[1]);
+  /*@SWIG@*/;
+  
+  result = (OTDB::BitcoinServer *)(arg1)->GetBitcoinServer(arg2);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__BitcoinServer, 0);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_WalletData_RemoveBitcoinServer) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  zval **args[2];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__WalletData, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of WalletData_RemoveBitcoinServer. Expected SWIGTYPE_p_OTDB__WalletData");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/usr/local/share/swig/2.0.3/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[1]);
+  arg2 = (size_t) Z_LVAL_PP(args[1]);
+  /*@SWIG@*/;
+  
+  result = (bool)(arg1)->RemoveBitcoinServer(arg2);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_WalletData_AddBitcoinServer) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  OTDB::BitcoinServer *arg2 = 0 ;
+  zval **args[2];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__WalletData, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of WalletData_AddBitcoinServer. Expected SWIGTYPE_p_OTDB__WalletData");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_OTDB__BitcoinServer, 0) < 0 || arg2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of WalletData_AddBitcoinServer. Expected SWIGTYPE_p_OTDB__BitcoinServer");
+    }
+  }
+  result = (bool)(arg1)->AddBitcoinServer(*arg2);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_WalletData_GetBitcoinAcctCount) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  zval **args[1];
+  size_t result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__WalletData, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of WalletData_GetBitcoinAcctCount. Expected SWIGTYPE_p_OTDB__WalletData");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (arg1)->GetBitcoinAcctCount();
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_WalletData_GetBitcoinAcct) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  zval **args[2];
+  OTDB::BitcoinAcct *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__WalletData, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of WalletData_GetBitcoinAcct. Expected SWIGTYPE_p_OTDB__WalletData");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/usr/local/share/swig/2.0.3/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[1]);
+  arg2 = (size_t) Z_LVAL_PP(args[1]);
+  /*@SWIG@*/;
+  
+  result = (OTDB::BitcoinAcct *)(arg1)->GetBitcoinAcct(arg2);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__BitcoinAcct, 0);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_WalletData_RemoveBitcoinAcct) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  zval **args[2];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__WalletData, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of WalletData_RemoveBitcoinAcct. Expected SWIGTYPE_p_OTDB__WalletData");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/usr/local/share/swig/2.0.3/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[1]);
+  arg2 = (size_t) Z_LVAL_PP(args[1]);
+  /*@SWIG@*/;
+  
+  result = (bool)(arg1)->RemoveBitcoinAcct(arg2);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_WalletData_AddBitcoinAcct) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  OTDB::BitcoinAcct *arg2 = 0 ;
+  zval **args[2];
+  bool result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__WalletData, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of WalletData_AddBitcoinAcct. Expected SWIGTYPE_p_OTDB__WalletData");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_OTDB__BitcoinAcct, 0) < 0 || arg2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of WalletData_AddBitcoinAcct. Expected SWIGTYPE_p_OTDB__BitcoinAcct");
+    }
+  }
+  result = (bool)(arg1)->AddBitcoinAcct(*arg2);
+  {
+    ZVAL_BOOL(return_value,(result)?1:0);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTDB__Server) {
+  __wrap_delete_Server(rsrc, SWIGTYPE_p_OTDB__Server->name TSRMLS_CC);
+}
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTCaller) {
   __wrap_delete_OTCaller(rsrc, SWIGTYPE_p_OTCaller->name TSRMLS_CC);
 }
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTDB__StringMap) {
+  __wrap_delete_StringMap(rsrc, SWIGTYPE_p_OTDB__StringMap->name TSRMLS_CC);
+}
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTDB__BitcoinServer) {
+  __wrap_delete_BitcoinServer(rsrc, SWIGTYPE_p_OTDB__BitcoinServer->name TSRMLS_CC);
+}
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_StoredObjectType) {
+  /* No destructor for simple type _p_StoredObjectType */
+  efree(rsrc->ptr);
+}
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTCallback) {
   __wrap_delete_OTCallback(rsrc, SWIGTYPE_p_OTCallback->name TSRMLS_CC);
+}
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTDB__Displayable) {
+  __wrap_delete_Displayable(rsrc, SWIGTYPE_p_OTDB__Displayable->name TSRMLS_CC);
+}
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTDB__WalletData) {
+  __wrap_delete_WalletData(rsrc, SWIGTYPE_p_OTDB__WalletData->name TSRMLS_CC);
+}
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTDB__Storable) {
+  __wrap_delete_Storable(rsrc, SWIGTYPE_p_OTDB__Storable->name TSRMLS_CC);
+}
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTDB__BitcoinAcct) {
+  __wrap_delete_BitcoinAcct(rsrc, SWIGTYPE_p_OTDB__BitcoinAcct->name TSRMLS_CC);
+}
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_StorageType) {
+  /* No destructor for simple type _p_StorageType */
+  efree(rsrc->ptr);
+}
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_PackType) {
+  /* No destructor for simple type _p_PackType */
+  efree(rsrc->ptr);
+}
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTDB__Storage) {
+  __wrap_delete_Storage(rsrc, SWIGTYPE_p_OTDB__Storage->name TSRMLS_CC);
+}
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_std__mapT_std__string_std__string_t) {
+  /* No destructor for simple type _p_std__mapT_std__string_std__string_t */
+  efree(rsrc->ptr);
+}
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTDB__Acct) {
+  __wrap_delete_Acct(rsrc, SWIGTYPE_p_OTDB__Acct->name TSRMLS_CC);
 }
 /* end wrapper section */
 /* class entry subsection */
@@ -9160,6 +14237,57 @@ static zend_function_entry otapi_functions[] = {
  SWIG_ZEND_NAMED_FE(ot_api_message_getnewacctid,_wrap_OT_API_Message_GetNewAcctID,NULL)
  SWIG_ZEND_NAMED_FE(ot_api_connectserver,_wrap_OT_API_ConnectServer,NULL)
  SWIG_ZEND_NAMED_FE(ot_api_processsockets,_wrap_OT_API_ProcessSockets,NULL)
+ SWIG_ZEND_NAMED_FE(storable_create,_wrap_Storable_Create,NULL)
+ SWIG_ZEND_NAMED_FE(storage_init,_wrap_Storage_Init,NULL)
+ SWIG_ZEND_NAMED_FE(storage_exists,_wrap_Storage_Exists,NULL)
+ SWIG_ZEND_NAMED_FE(storage_storestring,_wrap_Storage_StoreString,NULL)
+ SWIG_ZEND_NAMED_FE(storage_querystring,_wrap_Storage_QueryString,NULL)
+ SWIG_ZEND_NAMED_FE(storage_storeobject,_wrap_Storage_StoreObject,NULL)
+ SWIG_ZEND_NAMED_FE(storage_queryobject,_wrap_Storage_QueryObject,NULL)
+ SWIG_ZEND_NAMED_FE(storage_createobject,_wrap_Storage_CreateObject,NULL)
+ SWIG_ZEND_NAMED_FE(storage_create,_wrap_Storage_Create,NULL)
+ SWIG_ZEND_NAMED_FE(storage_gettype,_wrap_Storage_GetType,NULL)
+ SWIG_ZEND_NAMED_FE(initdefaultstorage,_wrap_InitDefaultStorage,NULL)
+ SWIG_ZEND_NAMED_FE(getdefaultstorage,_wrap_GetDefaultStorage,NULL)
+ SWIG_ZEND_NAMED_FE(createstoragecontext,_wrap_CreateStorageContext,NULL)
+ SWIG_ZEND_NAMED_FE(createobject,_wrap_CreateObject,NULL)
+ SWIG_ZEND_NAMED_FE(exists,_wrap_Exists,NULL)
+ SWIG_ZEND_NAMED_FE(storestring,_wrap_StoreString,NULL)
+ SWIG_ZEND_NAMED_FE(querystring,_wrap_QueryString,NULL)
+ SWIG_ZEND_NAMED_FE(storeobject,_wrap_StoreObject,NULL)
+ SWIG_ZEND_NAMED_FE(queryobject,_wrap_QueryObject,NULL)
+ SWIG_ZEND_NAMED_FE(stringmap_the_map_set,_wrap_StringMap_the_map_set,NULL)
+ SWIG_ZEND_NAMED_FE(stringmap_the_map_get,_wrap_StringMap_the_map_get,NULL)
+ SWIG_ZEND_NAMED_FE(stringmap_setvalue,_wrap_StringMap_SetValue,NULL)
+ SWIG_ZEND_NAMED_FE(stringmap_getvalue,_wrap_StringMap_GetValue,NULL)
+ SWIG_ZEND_NAMED_FE(displayable_gui_label_set,_wrap_Displayable_gui_label_set,NULL)
+ SWIG_ZEND_NAMED_FE(displayable_gui_label_get,_wrap_Displayable_gui_label_get,NULL)
+ SWIG_ZEND_NAMED_FE(acct_acct_id_set,_wrap_Acct_acct_id_set,NULL)
+ SWIG_ZEND_NAMED_FE(acct_acct_id_get,_wrap_Acct_acct_id_get,NULL)
+ SWIG_ZEND_NAMED_FE(acct_server_id_set,_wrap_Acct_server_id_set,NULL)
+ SWIG_ZEND_NAMED_FE(acct_server_id_get,_wrap_Acct_server_id_get,NULL)
+ SWIG_ZEND_NAMED_FE(bitcoinacct_bitcoin_acct_name_set,_wrap_BitcoinAcct_bitcoin_acct_name_set,NULL)
+ SWIG_ZEND_NAMED_FE(bitcoinacct_bitcoin_acct_name_get,_wrap_BitcoinAcct_bitcoin_acct_name_get,NULL)
+ SWIG_ZEND_NAMED_FE(server_server_id_set,_wrap_Server_server_id_set,NULL)
+ SWIG_ZEND_NAMED_FE(server_server_id_get,_wrap_Server_server_id_get,NULL)
+ SWIG_ZEND_NAMED_FE(server_server_type_set,_wrap_Server_server_type_set,NULL)
+ SWIG_ZEND_NAMED_FE(server_server_type_get,_wrap_Server_server_type_get,NULL)
+ SWIG_ZEND_NAMED_FE(server_server_host_set,_wrap_Server_server_host_set,NULL)
+ SWIG_ZEND_NAMED_FE(server_server_host_get,_wrap_Server_server_host_get,NULL)
+ SWIG_ZEND_NAMED_FE(server_server_port_set,_wrap_Server_server_port_set,NULL)
+ SWIG_ZEND_NAMED_FE(server_server_port_get,_wrap_Server_server_port_get,NULL)
+ SWIG_ZEND_NAMED_FE(bitcoinserver_bitcoin_username_set,_wrap_BitcoinServer_bitcoin_username_set,NULL)
+ SWIG_ZEND_NAMED_FE(bitcoinserver_bitcoin_username_get,_wrap_BitcoinServer_bitcoin_username_get,NULL)
+ SWIG_ZEND_NAMED_FE(bitcoinserver_bitcoin_password_set,_wrap_BitcoinServer_bitcoin_password_set,NULL)
+ SWIG_ZEND_NAMED_FE(bitcoinserver_bitcoin_password_get,_wrap_BitcoinServer_bitcoin_password_get,NULL)
+ SWIG_ZEND_NAMED_FE(walletdata_getbitcoinservercount,_wrap_WalletData_GetBitcoinServerCount,NULL)
+ SWIG_ZEND_NAMED_FE(walletdata_getbitcoinserver,_wrap_WalletData_GetBitcoinServer,NULL)
+ SWIG_ZEND_NAMED_FE(walletdata_removebitcoinserver,_wrap_WalletData_RemoveBitcoinServer,NULL)
+ SWIG_ZEND_NAMED_FE(walletdata_addbitcoinserver,_wrap_WalletData_AddBitcoinServer,NULL)
+ SWIG_ZEND_NAMED_FE(walletdata_getbitcoinacctcount,_wrap_WalletData_GetBitcoinAcctCount,NULL)
+ SWIG_ZEND_NAMED_FE(walletdata_getbitcoinacct,_wrap_WalletData_GetBitcoinAcct,NULL)
+ SWIG_ZEND_NAMED_FE(walletdata_removebitcoinacct,_wrap_WalletData_RemoveBitcoinAcct,NULL)
+ SWIG_ZEND_NAMED_FE(walletdata_addbitcoinacct,_wrap_WalletData_AddBitcoinAcct,NULL)
  SWIG_ZEND_NAMED_FE(swig_otapi_alter_newobject,_wrap_swig_otapi_alter_newobject,NULL)
  SWIG_ZEND_NAMED_FE(swig_otapi_get_newobject,_wrap_swig_otapi_get_newobject,NULL)
 {NULL, NULL, NULL}
@@ -9442,10 +14570,36 @@ SWIG_PropagateClientData(void) {
 ZEND_INIT_MODULE_GLOBALS(otapi, otapi_init_globals, otapi_destroy_globals);
 
 /* Register resource destructors for pointer types */
+le_swig__p_OTDB__Server=zend_register_list_destructors_ex(_wrap_destroy_p_OTDB__Server,NULL,(char *)(SWIGTYPE_p_OTDB__Server->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_OTDB__Server,&le_swig__p_OTDB__Server);
 le_swig__p_OTCaller=zend_register_list_destructors_ex(_wrap_destroy_p_OTCaller,NULL,(char *)(SWIGTYPE_p_OTCaller->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_OTCaller,&le_swig__p_OTCaller);
+le_swig__p_OTDB__StringMap=zend_register_list_destructors_ex(_wrap_destroy_p_OTDB__StringMap,NULL,(char *)(SWIGTYPE_p_OTDB__StringMap->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_OTDB__StringMap,&le_swig__p_OTDB__StringMap);
+le_swig__p_OTDB__BitcoinServer=zend_register_list_destructors_ex(_wrap_destroy_p_OTDB__BitcoinServer,NULL,(char *)(SWIGTYPE_p_OTDB__BitcoinServer->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_OTDB__BitcoinServer,&le_swig__p_OTDB__BitcoinServer);
+le_swig__p_StoredObjectType=zend_register_list_destructors_ex(_wrap_destroy_p_StoredObjectType,NULL,(char *)(SWIGTYPE_p_StoredObjectType->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_StoredObjectType,&le_swig__p_StoredObjectType);
 le_swig__p_OTCallback=zend_register_list_destructors_ex(_wrap_destroy_p_OTCallback,NULL,(char *)(SWIGTYPE_p_OTCallback->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_OTCallback,&le_swig__p_OTCallback);
+le_swig__p_OTDB__Displayable=zend_register_list_destructors_ex(_wrap_destroy_p_OTDB__Displayable,NULL,(char *)(SWIGTYPE_p_OTDB__Displayable->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_OTDB__Displayable,&le_swig__p_OTDB__Displayable);
+le_swig__p_OTDB__WalletData=zend_register_list_destructors_ex(_wrap_destroy_p_OTDB__WalletData,NULL,(char *)(SWIGTYPE_p_OTDB__WalletData->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_OTDB__WalletData,&le_swig__p_OTDB__WalletData);
+le_swig__p_OTDB__Storable=zend_register_list_destructors_ex(_wrap_destroy_p_OTDB__Storable,NULL,(char *)(SWIGTYPE_p_OTDB__Storable->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_OTDB__Storable,&le_swig__p_OTDB__Storable);
+le_swig__p_OTDB__BitcoinAcct=zend_register_list_destructors_ex(_wrap_destroy_p_OTDB__BitcoinAcct,NULL,(char *)(SWIGTYPE_p_OTDB__BitcoinAcct->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_OTDB__BitcoinAcct,&le_swig__p_OTDB__BitcoinAcct);
+le_swig__p_StorageType=zend_register_list_destructors_ex(_wrap_destroy_p_StorageType,NULL,(char *)(SWIGTYPE_p_StorageType->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_StorageType,&le_swig__p_StorageType);
+le_swig__p_PackType=zend_register_list_destructors_ex(_wrap_destroy_p_PackType,NULL,(char *)(SWIGTYPE_p_PackType->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_PackType,&le_swig__p_PackType);
+le_swig__p_OTDB__Storage=zend_register_list_destructors_ex(_wrap_destroy_p_OTDB__Storage,NULL,(char *)(SWIGTYPE_p_OTDB__Storage->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_OTDB__Storage,&le_swig__p_OTDB__Storage);
+le_swig__p_std__mapT_std__string_std__string_t=zend_register_list_destructors_ex(_wrap_destroy_p_std__mapT_std__string_std__string_t,NULL,(char *)(SWIGTYPE_p_std__mapT_std__string_std__string_t->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_std__mapT_std__string_std__string_t,&le_swig__p_std__mapT_std__string_std__string_t);
+le_swig__p_OTDB__Acct=zend_register_list_destructors_ex(_wrap_destroy_p_OTDB__Acct,NULL,(char *)(SWIGTYPE_p_OTDB__Acct->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_OTDB__Acct,&le_swig__p_OTDB__Acct);
 CG(active_class_entry) = NULL;
 /* end oinit subsection */
 

@@ -95,8 +95,8 @@ C_COMPILER = cc
 
 # The LIBS macro contains a list of libraries that the the
 # executable must be linked against.
-API_LIBS =  -lssl -lcrypto  -lOTLib -lssl -lcrypto  -lOTLib  -lssl -lcrypto -lOTLib  -lssl -lcrypto -lOTLib
-API_DEBUG_LIBS = -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd  -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd
+API_LIBS =  -lssl -lcrypto  -lOTLib -lssl -lcrypto  -lOTLib  -lssl -lcrypto -lOTLib  -lssl -lcrypto -lprotobuf -lmsgpack -lOTLib
+API_DEBUG_LIBS = -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd  -lssl -lcrypto -lOTLibd -lssl -lcrypto -lprotobuf -lmsgpack -lOTLibd
 #
 # FT: I tested this recently. The above version worked on Linux, and the below version did not.
 #
@@ -698,29 +698,37 @@ OTAPI.o: OTAPI.cpp OTAPI.h
 
 # Common Lisp
 OTAPI_cffi.o: OTAPI_cffi.c 
+	cp OTAPI_cffi.h OTAPI_wrap.h
 	$(CC) $(CFLAGS) -o OTAPI_cffi.o OTAPI_cffi.c
 
 # C-Sharp
 OTAPI_csharp.o: OTAPI_csharp.cpp 
+	cp OTAPI_csharp.h OTAPI_wrap.h
 	$(CXX) $(CFLAGS) -o OTAPI_csharp.o OTAPI_csharp.cpp
 
 
 OTAPI_java.o: OTAPI_java.cpp
+	cp OTAPI_java.h OTAPI_wrap.h
 	$(CXX) $(CFLAGS) -o OTAPI_java.o OTAPI_java.cpp
 
 OTAPI_perl5.o: OTAPI_perl5.cpp
+	cp OTAPI_perl5.h OTAPI_wrap.h
 	$(CXX) $(CFLAGS) -o OTAPI_perl5.o OTAPI_perl5.cpp
 
 OTAPI_php.o: OTAPI_php.cpp 
+	cp OTAPI_php.h OTAPI_wrap.h
 	$(CXX) $(CFLAGS) -o OTAPI_php.o OTAPI_php.cpp
 
 OTAPI_python.o: OTAPI_python.cpp
+	cp OTAPI_python.h OTAPI_wrap.h
 	$(CXX) $(CFLAGS) -o OTAPI_python.o OTAPI_python.cpp
 
 OTAPI_ruby.o: OTAPI_ruby.cpp
+	cp OTAPI_ruby.h OTAPI_wrap.h
 	$(CXX) $(CFLAGS) -o OTAPI_ruby.o OTAPI_ruby.cpp
 
 OTAPI_tcl.o: OTAPI_tcl.cpp
+	cp OTAPI_tcl.h OTAPI_wrap.h
 	$(CXX) $(CFLAGS) -o OTAPI_tcl.o OTAPI_tcl.cpp
 
 #

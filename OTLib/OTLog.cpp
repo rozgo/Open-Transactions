@@ -192,7 +192,7 @@ int OTLog::__CurrentLogLevel = -1;	// If you build with DSP=1, it assumes a spec
 int OTLog::__CurrentLogLevel = 3;
 #endif
 
-OTString OTLog::__Version = "0.60";
+OTString OTLog::__Version = "0.61";
 
 
 
@@ -241,13 +241,15 @@ dequeOfStrings OTLog::__logDeque; // Stores the last 1024 logs in memory.
 
 const char * OTLog::GetMemlogAtIndex(int nIndex)
 {
-	if ((nIndex < 0) || (nIndex >= __logDeque.size()))
+	unsigned int uIndex = static_cast<unsigned int> (nIndex);
+	
+	if ((uIndex < 0) || (uIndex >= __logDeque.size()))
 	{
 		OTLog::vError("OTLog::GetMemlogAtIndex: index out of bounds: %d\n", nIndex);
 		return NULL;
 	}
 	
-	OTString * pStr = __logDeque.at(nIndex);
+	OTString * pStr = __logDeque.at(uIndex);
 	
 	if ((NULL != pStr) && (pStr->Exists()))
 		return pStr->Get();

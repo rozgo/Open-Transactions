@@ -203,7 +203,7 @@ public:
 	// Creates inside Path(). IE:  <path>/szFolderName
 	static bool ConfirmOrCreateFolder(const char * szFolderName);
 	static bool ConfirmFile(const char * szFileName);
-	static bool ConfirmExactPath(const char * szFileName);
+	static bool ConfirmExactPath(const char * szFileName); // This one expects fully-qualified path.
 	
 	// OTPath is where all the subdirectories can be found.
 	// If the server is what's running, then it's the server folder.
