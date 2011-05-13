@@ -40,10 +40,9 @@ public class Storable : IDisposable {
     }
   }
 
-  public static Storable Create(SWIGTYPE_p_StoredObjectType eType, SWIGTYPE_p_PackType thePackType) {
-    IntPtr cPtr = otapiPINVOKE.Storable_Create(SWIGTYPE_p_StoredObjectType.getCPtr(eType), SWIGTYPE_p_PackType.getCPtr(thePackType));
+  public static Storable Create(StoredObjectType eType, PackType thePackType) {
+    IntPtr cPtr = otapiPINVOKE.Storable_Create((int)eType, (int)thePackType);
     Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, false);
-    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 

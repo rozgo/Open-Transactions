@@ -503,11 +503,46 @@ sub ACQUIRE {
 }
 
 
+############# Class : otapi::ServerInfo ##############
+
+package otapi::ServerInfo;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi::Displayable otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_ServerInfo($self);
+        delete $OWNER{$self};
+    }
+}
+
+*swig_server_id_get = *otapic::ServerInfo_server_id_get;
+*swig_server_id_set = *otapic::ServerInfo_server_id_set;
+*swig_server_type_get = *otapic::ServerInfo_server_type_get;
+*swig_server_type_set = *otapic::ServerInfo_server_type_set;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
 ############# Class : otapi::Server ##############
 
 package otapi::Server;
 use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
-@ISA = qw( otapi::Displayable otapi );
+@ISA = qw( otapi::ServerInfo otapi );
 %OWNER = ();
 %ITERATORS = ();
 sub DESTROY {
@@ -521,10 +556,6 @@ sub DESTROY {
     }
 }
 
-*swig_server_id_get = *otapic::Server_server_id_get;
-*swig_server_id_set = *otapic::Server_server_id_set;
-*swig_server_type_get = *otapic::Server_server_type_get;
-*swig_server_type_set = *otapic::Server_server_type_set;
 *swig_server_host_get = *otapic::Server_server_host_get;
 *swig_server_host_set = *otapic::Server_server_host_set;
 *swig_server_port_get = *otapic::Server_server_port_get;
@@ -564,6 +595,174 @@ sub DESTROY {
 *swig_bitcoin_username_set = *otapic::BitcoinServer_bitcoin_username_set;
 *swig_bitcoin_password_get = *otapic::BitcoinServer_bitcoin_password_get;
 *swig_bitcoin_password_set = *otapic::BitcoinServer_bitcoin_password_set;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : otapi::ContactNym ##############
+
+package otapi::ContactNym;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi::Displayable otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_ContactNym($self);
+        delete $OWNER{$self};
+    }
+}
+
+*swig_nym_type_get = *otapic::ContactNym_nym_type_get;
+*swig_nym_type_set = *otapic::ContactNym_nym_type_set;
+*swig_nym_id_get = *otapic::ContactNym_nym_id_get;
+*swig_nym_id_set = *otapic::ContactNym_nym_id_set;
+*swig_public_key_get = *otapic::ContactNym_public_key_get;
+*swig_public_key_set = *otapic::ContactNym_public_key_set;
+*swig_memo_get = *otapic::ContactNym_memo_get;
+*swig_memo_set = *otapic::ContactNym_memo_set;
+*GetServerInfoCount = *otapic::ContactNym_GetServerInfoCount;
+*GetServerInfo = *otapic::ContactNym_GetServerInfo;
+*RemoveServerInfo = *otapic::ContactNym_RemoveServerInfo;
+*AddServerInfo = *otapic::ContactNym_AddServerInfo;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : otapi::ContactAcct ##############
+
+package otapi::ContactAcct;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi::Displayable otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_ContactAcct($self);
+        delete $OWNER{$self};
+    }
+}
+
+*swig_server_type_get = *otapic::ContactAcct_server_type_get;
+*swig_server_type_set = *otapic::ContactAcct_server_type_set;
+*swig_server_id_get = *otapic::ContactAcct_server_id_get;
+*swig_server_id_set = *otapic::ContactAcct_server_id_set;
+*swig_asset_type_id_get = *otapic::ContactAcct_asset_type_id_get;
+*swig_asset_type_id_set = *otapic::ContactAcct_asset_type_id_set;
+*swig_acct_id_get = *otapic::ContactAcct_acct_id_get;
+*swig_acct_id_set = *otapic::ContactAcct_acct_id_set;
+*swig_nym_id_get = *otapic::ContactAcct_nym_id_get;
+*swig_nym_id_set = *otapic::ContactAcct_nym_id_set;
+*swig_memo_get = *otapic::ContactAcct_memo_get;
+*swig_memo_set = *otapic::ContactAcct_memo_set;
+*swig_public_key_get = *otapic::ContactAcct_public_key_get;
+*swig_public_key_set = *otapic::ContactAcct_public_key_set;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : otapi::Contact ##############
+
+package otapi::Contact;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi::Displayable otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_Contact($self);
+        delete $OWNER{$self};
+    }
+}
+
+*swig_email_get = *otapic::Contact_email_get;
+*swig_email_set = *otapic::Contact_email_set;
+*swig_memo_get = *otapic::Contact_memo_get;
+*swig_memo_set = *otapic::Contact_memo_set;
+*swig_public_key_get = *otapic::Contact_public_key_get;
+*swig_public_key_set = *otapic::Contact_public_key_set;
+*GetContactNymCount = *otapic::Contact_GetContactNymCount;
+*GetContactNym = *otapic::Contact_GetContactNym;
+*RemoveContactNym = *otapic::Contact_RemoveContactNym;
+*AddContactNym = *otapic::Contact_AddContactNym;
+*GetContactAcctCount = *otapic::Contact_GetContactAcctCount;
+*GetContactAcct = *otapic::Contact_GetContactAcct;
+*RemoveContactAcct = *otapic::Contact_RemoveContactAcct;
+*AddContactAcct = *otapic::Contact_AddContactAcct;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : otapi::AddressBook ##############
+
+package otapi::AddressBook;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi::Storable otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_AddressBook($self);
+        delete $OWNER{$self};
+    }
+}
+
+*GetContactCount = *otapic::AddressBook_GetContactCount;
+*GetContact = *otapic::AddressBook_GetContact;
+*RemoveContact = *otapic::AddressBook_RemoveContact;
+*AddContact = *otapic::AddressBook_AddContact;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -620,4 +819,20 @@ sub ACQUIRE {
 
 package otapi;
 
+*typeunsafe = *otapic::typeunsafe;
+*PACK_MESSAGE_PACK = *otapic::PACK_MESSAGE_PACK;
+*PACK_PROTOCOL_BUFFERS = *otapic::PACK_PROTOCOL_BUFFERS;
+*PACK_TYPE_ERROR = *otapic::PACK_TYPE_ERROR;
+*STORE_FILESYSTEM = *otapic::STORE_FILESYSTEM;
+*STORE_TYPE_SUBCLASS = *otapic::STORE_TYPE_SUBCLASS;
+*STORED_OBJ_STRING_MAP = *otapic::STORED_OBJ_STRING_MAP;
+*STORED_OBJ_WALLET_DATA = *otapic::STORED_OBJ_WALLET_DATA;
+*STORED_OBJ_BITCOIN_ACCT = *otapic::STORED_OBJ_BITCOIN_ACCT;
+*STORED_OBJ_BITCOIN_SERVER = *otapic::STORED_OBJ_BITCOIN_SERVER;
+*STORED_OBJ_SERVER_INFO = *otapic::STORED_OBJ_SERVER_INFO;
+*STORED_OBJ_CONTACT_NYM = *otapic::STORED_OBJ_CONTACT_NYM;
+*STORED_OBJ_CONTACT_ACCT = *otapic::STORED_OBJ_CONTACT_ACCT;
+*STORED_OBJ_CONTACT = *otapic::STORED_OBJ_CONTACT;
+*STORED_OBJ_ADDRESS_BOOK = *otapic::STORED_OBJ_ADDRESS_BOOK;
+*STORED_OBJ_ERROR = *otapic::STORED_OBJ_ERROR;
 1;

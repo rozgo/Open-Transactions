@@ -188,6 +188,12 @@ class otapiPINVOKE {
   }
 
 
+  [DllImport("otapi", EntryPoint="CSharp_typeunsafe_set")]
+  public static extern void typeunsafe_set(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_typeunsafe_get")]
+  public static extern IntPtr typeunsafe_get();
+
   [DllImport("otapi", EntryPoint="CSharp_new_OTCallback")]
   public static extern IntPtr new_OTCallback();
 
@@ -699,7 +705,7 @@ class otapiPINVOKE {
   public static extern void delete_Storable(HandleRef jarg1);
 
   [DllImport("otapi", EntryPoint="CSharp_Storable_Create")]
-  public static extern IntPtr Storable_Create(HandleRef jarg1, HandleRef jarg2);
+  public static extern IntPtr Storable_Create(int jarg1, int jarg2);
 
   [DllImport("otapi", EntryPoint="CSharp_delete_Storage")]
   public static extern void delete_Storage(HandleRef jarg1);
@@ -774,58 +780,58 @@ class otapiPINVOKE {
   public static extern bool Storage_StoreObject__SWIG_3(HandleRef jarg1, HandleRef jarg2, string jarg3);
 
   [DllImport("otapi", EntryPoint="CSharp_Storage_QueryObject__SWIG_0")]
-  public static extern IntPtr Storage_QueryObject__SWIG_0(HandleRef jarg1, HandleRef jarg2, string jarg3, string jarg4, string jarg5, string jarg6);
+  public static extern IntPtr Storage_QueryObject__SWIG_0(HandleRef jarg1, int jarg2, string jarg3, string jarg4, string jarg5, string jarg6);
 
   [DllImport("otapi", EntryPoint="CSharp_Storage_QueryObject__SWIG_1")]
-  public static extern IntPtr Storage_QueryObject__SWIG_1(HandleRef jarg1, HandleRef jarg2, string jarg3, string jarg4, string jarg5);
+  public static extern IntPtr Storage_QueryObject__SWIG_1(HandleRef jarg1, int jarg2, string jarg3, string jarg4, string jarg5);
 
   [DllImport("otapi", EntryPoint="CSharp_Storage_QueryObject__SWIG_2")]
-  public static extern IntPtr Storage_QueryObject__SWIG_2(HandleRef jarg1, HandleRef jarg2, string jarg3, string jarg4);
+  public static extern IntPtr Storage_QueryObject__SWIG_2(HandleRef jarg1, int jarg2, string jarg3, string jarg4);
 
   [DllImport("otapi", EntryPoint="CSharp_Storage_QueryObject__SWIG_3")]
-  public static extern IntPtr Storage_QueryObject__SWIG_3(HandleRef jarg1, HandleRef jarg2, string jarg3);
+  public static extern IntPtr Storage_QueryObject__SWIG_3(HandleRef jarg1, int jarg2, string jarg3);
 
   [DllImport("otapi", EntryPoint="CSharp_Storage_CreateObject")]
-  public static extern IntPtr Storage_CreateObject(HandleRef jarg1, HandleRef jarg2);
+  public static extern IntPtr Storage_CreateObject(HandleRef jarg1, int jarg2);
 
   [DllImport("otapi", EntryPoint="CSharp_Storage_Create")]
-  public static extern IntPtr Storage_Create(HandleRef jarg1, HandleRef jarg2);
+  public static extern IntPtr Storage_Create(int jarg1, int jarg2);
 
   [DllImport("otapi", EntryPoint="CSharp_Storage_GetType")]
-  public static extern IntPtr Storage_GetType(HandleRef jarg1);
+  public static extern int Storage_GetType(HandleRef jarg1);
 
   [DllImport("otapi", EntryPoint="CSharp_InitDefaultStorage__SWIG_0")]
-  public static extern bool InitDefaultStorage__SWIG_0(HandleRef jarg1, HandleRef jarg2, string jarg3, string jarg4, string jarg5, string jarg6, string jarg7, string jarg8);
+  public static extern bool InitDefaultStorage__SWIG_0(int jarg1, int jarg2, string jarg3, string jarg4, string jarg5, string jarg6, string jarg7, string jarg8);
 
   [DllImport("otapi", EntryPoint="CSharp_InitDefaultStorage__SWIG_1")]
-  public static extern bool InitDefaultStorage__SWIG_1(HandleRef jarg1, HandleRef jarg2, string jarg3, string jarg4, string jarg5, string jarg6, string jarg7);
+  public static extern bool InitDefaultStorage__SWIG_1(int jarg1, int jarg2, string jarg3, string jarg4, string jarg5, string jarg6, string jarg7);
 
   [DllImport("otapi", EntryPoint="CSharp_InitDefaultStorage__SWIG_2")]
-  public static extern bool InitDefaultStorage__SWIG_2(HandleRef jarg1, HandleRef jarg2, string jarg3, string jarg4, string jarg5, string jarg6);
+  public static extern bool InitDefaultStorage__SWIG_2(int jarg1, int jarg2, string jarg3, string jarg4, string jarg5, string jarg6);
 
   [DllImport("otapi", EntryPoint="CSharp_InitDefaultStorage__SWIG_3")]
-  public static extern bool InitDefaultStorage__SWIG_3(HandleRef jarg1, HandleRef jarg2, string jarg3, string jarg4, string jarg5);
+  public static extern bool InitDefaultStorage__SWIG_3(int jarg1, int jarg2, string jarg3, string jarg4, string jarg5);
 
   [DllImport("otapi", EntryPoint="CSharp_InitDefaultStorage__SWIG_4")]
-  public static extern bool InitDefaultStorage__SWIG_4(HandleRef jarg1, HandleRef jarg2, string jarg3, string jarg4);
+  public static extern bool InitDefaultStorage__SWIG_4(int jarg1, int jarg2, string jarg3, string jarg4);
 
   [DllImport("otapi", EntryPoint="CSharp_InitDefaultStorage__SWIG_5")]
-  public static extern bool InitDefaultStorage__SWIG_5(HandleRef jarg1, HandleRef jarg2, string jarg3);
+  public static extern bool InitDefaultStorage__SWIG_5(int jarg1, int jarg2, string jarg3);
 
   [DllImport("otapi", EntryPoint="CSharp_InitDefaultStorage__SWIG_6")]
-  public static extern bool InitDefaultStorage__SWIG_6(HandleRef jarg1, HandleRef jarg2);
+  public static extern bool InitDefaultStorage__SWIG_6(int jarg1, int jarg2);
 
   [DllImport("otapi", EntryPoint="CSharp_GetDefaultStorage")]
   public static extern IntPtr GetDefaultStorage();
 
   [DllImport("otapi", EntryPoint="CSharp_CreateStorageContext__SWIG_0")]
-  public static extern IntPtr CreateStorageContext__SWIG_0(HandleRef jarg1, HandleRef jarg2);
+  public static extern IntPtr CreateStorageContext__SWIG_0(int jarg1, int jarg2);
 
   [DllImport("otapi", EntryPoint="CSharp_CreateStorageContext__SWIG_1")]
-  public static extern IntPtr CreateStorageContext__SWIG_1(HandleRef jarg1);
+  public static extern IntPtr CreateStorageContext__SWIG_1(int jarg1);
 
   [DllImport("otapi", EntryPoint="CSharp_CreateObject")]
-  public static extern IntPtr CreateObject(HandleRef jarg1);
+  public static extern IntPtr CreateObject(int jarg1);
 
   [DllImport("otapi", EntryPoint="CSharp_Exists__SWIG_0")]
   public static extern bool Exists__SWIG_0(string jarg1, string jarg2, string jarg3, string jarg4);
@@ -876,16 +882,16 @@ class otapiPINVOKE {
   public static extern bool StoreObject__SWIG_3(HandleRef jarg1, string jarg2);
 
   [DllImport("otapi", EntryPoint="CSharp_QueryObject__SWIG_0")]
-  public static extern IntPtr QueryObject__SWIG_0(HandleRef jarg1, string jarg2, string jarg3, string jarg4, string jarg5);
+  public static extern IntPtr QueryObject__SWIG_0(int jarg1, string jarg2, string jarg3, string jarg4, string jarg5);
 
   [DllImport("otapi", EntryPoint="CSharp_QueryObject__SWIG_1")]
-  public static extern IntPtr QueryObject__SWIG_1(HandleRef jarg1, string jarg2, string jarg3, string jarg4);
+  public static extern IntPtr QueryObject__SWIG_1(int jarg1, string jarg2, string jarg3, string jarg4);
 
   [DllImport("otapi", EntryPoint="CSharp_QueryObject__SWIG_2")]
-  public static extern IntPtr QueryObject__SWIG_2(HandleRef jarg1, string jarg2, string jarg3);
+  public static extern IntPtr QueryObject__SWIG_2(int jarg1, string jarg2, string jarg3);
 
   [DllImport("otapi", EntryPoint="CSharp_QueryObject__SWIG_3")]
-  public static extern IntPtr QueryObject__SWIG_3(HandleRef jarg1, string jarg2);
+  public static extern IntPtr QueryObject__SWIG_3(int jarg1, string jarg2);
 
   [DllImport("otapi", EntryPoint="CSharp_delete_StringMap")]
   public static extern void delete_StringMap(HandleRef jarg1);
@@ -935,20 +941,23 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_BitcoinAcct_bitcoin_acct_name_get")]
   public static extern string BitcoinAcct_bitcoin_acct_name_get(HandleRef jarg1);
 
+  [DllImport("otapi", EntryPoint="CSharp_delete_ServerInfo")]
+  public static extern void delete_ServerInfo(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ServerInfo_server_id_set")]
+  public static extern void ServerInfo_server_id_set(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_ServerInfo_server_id_get")]
+  public static extern string ServerInfo_server_id_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ServerInfo_server_type_set")]
+  public static extern void ServerInfo_server_type_set(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_ServerInfo_server_type_get")]
+  public static extern string ServerInfo_server_type_get(HandleRef jarg1);
+
   [DllImport("otapi", EntryPoint="CSharp_delete_Server")]
   public static extern void delete_Server(HandleRef jarg1);
-
-  [DllImport("otapi", EntryPoint="CSharp_Server_server_id_set")]
-  public static extern void Server_server_id_set(HandleRef jarg1, string jarg2);
-
-  [DllImport("otapi", EntryPoint="CSharp_Server_server_id_get")]
-  public static extern string Server_server_id_get(HandleRef jarg1);
-
-  [DllImport("otapi", EntryPoint="CSharp_Server_server_type_set")]
-  public static extern void Server_server_type_set(HandleRef jarg1, string jarg2);
-
-  [DllImport("otapi", EntryPoint="CSharp_Server_server_type_get")]
-  public static extern string Server_server_type_get(HandleRef jarg1);
 
   [DllImport("otapi", EntryPoint="CSharp_Server_server_host_set")]
   public static extern void Server_server_host_set(HandleRef jarg1, string jarg2);
@@ -976,6 +985,150 @@ class otapiPINVOKE {
 
   [DllImport("otapi", EntryPoint="CSharp_BitcoinServer_bitcoin_password_get")]
   public static extern string BitcoinServer_bitcoin_password_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_delete_ContactNym")]
+  public static extern void delete_ContactNym(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactNym_nym_type_set")]
+  public static extern void ContactNym_nym_type_set(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactNym_nym_type_get")]
+  public static extern string ContactNym_nym_type_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactNym_nym_id_set")]
+  public static extern void ContactNym_nym_id_set(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactNym_nym_id_get")]
+  public static extern string ContactNym_nym_id_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactNym_public_key_set")]
+  public static extern void ContactNym_public_key_set(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactNym_public_key_get")]
+  public static extern string ContactNym_public_key_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactNym_memo_set")]
+  public static extern void ContactNym_memo_set(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactNym_memo_get")]
+  public static extern string ContactNym_memo_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactNym_GetServerInfoCount")]
+  public static extern uint ContactNym_GetServerInfoCount(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactNym_GetServerInfo")]
+  public static extern IntPtr ContactNym_GetServerInfo(HandleRef jarg1, uint jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactNym_RemoveServerInfo")]
+  public static extern bool ContactNym_RemoveServerInfo(HandleRef jarg1, uint jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactNym_AddServerInfo")]
+  public static extern bool ContactNym_AddServerInfo(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_delete_ContactAcct")]
+  public static extern void delete_ContactAcct(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactAcct_server_type_set")]
+  public static extern void ContactAcct_server_type_set(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactAcct_server_type_get")]
+  public static extern string ContactAcct_server_type_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactAcct_server_id_set")]
+  public static extern void ContactAcct_server_id_set(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactAcct_server_id_get")]
+  public static extern string ContactAcct_server_id_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactAcct_asset_type_id_set")]
+  public static extern void ContactAcct_asset_type_id_set(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactAcct_asset_type_id_get")]
+  public static extern string ContactAcct_asset_type_id_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactAcct_acct_id_set")]
+  public static extern void ContactAcct_acct_id_set(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactAcct_acct_id_get")]
+  public static extern string ContactAcct_acct_id_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactAcct_nym_id_set")]
+  public static extern void ContactAcct_nym_id_set(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactAcct_nym_id_get")]
+  public static extern string ContactAcct_nym_id_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactAcct_memo_set")]
+  public static extern void ContactAcct_memo_set(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactAcct_memo_get")]
+  public static extern string ContactAcct_memo_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactAcct_public_key_set")]
+  public static extern void ContactAcct_public_key_set(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactAcct_public_key_get")]
+  public static extern string ContactAcct_public_key_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_delete_Contact")]
+  public static extern void delete_Contact(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_Contact_email_set")]
+  public static extern void Contact_email_set(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_Contact_email_get")]
+  public static extern string Contact_email_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_Contact_memo_set")]
+  public static extern void Contact_memo_set(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_Contact_memo_get")]
+  public static extern string Contact_memo_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_Contact_public_key_set")]
+  public static extern void Contact_public_key_set(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_Contact_public_key_get")]
+  public static extern string Contact_public_key_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_Contact_GetContactNymCount")]
+  public static extern uint Contact_GetContactNymCount(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_Contact_GetContactNym")]
+  public static extern IntPtr Contact_GetContactNym(HandleRef jarg1, uint jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_Contact_RemoveContactNym")]
+  public static extern bool Contact_RemoveContactNym(HandleRef jarg1, uint jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_Contact_AddContactNym")]
+  public static extern bool Contact_AddContactNym(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_Contact_GetContactAcctCount")]
+  public static extern uint Contact_GetContactAcctCount(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_Contact_GetContactAcct")]
+  public static extern IntPtr Contact_GetContactAcct(HandleRef jarg1, uint jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_Contact_RemoveContactAcct")]
+  public static extern bool Contact_RemoveContactAcct(HandleRef jarg1, uint jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_Contact_AddContactAcct")]
+  public static extern bool Contact_AddContactAcct(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_delete_AddressBook")]
+  public static extern void delete_AddressBook(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_AddressBook_GetContactCount")]
+  public static extern uint AddressBook_GetContactCount(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_AddressBook_GetContact")]
+  public static extern IntPtr AddressBook_GetContact(HandleRef jarg1, uint jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_AddressBook_RemoveContact")]
+  public static extern bool AddressBook_RemoveContact(HandleRef jarg1, uint jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_AddressBook_AddContact")]
+  public static extern bool AddressBook_AddContact(HandleRef jarg1, HandleRef jarg2);
 
   [DllImport("otapi", EntryPoint="CSharp_delete_WalletData")]
   public static extern void delete_WalletData(HandleRef jarg1);
@@ -1016,11 +1169,26 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_BitcoinAcct_SWIGUpcast")]
   public static extern IntPtr BitcoinAcct_SWIGUpcast(IntPtr jarg1);
 
+  [DllImport("otapi", EntryPoint="CSharp_ServerInfo_SWIGUpcast")]
+  public static extern IntPtr ServerInfo_SWIGUpcast(IntPtr jarg1);
+
   [DllImport("otapi", EntryPoint="CSharp_Server_SWIGUpcast")]
   public static extern IntPtr Server_SWIGUpcast(IntPtr jarg1);
 
   [DllImport("otapi", EntryPoint="CSharp_BitcoinServer_SWIGUpcast")]
   public static extern IntPtr BitcoinServer_SWIGUpcast(IntPtr jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactNym_SWIGUpcast")]
+  public static extern IntPtr ContactNym_SWIGUpcast(IntPtr jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_ContactAcct_SWIGUpcast")]
+  public static extern IntPtr ContactAcct_SWIGUpcast(IntPtr jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_Contact_SWIGUpcast")]
+  public static extern IntPtr Contact_SWIGUpcast(IntPtr jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_AddressBook_SWIGUpcast")]
+  public static extern IntPtr AddressBook_SWIGUpcast(IntPtr jarg1);
 
   [DllImport("otapi", EntryPoint="CSharp_WalletData_SWIGUpcast")]
   public static extern IntPtr WalletData_SWIGUpcast(IntPtr jarg1);

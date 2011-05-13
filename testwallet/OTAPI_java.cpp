@@ -414,6 +414,7 @@ namespace Swig {
 #include "../OTLib/OTStorage.h"
 //#include "../OTLib/Generics.pb.h"
 //#include "../OTLib/Bitcoin.pb.h"
+//#include "../OTLib/Moneychanger.pb.h"
 
 
 #include <string>
@@ -5059,6 +5060,186 @@ SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_OT_1API_1ProcessSocke
 }
 
 
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_PACK_1MESSAGE_1PACK_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  OTDB::PackType result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTDB::PackType)OTDB::PACK_MESSAGE_PACK;
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_PACK_1PROTOCOL_1BUFFERS_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  OTDB::PackType result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTDB::PackType)OTDB::PACK_PROTOCOL_BUFFERS;
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_PACK_1TYPE_1ERROR_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  OTDB::PackType result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTDB::PackType)OTDB::PACK_TYPE_ERROR;
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_STORE_1FILESYSTEM_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  OTDB::StorageType result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTDB::StorageType)OTDB::STORE_FILESYSTEM;
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_STORE_1TYPE_1SUBCLASS_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  OTDB::StorageType result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTDB::StorageType)OTDB::STORE_TYPE_SUBCLASS;
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_STORED_1OBJ_1STRING_1MAP_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  OTDB::StoredObjectType result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTDB::StoredObjectType)OTDB::STORED_OBJ_STRING_MAP;
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_STORED_1OBJ_1WALLET_1DATA_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  OTDB::StoredObjectType result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTDB::StoredObjectType)OTDB::STORED_OBJ_WALLET_DATA;
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_STORED_1OBJ_1BITCOIN_1ACCT_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  OTDB::StoredObjectType result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTDB::StoredObjectType)OTDB::STORED_OBJ_BITCOIN_ACCT;
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_STORED_1OBJ_1BITCOIN_1SERVER_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  OTDB::StoredObjectType result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTDB::StoredObjectType)OTDB::STORED_OBJ_BITCOIN_SERVER;
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_STORED_1OBJ_1SERVER_1INFO_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  OTDB::StoredObjectType result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTDB::StoredObjectType)OTDB::STORED_OBJ_SERVER_INFO;
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_STORED_1OBJ_1CONTACT_1NYM_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  OTDB::StoredObjectType result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTDB::StoredObjectType)OTDB::STORED_OBJ_CONTACT_NYM;
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_STORED_1OBJ_1CONTACT_1ACCT_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  OTDB::StoredObjectType result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTDB::StoredObjectType)OTDB::STORED_OBJ_CONTACT_ACCT;
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_STORED_1OBJ_1CONTACT_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  OTDB::StoredObjectType result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTDB::StoredObjectType)OTDB::STORED_OBJ_CONTACT;
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_STORED_1OBJ_1ADDRESS_1BOOK_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  OTDB::StoredObjectType result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTDB::StoredObjectType)OTDB::STORED_OBJ_ADDRESS_BOOK;
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_STORED_1OBJ_1ERROR_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  OTDB::StoredObjectType result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTDB::StoredObjectType)OTDB::STORED_OBJ_ERROR;
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1Storable(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
   
@@ -5069,28 +5250,16 @@ SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1Storable(JNIE
 }
 
 
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storable_1Create(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storable_1Create(JNIEnv *jenv, jclass jcls, jint jarg1, jint jarg2) {
   jlong jresult = 0 ;
-  StoredObjectType arg1 ;
-  PackType arg2 ;
-  StoredObjectType *argp1 ;
-  PackType *argp2 ;
+  OTDB::StoredObjectType arg1 ;
+  OTDB::PackType arg2 ;
   OTDB::Storable *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  argp1 = *(StoredObjectType **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StoredObjectType");
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = *(PackType **)&jarg2; 
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null PackType");
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StoredObjectType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   result = (OTDB::Storable *)OTDB::Storable::Create(arg1,arg2);
   *(OTDB::Storable **)&jresult = result; 
   return jresult;
@@ -6065,27 +6234,21 @@ SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1StoreObj
 }
 
 
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1QueryObject_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6) {
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1QueryObject_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6) {
   jlong jresult = 0 ;
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StoredObjectType arg2 ;
+  OTDB::StoredObjectType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
   std::string arg6 ;
-  StoredObjectType *argp2 ;
   OTDB::Storable *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(OTDB::Storage **)&jarg1; 
-  argp2 = *(StoredObjectType **)&jarg2; 
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StoredObjectType");
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg2 = (OTDB::StoredObjectType)jarg2; 
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
     return 0;
@@ -6124,26 +6287,20 @@ SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1QueryObject
 }
 
 
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1QueryObject_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1QueryObject_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
   jlong jresult = 0 ;
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StoredObjectType arg2 ;
+  OTDB::StoredObjectType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
-  StoredObjectType *argp2 ;
   OTDB::Storable *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(OTDB::Storage **)&jarg1; 
-  argp2 = *(StoredObjectType **)&jarg2; 
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StoredObjectType");
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg2 = (OTDB::StoredObjectType)jarg2; 
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
     return 0;
@@ -6174,25 +6331,19 @@ SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1QueryObject
 }
 
 
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1QueryObject_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1QueryObject_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jstring jarg3, jstring jarg4) {
   jlong jresult = 0 ;
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StoredObjectType arg2 ;
+  OTDB::StoredObjectType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
-  StoredObjectType *argp2 ;
   OTDB::Storable *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(OTDB::Storage **)&jarg1; 
-  argp2 = *(StoredObjectType **)&jarg2; 
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StoredObjectType");
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg2 = (OTDB::StoredObjectType)jarg2; 
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
     return 0;
@@ -6215,24 +6366,18 @@ SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1QueryObject
 }
 
 
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1QueryObject_1_1SWIG_13(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jstring jarg3) {
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1QueryObject_1_1SWIG_13(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2, jstring jarg3) {
   jlong jresult = 0 ;
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StoredObjectType arg2 ;
+  OTDB::StoredObjectType arg2 ;
   std::string arg3 ;
-  StoredObjectType *argp2 ;
   OTDB::Storable *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(OTDB::Storage **)&jarg1; 
-  argp2 = *(StoredObjectType **)&jarg2; 
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StoredObjectType");
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg2 = (OTDB::StoredObjectType)jarg2; 
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
     return 0;
@@ -6247,100 +6392,70 @@ SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1QueryObject
 }
 
 
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1CreateObject(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1CreateObject(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   jlong jresult = 0 ;
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StoredObjectType arg2 ;
-  StoredObjectType *argp2 ;
+  OTDB::StoredObjectType arg2 ;
   OTDB::Storable *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(OTDB::Storage **)&jarg1; 
-  argp2 = *(StoredObjectType **)&jarg2; 
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StoredObjectType");
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg2 = (OTDB::StoredObjectType)jarg2; 
   result = (OTDB::Storable *)(arg1)->CreateObject(arg2);
   *(OTDB::Storable **)&jresult = result; 
   return jresult;
 }
 
 
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1Create(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1Create(JNIEnv *jenv, jclass jcls, jint jarg1, jint jarg2) {
   jlong jresult = 0 ;
-  StorageType arg1 ;
-  PackType arg2 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   OTDB::Storage *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  argp1 = *(StorageType **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StorageType");
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = *(PackType **)&jarg2; 
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null PackType");
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   result = (OTDB::Storage *)OTDB::Storage::Create(arg1,arg2);
   *(OTDB::Storage **)&jresult = result; 
   return jresult;
 }
 
 
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1GetType(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jlong jresult = 0 ;
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1GetType(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StorageType result;
+  OTDB::StorageType result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(OTDB::Storage **)&jarg1; 
-  result = ((OTDB::Storage const *)arg1)->GetType();
-  *(StorageType **)&jresult = new StorageType((const StorageType &)result); 
+  result = (OTDB::StorageType)((OTDB::Storage const *)arg1)->GetType();
+  jresult = (jint)result; 
   return jresult;
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorage_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6, jstring jarg7, jstring jarg8) {
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorage_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jint jarg1, jint jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6, jstring jarg7, jstring jarg8) {
   jboolean jresult = 0 ;
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
   std::string arg6 ;
   std::string arg7 ;
   std::string arg8 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
   bool result;
   
   (void)jenv;
   (void)jcls;
-  argp1 = *(StorageType **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StorageType");
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = *(PackType **)&jarg2; 
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null PackType");
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
     return 0;
@@ -6395,33 +6510,21 @@ SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorag
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorage_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6, jstring jarg7) {
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorage_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jint jarg1, jint jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6, jstring jarg7) {
   jboolean jresult = 0 ;
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
   std::string arg6 ;
   std::string arg7 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
   bool result;
   
   (void)jenv;
   (void)jcls;
-  argp1 = *(StorageType **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StorageType");
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = *(PackType **)&jarg2; 
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null PackType");
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
     return 0;
@@ -6468,32 +6571,20 @@ SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorag
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorage_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6) {
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorage_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jint jarg1, jint jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6) {
   jboolean jresult = 0 ;
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
   std::string arg6 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
   bool result;
   
   (void)jenv;
   (void)jcls;
-  argp1 = *(StorageType **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StorageType");
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = *(PackType **)&jarg2; 
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null PackType");
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
     return 0;
@@ -6532,31 +6623,19 @@ SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorag
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorage_1_1SWIG_13(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorage_1_1SWIG_13(JNIEnv *jenv, jclass jcls, jint jarg1, jint jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
   jboolean jresult = 0 ;
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
   bool result;
   
   (void)jenv;
   (void)jcls;
-  argp1 = *(StorageType **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StorageType");
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = *(PackType **)&jarg2; 
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null PackType");
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
     return 0;
@@ -6587,30 +6666,18 @@ SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorag
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorage_1_1SWIG_14(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorage_1_1SWIG_14(JNIEnv *jenv, jclass jcls, jint jarg1, jint jarg2, jstring jarg3, jstring jarg4) {
   jboolean jresult = 0 ;
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
   bool result;
   
   (void)jenv;
   (void)jcls;
-  argp1 = *(StorageType **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StorageType");
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = *(PackType **)&jarg2; 
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null PackType");
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
     return 0;
@@ -6633,29 +6700,17 @@ SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorag
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorage_1_1SWIG_15(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jstring jarg3) {
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorage_1_1SWIG_15(JNIEnv *jenv, jclass jcls, jint jarg1, jint jarg2, jstring jarg3) {
   jboolean jresult = 0 ;
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
   bool result;
   
   (void)jenv;
   (void)jcls;
-  argp1 = *(StorageType **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StorageType");
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = *(PackType **)&jarg2; 
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null PackType");
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   if(!jarg3) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
     return 0;
@@ -6670,28 +6725,16 @@ SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorag
 }
 
 
-SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorage_1_1SWIG_16(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_InitDefaultStorage_1_1SWIG_16(JNIEnv *jenv, jclass jcls, jint jarg1, jint jarg2) {
   jboolean jresult = 0 ;
-  StorageType arg1 ;
-  PackType arg2 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   bool result;
   
   (void)jenv;
   (void)jcls;
-  argp1 = *(StorageType **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StorageType");
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = *(PackType **)&jarg2; 
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null PackType");
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   result = (bool)OTDB::InitDefaultStorage(arg1,arg2);
   jresult = (jboolean)result; 
   return jresult;
@@ -6710,68 +6753,44 @@ SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_GetDefaultStorage(JN
 }
 
 
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_CreateStorageContext_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_CreateStorageContext_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jint jarg1, jint jarg2) {
   jlong jresult = 0 ;
-  StorageType arg1 ;
-  PackType arg2 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   OTDB::Storage *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  argp1 = *(StorageType **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StorageType");
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = *(PackType **)&jarg2; 
-  if (!argp2) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null PackType");
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1,arg2);
   *(OTDB::Storage **)&jresult = result; 
   return jresult;
 }
 
 
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_CreateStorageContext_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_CreateStorageContext_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jint jarg1) {
   jlong jresult = 0 ;
-  StorageType arg1 ;
-  StorageType *argp1 ;
+  OTDB::StorageType arg1 ;
   OTDB::Storage *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  argp1 = *(StorageType **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StorageType");
-    return 0;
-  }
-  arg1 = *argp1; 
+  arg1 = (OTDB::StorageType)jarg1; 
   result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1);
   *(OTDB::Storage **)&jresult = result; 
   return jresult;
 }
 
 
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_CreateObject(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_CreateObject(JNIEnv *jenv, jclass jcls, jint jarg1) {
   jlong jresult = 0 ;
-  StoredObjectType arg1 ;
-  StoredObjectType *argp1 ;
+  OTDB::StoredObjectType arg1 ;
   OTDB::Storable *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  argp1 = *(StoredObjectType **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StoredObjectType");
-    return 0;
-  }
-  arg1 = *argp1; 
+  arg1 = (OTDB::StoredObjectType)jarg1; 
   result = (OTDB::Storable *)OTDB::CreateObject(arg1);
   *(OTDB::Storable **)&jresult = result; 
   return jresult;
@@ -7394,24 +7413,18 @@ SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_StoreObject_1_1SW
 }
 
 
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_QueryObject_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_QueryObject_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jint jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
   jlong jresult = 0 ;
-  StoredObjectType arg1 ;
+  OTDB::StoredObjectType arg1 ;
   std::string arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
-  StoredObjectType *argp1 ;
   OTDB::Storable *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  argp1 = *(StoredObjectType **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StoredObjectType");
-    return 0;
-  }
-  arg1 = *argp1; 
+  arg1 = (OTDB::StoredObjectType)jarg1; 
   if(!jarg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
     return 0;
@@ -7450,23 +7463,17 @@ SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_QueryObject_1_1SWIG_
 }
 
 
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_QueryObject_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_QueryObject_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jint jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
   jlong jresult = 0 ;
-  StoredObjectType arg1 ;
+  OTDB::StoredObjectType arg1 ;
   std::string arg2 ;
   std::string arg3 ;
   std::string arg4 ;
-  StoredObjectType *argp1 ;
   OTDB::Storable *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  argp1 = *(StoredObjectType **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StoredObjectType");
-    return 0;
-  }
-  arg1 = *argp1; 
+  arg1 = (OTDB::StoredObjectType)jarg1; 
   if(!jarg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
     return 0;
@@ -7497,22 +7504,16 @@ SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_QueryObject_1_1SWIG_
 }
 
 
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_QueryObject_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_QueryObject_1_1SWIG_12(JNIEnv *jenv, jclass jcls, jint jarg1, jstring jarg2, jstring jarg3) {
   jlong jresult = 0 ;
-  StoredObjectType arg1 ;
+  OTDB::StoredObjectType arg1 ;
   std::string arg2 ;
   std::string arg3 ;
-  StoredObjectType *argp1 ;
   OTDB::Storable *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  argp1 = *(StoredObjectType **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StoredObjectType");
-    return 0;
-  }
-  arg1 = *argp1; 
+  arg1 = (OTDB::StoredObjectType)jarg1; 
   if(!jarg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
     return 0;
@@ -7535,21 +7536,15 @@ SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_QueryObject_1_1SWIG_
 }
 
 
-SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_QueryObject_1_1SWIG_13(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_QueryObject_1_1SWIG_13(JNIEnv *jenv, jclass jcls, jint jarg1, jstring jarg2) {
   jlong jresult = 0 ;
-  StoredObjectType arg1 ;
+  OTDB::StoredObjectType arg1 ;
   std::string arg2 ;
-  StoredObjectType *argp1 ;
   OTDB::Storable *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  argp1 = *(StoredObjectType **)&jarg1; 
-  if (!argp1) {
-    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null StoredObjectType");
-    return 0;
-  }
-  arg1 = *argp1; 
+  arg1 = (OTDB::StoredObjectType)jarg1; 
   if(!jarg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
     return 0;
@@ -7832,24 +7827,24 @@ SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_BitcoinAcct_1bitco
 }
 
 
-SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1Server(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1ServerInfo(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = *(OTDB::Server **)&jarg1; 
+  arg1 = *(OTDB::ServerInfo **)&jarg1; 
   delete arg1;
 }
 
 
-SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_Server_1server_1id_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
-  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_ServerInfo_1server_1id_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
   std::string *arg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(OTDB::Server **)&jarg1; 
+  arg1 = *(OTDB::ServerInfo **)&jarg1; 
   if(!jarg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
     return ;
@@ -7863,29 +7858,29 @@ SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_Server_1server_1id_1s
 }
 
 
-SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_Server_1server_1id_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_ServerInfo_1server_1id_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jstring jresult = 0 ;
-  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
   std::string *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(OTDB::Server **)&jarg1; 
+  arg1 = *(OTDB::ServerInfo **)&jarg1; 
   result = (std::string *) & ((arg1)->server_id);
   jresult = jenv->NewStringUTF(result->c_str()); 
   return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_Server_1server_1type_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
-  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_ServerInfo_1server_1type_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
   std::string *arg2 = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(OTDB::Server **)&jarg1; 
+  arg1 = *(OTDB::ServerInfo **)&jarg1; 
   if(!jarg2) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
     return ;
@@ -7899,18 +7894,28 @@ SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_Server_1server_1type_
 }
 
 
-SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_Server_1server_1type_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_ServerInfo_1server_1type_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jstring jresult = 0 ;
-  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
   std::string *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(OTDB::Server **)&jarg1; 
+  arg1 = *(OTDB::ServerInfo **)&jarg1; 
   result = (std::string *) & ((arg1)->server_type);
   jresult = jenv->NewStringUTF(result->c_str()); 
   return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1Server(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(OTDB::Server **)&jarg1; 
+  delete arg1;
 }
 
 
@@ -8064,6 +8069,834 @@ SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_BitcoinServer_1bit
   arg1 = *(OTDB::BitcoinServer **)&jarg1; 
   result = (std::string *) & ((arg1)->bitcoin_password);
   jresult = jenv->NewStringUTF(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1ContactNym(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(OTDB::ContactNym **)&jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactNym_1nym_1type_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactNym **)&jarg1; 
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
+    return ;
+  }
+  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
+  if (!arg2_pstr) return ;
+  std::string arg2_str(arg2_pstr);
+  arg2 = &arg2_str;
+  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
+  if (arg1) (arg1)->nym_type = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactNym_1nym_1type_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactNym **)&jarg1; 
+  result = (std::string *) & ((arg1)->nym_type);
+  jresult = jenv->NewStringUTF(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactNym_1nym_1id_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactNym **)&jarg1; 
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
+    return ;
+  }
+  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
+  if (!arg2_pstr) return ;
+  std::string arg2_str(arg2_pstr);
+  arg2 = &arg2_str;
+  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
+  if (arg1) (arg1)->nym_id = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactNym_1nym_1id_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactNym **)&jarg1; 
+  result = (std::string *) & ((arg1)->nym_id);
+  jresult = jenv->NewStringUTF(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactNym_1public_1key_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactNym **)&jarg1; 
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
+    return ;
+  }
+  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
+  if (!arg2_pstr) return ;
+  std::string arg2_str(arg2_pstr);
+  arg2 = &arg2_str;
+  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
+  if (arg1) (arg1)->public_key = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactNym_1public_1key_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactNym **)&jarg1; 
+  result = (std::string *) & ((arg1)->public_key);
+  jresult = jenv->NewStringUTF(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactNym_1memo_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactNym **)&jarg1; 
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
+    return ;
+  }
+  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
+  if (!arg2_pstr) return ;
+  std::string arg2_str(arg2_pstr);
+  arg2 = &arg2_str;
+  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
+  if (arg1) (arg1)->memo = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactNym_1memo_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactNym **)&jarg1; 
+  result = (std::string *) & ((arg1)->memo);
+  jresult = jenv->NewStringUTF(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactNym_1GetServerInfoCount(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  size_t result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactNym **)&jarg1; 
+  result = (arg1)->GetServerInfoCount();
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactNym_1GetServerInfo(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+  jlong jresult = 0 ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  size_t arg2 ;
+  OTDB::ServerInfo *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactNym **)&jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (OTDB::ServerInfo *)(arg1)->GetServerInfo(arg2);
+  *(OTDB::ServerInfo **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactNym_1RemoveServerInfo(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+  jboolean jresult = 0 ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  size_t arg2 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactNym **)&jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (bool)(arg1)->RemoveServerInfo(arg2);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactNym_1AddServerInfo(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jboolean jresult = 0 ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  OTDB::ServerInfo *arg2 = 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(OTDB::ContactNym **)&jarg1; 
+  arg2 = *(OTDB::ServerInfo **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "OTDB::ServerInfo & reference is null");
+    return 0;
+  } 
+  result = (bool)(arg1)->AddServerInfo(*arg2);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1ContactAcct(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(OTDB::ContactAcct **)&jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactAcct_1server_1type_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactAcct **)&jarg1; 
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
+    return ;
+  }
+  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
+  if (!arg2_pstr) return ;
+  std::string arg2_str(arg2_pstr);
+  arg2 = &arg2_str;
+  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
+  if (arg1) (arg1)->server_type = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactAcct_1server_1type_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactAcct **)&jarg1; 
+  result = (std::string *) & ((arg1)->server_type);
+  jresult = jenv->NewStringUTF(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactAcct_1server_1id_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactAcct **)&jarg1; 
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
+    return ;
+  }
+  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
+  if (!arg2_pstr) return ;
+  std::string arg2_str(arg2_pstr);
+  arg2 = &arg2_str;
+  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
+  if (arg1) (arg1)->server_id = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactAcct_1server_1id_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactAcct **)&jarg1; 
+  result = (std::string *) & ((arg1)->server_id);
+  jresult = jenv->NewStringUTF(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactAcct_1asset_1type_1id_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactAcct **)&jarg1; 
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
+    return ;
+  }
+  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
+  if (!arg2_pstr) return ;
+  std::string arg2_str(arg2_pstr);
+  arg2 = &arg2_str;
+  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
+  if (arg1) (arg1)->asset_type_id = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactAcct_1asset_1type_1id_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactAcct **)&jarg1; 
+  result = (std::string *) & ((arg1)->asset_type_id);
+  jresult = jenv->NewStringUTF(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactAcct_1acct_1id_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactAcct **)&jarg1; 
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
+    return ;
+  }
+  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
+  if (!arg2_pstr) return ;
+  std::string arg2_str(arg2_pstr);
+  arg2 = &arg2_str;
+  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
+  if (arg1) (arg1)->acct_id = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactAcct_1acct_1id_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactAcct **)&jarg1; 
+  result = (std::string *) & ((arg1)->acct_id);
+  jresult = jenv->NewStringUTF(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactAcct_1nym_1id_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactAcct **)&jarg1; 
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
+    return ;
+  }
+  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
+  if (!arg2_pstr) return ;
+  std::string arg2_str(arg2_pstr);
+  arg2 = &arg2_str;
+  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
+  if (arg1) (arg1)->nym_id = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactAcct_1nym_1id_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactAcct **)&jarg1; 
+  result = (std::string *) & ((arg1)->nym_id);
+  jresult = jenv->NewStringUTF(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactAcct_1memo_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactAcct **)&jarg1; 
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
+    return ;
+  }
+  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
+  if (!arg2_pstr) return ;
+  std::string arg2_str(arg2_pstr);
+  arg2 = &arg2_str;
+  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
+  if (arg1) (arg1)->memo = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactAcct_1memo_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactAcct **)&jarg1; 
+  result = (std::string *) & ((arg1)->memo);
+  jresult = jenv->NewStringUTF(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactAcct_1public_1key_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactAcct **)&jarg1; 
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
+    return ;
+  }
+  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
+  if (!arg2_pstr) return ;
+  std::string arg2_str(arg2_pstr);
+  arg2 = &arg2_str;
+  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
+  if (arg1) (arg1)->public_key = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactAcct_1public_1key_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::ContactAcct **)&jarg1; 
+  result = (std::string *) & ((arg1)->public_key);
+  jresult = jenv->NewStringUTF(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1Contact(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(OTDB::Contact **)&jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_Contact_1email_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::Contact **)&jarg1; 
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
+    return ;
+  }
+  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
+  if (!arg2_pstr) return ;
+  std::string arg2_str(arg2_pstr);
+  arg2 = &arg2_str;
+  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
+  if (arg1) (arg1)->email = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_Contact_1email_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::Contact **)&jarg1; 
+  result = (std::string *) & ((arg1)->email);
+  jresult = jenv->NewStringUTF(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_Contact_1memo_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::Contact **)&jarg1; 
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
+    return ;
+  }
+  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
+  if (!arg2_pstr) return ;
+  std::string arg2_str(arg2_pstr);
+  arg2 = &arg2_str;
+  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
+  if (arg1) (arg1)->memo = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_Contact_1memo_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::Contact **)&jarg1; 
+  result = (std::string *) & ((arg1)->memo);
+  jresult = jenv->NewStringUTF(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_Contact_1public_1key_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::Contact **)&jarg1; 
+  if(!jarg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null std::string");
+    return ;
+  }
+  const char *arg2_pstr = (const char *)jenv->GetStringUTFChars(jarg2, 0); 
+  if (!arg2_pstr) return ;
+  std::string arg2_str(arg2_pstr);
+  arg2 = &arg2_str;
+  jenv->ReleaseStringUTFChars(jarg2, arg2_pstr); 
+  if (arg1) (arg1)->public_key = *arg2;
+}
+
+
+SWIGEXPORT jstring JNICALL Java_com_wrapper_core_jni_otapiJNI_Contact_1public_1key_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jstring jresult = 0 ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::Contact **)&jarg1; 
+  result = (std::string *) & ((arg1)->public_key);
+  jresult = jenv->NewStringUTF(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Contact_1GetContactNymCount(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::Contact **)&jarg1; 
+  result = (arg1)->GetContactNymCount();
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Contact_1GetContactNym(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+  jlong jresult = 0 ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  OTDB::ContactNym *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::Contact **)&jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (OTDB::ContactNym *)(arg1)->GetContactNym(arg2);
+  *(OTDB::ContactNym **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_Contact_1RemoveContactNym(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+  jboolean jresult = 0 ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::Contact **)&jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (bool)(arg1)->RemoveContactNym(arg2);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_Contact_1AddContactNym(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jboolean jresult = 0 ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  OTDB::ContactNym *arg2 = 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(OTDB::Contact **)&jarg1; 
+  arg2 = *(OTDB::ContactNym **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "OTDB::ContactNym & reference is null");
+    return 0;
+  } 
+  result = (bool)(arg1)->AddContactNym(*arg2);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Contact_1GetContactAcctCount(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::Contact **)&jarg1; 
+  result = (arg1)->GetContactAcctCount();
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Contact_1GetContactAcct(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+  jlong jresult = 0 ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  OTDB::ContactAcct *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::Contact **)&jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (OTDB::ContactAcct *)(arg1)->GetContactAcct(arg2);
+  *(OTDB::ContactAcct **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_Contact_1RemoveContactAcct(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+  jboolean jresult = 0 ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::Contact **)&jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (bool)(arg1)->RemoveContactAcct(arg2);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_Contact_1AddContactAcct(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jboolean jresult = 0 ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  OTDB::ContactAcct *arg2 = 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(OTDB::Contact **)&jarg1; 
+  arg2 = *(OTDB::ContactAcct **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "OTDB::ContactAcct & reference is null");
+    return 0;
+  } 
+  result = (bool)(arg1)->AddContactAcct(*arg2);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1AddressBook(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(OTDB::AddressBook **)&jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_AddressBook_1GetContactCount(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  size_t result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::AddressBook **)&jarg1; 
+  result = (arg1)->GetContactCount();
+  jresult = (jlong)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_AddressBook_1GetContact(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+  jlong jresult = 0 ;
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  size_t arg2 ;
+  OTDB::Contact *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::AddressBook **)&jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (OTDB::Contact *)(arg1)->GetContact(arg2);
+  *(OTDB::Contact **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_AddressBook_1RemoveContact(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+  jboolean jresult = 0 ;
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  size_t arg2 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::AddressBook **)&jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (bool)(arg1)->RemoveContact(arg2);
+  jresult = (jboolean)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_AddressBook_1AddContact(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
+  jboolean jresult = 0 ;
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  OTDB::Contact *arg2 = 0 ;
+  bool result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(OTDB::AddressBook **)&jarg1; 
+  arg2 = *(OTDB::Contact **)&jarg2;
+  if (!arg2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "OTDB::Contact & reference is null");
+    return 0;
+  } 
+  result = (bool)(arg1)->AddContact(*arg2);
+  jresult = (jboolean)result; 
   return jresult;
 }
 
@@ -8252,11 +9085,19 @@ SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_BitcoinAcct_1SWIGUpc
     return baseptr;
 }
 
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_ServerInfo_1SWIGUpcast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+    jlong baseptr = 0;
+    (void)jenv;
+    (void)jcls;
+    *(OTDB::Displayable **)&baseptr = *(OTDB::ServerInfo **)&jarg1;
+    return baseptr;
+}
+
 SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Server_1SWIGUpcast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong baseptr = 0;
     (void)jenv;
     (void)jcls;
-    *(OTDB::Displayable **)&baseptr = *(OTDB::Server **)&jarg1;
+    *(OTDB::ServerInfo **)&baseptr = *(OTDB::Server **)&jarg1;
     return baseptr;
 }
 
@@ -8265,6 +9106,38 @@ SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_BitcoinServer_1SWIGU
     (void)jenv;
     (void)jcls;
     *(OTDB::Server **)&baseptr = *(OTDB::BitcoinServer **)&jarg1;
+    return baseptr;
+}
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactNym_1SWIGUpcast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+    jlong baseptr = 0;
+    (void)jenv;
+    (void)jcls;
+    *(OTDB::Displayable **)&baseptr = *(OTDB::ContactNym **)&jarg1;
+    return baseptr;
+}
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_ContactAcct_1SWIGUpcast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+    jlong baseptr = 0;
+    (void)jenv;
+    (void)jcls;
+    *(OTDB::Displayable **)&baseptr = *(OTDB::ContactAcct **)&jarg1;
+    return baseptr;
+}
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Contact_1SWIGUpcast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+    jlong baseptr = 0;
+    (void)jenv;
+    (void)jcls;
+    *(OTDB::Displayable **)&baseptr = *(OTDB::Contact **)&jarg1;
+    return baseptr;
+}
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_AddressBook_1SWIGUpcast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+    jlong baseptr = 0;
+    (void)jenv;
+    (void)jcls;
+    *(OTDB::Storable **)&baseptr = *(OTDB::AddressBook **)&jarg1;
     return baseptr;
 }
 

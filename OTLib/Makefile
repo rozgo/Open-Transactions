@@ -196,7 +196,8 @@ CXXSOURCES = $(BIGINTSOURCES) $(LUCRESOURCES) $(IRRXMLSOURCES) \
 			 OTStorage.cpp \
 			 OTDataCheck.cpp \
 			 Generics.pb.cpp \
-			 Bitcoin.pb.cpp
+			 Bitcoin.pb.cpp \
+			 Moneychanger.pb.cpp
 
 CXXOBJECTS = $(CXXSOURCES:.cpp=.o)  # expands to list of object files
 COBJECTS   = $(CSOURCES:.c=.o)
@@ -347,6 +348,8 @@ Generics.pb.o: Generics.pb.cpp Generics.pb.h
 	$(CXX) $(CXXFLAGS) -c -o Generics.pb.o Generics.pb.cpp
 Bitcoin.pb.o: Bitcoin.pb.cpp Bitcoin.pb.h
 	$(CXX) $(CXXFLAGS) -c -o Bitcoin.pb.o Bitcoin.pb.cpp
+Moneychanger.pb.o: Moneychanger.pb.cpp Moneychanger.pb.h
+	$(CXX) $(CXXFLAGS) -c -o Moneychanger.pb.o Moneychanger.pb.cpp
 
 #
 # Clean target: "make -f Makefile.Linux clean" to remove unwanted objects and executables.

@@ -172,6 +172,8 @@ extern "C"
 //#define OTDB_DEFAULT_PACKER		PACK_MESSAGE_PACK
 #define OTDB_DEFAULT_PACKER		OTDB::PACK_PROTOCOL_BUFFERS
 
+#define OTDB_DEFAULT_STORAGE	OTDB::STORE_FILESYSTEM
+
 
 // ----------------------------------------------------
 // JAVA-STYLE INTERFACES.
@@ -244,6 +246,11 @@ namespace OTDB
 		STORED_OBJ_WALLET_DATA,		// The GUI wallet's stored data
 		STORED_OBJ_BITCOIN_ACCT,	// The GUI wallet's stored data about a Bitcoin acct
 		STORED_OBJ_BITCOIN_SERVER,	// The GUI wallet's stored data about a Bitcoin RPC port.
+		STORED_OBJ_SERVER_INFO,		// A Nym has a list of these.
+		STORED_OBJ_CONTACT_NYM,		// This is a Nym record inside a contact of your address book.
+		STORED_OBJ_CONTACT_ACCT,	// This is an account record inside a contact of your address book.
+		STORED_OBJ_CONTACT,			// Your address book has a list of these.
+		STORED_OBJ_ADDRESS_BOOK,	// Your address book.
 		STORED_OBJ_ERROR			// (Should never be.)
 	};
 	
@@ -665,7 +672,7 @@ EndInterface
 	
 	// *************************************************
 	
-	// ACCOUNT (GUI local storage about accounts.)
+	// ACCOUNT (GUI local storage about my own accounts, in my wallet.)
 	
 	class Acct : public Displayable
 	{
@@ -676,6 +683,8 @@ EndInterface
 		
 	public:
 		virtual ~Acct() { }
+
+//		std::string gui_label;  // The label that appears in the GUI
 
 		std::string acct_id;
 		std::string server_id;
@@ -693,6 +702,11 @@ EndInterface
 	public:
 		virtual ~BitcoinAcct() { }
 		
+//		std::string gui_label;  // The label that appears in the GUI
+		
+//		std::string acct_id;
+//		std::string server_id;
+		
 		std::string bitcoin_acct_name;
 	};
 	
@@ -700,18 +714,38 @@ EndInterface
 	
 	// SERVER (GUI local storage about servers.)
 	
-	class Server : public Displayable
+	class ServerInfo : public Displayable
 	{
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		Server() : Displayable(), server_id(""), server_type(""), server_host(""), server_port("") { }
+		ServerInfo() : Displayable(), server_id(""), server_type("") { }
+		
+	public:
+		virtual ~ServerInfo() { }
+		
+//		std::string gui_label;  // The label that appears in the GUI
+
+		std::string server_id;
+		std::string server_type;
+	};
+	
+	// ----------------------------
+	
+	class Server : public ServerInfo
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		Server() : ServerInfo(), server_host(""), server_port("") { }
 		
 	public:
 		virtual ~Server() { }
 		
-		std::string server_id;
-		std::string server_type;
+//		std::string gui_label;  // The label that appears in the GUI
+
+//		std::string server_id;   // in base class
+//		std::string server_type; // in base class
 		
 		std::string server_host;
 		std::string server_port;
@@ -729,6 +763,14 @@ EndInterface
 	public:
 		virtual ~BitcoinServer() { }
 		
+//		std::string gui_label;  // The label that appears in the GUI
+		
+//		std::string server_id;   // in base class
+//		std::string server_type; // in base class
+		
+//		std::string server_host;
+//		std::string server_port;
+		
 		std::string bitcoin_username;
 		std::string bitcoin_password;
 	};
@@ -745,6 +787,29 @@ EndInterface
 	bool Add##name(name & disownObject)
 	
 	
+	class ContactNym : public Displayable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		ContactNym() : Displayable(), nym_type(""), nym_id(""), public_key(""), memo("") { }
+		
+	public:
+		virtual ~ContactNym();
+		
+//		std::string gui_label;  // The label that appears in the GUI
+
+		std::string nym_type;
+		std::string nym_id;
+		std::string public_key;
+		std::string memo;
+		
+		DECLARE_GET_ADD_REMOVE(ServerInfo);
+	};
+	
+	
+	// ------------------------------------------------
+
 	class WalletData : public Storable
 	{
 		// You never actually get an instance of this, only its subclasses.
@@ -761,10 +826,65 @@ EndInterface
 		
 		DECLARE_GET_ADD_REMOVE(BitcoinServer);
 		DECLARE_GET_ADD_REMOVE(BitcoinAcct);
-		
 	};
 	
+	// ----------------------------
 	
+	class ContactAcct : public Displayable {
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		ContactAcct() : Displayable(), server_type(""), server_id(""), asset_type_id(""), acct_id(""), nym_id(""), memo(""), public_key("")  { }
+		
+	public:
+		virtual ~ContactAcct() { }
+		
+//		std::string gui_label;  // The label that appears in the GUI
+		
+		std::string server_type;
+		std::string server_id;
+		std::string asset_type_id;
+		std::string acct_id;
+		std::string nym_id;
+		std::string memo;
+		std::string public_key;
+	};
+	
+	// ----------------------------
+	
+	
+	class Contact : public Displayable {
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		Contact() : Displayable(), email(""), memo(""), public_key("") { }
+		
+	public:
+		virtual ~Contact();
+		
+//		std::string gui_label;  // The label that appears in the GUI
+		
+		std::string email;
+		std::string memo;
+		std::string public_key;
+		
+		DECLARE_GET_ADD_REMOVE(ContactNym);
+		DECLARE_GET_ADD_REMOVE(ContactAcct);
+	};
+	
+	// ----------------------------
+	
+	class AddressBook : public Storable {
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		AddressBook() : Storable() { }
+		
+	public:
+		virtual ~AddressBook();
+		
+		DECLARE_GET_ADD_REMOVE(Contact);
+	};
 } // Namespace OTDB
 
 // ********************************************************************
@@ -1008,6 +1128,7 @@ namespace OTDB
 	};
 // -------------------------------------------------------
 	
+	
 	// Do NOT use a semicolon after the first macro. (OT_MSGPACK_BEGIN.)
 	// DO put a semicolon after the MSGPACK_DEFINE macro.
 	// DO put a semicolon after the OT_MSGPACK_END macro.
@@ -1016,6 +1137,11 @@ namespace OTDB
 	OT_MSGPACK_BEGIN(StringMapMsgpack, StringMap)
 		OT_USING_ISTORABLE_HOOKS;
 		MSGPACK_DEFINE(the_map);
+	OT_MSGPACK_END;	
+	// -------------------------------------------------------
+	OT_MSGPACK_BEGIN(ServerInfoMsgpack, ServerInfo)
+		OT_USING_ISTORABLE_HOOKS;
+		MSGPACK_DEFINE(gui_label, server_id, server_type);
 	OT_MSGPACK_END;	
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(BitcoinAcctMsgpack, BitcoinAcct)
@@ -1027,6 +1153,33 @@ namespace OTDB
 		OT_USING_ISTORABLE_HOOKS;
 		MSGPACK_DEFINE(gui_label, server_id, server_type, server_host, server_port, bitcoin_username, bitcoin_password);
 	OT_MSGPACK_END;
+	// -------------------------------------------------------
+	OT_MSGPACK_BEGIN(ContactAcctMsgpack, ContactAcct)
+		OT_USING_ISTORABLE_HOOKS;
+		MSGPACK_DEFINE(gui_label, server_id, server_type, asset_type_id, acct_id, nym_id, memo, public_key);
+	OT_MSGPACK_END;
+	// -------------------------------------------------------
+	OT_MSGPACK_BEGIN(ContactNymMsgpack, ContactNym)
+		virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
+		virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
+		std::deque<ServerInfoMsgpack>	deque_ServerInfos;
+		MSGPACK_DEFINE(gui_label, nym_id, nym_type, public_key, memo, deque_ServerInfos);
+	OT_MSGPACK_END;	
+	// -------------------------------------------------------
+	OT_MSGPACK_BEGIN(ContactMsgpack, Contact)
+		virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
+		virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
+		std::deque<ContactNymMsgpack>	deque_Nyms;
+		std::deque<ContactAcctMsgpack>	deque_Accounts;
+		MSGPACK_DEFINE(gui_label, email, public_key, memo, deque_Nyms, deque_Accounts);
+	OT_MSGPACK_END;	
+	// -------------------------------------------------------
+	OT_MSGPACK_BEGIN(AddressBookMsgpack, AddressBook)
+		virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
+		virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
+		std::deque<ContactMsgpack>	deque_Contacts;
+		MSGPACK_DEFINE(deque_Contacts);
+	OT_MSGPACK_END;	
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(WalletDataMsgpack, WalletData)
 		virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
@@ -1061,6 +1214,7 @@ namespace OTDB
 #if defined(OTDB_PROTOCOL_BUFFERS)
 #include "Generics.pb.h"
 #include "Bitcoin.pb.h"
+#include "Moneychanger.pb.h"
 // To make subclasses of the various data objects (for Protocol Buffers):
 //
 // typedef ProtobufSubclass<theBaseType, theInternalType> theType;
@@ -1160,11 +1314,21 @@ namespace OTDB
 
 	typedef ProtobufSubclass<StringMap, StringMap_InternalPB>	StringMapPB;
 	
-	typedef ProtobufSubclass<WalletData, WalletData_InternalPB>	WalletDataPB;
-	
 	typedef ProtobufSubclass<BitcoinAcct, BitcoinAcct_InternalPB>		BitcoinAcctPB;
 	typedef ProtobufSubclass<BitcoinServer, BitcoinServer_InternalPB>	BitcoinServerPB;
-		
+	
+	
+	typedef ProtobufSubclass<ServerInfo, ServerInfo_InternalPB>		ServerInfoPB;
+
+	typedef ProtobufSubclass<ContactAcct, ContactAcct_InternalPB>	ContactAcctPB;
+	typedef ProtobufSubclass<ContactNym, ContactNym_InternalPB>		ContactNymPB;
+	typedef ProtobufSubclass<Contact, Contact_InternalPB>			ContactPB;
+
+	typedef ProtobufSubclass<AddressBook, AddressBook_InternalPB>	AddressBookPB;
+
+	typedef ProtobufSubclass<WalletData, WalletData_InternalPB>		WalletDataPB;
+
+	
 	// !! ALL OF THESE have to provide implementations for hookBeforePack() and hookAfterUnpack().
 	// In .cpp file:
 	/*

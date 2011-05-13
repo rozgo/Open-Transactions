@@ -127,38 +127,38 @@ public class Storage {
     return otapiJNI.Storage_StoreObject__SWIG_3(swigCPtr, this, Storable.getCPtr(theContents), theContents, strFolder);
   }
 
-  public Storable QueryObject(SWIGTYPE_p_StoredObjectType theObjectType, String strFolder, String oneStr, String twoStr, String threeStr) {
-    long cPtr = otapiJNI.Storage_QueryObject__SWIG_0(swigCPtr, this, SWIGTYPE_p_StoredObjectType.getCPtr(theObjectType), strFolder, oneStr, twoStr, threeStr);
+  public Storable QueryObject(int theObjectType, String strFolder, String oneStr, String twoStr, String threeStr) {
+    long cPtr = otapiJNI.Storage_QueryObject__SWIG_0(swigCPtr, this, theObjectType, strFolder, oneStr, twoStr, threeStr);
     return (cPtr == 0) ? null : new Storable(cPtr, true);
   }
 
-  public Storable QueryObject(SWIGTYPE_p_StoredObjectType theObjectType, String strFolder, String oneStr, String twoStr) {
-    long cPtr = otapiJNI.Storage_QueryObject__SWIG_1(swigCPtr, this, SWIGTYPE_p_StoredObjectType.getCPtr(theObjectType), strFolder, oneStr, twoStr);
+  public Storable QueryObject(int theObjectType, String strFolder, String oneStr, String twoStr) {
+    long cPtr = otapiJNI.Storage_QueryObject__SWIG_1(swigCPtr, this, theObjectType, strFolder, oneStr, twoStr);
     return (cPtr == 0) ? null : new Storable(cPtr, true);
   }
 
-  public Storable QueryObject(SWIGTYPE_p_StoredObjectType theObjectType, String strFolder, String oneStr) {
-    long cPtr = otapiJNI.Storage_QueryObject__SWIG_2(swigCPtr, this, SWIGTYPE_p_StoredObjectType.getCPtr(theObjectType), strFolder, oneStr);
+  public Storable QueryObject(int theObjectType, String strFolder, String oneStr) {
+    long cPtr = otapiJNI.Storage_QueryObject__SWIG_2(swigCPtr, this, theObjectType, strFolder, oneStr);
     return (cPtr == 0) ? null : new Storable(cPtr, true);
   }
 
-  public Storable QueryObject(SWIGTYPE_p_StoredObjectType theObjectType, String strFolder) {
-    long cPtr = otapiJNI.Storage_QueryObject__SWIG_3(swigCPtr, this, SWIGTYPE_p_StoredObjectType.getCPtr(theObjectType), strFolder);
+  public Storable QueryObject(int theObjectType, String strFolder) {
+    long cPtr = otapiJNI.Storage_QueryObject__SWIG_3(swigCPtr, this, theObjectType, strFolder);
     return (cPtr == 0) ? null : new Storable(cPtr, true);
   }
 
-  public Storable CreateObject(SWIGTYPE_p_StoredObjectType eType) {
-    long cPtr = otapiJNI.Storage_CreateObject(swigCPtr, this, SWIGTYPE_p_StoredObjectType.getCPtr(eType));
+  public Storable CreateObject(int eType) {
+    long cPtr = otapiJNI.Storage_CreateObject(swigCPtr, this, eType);
     return (cPtr == 0) ? null : new Storable(cPtr, false);
   }
 
-  public static Storage Create(SWIGTYPE_p_StorageType eStorageType, SWIGTYPE_p_PackType ePackType) {
-    long cPtr = otapiJNI.Storage_Create(SWIGTYPE_p_StorageType.getCPtr(eStorageType), SWIGTYPE_p_PackType.getCPtr(ePackType));
+  public static Storage Create(int eStorageType, int ePackType) {
+    long cPtr = otapiJNI.Storage_Create(eStorageType, ePackType);
     return (cPtr == 0) ? null : new Storage(cPtr, false);
   }
 
-  public SWIGTYPE_p_StorageType GetType() {
-    return new SWIGTYPE_p_StorageType(otapiJNI.Storage_GetType(swigCPtr, this), true);
+  public int GetType() {
+    return otapiJNI.Storage_GetType(swigCPtr, this);
   }
 
 }

@@ -8,16 +8,15 @@
 
 package com.wrapper.core.jni;
 
-public class Storable {
+public class ServerInfo extends Displayable {
   private long swigCPtr;
-  protected boolean swigCMemOwn;
 
-  public Storable(long cPtr, boolean cMemoryOwn) {
-    swigCMemOwn = cMemoryOwn;
+  public ServerInfo(long cPtr, boolean cMemoryOwn) {
+    super(otapiJNI.ServerInfo_SWIGUpcast(cPtr), cMemoryOwn);
     swigCPtr = cPtr;
   }
 
-  public static long getCPtr(Storable obj) {
+  public static long getCPtr(ServerInfo obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 
@@ -29,15 +28,27 @@ public class Storable {
     if (swigCPtr != 0) {
       if (swigCMemOwn) {
         swigCMemOwn = false;
-        otapiJNI.delete_Storable(swigCPtr);
+        otapiJNI.delete_ServerInfo(swigCPtr);
       }
       swigCPtr = 0;
     }
+    super.delete();
   }
 
-  public static Storable Create(int eType, int thePackType) {
-    long cPtr = otapiJNI.Storable_Create(eType, thePackType);
-    return (cPtr == 0) ? null : new Storable(cPtr, false);
+  public void setServer_id(String value) {
+    otapiJNI.ServerInfo_server_id_set(swigCPtr, this, value);
+  }
+
+  public String getServer_id() {
+    return otapiJNI.ServerInfo_server_id_get(swigCPtr, this);
+  }
+
+  public void setServer_type(String value) {
+    otapiJNI.ServerInfo_server_type_set(swigCPtr, this, value);
+  }
+
+  public String getServer_type() {
+    return otapiJNI.ServerInfo_server_type_get(swigCPtr, this);
   }
 
 }

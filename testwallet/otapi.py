@@ -97,6 +97,7 @@ class OTCallback(_object):
         return weakref_proxy(self)
 OTCallback_swigregister = _otapi.OTCallback_swigregister
 OTCallback_swigregister(OTCallback)
+cvar = _otapi.cvar
 
 class OTCaller(_object):
     __swig_setmethods__ = {}
@@ -735,6 +736,21 @@ OT_API_ConnectServer = _otapi.OT_API_ConnectServer
 def OT_API_ProcessSockets():
   return _otapi.OT_API_ProcessSockets()
 OT_API_ProcessSockets = _otapi.OT_API_ProcessSockets
+PACK_MESSAGE_PACK = _otapi.PACK_MESSAGE_PACK
+PACK_PROTOCOL_BUFFERS = _otapi.PACK_PROTOCOL_BUFFERS
+PACK_TYPE_ERROR = _otapi.PACK_TYPE_ERROR
+STORE_FILESYSTEM = _otapi.STORE_FILESYSTEM
+STORE_TYPE_SUBCLASS = _otapi.STORE_TYPE_SUBCLASS
+STORED_OBJ_STRING_MAP = _otapi.STORED_OBJ_STRING_MAP
+STORED_OBJ_WALLET_DATA = _otapi.STORED_OBJ_WALLET_DATA
+STORED_OBJ_BITCOIN_ACCT = _otapi.STORED_OBJ_BITCOIN_ACCT
+STORED_OBJ_BITCOIN_SERVER = _otapi.STORED_OBJ_BITCOIN_SERVER
+STORED_OBJ_SERVER_INFO = _otapi.STORED_OBJ_SERVER_INFO
+STORED_OBJ_CONTACT_NYM = _otapi.STORED_OBJ_CONTACT_NYM
+STORED_OBJ_CONTACT_ACCT = _otapi.STORED_OBJ_CONTACT_ACCT
+STORED_OBJ_CONTACT = _otapi.STORED_OBJ_CONTACT
+STORED_OBJ_ADDRESS_BOOK = _otapi.STORED_OBJ_ADDRESS_BOOK
+STORED_OBJ_ERROR = _otapi.STORED_OBJ_ERROR
 class Storable(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Storable, name, value)
@@ -889,23 +905,37 @@ class BitcoinAcct(Acct):
 BitcoinAcct_swigregister = _otapi.BitcoinAcct_swigregister
 BitcoinAcct_swigregister(BitcoinAcct)
 
-class Server(Displayable):
+class ServerInfo(Displayable):
     __swig_setmethods__ = {}
     for _s in [Displayable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, Server, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(self, ServerInfo, name, value)
     __swig_getmethods__ = {}
     for _s in [Displayable]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, ServerInfo, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_ServerInfo
+    __del__ = lambda self : None;
+    __swig_setmethods__["server_id"] = _otapi.ServerInfo_server_id_set
+    __swig_getmethods__["server_id"] = _otapi.ServerInfo_server_id_get
+    if _newclass:server_id = _swig_property(_otapi.ServerInfo_server_id_get, _otapi.ServerInfo_server_id_set)
+    __swig_setmethods__["server_type"] = _otapi.ServerInfo_server_type_set
+    __swig_getmethods__["server_type"] = _otapi.ServerInfo_server_type_get
+    if _newclass:server_type = _swig_property(_otapi.ServerInfo_server_type_get, _otapi.ServerInfo_server_type_set)
+ServerInfo_swigregister = _otapi.ServerInfo_swigregister
+ServerInfo_swigregister(ServerInfo)
+
+class Server(ServerInfo):
+    __swig_setmethods__ = {}
+    for _s in [ServerInfo]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Server, name, value)
+    __swig_getmethods__ = {}
+    for _s in [ServerInfo]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
     __getattr__ = lambda self, name: _swig_getattr(self, Server, name)
     def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
     __repr__ = _swig_repr
     __swig_destroy__ = _otapi.delete_Server
     __del__ = lambda self : None;
-    __swig_setmethods__["server_id"] = _otapi.Server_server_id_set
-    __swig_getmethods__["server_id"] = _otapi.Server_server_id_get
-    if _newclass:server_id = _swig_property(_otapi.Server_server_id_get, _otapi.Server_server_id_set)
-    __swig_setmethods__["server_type"] = _otapi.Server_server_type_set
-    __swig_getmethods__["server_type"] = _otapi.Server_server_type_get
-    if _newclass:server_type = _swig_property(_otapi.Server_server_type_get, _otapi.Server_server_type_set)
     __swig_setmethods__["server_host"] = _otapi.Server_server_host_set
     __swig_getmethods__["server_host"] = _otapi.Server_server_host_get
     if _newclass:server_host = _swig_property(_otapi.Server_server_host_get, _otapi.Server_server_host_set)
@@ -934,6 +964,120 @@ class BitcoinServer(Server):
     if _newclass:bitcoin_password = _swig_property(_otapi.BitcoinServer_bitcoin_password_get, _otapi.BitcoinServer_bitcoin_password_set)
 BitcoinServer_swigregister = _otapi.BitcoinServer_swigregister
 BitcoinServer_swigregister(BitcoinServer)
+
+class ContactNym(Displayable):
+    __swig_setmethods__ = {}
+    for _s in [Displayable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, ContactNym, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Displayable]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, ContactNym, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_ContactNym
+    __del__ = lambda self : None;
+    __swig_setmethods__["nym_type"] = _otapi.ContactNym_nym_type_set
+    __swig_getmethods__["nym_type"] = _otapi.ContactNym_nym_type_get
+    if _newclass:nym_type = _swig_property(_otapi.ContactNym_nym_type_get, _otapi.ContactNym_nym_type_set)
+    __swig_setmethods__["nym_id"] = _otapi.ContactNym_nym_id_set
+    __swig_getmethods__["nym_id"] = _otapi.ContactNym_nym_id_get
+    if _newclass:nym_id = _swig_property(_otapi.ContactNym_nym_id_get, _otapi.ContactNym_nym_id_set)
+    __swig_setmethods__["public_key"] = _otapi.ContactNym_public_key_set
+    __swig_getmethods__["public_key"] = _otapi.ContactNym_public_key_get
+    if _newclass:public_key = _swig_property(_otapi.ContactNym_public_key_get, _otapi.ContactNym_public_key_set)
+    __swig_setmethods__["memo"] = _otapi.ContactNym_memo_set
+    __swig_getmethods__["memo"] = _otapi.ContactNym_memo_get
+    if _newclass:memo = _swig_property(_otapi.ContactNym_memo_get, _otapi.ContactNym_memo_set)
+    def GetServerInfoCount(self): return _otapi.ContactNym_GetServerInfoCount(self)
+    def GetServerInfo(self, *args): return _otapi.ContactNym_GetServerInfo(self, *args)
+    def RemoveServerInfo(self, *args): return _otapi.ContactNym_RemoveServerInfo(self, *args)
+    def AddServerInfo(self, *args): return _otapi.ContactNym_AddServerInfo(self, *args)
+ContactNym_swigregister = _otapi.ContactNym_swigregister
+ContactNym_swigregister(ContactNym)
+
+class ContactAcct(Displayable):
+    __swig_setmethods__ = {}
+    for _s in [Displayable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, ContactAcct, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Displayable]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, ContactAcct, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_ContactAcct
+    __del__ = lambda self : None;
+    __swig_setmethods__["server_type"] = _otapi.ContactAcct_server_type_set
+    __swig_getmethods__["server_type"] = _otapi.ContactAcct_server_type_get
+    if _newclass:server_type = _swig_property(_otapi.ContactAcct_server_type_get, _otapi.ContactAcct_server_type_set)
+    __swig_setmethods__["server_id"] = _otapi.ContactAcct_server_id_set
+    __swig_getmethods__["server_id"] = _otapi.ContactAcct_server_id_get
+    if _newclass:server_id = _swig_property(_otapi.ContactAcct_server_id_get, _otapi.ContactAcct_server_id_set)
+    __swig_setmethods__["asset_type_id"] = _otapi.ContactAcct_asset_type_id_set
+    __swig_getmethods__["asset_type_id"] = _otapi.ContactAcct_asset_type_id_get
+    if _newclass:asset_type_id = _swig_property(_otapi.ContactAcct_asset_type_id_get, _otapi.ContactAcct_asset_type_id_set)
+    __swig_setmethods__["acct_id"] = _otapi.ContactAcct_acct_id_set
+    __swig_getmethods__["acct_id"] = _otapi.ContactAcct_acct_id_get
+    if _newclass:acct_id = _swig_property(_otapi.ContactAcct_acct_id_get, _otapi.ContactAcct_acct_id_set)
+    __swig_setmethods__["nym_id"] = _otapi.ContactAcct_nym_id_set
+    __swig_getmethods__["nym_id"] = _otapi.ContactAcct_nym_id_get
+    if _newclass:nym_id = _swig_property(_otapi.ContactAcct_nym_id_get, _otapi.ContactAcct_nym_id_set)
+    __swig_setmethods__["memo"] = _otapi.ContactAcct_memo_set
+    __swig_getmethods__["memo"] = _otapi.ContactAcct_memo_get
+    if _newclass:memo = _swig_property(_otapi.ContactAcct_memo_get, _otapi.ContactAcct_memo_set)
+    __swig_setmethods__["public_key"] = _otapi.ContactAcct_public_key_set
+    __swig_getmethods__["public_key"] = _otapi.ContactAcct_public_key_get
+    if _newclass:public_key = _swig_property(_otapi.ContactAcct_public_key_get, _otapi.ContactAcct_public_key_set)
+ContactAcct_swigregister = _otapi.ContactAcct_swigregister
+ContactAcct_swigregister(ContactAcct)
+
+class Contact(Displayable):
+    __swig_setmethods__ = {}
+    for _s in [Displayable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Contact, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Displayable]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, Contact, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_Contact
+    __del__ = lambda self : None;
+    __swig_setmethods__["email"] = _otapi.Contact_email_set
+    __swig_getmethods__["email"] = _otapi.Contact_email_get
+    if _newclass:email = _swig_property(_otapi.Contact_email_get, _otapi.Contact_email_set)
+    __swig_setmethods__["memo"] = _otapi.Contact_memo_set
+    __swig_getmethods__["memo"] = _otapi.Contact_memo_get
+    if _newclass:memo = _swig_property(_otapi.Contact_memo_get, _otapi.Contact_memo_set)
+    __swig_setmethods__["public_key"] = _otapi.Contact_public_key_set
+    __swig_getmethods__["public_key"] = _otapi.Contact_public_key_get
+    if _newclass:public_key = _swig_property(_otapi.Contact_public_key_get, _otapi.Contact_public_key_set)
+    def GetContactNymCount(self): return _otapi.Contact_GetContactNymCount(self)
+    def GetContactNym(self, *args): return _otapi.Contact_GetContactNym(self, *args)
+    def RemoveContactNym(self, *args): return _otapi.Contact_RemoveContactNym(self, *args)
+    def AddContactNym(self, *args): return _otapi.Contact_AddContactNym(self, *args)
+    def GetContactAcctCount(self): return _otapi.Contact_GetContactAcctCount(self)
+    def GetContactAcct(self, *args): return _otapi.Contact_GetContactAcct(self, *args)
+    def RemoveContactAcct(self, *args): return _otapi.Contact_RemoveContactAcct(self, *args)
+    def AddContactAcct(self, *args): return _otapi.Contact_AddContactAcct(self, *args)
+Contact_swigregister = _otapi.Contact_swigregister
+Contact_swigregister(Contact)
+
+class AddressBook(Storable):
+    __swig_setmethods__ = {}
+    for _s in [Storable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, AddressBook, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Storable]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, AddressBook, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_AddressBook
+    __del__ = lambda self : None;
+    def GetContactCount(self): return _otapi.AddressBook_GetContactCount(self)
+    def GetContact(self, *args): return _otapi.AddressBook_GetContact(self, *args)
+    def RemoveContact(self, *args): return _otapi.AddressBook_RemoveContact(self, *args)
+    def AddContact(self, *args): return _otapi.AddressBook_AddContact(self, *args)
+AddressBook_swigregister = _otapi.AddressBook_swigregister
+AddressBook_swigregister(AddressBook)
 
 class WalletData(Storable):
     __swig_setmethods__ = {}

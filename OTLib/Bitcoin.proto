@@ -17,8 +17,4 @@ message BitcoinServer_InternalPB {
   optional string bitcoin_password = 7;
 }
 
-message WalletData_InternalPB {
-  repeated BitcoinServer_InternalPB bitcoin_server = 1;
-  repeated BitcoinAcct_InternalPB bitcoin_acct = 2;
-}
 

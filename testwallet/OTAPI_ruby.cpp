@@ -2198,21 +2198,24 @@ namespace Swig {
 #define SWIGTYPE_p_OTCallback swig_types[0]
 #define SWIGTYPE_p_OTCaller swig_types[1]
 #define SWIGTYPE_p_OTDB__Acct swig_types[2]
-#define SWIGTYPE_p_OTDB__BitcoinAcct swig_types[3]
-#define SWIGTYPE_p_OTDB__BitcoinServer swig_types[4]
-#define SWIGTYPE_p_OTDB__Displayable swig_types[5]
-#define SWIGTYPE_p_OTDB__Server swig_types[6]
-#define SWIGTYPE_p_OTDB__Storable swig_types[7]
-#define SWIGTYPE_p_OTDB__Storage swig_types[8]
-#define SWIGTYPE_p_OTDB__StringMap swig_types[9]
-#define SWIGTYPE_p_OTDB__WalletData swig_types[10]
-#define SWIGTYPE_p_PackType swig_types[11]
-#define SWIGTYPE_p_StorageType swig_types[12]
-#define SWIGTYPE_p_StoredObjectType swig_types[13]
-#define SWIGTYPE_p_char swig_types[14]
-#define SWIGTYPE_p_std__mapT_std__string_std__string_t swig_types[15]
-static swig_type_info *swig_types[17];
-static swig_module_info swig_module = {swig_types, 16, 0, 0, 0, 0};
+#define SWIGTYPE_p_OTDB__AddressBook swig_types[3]
+#define SWIGTYPE_p_OTDB__BitcoinAcct swig_types[4]
+#define SWIGTYPE_p_OTDB__BitcoinServer swig_types[5]
+#define SWIGTYPE_p_OTDB__Contact swig_types[6]
+#define SWIGTYPE_p_OTDB__ContactAcct swig_types[7]
+#define SWIGTYPE_p_OTDB__ContactNym swig_types[8]
+#define SWIGTYPE_p_OTDB__Displayable swig_types[9]
+#define SWIGTYPE_p_OTDB__Server swig_types[10]
+#define SWIGTYPE_p_OTDB__ServerInfo swig_types[11]
+#define SWIGTYPE_p_OTDB__Storable swig_types[12]
+#define SWIGTYPE_p_OTDB__Storage swig_types[13]
+#define SWIGTYPE_p_OTDB__StringMap swig_types[14]
+#define SWIGTYPE_p_OTDB__WalletData swig_types[15]
+#define SWIGTYPE_p__javaenum swig_types[16]
+#define SWIGTYPE_p_char swig_types[17]
+#define SWIGTYPE_p_std__mapT_std__string_std__string_t swig_types[18]
+static swig_type_info *swig_types[20];
+static swig_module_info swig_module = {swig_types, 19, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -2246,6 +2249,7 @@ static VALUE mOtapi;
 #include "../OTLib/OTStorage.h"
 //#include "../OTLib/Generics.pb.h"
 //#include "../OTLib/Bitcoin.pb.h"
+//#include "../OTLib/Moneychanger.pb.h"
 
 
 #include <string>
@@ -2551,6 +2555,35 @@ std::string SwigDirector_OTCallback::runTwo() {
   c_result = *swig_optr;
   if (SWIG_IsNewObj(swig_ores)) delete swig_optr;
   return (std::string) c_result;
+}
+
+
+SWIGINTERN VALUE
+_wrap_typeunsafe_get(VALUE self) {
+  VALUE _val;
+  
+  _val = SWIG_NewPointerObj(SWIG_as_voidptr(&typeunsafe), SWIGTYPE_p__javaenum,  0 );
+  return _val;
+}
+
+
+SWIGINTERN VALUE
+_wrap_typeunsafe_set(VALUE self, VALUE _val) {
+  {
+    void *argp = 0;
+    int res = SWIG_ConvertPtr(_val, &argp, SWIGTYPE_p__javaenum,  0 );
+    if (!SWIG_IsOK(res)) {
+      SWIG_exception_fail(SWIG_ArgError(res), "in variable '""typeunsafe""' of type '""%javaenum""'");
+    }
+    if (!argp) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""typeunsafe""' of type '""%javaenum""'");
+    } else {
+      typeunsafe = *(reinterpret_cast< %javaenum * >(argp));
+    }
+  }
+  return _val;
+fail:
+  return Qnil;
 }
 
 
@@ -9438,40 +9471,16 @@ free_OTDB_Storable(OTDB::Storable *arg1) {
 
 SWIGINTERN VALUE
 _wrap_Storable_Create(int argc, VALUE *argv, VALUE self) {
-  StoredObjectType arg1 ;
-  PackType arg2 ;
-  void *argp1 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
+  OTDB::StoredObjectType arg1 ;
+  OTDB::PackType arg2 ;
   OTDB::Storable *result = 0 ;
   VALUE vresult = Qnil;
   
   if ((argc < 2) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
-  {
-    res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_StoredObjectType,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "StoredObjectType","OTDB::Storable::Create", 1, argv[0] )); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StoredObjectType","OTDB::Storable::Create", 1, argv[0]));
-    } else {
-      arg1 = *(reinterpret_cast< StoredObjectType * >(argp1));
-    }
-  }
-  {
-    res2 = SWIG_ConvertPtr(argv[1], &argp2, SWIGTYPE_p_PackType,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "PackType","OTDB::Storable::Create", 2, argv[1] )); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "PackType","OTDB::Storable::Create", 2, argv[1]));
-    } else {
-      arg2 = *(reinterpret_cast< PackType * >(argp2));
-    }
-  }
+  arg1 = (OTDB::StoredObjectType)argv[0]; 
+  arg2 = (OTDB::PackType)argv[1]; 
   result = (OTDB::Storable *)OTDB::Storable::Create(arg1,arg2);
   vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
   return vresult;
@@ -11341,15 +11350,13 @@ fail:
 SWIGINTERN VALUE
 _wrap_Storage_QueryObject__SWIG_0(int argc, VALUE *argv, VALUE self) {
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StoredObjectType arg2 ;
+  OTDB::StoredObjectType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
   std::string arg6 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
   OTDB::Storable *result = 0 ;
   VALUE vresult = Qnil;
   
@@ -11361,17 +11368,7 @@ _wrap_Storage_QueryObject__SWIG_0(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Storage *","QueryObject", 1, self )); 
   }
   arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_StoredObjectType,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "StoredObjectType","QueryObject", 2, argv[0] )); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StoredObjectType","QueryObject", 2, argv[0]));
-    } else {
-      arg2 = *(reinterpret_cast< StoredObjectType * >(argp2));
-    }
-  }
+  arg2 = (OTDB::StoredObjectType)argv[0]; 
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(argv[1], &ptr);
@@ -11419,14 +11416,12 @@ fail:
 SWIGINTERN VALUE
 _wrap_Storage_QueryObject__SWIG_1(int argc, VALUE *argv, VALUE self) {
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StoredObjectType arg2 ;
+  OTDB::StoredObjectType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
   OTDB::Storable *result = 0 ;
   VALUE vresult = Qnil;
   
@@ -11438,17 +11433,7 @@ _wrap_Storage_QueryObject__SWIG_1(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Storage *","QueryObject", 1, self )); 
   }
   arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_StoredObjectType,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "StoredObjectType","QueryObject", 2, argv[0] )); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StoredObjectType","QueryObject", 2, argv[0]));
-    } else {
-      arg2 = *(reinterpret_cast< StoredObjectType * >(argp2));
-    }
-  }
+  arg2 = (OTDB::StoredObjectType)argv[0]; 
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(argv[1], &ptr);
@@ -11487,13 +11472,11 @@ fail:
 SWIGINTERN VALUE
 _wrap_Storage_QueryObject__SWIG_2(int argc, VALUE *argv, VALUE self) {
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StoredObjectType arg2 ;
+  OTDB::StoredObjectType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
   OTDB::Storable *result = 0 ;
   VALUE vresult = Qnil;
   
@@ -11505,17 +11488,7 @@ _wrap_Storage_QueryObject__SWIG_2(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Storage *","QueryObject", 1, self )); 
   }
   arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_StoredObjectType,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "StoredObjectType","QueryObject", 2, argv[0] )); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StoredObjectType","QueryObject", 2, argv[0]));
-    } else {
-      arg2 = *(reinterpret_cast< StoredObjectType * >(argp2));
-    }
-  }
+  arg2 = (OTDB::StoredObjectType)argv[0]; 
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(argv[1], &ptr);
@@ -11545,12 +11518,10 @@ fail:
 SWIGINTERN VALUE
 _wrap_Storage_QueryObject__SWIG_3(int argc, VALUE *argv, VALUE self) {
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StoredObjectType arg2 ;
+  OTDB::StoredObjectType arg2 ;
   std::string arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
   OTDB::Storable *result = 0 ;
   VALUE vresult = Qnil;
   
@@ -11562,17 +11533,7 @@ _wrap_Storage_QueryObject__SWIG_3(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Storage *","QueryObject", 1, self )); 
   }
   arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_StoredObjectType,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "StoredObjectType","QueryObject", 2, argv[0] )); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StoredObjectType","QueryObject", 2, argv[0]));
-    } else {
-      arg2 = *(reinterpret_cast< StoredObjectType * >(argp2));
-    }
-  }
+  arg2 = (OTDB::StoredObjectType)argv[0]; 
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(argv[1], &ptr);
@@ -11607,9 +11568,6 @@ SWIGINTERN VALUE _wrap_Storage_QueryObject(int nargs, VALUE *args, VALUE self) {
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_OTDB__Storage, 0);
     _v = SWIG_CheckState(res);
     if (_v) {
-      void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_StoredObjectType, 0);
-      _v = SWIG_CheckState(res);
       if (_v) {
         int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -11625,9 +11583,6 @@ SWIGINTERN VALUE _wrap_Storage_QueryObject(int nargs, VALUE *args, VALUE self) {
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_OTDB__Storage, 0);
     _v = SWIG_CheckState(res);
     if (_v) {
-      void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_StoredObjectType, 0);
-      _v = SWIG_CheckState(res);
       if (_v) {
         int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -11647,9 +11602,6 @@ SWIGINTERN VALUE _wrap_Storage_QueryObject(int nargs, VALUE *args, VALUE self) {
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_OTDB__Storage, 0);
     _v = SWIG_CheckState(res);
     if (_v) {
-      void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_StoredObjectType, 0);
-      _v = SWIG_CheckState(res);
       if (_v) {
         int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -11673,9 +11625,6 @@ SWIGINTERN VALUE _wrap_Storage_QueryObject(int nargs, VALUE *args, VALUE self) {
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_OTDB__Storage, 0);
     _v = SWIG_CheckState(res);
     if (_v) {
-      void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_StoredObjectType, 0);
-      _v = SWIG_CheckState(res);
       if (_v) {
         int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -11700,10 +11649,10 @@ SWIGINTERN VALUE _wrap_Storage_QueryObject(int nargs, VALUE *args, VALUE self) {
   
 fail:
   Ruby_Format_OverloadedError( argc, 7, "QueryObject.new", 
-    "    QueryObject.new(StoredObjectType theObjectType, std::string strFolder, std::string oneStr, std::string twoStr, std::string threeStr)\n"
-    "    QueryObject.new(StoredObjectType theObjectType, std::string strFolder, std::string oneStr, std::string twoStr)\n"
-    "    QueryObject.new(StoredObjectType theObjectType, std::string strFolder, std::string oneStr)\n"
-    "    QueryObject.new(StoredObjectType theObjectType, std::string strFolder)\n");
+    "    QueryObject.new(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr, std::string twoStr, std::string threeStr)\n"
+    "    QueryObject.new(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr, std::string twoStr)\n"
+    "    QueryObject.new(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr)\n"
+    "    QueryObject.new(OTDB::StoredObjectType theObjectType, std::string strFolder)\n");
   
   return Qnil;
 }
@@ -11712,11 +11661,9 @@ fail:
 SWIGINTERN VALUE
 _wrap_Storage_CreateObject(int argc, VALUE *argv, VALUE self) {
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StoredObjectType arg2 ;
+  OTDB::StoredObjectType arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
   OTDB::Storable *result = 0 ;
   VALUE vresult = Qnil;
   
@@ -11728,17 +11675,7 @@ _wrap_Storage_CreateObject(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Storage *","CreateObject", 1, self )); 
   }
   arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
-  {
-    res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_StoredObjectType,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "StoredObjectType","CreateObject", 2, argv[0] )); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StoredObjectType","CreateObject", 2, argv[0]));
-    } else {
-      arg2 = *(reinterpret_cast< StoredObjectType * >(argp2));
-    }
-  }
+  arg2 = (OTDB::StoredObjectType)argv[0]; 
   result = (OTDB::Storable *)(arg1)->CreateObject(arg2);
   vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
   return vresult;
@@ -11749,40 +11686,16 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_Storage_Create(int argc, VALUE *argv, VALUE self) {
-  StorageType arg1 ;
-  PackType arg2 ;
-  void *argp1 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   OTDB::Storage *result = 0 ;
   VALUE vresult = Qnil;
   
   if ((argc < 2) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
-  {
-    res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_StorageType,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "StorageType","OTDB::Storage::Create", 1, argv[0] )); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StorageType","OTDB::Storage::Create", 1, argv[0]));
-    } else {
-      arg1 = *(reinterpret_cast< StorageType * >(argp1));
-    }
-  }
-  {
-    res2 = SWIG_ConvertPtr(argv[1], &argp2, SWIGTYPE_p_PackType,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "PackType","OTDB::Storage::Create", 2, argv[1] )); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "PackType","OTDB::Storage::Create", 2, argv[1]));
-    } else {
-      arg2 = *(reinterpret_cast< PackType * >(argp2));
-    }
-  }
+  arg1 = (OTDB::StorageType)argv[0]; 
+  arg2 = (OTDB::PackType)argv[1]; 
   result = (OTDB::Storage *)OTDB::Storage::Create(arg1,arg2);
   vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, 0 |  0 );
   return vresult;
@@ -11796,7 +11709,7 @@ _wrap_Storage_GetType(int argc, VALUE *argv, VALUE self) {
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  StorageType result;
+  OTDB::StorageType result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
@@ -11807,8 +11720,8 @@ _wrap_Storage_GetType(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Storage const *","GetType", 1, self )); 
   }
   arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
-  result = ((OTDB::Storage const *)arg1)->GetType();
-  vresult = SWIG_NewPointerObj((new StorageType(static_cast< const StorageType& >(result))), SWIGTYPE_p_StorageType, SWIG_POINTER_OWN |  0 );
+  result = (OTDB::StorageType)((OTDB::Storage const *)arg1)->GetType();
+  vresult = (jint)result; 
   return vresult;
 fail:
   return Qnil;
@@ -11817,46 +11730,22 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_InitDefaultStorage__SWIG_0(int argc, VALUE *argv, VALUE self) {
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
   std::string arg6 ;
   std::string arg7 ;
   std::string arg8 ;
-  void *argp1 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
   bool result;
   VALUE vresult = Qnil;
   
   if ((argc < 8) || (argc > 8)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 8)",argc); SWIG_fail;
   }
-  {
-    res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_StorageType,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "StorageType","OTDB::InitDefaultStorage", 1, argv[0] )); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StorageType","OTDB::InitDefaultStorage", 1, argv[0]));
-    } else {
-      arg1 = *(reinterpret_cast< StorageType * >(argp1));
-    }
-  }
-  {
-    res2 = SWIG_ConvertPtr(argv[1], &argp2, SWIGTYPE_p_PackType,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "PackType","OTDB::InitDefaultStorage", 2, argv[1] )); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "PackType","OTDB::InitDefaultStorage", 2, argv[1]));
-    } else {
-      arg2 = *(reinterpret_cast< PackType * >(argp2));
-    }
-  }
+  arg1 = (OTDB::StorageType)argv[0]; 
+  arg2 = (OTDB::PackType)argv[1]; 
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(argv[2], &ptr);
@@ -11921,45 +11810,21 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_InitDefaultStorage__SWIG_1(int argc, VALUE *argv, VALUE self) {
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
   std::string arg6 ;
   std::string arg7 ;
-  void *argp1 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
   bool result;
   VALUE vresult = Qnil;
   
   if ((argc < 7) || (argc > 7)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 7)",argc); SWIG_fail;
   }
-  {
-    res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_StorageType,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "StorageType","OTDB::InitDefaultStorage", 1, argv[0] )); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StorageType","OTDB::InitDefaultStorage", 1, argv[0]));
-    } else {
-      arg1 = *(reinterpret_cast< StorageType * >(argp1));
-    }
-  }
-  {
-    res2 = SWIG_ConvertPtr(argv[1], &argp2, SWIGTYPE_p_PackType,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "PackType","OTDB::InitDefaultStorage", 2, argv[1] )); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "PackType","OTDB::InitDefaultStorage", 2, argv[1]));
-    } else {
-      arg2 = *(reinterpret_cast< PackType * >(argp2));
-    }
-  }
+  arg1 = (OTDB::StorageType)argv[0]; 
+  arg2 = (OTDB::PackType)argv[1]; 
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(argv[2], &ptr);
@@ -12015,44 +11880,20 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_InitDefaultStorage__SWIG_2(int argc, VALUE *argv, VALUE self) {
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
   std::string arg6 ;
-  void *argp1 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
   bool result;
   VALUE vresult = Qnil;
   
   if ((argc < 6) || (argc > 6)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 6)",argc); SWIG_fail;
   }
-  {
-    res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_StorageType,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "StorageType","OTDB::InitDefaultStorage", 1, argv[0] )); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StorageType","OTDB::InitDefaultStorage", 1, argv[0]));
-    } else {
-      arg1 = *(reinterpret_cast< StorageType * >(argp1));
-    }
-  }
-  {
-    res2 = SWIG_ConvertPtr(argv[1], &argp2, SWIGTYPE_p_PackType,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "PackType","OTDB::InitDefaultStorage", 2, argv[1] )); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "PackType","OTDB::InitDefaultStorage", 2, argv[1]));
-    } else {
-      arg2 = *(reinterpret_cast< PackType * >(argp2));
-    }
-  }
+  arg1 = (OTDB::StorageType)argv[0]; 
+  arg2 = (OTDB::PackType)argv[1]; 
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(argv[2], &ptr);
@@ -12099,43 +11940,19 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_InitDefaultStorage__SWIG_3(int argc, VALUE *argv, VALUE self) {
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
-  void *argp1 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
   bool result;
   VALUE vresult = Qnil;
   
   if ((argc < 5) || (argc > 5)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 5)",argc); SWIG_fail;
   }
-  {
-    res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_StorageType,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "StorageType","OTDB::InitDefaultStorage", 1, argv[0] )); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StorageType","OTDB::InitDefaultStorage", 1, argv[0]));
-    } else {
-      arg1 = *(reinterpret_cast< StorageType * >(argp1));
-    }
-  }
-  {
-    res2 = SWIG_ConvertPtr(argv[1], &argp2, SWIGTYPE_p_PackType,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "PackType","OTDB::InitDefaultStorage", 2, argv[1] )); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "PackType","OTDB::InitDefaultStorage", 2, argv[1]));
-    } else {
-      arg2 = *(reinterpret_cast< PackType * >(argp2));
-    }
-  }
+  arg1 = (OTDB::StorageType)argv[0]; 
+  arg2 = (OTDB::PackType)argv[1]; 
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(argv[2], &ptr);
@@ -12173,42 +11990,18 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_InitDefaultStorage__SWIG_4(int argc, VALUE *argv, VALUE self) {
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
-  void *argp1 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
   bool result;
   VALUE vresult = Qnil;
   
   if ((argc < 4) || (argc > 4)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
   }
-  {
-    res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_StorageType,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "StorageType","OTDB::InitDefaultStorage", 1, argv[0] )); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StorageType","OTDB::InitDefaultStorage", 1, argv[0]));
-    } else {
-      arg1 = *(reinterpret_cast< StorageType * >(argp1));
-    }
-  }
-  {
-    res2 = SWIG_ConvertPtr(argv[1], &argp2, SWIGTYPE_p_PackType,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "PackType","OTDB::InitDefaultStorage", 2, argv[1] )); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "PackType","OTDB::InitDefaultStorage", 2, argv[1]));
-    } else {
-      arg2 = *(reinterpret_cast< PackType * >(argp2));
-    }
-  }
+  arg1 = (OTDB::StorageType)argv[0]; 
+  arg2 = (OTDB::PackType)argv[1]; 
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(argv[2], &ptr);
@@ -12237,41 +12030,17 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_InitDefaultStorage__SWIG_5(int argc, VALUE *argv, VALUE self) {
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
-  void *argp1 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
   bool result;
   VALUE vresult = Qnil;
   
   if ((argc < 3) || (argc > 3)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
   }
-  {
-    res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_StorageType,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "StorageType","OTDB::InitDefaultStorage", 1, argv[0] )); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StorageType","OTDB::InitDefaultStorage", 1, argv[0]));
-    } else {
-      arg1 = *(reinterpret_cast< StorageType * >(argp1));
-    }
-  }
-  {
-    res2 = SWIG_ConvertPtr(argv[1], &argp2, SWIGTYPE_p_PackType,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "PackType","OTDB::InitDefaultStorage", 2, argv[1] )); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "PackType","OTDB::InitDefaultStorage", 2, argv[1]));
-    } else {
-      arg2 = *(reinterpret_cast< PackType * >(argp2));
-    }
-  }
+  arg1 = (OTDB::StorageType)argv[0]; 
+  arg2 = (OTDB::PackType)argv[1]; 
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(argv[2], &ptr);
@@ -12291,40 +12060,16 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_InitDefaultStorage__SWIG_6(int argc, VALUE *argv, VALUE self) {
-  StorageType arg1 ;
-  PackType arg2 ;
-  void *argp1 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   bool result;
   VALUE vresult = Qnil;
   
   if ((argc < 2) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
-  {
-    res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_StorageType,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "StorageType","OTDB::InitDefaultStorage", 1, argv[0] )); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StorageType","OTDB::InitDefaultStorage", 1, argv[0]));
-    } else {
-      arg1 = *(reinterpret_cast< StorageType * >(argp1));
-    }
-  }
-  {
-    res2 = SWIG_ConvertPtr(argv[1], &argp2, SWIGTYPE_p_PackType,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "PackType","OTDB::InitDefaultStorage", 2, argv[1] )); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "PackType","OTDB::InitDefaultStorage", 2, argv[1]));
-    } else {
-      arg2 = *(reinterpret_cast< PackType * >(argp2));
-    }
-  }
+  arg1 = (OTDB::StorageType)argv[0]; 
+  arg2 = (OTDB::PackType)argv[1]; 
   result = (bool)OTDB::InitDefaultStorage(arg1,arg2);
   vresult = SWIG_From_bool(static_cast< bool >(result));
   return vresult;
@@ -12345,13 +12090,8 @@ SWIGINTERN VALUE _wrap_InitDefaultStorage(int nargs, VALUE *args, VALUE self) {
   }
   if (argc == 2) {
     int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_StorageType, 0);
-    _v = SWIG_CheckState(res);
+    
     if (_v) {
-      void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_PackType, 0);
-      _v = SWIG_CheckState(res);
       if (_v) {
         return _wrap_InitDefaultStorage__SWIG_6(nargs, args, self);
       }
@@ -12359,13 +12099,8 @@ SWIGINTERN VALUE _wrap_InitDefaultStorage(int nargs, VALUE *args, VALUE self) {
   }
   if (argc == 3) {
     int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_StorageType, 0);
-    _v = SWIG_CheckState(res);
+    
     if (_v) {
-      void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_PackType, 0);
-      _v = SWIG_CheckState(res);
       if (_v) {
         int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -12377,13 +12112,8 @@ SWIGINTERN VALUE _wrap_InitDefaultStorage(int nargs, VALUE *args, VALUE self) {
   }
   if (argc == 4) {
     int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_StorageType, 0);
-    _v = SWIG_CheckState(res);
+    
     if (_v) {
-      void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_PackType, 0);
-      _v = SWIG_CheckState(res);
       if (_v) {
         int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -12399,13 +12129,8 @@ SWIGINTERN VALUE _wrap_InitDefaultStorage(int nargs, VALUE *args, VALUE self) {
   }
   if (argc == 5) {
     int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_StorageType, 0);
-    _v = SWIG_CheckState(res);
+    
     if (_v) {
-      void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_PackType, 0);
-      _v = SWIG_CheckState(res);
       if (_v) {
         int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -12425,13 +12150,8 @@ SWIGINTERN VALUE _wrap_InitDefaultStorage(int nargs, VALUE *args, VALUE self) {
   }
   if (argc == 6) {
     int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_StorageType, 0);
-    _v = SWIG_CheckState(res);
+    
     if (_v) {
-      void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_PackType, 0);
-      _v = SWIG_CheckState(res);
       if (_v) {
         int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -12455,13 +12175,8 @@ SWIGINTERN VALUE _wrap_InitDefaultStorage(int nargs, VALUE *args, VALUE self) {
   }
   if (argc == 7) {
     int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_StorageType, 0);
-    _v = SWIG_CheckState(res);
+    
     if (_v) {
-      void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_PackType, 0);
-      _v = SWIG_CheckState(res);
       if (_v) {
         int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -12489,13 +12204,8 @@ SWIGINTERN VALUE _wrap_InitDefaultStorage(int nargs, VALUE *args, VALUE self) {
   }
   if (argc == 8) {
     int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_StorageType, 0);
-    _v = SWIG_CheckState(res);
+    
     if (_v) {
-      void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_PackType, 0);
-      _v = SWIG_CheckState(res);
       if (_v) {
         int res = SWIG_AsPtr_std_string(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -12528,13 +12238,13 @@ SWIGINTERN VALUE _wrap_InitDefaultStorage(int nargs, VALUE *args, VALUE self) {
   
 fail:
   Ruby_Format_OverloadedError( argc, 8, "InitDefaultStorage", 
-    "    bool InitDefaultStorage(StorageType eStoreType, PackType ePackType, std::string oneStr, std::string twoStr, std::string threeStr, std::string fourStr, std::string fiveStr, std::string sixStr)\n"
-    "    bool InitDefaultStorage(StorageType eStoreType, PackType ePackType, std::string oneStr, std::string twoStr, std::string threeStr, std::string fourStr, std::string fiveStr)\n"
-    "    bool InitDefaultStorage(StorageType eStoreType, PackType ePackType, std::string oneStr, std::string twoStr, std::string threeStr, std::string fourStr)\n"
-    "    bool InitDefaultStorage(StorageType eStoreType, PackType ePackType, std::string oneStr, std::string twoStr, std::string threeStr)\n"
-    "    bool InitDefaultStorage(StorageType eStoreType, PackType ePackType, std::string oneStr, std::string twoStr)\n"
-    "    bool InitDefaultStorage(StorageType eStoreType, PackType ePackType, std::string oneStr)\n"
-    "    bool InitDefaultStorage(StorageType eStoreType, PackType ePackType)\n");
+    "    bool InitDefaultStorage(OTDB::StorageType eStoreType, OTDB::PackType ePackType, std::string oneStr, std::string twoStr, std::string threeStr, std::string fourStr, std::string fiveStr, std::string sixStr)\n"
+    "    bool InitDefaultStorage(OTDB::StorageType eStoreType, OTDB::PackType ePackType, std::string oneStr, std::string twoStr, std::string threeStr, std::string fourStr, std::string fiveStr)\n"
+    "    bool InitDefaultStorage(OTDB::StorageType eStoreType, OTDB::PackType ePackType, std::string oneStr, std::string twoStr, std::string threeStr, std::string fourStr)\n"
+    "    bool InitDefaultStorage(OTDB::StorageType eStoreType, OTDB::PackType ePackType, std::string oneStr, std::string twoStr, std::string threeStr)\n"
+    "    bool InitDefaultStorage(OTDB::StorageType eStoreType, OTDB::PackType ePackType, std::string oneStr, std::string twoStr)\n"
+    "    bool InitDefaultStorage(OTDB::StorageType eStoreType, OTDB::PackType ePackType, std::string oneStr)\n"
+    "    bool InitDefaultStorage(OTDB::StorageType eStoreType, OTDB::PackType ePackType)\n");
   
   return Qnil;
 }
@@ -12558,40 +12268,16 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_CreateStorageContext__SWIG_0(int argc, VALUE *argv, VALUE self) {
-  StorageType arg1 ;
-  PackType arg2 ;
-  void *argp1 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   OTDB::Storage *result = 0 ;
   VALUE vresult = Qnil;
   
   if ((argc < 2) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
-  {
-    res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_StorageType,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "StorageType","OTDB::CreateStorageContext", 1, argv[0] )); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StorageType","OTDB::CreateStorageContext", 1, argv[0]));
-    } else {
-      arg1 = *(reinterpret_cast< StorageType * >(argp1));
-    }
-  }
-  {
-    res2 = SWIG_ConvertPtr(argv[1], &argp2, SWIGTYPE_p_PackType,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "PackType","OTDB::CreateStorageContext", 2, argv[1] )); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "PackType","OTDB::CreateStorageContext", 2, argv[1]));
-    } else {
-      arg2 = *(reinterpret_cast< PackType * >(argp2));
-    }
-  }
+  arg1 = (OTDB::StorageType)argv[0]; 
+  arg2 = (OTDB::PackType)argv[1]; 
   result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1,arg2);
   vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, SWIG_POINTER_OWN |  0 );
   return vresult;
@@ -12602,26 +12288,14 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_CreateStorageContext__SWIG_1(int argc, VALUE *argv, VALUE self) {
-  StorageType arg1 ;
-  void *argp1 ;
-  int res1 = 0 ;
+  OTDB::StorageType arg1 ;
   OTDB::Storage *result = 0 ;
   VALUE vresult = Qnil;
   
   if ((argc < 1) || (argc > 1)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
-  {
-    res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_StorageType,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "StorageType","OTDB::CreateStorageContext", 1, argv[0] )); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StorageType","OTDB::CreateStorageContext", 1, argv[0]));
-    } else {
-      arg1 = *(reinterpret_cast< StorageType * >(argp1));
-    }
-  }
+  arg1 = (OTDB::StorageType)argv[0]; 
   result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1);
   vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, SWIG_POINTER_OWN |  0 );
   return vresult;
@@ -12642,22 +12316,15 @@ SWIGINTERN VALUE _wrap_CreateStorageContext(int nargs, VALUE *args, VALUE self) 
   }
   if (argc == 1) {
     int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_StorageType, 0);
-    _v = SWIG_CheckState(res);
+    
     if (_v) {
       return _wrap_CreateStorageContext__SWIG_1(nargs, args, self);
     }
   }
   if (argc == 2) {
     int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_StorageType, 0);
-    _v = SWIG_CheckState(res);
+    
     if (_v) {
-      void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_PackType, 0);
-      _v = SWIG_CheckState(res);
       if (_v) {
         return _wrap_CreateStorageContext__SWIG_0(nargs, args, self);
       }
@@ -12666,8 +12333,8 @@ SWIGINTERN VALUE _wrap_CreateStorageContext(int nargs, VALUE *args, VALUE self) 
   
 fail:
   Ruby_Format_OverloadedError( argc, 2, "CreateStorageContext.new", 
-    "    CreateStorageContext.new(StorageType eStoreType, PackType ePackType)\n"
-    "    CreateStorageContext.new(StorageType eStoreType)\n");
+    "    CreateStorageContext.new(OTDB::StorageType eStoreType, OTDB::PackType ePackType)\n"
+    "    CreateStorageContext.new(OTDB::StorageType eStoreType)\n");
   
   return Qnil;
 }
@@ -12675,26 +12342,14 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_CreateObject(int argc, VALUE *argv, VALUE self) {
-  StoredObjectType arg1 ;
-  void *argp1 ;
-  int res1 = 0 ;
+  OTDB::StoredObjectType arg1 ;
   OTDB::Storable *result = 0 ;
   VALUE vresult = Qnil;
   
   if ((argc < 1) || (argc > 1)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
-  {
-    res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_StoredObjectType,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "StoredObjectType","OTDB::CreateObject", 1, argv[0] )); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StoredObjectType","OTDB::CreateObject", 1, argv[0]));
-    } else {
-      arg1 = *(reinterpret_cast< StoredObjectType * >(argp1));
-    }
-  }
+  arg1 = (OTDB::StoredObjectType)argv[0]; 
   result = (OTDB::Storable *)OTDB::CreateObject(arg1);
   vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
   return vresult;
@@ -13793,30 +13448,18 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_QueryObject__SWIG_0(int argc, VALUE *argv, VALUE self) {
-  StoredObjectType arg1 ;
+  OTDB::StoredObjectType arg1 ;
   std::string arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
-  void *argp1 ;
-  int res1 = 0 ;
   OTDB::Storable *result = 0 ;
   VALUE vresult = Qnil;
   
   if ((argc < 5) || (argc > 5)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 5)",argc); SWIG_fail;
   }
-  {
-    res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_StoredObjectType,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "StoredObjectType","OTDB::QueryObject", 1, argv[0] )); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StoredObjectType","OTDB::QueryObject", 1, argv[0]));
-    } else {
-      arg1 = *(reinterpret_cast< StoredObjectType * >(argp1));
-    }
-  }
+  arg1 = (OTDB::StoredObjectType)argv[0]; 
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(argv[1], &ptr);
@@ -13863,29 +13506,17 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_QueryObject__SWIG_1(int argc, VALUE *argv, VALUE self) {
-  StoredObjectType arg1 ;
+  OTDB::StoredObjectType arg1 ;
   std::string arg2 ;
   std::string arg3 ;
   std::string arg4 ;
-  void *argp1 ;
-  int res1 = 0 ;
   OTDB::Storable *result = 0 ;
   VALUE vresult = Qnil;
   
   if ((argc < 4) || (argc > 4)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 4)",argc); SWIG_fail;
   }
-  {
-    res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_StoredObjectType,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "StoredObjectType","OTDB::QueryObject", 1, argv[0] )); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StoredObjectType","OTDB::QueryObject", 1, argv[0]));
-    } else {
-      arg1 = *(reinterpret_cast< StoredObjectType * >(argp1));
-    }
-  }
+  arg1 = (OTDB::StoredObjectType)argv[0]; 
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(argv[1], &ptr);
@@ -13923,28 +13554,16 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_QueryObject__SWIG_2(int argc, VALUE *argv, VALUE self) {
-  StoredObjectType arg1 ;
+  OTDB::StoredObjectType arg1 ;
   std::string arg2 ;
   std::string arg3 ;
-  void *argp1 ;
-  int res1 = 0 ;
   OTDB::Storable *result = 0 ;
   VALUE vresult = Qnil;
   
   if ((argc < 3) || (argc > 3)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
   }
-  {
-    res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_StoredObjectType,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "StoredObjectType","OTDB::QueryObject", 1, argv[0] )); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StoredObjectType","OTDB::QueryObject", 1, argv[0]));
-    } else {
-      arg1 = *(reinterpret_cast< StoredObjectType * >(argp1));
-    }
-  }
+  arg1 = (OTDB::StoredObjectType)argv[0]; 
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(argv[1], &ptr);
@@ -13973,27 +13592,15 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_QueryObject__SWIG_3(int argc, VALUE *argv, VALUE self) {
-  StoredObjectType arg1 ;
+  OTDB::StoredObjectType arg1 ;
   std::string arg2 ;
-  void *argp1 ;
-  int res1 = 0 ;
   OTDB::Storable *result = 0 ;
   VALUE vresult = Qnil;
   
   if ((argc < 2) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
-  {
-    res1 = SWIG_ConvertPtr(argv[0], &argp1, SWIGTYPE_p_StoredObjectType,  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "StoredObjectType","OTDB::QueryObject", 1, argv[0] )); 
-    }  
-    if (!argp1) {
-      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "StoredObjectType","OTDB::QueryObject", 1, argv[0]));
-    } else {
-      arg1 = *(reinterpret_cast< StoredObjectType * >(argp1));
-    }
-  }
+  arg1 = (OTDB::StoredObjectType)argv[0]; 
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(argv[1], &ptr);
@@ -14023,9 +13630,7 @@ SWIGINTERN VALUE _wrap_QueryObject(int nargs, VALUE *args, VALUE self) {
   }
   if (argc == 2) {
     int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_StoredObjectType, 0);
-    _v = SWIG_CheckState(res);
+    
     if (_v) {
       int res = SWIG_AsPtr_std_string(argv[1], (std::string**)(0));
       _v = SWIG_CheckState(res);
@@ -14036,9 +13641,7 @@ SWIGINTERN VALUE _wrap_QueryObject(int nargs, VALUE *args, VALUE self) {
   }
   if (argc == 3) {
     int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_StoredObjectType, 0);
-    _v = SWIG_CheckState(res);
+    
     if (_v) {
       int res = SWIG_AsPtr_std_string(argv[1], (std::string**)(0));
       _v = SWIG_CheckState(res);
@@ -14053,9 +13656,7 @@ SWIGINTERN VALUE _wrap_QueryObject(int nargs, VALUE *args, VALUE self) {
   }
   if (argc == 4) {
     int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_StoredObjectType, 0);
-    _v = SWIG_CheckState(res);
+    
     if (_v) {
       int res = SWIG_AsPtr_std_string(argv[1], (std::string**)(0));
       _v = SWIG_CheckState(res);
@@ -14074,9 +13675,7 @@ SWIGINTERN VALUE _wrap_QueryObject(int nargs, VALUE *args, VALUE self) {
   }
   if (argc == 5) {
     int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_StoredObjectType, 0);
-    _v = SWIG_CheckState(res);
+    
     if (_v) {
       int res = SWIG_AsPtr_std_string(argv[1], (std::string**)(0));
       _v = SWIG_CheckState(res);
@@ -14100,10 +13699,10 @@ SWIGINTERN VALUE _wrap_QueryObject(int nargs, VALUE *args, VALUE self) {
   
 fail:
   Ruby_Format_OverloadedError( argc, 5, "QueryObject.new", 
-    "    QueryObject.new(StoredObjectType theObjectType, std::string strFolder, std::string oneStr, std::string twoStr, std::string threeStr)\n"
-    "    QueryObject.new(StoredObjectType theObjectType, std::string strFolder, std::string oneStr, std::string twoStr)\n"
-    "    QueryObject.new(StoredObjectType theObjectType, std::string strFolder, std::string oneStr)\n"
-    "    QueryObject.new(StoredObjectType theObjectType, std::string strFolder)\n");
+    "    QueryObject.new(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr, std::string twoStr, std::string threeStr)\n"
+    "    QueryObject.new(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr, std::string twoStr)\n"
+    "    QueryObject.new(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr)\n"
+    "    QueryObject.new(OTDB::StoredObjectType theObjectType, std::string strFolder)\n");
   
   return Qnil;
 }
@@ -14520,16 +14119,16 @@ fail:
 }
 
 
-swig_class SwigClassServer;
+swig_class SwigClassServerInfo;
 
 SWIGINTERN void
-free_OTDB_Server(OTDB::Server *arg1) {
+free_OTDB_ServerInfo(OTDB::ServerInfo *arg1) {
     delete arg1;
 }
 
 SWIGINTERN VALUE
-_wrap_Server_server_id_set(int argc, VALUE *argv, VALUE self) {
-  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+_wrap_ServerInfo_server_id_set(int argc, VALUE *argv, VALUE self) {
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
   std::string *arg2 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -14538,11 +14137,11 @@ _wrap_Server_server_id_set(int argc, VALUE *argv, VALUE self) {
   if ((argc < 1) || (argc > 1)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Server, 0 |  0 );
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ServerInfo, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Server *","server_id", 1, self )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ServerInfo *","server_id", 1, self )); 
   }
-  arg1 = reinterpret_cast< OTDB::Server * >(argp1);
+  arg1 = reinterpret_cast< OTDB::ServerInfo * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(argv[0], &ptr);
@@ -14564,8 +14163,8 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_Server_server_id_get(int argc, VALUE *argv, VALUE self) {
-  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+_wrap_ServerInfo_server_id_get(int argc, VALUE *argv, VALUE self) {
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   std::string *result = 0 ;
@@ -14574,11 +14173,11 @@ _wrap_Server_server_id_get(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Server, 0 |  0 );
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ServerInfo, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Server *","server_id", 1, self )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ServerInfo *","server_id", 1, self )); 
   }
-  arg1 = reinterpret_cast< OTDB::Server * >(argp1);
+  arg1 = reinterpret_cast< OTDB::ServerInfo * >(argp1);
   result = (std::string *) & ((arg1)->server_id);
   vresult = SWIG_From_std_string(static_cast< std::string >(*result));
   return vresult;
@@ -14588,8 +14187,8 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_Server_server_type_set(int argc, VALUE *argv, VALUE self) {
-  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+_wrap_ServerInfo_server_type_set(int argc, VALUE *argv, VALUE self) {
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
   std::string *arg2 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -14598,11 +14197,11 @@ _wrap_Server_server_type_set(int argc, VALUE *argv, VALUE self) {
   if ((argc < 1) || (argc > 1)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Server, 0 |  0 );
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ServerInfo, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Server *","server_type", 1, self )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ServerInfo *","server_type", 1, self )); 
   }
-  arg1 = reinterpret_cast< OTDB::Server * >(argp1);
+  arg1 = reinterpret_cast< OTDB::ServerInfo * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(argv[0], &ptr);
@@ -14624,8 +14223,8 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_Server_server_type_get(int argc, VALUE *argv, VALUE self) {
-  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+_wrap_ServerInfo_server_type_get(int argc, VALUE *argv, VALUE self) {
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   std::string *result = 0 ;
@@ -14634,11 +14233,11 @@ _wrap_Server_server_type_get(int argc, VALUE *argv, VALUE self) {
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Server, 0 |  0 );
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ServerInfo, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Server *","server_type", 1, self )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ServerInfo *","server_type", 1, self )); 
   }
-  arg1 = reinterpret_cast< OTDB::Server * >(argp1);
+  arg1 = reinterpret_cast< OTDB::ServerInfo * >(argp1);
   result = (std::string *) & ((arg1)->server_type);
   vresult = SWIG_From_std_string(static_cast< std::string >(*result));
   return vresult;
@@ -14646,6 +14245,13 @@ fail:
   return Qnil;
 }
 
+
+swig_class SwigClassServer;
+
+SWIGINTERN void
+free_OTDB_Server(OTDB::Server *arg1) {
+    delete arg1;
+}
 
 SWIGINTERN VALUE
 _wrap_Server_server_host_set(int argc, VALUE *argv, VALUE self) {
@@ -14888,6 +14494,1366 @@ _wrap_BitcoinServer_bitcoin_password_get(int argc, VALUE *argv, VALUE self) {
   arg1 = reinterpret_cast< OTDB::BitcoinServer * >(argp1);
   result = (std::string *) & ((arg1)->bitcoin_password);
   vresult = SWIG_From_std_string(static_cast< std::string >(*result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+swig_class SwigClassContactNym;
+
+SWIGINTERN void
+free_OTDB_ContactNym(OTDB::ContactNym *arg1) {
+    delete arg1;
+}
+
+SWIGINTERN VALUE
+_wrap_ContactNym_nym_type_set(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactNym *","nym_type", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(argv[0], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "std::string const &","nym_type", 2, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::string const &","nym_type", 2, argv[0])); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->nym_type = *arg2;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactNym_nym_type_get(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactNym *","nym_type", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  result = (std::string *) & ((arg1)->nym_type);
+  vresult = SWIG_From_std_string(static_cast< std::string >(*result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactNym_nym_id_set(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactNym *","nym_id", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(argv[0], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "std::string const &","nym_id", 2, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::string const &","nym_id", 2, argv[0])); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->nym_id = *arg2;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactNym_nym_id_get(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactNym *","nym_id", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  result = (std::string *) & ((arg1)->nym_id);
+  vresult = SWIG_From_std_string(static_cast< std::string >(*result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactNym_public_key_set(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactNym *","public_key", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(argv[0], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "std::string const &","public_key", 2, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::string const &","public_key", 2, argv[0])); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->public_key = *arg2;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactNym_public_key_get(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactNym *","public_key", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  result = (std::string *) & ((arg1)->public_key);
+  vresult = SWIG_From_std_string(static_cast< std::string >(*result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactNym_memo_set(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactNym *","memo", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(argv[0], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "std::string const &","memo", 2, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::string const &","memo", 2, argv[0])); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->memo = *arg2;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactNym_memo_get(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactNym *","memo", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  result = (std::string *) & ((arg1)->memo);
+  vresult = SWIG_From_std_string(static_cast< std::string >(*result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactNym_GetServerInfoCount(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactNym *","GetServerInfoCount", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  result = (arg1)->GetServerInfoCount();
+  vresult = SWIG_From_size_t(static_cast< size_t >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactNym_GetServerInfo(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  OTDB::ServerInfo *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactNym *","GetServerInfo", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "size_t","GetServerInfo", 2, argv[0] ));
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (OTDB::ServerInfo *)(arg1)->GetServerInfo(arg2);
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ServerInfo, 0 |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactNym_RemoveServerInfo(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactNym *","RemoveServerInfo", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "size_t","RemoveServerInfo", 2, argv[0] ));
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (bool)(arg1)->RemoveServerInfo(arg2);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactNym_AddServerInfo(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  OTDB::ServerInfo *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactNym *","AddServerInfo", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_OTDB__ServerInfo,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "OTDB::ServerInfo &","AddServerInfo", 2, argv[0] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "OTDB::ServerInfo &","AddServerInfo", 2, argv[0])); 
+  }
+  arg2 = reinterpret_cast< OTDB::ServerInfo * >(argp2);
+  result = (bool)(arg1)->AddServerInfo(*arg2);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+swig_class SwigClassContactAcct;
+
+SWIGINTERN void
+free_OTDB_ContactAcct(OTDB::ContactAcct *arg1) {
+    delete arg1;
+}
+
+SWIGINTERN VALUE
+_wrap_ContactAcct_server_type_set(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactAcct *","server_type", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(argv[0], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "std::string const &","server_type", 2, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::string const &","server_type", 2, argv[0])); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->server_type = *arg2;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactAcct_server_type_get(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactAcct *","server_type", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
+  result = (std::string *) & ((arg1)->server_type);
+  vresult = SWIG_From_std_string(static_cast< std::string >(*result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactAcct_server_id_set(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactAcct *","server_id", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(argv[0], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "std::string const &","server_id", 2, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::string const &","server_id", 2, argv[0])); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->server_id = *arg2;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactAcct_server_id_get(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactAcct *","server_id", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
+  result = (std::string *) & ((arg1)->server_id);
+  vresult = SWIG_From_std_string(static_cast< std::string >(*result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactAcct_asset_type_id_set(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactAcct *","asset_type_id", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(argv[0], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "std::string const &","asset_type_id", 2, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::string const &","asset_type_id", 2, argv[0])); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->asset_type_id = *arg2;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactAcct_asset_type_id_get(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactAcct *","asset_type_id", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
+  result = (std::string *) & ((arg1)->asset_type_id);
+  vresult = SWIG_From_std_string(static_cast< std::string >(*result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactAcct_acct_id_set(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactAcct *","acct_id", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(argv[0], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "std::string const &","acct_id", 2, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::string const &","acct_id", 2, argv[0])); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->acct_id = *arg2;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactAcct_acct_id_get(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactAcct *","acct_id", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
+  result = (std::string *) & ((arg1)->acct_id);
+  vresult = SWIG_From_std_string(static_cast< std::string >(*result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactAcct_nym_id_set(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactAcct *","nym_id", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(argv[0], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "std::string const &","nym_id", 2, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::string const &","nym_id", 2, argv[0])); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->nym_id = *arg2;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactAcct_nym_id_get(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactAcct *","nym_id", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
+  result = (std::string *) & ((arg1)->nym_id);
+  vresult = SWIG_From_std_string(static_cast< std::string >(*result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactAcct_memo_set(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactAcct *","memo", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(argv[0], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "std::string const &","memo", 2, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::string const &","memo", 2, argv[0])); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->memo = *arg2;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactAcct_memo_get(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactAcct *","memo", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
+  result = (std::string *) & ((arg1)->memo);
+  vresult = SWIG_From_std_string(static_cast< std::string >(*result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactAcct_public_key_set(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactAcct *","public_key", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(argv[0], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "std::string const &","public_key", 2, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::string const &","public_key", 2, argv[0])); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->public_key = *arg2;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_ContactAcct_public_key_get(int argc, VALUE *argv, VALUE self) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::ContactAcct *","public_key", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
+  result = (std::string *) & ((arg1)->public_key);
+  vresult = SWIG_From_std_string(static_cast< std::string >(*result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+swig_class SwigClassContact;
+
+SWIGINTERN void
+free_OTDB_Contact(OTDB::Contact *arg1) {
+    delete arg1;
+}
+
+SWIGINTERN VALUE
+_wrap_Contact_email_set(int argc, VALUE *argv, VALUE self) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Contact *","email", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(argv[0], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "std::string const &","email", 2, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::string const &","email", 2, argv[0])); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->email = *arg2;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Contact_email_get(int argc, VALUE *argv, VALUE self) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Contact *","email", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  result = (std::string *) & ((arg1)->email);
+  vresult = SWIG_From_std_string(static_cast< std::string >(*result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Contact_memo_set(int argc, VALUE *argv, VALUE self) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Contact *","memo", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(argv[0], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "std::string const &","memo", 2, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::string const &","memo", 2, argv[0])); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->memo = *arg2;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Contact_memo_get(int argc, VALUE *argv, VALUE self) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Contact *","memo", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  result = (std::string *) & ((arg1)->memo);
+  vresult = SWIG_From_std_string(static_cast< std::string >(*result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Contact_public_key_set(int argc, VALUE *argv, VALUE self) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Contact *","public_key", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string(argv[0], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "std::string const &","public_key", 2, argv[0] )); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "std::string const &","public_key", 2, argv[0])); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->public_key = *arg2;
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Contact_public_key_get(int argc, VALUE *argv, VALUE self) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Contact *","public_key", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  result = (std::string *) & ((arg1)->public_key);
+  vresult = SWIG_From_std_string(static_cast< std::string >(*result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Contact_GetContactNymCount(int argc, VALUE *argv, VALUE self) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Contact *","GetContactNymCount", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  result = (arg1)->GetContactNymCount();
+  vresult = SWIG_From_size_t(static_cast< size_t >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Contact_GetContactNym(int argc, VALUE *argv, VALUE self) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  OTDB::ContactNym *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Contact *","GetContactNym", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "size_t","GetContactNym", 2, argv[0] ));
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (OTDB::ContactNym *)(arg1)->GetContactNym(arg2);
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Contact_RemoveContactNym(int argc, VALUE *argv, VALUE self) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Contact *","RemoveContactNym", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "size_t","RemoveContactNym", 2, argv[0] ));
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (bool)(arg1)->RemoveContactNym(arg2);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Contact_AddContactNym(int argc, VALUE *argv, VALUE self) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  OTDB::ContactNym *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Contact *","AddContactNym", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_OTDB__ContactNym,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "OTDB::ContactNym &","AddContactNym", 2, argv[0] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "OTDB::ContactNym &","AddContactNym", 2, argv[0])); 
+  }
+  arg2 = reinterpret_cast< OTDB::ContactNym * >(argp2);
+  result = (bool)(arg1)->AddContactNym(*arg2);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Contact_GetContactAcctCount(int argc, VALUE *argv, VALUE self) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Contact *","GetContactAcctCount", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  result = (arg1)->GetContactAcctCount();
+  vresult = SWIG_From_size_t(static_cast< size_t >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Contact_GetContactAcct(int argc, VALUE *argv, VALUE self) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  OTDB::ContactAcct *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Contact *","GetContactAcct", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "size_t","GetContactAcct", 2, argv[0] ));
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (OTDB::ContactAcct *)(arg1)->GetContactAcct(arg2);
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Contact_RemoveContactAcct(int argc, VALUE *argv, VALUE self) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Contact *","RemoveContactAcct", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "size_t","RemoveContactAcct", 2, argv[0] ));
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (bool)(arg1)->RemoveContactAcct(arg2);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_Contact_AddContactAcct(int argc, VALUE *argv, VALUE self) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  OTDB::ContactAcct *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::Contact *","AddContactAcct", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_OTDB__ContactAcct,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "OTDB::ContactAcct &","AddContactAcct", 2, argv[0] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "OTDB::ContactAcct &","AddContactAcct", 2, argv[0])); 
+  }
+  arg2 = reinterpret_cast< OTDB::ContactAcct * >(argp2);
+  result = (bool)(arg1)->AddContactAcct(*arg2);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+swig_class SwigClassAddressBook;
+
+SWIGINTERN void
+free_OTDB_AddressBook(OTDB::AddressBook *arg1) {
+    delete arg1;
+}
+
+SWIGINTERN VALUE
+_wrap_AddressBook_GetContactCount(int argc, VALUE *argv, VALUE self) {
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__AddressBook, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::AddressBook *","GetContactCount", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::AddressBook * >(argp1);
+  result = (arg1)->GetContactCount();
+  vresult = SWIG_From_size_t(static_cast< size_t >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_AddressBook_GetContact(int argc, VALUE *argv, VALUE self) {
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  OTDB::Contact *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__AddressBook, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::AddressBook *","GetContact", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::AddressBook * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "size_t","GetContact", 2, argv[0] ));
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (OTDB::Contact *)(arg1)->GetContact(arg2);
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_AddressBook_RemoveContact(int argc, VALUE *argv, VALUE self) {
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__AddressBook, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::AddressBook *","RemoveContact", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::AddressBook * >(argp1);
+  ecode2 = SWIG_AsVal_size_t(argv[0], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "size_t","RemoveContact", 2, argv[0] ));
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (bool)(arg1)->RemoveContact(arg2);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_AddressBook_AddContact(int argc, VALUE *argv, VALUE self) {
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  OTDB::Contact *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  bool result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_OTDB__AddressBook, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "OTDB::AddressBook *","AddContact", 1, self )); 
+  }
+  arg1 = reinterpret_cast< OTDB::AddressBook * >(argp1);
+  res2 = SWIG_ConvertPtr(argv[0], &argp2, SWIGTYPE_p_OTDB__Contact,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "OTDB::Contact &","AddContact", 2, argv[0] )); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, Ruby_Format_TypeError("invalid null reference ", "OTDB::Contact &","AddContact", 2, argv[0])); 
+  }
+  arg2 = reinterpret_cast< OTDB::Contact * >(argp2);
+  result = (bool)(arg1)->AddContact(*arg2);
+  vresult = SWIG_From_bool(static_cast< bool >(result));
   return vresult;
 fail:
   return Qnil;
@@ -15160,22 +16126,37 @@ static void *_p_OTDB__BitcoinAcctTo_p_OTDB__Displayable(void *x, int *SWIGUNUSED
     return (void *)((OTDB::Displayable *) (OTDB::Acct *) ((OTDB::BitcoinAcct *) x));
 }
 static void *_p_OTDB__ServerTo_p_OTDB__Displayable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((OTDB::Displayable *)  ((OTDB::Server *) x));
+    return (void *)((OTDB::Displayable *) (OTDB::ServerInfo *) ((OTDB::Server *) x));
 }
 static void *_p_OTDB__BitcoinServerTo_p_OTDB__Displayable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((OTDB::Displayable *) (OTDB::Server *) ((OTDB::BitcoinServer *) x));
+    return (void *)((OTDB::Displayable *) (OTDB::ServerInfo *)(OTDB::Server *) ((OTDB::BitcoinServer *) x));
 }
 static void *_p_OTDB__AcctTo_p_OTDB__Displayable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OTDB::Displayable *)  ((OTDB::Acct *) x));
+}
+static void *_p_OTDB__ContactNymTo_p_OTDB__Displayable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Displayable *)  ((OTDB::ContactNym *) x));
+}
+static void *_p_OTDB__ContactTo_p_OTDB__Displayable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Displayable *)  ((OTDB::Contact *) x));
+}
+static void *_p_OTDB__ServerInfoTo_p_OTDB__Displayable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Displayable *)  ((OTDB::ServerInfo *) x));
+}
+static void *_p_OTDB__ContactAcctTo_p_OTDB__Displayable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Displayable *)  ((OTDB::ContactAcct *) x));
+}
+static void *_p_OTDB__AddressBookTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *)  ((OTDB::AddressBook *) x));
 }
 static void *_p_OTDB__BitcoinAcctTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OTDB::Storable *) (OTDB::Displayable *)(OTDB::Acct *) ((OTDB::BitcoinAcct *) x));
 }
 static void *_p_OTDB__ServerTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((OTDB::Storable *) (OTDB::Displayable *) ((OTDB::Server *) x));
+    return (void *)((OTDB::Storable *) (OTDB::Displayable *)(OTDB::ServerInfo *) ((OTDB::Server *) x));
 }
 static void *_p_OTDB__BitcoinServerTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((OTDB::Storable *) (OTDB::Displayable *)(OTDB::Server *) ((OTDB::BitcoinServer *) x));
+    return (void *)((OTDB::Storable *) (OTDB::Displayable *)(OTDB::ServerInfo *)(OTDB::Server *) ((OTDB::BitcoinServer *) x));
 }
 static void *_p_OTDB__AcctTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OTDB::Storable *) (OTDB::Displayable *) ((OTDB::Acct *) x));
@@ -15186,23 +16167,44 @@ static void *_p_OTDB__WalletDataTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM
 static void *_p_OTDB__DisplayableTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OTDB::Storable *)  ((OTDB::Displayable *) x));
 }
+static void *_p_OTDB__ContactNymTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *) (OTDB::Displayable *) ((OTDB::ContactNym *) x));
+}
+static void *_p_OTDB__ContactTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *) (OTDB::Displayable *) ((OTDB::Contact *) x));
+}
 static void *_p_OTDB__StringMapTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OTDB::Storable *)  ((OTDB::StringMap *) x));
+}
+static void *_p_OTDB__ServerInfoTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *) (OTDB::Displayable *) ((OTDB::ServerInfo *) x));
+}
+static void *_p_OTDB__ContactAcctTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *) (OTDB::Displayable *) ((OTDB::ContactAcct *) x));
+}
+static void *_p_OTDB__ServerTo_p_OTDB__ServerInfo(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::ServerInfo *)  ((OTDB::Server *) x));
+}
+static void *_p_OTDB__BitcoinServerTo_p_OTDB__ServerInfo(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::ServerInfo *) (OTDB::Server *) ((OTDB::BitcoinServer *) x));
 }
 static swig_type_info _swigt__p_OTCallback = {"_p_OTCallback", "OTCallback *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTCaller = {"_p_OTCaller", "OTCaller *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTDB__Acct = {"_p_OTDB__Acct", "OTDB::Acct *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OTDB__AddressBook = {"_p_OTDB__AddressBook", "OTDB::AddressBook *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTDB__BitcoinAcct = {"_p_OTDB__BitcoinAcct", "OTDB::BitcoinAcct *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTDB__BitcoinServer = {"_p_OTDB__BitcoinServer", "OTDB::BitcoinServer *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OTDB__Contact = {"_p_OTDB__Contact", "OTDB::Contact *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OTDB__ContactAcct = {"_p_OTDB__ContactAcct", "OTDB::ContactAcct *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OTDB__ContactNym = {"_p_OTDB__ContactNym", "OTDB::ContactNym *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTDB__Displayable = {"_p_OTDB__Displayable", "OTDB::Displayable *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTDB__Server = {"_p_OTDB__Server", "OTDB::Server *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OTDB__ServerInfo = {"_p_OTDB__ServerInfo", "OTDB::ServerInfo *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTDB__Storable = {"_p_OTDB__Storable", "OTDB::Storable *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTDB__Storage = {"_p_OTDB__Storage", "OTDB::Storage *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTDB__StringMap = {"_p_OTDB__StringMap", "OTDB::StringMap *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTDB__WalletData = {"_p_OTDB__WalletData", "OTDB::WalletData *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_PackType = {"_p_PackType", "PackType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_StorageType = {"_p_StorageType", "StorageType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_StoredObjectType = {"_p_StoredObjectType", "StoredObjectType *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p__javaenum = {"_p__javaenum", "%javaenum *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__mapT_std__string_std__string_t = {"_p_std__mapT_std__string_std__string_t", "std::map< std::string,std::string > *", 0, 0, (void*)0, 0};
 
@@ -15210,17 +16212,20 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_OTCallback,
   &_swigt__p_OTCaller,
   &_swigt__p_OTDB__Acct,
+  &_swigt__p_OTDB__AddressBook,
   &_swigt__p_OTDB__BitcoinAcct,
   &_swigt__p_OTDB__BitcoinServer,
+  &_swigt__p_OTDB__Contact,
+  &_swigt__p_OTDB__ContactAcct,
+  &_swigt__p_OTDB__ContactNym,
   &_swigt__p_OTDB__Displayable,
   &_swigt__p_OTDB__Server,
+  &_swigt__p_OTDB__ServerInfo,
   &_swigt__p_OTDB__Storable,
   &_swigt__p_OTDB__Storage,
   &_swigt__p_OTDB__StringMap,
   &_swigt__p_OTDB__WalletData,
-  &_swigt__p_PackType,
-  &_swigt__p_StorageType,
-  &_swigt__p_StoredObjectType,
+  &_swigt__p__javaenum,
   &_swigt__p_char,
   &_swigt__p_std__mapT_std__string_std__string_t,
 };
@@ -15228,17 +16233,20 @@ static swig_type_info *swig_type_initial[] = {
 static swig_cast_info _swigc__p_OTCallback[] = {  {&_swigt__p_OTCallback, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTCaller[] = {  {&_swigt__p_OTCaller, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__Acct[] = {  {&_swigt__p_OTDB__BitcoinAcct, _p_OTDB__BitcoinAcctTo_p_OTDB__Acct, 0, 0},  {&_swigt__p_OTDB__Acct, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__AddressBook[] = {  {&_swigt__p_OTDB__AddressBook, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__BitcoinAcct[] = {  {&_swigt__p_OTDB__BitcoinAcct, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__BitcoinServer[] = {  {&_swigt__p_OTDB__BitcoinServer, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_OTDB__Displayable[] = {  {&_swigt__p_OTDB__BitcoinAcct, _p_OTDB__BitcoinAcctTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__Displayable, 0, 0, 0},  {&_swigt__p_OTDB__Acct, _p_OTDB__AcctTo_p_OTDB__Displayable, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__Contact[] = {  {&_swigt__p_OTDB__Contact, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__ContactAcct[] = {  {&_swigt__p_OTDB__ContactAcct, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__ContactNym[] = {  {&_swigt__p_OTDB__ContactNym, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__Displayable[] = {  {&_swigt__p_OTDB__BitcoinAcct, _p_OTDB__BitcoinAcctTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__Displayable, 0, 0, 0},  {&_swigt__p_OTDB__ContactNym, _p_OTDB__ContactNymTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__Contact, _p_OTDB__ContactTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__ServerInfo, _p_OTDB__ServerInfoTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__Acct, _p_OTDB__AcctTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__ContactAcct, _p_OTDB__ContactAcctTo_p_OTDB__Displayable, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__Server[] = {  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Server, 0, 0},  {&_swigt__p_OTDB__Server, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_OTDB__Storable[] = {  {&_swigt__p_OTDB__BitcoinAcct, _p_OTDB__BitcoinAcctTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__WalletData, _p_OTDB__WalletDataTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Storable, 0, 0, 0},  {&_swigt__p_OTDB__Displayable, _p_OTDB__DisplayableTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__StringMap, _p_OTDB__StringMapTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Acct, _p_OTDB__AcctTo_p_OTDB__Storable, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__ServerInfo[] = {  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__ServerInfo, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__ServerInfo, 0, 0},  {&_swigt__p_OTDB__ServerInfo, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__Storable[] = {  {&_swigt__p_OTDB__AddressBook, _p_OTDB__AddressBookTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__BitcoinAcct, _p_OTDB__BitcoinAcctTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__WalletData, _p_OTDB__WalletDataTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Storable, 0, 0, 0},  {&_swigt__p_OTDB__Displayable, _p_OTDB__DisplayableTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__ContactNym, _p_OTDB__ContactNymTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Contact, _p_OTDB__ContactTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__ServerInfo, _p_OTDB__ServerInfoTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__StringMap, _p_OTDB__StringMapTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Acct, _p_OTDB__AcctTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__ContactAcct, _p_OTDB__ContactAcctTo_p_OTDB__Storable, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__Storage[] = {  {&_swigt__p_OTDB__Storage, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__StringMap[] = {  {&_swigt__p_OTDB__StringMap, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__WalletData[] = {  {&_swigt__p_OTDB__WalletData, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_PackType[] = {  {&_swigt__p_PackType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_StorageType[] = {  {&_swigt__p_StorageType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_StoredObjectType[] = {  {&_swigt__p_StoredObjectType, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p__javaenum[] = {  {&_swigt__p__javaenum, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__mapT_std__string_std__string_t[] = {  {&_swigt__p_std__mapT_std__string_std__string_t, 0, 0, 0},{0, 0, 0, 0}};
 
@@ -15246,17 +16254,20 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_OTCallback,
   _swigc__p_OTCaller,
   _swigc__p_OTDB__Acct,
+  _swigc__p_OTDB__AddressBook,
   _swigc__p_OTDB__BitcoinAcct,
   _swigc__p_OTDB__BitcoinServer,
+  _swigc__p_OTDB__Contact,
+  _swigc__p_OTDB__ContactAcct,
+  _swigc__p_OTDB__ContactNym,
   _swigc__p_OTDB__Displayable,
   _swigc__p_OTDB__Server,
+  _swigc__p_OTDB__ServerInfo,
   _swigc__p_OTDB__Storable,
   _swigc__p_OTDB__Storage,
   _swigc__p_OTDB__StringMap,
   _swigc__p_OTDB__WalletData,
-  _swigc__p_PackType,
-  _swigc__p_StorageType,
-  _swigc__p_StoredObjectType,
+  _swigc__p__javaenum,
   _swigc__p_char,
   _swigc__p_std__mapT_std__string_std__string_t,
 };
@@ -15519,6 +16530,8 @@ SWIGEXPORT void Init_otapi(void) {
   }
   
   SWIG_RubyInitializeTrackings();
+  rb_define_singleton_method(mOtapi, "typeunsafe", VALUEFUNC(_wrap_typeunsafe_get), 0);
+  rb_define_singleton_method(mOtapi, "typeunsafe=", VALUEFUNC(_wrap_typeunsafe_set), 1);
   rb_define_module_function(mOtapi, "disown_OTCallback", VALUEFUNC(_wrap_disown_OTCallback), -1);
   
   SwigClassOTCallback.klass = rb_define_class_under(mOtapi, "OTCallback", rb_cObject);
@@ -15698,6 +16711,21 @@ SWIGEXPORT void Init_otapi(void) {
   rb_define_module_function(mOtapi, "OT_API_Message_GetNewAcctID", VALUEFUNC(_wrap_OT_API_Message_GetNewAcctID), -1);
   rb_define_module_function(mOtapi, "OT_API_ConnectServer", VALUEFUNC(_wrap_OT_API_ConnectServer), -1);
   rb_define_module_function(mOtapi, "OT_API_ProcessSockets", VALUEFUNC(_wrap_OT_API_ProcessSockets), -1);
+  rb_define_const(mOtapi, "PACK_MESSAGE_PACK", SWIG_From_int(static_cast< int >(OTDB::PACK_MESSAGE_PACK)));
+  rb_define_const(mOtapi, "PACK_PROTOCOL_BUFFERS", SWIG_From_int(static_cast< int >(OTDB::PACK_PROTOCOL_BUFFERS)));
+  rb_define_const(mOtapi, "PACK_TYPE_ERROR", SWIG_From_int(static_cast< int >(OTDB::PACK_TYPE_ERROR)));
+  rb_define_const(mOtapi, "STORE_FILESYSTEM", SWIG_From_int(static_cast< int >(OTDB::STORE_FILESYSTEM)));
+  rb_define_const(mOtapi, "STORE_TYPE_SUBCLASS", SWIG_From_int(static_cast< int >(OTDB::STORE_TYPE_SUBCLASS)));
+  rb_define_const(mOtapi, "STORED_OBJ_STRING_MAP", SWIG_From_int(static_cast< int >(OTDB::STORED_OBJ_STRING_MAP)));
+  rb_define_const(mOtapi, "STORED_OBJ_WALLET_DATA", SWIG_From_int(static_cast< int >(OTDB::STORED_OBJ_WALLET_DATA)));
+  rb_define_const(mOtapi, "STORED_OBJ_BITCOIN_ACCT", SWIG_From_int(static_cast< int >(OTDB::STORED_OBJ_BITCOIN_ACCT)));
+  rb_define_const(mOtapi, "STORED_OBJ_BITCOIN_SERVER", SWIG_From_int(static_cast< int >(OTDB::STORED_OBJ_BITCOIN_SERVER)));
+  rb_define_const(mOtapi, "STORED_OBJ_SERVER_INFO", SWIG_From_int(static_cast< int >(OTDB::STORED_OBJ_SERVER_INFO)));
+  rb_define_const(mOtapi, "STORED_OBJ_CONTACT_NYM", SWIG_From_int(static_cast< int >(OTDB::STORED_OBJ_CONTACT_NYM)));
+  rb_define_const(mOtapi, "STORED_OBJ_CONTACT_ACCT", SWIG_From_int(static_cast< int >(OTDB::STORED_OBJ_CONTACT_ACCT)));
+  rb_define_const(mOtapi, "STORED_OBJ_CONTACT", SWIG_From_int(static_cast< int >(OTDB::STORED_OBJ_CONTACT)));
+  rb_define_const(mOtapi, "STORED_OBJ_ADDRESS_BOOK", SWIG_From_int(static_cast< int >(OTDB::STORED_OBJ_ADDRESS_BOOK)));
+  rb_define_const(mOtapi, "STORED_OBJ_ERROR", SWIG_From_int(static_cast< int >(OTDB::STORED_OBJ_ERROR)));
   
   SwigClassStorable.klass = rb_define_class_under(mOtapi, "Storable", rb_cObject);
   SWIG_TypeClientData(SWIGTYPE_p_OTDB__Storable, (void *) &SwigClassStorable);
@@ -15772,13 +16800,20 @@ SWIGEXPORT void Init_otapi(void) {
   SwigClassBitcoinAcct.destroy = (void (*)(void *)) free_OTDB_BitcoinAcct;
   SwigClassBitcoinAcct.trackObjects = 0;
   
-  SwigClassServer.klass = rb_define_class_under(mOtapi, "Server", ((swig_class *) SWIGTYPE_p_OTDB__Displayable->clientdata)->klass);
+  SwigClassServerInfo.klass = rb_define_class_under(mOtapi, "ServerInfo", ((swig_class *) SWIGTYPE_p_OTDB__Displayable->clientdata)->klass);
+  SWIG_TypeClientData(SWIGTYPE_p_OTDB__ServerInfo, (void *) &SwigClassServerInfo);
+  rb_undef_alloc_func(SwigClassServerInfo.klass);
+  rb_define_method(SwigClassServerInfo.klass, "server_id=", VALUEFUNC(_wrap_ServerInfo_server_id_set), -1);
+  rb_define_method(SwigClassServerInfo.klass, "server_id", VALUEFUNC(_wrap_ServerInfo_server_id_get), -1);
+  rb_define_method(SwigClassServerInfo.klass, "server_type=", VALUEFUNC(_wrap_ServerInfo_server_type_set), -1);
+  rb_define_method(SwigClassServerInfo.klass, "server_type", VALUEFUNC(_wrap_ServerInfo_server_type_get), -1);
+  SwigClassServerInfo.mark = 0;
+  SwigClassServerInfo.destroy = (void (*)(void *)) free_OTDB_ServerInfo;
+  SwigClassServerInfo.trackObjects = 0;
+  
+  SwigClassServer.klass = rb_define_class_under(mOtapi, "Server", ((swig_class *) SWIGTYPE_p_OTDB__ServerInfo->clientdata)->klass);
   SWIG_TypeClientData(SWIGTYPE_p_OTDB__Server, (void *) &SwigClassServer);
   rb_undef_alloc_func(SwigClassServer.klass);
-  rb_define_method(SwigClassServer.klass, "server_id=", VALUEFUNC(_wrap_Server_server_id_set), -1);
-  rb_define_method(SwigClassServer.klass, "server_id", VALUEFUNC(_wrap_Server_server_id_get), -1);
-  rb_define_method(SwigClassServer.klass, "server_type=", VALUEFUNC(_wrap_Server_server_type_set), -1);
-  rb_define_method(SwigClassServer.klass, "server_type", VALUEFUNC(_wrap_Server_server_type_get), -1);
   rb_define_method(SwigClassServer.klass, "server_host=", VALUEFUNC(_wrap_Server_server_host_set), -1);
   rb_define_method(SwigClassServer.klass, "server_host", VALUEFUNC(_wrap_Server_server_host_get), -1);
   rb_define_method(SwigClassServer.klass, "server_port=", VALUEFUNC(_wrap_Server_server_port_set), -1);
@@ -15797,6 +16832,78 @@ SWIGEXPORT void Init_otapi(void) {
   SwigClassBitcoinServer.mark = 0;
   SwigClassBitcoinServer.destroy = (void (*)(void *)) free_OTDB_BitcoinServer;
   SwigClassBitcoinServer.trackObjects = 0;
+  
+  SwigClassContactNym.klass = rb_define_class_under(mOtapi, "ContactNym", ((swig_class *) SWIGTYPE_p_OTDB__Displayable->clientdata)->klass);
+  SWIG_TypeClientData(SWIGTYPE_p_OTDB__ContactNym, (void *) &SwigClassContactNym);
+  rb_undef_alloc_func(SwigClassContactNym.klass);
+  rb_define_method(SwigClassContactNym.klass, "nym_type=", VALUEFUNC(_wrap_ContactNym_nym_type_set), -1);
+  rb_define_method(SwigClassContactNym.klass, "nym_type", VALUEFUNC(_wrap_ContactNym_nym_type_get), -1);
+  rb_define_method(SwigClassContactNym.klass, "nym_id=", VALUEFUNC(_wrap_ContactNym_nym_id_set), -1);
+  rb_define_method(SwigClassContactNym.klass, "nym_id", VALUEFUNC(_wrap_ContactNym_nym_id_get), -1);
+  rb_define_method(SwigClassContactNym.klass, "public_key=", VALUEFUNC(_wrap_ContactNym_public_key_set), -1);
+  rb_define_method(SwigClassContactNym.klass, "public_key", VALUEFUNC(_wrap_ContactNym_public_key_get), -1);
+  rb_define_method(SwigClassContactNym.klass, "memo=", VALUEFUNC(_wrap_ContactNym_memo_set), -1);
+  rb_define_method(SwigClassContactNym.klass, "memo", VALUEFUNC(_wrap_ContactNym_memo_get), -1);
+  rb_define_method(SwigClassContactNym.klass, "GetServerInfoCount", VALUEFUNC(_wrap_ContactNym_GetServerInfoCount), -1);
+  rb_define_method(SwigClassContactNym.klass, "GetServerInfo", VALUEFUNC(_wrap_ContactNym_GetServerInfo), -1);
+  rb_define_method(SwigClassContactNym.klass, "RemoveServerInfo", VALUEFUNC(_wrap_ContactNym_RemoveServerInfo), -1);
+  rb_define_method(SwigClassContactNym.klass, "AddServerInfo", VALUEFUNC(_wrap_ContactNym_AddServerInfo), -1);
+  SwigClassContactNym.mark = 0;
+  SwigClassContactNym.destroy = (void (*)(void *)) free_OTDB_ContactNym;
+  SwigClassContactNym.trackObjects = 0;
+  
+  SwigClassContactAcct.klass = rb_define_class_under(mOtapi, "ContactAcct", ((swig_class *) SWIGTYPE_p_OTDB__Displayable->clientdata)->klass);
+  SWIG_TypeClientData(SWIGTYPE_p_OTDB__ContactAcct, (void *) &SwigClassContactAcct);
+  rb_undef_alloc_func(SwigClassContactAcct.klass);
+  rb_define_method(SwigClassContactAcct.klass, "server_type=", VALUEFUNC(_wrap_ContactAcct_server_type_set), -1);
+  rb_define_method(SwigClassContactAcct.klass, "server_type", VALUEFUNC(_wrap_ContactAcct_server_type_get), -1);
+  rb_define_method(SwigClassContactAcct.klass, "server_id=", VALUEFUNC(_wrap_ContactAcct_server_id_set), -1);
+  rb_define_method(SwigClassContactAcct.klass, "server_id", VALUEFUNC(_wrap_ContactAcct_server_id_get), -1);
+  rb_define_method(SwigClassContactAcct.klass, "asset_type_id=", VALUEFUNC(_wrap_ContactAcct_asset_type_id_set), -1);
+  rb_define_method(SwigClassContactAcct.klass, "asset_type_id", VALUEFUNC(_wrap_ContactAcct_asset_type_id_get), -1);
+  rb_define_method(SwigClassContactAcct.klass, "acct_id=", VALUEFUNC(_wrap_ContactAcct_acct_id_set), -1);
+  rb_define_method(SwigClassContactAcct.klass, "acct_id", VALUEFUNC(_wrap_ContactAcct_acct_id_get), -1);
+  rb_define_method(SwigClassContactAcct.klass, "nym_id=", VALUEFUNC(_wrap_ContactAcct_nym_id_set), -1);
+  rb_define_method(SwigClassContactAcct.klass, "nym_id", VALUEFUNC(_wrap_ContactAcct_nym_id_get), -1);
+  rb_define_method(SwigClassContactAcct.klass, "memo=", VALUEFUNC(_wrap_ContactAcct_memo_set), -1);
+  rb_define_method(SwigClassContactAcct.klass, "memo", VALUEFUNC(_wrap_ContactAcct_memo_get), -1);
+  rb_define_method(SwigClassContactAcct.klass, "public_key=", VALUEFUNC(_wrap_ContactAcct_public_key_set), -1);
+  rb_define_method(SwigClassContactAcct.klass, "public_key", VALUEFUNC(_wrap_ContactAcct_public_key_get), -1);
+  SwigClassContactAcct.mark = 0;
+  SwigClassContactAcct.destroy = (void (*)(void *)) free_OTDB_ContactAcct;
+  SwigClassContactAcct.trackObjects = 0;
+  
+  SwigClassContact.klass = rb_define_class_under(mOtapi, "Contact", ((swig_class *) SWIGTYPE_p_OTDB__Displayable->clientdata)->klass);
+  SWIG_TypeClientData(SWIGTYPE_p_OTDB__Contact, (void *) &SwigClassContact);
+  rb_undef_alloc_func(SwigClassContact.klass);
+  rb_define_method(SwigClassContact.klass, "email=", VALUEFUNC(_wrap_Contact_email_set), -1);
+  rb_define_method(SwigClassContact.klass, "email", VALUEFUNC(_wrap_Contact_email_get), -1);
+  rb_define_method(SwigClassContact.klass, "memo=", VALUEFUNC(_wrap_Contact_memo_set), -1);
+  rb_define_method(SwigClassContact.klass, "memo", VALUEFUNC(_wrap_Contact_memo_get), -1);
+  rb_define_method(SwigClassContact.klass, "public_key=", VALUEFUNC(_wrap_Contact_public_key_set), -1);
+  rb_define_method(SwigClassContact.klass, "public_key", VALUEFUNC(_wrap_Contact_public_key_get), -1);
+  rb_define_method(SwigClassContact.klass, "GetContactNymCount", VALUEFUNC(_wrap_Contact_GetContactNymCount), -1);
+  rb_define_method(SwigClassContact.klass, "GetContactNym", VALUEFUNC(_wrap_Contact_GetContactNym), -1);
+  rb_define_method(SwigClassContact.klass, "RemoveContactNym", VALUEFUNC(_wrap_Contact_RemoveContactNym), -1);
+  rb_define_method(SwigClassContact.klass, "AddContactNym", VALUEFUNC(_wrap_Contact_AddContactNym), -1);
+  rb_define_method(SwigClassContact.klass, "GetContactAcctCount", VALUEFUNC(_wrap_Contact_GetContactAcctCount), -1);
+  rb_define_method(SwigClassContact.klass, "GetContactAcct", VALUEFUNC(_wrap_Contact_GetContactAcct), -1);
+  rb_define_method(SwigClassContact.klass, "RemoveContactAcct", VALUEFUNC(_wrap_Contact_RemoveContactAcct), -1);
+  rb_define_method(SwigClassContact.klass, "AddContactAcct", VALUEFUNC(_wrap_Contact_AddContactAcct), -1);
+  SwigClassContact.mark = 0;
+  SwigClassContact.destroy = (void (*)(void *)) free_OTDB_Contact;
+  SwigClassContact.trackObjects = 0;
+  
+  SwigClassAddressBook.klass = rb_define_class_under(mOtapi, "AddressBook", ((swig_class *) SWIGTYPE_p_OTDB__Storable->clientdata)->klass);
+  SWIG_TypeClientData(SWIGTYPE_p_OTDB__AddressBook, (void *) &SwigClassAddressBook);
+  rb_undef_alloc_func(SwigClassAddressBook.klass);
+  rb_define_method(SwigClassAddressBook.klass, "GetContactCount", VALUEFUNC(_wrap_AddressBook_GetContactCount), -1);
+  rb_define_method(SwigClassAddressBook.klass, "GetContact", VALUEFUNC(_wrap_AddressBook_GetContact), -1);
+  rb_define_method(SwigClassAddressBook.klass, "RemoveContact", VALUEFUNC(_wrap_AddressBook_RemoveContact), -1);
+  rb_define_method(SwigClassAddressBook.klass, "AddContact", VALUEFUNC(_wrap_AddressBook_AddContact), -1);
+  SwigClassAddressBook.mark = 0;
+  SwigClassAddressBook.destroy = (void (*)(void *)) free_OTDB_AddressBook;
+  SwigClassAddressBook.trackObjects = 0;
   
   SwigClassWalletData.klass = rb_define_class_under(mOtapi, "WalletData", ((swig_class *) SWIGTYPE_p_OTDB__Storable->clientdata)->klass);
   SWIG_TypeClientData(SWIGTYPE_p_OTDB__WalletData, (void *) &SwigClassWalletData);

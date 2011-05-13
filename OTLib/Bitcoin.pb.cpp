@@ -23,9 +23,6 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* BitcoinServer_InternalPB_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   BitcoinServer_InternalPB_reflection_ = NULL;
-const ::google::protobuf::Descriptor* WalletData_InternalPB_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  WalletData_InternalPB_reflection_ = NULL;
 
 }  // namespace
 
@@ -75,22 +72,6 @@ void protobuf_AssignDesc_Bitcoin_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(BitcoinServer_InternalPB));
-  WalletData_InternalPB_descriptor_ = file->message_type(2);
-  static const int WalletData_InternalPB_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalletData_InternalPB, bitcoin_server_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalletData_InternalPB, bitcoin_acct_),
-  };
-  WalletData_InternalPB_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      WalletData_InternalPB_descriptor_,
-      WalletData_InternalPB::default_instance_,
-      WalletData_InternalPB_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalletData_InternalPB, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalletData_InternalPB, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(WalletData_InternalPB));
 }
 
 namespace {
@@ -107,8 +88,6 @@ void protobuf_RegisterTypes(const ::std::string&) {
     BitcoinAcct_InternalPB_descriptor_, &BitcoinAcct_InternalPB::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     BitcoinServer_InternalPB_descriptor_, &BitcoinServer_InternalPB::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    WalletData_InternalPB_descriptor_, &WalletData_InternalPB::default_instance());
 }
 
 }  // namespace
@@ -118,8 +97,6 @@ void protobuf_ShutdownFile_Bitcoin_2eproto() {
   delete BitcoinAcct_InternalPB_reflection_;
   delete BitcoinServer_InternalPB::default_instance_;
   delete BitcoinServer_InternalPB_reflection_;
-  delete WalletData_InternalPB::default_instance_;
-  delete WalletData_InternalPB_reflection_;
 }
 
 void protobuf_AddDesc_Bitcoin_2eproto() {
@@ -136,19 +113,13 @@ void protobuf_AddDesc_Bitcoin_2eproto() {
     "\n\tgui_label\030\001 \001(\t\022\021\n\tserver_id\030\002 \001(\t\022\023\n\013"
     "server_type\030\003 \001(\t\022\023\n\013server_host\030\004 \001(\t\022\023"
     "\n\013server_port\030\005 \001(\t\022\030\n\020bitcoin_username\030"
-    "\006 \001(\t\022\030\n\020bitcoin_password\030\007 \001(\t\"\203\001\n\025Wall"
-    "etData_InternalPB\0226\n\016bitcoin_server\030\001 \003("
-    "\0132\036.OTDB.BitcoinServer_InternalPB\0222\n\014bit"
-    "coin_acct\030\002 \003(\0132\034.OTDB.BitcoinAcct_Inter"
-    "nalPB", 445);
+    "\006 \001(\t\022\030\n\020bitcoin_password\030\007 \001(\t", 311);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Bitcoin.proto", &protobuf_RegisterTypes);
   BitcoinAcct_InternalPB::default_instance_ = new BitcoinAcct_InternalPB();
   BitcoinServer_InternalPB::default_instance_ = new BitcoinServer_InternalPB();
-  WalletData_InternalPB::default_instance_ = new WalletData_InternalPB();
   BitcoinAcct_InternalPB::default_instance_->InitAsDefaultInstance();
   BitcoinServer_InternalPB::default_instance_->InitAsDefaultInstance();
-  WalletData_InternalPB::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_Bitcoin_2eproto);
 }
 
@@ -1117,248 +1088,6 @@ void BitcoinServer_InternalPB::Swap(BitcoinServer_InternalPB* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = BitcoinServer_InternalPB_descriptor_;
   metadata.reflection = BitcoinServer_InternalPB_reflection_;
-  return metadata;
-}
-
-
-// ===================================================================
-
-#ifndef _MSC_VER
-const int WalletData_InternalPB::kBitcoinServerFieldNumber;
-const int WalletData_InternalPB::kBitcoinAcctFieldNumber;
-#endif  // !_MSC_VER
-
-WalletData_InternalPB::WalletData_InternalPB()
-  : ::google::protobuf::Message() {
-  SharedCtor();
-}
-
-void WalletData_InternalPB::InitAsDefaultInstance() {
-}
-
-WalletData_InternalPB::WalletData_InternalPB(const WalletData_InternalPB& from)
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  MergeFrom(from);
-}
-
-void WalletData_InternalPB::SharedCtor() {
-  _cached_size_ = 0;
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-}
-
-WalletData_InternalPB::~WalletData_InternalPB() {
-  SharedDtor();
-}
-
-void WalletData_InternalPB::SharedDtor() {
-  if (this != default_instance_) {
-  }
-}
-
-void WalletData_InternalPB::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* WalletData_InternalPB::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return WalletData_InternalPB_descriptor_;
-}
-
-const WalletData_InternalPB& WalletData_InternalPB::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_Bitcoin_2eproto();  return *default_instance_;
-}
-
-WalletData_InternalPB* WalletData_InternalPB::default_instance_ = NULL;
-
-WalletData_InternalPB* WalletData_InternalPB::New() const {
-  return new WalletData_InternalPB;
-}
-
-void WalletData_InternalPB::Clear() {
-  bitcoin_server_.Clear();
-  bitcoin_acct_.Clear();
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
-}
-
-bool WalletData_InternalPB::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
-  ::google::protobuf::uint32 tag;
-  while ((tag = input->ReadTag()) != 0) {
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .OTDB.BitcoinServer_InternalPB bitcoin_server = 1;
-      case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_bitcoin_server:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_bitcoin_server()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(10)) goto parse_bitcoin_server;
-        if (input->ExpectTag(18)) goto parse_bitcoin_acct;
-        break;
-      }
-      
-      // repeated .OTDB.BitcoinAcct_InternalPB bitcoin_acct = 2;
-      case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_bitcoin_acct:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_bitcoin_acct()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(18)) goto parse_bitcoin_acct;
-        if (input->ExpectAtEnd()) return true;
-        break;
-      }
-      
-      default: {
-      handle_uninterpreted:
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          return true;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-  return true;
-#undef DO_
-}
-
-void WalletData_InternalPB::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated .OTDB.BitcoinServer_InternalPB bitcoin_server = 1;
-  for (int i = 0; i < this->bitcoin_server_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->bitcoin_server(i), output);
-  }
-  
-  // repeated .OTDB.BitcoinAcct_InternalPB bitcoin_acct = 2;
-  for (int i = 0; i < this->bitcoin_acct_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, this->bitcoin_acct(i), output);
-  }
-  
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* WalletData_InternalPB::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // repeated .OTDB.BitcoinServer_InternalPB bitcoin_server = 1;
-  for (int i = 0; i < this->bitcoin_server_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        1, this->bitcoin_server(i), target);
-  }
-  
-  // repeated .OTDB.BitcoinAcct_InternalPB bitcoin_acct = 2;
-  for (int i = 0; i < this->bitcoin_acct_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        2, this->bitcoin_acct(i), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
-}
-
-int WalletData_InternalPB::ByteSize() const {
-  int total_size = 0;
-  
-  // repeated .OTDB.BitcoinServer_InternalPB bitcoin_server = 1;
-  total_size += 1 * this->bitcoin_server_size();
-  for (int i = 0; i < this->bitcoin_server_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->bitcoin_server(i));
-  }
-  
-  // repeated .OTDB.BitcoinAcct_InternalPB bitcoin_acct = 2;
-  total_size += 1 * this->bitcoin_acct_size();
-  for (int i = 0; i < this->bitcoin_acct_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->bitcoin_acct(i));
-  }
-  
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void WalletData_InternalPB::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const WalletData_InternalPB* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const WalletData_InternalPB*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
-}
-
-void WalletData_InternalPB::MergeFrom(const WalletData_InternalPB& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  bitcoin_server_.MergeFrom(from.bitcoin_server_);
-  bitcoin_acct_.MergeFrom(from.bitcoin_acct_);
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void WalletData_InternalPB::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void WalletData_InternalPB::CopyFrom(const WalletData_InternalPB& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool WalletData_InternalPB::IsInitialized() const {
-  
-  return true;
-}
-
-void WalletData_InternalPB::Swap(WalletData_InternalPB* other) {
-  if (other != this) {
-    bitcoin_server_.Swap(&other->bitcoin_server_);
-    bitcoin_acct_.Swap(&other->bitcoin_acct_);
-    std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
-    std::swap(_cached_size_, other->_cached_size_);
-  }
-}
-
-::google::protobuf::Metadata WalletData_InternalPB::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = WalletData_InternalPB_descriptor_;
-  metadata.reflection = WalletData_InternalPB_reflection_;
   return metadata;
 }
 

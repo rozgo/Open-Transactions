@@ -8,9 +8,11 @@
 #include "../OTLib/OTStorage.h"
 //#include "../OTLib/Generics.pb.h"
 //#include "../OTLib/Bitcoin.pb.h"
+//#include "../OTLib/Moneychanger.pb.h"
 %}
  
-%include "std_string.i"
+%include "std_string.i";
+%include "java/enumtypeunsafe.swg";
 
 
 %typemap("javapackage") OTCallback, OTCallback *, OTCallback & "com.wrapper.core.jni";
@@ -21,6 +23,11 @@
 %typemap("javapackage") StringMap, StringMap *, StringMap & "com.wrapper.core.jni";
 %typemap("javapackage") BitcoinAcct, BitcoinAcct *, BitcoinAcct & "com.wrapper.core.jni";
 %typemap("javapackage") BitcoinServer, BitcoinServer *, BitcoinServer & "com.wrapper.core.jni";
+%typemap("javapackage") ServerInfo, ServerInfo *, ServerInfo & "com.wrapper.core.jni";
+%typemap("javapackage") ContactNym, ContactNym *, ContactNym & "com.wrapper.core.jni";
+%typemap("javapackage") ContactAcct, ContactAcct *, ContactAcct & "com.wrapper.core.jni";
+%typemap("javapackage") Contact, Contact *, Contact & "com.wrapper.core.jni";
+%typemap("javapackage") AddressBook, AddressBook *, AddressBook & "com.wrapper.core.jni";
 %typemap("javapackage") WalletData, WalletData *, WalletData & "com.wrapper.core.jni";
 %typemap("javapackage") InitDefaultStorage "com.wrapper.core.jni";
 %typemap("javapackage") GetDefaultStorage "com.wrapper.core.jni";
@@ -32,7 +39,12 @@
 %typemap("javapackage") StoreObject "com.wrapper.core.jni";
 %typemap("javapackage") QueryObject "com.wrapper.core.jni";
 
+%typemap("javapackage") PackType "com.wrapper.core.jni";
+%typemap("javapackage") StorageType "com.wrapper.core.jni";
+%typemap("javapackage") StoredObjectType "com.wrapper.core.jni";
+
 %feature("director") OTCallback;
+
 
 
 
@@ -102,6 +114,14 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 
 %typemap(in) SWIGTYPE *DISOWN { BitcoinServer & disownObject };
 
+%typemap(in) SWIGTYPE *DISOWN { ServerInfo & disownObject };
+
+%typemap(in) SWIGTYPE *DISOWN { ContactNym & disownObject };
+
+%typemap(in) SWIGTYPE *DISOWN { ContactAcct & disownObject };
+
+%typemap(in) SWIGTYPE *DISOWN { Contact & disownObject };
+
 
 %newobject Storage::QueryObject(StoredObjectType theObjectType, std::string strFolder, std::string oneStr="", std::string twoStr="", std::string threeStr="");
 
@@ -120,8 +140,37 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 
 
 
-
 namespace OTDB { 
+
+
+enum PackType // PACKING TYPE
+{
+	PACK_MESSAGE_PACK = 0,	// Using MessagePack as packer.
+	PACK_PROTOCOL_BUFFERS,	// Using Google Protocol Buffers as packer.
+	PACK_TYPE_ERROR		// (Should never be.)
+};
+	
+enum StorageType  // STORAGE TYPE
+{
+	STORE_FILESYSTEM = 0,	// Filesystem
+//	STORE_COUCH_DB,			// Couch DB (not yet supported)
+	STORE_TYPE_SUBCLASS		// (Subclass provided by API client via SWIG.)
+};
+	
+enum StoredObjectType
+{
+	STORED_OBJ_STRING_MAP=0,	// A StringMap is a list of Key/Value pairs, useful for storing nearly anything.
+	STORED_OBJ_WALLET_DATA,		// The GUI wallet's stored data
+	STORED_OBJ_BITCOIN_ACCT,	// The GUI wallet's stored data about a Bitcoin acct
+	STORED_OBJ_BITCOIN_SERVER,	// The GUI wallet's stored data about a Bitcoin RPC port.
+	STORED_OBJ_SERVER_INFO,		// A Nym has a list of these.
+	STORED_OBJ_CONTACT_NYM,		// This is a Nym record inside a contact of your address book.
+	STORED_OBJ_CONTACT_ACCT,	// This is an account record inside a contact of your address book.
+	STORED_OBJ_CONTACT,		// Your address book has a list of these.
+	STORED_OBJ_ADDRESS_BOOK,	// Your address book.
+	STORED_OBJ_ERROR		// (Should never be.)
+};
+
 
 class Storable
 {
@@ -309,7 +358,7 @@ public:
 
 // *************************************************
 
-// ACCOUNT (GUI local storage about accounts.)
+// ACCOUNT (GUI local storage about my own accounts, in my wallet.)
 
 class Acct : public Displayable
 {
@@ -321,12 +370,14 @@ protected:
 public:
 	virtual ~Acct() { }
 	
+	//		std::string gui_label;  // The label that appears in the GUI
+	
 	std::string acct_id;
 	std::string server_id;
 };
 
 // ----------------------------
-
+	
 class BitcoinAcct : public Acct
 {
 	// You never actually get an instance of this, only its subclasses.
@@ -337,6 +388,11 @@ protected:
 public:
 	virtual ~BitcoinAcct() { }
 	
+	//		std::string gui_label;  // The label that appears in the GUI
+	
+	//		std::string acct_id;
+	//		std::string server_id;
+	
 	std::string bitcoin_acct_name;
 };
 
@@ -344,18 +400,38 @@ public:
 
 // SERVER (GUI local storage about servers.)
 
-class Server : public Displayable
+class ServerInfo : public Displayable
 {
 	// You never actually get an instance of this, only its subclasses.
 	// Therefore, I don't allow you to access the constructor except through factory.
 protected:
-	Server() : Displayable(), server_id(""), server_type(""), server_host(""), server_port("") { }
+	ServerInfo() : Displayable(), server_id(""), server_type("") { }
+	
+public:
+	virtual ~ServerInfo() { }
+	
+	//		std::string gui_label;  // The label that appears in the GUI
+	
+	std::string server_id;
+	std::string server_type;
+};
+
+// ----------------------------
+	
+class Server : public ServerInfo
+{
+	// You never actually get an instance of this, only its subclasses.
+	// Therefore, I don't allow you to access the constructor except through factory.
+protected:
+	Server() : ServerInfo(), server_host(""), server_port("") { }
 	
 public:
 	virtual ~Server() { }
 	
-	std::string server_id;
-	std::string server_type;
+	//		std::string gui_label;  // The label that appears in the GUI
+	
+	//		std::string server_id;   // in base class
+	//		std::string server_type; // in base class
 	
 	std::string server_host;
 	std::string server_port;
@@ -373,8 +449,122 @@ protected:
 public:
 	virtual ~BitcoinServer() { }
 	
+	//		std::string gui_label;  // The label that appears in the GUI
+	
+	//		std::string server_id;   // in base class
+	//		std::string server_type; // in base class
+	
+	//		std::string server_host;
+	//		std::string server_port;
+	
 	std::string bitcoin_username;
 	std::string bitcoin_password;
+};
+
+// ----------------------------	
+	
+class ContactNym : public Displayable
+{
+	// You never actually get an instance of this, only its subclasses.
+	// Therefore, I don't allow you to access the constructor except through factory.
+protected:
+	ContactNym() : Displayable(), nym_type(""), nym_id(""), public_key(""), memo("") { }
+	
+public:
+	virtual ~ContactNym();
+	
+	//		std::string gui_label;  // The label that appears in the GUI
+	
+	std::string nym_type;
+	std::string nym_id;
+	std::string public_key;
+	std::string memo;
+	
+protected:
+	std::deque<ServerInfo *> list_ServerInfos;
+public:
+	size_t GetServerInfoCount();
+	ServerInfo * GetServerInfo(size_t nIndex);
+	bool RemoveServerInfo(size_t nIndex);
+	bool AddServerInfo(ServerInfo & disownObject);
+};
+
+
+// ------------------------------------------------
+		
+class ContactAcct : public Displayable {
+	// You never actually get an instance of this, only its subclasses.
+	// Therefore, I don't allow you to access the constructor except through factory.
+protected:
+	ContactAcct() : Displayable(), server_type(""), server_id(""), asset_type_id(""), acct_id(""), nym_id(""), memo(""), public_key("")  { }
+	
+public:
+	virtual ~ContactAcct() { }
+	
+	//		std::string gui_label;  // The label that appears in the GUI
+	
+	std::string server_type;
+	std::string server_id;
+	std::string asset_type_id;
+	std::string acct_id;
+	std::string nym_id;
+	std::string memo;
+	std::string public_key;
+};
+
+// ----------------------------
+	
+	
+class Contact : public Displayable {
+	// You never actually get an instance of this, only its subclasses.
+	// Therefore, I don't allow you to access the constructor except through factory.
+protected:
+	Contact() : Displayable(), email(""), memo(""), public_key("") { }
+	
+public:
+	virtual ~Contact();
+	
+//		std::string gui_label;  // The label that appears in the GUI
+	
+	std::string email;
+	std::string memo;
+	std::string public_key;
+	
+protected:
+	std::deque<ContactNym *> list_ContactNyms;
+public:
+	size_t GetContactNymCount();
+	ContactNym * GetContactNym(size_t nIndex);
+	bool RemoveContactNym(size_t nIndex);
+	bool AddContactNym(ContactNym & disownObject);
+	
+protected:
+	std::deque<ContactAcct *> list_ContactAccts;
+public:
+	size_t GetContactAcctCount();
+	ContactAcct * GetContactAcct(size_t nIndex);
+	bool RemoveContactAcct(size_t nIndex);
+	bool AddContactAcct(ContactAcct & disownObject);
+};
+	
+// ----------------------------
+
+class AddressBook : public Storable {
+	// You never actually get an instance of this, only its subclasses.
+	// Therefore, I don't allow you to access the constructor except through factory.
+protected:
+	AddressBook() : Storable() { }
+	
+public:
+	virtual ~AddressBook();
+	
+protected:
+	std::deque<Contact *> list_Contacts;
+public:
+	size_t GetContactCount();
+	Contact * GetContact(size_t nIndex);
+	bool RemoveContact(size_t nIndex);
+	bool AddContact(Contact & disownObject);		
 };
 
 // ----------------------------
@@ -393,7 +583,6 @@ public:
 	// List of Bitcoin servers
 	// List of Bitcoin accounts
 	// Loom, etc.
-	
 	
 protected:
 	std::deque<BitcoinServer *> list_BitcoinServers;

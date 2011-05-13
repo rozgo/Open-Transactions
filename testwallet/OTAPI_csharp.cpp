@@ -336,6 +336,7 @@ namespace Swig {
 #include "../OTLib/OTStorage.h"
 //#include "../OTLib/Generics.pb.h"
 //#include "../OTLib/Bitcoin.pb.h"
+//#include "../OTLib/Moneychanger.pb.h"
 
 
 #include <string>
@@ -408,6 +409,30 @@ void SwigDirector_OTCallback::swig_init_callbacks() {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+SWIGEXPORT void SWIGSTDCALL CSharp_typeunsafe_set(void * jarg1) {
+  %javaenum arg1 ;
+  %javaenum *argp1 ;
+  
+  argp1 = (%javaenum *)jarg1; 
+  if (!argp1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null %javaenum", 0);
+    return ;
+  }
+  arg1 = *argp1; 
+  typeunsafe = arg1;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_typeunsafe_get() {
+  void * jresult ;
+  %javaenum result;
+  
+  result = typeunsafe;
+  jresult = new %javaenum((const %javaenum &)result); 
+  return jresult;
+}
+
 
 SWIGEXPORT void * SWIGSTDCALL CSharp_new_OTCallback() {
   void * jresult ;
@@ -2773,26 +2798,14 @@ SWIGEXPORT void SWIGSTDCALL CSharp_delete_Storable(void * jarg1) {
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_Storable_Create(void * jarg1, void * jarg2) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_Storable_Create(int jarg1, int jarg2) {
   void * jresult ;
-  StoredObjectType arg1 ;
-  PackType arg2 ;
-  StoredObjectType *argp1 ;
-  PackType *argp2 ;
+  OTDB::StoredObjectType arg1 ;
+  OTDB::PackType arg2 ;
   OTDB::Storable *result = 0 ;
   
-  argp1 = (StoredObjectType *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StoredObjectType", 0);
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = (PackType *)jarg2; 
-  if (!argp2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null PackType", 0);
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StoredObjectType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   result = (OTDB::Storable *)OTDB::Storable::Create(arg1,arg2);
   jresult = (void *)result; 
   return jresult;
@@ -3497,24 +3510,18 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Storage_StoreObject__SWIG_3(void * ja
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_QueryObject__SWIG_0(void * jarg1, void * jarg2, char * jarg3, char * jarg4, char * jarg5, char * jarg6) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_QueryObject__SWIG_0(void * jarg1, int jarg2, char * jarg3, char * jarg4, char * jarg5, char * jarg6) {
   void * jresult ;
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StoredObjectType arg2 ;
+  OTDB::StoredObjectType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
   std::string arg6 ;
-  StoredObjectType *argp2 ;
   OTDB::Storable *result = 0 ;
   
   arg1 = (OTDB::Storage *)jarg1; 
-  argp2 = (StoredObjectType *)jarg2; 
-  if (!argp2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StoredObjectType", 0);
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg2 = (OTDB::StoredObjectType)jarg2; 
   if (!jarg3) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return 0;
@@ -3541,23 +3548,17 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_QueryObject__SWIG_0(void * jarg1, v
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_QueryObject__SWIG_1(void * jarg1, void * jarg2, char * jarg3, char * jarg4, char * jarg5) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_QueryObject__SWIG_1(void * jarg1, int jarg2, char * jarg3, char * jarg4, char * jarg5) {
   void * jresult ;
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StoredObjectType arg2 ;
+  OTDB::StoredObjectType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
-  StoredObjectType *argp2 ;
   OTDB::Storable *result = 0 ;
   
   arg1 = (OTDB::Storage *)jarg1; 
-  argp2 = (StoredObjectType *)jarg2; 
-  if (!argp2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StoredObjectType", 0);
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg2 = (OTDB::StoredObjectType)jarg2; 
   if (!jarg3) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return 0;
@@ -3579,22 +3580,16 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_QueryObject__SWIG_1(void * jarg1, v
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_QueryObject__SWIG_2(void * jarg1, void * jarg2, char * jarg3, char * jarg4) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_QueryObject__SWIG_2(void * jarg1, int jarg2, char * jarg3, char * jarg4) {
   void * jresult ;
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StoredObjectType arg2 ;
+  OTDB::StoredObjectType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
-  StoredObjectType *argp2 ;
   OTDB::Storable *result = 0 ;
   
   arg1 = (OTDB::Storage *)jarg1; 
-  argp2 = (StoredObjectType *)jarg2; 
-  if (!argp2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StoredObjectType", 0);
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg2 = (OTDB::StoredObjectType)jarg2; 
   if (!jarg3) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return 0;
@@ -3611,21 +3606,15 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_QueryObject__SWIG_2(void * jarg1, v
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_QueryObject__SWIG_3(void * jarg1, void * jarg2, char * jarg3) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_QueryObject__SWIG_3(void * jarg1, int jarg2, char * jarg3) {
   void * jresult ;
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StoredObjectType arg2 ;
+  OTDB::StoredObjectType arg2 ;
   std::string arg3 ;
-  StoredObjectType *argp2 ;
   OTDB::Storable *result = 0 ;
   
   arg1 = (OTDB::Storage *)jarg1; 
-  argp2 = (StoredObjectType *)jarg2; 
-  if (!argp2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StoredObjectType", 0);
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg2 = (OTDB::StoredObjectType)jarg2; 
   if (!jarg3) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return 0;
@@ -3637,90 +3626,60 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_QueryObject__SWIG_3(void * jarg1, v
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_CreateObject(void * jarg1, void * jarg2) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_CreateObject(void * jarg1, int jarg2) {
   void * jresult ;
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StoredObjectType arg2 ;
-  StoredObjectType *argp2 ;
+  OTDB::StoredObjectType arg2 ;
   OTDB::Storable *result = 0 ;
   
   arg1 = (OTDB::Storage *)jarg1; 
-  argp2 = (StoredObjectType *)jarg2; 
-  if (!argp2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StoredObjectType", 0);
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg2 = (OTDB::StoredObjectType)jarg2; 
   result = (OTDB::Storable *)(arg1)->CreateObject(arg2);
   jresult = (void *)result; 
   return jresult;
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_Create(void * jarg1, void * jarg2) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_Create(int jarg1, int jarg2) {
   void * jresult ;
-  StorageType arg1 ;
-  PackType arg2 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   OTDB::Storage *result = 0 ;
   
-  argp1 = (StorageType *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StorageType", 0);
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = (PackType *)jarg2; 
-  if (!argp2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null PackType", 0);
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   result = (OTDB::Storage *)OTDB::Storage::Create(arg1,arg2);
   jresult = (void *)result; 
   return jresult;
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_Storage_GetType(void * jarg1) {
-  void * jresult ;
+SWIGEXPORT int SWIGSTDCALL CSharp_Storage_GetType(void * jarg1) {
+  int jresult ;
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  StorageType result;
+  OTDB::StorageType result;
   
   arg1 = (OTDB::Storage *)jarg1; 
-  result = ((OTDB::Storage const *)arg1)->GetType();
-  jresult = new StorageType((const StorageType &)result); 
+  result = (OTDB::StorageType)((OTDB::Storage const *)arg1)->GetType();
+  jresult = (jint)result; 
   return jresult;
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_0(void * jarg1, void * jarg2, char * jarg3, char * jarg4, char * jarg5, char * jarg6, char * jarg7, char * jarg8) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_0(int jarg1, int jarg2, char * jarg3, char * jarg4, char * jarg5, char * jarg6, char * jarg7, char * jarg8) {
   unsigned int jresult ;
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
   std::string arg6 ;
   std::string arg7 ;
   std::string arg8 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
   bool result;
   
-  argp1 = (StorageType *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StorageType", 0);
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = (PackType *)jarg2; 
-  if (!argp2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null PackType", 0);
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   if (!jarg3) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return 0;
@@ -3757,31 +3716,19 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_0(void * jar
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_1(void * jarg1, void * jarg2, char * jarg3, char * jarg4, char * jarg5, char * jarg6, char * jarg7) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_1(int jarg1, int jarg2, char * jarg3, char * jarg4, char * jarg5, char * jarg6, char * jarg7) {
   unsigned int jresult ;
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
   std::string arg6 ;
   std::string arg7 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
   bool result;
   
-  argp1 = (StorageType *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StorageType", 0);
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = (PackType *)jarg2; 
-  if (!argp2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null PackType", 0);
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   if (!jarg3) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return 0;
@@ -3813,30 +3760,18 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_1(void * jar
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_2(void * jarg1, void * jarg2, char * jarg3, char * jarg4, char * jarg5, char * jarg6) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_2(int jarg1, int jarg2, char * jarg3, char * jarg4, char * jarg5, char * jarg6) {
   unsigned int jresult ;
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
   std::string arg6 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
   bool result;
   
-  argp1 = (StorageType *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StorageType", 0);
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = (PackType *)jarg2; 
-  if (!argp2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null PackType", 0);
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   if (!jarg3) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return 0;
@@ -3863,29 +3798,17 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_2(void * jar
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_3(void * jarg1, void * jarg2, char * jarg3, char * jarg4, char * jarg5) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_3(int jarg1, int jarg2, char * jarg3, char * jarg4, char * jarg5) {
   unsigned int jresult ;
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
   bool result;
   
-  argp1 = (StorageType *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StorageType", 0);
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = (PackType *)jarg2; 
-  if (!argp2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null PackType", 0);
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   if (!jarg3) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return 0;
@@ -3907,28 +3830,16 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_3(void * jar
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_4(void * jarg1, void * jarg2, char * jarg3, char * jarg4) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_4(int jarg1, int jarg2, char * jarg3, char * jarg4) {
   unsigned int jresult ;
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
   bool result;
   
-  argp1 = (StorageType *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StorageType", 0);
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = (PackType *)jarg2; 
-  if (!argp2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null PackType", 0);
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   if (!jarg3) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return 0;
@@ -3945,27 +3856,15 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_4(void * jar
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_5(void * jarg1, void * jarg2, char * jarg3) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_5(int jarg1, int jarg2, char * jarg3) {
   unsigned int jresult ;
-  StorageType arg1 ;
-  PackType arg2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   std::string arg3 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
   bool result;
   
-  argp1 = (StorageType *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StorageType", 0);
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = (PackType *)jarg2; 
-  if (!argp2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null PackType", 0);
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   if (!jarg3) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return 0;
@@ -3977,26 +3876,14 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_5(void * jar
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_6(void * jarg1, void * jarg2) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitDefaultStorage__SWIG_6(int jarg1, int jarg2) {
   unsigned int jresult ;
-  StorageType arg1 ;
-  PackType arg2 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   bool result;
   
-  argp1 = (StorageType *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StorageType", 0);
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = (PackType *)jarg2; 
-  if (!argp2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null PackType", 0);
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   result = (bool)OTDB::InitDefaultStorage(arg1,arg2);
   jresult = result; 
   return jresult;
@@ -4013,62 +3900,38 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_GetDefaultStorage() {
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_CreateStorageContext__SWIG_0(void * jarg1, void * jarg2) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_CreateStorageContext__SWIG_0(int jarg1, int jarg2) {
   void * jresult ;
-  StorageType arg1 ;
-  PackType arg2 ;
-  StorageType *argp1 ;
-  PackType *argp2 ;
+  OTDB::StorageType arg1 ;
+  OTDB::PackType arg2 ;
   OTDB::Storage *result = 0 ;
   
-  argp1 = (StorageType *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StorageType", 0);
-    return 0;
-  }
-  arg1 = *argp1; 
-  argp2 = (PackType *)jarg2; 
-  if (!argp2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null PackType", 0);
-    return 0;
-  }
-  arg2 = *argp2; 
+  arg1 = (OTDB::StorageType)jarg1; 
+  arg2 = (OTDB::PackType)jarg2; 
   result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1,arg2);
   jresult = (void *)result; 
   return jresult;
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_CreateStorageContext__SWIG_1(void * jarg1) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_CreateStorageContext__SWIG_1(int jarg1) {
   void * jresult ;
-  StorageType arg1 ;
-  StorageType *argp1 ;
+  OTDB::StorageType arg1 ;
   OTDB::Storage *result = 0 ;
   
-  argp1 = (StorageType *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StorageType", 0);
-    return 0;
-  }
-  arg1 = *argp1; 
+  arg1 = (OTDB::StorageType)jarg1; 
   result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1);
   jresult = (void *)result; 
   return jresult;
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_CreateObject(void * jarg1) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_CreateObject(int jarg1) {
   void * jresult ;
-  StoredObjectType arg1 ;
-  StoredObjectType *argp1 ;
+  OTDB::StoredObjectType arg1 ;
   OTDB::Storable *result = 0 ;
   
-  argp1 = (StoredObjectType *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StoredObjectType", 0);
-    return 0;
-  }
-  arg1 = *argp1; 
+  arg1 = (OTDB::StoredObjectType)jarg1; 
   result = (OTDB::Storable *)OTDB::CreateObject(arg1);
   jresult = (void *)result; 
   return jresult;
@@ -4523,22 +4386,16 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_StoreObject__SWIG_3(void * jarg1, cha
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_QueryObject__SWIG_0(void * jarg1, char * jarg2, char * jarg3, char * jarg4, char * jarg5) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_QueryObject__SWIG_0(int jarg1, char * jarg2, char * jarg3, char * jarg4, char * jarg5) {
   void * jresult ;
-  StoredObjectType arg1 ;
+  OTDB::StoredObjectType arg1 ;
   std::string arg2 ;
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
-  StoredObjectType *argp1 ;
   OTDB::Storable *result = 0 ;
   
-  argp1 = (StoredObjectType *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StoredObjectType", 0);
-    return 0;
-  }
-  arg1 = *argp1; 
+  arg1 = (OTDB::StoredObjectType)jarg1; 
   if (!jarg2) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return 0;
@@ -4565,21 +4422,15 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_QueryObject__SWIG_0(void * jarg1, char * ja
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_QueryObject__SWIG_1(void * jarg1, char * jarg2, char * jarg3, char * jarg4) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_QueryObject__SWIG_1(int jarg1, char * jarg2, char * jarg3, char * jarg4) {
   void * jresult ;
-  StoredObjectType arg1 ;
+  OTDB::StoredObjectType arg1 ;
   std::string arg2 ;
   std::string arg3 ;
   std::string arg4 ;
-  StoredObjectType *argp1 ;
   OTDB::Storable *result = 0 ;
   
-  argp1 = (StoredObjectType *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StoredObjectType", 0);
-    return 0;
-  }
-  arg1 = *argp1; 
+  arg1 = (OTDB::StoredObjectType)jarg1; 
   if (!jarg2) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return 0;
@@ -4601,20 +4452,14 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_QueryObject__SWIG_1(void * jarg1, char * ja
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_QueryObject__SWIG_2(void * jarg1, char * jarg2, char * jarg3) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_QueryObject__SWIG_2(int jarg1, char * jarg2, char * jarg3) {
   void * jresult ;
-  StoredObjectType arg1 ;
+  OTDB::StoredObjectType arg1 ;
   std::string arg2 ;
   std::string arg3 ;
-  StoredObjectType *argp1 ;
   OTDB::Storable *result = 0 ;
   
-  argp1 = (StoredObjectType *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StoredObjectType", 0);
-    return 0;
-  }
-  arg1 = *argp1; 
+  arg1 = (OTDB::StoredObjectType)jarg1; 
   if (!jarg2) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return 0;
@@ -4631,19 +4476,13 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_QueryObject__SWIG_2(void * jarg1, char * ja
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_QueryObject__SWIG_3(void * jarg1, char * jarg2) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_QueryObject__SWIG_3(int jarg1, char * jarg2) {
   void * jresult ;
-  StoredObjectType arg1 ;
+  OTDB::StoredObjectType arg1 ;
   std::string arg2 ;
-  StoredObjectType *argp1 ;
   OTDB::Storable *result = 0 ;
   
-  argp1 = (StoredObjectType *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null StoredObjectType", 0);
-    return 0;
-  }
-  arg1 = *argp1; 
+  arg1 = (OTDB::StoredObjectType)jarg1; 
   if (!jarg2) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return 0;
@@ -4858,19 +4697,19 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_BitcoinAcct_bitcoin_acct_name_get(void * ja
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_delete_Server(void * jarg1) {
-  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_ServerInfo(void * jarg1) {
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
   
-  arg1 = (OTDB::Server *)jarg1; 
+  arg1 = (OTDB::ServerInfo *)jarg1; 
   delete arg1;
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_Server_server_id_set(void * jarg1, char * jarg2) {
-  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+SWIGEXPORT void SWIGSTDCALL CSharp_ServerInfo_server_id_set(void * jarg1, char * jarg2) {
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
   std::string *arg2 = 0 ;
   
-  arg1 = (OTDB::Server *)jarg1; 
+  arg1 = (OTDB::ServerInfo *)jarg1; 
   if (!jarg2) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return ;
@@ -4881,23 +4720,23 @@ SWIGEXPORT void SWIGSTDCALL CSharp_Server_server_id_set(void * jarg1, char * jar
 }
 
 
-SWIGEXPORT char * SWIGSTDCALL CSharp_Server_server_id_get(void * jarg1) {
+SWIGEXPORT char * SWIGSTDCALL CSharp_ServerInfo_server_id_get(void * jarg1) {
   char * jresult ;
-  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
   std::string *result = 0 ;
   
-  arg1 = (OTDB::Server *)jarg1; 
+  arg1 = (OTDB::ServerInfo *)jarg1; 
   result = (std::string *) & ((arg1)->server_id);
   jresult = SWIG_csharp_string_callback(result->c_str()); 
   return jresult;
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_Server_server_type_set(void * jarg1, char * jarg2) {
-  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+SWIGEXPORT void SWIGSTDCALL CSharp_ServerInfo_server_type_set(void * jarg1, char * jarg2) {
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
   std::string *arg2 = 0 ;
   
-  arg1 = (OTDB::Server *)jarg1; 
+  arg1 = (OTDB::ServerInfo *)jarg1; 
   if (!jarg2) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return ;
@@ -4908,15 +4747,23 @@ SWIGEXPORT void SWIGSTDCALL CSharp_Server_server_type_set(void * jarg1, char * j
 }
 
 
-SWIGEXPORT char * SWIGSTDCALL CSharp_Server_server_type_get(void * jarg1) {
+SWIGEXPORT char * SWIGSTDCALL CSharp_ServerInfo_server_type_get(void * jarg1) {
   char * jresult ;
-  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
   std::string *result = 0 ;
   
-  arg1 = (OTDB::Server *)jarg1; 
+  arg1 = (OTDB::ServerInfo *)jarg1; 
   result = (std::string *) & ((arg1)->server_type);
   jresult = SWIG_csharp_string_callback(result->c_str()); 
   return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_Server(void * jarg1) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  
+  arg1 = (OTDB::Server *)jarg1; 
+  delete arg1;
 }
 
 
@@ -5032,6 +4879,648 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_BitcoinServer_bitcoin_password_get(void * j
   arg1 = (OTDB::BitcoinServer *)jarg1; 
   result = (std::string *) & ((arg1)->bitcoin_password);
   jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_ContactNym(void * jarg1) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ContactNym_nym_type_set(void * jarg1, char * jarg2) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->nym_type = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_ContactNym_nym_type_get(void * jarg1) {
+  char * jresult ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  result = (std::string *) & ((arg1)->nym_type);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ContactNym_nym_id_set(void * jarg1, char * jarg2) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->nym_id = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_ContactNym_nym_id_get(void * jarg1) {
+  char * jresult ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  result = (std::string *) & ((arg1)->nym_id);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ContactNym_public_key_set(void * jarg1, char * jarg2) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->public_key = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_ContactNym_public_key_get(void * jarg1) {
+  char * jresult ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  result = (std::string *) & ((arg1)->public_key);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ContactNym_memo_set(void * jarg1, char * jarg2) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->memo = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_ContactNym_memo_get(void * jarg1) {
+  char * jresult ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  result = (std::string *) & ((arg1)->memo);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned long SWIGSTDCALL CSharp_ContactNym_GetServerInfoCount(void * jarg1) {
+  unsigned long jresult ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  size_t result;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  result = (arg1)->GetServerInfoCount();
+  jresult = (unsigned long)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_ContactNym_GetServerInfo(void * jarg1, unsigned long jarg2) {
+  void * jresult ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  size_t arg2 ;
+  OTDB::ServerInfo *result = 0 ;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (OTDB::ServerInfo *)(arg1)->GetServerInfo(arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ContactNym_RemoveServerInfo(void * jarg1, unsigned long jarg2) {
+  unsigned int jresult ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  size_t arg2 ;
+  bool result;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (bool)(arg1)->RemoveServerInfo(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ContactNym_AddServerInfo(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  OTDB::ServerInfo *arg2 = 0 ;
+  bool result;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  arg2 = (OTDB::ServerInfo *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "OTDB::ServerInfo & type is null", 0);
+    return 0;
+  } 
+  result = (bool)(arg1)->AddServerInfo(*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_ContactAcct(void * jarg1) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ContactAcct_server_type_set(void * jarg1, char * jarg2) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->server_type = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_ContactAcct_server_type_get(void * jarg1) {
+  char * jresult ;
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  result = (std::string *) & ((arg1)->server_type);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ContactAcct_server_id_set(void * jarg1, char * jarg2) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->server_id = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_ContactAcct_server_id_get(void * jarg1) {
+  char * jresult ;
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  result = (std::string *) & ((arg1)->server_id);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ContactAcct_asset_type_id_set(void * jarg1, char * jarg2) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->asset_type_id = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_ContactAcct_asset_type_id_get(void * jarg1) {
+  char * jresult ;
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  result = (std::string *) & ((arg1)->asset_type_id);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ContactAcct_acct_id_set(void * jarg1, char * jarg2) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->acct_id = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_ContactAcct_acct_id_get(void * jarg1) {
+  char * jresult ;
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  result = (std::string *) & ((arg1)->acct_id);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ContactAcct_nym_id_set(void * jarg1, char * jarg2) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->nym_id = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_ContactAcct_nym_id_get(void * jarg1) {
+  char * jresult ;
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  result = (std::string *) & ((arg1)->nym_id);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ContactAcct_memo_set(void * jarg1, char * jarg2) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->memo = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_ContactAcct_memo_get(void * jarg1) {
+  char * jresult ;
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  result = (std::string *) & ((arg1)->memo);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ContactAcct_public_key_set(void * jarg1, char * jarg2) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->public_key = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_ContactAcct_public_key_get(void * jarg1) {
+  char * jresult ;
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  result = (std::string *) & ((arg1)->public_key);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_Contact(void * jarg1) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Contact_email_set(void * jarg1, char * jarg2) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->email = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_Contact_email_get(void * jarg1) {
+  char * jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  result = (std::string *) & ((arg1)->email);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Contact_memo_set(void * jarg1, char * jarg2) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->memo = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_Contact_memo_get(void * jarg1) {
+  char * jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  result = (std::string *) & ((arg1)->memo);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Contact_public_key_set(void * jarg1, char * jarg2) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->public_key = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_Contact_public_key_get(void * jarg1) {
+  char * jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  result = (std::string *) & ((arg1)->public_key);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned long SWIGSTDCALL CSharp_Contact_GetContactNymCount(void * jarg1) {
+  unsigned long jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t result;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  result = (arg1)->GetContactNymCount();
+  jresult = (unsigned long)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_Contact_GetContactNym(void * jarg1, unsigned long jarg2) {
+  void * jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  OTDB::ContactNym *result = 0 ;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (OTDB::ContactNym *)(arg1)->GetContactNym(arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Contact_RemoveContactNym(void * jarg1, unsigned long jarg2) {
+  unsigned int jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  bool result;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (bool)(arg1)->RemoveContactNym(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Contact_AddContactNym(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  OTDB::ContactNym *arg2 = 0 ;
+  bool result;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  arg2 = (OTDB::ContactNym *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "OTDB::ContactNym & type is null", 0);
+    return 0;
+  } 
+  result = (bool)(arg1)->AddContactNym(*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned long SWIGSTDCALL CSharp_Contact_GetContactAcctCount(void * jarg1) {
+  unsigned long jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t result;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  result = (arg1)->GetContactAcctCount();
+  jresult = (unsigned long)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_Contact_GetContactAcct(void * jarg1, unsigned long jarg2) {
+  void * jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  OTDB::ContactAcct *result = 0 ;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (OTDB::ContactAcct *)(arg1)->GetContactAcct(arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Contact_RemoveContactAcct(void * jarg1, unsigned long jarg2) {
+  unsigned int jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  bool result;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (bool)(arg1)->RemoveContactAcct(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Contact_AddContactAcct(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  OTDB::ContactAcct *arg2 = 0 ;
+  bool result;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  arg2 = (OTDB::ContactAcct *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "OTDB::ContactAcct & type is null", 0);
+    return 0;
+  } 
+  result = (bool)(arg1)->AddContactAcct(*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_AddressBook(void * jarg1) {
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  
+  arg1 = (OTDB::AddressBook *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT unsigned long SWIGSTDCALL CSharp_AddressBook_GetContactCount(void * jarg1) {
+  unsigned long jresult ;
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  size_t result;
+  
+  arg1 = (OTDB::AddressBook *)jarg1; 
+  result = (arg1)->GetContactCount();
+  jresult = (unsigned long)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_AddressBook_GetContact(void * jarg1, unsigned long jarg2) {
+  void * jresult ;
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  size_t arg2 ;
+  OTDB::Contact *result = 0 ;
+  
+  arg1 = (OTDB::AddressBook *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (OTDB::Contact *)(arg1)->GetContact(arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_AddressBook_RemoveContact(void * jarg1, unsigned long jarg2) {
+  unsigned int jresult ;
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  size_t arg2 ;
+  bool result;
+  
+  arg1 = (OTDB::AddressBook *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (bool)(arg1)->RemoveContact(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_AddressBook_AddContact(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  OTDB::Contact *arg2 = 0 ;
+  bool result;
+  
+  arg1 = (OTDB::AddressBook *)jarg1; 
+  arg2 = (OTDB::Contact *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "OTDB::Contact & type is null", 0);
+    return 0;
+  } 
+  result = (bool)(arg1)->AddContact(*arg2);
+  jresult = result; 
   return jresult;
 }
 
@@ -5176,12 +5665,32 @@ SWIGEXPORT OTDB::Acct * SWIGSTDCALL CSharp_BitcoinAcct_SWIGUpcast(OTDB::BitcoinA
     return (OTDB::Acct *)jarg1;
 }
 
-SWIGEXPORT OTDB::Displayable * SWIGSTDCALL CSharp_Server_SWIGUpcast(OTDB::Server *jarg1) {
+SWIGEXPORT OTDB::Displayable * SWIGSTDCALL CSharp_ServerInfo_SWIGUpcast(OTDB::ServerInfo *jarg1) {
     return (OTDB::Displayable *)jarg1;
+}
+
+SWIGEXPORT OTDB::ServerInfo * SWIGSTDCALL CSharp_Server_SWIGUpcast(OTDB::Server *jarg1) {
+    return (OTDB::ServerInfo *)jarg1;
 }
 
 SWIGEXPORT OTDB::Server * SWIGSTDCALL CSharp_BitcoinServer_SWIGUpcast(OTDB::BitcoinServer *jarg1) {
     return (OTDB::Server *)jarg1;
+}
+
+SWIGEXPORT OTDB::Displayable * SWIGSTDCALL CSharp_ContactNym_SWIGUpcast(OTDB::ContactNym *jarg1) {
+    return (OTDB::Displayable *)jarg1;
+}
+
+SWIGEXPORT OTDB::Displayable * SWIGSTDCALL CSharp_ContactAcct_SWIGUpcast(OTDB::ContactAcct *jarg1) {
+    return (OTDB::Displayable *)jarg1;
+}
+
+SWIGEXPORT OTDB::Displayable * SWIGSTDCALL CSharp_Contact_SWIGUpcast(OTDB::Contact *jarg1) {
+    return (OTDB::Displayable *)jarg1;
+}
+
+SWIGEXPORT OTDB::Storable * SWIGSTDCALL CSharp_AddressBook_SWIGUpcast(OTDB::AddressBook *jarg1) {
+    return (OTDB::Storable *)jarg1;
 }
 
 SWIGEXPORT OTDB::Storable * SWIGSTDCALL CSharp_WalletData_SWIGUpcast(OTDB::WalletData *jarg1) {

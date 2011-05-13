@@ -8,7 +8,7 @@
 
 package com.wrapper.core.jni;
 
-public class Server extends Displayable {
+public class Server extends ServerInfo {
   private long swigCPtr;
 
   public Server(long cPtr, boolean cMemoryOwn) {
@@ -33,22 +33,6 @@ public class Server extends Displayable {
       swigCPtr = 0;
     }
     super.delete();
-  }
-
-  public void setServer_id(String value) {
-    otapiJNI.Server_server_id_set(swigCPtr, this, value);
-  }
-
-  public String getServer_id() {
-    return otapiJNI.Server_server_id_get(swigCPtr, this);
-  }
-
-  public void setServer_type(String value) {
-    otapiJNI.Server_server_type_set(swigCPtr, this, value);
-  }
-
-  public String getServer_type() {
-    return otapiJNI.Server_server_type_get(swigCPtr, this);
   }
 
   public void setServer_host(String value) {

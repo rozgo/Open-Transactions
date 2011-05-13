@@ -177,50 +177,48 @@ public class Storage : IDisposable {
     return ret;
   }
 
-  public Storable QueryObject(SWIGTYPE_p_StoredObjectType theObjectType, string strFolder, string oneStr, string twoStr, string threeStr) {
-    IntPtr cPtr = otapiPINVOKE.Storage_QueryObject__SWIG_0(swigCPtr, SWIGTYPE_p_StoredObjectType.getCPtr(theObjectType), strFolder, oneStr, twoStr, threeStr);
+  public Storable QueryObject(StoredObjectType theObjectType, string strFolder, string oneStr, string twoStr, string threeStr) {
+    IntPtr cPtr = otapiPINVOKE.Storage_QueryObject__SWIG_0(swigCPtr, (int)theObjectType, strFolder, oneStr, twoStr, threeStr);
     Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
     if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 
-  public Storable QueryObject(SWIGTYPE_p_StoredObjectType theObjectType, string strFolder, string oneStr, string twoStr) {
-    IntPtr cPtr = otapiPINVOKE.Storage_QueryObject__SWIG_1(swigCPtr, SWIGTYPE_p_StoredObjectType.getCPtr(theObjectType), strFolder, oneStr, twoStr);
+  public Storable QueryObject(StoredObjectType theObjectType, string strFolder, string oneStr, string twoStr) {
+    IntPtr cPtr = otapiPINVOKE.Storage_QueryObject__SWIG_1(swigCPtr, (int)theObjectType, strFolder, oneStr, twoStr);
     Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
     if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 
-  public Storable QueryObject(SWIGTYPE_p_StoredObjectType theObjectType, string strFolder, string oneStr) {
-    IntPtr cPtr = otapiPINVOKE.Storage_QueryObject__SWIG_2(swigCPtr, SWIGTYPE_p_StoredObjectType.getCPtr(theObjectType), strFolder, oneStr);
+  public Storable QueryObject(StoredObjectType theObjectType, string strFolder, string oneStr) {
+    IntPtr cPtr = otapiPINVOKE.Storage_QueryObject__SWIG_2(swigCPtr, (int)theObjectType, strFolder, oneStr);
     Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
     if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 
-  public Storable QueryObject(SWIGTYPE_p_StoredObjectType theObjectType, string strFolder) {
-    IntPtr cPtr = otapiPINVOKE.Storage_QueryObject__SWIG_3(swigCPtr, SWIGTYPE_p_StoredObjectType.getCPtr(theObjectType), strFolder);
+  public Storable QueryObject(StoredObjectType theObjectType, string strFolder) {
+    IntPtr cPtr = otapiPINVOKE.Storage_QueryObject__SWIG_3(swigCPtr, (int)theObjectType, strFolder);
     Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
     if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 
-  public Storable CreateObject(SWIGTYPE_p_StoredObjectType eType) {
-    IntPtr cPtr = otapiPINVOKE.Storage_CreateObject(swigCPtr, SWIGTYPE_p_StoredObjectType.getCPtr(eType));
+  public Storable CreateObject(StoredObjectType eType) {
+    IntPtr cPtr = otapiPINVOKE.Storage_CreateObject(swigCPtr, (int)eType);
     Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, false);
-    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 
-  public static Storage Create(SWIGTYPE_p_StorageType eStorageType, SWIGTYPE_p_PackType ePackType) {
-    IntPtr cPtr = otapiPINVOKE.Storage_Create(SWIGTYPE_p_StorageType.getCPtr(eStorageType), SWIGTYPE_p_PackType.getCPtr(ePackType));
+  public static Storage Create(StorageType eStorageType, PackType ePackType) {
+    IntPtr cPtr = otapiPINVOKE.Storage_Create((int)eStorageType, (int)ePackType);
     Storage ret = (cPtr == IntPtr.Zero) ? null : new Storage(cPtr, false);
-    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 
-  public SWIGTYPE_p_StorageType GetType() {
-    SWIGTYPE_p_StorageType ret = new SWIGTYPE_p_StorageType(otapiPINVOKE.Storage_GetType(swigCPtr), true);
+  public StorageType GetType() {
+    StorageType ret = (StorageType)otapiPINVOKE.Storage_GetType(swigCPtr);
     return ret;
   }
 

@@ -34,7 +34,6 @@ void protobuf_ShutdownFile_Bitcoin_2eproto();
 
 class BitcoinAcct_InternalPB;
 class BitcoinServer_InternalPB;
-class WalletData_InternalPB;
 
 // ===================================================================
 
@@ -333,104 +332,6 @@ class BitcoinServer_InternalPB : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static BitcoinServer_InternalPB* default_instance_;
-};
-// -------------------------------------------------------------------
-
-class WalletData_InternalPB : public ::google::protobuf::Message {
- public:
-  WalletData_InternalPB();
-  virtual ~WalletData_InternalPB();
-  
-  WalletData_InternalPB(const WalletData_InternalPB& from);
-  
-  inline WalletData_InternalPB& operator=(const WalletData_InternalPB& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-  
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-  
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const WalletData_InternalPB& default_instance();
-  
-  void Swap(WalletData_InternalPB* other);
-  
-  // implements Message ----------------------------------------------
-  
-  WalletData_InternalPB* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const WalletData_InternalPB& from);
-  void MergeFrom(const WalletData_InternalPB& from);
-  void Clear();
-  bool IsInitialized() const;
-  
-  int ByteSize() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  public:
-  
-  ::google::protobuf::Metadata GetMetadata() const;
-  
-  // nested types ----------------------------------------------------
-  
-  // accessors -------------------------------------------------------
-  
-  // repeated .OTDB.BitcoinServer_InternalPB bitcoin_server = 1;
-  inline int bitcoin_server_size() const;
-  inline void clear_bitcoin_server();
-  static const int kBitcoinServerFieldNumber = 1;
-  inline const ::OTDB::BitcoinServer_InternalPB& bitcoin_server(int index) const;
-  inline ::OTDB::BitcoinServer_InternalPB* mutable_bitcoin_server(int index);
-  inline ::OTDB::BitcoinServer_InternalPB* add_bitcoin_server();
-  inline const ::google::protobuf::RepeatedPtrField< ::OTDB::BitcoinServer_InternalPB >&
-      bitcoin_server() const;
-  inline ::google::protobuf::RepeatedPtrField< ::OTDB::BitcoinServer_InternalPB >*
-      mutable_bitcoin_server();
-  
-  // repeated .OTDB.BitcoinAcct_InternalPB bitcoin_acct = 2;
-  inline int bitcoin_acct_size() const;
-  inline void clear_bitcoin_acct();
-  static const int kBitcoinAcctFieldNumber = 2;
-  inline const ::OTDB::BitcoinAcct_InternalPB& bitcoin_acct(int index) const;
-  inline ::OTDB::BitcoinAcct_InternalPB* mutable_bitcoin_acct(int index);
-  inline ::OTDB::BitcoinAcct_InternalPB* add_bitcoin_acct();
-  inline const ::google::protobuf::RepeatedPtrField< ::OTDB::BitcoinAcct_InternalPB >&
-      bitcoin_acct() const;
-  inline ::google::protobuf::RepeatedPtrField< ::OTDB::BitcoinAcct_InternalPB >*
-      mutable_bitcoin_acct();
-  
-  // @@protoc_insertion_point(class_scope:OTDB.WalletData_InternalPB)
- private:
-  
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-  
-  ::google::protobuf::RepeatedPtrField< ::OTDB::BitcoinServer_InternalPB > bitcoin_server_;
-  ::google::protobuf::RepeatedPtrField< ::OTDB::BitcoinAcct_InternalPB > bitcoin_acct_;
-  
-  mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
-  
-  friend void  protobuf_AddDesc_Bitcoin_2eproto();
-  friend void protobuf_AssignDesc_Bitcoin_2eproto();
-  friend void protobuf_ShutdownFile_Bitcoin_2eproto();
-  
-  void InitAsDefaultInstance();
-  static WalletData_InternalPB* default_instance_;
 };
 // ===================================================================
 
@@ -1079,60 +980,6 @@ inline ::std::string* BitcoinServer_InternalPB::release_bitcoin_password() {
     bitcoin_password_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
     return temp;
   }
-}
-
-// -------------------------------------------------------------------
-
-// WalletData_InternalPB
-
-// repeated .OTDB.BitcoinServer_InternalPB bitcoin_server = 1;
-inline int WalletData_InternalPB::bitcoin_server_size() const {
-  return bitcoin_server_.size();
-}
-inline void WalletData_InternalPB::clear_bitcoin_server() {
-  bitcoin_server_.Clear();
-}
-inline const ::OTDB::BitcoinServer_InternalPB& WalletData_InternalPB::bitcoin_server(int index) const {
-  return bitcoin_server_.Get(index);
-}
-inline ::OTDB::BitcoinServer_InternalPB* WalletData_InternalPB::mutable_bitcoin_server(int index) {
-  return bitcoin_server_.Mutable(index);
-}
-inline ::OTDB::BitcoinServer_InternalPB* WalletData_InternalPB::add_bitcoin_server() {
-  return bitcoin_server_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::OTDB::BitcoinServer_InternalPB >&
-WalletData_InternalPB::bitcoin_server() const {
-  return bitcoin_server_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::OTDB::BitcoinServer_InternalPB >*
-WalletData_InternalPB::mutable_bitcoin_server() {
-  return &bitcoin_server_;
-}
-
-// repeated .OTDB.BitcoinAcct_InternalPB bitcoin_acct = 2;
-inline int WalletData_InternalPB::bitcoin_acct_size() const {
-  return bitcoin_acct_.size();
-}
-inline void WalletData_InternalPB::clear_bitcoin_acct() {
-  bitcoin_acct_.Clear();
-}
-inline const ::OTDB::BitcoinAcct_InternalPB& WalletData_InternalPB::bitcoin_acct(int index) const {
-  return bitcoin_acct_.Get(index);
-}
-inline ::OTDB::BitcoinAcct_InternalPB* WalletData_InternalPB::mutable_bitcoin_acct(int index) {
-  return bitcoin_acct_.Mutable(index);
-}
-inline ::OTDB::BitcoinAcct_InternalPB* WalletData_InternalPB::add_bitcoin_acct() {
-  return bitcoin_acct_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::OTDB::BitcoinAcct_InternalPB >&
-WalletData_InternalPB::bitcoin_acct() const {
-  return bitcoin_acct_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::OTDB::BitcoinAcct_InternalPB >*
-WalletData_InternalPB::mutable_bitcoin_acct() {
-  return &bitcoin_acct_;
 }
 
 

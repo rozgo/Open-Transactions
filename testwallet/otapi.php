@@ -27,6 +27,14 @@ if (!extension_loaded('otapi')) {
 
 
 abstract class otapi {
+	static function typeunsafe_set($typeunsafe) {
+		typeunsafe_set($typeunsafe);
+	}
+
+	static function typeunsafe_get() {
+		return typeunsafe_get();
+	}
+
 	static function OT_API_Set_PasswordCallback($theCaller) {
 		return OT_API_Set_PasswordCallback($theCaller);
 	}
@@ -643,6 +651,36 @@ abstract class otapi {
 		return OT_API_ProcessSockets();
 	}
 
+	const PACK_MESSAGE_PACK = 0;
+
+	const PACK_PROTOCOL_BUFFERS = PACK_PROTOCOL_BUFFERS;
+
+	const PACK_TYPE_ERROR = PACK_TYPE_ERROR;
+
+	const STORE_FILESYSTEM = 0;
+
+	const STORE_TYPE_SUBCLASS = STORE_TYPE_SUBCLASS;
+
+	const STORED_OBJ_STRING_MAP = 0;
+
+	const STORED_OBJ_WALLET_DATA = STORED_OBJ_WALLET_DATA;
+
+	const STORED_OBJ_BITCOIN_ACCT = STORED_OBJ_BITCOIN_ACCT;
+
+	const STORED_OBJ_BITCOIN_SERVER = STORED_OBJ_BITCOIN_SERVER;
+
+	const STORED_OBJ_SERVER_INFO = STORED_OBJ_SERVER_INFO;
+
+	const STORED_OBJ_CONTACT_NYM = STORED_OBJ_CONTACT_NYM;
+
+	const STORED_OBJ_CONTACT_ACCT = STORED_OBJ_CONTACT_ACCT;
+
+	const STORED_OBJ_CONTACT = STORED_OBJ_CONTACT;
+
+	const STORED_OBJ_ADDRESS_BOOK = STORED_OBJ_ADDRESS_BOOK;
+
+	const STORED_OBJ_ERROR = STORED_OBJ_ERROR;
+
 	static function InitDefaultStorage($eStoreType,$ePackType,$oneStr=null,$twoStr=null,$threeStr=null,$fourStr=null,$fiveStr=null,$sixStr=null) {
 		switch (func_num_args()) {
 		case 2: $r=InitDefaultStorage($eStoreType,$ePackType); break;
@@ -1111,20 +1149,52 @@ class BitcoinAcct extends Acct {
 	}
 }
 
-class Server extends Displayable {
+class ServerInfo extends Displayable {
 	public $_cPtr=null;
 
 	function __set($var,$value) {
-		$func = 'Server_'.$var.'_set';
-		if (function_exists($func)) return call_user_func($func,$this->_cPtr,$value);
+		if ($var === 'server_type') return ServerInfo_server_type_set($this->_cPtr,$value);
+		if ($var === 'server_id') return ServerInfo_server_id_set($this->_cPtr,$value);
 		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
 		Displayable::__set($var,$value);
 	}
 
 	function __isset($var) {
-		if (function_exists('Server_'.$var.'_set')) return true;
+		if (function_exists('ServerInfo_'.$var.'_set')) return true;
 		if ($var === 'thisown') return true;
 		return Displayable::__isset($var);
+	}
+
+	function __get($var) {
+		$func = 'ServerInfo_'.$var.'_get';
+		if (function_exists($func)) {
+			$r = call_user_func($func,$this->_cPtr);
+			if (!is_resource($r)) return $r;
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			return new $c($r);
+		}
+		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
+		return Displayable::__get($var);
+	}
+	function __construct($h) {
+		$this->_cPtr=$h;
+	}
+}
+
+class Server extends ServerInfo {
+	public $_cPtr=null;
+
+	function __set($var,$value) {
+		if ($var === 'server_host') return Server_server_host_set($this->_cPtr,$value);
+		if ($var === 'server_port') return Server_server_port_set($this->_cPtr,$value);
+		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
+		ServerInfo::__set($var,$value);
+	}
+
+	function __isset($var) {
+		if (function_exists('Server_'.$var.'_set')) return true;
+		if ($var === 'thisown') return true;
+		return ServerInfo::__isset($var);
 	}
 
 	function __get($var) {
@@ -1136,7 +1206,7 @@ class Server extends Displayable {
 			return new $c($r);
 		}
 		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
-		return Displayable::__get($var);
+		return ServerInfo::__get($var);
 	}
 	function __construct($h) {
 		$this->_cPtr=$h;
@@ -1172,6 +1242,220 @@ class BitcoinServer extends Server {
 	}
 	function __construct($h) {
 		$this->_cPtr=$h;
+	}
+}
+
+class ContactNym extends Displayable {
+	public $_cPtr=null;
+
+	function __set($var,$value) {
+		$func = 'ContactNym_'.$var.'_set';
+		if (function_exists($func)) return call_user_func($func,$this->_cPtr,$value);
+		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
+		Displayable::__set($var,$value);
+	}
+
+	function __isset($var) {
+		if (function_exists('ContactNym_'.$var.'_set')) return true;
+		if ($var === 'thisown') return true;
+		return Displayable::__isset($var);
+	}
+
+	function __get($var) {
+		$func = 'ContactNym_'.$var.'_get';
+		if (function_exists($func)) {
+			$r = call_user_func($func,$this->_cPtr);
+			if (!is_resource($r)) return $r;
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			return new $c($r);
+		}
+		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
+		return Displayable::__get($var);
+	}
+	function __construct($h) {
+		$this->_cPtr=$h;
+	}
+
+	function GetServerInfoCount() {
+		return ContactNym_GetServerInfoCount($this->_cPtr);
+	}
+
+	function GetServerInfo($nIndex) {
+		$r=ContactNym_GetServerInfo($this->_cPtr,$nIndex);
+		if (is_resource($r)) {
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			if (!class_exists($c)) {
+				return new ServerInfo($r);
+			}
+			return new $c($r);
+		}
+		return $r;
+	}
+
+	function RemoveServerInfo($nIndex) {
+		return ContactNym_RemoveServerInfo($this->_cPtr,$nIndex);
+	}
+
+	function AddServerInfo($disownObject) {
+		return ContactNym_AddServerInfo($this->_cPtr,$disownObject);
+	}
+}
+
+class ContactAcct extends Displayable {
+	public $_cPtr=null;
+
+	function __set($var,$value) {
+		$func = 'ContactAcct_'.$var.'_set';
+		if (function_exists($func)) return call_user_func($func,$this->_cPtr,$value);
+		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
+		Displayable::__set($var,$value);
+	}
+
+	function __isset($var) {
+		if (function_exists('ContactAcct_'.$var.'_set')) return true;
+		if ($var === 'thisown') return true;
+		return Displayable::__isset($var);
+	}
+
+	function __get($var) {
+		$func = 'ContactAcct_'.$var.'_get';
+		if (function_exists($func)) {
+			$r = call_user_func($func,$this->_cPtr);
+			if (!is_resource($r)) return $r;
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			return new $c($r);
+		}
+		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
+		return Displayable::__get($var);
+	}
+	function __construct($h) {
+		$this->_cPtr=$h;
+	}
+}
+
+class Contact extends Displayable {
+	public $_cPtr=null;
+
+	function __set($var,$value) {
+		$func = 'Contact_'.$var.'_set';
+		if (function_exists($func)) return call_user_func($func,$this->_cPtr,$value);
+		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
+		Displayable::__set($var,$value);
+	}
+
+	function __isset($var) {
+		if (function_exists('Contact_'.$var.'_set')) return true;
+		if ($var === 'thisown') return true;
+		return Displayable::__isset($var);
+	}
+
+	function __get($var) {
+		$func = 'Contact_'.$var.'_get';
+		if (function_exists($func)) {
+			$r = call_user_func($func,$this->_cPtr);
+			if (!is_resource($r)) return $r;
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			return new $c($r);
+		}
+		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
+		return Displayable::__get($var);
+	}
+	function __construct($h) {
+		$this->_cPtr=$h;
+	}
+
+	function GetContactNymCount() {
+		return Contact_GetContactNymCount($this->_cPtr);
+	}
+
+	function GetContactNym($nIndex) {
+		$r=Contact_GetContactNym($this->_cPtr,$nIndex);
+		if (is_resource($r)) {
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			if (!class_exists($c)) {
+				return new ContactNym($r);
+			}
+			return new $c($r);
+		}
+		return $r;
+	}
+
+	function RemoveContactNym($nIndex) {
+		return Contact_RemoveContactNym($this->_cPtr,$nIndex);
+	}
+
+	function AddContactNym($disownObject) {
+		return Contact_AddContactNym($this->_cPtr,$disownObject);
+	}
+
+	function GetContactAcctCount() {
+		return Contact_GetContactAcctCount($this->_cPtr);
+	}
+
+	function GetContactAcct($nIndex) {
+		$r=Contact_GetContactAcct($this->_cPtr,$nIndex);
+		if (is_resource($r)) {
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			if (!class_exists($c)) {
+				return new ContactAcct($r);
+			}
+			return new $c($r);
+		}
+		return $r;
+	}
+
+	function RemoveContactAcct($nIndex) {
+		return Contact_RemoveContactAcct($this->_cPtr,$nIndex);
+	}
+
+	function AddContactAcct($disownObject) {
+		return Contact_AddContactAcct($this->_cPtr,$disownObject);
+	}
+}
+
+class AddressBook extends Storable {
+	public $_cPtr=null;
+
+	function __set($var,$value) {
+		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
+		Storable::__set($var,$value);
+	}
+
+	function __isset($var) {
+		if ($var === 'thisown') return true;
+		return Storable::__isset($var);
+	}
+
+	function __get($var) {
+		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
+		return Storable::__get($var);
+	}
+	function __construct($h) {
+		$this->_cPtr=$h;
+	}
+
+	function GetContactCount() {
+		return AddressBook_GetContactCount($this->_cPtr);
+	}
+
+	function GetContact($nIndex) {
+		$r=AddressBook_GetContact($this->_cPtr,$nIndex);
+		if (is_resource($r)) {
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			if (!class_exists($c)) {
+				return new Contact($r);
+			}
+			return new $c($r);
+		}
+		return $r;
+	}
+
+	function RemoveContact($nIndex) {
+		return AddressBook_RemoveContact($this->_cPtr,$nIndex);
+	}
+
+	function AddContact($disownObject) {
+		return AddressBook_AddContact($this->_cPtr,$disownObject);
 	}
 }
 

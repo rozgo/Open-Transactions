@@ -10,18 +10,18 @@
 using System;
 using System.Runtime.InteropServices;
 
-public class Server : ServerInfo {
+public class ServerInfo : Displayable {
   private HandleRef swigCPtr;
 
-  internal Server(IntPtr cPtr, bool cMemoryOwn) : base(otapiPINVOKE.Server_SWIGUpcast(cPtr), cMemoryOwn) {
+  internal ServerInfo(IntPtr cPtr, bool cMemoryOwn) : base(otapiPINVOKE.ServerInfo_SWIGUpcast(cPtr), cMemoryOwn) {
     swigCPtr = new HandleRef(this, cPtr);
   }
 
-  internal static HandleRef getCPtr(Server obj) {
+  internal static HandleRef getCPtr(ServerInfo obj) {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
   }
 
-  ~Server() {
+  ~ServerInfo() {
     Dispose();
   }
 
@@ -30,7 +30,7 @@ public class Server : ServerInfo {
       if (swigCPtr.Handle != IntPtr.Zero) {
         if (swigCMemOwn) {
           swigCMemOwn = false;
-          otapiPINVOKE.delete_Server(swigCPtr);
+          otapiPINVOKE.delete_ServerInfo(swigCPtr);
         }
         swigCPtr = new HandleRef(null, IntPtr.Zero);
       }
@@ -39,25 +39,25 @@ public class Server : ServerInfo {
     }
   }
 
-  public string server_host {
+  public string server_id {
     set {
-      otapiPINVOKE.Server_server_host_set(swigCPtr, value);
+      otapiPINVOKE.ServerInfo_server_id_set(swigCPtr, value);
       if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     } 
     get {
-      string ret = otapiPINVOKE.Server_server_host_get(swigCPtr);
+      string ret = otapiPINVOKE.ServerInfo_server_id_get(swigCPtr);
       if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
       return ret;
     } 
   }
 
-  public string server_port {
+  public string server_type {
     set {
-      otapiPINVOKE.Server_server_port_set(swigCPtr, value);
+      otapiPINVOKE.ServerInfo_server_type_set(swigCPtr, value);
       if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     } 
     get {
-      string ret = otapiPINVOKE.Server_server_port_get(swigCPtr);
+      string ret = otapiPINVOKE.ServerInfo_server_type_get(swigCPtr);
       if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
       return ret;
     } 

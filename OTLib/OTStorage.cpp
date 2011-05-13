@@ -287,18 +287,28 @@ InitOTDBDetails::InitOTDBDetails() // Constructor for namespace
 	// Set up theMap...
 	
 #if defined (OTDB_MESSAGE_PACK)
-	theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_STRING_MAP)]		= &StringMapMsgpack::Instantiate;
-	theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_WALLET_DATA)]		= &WalletDataMsgpack::Instantiate;
+	theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_STRING_MAP)]	= &StringMapMsgpack::Instantiate;
+	theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_WALLET_DATA)]	= &WalletDataMsgpack::Instantiate;
 	theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_BITCOIN_ACCT)]	= &BitcoinAcctMsgpack::Instantiate;
-	theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_BITCOIN_SERVER)]	= &BitcoinServerMsgpack::Instantiate;
+	theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_BITCOIN_SERVER)]= &BitcoinServerMsgpack::Instantiate;
+	theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_SERVER_INFO)]	= &ServerInfoMsgpack::Instantiate;
+	theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_CONTACT_ACCT)]	= &ContactAcctMsgpack::Instantiate;
+	theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_CONTACT_NYM)]	= &ContactNymMsgpack::Instantiate;
+	theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_CONTACT)]		= &ContactMsgpack::Instantiate;
+	theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_ADDRESS_BOOK)]	= &AddressBookMsgpack::Instantiate;
 #endif
 	
 #if defined (OTDB_PROTOCOL_BUFFERS)
 	GOOGLE_PROTOBUF_VERIFY_VERSION; 
-	theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_STRING_MAP)]		= &StringMapPB::Instantiate;
-	theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_WALLET_DATA)]		= &WalletDataPB::Instantiate;
+	theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_STRING_MAP)]	= &StringMapPB::Instantiate;
+	theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_WALLET_DATA)]	= &WalletDataPB::Instantiate;
 	theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_BITCOIN_ACCT)]	= &BitcoinAcctPB::Instantiate;
-	theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_BITCOIN_SERVER)]	= &BitcoinServerPB::Instantiate; 
+	theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_BITCOIN_SERVER)]= &BitcoinServerPB::Instantiate; 
+	theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_SERVER_INFO)]	= &ServerInfoPB::Instantiate; 
+	theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_CONTACT_ACCT)]	= &ContactAcctPB::Instantiate; 
+	theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_CONTACT_NYM)]	= &ContactNymPB::Instantiate; 
+	theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_CONTACT)]		= &ContactPB::Instantiate; 
+	theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_ADDRESS_BOOK)]	= &AddressBookPB::Instantiate; 
 #endif
 	
 }
@@ -653,10 +663,11 @@ bool OTPacker::Unpack(PackedBuffer& inBuf, std::string& outObj)
 
 // ---------------------------------------------
 
+/*
 #define CPPCAT3(X,Y) X##Y
 #define CPPCAT2(X,Y)  CPPCAT3(X,Y)
 #define CPPCAT(X,Y)  CPPCAT2(X,Y)
-/*
+
 #define IMPLEMENT_GET_ADD_REMOVE(scope, name) \
 int  scope CPPCAT2(CPPCAT3(Get,name),Count)() { return CPPCAT2(list_,CPPCAT3(name,s)).size() } \
 name * scope CPPCAT2(Get,name)(int nIndex) \
@@ -686,6 +697,16 @@ bool scope Add##name(name & disownObject) { list_##name##s.push_back(&disownObje
 IMPLEMENT_GET_ADD_REMOVE(WalletData::, BitcoinServer)   // No semicolon on this one!
 
 IMPLEMENT_GET_ADD_REMOVE(WalletData::, BitcoinAcct)   // No semicolon on this one!
+	
+IMPLEMENT_GET_ADD_REMOVE(ContactNym::, ServerInfo)   // No semicolon on this one!
+
+IMPLEMENT_GET_ADD_REMOVE(Contact::, ContactNym)   // No semicolon on this one!
+
+IMPLEMENT_GET_ADD_REMOVE(Contact::, ContactAcct)   // No semicolon on this one!
+
+IMPLEMENT_GET_ADD_REMOVE(AddressBook::, Contact)   // No semicolon on this one!
+	
+
 
 // Make sure SWIG "loses ownership" of any objects pushed onto these lists.
 // (So I am safe to destruct them indiscriminately.)
@@ -703,7 +724,40 @@ WalletData::~WalletData()
 
 
 
+ContactNym::~ContactNym()
+{
+	while (GetServerInfoCount() > 0)
+		RemoveServerInfo(0);
+}
 
+// ----------------------------------------------
+
+Contact::~Contact()
+{
+	while (GetContactNymCount() > 0)
+		RemoveContactNym(0);
+	
+	while (GetContactAcctCount() > 0)
+		RemoveContactAcct(0);
+}
+
+// ----------------------------------------------
+
+
+
+AddressBook::~AddressBook()
+{
+	while (GetContactCount() > 0)
+		RemoveContact(0);
+}
+
+// ----------------------------------------------
+
+	
+	
+	
+	
+	
 
 
 
@@ -859,6 +913,169 @@ bool BufferMsgpack::WriteToOStream(std::ostream &outStream)
 
 	
 	
+	
+void ContactNymMsgpack::hookBeforePack()
+{
+	// ----------------------------------------------------
+	// ServerInfo
+	//
+	deque_ServerInfos.clear(); 
+	
+	// Loop through all the objects in the list, and add them to deque_ServerInfos.
+	//
+	for (std::deque<ServerInfo *>::iterator ii = list_ServerInfos.begin(); ii != list_ServerInfos.end(); ++ii)
+	{
+		ServerInfoMsgpack * pObject = dynamic_cast<ServerInfoMsgpack *>(*ii);
+		
+		if (NULL == pObject)
+			continue;
+		
+		deque_ServerInfos.push_back(*pObject); // The deque acquires its own copy here, due to the default assignment operator.
+	}
+	// ----------------------------------------------------		
+}
+
+void ContactNymMsgpack::hookAfterUnpack() 
+{ 
+	while (GetServerInfoCount() > 0)
+		RemoveServerInfo(0);
+	
+	// ---------------------------------
+	for (std::deque<ServerInfoMsgpack>::iterator ii = deque_ServerInfos.begin(); ii != deque_ServerInfos.end(); ++ii)
+	{		
+		ServerInfoMsgpack * pNewWrapper = dynamic_cast<ServerInfoMsgpack *>(Storable::Create(STORED_OBJ_SERVER_INFO, PACK_MESSAGE_PACK));
+		OT_ASSERT(NULL != pNewWrapper);
+		
+		(*pNewWrapper) = (*ii);  // COPYING THE DATA
+		
+		list_ServerInfos.push_back(dynamic_cast<ServerInfo*>(pNewWrapper));
+	}
+	// ---------------------------------
+}
+
+// ----------------------------------------------
+
+void ContactMsgpack::hookBeforePack()
+{
+	// ----------------------------------------------------
+	// ContactNym
+	//
+	deque_Nyms.clear(); 
+	
+	// Loop through all the objects in the list, and add them to deque_Nyms.
+	//
+	for (std::deque<ContactNym *>::iterator ii = list_ContactNyms.begin(); ii != list_ContactNyms.end(); ++ii)
+	{
+		ContactNymMsgpack * pObject = dynamic_cast<ContactNymMsgpack *>(*ii);
+		
+		if (NULL == pObject)
+			continue;
+		
+		deque_Nyms.push_back(*pObject); // The deque acquires its own copy here, due to the default assignment operator.
+	}
+	// ----------------------------------------------------
+	
+	
+	
+	// ----------------------------------------------------
+	// ContactAcct
+	//
+	deque_Accounts.clear(); 
+	
+	// Loop through all the objects in the deque, and add them to deque_Accounts.
+	//
+	for (std::deque<ContactAcct *>::iterator ii = list_ContactAccts.begin(); ii != list_ContactAccts.end(); ++ii)
+	{
+		ContactAcctMsgpack * pObject = dynamic_cast<ContactAcctMsgpack *>(*ii);
+		
+		if (NULL == pObject)
+			continue;
+		
+		deque_Accounts.push_back(*pObject);
+	}
+	// ----------------------------------------------------
+	
+}
+
+
+void ContactMsgpack::hookAfterUnpack()
+{ 
+	//	the_map = __pb_obj.the_map();
+	
+	while (GetContactNymCount() > 0)
+		RemoveContactNym(0);
+	
+	while (GetContactAcctCount() > 0)
+		RemoveContactAcct(0);
+	
+	// ---------------------------------
+	for (std::deque<ContactNymMsgpack>::iterator ii = deque_Nyms.begin(); ii != deque_Nyms.end(); ++ii)
+	{		
+		ContactNymMsgpack * pNewWrapper = dynamic_cast<ContactNymMsgpack *>(Storable::Create(STORED_OBJ_CONTACT_NYM, PACK_MESSAGE_PACK));
+		OT_ASSERT(NULL != pNewWrapper);
+		
+		(*pNewWrapper) = (*ii);  // COPYING THE DATA
+		
+		list_ContactNyms.push_back(dynamic_cast<ContactNym*>(pNewWrapper));
+	}
+	
+	// ---------------------------------
+	
+	for (std::deque<ContactAcctMsgpack>::iterator ii = deque_Accounts.begin(); ii != deque_Accounts.end(); ++ii)
+	{
+		ContactAcctMsgpack * pNewWrapper = dynamic_cast<ContactAcctMsgpack *>(Storable::Create(STORED_OBJ_CONTACT_ACCT, PACK_MESSAGE_PACK));
+		OT_ASSERT(NULL != pNewWrapper);
+		
+		(*pNewWrapper) = (*ii);  // COPYING THE DATA
+		
+		list_ContactAccts.push_back(dynamic_cast<ContactAcct*>(pNewWrapper));
+	}
+}
+
+// ----------------------------------------------
+	
+
+	
+void AddressBookMsgpack::hookBeforePack()
+{
+	// ----------------------------------------------------
+	// Contact
+	//
+	deque_Contacts.clear(); 
+	
+	// Loop through all the objects in the list, and add them to deque_Contacts.
+	//
+	for (std::deque<Contact *>::iterator ii = list_Contacts.begin(); ii != list_Contacts.end(); ++ii)
+	{
+		ContactMsgpack * pObject = dynamic_cast<ContactMsgpack *>(*ii);
+		
+		if (NULL == pObject)
+			continue;
+		
+		deque_Contacts.push_back(*pObject); // The deque acquires its own copy here, due to the default assignment operator.
+	}
+	// ----------------------------------------------------		
+}
+
+void AddressBookMsgpack::hookAfterUnpack() 
+{ 
+	while (GetContactCount() > 0)
+		RemoveContact(0);
+	
+	// ---------------------------------
+	for (std::deque<ContactMsgpack>::iterator ii = deque_Contacts.begin(); ii != deque_Contacts.end(); ++ii)
+	{		
+		ContactMsgpack * pNewWrapper = dynamic_cast<ContactMsgpack *>(Storable::Create(STORED_OBJ_CONTACT, PACK_MESSAGE_PACK));
+		OT_ASSERT(NULL != pNewWrapper);
+		
+		(*pNewWrapper) = (*ii);  // COPYING THE DATA
+		
+		list_Contacts.push_back(dynamic_cast<Contact*>(pNewWrapper));
+	}
+	// ---------------------------------
+}
+	
+	
 void WalletDataMsgpack::hookBeforePack()
 {
 	// ----------------------------------------------------
@@ -902,7 +1119,7 @@ void WalletDataMsgpack::hookBeforePack()
 }
 
 
-void WalletDataMsgpack::hookAfterUnpack()  // TODO
+void WalletDataMsgpack::hookAfterUnpack()
 { 
 	//	the_map = __pb_obj.the_map();
 	
@@ -1491,8 +1708,412 @@ void StringPB::hookAfterUnpack()
 	// The way StringPB is used, this function will never actually get called.
 }
 // ---------------------------------------------
+	
+	
+template<> 
+void ContactPB::hookBeforePack()
+{
+	__pb_obj.set_gui_label(gui_label); 
+	__pb_obj.set_email(email); 
+	__pb_obj.set_public_key(public_key); 
+	__pb_obj.set_memo(memo); 
+
+	// ----------------------------------------------------
+	// ContactNym
+	//
+	__pb_obj.clear_nyms(); // "nyms" is the repeated field of ContactNyms. 
+	
+	// Loop through all the objects in the deque, and add them to __pb_obj.nyms.
+	//
+	for (std::deque<ContactNym *>::iterator ii = list_ContactNyms.begin(); ii != list_ContactNyms.end(); ++ii)
+	{
+		ContactNymPB * pObject = dynamic_cast<ContactNymPB *>(*ii);
+		
+		if (NULL == pObject)
+			continue;
+		
+		::google::protobuf::Message * pMessage = pObject->getPBMessage();
+		
+		if (NULL == pMessage)
+			continue;
+		
+		// Now theMessage contains the ContactNym_InternalPB from the list...
+		// -----------------------
+		
+		ContactNym_InternalPB * pInternal = dynamic_cast<ContactNym_InternalPB *>(pMessage);
+		
+		if (NULL == pInternal)
+			continue;
+		
+		// -----------------------
+		
+		ContactNym_InternalPB * pNewInternal = __pb_obj.add_nyms();
+		
+		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
+	}
+	// ----------------------------------------------------
+	
+	
+	
+	// ----------------------------------------------------
+	// ContactAcct
+	//
+	__pb_obj.clear_accounts(); // "accounts" is the repeated field of ContactAccts. 
+	
+	// Loop through all the objects in the deque, and add them to __pb_obj.accounts.
+	//
+	for (std::deque<ContactAcct *>::iterator ii = list_ContactAccts.begin(); ii != list_ContactAccts.end(); ++ii)
+	{
+		ContactAcctPB * pObject = dynamic_cast<ContactAcctPB *>(*ii);
+		
+		if (NULL == pObject)
+			continue;
+		
+		::google::protobuf::Message * pMessage = pObject->getPBMessage();
+		
+		if (NULL == pMessage)
+			continue;
+		
+		// Now theMessage contains the ContactAcct_InternalPB from the list...
+		// -----------------------
+		
+		ContactAcct_InternalPB * pInternal = dynamic_cast<ContactAcct_InternalPB *>(pMessage);
+		
+		if (NULL == pInternal)
+			continue;		
+		// -----------------------
+		
+		ContactAcct_InternalPB * pNewInternal = __pb_obj.add_accounts();
+		
+		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
+	}
+	// ----------------------------------------------------
+	
+	// Now when __pb_obj is serialized, it's up to date!	
+}
+
+template<> 
+void ContactPB::hookAfterUnpack()
+{ 	
+	gui_label = __pb_obj.gui_label();
+	email = __pb_obj.email();
+	public_key = __pb_obj.public_key();
+	memo = __pb_obj.memo();
+
+	// ---------------------------------
+
+	while (GetContactNymCount() > 0)
+		RemoveContactNym(0);
+	
+	while (GetContactAcctCount() > 0)
+		RemoveContactAcct(0);
+	
+	// ---------------------------------
+	
+	for (int i = 0; i < __pb_obj.nyms_size(); i++)
+	{
+		const ContactNym_InternalPB & theInternal = __pb_obj.nyms(i);
+		// theInternal contains the internal data I want to copy to the list. (deque)
+		
+		ContactNymPB * pNewWrapper = dynamic_cast<ContactNymPB *>(Storable::Create(STORED_OBJ_CONTACT_NYM, PACK_PROTOCOL_BUFFERS));
+		OT_ASSERT(NULL != pNewWrapper);
+		
+		::google::protobuf::Message * pMessage = pNewWrapper->getPBMessage();
+		
+		if (NULL == pMessage)
+		{
+			delete pNewWrapper;
+			continue;	
+		}
+		
+		// Now theMessage contains the ContactNym_InternalPB for the new object we just created.... (and wish to populate)
+		// -----------------------
+		
+		ContactNym_InternalPB * pInternal = dynamic_cast<ContactNym_InternalPB *>(pMessage);
+		
+		if (NULL == pInternal)
+		{
+			delete pNewWrapper;
+			continue;	
+		}
+		
+		// now pInternal is the new object's ContactNym_InternalPB, and theInternal is 
+		// the __pb_obj data I want... nothing to do now but copy it over...
+		
+		(*pInternal) = theInternal;  // COPYING THE DATA
+		
+		list_ContactNyms.push_back(dynamic_cast<ContactNym*>(pNewWrapper));
+	}
+	
+	// ---------------------------------
+	
+	for (int i = 0; i < __pb_obj.accounts_size(); i++)
+	{
+		const ContactAcct_InternalPB & theInternal = __pb_obj.accounts(i);
+		// theInternal contains the internal data I want to copy to the list. (deque)
+		
+		ContactAcctPB * pNewWrapper = dynamic_cast<ContactAcctPB *>(Storable::Create(STORED_OBJ_CONTACT_ACCT, PACK_PROTOCOL_BUFFERS));
+		OT_ASSERT(NULL != pNewWrapper);
+		
+		::google::protobuf::Message * pMessage = pNewWrapper->getPBMessage();
+		
+		if (NULL == pMessage)
+		{
+			delete pNewWrapper;
+			continue;	
+		}
+		
+		// Now theMessage contains the ContactAcct_InternalPB for the new object we just created.... (and wish to populate)
+		// -----------------------
+		
+		ContactAcct_InternalPB * pInternal = dynamic_cast<ContactAcct_InternalPB *>(pMessage);
+		
+		if (NULL == pInternal)
+		{
+			delete pNewWrapper;
+			continue;	
+		}
+		
+		// now pInternal is the new object's ContactAcct_InternalPB, and theInternal is 
+		// the __pb_obj data I want... nothing to do now but copy it over...
+		
+		(*pInternal) = theInternal;  // COPYING THE DATA
+		
+		list_ContactAccts.push_back(dynamic_cast<ContactAcct*>(pNewWrapper));
+	}
+}
+// ---------------------------------------------
 
 
+	
+template<> 
+void ContactNymPB::hookBeforePack()
+{
+	__pb_obj.set_gui_label(gui_label); 
+	__pb_obj.set_nym_id(nym_id); 
+	__pb_obj.set_nym_type(nym_type); 
+	__pb_obj.set_public_key(public_key); 
+	__pb_obj.set_memo(memo); 
+
+	// ----------------------------------------------------
+	// ServerInfo
+	//
+	__pb_obj.clear_servers(); // "servers" is the repeated field of ServerInfos. 
+	
+	// Loop through all the objects in the deque, and add them to __pb_obj.servers.
+	//
+	for (std::deque<ServerInfo *>::iterator ii = list_ServerInfos.begin(); ii != list_ServerInfos.end(); ++ii)
+	{
+		ServerInfoPB * pObject = dynamic_cast<ServerInfoPB *>(*ii);
+		
+		if (NULL == pObject)
+			continue;
+		
+		::google::protobuf::Message * pMessage = pObject->getPBMessage();
+		
+		if (NULL == pMessage)
+			continue;
+		
+		// Now theMessage contains the ServerInfo_InternalPB from the list...
+		// -----------------------
+		
+		ServerInfo_InternalPB * pInternal = dynamic_cast<ServerInfo_InternalPB *>(pMessage);
+		
+		if (NULL == pInternal)
+			continue;
+		
+		// -----------------------
+		
+		ServerInfo_InternalPB * pNewInternal = __pb_obj.add_servers();
+		
+		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
+	}
+	// ----------------------------------------------------
+		// Now when __pb_obj is serialized, it's up to date!	
+}
+
+template<> 
+void ContactNymPB::hookAfterUnpack()
+{ 
+	gui_label = __pb_obj.gui_label();
+	nym_id = __pb_obj.nym_id();
+	nym_type = __pb_obj.nym_type();
+	public_key = __pb_obj.public_key();
+	memo = __pb_obj.memo();
+	
+	while (GetServerInfoCount() > 0)
+		RemoveServerInfo(0);
+	
+	// ---------------------------------
+	
+	for (int i = 0; i < __pb_obj.servers_size(); i++)
+	{
+		const ServerInfo_InternalPB & theInternal = __pb_obj.servers(i);
+		// theInternal contains the internal data I want to copy to the list. (deque)
+		
+		ServerInfoPB * pNewWrapper = dynamic_cast<ServerInfoPB *>(Storable::Create(STORED_OBJ_SERVER_INFO, PACK_PROTOCOL_BUFFERS));
+		OT_ASSERT(NULL != pNewWrapper);
+		
+		::google::protobuf::Message * pMessage = pNewWrapper->getPBMessage();
+		
+		if (NULL == pMessage)
+		{
+			delete pNewWrapper;
+			continue;	
+		}
+		
+		// Now theMessage contains the ServerInfo_InternalPB for the new object we just created.... (and wish to populate)
+		// -----------------------
+		
+		ServerInfo_InternalPB * pInternal = dynamic_cast<ServerInfo_InternalPB *>(pMessage);
+		
+		if (NULL == pInternal)
+		{
+			delete pNewWrapper;
+			continue;	
+		}
+		
+		// now pInternal is the new object's ServerInfo_InternalPB, and theInternal is 
+		// the __pb_obj data I want... nothing to do now but copy it over...
+		
+		(*pInternal) = theInternal;  // COPYING THE DATA
+		
+		list_ServerInfos.push_back(dynamic_cast<ServerInfo*>(pNewWrapper));
+	}
+}
+// ---------------------------------------------
+	
+	
+	
+
+
+template<> 
+void AddressBookPB::hookBeforePack()
+{
+	// ----------------------------------------------------
+	// Contact
+	//
+	__pb_obj.clear_contacts(); // "contacts" is the repeated field of Contacts. 
+	
+	// Loop through all the objects in the deque, and add them to __pb_obj.contacts.
+	//
+	for (std::deque<Contact *>::iterator ii = list_Contacts.begin(); ii != list_Contacts.end(); ++ii)
+	{
+		ContactPB * pObject = dynamic_cast<ContactPB *>(*ii);
+		
+		if (NULL == pObject)
+			continue;
+		
+		::google::protobuf::Message * pMessage = pObject->getPBMessage();
+		
+		if (NULL == pMessage)
+			continue;
+		
+		// Now theMessage contains the Contact_InternalPB from the list...
+		// -----------------------
+		
+		Contact_InternalPB * pInternal = dynamic_cast<Contact_InternalPB *>(pMessage);
+		
+		if (NULL == pInternal)
+			continue;
+		
+		// -----------------------
+		
+		Contact_InternalPB * pNewInternal = __pb_obj.add_contacts();
+		
+		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
+	}
+	// ----------------------------------------------------
+	// Now when __pb_obj is serialized, it's up to date!	
+}
+
+template<> 
+void AddressBookPB::hookAfterUnpack()
+{ 
+	//	the_map = __pb_obj.the_map();
+	
+	while (GetContactCount() > 0)
+		RemoveContact(0);
+	
+	// ---------------------------------
+	
+	for (int i = 0; i < __pb_obj.contacts_size(); i++)
+	{
+		const Contact_InternalPB & theInternal = __pb_obj.contacts(i);
+		// theInternal contains the internal data I want to copy to the list. (deque)
+		
+		ContactPB * pNewWrapper = dynamic_cast<ContactPB *>(Storable::Create(STORED_OBJ_CONTACT, PACK_PROTOCOL_BUFFERS));
+		OT_ASSERT(NULL != pNewWrapper);
+		
+		::google::protobuf::Message * pMessage = pNewWrapper->getPBMessage();
+		
+		if (NULL == pMessage)
+		{
+			delete pNewWrapper;
+			continue;	
+		}
+		
+		// Now theMessage contains the Contact_InternalPB for the new object we just created.... (and wish to populate)
+		// -----------------------
+		
+		Contact_InternalPB * pInternal = dynamic_cast<Contact_InternalPB *>(pMessage);
+		
+		if (NULL == pInternal)
+		{
+			delete pNewWrapper;
+			continue;	
+		}
+		
+		// now pInternal is the new object's Contact_InternalPB, and theInternal is 
+		// the __pb_obj data I want... nothing to do now but copy it over...
+		
+		(*pInternal) = theInternal;  // COPYING THE DATA
+		
+		list_Contacts.push_back(dynamic_cast<Contact*>(pNewWrapper));
+	}
+}
+// ---------------------------------------------
+	
+template<> 
+void ContactAcctPB::hookBeforePack()
+{
+	__pb_obj.set_gui_label(gui_label); 
+	__pb_obj.set_server_id(server_id); 
+	__pb_obj.set_server_type(server_type); 
+	__pb_obj.set_asset_type_id(asset_type_id); 
+	__pb_obj.set_acct_id(acct_id); 
+	__pb_obj.set_nym_id(nym_id); 
+	__pb_obj.set_memo(memo); 
+	__pb_obj.set_public_key(public_key); 
+}
+template<> 
+void ContactAcctPB::hookAfterUnpack()
+{ 
+	gui_label = __pb_obj.gui_label();
+	server_id = __pb_obj.server_id();
+	server_type = __pb_obj.server_type();
+	asset_type_id = __pb_obj.asset_type_id();
+	acct_id = __pb_obj.acct_id();
+	nym_id = __pb_obj.nym_id();
+	memo = __pb_obj.memo();
+	public_key = __pb_obj.public_key();
+}
+// ---------------------------------------------
+
+template<> 
+void ServerInfoPB::hookBeforePack()
+{
+	__pb_obj.set_server_id(server_id); 
+	__pb_obj.set_server_type(server_type); 
+}
+template<> 
+void ServerInfoPB::hookAfterUnpack()
+{ 
+	server_id = __pb_obj.server_id();
+	server_type = __pb_obj.server_type();
+}
+// ---------------------------------------------
+	
 template<> 
 void BitcoinAcctPB::hookBeforePack()
 {

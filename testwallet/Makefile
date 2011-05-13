@@ -110,6 +110,8 @@ LINUX_LIBDIR = lib
 LBITS := $(shell getconf LONG_BIT)
 ifeq ($(LBITS),64)
 LINUX_LIBDIR = lib64
+API_CFLAGS = -m64
+API_LDFLAGS = -m64
 endif
 
 # ---------------------------------------------------------------------
