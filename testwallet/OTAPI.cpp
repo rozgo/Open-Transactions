@@ -220,7 +220,7 @@ OT_BOOL OT_API_Init(const char * szClientPath)
 				
 				// This way, everywhere else I can use the default storage context (for now) and it will work
 				// everywhere I put it. (Because it's now set up...)
-				bool bDefaultStore = OTDB::InitDefaultStorage(OTDB::STORE_FILESYSTEM, OTDB_DEFAULT_PACKER, strPath);
+				bool bDefaultStore = OTDB::InitDefaultStorage(OTDB_DEFAULT_STORAGE, OTDB_DEFAULT_PACKER, strPath);
 				
 				return OT_TRUE;
 			}
@@ -256,7 +256,19 @@ OT_BOOL OT_API_SwitchWallet(const char * szDataFolderPath, const char * szWallet
 	
 	OTLog::SetMainPath(szDataFolderPath);
 
-	return OT_API_LoadWallet(szWalletFilename);
+	bool bDefaultStore = false;
+	{
+		std::string strPath = szDataFolderPath;
+		
+		// This way, everywhere else I can use the default storage context (for now) and it will work
+		// everywhere I put it. (Because it's now set up...)
+		bDefaultStore = OTDB::InitDefaultStorage(OTDB_DEFAULT_STORAGE, OTDB_DEFAULT_PACKER, strPath);		
+	}
+	
+	if (bDefaultStore)
+		return OT_API_LoadWallet(szWalletFilename);
+	
+	return OT_FALSE;
 }
 
 

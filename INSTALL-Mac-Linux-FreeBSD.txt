@@ -17,7 +17,13 @@ OpenTransactions for Mac OS X, Linux, and FreeBSD
      this will be a living document.
  
 
+Install instructions (Wiki):
+https://github.com/FellowTraveler/Open-Transactions/wiki/Install
 
+For Troubleshooting notes:
+https://github.com/FellowTraveler/Moneychanger/wiki/Troubleshooting
+
+----------------------------------
 
 PRE-BUILD:
 
@@ -39,8 +45,10 @@ PRE-BUILD:
 
     * On FreeBSD (as root):  cd /usr/ports/security/openssl/ && make install clean
 
-
 --- cd (change directory) to the Open-Transactions folder. <=== ("THE MAIN FOLDER")
+
+(See Troubleshooting doc for notes on how to use OpenSSL 1.0.0 with Open
+Transactions without having to install it as your official system copy.)
 
 ---------------------------------------------------------------
 
@@ -121,10 +129,16 @@ Other build targets are debug, debugrpc, and clean.
 
 You can also build the API for several languages (python, ruby,
 perl5, and php5) at the top level. For other languages, see the
-below notes, as well as the testwallet/API-README.txt file.
+below notes, as well as the testwallet/API-README.txt file. For
+example:
+     make java
+     make python
+     make php5
+     make sharp
+     Etc.
 
 
-*For FreeBSD, make sure you have gmake installed, since the Makefiles won't
+!!! For FreeBSD, make sure you have gmake installed, since the Makefiles won't
 work with the default version of make. Once you install it, you can build
 using these commands, depending on which options you prefer:
       gmake rpc
@@ -138,7 +152,7 @@ using these commands, depending on which options you prefer:
 
 
 If you prefer to build all of the projects individually, they are below for
-my notes. But the above step should be enough to take care of everything for
+my notes. But the above steps should be enough to take care of everything for
 most people.
 
 --- (optional) build the XmlRpc++ library:
