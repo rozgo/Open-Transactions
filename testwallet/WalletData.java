@@ -69,4 +69,9 @@ public class WalletData extends Storable {
     return otapiJNI.WalletData_AddBitcoinAcct(swigCPtr, this, BitcoinAcct.getCPtr(disownObject), disownObject);
   }
 
+  public static WalletData dynamic_cast(Storable pObject) {
+    long cPtr = otapiJNI.WalletData_dynamic_cast(Storable.getCPtr(pObject), pObject);
+    return (cPtr == 0) ? null : new WalletData(cPtr, false);
+  }
+
 }

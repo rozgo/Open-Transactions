@@ -32,11 +32,12 @@ message ContactAcct_InternalPB {
 
 message Contact_InternalPB {
   optional string gui_label = 1;
-  optional string email = 2;
-  optional string memo = 3;
-  optional string public_key = 4;
-  repeated ContactNym_InternalPB nyms = 5;
-  repeated ContactAcct_InternalPB accounts = 6;
+  optional string contact_id = 2;
+  optional string email = 3;
+  optional string memo = 4;
+  optional string public_key = 5;
+  repeated ContactNym_InternalPB nyms = 6;
+  repeated ContactAcct_InternalPB accounts = 7;
 }
 
 

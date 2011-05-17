@@ -35,6 +35,14 @@ public class Contact extends Displayable {
     super.delete();
   }
 
+  public void setContact_id(String value) {
+    otapiJNI.Contact_contact_id_set(swigCPtr, this, value);
+  }
+
+  public String getContact_id() {
+    return otapiJNI.Contact_contact_id_get(swigCPtr, this);
+  }
+
   public void setEmail(String value) {
     otapiJNI.Contact_email_set(swigCPtr, this, value);
   }
@@ -91,6 +99,11 @@ public class Contact extends Displayable {
 
   public boolean AddContactAcct(ContactAcct disownObject) {
     return otapiJNI.Contact_AddContactAcct(swigCPtr, this, ContactAcct.getCPtr(disownObject), disownObject);
+  }
+
+  public static Contact dynamic_cast(Storable pObject) {
+    long cPtr = otapiJNI.Contact_dynamic_cast(Storable.getCPtr(pObject), pObject);
+    return (cPtr == 0) ? null : new Contact(cPtr, false);
   }
 
 }

@@ -51,4 +51,9 @@ public class BitcoinServer extends Server {
     return otapiJNI.BitcoinServer_bitcoin_password_get(swigCPtr, this);
   }
 
+  public static BitcoinServer dynamic_cast(Storable pObject) {
+    long cPtr = otapiJNI.BitcoinServer_dynamic_cast(Storable.getCPtr(pObject), pObject);
+    return (cPtr == 0) ? null : new BitcoinServer(cPtr, false);
+  }
+
 }

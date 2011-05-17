@@ -17,8 +17,8 @@ public class otapi {
     return otapiJNI.OT_API_Init(szClientPath);
   }
 
-  public static int OT_API_LoadWallet(String szPath) {
-    return otapiJNI.OT_API_LoadWallet(szPath);
+  public static int OT_API_LoadWallet(String szWalletFilename) {
+    return otapiJNI.OT_API_LoadWallet(szWalletFilename);
   }
 
   public static int OT_API_SwitchWallet(String szDataFolderPath, String szWalletFilename) {
@@ -670,7 +670,7 @@ public class otapi {
 
   public static Storable CreateObject(int eType) {
     long cPtr = otapiJNI.CreateObject(eType);
-    return (cPtr == 0) ? null : new Storable(cPtr, false);
+    return (cPtr == 0) ? null : new Storable(cPtr, true);
   }
 
   public static boolean Exists(String strFolder, String oneStr, String twoStr, String threeStr) {
@@ -719,6 +719,38 @@ public class otapi {
 
   public static String QueryString(String strFolder) {
     return otapiJNI.QueryString__SWIG_3(strFolder);
+  }
+
+  public static boolean StorePlainString(String strContents, String strFolder, String oneStr, String twoStr, String threeStr) {
+    return otapiJNI.StorePlainString__SWIG_0(strContents, strFolder, oneStr, twoStr, threeStr);
+  }
+
+  public static boolean StorePlainString(String strContents, String strFolder, String oneStr, String twoStr) {
+    return otapiJNI.StorePlainString__SWIG_1(strContents, strFolder, oneStr, twoStr);
+  }
+
+  public static boolean StorePlainString(String strContents, String strFolder, String oneStr) {
+    return otapiJNI.StorePlainString__SWIG_2(strContents, strFolder, oneStr);
+  }
+
+  public static boolean StorePlainString(String strContents, String strFolder) {
+    return otapiJNI.StorePlainString__SWIG_3(strContents, strFolder);
+  }
+
+  public static String QueryPlainString(String strFolder, String oneStr, String twoStr, String threeStr) {
+    return otapiJNI.QueryPlainString__SWIG_0(strFolder, oneStr, twoStr, threeStr);
+  }
+
+  public static String QueryPlainString(String strFolder, String oneStr, String twoStr) {
+    return otapiJNI.QueryPlainString__SWIG_1(strFolder, oneStr, twoStr);
+  }
+
+  public static String QueryPlainString(String strFolder, String oneStr) {
+    return otapiJNI.QueryPlainString__SWIG_2(strFolder, oneStr);
+  }
+
+  public static String QueryPlainString(String strFolder) {
+    return otapiJNI.QueryPlainString__SWIG_3(strFolder);
   }
 
   public static boolean StoreObject(Storable theContents, String strFolder, String oneStr, String twoStr, String threeStr) {

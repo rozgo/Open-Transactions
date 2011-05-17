@@ -104,8 +104,9 @@ void protobuf_AssignDesc_Moneychanger_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ContactAcct_InternalPB));
   Contact_InternalPB_descriptor_ = file->message_type(3);
-  static const int Contact_InternalPB_offsets_[6] = {
+  static const int Contact_InternalPB_offsets_[7] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Contact_InternalPB, gui_label_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Contact_InternalPB, contact_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Contact_InternalPB, email_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Contact_InternalPB, memo_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Contact_InternalPB, public_key_),
@@ -217,17 +218,17 @@ void protobuf_AddDesc_Moneychanger_2eproto() {
     "l\030\001 \001(\t\022\023\n\013server_type\030\002 \001(\t\022\021\n\tserver_i"
     "d\030\003 \001(\t\022\025\n\rasset_type_id\030\004 \001(\t\022\017\n\007acct_i"
     "d\030\005 \001(\t\022\016\n\006nym_id\030\006 \001(\t\022\014\n\004memo\030\007 \001(\t\022\022\n"
-    "\npublic_key\030\010 \001(\t\"\263\001\n\022Contact_InternalPB"
-    "\022\021\n\tgui_label\030\001 \001(\t\022\r\n\005email\030\002 \001(\t\022\014\n\004me"
-    "mo\030\003 \001(\t\022\022\n\npublic_key\030\004 \001(\t\022)\n\004nyms\030\005 \003"
-    "(\0132\033.OTDB.ContactNym_InternalPB\022.\n\010accou"
-    "nts\030\006 \003(\0132\034.OTDB.ContactAcct_InternalPB\""
-    "D\n\026AddressBook_InternalPB\022*\n\010contacts\030\001 "
-    "\003(\0132\030.OTDB.Contact_InternalPB\"\203\001\n\025Wallet"
-    "Data_InternalPB\0226\n\016bitcoin_server\030\001 \003(\0132"
-    "\036.OTDB.BitcoinServer_InternalPB\0222\n\014bitco"
-    "in_acct\030\002 \003(\0132\034.OTDB.BitcoinAcct_Interna"
-    "lPB", 843);
+    "\npublic_key\030\010 \001(\t\"\307\001\n\022Contact_InternalPB"
+    "\022\021\n\tgui_label\030\001 \001(\t\022\022\n\ncontact_id\030\002 \001(\t\022"
+    "\r\n\005email\030\003 \001(\t\022\014\n\004memo\030\004 \001(\t\022\022\n\npublic_k"
+    "ey\030\005 \001(\t\022)\n\004nyms\030\006 \003(\0132\033.OTDB.ContactNym"
+    "_InternalPB\022.\n\010accounts\030\007 \003(\0132\034.OTDB.Con"
+    "tactAcct_InternalPB\"D\n\026AddressBook_Inter"
+    "nalPB\022*\n\010contacts\030\001 \003(\0132\030.OTDB.Contact_I"
+    "nternalPB\"\203\001\n\025WalletData_InternalPB\0226\n\016b"
+    "itcoin_server\030\001 \003(\0132\036.OTDB.BitcoinServer"
+    "_InternalPB\0222\n\014bitcoin_acct\030\002 \003(\0132\034.OTDB"
+    ".BitcoinAcct_InternalPB", 863);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Moneychanger.proto", &protobuf_RegisterTypes);
   ServerInfo_InternalPB::default_instance_ = new ServerInfo_InternalPB();
@@ -1653,6 +1654,7 @@ void ContactAcct_InternalPB::Swap(ContactAcct_InternalPB* other) {
 
 #ifndef _MSC_VER
 const int Contact_InternalPB::kGuiLabelFieldNumber;
+const int Contact_InternalPB::kContactIdFieldNumber;
 const int Contact_InternalPB::kEmailFieldNumber;
 const int Contact_InternalPB::kMemoFieldNumber;
 const int Contact_InternalPB::kPublicKeyFieldNumber;
@@ -1677,6 +1679,7 @@ Contact_InternalPB::Contact_InternalPB(const Contact_InternalPB& from)
 void Contact_InternalPB::SharedCtor() {
   _cached_size_ = 0;
   gui_label_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  contact_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   email_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   memo_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   public_key_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
@@ -1690,6 +1693,9 @@ Contact_InternalPB::~Contact_InternalPB() {
 void Contact_InternalPB::SharedDtor() {
   if (gui_label_ != &::google::protobuf::internal::kEmptyString) {
     delete gui_label_;
+  }
+  if (contact_id_ != &::google::protobuf::internal::kEmptyString) {
+    delete contact_id_;
   }
   if (email_ != &::google::protobuf::internal::kEmptyString) {
     delete email_;
@@ -1729,6 +1735,11 @@ void Contact_InternalPB::Clear() {
     if (has_gui_label()) {
       if (gui_label_ != &::google::protobuf::internal::kEmptyString) {
         gui_label_->clear();
+      }
+    }
+    if (has_contact_id()) {
+      if (contact_id_ != &::google::protobuf::internal::kEmptyString) {
+        contact_id_->clear();
       }
     }
     if (has_email()) {
@@ -1771,12 +1782,29 @@ bool Contact_InternalPB::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(18)) goto parse_email;
+        if (input->ExpectTag(18)) goto parse_contact_id;
         break;
       }
       
-      // optional string email = 2;
+      // optional string contact_id = 2;
       case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_contact_id:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_contact_id()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->contact_id().data(), this->contact_id().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(26)) goto parse_email;
+        break;
+      }
+      
+      // optional string email = 3;
+      case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_email:
@@ -1788,12 +1816,12 @@ bool Contact_InternalPB::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(26)) goto parse_memo;
+        if (input->ExpectTag(34)) goto parse_memo;
         break;
       }
       
-      // optional string memo = 3;
-      case 3: {
+      // optional string memo = 4;
+      case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_memo:
@@ -1805,12 +1833,12 @@ bool Contact_InternalPB::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(34)) goto parse_public_key;
+        if (input->ExpectTag(42)) goto parse_public_key;
         break;
       }
       
-      // optional string public_key = 4;
-      case 4: {
+      // optional string public_key = 5;
+      case 5: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_public_key:
@@ -1822,12 +1850,12 @@ bool Contact_InternalPB::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(42)) goto parse_nyms;
+        if (input->ExpectTag(50)) goto parse_nyms;
         break;
       }
       
-      // repeated .OTDB.ContactNym_InternalPB nyms = 5;
-      case 5: {
+      // repeated .OTDB.ContactNym_InternalPB nyms = 6;
+      case 6: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_nyms:
@@ -1836,13 +1864,13 @@ bool Contact_InternalPB::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(42)) goto parse_nyms;
-        if (input->ExpectTag(50)) goto parse_accounts;
+        if (input->ExpectTag(50)) goto parse_nyms;
+        if (input->ExpectTag(58)) goto parse_accounts;
         break;
       }
       
-      // repeated .OTDB.ContactAcct_InternalPB accounts = 6;
-      case 6: {
+      // repeated .OTDB.ContactAcct_InternalPB accounts = 7;
+      case 7: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_accounts:
@@ -1851,7 +1879,7 @@ bool Contact_InternalPB::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(50)) goto parse_accounts;
+        if (input->ExpectTag(58)) goto parse_accounts;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -1883,43 +1911,52 @@ void Contact_InternalPB::SerializeWithCachedSizes(
       1, this->gui_label(), output);
   }
   
-  // optional string email = 2;
+  // optional string contact_id = 2;
+  if (has_contact_id()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->contact_id().data(), this->contact_id().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      2, this->contact_id(), output);
+  }
+  
+  // optional string email = 3;
   if (has_email()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->email().data(), this->email().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
-      2, this->email(), output);
+      3, this->email(), output);
   }
   
-  // optional string memo = 3;
+  // optional string memo = 4;
   if (has_memo()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->memo().data(), this->memo().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
-      3, this->memo(), output);
+      4, this->memo(), output);
   }
   
-  // optional string public_key = 4;
+  // optional string public_key = 5;
   if (has_public_key()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->public_key().data(), this->public_key().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
-      4, this->public_key(), output);
+      5, this->public_key(), output);
   }
   
-  // repeated .OTDB.ContactNym_InternalPB nyms = 5;
+  // repeated .OTDB.ContactNym_InternalPB nyms = 6;
   for (int i = 0; i < this->nyms_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      5, this->nyms(i), output);
+      6, this->nyms(i), output);
   }
   
-  // repeated .OTDB.ContactAcct_InternalPB accounts = 6;
+  // repeated .OTDB.ContactAcct_InternalPB accounts = 7;
   for (int i = 0; i < this->accounts_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      6, this->accounts(i), output);
+      7, this->accounts(i), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -1940,48 +1977,58 @@ void Contact_InternalPB::SerializeWithCachedSizes(
         1, this->gui_label(), target);
   }
   
-  // optional string email = 2;
+  // optional string contact_id = 2;
+  if (has_contact_id()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->contact_id().data(), this->contact_id().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->contact_id(), target);
+  }
+  
+  // optional string email = 3;
   if (has_email()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->email().data(), this->email().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->email(), target);
+        3, this->email(), target);
   }
   
-  // optional string memo = 3;
+  // optional string memo = 4;
   if (has_memo()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->memo().data(), this->memo().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        3, this->memo(), target);
+        4, this->memo(), target);
   }
   
-  // optional string public_key = 4;
+  // optional string public_key = 5;
   if (has_public_key()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->public_key().data(), this->public_key().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        4, this->public_key(), target);
+        5, this->public_key(), target);
   }
   
-  // repeated .OTDB.ContactNym_InternalPB nyms = 5;
+  // repeated .OTDB.ContactNym_InternalPB nyms = 6;
   for (int i = 0; i < this->nyms_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        5, this->nyms(i), target);
+        6, this->nyms(i), target);
   }
   
-  // repeated .OTDB.ContactAcct_InternalPB accounts = 6;
+  // repeated .OTDB.ContactAcct_InternalPB accounts = 7;
   for (int i = 0; i < this->accounts_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        6, this->accounts(i), target);
+        7, this->accounts(i), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -2002,21 +2049,28 @@ int Contact_InternalPB::ByteSize() const {
           this->gui_label());
     }
     
-    // optional string email = 2;
+    // optional string contact_id = 2;
+    if (has_contact_id()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->contact_id());
+    }
+    
+    // optional string email = 3;
     if (has_email()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->email());
     }
     
-    // optional string memo = 3;
+    // optional string memo = 4;
     if (has_memo()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->memo());
     }
     
-    // optional string public_key = 4;
+    // optional string public_key = 5;
     if (has_public_key()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
@@ -2024,7 +2078,7 @@ int Contact_InternalPB::ByteSize() const {
     }
     
   }
-  // repeated .OTDB.ContactNym_InternalPB nyms = 5;
+  // repeated .OTDB.ContactNym_InternalPB nyms = 6;
   total_size += 1 * this->nyms_size();
   for (int i = 0; i < this->nyms_size(); i++) {
     total_size +=
@@ -2032,7 +2086,7 @@ int Contact_InternalPB::ByteSize() const {
         this->nyms(i));
   }
   
-  // repeated .OTDB.ContactAcct_InternalPB accounts = 6;
+  // repeated .OTDB.ContactAcct_InternalPB accounts = 7;
   total_size += 1 * this->accounts_size();
   for (int i = 0; i < this->accounts_size(); i++) {
     total_size +=
@@ -2071,6 +2125,9 @@ void Contact_InternalPB::MergeFrom(const Contact_InternalPB& from) {
     if (from.has_gui_label()) {
       set_gui_label(from.gui_label());
     }
+    if (from.has_contact_id()) {
+      set_contact_id(from.contact_id());
+    }
     if (from.has_email()) {
       set_email(from.email());
     }
@@ -2104,6 +2161,7 @@ bool Contact_InternalPB::IsInitialized() const {
 void Contact_InternalPB::Swap(Contact_InternalPB* other) {
   if (other != this) {
     std::swap(gui_label_, other->gui_label_);
+    std::swap(contact_id_, other->contact_id_);
     std::swap(email_, other->email_);
     std::swap(memo_, other->memo_);
     std::swap(public_key_, other->public_key_);

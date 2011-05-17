@@ -123,4 +123,11 @@ public class ContactAcct : Displayable {
     } 
   }
 
+  public static ContactAcct dynamic_cast(Storable pObject) {
+    IntPtr cPtr = otapiPINVOKE.ContactAcct_dynamic_cast(Storable.getCPtr(pObject));
+    ContactAcct ret = (cPtr == IntPtr.Zero) ? null : new ContactAcct(cPtr, false);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
 }

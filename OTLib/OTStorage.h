@@ -131,6 +131,8 @@
 #include <deque>
 #include <map>
 
+// credit:stlplus library.
+#include "containers/simple_ptr.hpp"
 
 // Use Win or Posix
 // IF I need this while porting, then uncomment it.
@@ -194,11 +196,13 @@ extern "C"
 
 #define DeclareInterface(name) Interface name { \
 public: \
-	virtual ~name() {}
+	virtual ~name() {}\
+	name* clone(void) const {return NULL;}
 
 #define DeclareBasedInterface(name, base) class name : public base { \
 public: \
-	virtual ~name() {}
+	virtual ~name() {} \
+	base* clone(void) const {return NULL;}
 
 #define EndInterface };
 
@@ -521,6 +525,12 @@ EndInterface
 		virtual bool onQueryPackedBuffer(PackedBuffer & theBuffer, std::string strFolder, std::string oneStr="",
 										 std::string twoStr="", std::string threeStr="")=0;
 		
+		virtual bool onStorePlainString(std::string & theBuffer, std::string strFolder, std::string oneStr="", 
+										std::string twoStr="", std::string threeStr="")=0;
+		
+		virtual bool onQueryPlainString(std::string & theBuffer, std::string strFolder, std::string oneStr="",
+										std::string twoStr="", std::string threeStr="")=0;
+		
 		// -------------------------------------
 		
 	public:
@@ -543,6 +553,12 @@ EndInterface
 		std::string QueryString(std::string strFolder, std::string oneStr="",
 								std::string twoStr="", std::string threeStr="");
 				
+		bool StorePlainString(std::string strContents, std::string strFolder, 
+							  std::string oneStr="", std::string twoStr="", std::string threeStr="");
+		
+		std::string QueryPlainString(std::string strFolder, std::string oneStr="",
+									 std::string twoStr="", std::string threeStr="");
+		
 		// -----------------------------------------
 		// Store/Retrieve an object. (Storable.)
 		
@@ -613,6 +629,12 @@ EndInterface
 	
 	std::string QueryString(std::string strFolder, std::string oneStr="",
 							std::string twoStr="", std::string threeStr="");
+	
+	bool StorePlainString(std::string strContents, std::string strFolder, 
+						  std::string oneStr="", std::string twoStr="", std::string threeStr="");
+	
+	std::string QueryPlainString(std::string strFolder, std::string oneStr="",
+								 std::string twoStr="", std::string threeStr="");
 	
 	// --------
 	// Store/Retrieve an object. (Storable.)
@@ -779,7 +801,7 @@ EndInterface
 	
 #define DECLARE_GET_ADD_REMOVE(name) \
 	protected: \
-	std::deque<name *> list_##name##s; \
+	std::deque< stlplus::simple_ptr_clone<name> > list_##name##s; \
 	public: \
 	size_t Get##name##Count(); \
 	name * Get##name(size_t nIndex); \
@@ -857,13 +879,14 @@ EndInterface
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		Contact() : Displayable(), email(""), memo(""), public_key("") { }
+		Contact() : Displayable(), contact_id(""), email(""), memo(""), public_key("") { }
 		
 	public:
 		virtual ~Contact();
 		
 //		std::string gui_label;  // The label that appears in the GUI
 		
+		std::string contact_id;
 		std::string email;
 		std::string memo;
 		std::string public_key;
@@ -925,6 +948,13 @@ namespace OTDB
 		
 		virtual bool onQueryPackedBuffer(PackedBuffer & theBuffer, std::string strFolder, std::string oneStr="",
 										 std::string twoStr="", std::string threeStr="");
+		
+		virtual bool onStorePlainString(std::string & theBuffer, std::string strFolder, std::string oneStr="", 
+										std::string twoStr="", std::string threeStr="");
+		
+		virtual bool onQueryPlainString(std::string & theBuffer, std::string strFolder, std::string oneStr="",
+										std::string twoStr="", std::string threeStr="");
+		
 		// -----------------------------------------------------
 		
 		long ConstructAndConfirmPath(std::string & strOutput,
@@ -1074,17 +1104,62 @@ class theType : public theBaseType, implements IStorableMsgpack \
 {		\
 public: \
 	theType() : theBaseType() { } \
+	IStorable * clone(void) const {return dynamic_cast<IStorable *>(new theType(*this));} \
 	static Storable * Instantiate() { return dynamic_cast<Storable *>(new theType); } \
 	virtual ~theType() { } \
 	virtual bool PerformPack(BufferMsgpack& theBuffer) { msgpack::pack(theBuffer.GetBuffer(), *this); return true; } \
 	virtual bool PerformUnpack(BufferMsgpack& theBuffer) { msgpack::zone z; msgpack::object obj; msgpack::unpack_return ret = \
-	msgpack::unpack(theBuffer.GetBuffer().data(), theBuffer.GetBuffer().size(), NULL, &z, &obj); if (msgpack::UNPACK_SUCCESS == ret) \
-	{ obj.convert(this); return true; } return false; }
+		msgpack::unpack(theBuffer.GetBuffer().data(), theBuffer.GetBuffer().size(), NULL, &z, &obj); if (msgpack::UNPACK_SUCCESS == ret) \
+		{ obj.convert(this); return true; } return false; }
 
-#define OT_MSGPACK_END    }
+// Next go these:
+//	OT_USING_ISTORABLE_HOOKS;
+//	MSGPACK_DEFINE(gui_label, server_id, server_type, asset_type_id, acct_id, nym_id, memo, public_key);
+
+// Sometimes looks more like this:
+//	virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
+//	virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
+//	std::deque<BitcoinServerMsgpack>	deque_BitcoinServers;
+//	std::deque<BitcoinAcctMsgpack>		deque_BitcoinAccts;
+//	MSGPACK_DEFINE(deque_BitcoinServers, deque_BitcoinAccts);
+
+// This part is commented out. Why? Because I think it's unnecessary. Operator= is not inherited.
+// That means when I copy these objects, only the WalletDataMsgpack data members are being copied,
+// not the 
+
+// !!!!! This bottom part MUST be directly before the OT_MSGPACK_END!!!!!!!!!
+// Notice I declare an op=, so the compiler won't define a default one. Why?
+// Because the default one will call the base class op= as well, and copy over the
+// pointer lists that are in the data portion. (I don't want that.) I want to only copy
+// the basic members and the deques, NOT the pointers. So I declare op= and do so.
+// NO semicolon after this one...
+/*
+#define OT_MSGPACK_BEGIN_SWAP(theType) \
+public: \
+	theType & operator=(theType rhs) { \
+		this->swap(rhs); \
+		return *this; \
+	} \
+void swap (theType & rhs) {
+
+// semicolon after this one.
+#define OT_MSGPACK_SWAP_MEMBER(theMember) \
+	std::swap(theMember, rhs.theMember)
+ 
+*/
+//
+// You put the actual assignments in like this:
+//		OT_MSGPACK_SWAP_MEMBER(theMember);
+//		OT_MSGPACK_SWAP_MEMBER(theMember);
+//		OT_MSGPACK_SWAP_MEMBER(theMember);
+
+
+// Finishing with this, and semicolon after.
+//#define OT_MSGPACK_END  } }
+#define OT_MSGPACK_END  } 
+
 
 // ----------------------------------------------
-
 
 
 namespace OTDB 
@@ -1126,8 +1201,9 @@ namespace OTDB
 		std::string s;
 		MSGPACK_DEFINE(s);
 	};
+		
 // -------------------------------------------------------
-	
+		
 	
 	// Do NOT use a semicolon after the first macro. (OT_MSGPACK_BEGIN.)
 	// DO put a semicolon after the MSGPACK_DEFINE macro.
@@ -1137,26 +1213,54 @@ namespace OTDB
 	OT_MSGPACK_BEGIN(StringMapMsgpack, StringMap)
 		OT_USING_ISTORABLE_HOOKS;
 		MSGPACK_DEFINE(the_map);
+//		OT_MSGPACK_BEGIN_SWAP(StringMapMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(the_map);
 	OT_MSGPACK_END;	
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(ServerInfoMsgpack, ServerInfo)
 		OT_USING_ISTORABLE_HOOKS;
 		MSGPACK_DEFINE(gui_label, server_id, server_type);
+//		OT_MSGPACK_BEGIN_SWAP(ServerInfoMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(gui_label);
+//		OT_MSGPACK_SWAP_MEMBER(server_id);
+//		OT_MSGPACK_SWAP_MEMBER(server_type);
 	OT_MSGPACK_END;	
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(BitcoinAcctMsgpack, BitcoinAcct)
 		OT_USING_ISTORABLE_HOOKS;
 		MSGPACK_DEFINE(gui_label, acct_id, server_id, bitcoin_acct_name);
+//		OT_MSGPACK_BEGIN_SWAP(BitcoinAcctMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(gui_label);
+//		OT_MSGPACK_SWAP_MEMBER(acct_id);
+//		OT_MSGPACK_SWAP_MEMBER(server_id);
+//		OT_MSGPACK_SWAP_MEMBER(bitcoin_acct_name);
 	OT_MSGPACK_END;
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(BitcoinServerMsgpack, BitcoinServer)
 		OT_USING_ISTORABLE_HOOKS;
 		MSGPACK_DEFINE(gui_label, server_id, server_type, server_host, server_port, bitcoin_username, bitcoin_password);
+//		OT_MSGPACK_BEGIN_SWAP(BitcoinServerMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(gui_label);
+//		OT_MSGPACK_SWAP_MEMBER(server_id);
+//		OT_MSGPACK_SWAP_MEMBER(server_type);
+//		OT_MSGPACK_SWAP_MEMBER(server_host);
+//		OT_MSGPACK_SWAP_MEMBER(server_port);
+//		OT_MSGPACK_SWAP_MEMBER(bitcoin_username);
+//		OT_MSGPACK_SWAP_MEMBER(bitcoin_password);
 	OT_MSGPACK_END;
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(ContactAcctMsgpack, ContactAcct)
 		OT_USING_ISTORABLE_HOOKS;
 		MSGPACK_DEFINE(gui_label, server_id, server_type, asset_type_id, acct_id, nym_id, memo, public_key);
+//		OT_MSGPACK_BEGIN_SWAP(ContactAcctMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(gui_label);
+//		OT_MSGPACK_SWAP_MEMBER(server_id);
+//		OT_MSGPACK_SWAP_MEMBER(server_type);
+//		OT_MSGPACK_SWAP_MEMBER(asset_type_id);
+//		OT_MSGPACK_SWAP_MEMBER(acct_id);
+//		OT_MSGPACK_SWAP_MEMBER(nym_id);
+//		OT_MSGPACK_SWAP_MEMBER(memo);
+//		OT_MSGPACK_SWAP_MEMBER(public_key);
 	OT_MSGPACK_END;
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(ContactNymMsgpack, ContactNym)
@@ -1164,6 +1268,13 @@ namespace OTDB
 		virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
 		std::deque<ServerInfoMsgpack>	deque_ServerInfos;
 		MSGPACK_DEFINE(gui_label, nym_id, nym_type, public_key, memo, deque_ServerInfos);
+//		OT_MSGPACK_BEGIN_SWAP(ContactNymMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(gui_label);
+//		OT_MSGPACK_SWAP_MEMBER(nym_id);
+//		OT_MSGPACK_SWAP_MEMBER(nym_type);
+//		OT_MSGPACK_SWAP_MEMBER(public_key);
+//		OT_MSGPACK_SWAP_MEMBER(memo);
+//		OT_MSGPACK_SWAP_MEMBER(deque_ServerInfos);
 	OT_MSGPACK_END;	
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(ContactMsgpack, Contact)
@@ -1171,7 +1282,15 @@ namespace OTDB
 		virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
 		std::deque<ContactNymMsgpack>	deque_Nyms;
 		std::deque<ContactAcctMsgpack>	deque_Accounts;
-		MSGPACK_DEFINE(gui_label, email, public_key, memo, deque_Nyms, deque_Accounts);
+		MSGPACK_DEFINE(gui_label, contact_id, email, public_key, memo, deque_Nyms, deque_Accounts);
+//		OT_MSGPACK_BEGIN_SWAP(ContactMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(gui_label);
+//		OT_MSGPACK_SWAP_MEMBER(contact_id);
+//		OT_MSGPACK_SWAP_MEMBER(email);
+//		OT_MSGPACK_SWAP_MEMBER(public_key);
+//		OT_MSGPACK_SWAP_MEMBER(memo);
+//		OT_MSGPACK_SWAP_MEMBER(deque_Nyms);
+//		OT_MSGPACK_SWAP_MEMBER(deque_Accounts);
 	OT_MSGPACK_END;	
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(AddressBookMsgpack, AddressBook)
@@ -1179,6 +1298,8 @@ namespace OTDB
 		virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
 		std::deque<ContactMsgpack>	deque_Contacts;
 		MSGPACK_DEFINE(deque_Contacts);
+//		OT_MSGPACK_BEGIN_SWAP(AddressBookMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(deque_Contacts);
 	OT_MSGPACK_END;	
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(WalletDataMsgpack, WalletData)
@@ -1187,13 +1308,17 @@ namespace OTDB
 		std::deque<BitcoinServerMsgpack>	deque_BitcoinServers;
 		std::deque<BitcoinAcctMsgpack>		deque_BitcoinAccts;
 		MSGPACK_DEFINE(deque_BitcoinServers, deque_BitcoinAccts);
+//		OT_MSGPACK_BEGIN_SWAP(WalletDataMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(deque_BitcoinServers);
+//		OT_MSGPACK_SWAP_MEMBER(deque_BitcoinAccts);
 	OT_MSGPACK_END;
 	// -------------------------------------------------------
 	
-	// WARNING: I put pointers in the WalletData (for bitcoin servers and accounts).
-	// So if the serialization doesn't work on the MsgPack side for wallet data, then you know
-	// why!  Have to override hookBeforePack and hookAfterUnpack in that case, to do some kind
-	// of copying, like I'm already doing with protobuffers.
+	// You might ask, why did I code the "copy and swap" idiom above, and then comment it out?
+	// Because I'm now storing smart pointers instead of regular pointers, in the lists of the
+	// objects above. Therefore I'm not so worried about the copy constructor, operator=, etc.
+	// The deques will copy over exactly, and the lists will copy the smart pointers, so I don't
+	// have to worry about the lists double-deleting anymore.
 	
 } // namespace OTDB
 
@@ -1299,6 +1424,8 @@ namespace OTDB
 	public: 
 		ProtobufSubclass() : theBaseType() { } 
 		virtual ::google::protobuf::Message * getPBMessage(); 
+		IStorable * clone(void) const 
+			{return dynamic_cast<IStorable *>(new ProtobufSubclass<theBaseType, theInternalType>(*this));} \
 		static Storable * Instantiate() 
 			{ return dynamic_cast<Storable *>(new ProtobufSubclass<theBaseType, theInternalType>); } 
 		virtual ~ProtobufSubclass() { } 
@@ -1306,41 +1433,63 @@ namespace OTDB
 		virtual void hookBeforePack();  // <=== Implement this if you subclass.
 		virtual void hookAfterUnpack(); // <=== Implement this if you subclass.
 	};
+	
+#define DECLARE_PROTOBUF_SUBCLASS(theBaseType, theInternalType, theNewType) \
+	template<> void ProtobufSubclass<theBaseType, theInternalType>::hookBeforePack(); \
+	template<> void ProtobufSubclass<theBaseType, theInternalType>::hookAfterUnpack(); \
+	typedef ProtobufSubclass<theBaseType, theInternalType>	theNewType
+
 	// ---------------------------------------------
 	//
-	// THE ACTUAL SUBCLASSES:
-	//
-	typedef ProtobufSubclass<Storable, String_InternalPB>	StringPB;
-
-	typedef ProtobufSubclass<StringMap, StringMap_InternalPB>	StringMapPB;
+	// THE ACTUAL SUBCLASSES: 
 	
-	typedef ProtobufSubclass<BitcoinAcct, BitcoinAcct_InternalPB>		BitcoinAcctPB;
-	typedef ProtobufSubclass<BitcoinServer, BitcoinServer_InternalPB>	BitcoinServerPB;
+	DECLARE_PROTOBUF_SUBCLASS(Storable,			String_InternalPB,			StringPB);
+	DECLARE_PROTOBUF_SUBCLASS(StringMap,		StringMap_InternalPB,		StringMapPB);
+	DECLARE_PROTOBUF_SUBCLASS(BitcoinAcct,		BitcoinAcct_InternalPB,		BitcoinAcctPB);
+	DECLARE_PROTOBUF_SUBCLASS(BitcoinServer,	BitcoinServer_InternalPB,	BitcoinServerPB);
+	DECLARE_PROTOBUF_SUBCLASS(ServerInfo,		ServerInfo_InternalPB,		ServerInfoPB);
+	DECLARE_PROTOBUF_SUBCLASS(ContactAcct,		ContactAcct_InternalPB,		ContactAcctPB);
+	DECLARE_PROTOBUF_SUBCLASS(ContactNym,		ContactNym_InternalPB,		ContactNymPB);
+	DECLARE_PROTOBUF_SUBCLASS(Contact,			Contact_InternalPB,			ContactPB);
+	DECLARE_PROTOBUF_SUBCLASS(AddressBook,		AddressBook_InternalPB,		AddressBookPB);
+	DECLARE_PROTOBUF_SUBCLASS(WalletData,		WalletData_InternalPB,		WalletDataPB);
+	
+	/*
+	typedef ProtobufSubclass<Storable, String_InternalPB>					StringPB;
+	
+	typedef ProtobufSubclass<StringMap, StringMap_InternalPB>::Type			StringMapPB;
+	
+	typedef ProtobufSubclass<BitcoinAcct, BitcoinAcct_InternalPB>::Type		BitcoinAcctPB;
+	typedef ProtobufSubclass<BitcoinServer, BitcoinServer_InternalPB>::Type	BitcoinServerPB;
 	
 	
-	typedef ProtobufSubclass<ServerInfo, ServerInfo_InternalPB>		ServerInfoPB;
-
-	typedef ProtobufSubclass<ContactAcct, ContactAcct_InternalPB>	ContactAcctPB;
-	typedef ProtobufSubclass<ContactNym, ContactNym_InternalPB>		ContactNymPB;
-	typedef ProtobufSubclass<Contact, Contact_InternalPB>			ContactPB;
-
-	typedef ProtobufSubclass<AddressBook, AddressBook_InternalPB>	AddressBookPB;
-
-	typedef ProtobufSubclass<WalletData, WalletData_InternalPB>		WalletDataPB;
-
+	typedef ProtobufSubclass<ServerInfo, ServerInfo_InternalPB>::Type		ServerInfoPB;
+	
+	typedef ProtobufSubclass<ContactAcct, ContactAcct_InternalPB>::Type		ContactAcctPB;
+	typedef ProtobufSubclass<ContactNym, ContactNym_InternalPB>::Type		ContactNymPB;
+	typedef ProtobufSubclass<Contact, Contact_InternalPB>::Type				ContactPB;
+	
+	typedef ProtobufSubclass<AddressBook, AddressBook_InternalPB>::Type		AddressBookPB;
+	
+	typedef ProtobufSubclass<WalletData, WalletData_InternalPB>::Type		WalletDataPB;
+	*/
+	
 	
 	// !! ALL OF THESE have to provide implementations for hookBeforePack() and hookAfterUnpack().
 	// In .cpp file:
 	/*
 	 void SUBCLASS_HERE::hookBeforePack()
 	 {
-		__pb_obj.set_PROPERTY_NAME_GOES_HERE(PROPERTY_NAME_GOES_HERE); 
+	 __pb_obj.set_PROPERTY_NAME_GOES_HERE(PROPERTY_NAME_GOES_HERE); 
 	 }
 	 void SUBCLASS_HERE::hookAfterUnpack()
 	 { 
-		PROPERTY_NAME_GOES_HERE	= __pb_obj.PROPERTY_NAME_GOES_HERE();
+	 PROPERTY_NAME_GOES_HERE	= __pb_obj.PROPERTY_NAME_GOES_HERE();
 	 }
 	 */
+	
+	
+	
 } // namespace OTDB
 
 #endif // defined(OTDB_PROTOCOL_BUFFERS)

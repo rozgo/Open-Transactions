@@ -84,4 +84,9 @@ public class ContactNym extends Displayable {
     return otapiJNI.ContactNym_AddServerInfo(swigCPtr, this, ServerInfo.getCPtr(disownObject), disownObject);
   }
 
+  public static ContactNym dynamic_cast(Storable pObject) {
+    long cPtr = otapiJNI.ContactNym_dynamic_cast(Storable.getCPtr(pObject), pObject);
+    return (cPtr == 0) ? null : new ContactNym(cPtr, false);
+  }
+
 }

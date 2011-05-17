@@ -153,6 +153,54 @@ public class Storage : IDisposable {
     return ret;
   }
 
+  public bool StorePlainString(string strContents, string strFolder, string oneStr, string twoStr, string threeStr) {
+    bool ret = otapiPINVOKE.Storage_StorePlainString__SWIG_0(swigCPtr, strContents, strFolder, oneStr, twoStr, threeStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public bool StorePlainString(string strContents, string strFolder, string oneStr, string twoStr) {
+    bool ret = otapiPINVOKE.Storage_StorePlainString__SWIG_1(swigCPtr, strContents, strFolder, oneStr, twoStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public bool StorePlainString(string strContents, string strFolder, string oneStr) {
+    bool ret = otapiPINVOKE.Storage_StorePlainString__SWIG_2(swigCPtr, strContents, strFolder, oneStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public bool StorePlainString(string strContents, string strFolder) {
+    bool ret = otapiPINVOKE.Storage_StorePlainString__SWIG_3(swigCPtr, strContents, strFolder);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public string QueryPlainString(string strFolder, string oneStr, string twoStr, string threeStr) {
+    string ret = otapiPINVOKE.Storage_QueryPlainString__SWIG_0(swigCPtr, strFolder, oneStr, twoStr, threeStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public string QueryPlainString(string strFolder, string oneStr, string twoStr) {
+    string ret = otapiPINVOKE.Storage_QueryPlainString__SWIG_1(swigCPtr, strFolder, oneStr, twoStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public string QueryPlainString(string strFolder, string oneStr) {
+    string ret = otapiPINVOKE.Storage_QueryPlainString__SWIG_2(swigCPtr, strFolder, oneStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public string QueryPlainString(string strFolder) {
+    string ret = otapiPINVOKE.Storage_QueryPlainString__SWIG_3(swigCPtr, strFolder);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
   public bool StoreObject(Storable theContents, string strFolder, string oneStr, string twoStr, string threeStr) {
     bool ret = otapiPINVOKE.Storage_StoreObject__SWIG_0(swigCPtr, Storable.getCPtr(theContents), strFolder, oneStr, twoStr, threeStr);
     if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
@@ -207,7 +255,7 @@ public class Storage : IDisposable {
 
   public Storable CreateObject(StoredObjectType eType) {
     IntPtr cPtr = otapiPINVOKE.Storage_CreateObject(swigCPtr, (int)eType);
-    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, false);
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
     return ret;
   }
 

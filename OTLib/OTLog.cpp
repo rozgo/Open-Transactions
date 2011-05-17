@@ -192,7 +192,7 @@ int OTLog::__CurrentLogLevel = -1;	// If you build with DSP=1, it assumes a spec
 int OTLog::__CurrentLogLevel = 3;
 #endif
 
-OTString OTLog::__Version = "0.61";
+OTString OTLog::__Version = "0.62";
 
 
 

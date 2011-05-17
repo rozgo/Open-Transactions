@@ -138,6 +138,9 @@
 #include <cstdio>
 #include <cstdarg>
 #include <cstring>
+#include <string>
+
+#include <algorithm>
 
 extern "C" {
 #include <stdint.h>
@@ -273,14 +276,19 @@ public:
 	OTString(const OTIdentifier & theValue);
 	OTString(OTPseudonym & theValue);
 	OTString(const char * new_string);
+	OTString(const std::string & new_string);
    
 	virtual ~OTString();
 
    void Initialize();
 
-	OTString& operator=(const OTString& rhs);
-	OTString& operator=(const char * new_string);
+	OTString& operator=(OTString rhs);
+//	OTString& operator=(const char * new_string);
+//	OTString& operator=(const std::string & strValue);
 
+	inline void swap(OTString & rhs) throw()
+	{ std::swap(m_lLength, rhs.m_lLength); std::swap(m_lPosition, rhs.m_lPosition); std::swap(m_strBuffer, rhs.m_strBuffer); } 
+	
    bool operator >(const OTString &s2) const;
    bool operator <(const OTString &s2) const;
    bool operator <=(const OTString &s2) const;
@@ -290,12 +298,23 @@ public:
    // Attributes
 public:
 
-   // Operations
+	// Implementation
+private:
+	// You better have called Initialize() or Release() before you dare call this.
+	void LowLevelSetStr(const OTString & strBuf);
+	
+	// Only call this right after calling Initialize() or Release().
+	// Also, this function ASSUMES the new_string pointer is good.
+	void LowLevelSet(const char * new_string, uint32_t nEnforcedMaxLength);
+	
+	// Operations
 public:	
-	inline bool At(uint32_t lIndex, char &c) { if (lIndex < m_lLength) { c = m_strBuffer[lIndex]; return true;} 
-		else return false; }
-   bool Exists(void) const;
-   uint32_t GetLength(void) const;
+	inline bool At(uint32_t lIndex, char &c) 
+	{ if (lIndex < m_lLength) { c = m_strBuffer[lIndex]; return true; } else return false; }
+	
+	inline bool Exists(void) const { return m_strBuffer ? true : false; }
+   
+	inline uint32_t GetLength(void) const { return m_lLength; }
 
 	bool Compare(const char * strCompare) const;
 	bool Compare(const OTString& strCompare) const;
@@ -303,11 +322,17 @@ public:
 	bool Contains(const char * strCompare) const;
 	bool Contains(const OTString& strCompare) const;
 	
-	const char * Get(void) const;
+	inline const char * Get(void) const { return m_strBuffer ? (const char*)m_strBuffer : ""; }
 	
-	void   Set(const char * new_string, uint32_t nEnforcedMaxLength=0);
-	void   Set(const OTString & strBuf);
+	// ----------------------------
+	inline void Set(const char * new_string, uint32_t nEnforcedMaxLength=0)
+		{ Release(); if (NULL == new_string) return; LowLevelSet(new_string, nEnforcedMaxLength); }
 	
+	// new_string MUST be at least nEnforcedMaxLength in size if nEnforcedMaxLength is passed in at all.
+	// That's because this function forces the null terminator at that length of the string minus 1.
+	inline void Set(const OTString & strBuf) { this->operator=(strBuf); }
+	// ----------------------------
+
 //	void   Concatenate(const char *arg);
 	void   Concatenate(const char *arg, ...);
 	void   Concatenate(const OTString & strBuf);
@@ -334,9 +359,6 @@ public:
 //	void WriteToFile(FILE * fl = NULL) const;
 
    virtual void Release(void);
-
-   // Implementation
-private:
 
    // Internal properties
 private:

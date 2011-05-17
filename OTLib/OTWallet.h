@@ -208,7 +208,8 @@ public:
 	
 	bool LoadWallet(const char * szFilename);
 	bool SaveWallet(const char * szFilename=NULL);
-	
+	bool SaveContract(OTString & strContract); // For saving the wallet to a string.
+
 	bool SignContractWithFirstNymOnList(OTContract & theContract);
 	
 	// ----------------------------------------------------

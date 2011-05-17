@@ -111,6 +111,38 @@ public class Storage {
     return otapiJNI.Storage_QueryString__SWIG_3(swigCPtr, this, strFolder);
   }
 
+  public boolean StorePlainString(String strContents, String strFolder, String oneStr, String twoStr, String threeStr) {
+    return otapiJNI.Storage_StorePlainString__SWIG_0(swigCPtr, this, strContents, strFolder, oneStr, twoStr, threeStr);
+  }
+
+  public boolean StorePlainString(String strContents, String strFolder, String oneStr, String twoStr) {
+    return otapiJNI.Storage_StorePlainString__SWIG_1(swigCPtr, this, strContents, strFolder, oneStr, twoStr);
+  }
+
+  public boolean StorePlainString(String strContents, String strFolder, String oneStr) {
+    return otapiJNI.Storage_StorePlainString__SWIG_2(swigCPtr, this, strContents, strFolder, oneStr);
+  }
+
+  public boolean StorePlainString(String strContents, String strFolder) {
+    return otapiJNI.Storage_StorePlainString__SWIG_3(swigCPtr, this, strContents, strFolder);
+  }
+
+  public String QueryPlainString(String strFolder, String oneStr, String twoStr, String threeStr) {
+    return otapiJNI.Storage_QueryPlainString__SWIG_0(swigCPtr, this, strFolder, oneStr, twoStr, threeStr);
+  }
+
+  public String QueryPlainString(String strFolder, String oneStr, String twoStr) {
+    return otapiJNI.Storage_QueryPlainString__SWIG_1(swigCPtr, this, strFolder, oneStr, twoStr);
+  }
+
+  public String QueryPlainString(String strFolder, String oneStr) {
+    return otapiJNI.Storage_QueryPlainString__SWIG_2(swigCPtr, this, strFolder, oneStr);
+  }
+
+  public String QueryPlainString(String strFolder) {
+    return otapiJNI.Storage_QueryPlainString__SWIG_3(swigCPtr, this, strFolder);
+  }
+
   public boolean StoreObject(Storable theContents, String strFolder, String oneStr, String twoStr, String threeStr) {
     return otapiJNI.Storage_StoreObject__SWIG_0(swigCPtr, this, Storable.getCPtr(theContents), theContents, strFolder, oneStr, twoStr, threeStr);
   }
@@ -149,7 +181,7 @@ public class Storage {
 
   public Storable CreateObject(int eType) {
     long cPtr = otapiJNI.Storage_CreateObject(swigCPtr, this, eType);
-    return (cPtr == 0) ? null : new Storable(cPtr, false);
+    return (cPtr == 0) ? null : new Storable(cPtr, true);
   }
 
   public static Storage Create(int eStorageType, int ePackType) {

@@ -34,8 +34,8 @@ public class otapi {
     return ret;
   }
 
-  public static int OT_API_LoadWallet(string szPath) {
-    int ret = otapiPINVOKE.OT_API_LoadWallet(szPath);
+  public static int OT_API_LoadWallet(string szWalletFilename) {
+    int ret = otapiPINVOKE.OT_API_LoadWallet(szWalletFilename);
     return ret;
   }
 
@@ -828,7 +828,7 @@ public class otapi {
 
   public static Storable CreateObject(StoredObjectType eType) {
     IntPtr cPtr = otapiPINVOKE.CreateObject((int)eType);
-    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, false);
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
     return ret;
   }
 
@@ -900,6 +900,54 @@ public class otapi {
 
   public static string QueryString(string strFolder) {
     string ret = otapiPINVOKE.QueryString__SWIG_3(strFolder);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool StorePlainString(string strContents, string strFolder, string oneStr, string twoStr, string threeStr) {
+    bool ret = otapiPINVOKE.StorePlainString__SWIG_0(strContents, strFolder, oneStr, twoStr, threeStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool StorePlainString(string strContents, string strFolder, string oneStr, string twoStr) {
+    bool ret = otapiPINVOKE.StorePlainString__SWIG_1(strContents, strFolder, oneStr, twoStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool StorePlainString(string strContents, string strFolder, string oneStr) {
+    bool ret = otapiPINVOKE.StorePlainString__SWIG_2(strContents, strFolder, oneStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static bool StorePlainString(string strContents, string strFolder) {
+    bool ret = otapiPINVOKE.StorePlainString__SWIG_3(strContents, strFolder);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static string QueryPlainString(string strFolder, string oneStr, string twoStr, string threeStr) {
+    string ret = otapiPINVOKE.QueryPlainString__SWIG_0(strFolder, oneStr, twoStr, threeStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static string QueryPlainString(string strFolder, string oneStr, string twoStr) {
+    string ret = otapiPINVOKE.QueryPlainString__SWIG_1(strFolder, oneStr, twoStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static string QueryPlainString(string strFolder, string oneStr) {
+    string ret = otapiPINVOKE.QueryPlainString__SWIG_2(strFolder, oneStr);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static string QueryPlainString(string strFolder) {
+    string ret = otapiPINVOKE.QueryPlainString__SWIG_3(strFolder);
     if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }

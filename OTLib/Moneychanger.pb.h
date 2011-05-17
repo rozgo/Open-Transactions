@@ -547,10 +547,21 @@ class Contact_InternalPB : public ::google::protobuf::Message {
   inline ::std::string* mutable_gui_label();
   inline ::std::string* release_gui_label();
   
-  // optional string email = 2;
+  // optional string contact_id = 2;
+  inline bool has_contact_id() const;
+  inline void clear_contact_id();
+  static const int kContactIdFieldNumber = 2;
+  inline const ::std::string& contact_id() const;
+  inline void set_contact_id(const ::std::string& value);
+  inline void set_contact_id(const char* value);
+  inline void set_contact_id(const char* value, size_t size);
+  inline ::std::string* mutable_contact_id();
+  inline ::std::string* release_contact_id();
+  
+  // optional string email = 3;
   inline bool has_email() const;
   inline void clear_email();
-  static const int kEmailFieldNumber = 2;
+  static const int kEmailFieldNumber = 3;
   inline const ::std::string& email() const;
   inline void set_email(const ::std::string& value);
   inline void set_email(const char* value);
@@ -558,10 +569,10 @@ class Contact_InternalPB : public ::google::protobuf::Message {
   inline ::std::string* mutable_email();
   inline ::std::string* release_email();
   
-  // optional string memo = 3;
+  // optional string memo = 4;
   inline bool has_memo() const;
   inline void clear_memo();
-  static const int kMemoFieldNumber = 3;
+  static const int kMemoFieldNumber = 4;
   inline const ::std::string& memo() const;
   inline void set_memo(const ::std::string& value);
   inline void set_memo(const char* value);
@@ -569,10 +580,10 @@ class Contact_InternalPB : public ::google::protobuf::Message {
   inline ::std::string* mutable_memo();
   inline ::std::string* release_memo();
   
-  // optional string public_key = 4;
+  // optional string public_key = 5;
   inline bool has_public_key() const;
   inline void clear_public_key();
-  static const int kPublicKeyFieldNumber = 4;
+  static const int kPublicKeyFieldNumber = 5;
   inline const ::std::string& public_key() const;
   inline void set_public_key(const ::std::string& value);
   inline void set_public_key(const char* value);
@@ -580,10 +591,10 @@ class Contact_InternalPB : public ::google::protobuf::Message {
   inline ::std::string* mutable_public_key();
   inline ::std::string* release_public_key();
   
-  // repeated .OTDB.ContactNym_InternalPB nyms = 5;
+  // repeated .OTDB.ContactNym_InternalPB nyms = 6;
   inline int nyms_size() const;
   inline void clear_nyms();
-  static const int kNymsFieldNumber = 5;
+  static const int kNymsFieldNumber = 6;
   inline const ::OTDB::ContactNym_InternalPB& nyms(int index) const;
   inline ::OTDB::ContactNym_InternalPB* mutable_nyms(int index);
   inline ::OTDB::ContactNym_InternalPB* add_nyms();
@@ -592,10 +603,10 @@ class Contact_InternalPB : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::OTDB::ContactNym_InternalPB >*
       mutable_nyms();
   
-  // repeated .OTDB.ContactAcct_InternalPB accounts = 6;
+  // repeated .OTDB.ContactAcct_InternalPB accounts = 7;
   inline int accounts_size() const;
   inline void clear_accounts();
-  static const int kAccountsFieldNumber = 6;
+  static const int kAccountsFieldNumber = 7;
   inline const ::OTDB::ContactAcct_InternalPB& accounts(int index) const;
   inline ::OTDB::ContactAcct_InternalPB* mutable_accounts(int index);
   inline ::OTDB::ContactAcct_InternalPB* add_accounts();
@@ -608,6 +619,8 @@ class Contact_InternalPB : public ::google::protobuf::Message {
  private:
   inline void set_has_gui_label();
   inline void clear_has_gui_label();
+  inline void set_has_contact_id();
+  inline void clear_has_contact_id();
   inline void set_has_email();
   inline void clear_has_email();
   inline void set_has_memo();
@@ -618,6 +631,7 @@ class Contact_InternalPB : public ::google::protobuf::Message {
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::std::string* gui_label_;
+  ::std::string* contact_id_;
   ::std::string* email_;
   ::std::string* memo_;
   ::std::string* public_key_;
@@ -625,7 +639,7 @@ class Contact_InternalPB : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedPtrField< ::OTDB::ContactAcct_InternalPB > accounts_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(7 + 31) / 32];
   
   friend void  protobuf_AddDesc_Moneychanger_2eproto();
   friend void protobuf_AssignDesc_Moneychanger_2eproto();
@@ -1789,15 +1803,73 @@ inline ::std::string* Contact_InternalPB::release_gui_label() {
   }
 }
 
-// optional string email = 2;
-inline bool Contact_InternalPB::has_email() const {
+// optional string contact_id = 2;
+inline bool Contact_InternalPB::has_contact_id() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void Contact_InternalPB::set_has_email() {
+inline void Contact_InternalPB::set_has_contact_id() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void Contact_InternalPB::clear_has_email() {
+inline void Contact_InternalPB::clear_has_contact_id() {
   _has_bits_[0] &= ~0x00000002u;
+}
+inline void Contact_InternalPB::clear_contact_id() {
+  if (contact_id_ != &::google::protobuf::internal::kEmptyString) {
+    contact_id_->clear();
+  }
+  clear_has_contact_id();
+}
+inline const ::std::string& Contact_InternalPB::contact_id() const {
+  return *contact_id_;
+}
+inline void Contact_InternalPB::set_contact_id(const ::std::string& value) {
+  set_has_contact_id();
+  if (contact_id_ == &::google::protobuf::internal::kEmptyString) {
+    contact_id_ = new ::std::string;
+  }
+  contact_id_->assign(value);
+}
+inline void Contact_InternalPB::set_contact_id(const char* value) {
+  set_has_contact_id();
+  if (contact_id_ == &::google::protobuf::internal::kEmptyString) {
+    contact_id_ = new ::std::string;
+  }
+  contact_id_->assign(value);
+}
+inline void Contact_InternalPB::set_contact_id(const char* value, size_t size) {
+  set_has_contact_id();
+  if (contact_id_ == &::google::protobuf::internal::kEmptyString) {
+    contact_id_ = new ::std::string;
+  }
+  contact_id_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Contact_InternalPB::mutable_contact_id() {
+  set_has_contact_id();
+  if (contact_id_ == &::google::protobuf::internal::kEmptyString) {
+    contact_id_ = new ::std::string;
+  }
+  return contact_id_;
+}
+inline ::std::string* Contact_InternalPB::release_contact_id() {
+  clear_has_contact_id();
+  if (contact_id_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = contact_id_;
+    contact_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional string email = 3;
+inline bool Contact_InternalPB::has_email() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void Contact_InternalPB::set_has_email() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void Contact_InternalPB::clear_has_email() {
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline void Contact_InternalPB::clear_email() {
   if (email_ != &::google::protobuf::internal::kEmptyString) {
@@ -1847,15 +1919,15 @@ inline ::std::string* Contact_InternalPB::release_email() {
   }
 }
 
-// optional string memo = 3;
+// optional string memo = 4;
 inline bool Contact_InternalPB::has_memo() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
 inline void Contact_InternalPB::set_has_memo() {
-  _has_bits_[0] |= 0x00000004u;
+  _has_bits_[0] |= 0x00000008u;
 }
 inline void Contact_InternalPB::clear_has_memo() {
-  _has_bits_[0] &= ~0x00000004u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void Contact_InternalPB::clear_memo() {
   if (memo_ != &::google::protobuf::internal::kEmptyString) {
@@ -1905,15 +1977,15 @@ inline ::std::string* Contact_InternalPB::release_memo() {
   }
 }
 
-// optional string public_key = 4;
+// optional string public_key = 5;
 inline bool Contact_InternalPB::has_public_key() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void Contact_InternalPB::set_has_public_key() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void Contact_InternalPB::clear_has_public_key() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void Contact_InternalPB::clear_public_key() {
   if (public_key_ != &::google::protobuf::internal::kEmptyString) {
@@ -1963,7 +2035,7 @@ inline ::std::string* Contact_InternalPB::release_public_key() {
   }
 }
 
-// repeated .OTDB.ContactNym_InternalPB nyms = 5;
+// repeated .OTDB.ContactNym_InternalPB nyms = 6;
 inline int Contact_InternalPB::nyms_size() const {
   return nyms_.size();
 }
@@ -1988,7 +2060,7 @@ Contact_InternalPB::mutable_nyms() {
   return &nyms_;
 }
 
-// repeated .OTDB.ContactAcct_InternalPB accounts = 6;
+// repeated .OTDB.ContactAcct_InternalPB accounts = 7;
 inline int Contact_InternalPB::accounts_size() const {
   return accounts_.size();
 }

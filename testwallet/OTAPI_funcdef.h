@@ -169,7 +169,7 @@ int OT_API_Init(const char * szClientPath); // actually returns BOOL
  OT_API_LoadWallet("wallet.xml");
  
  */
-int OT_API_LoadWallet(const char * szPath); // actually returns BOOL
+int OT_API_LoadWallet(const char * szWalletFilename); // actually returns BOOL
 
 
 

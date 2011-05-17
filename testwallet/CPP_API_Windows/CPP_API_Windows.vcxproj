@@ -87,10 +87,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\XmlRpcC4Win;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
+    <IncludePath>C:\~\protobuf\include;C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\XmlRpcC4Win;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TCP Debug|Win32'">
-    <IncludePath>C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
+    <IncludePath>C:\~\protobuf\include;C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LibraryPath>C:\~\Open-Transactions\OTLib\OTLib\Debug;$(LibraryPath)</LibraryPath>
@@ -99,11 +99,11 @@
     <LibraryPath>C:\~\Open-Transactions\OTLib\OTLib\TCP Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\XmlRpcC4Win;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
+    <IncludePath>C:\~\protobuf\include;C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\XmlRpcC4Win;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
     <LibraryPath>C:\~\Open-Transactions\OTLib\OTLib\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TCP Release|Win32'">
-    <IncludePath>C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
+    <IncludePath>C:\~\protobuf\include;C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
     <LibraryPath>C:\~\Open-Transactions\OTLib\OTLib\TCP Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

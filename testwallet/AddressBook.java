@@ -52,4 +52,9 @@ public class AddressBook extends Storable {
     return otapiJNI.AddressBook_AddContact(swigCPtr, this, Contact.getCPtr(disownObject), disownObject);
   }
 
+  public static AddressBook dynamic_cast(Storable pObject) {
+    long cPtr = otapiJNI.AddressBook_dynamic_cast(Storable.getCPtr(pObject), pObject);
+    return (cPtr == 0) ? null : new AddressBook(cPtr, false);
+  }
+
 }

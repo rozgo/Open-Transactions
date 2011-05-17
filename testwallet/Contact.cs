@@ -39,6 +39,18 @@ public class Contact : Displayable {
     }
   }
 
+  public string contact_id {
+    set {
+      otapiPINVOKE.Contact_contact_id_set(swigCPtr, value);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    } 
+    get {
+      string ret = otapiPINVOKE.Contact_contact_id_get(swigCPtr);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+      return ret;
+    } 
+  }
+
   public string email {
     set {
       otapiPINVOKE.Contact_email_set(swigCPtr, value);
@@ -115,6 +127,13 @@ public class Contact : Displayable {
 
   public bool AddContactAcct(ContactAcct disownObject) {
     bool ret = otapiPINVOKE.Contact_AddContactAcct(swigCPtr, ContactAcct.getCPtr(disownObject));
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public static Contact dynamic_cast(Storable pObject) {
+    IntPtr cPtr = otapiPINVOKE.Contact_dynamic_cast(Storable.getCPtr(pObject));
+    Contact ret = (cPtr == IntPtr.Zero) ? null : new Contact(cPtr, false);
     if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }

@@ -51,4 +51,9 @@ public class ServerInfo extends Displayable {
     return otapiJNI.ServerInfo_server_type_get(swigCPtr, this);
   }
 
+  public static ServerInfo dynamic_cast(Storable pObject) {
+    long cPtr = otapiJNI.ServerInfo_dynamic_cast(Storable.getCPtr(pObject), pObject);
+    return (cPtr == 0) ? null : new ServerInfo(cPtr, false);
+  }
+
 }

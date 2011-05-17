@@ -125,6 +125,9 @@
 #include <iostream>
 #include <sstream>
 
+// credit:stlplus library.
+#include "containers/simple_ptr.hpp"
+
 
 #include "OTLog.h"
 #include "OTStorage.h"
@@ -258,7 +261,7 @@ OTDB::mapOfFunctions * OTDB::details::pFunctionMap=NULL; // This is a pointer so
 namespace OTDB
 {
 	
-
+	
 // ********************************************************************
 
 // NAMESPACE CONSTRUCTOR / DESTRUCTOR
@@ -333,17 +336,18 @@ InitOTDBDetails::~InitOTDBDetails() // Destructor for namespace
 // INTERFACE for the Namespace (for coders to use.)
 
 
-	Storage * GetDefaultStorage() { return OTDB::details::s_pStorage; }
+Storage * GetDefaultStorage() { return OTDB::details::s_pStorage; }
 
+	
 // You might normally create your own Storage object, choosing the storage type
 // and the packing type, and then call Init() on that object in order to get it
 // up and running.  This function is the equivalent of doing all that, but with the
 // DEFAULT storage object (which OT uses when none is specified.)
 //
 bool InitDefaultStorage(StorageType eStoreType, PackType ePackType,
-							  std::string oneStr/*=""*/,  std::string twoStr/*=""*/,  std::string threeStr/*=""*/, 
-							  std::string fourStr/*=""*/, std::string fiveStr/*=""*/, std::string sixStr/*=""*/)
-{
+						std::string oneStr/*=""*/,  std::string twoStr/*=""*/,  std::string threeStr/*=""*/, 
+						std::string fourStr/*=""*/, std::string fiveStr/*=""*/, std::string sixStr/*=""*/)
+{	
 	// Allows you to call multiple times if you want to change the default storage.
 	//
 	if (NULL != details::s_pStorage)
@@ -394,7 +398,7 @@ Storable * CreateObject(StoredObjectType eType)
 // -----------------------------------------
 // See if the file is there.
 bool Exists(std::string strFolder, std::string oneStr/*=""*/,  
-				  std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
+			std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
 {
 	Storage * pStorage = details::s_pStorage;
 
@@ -410,7 +414,7 @@ bool Exists(std::string strFolder, std::string oneStr/*=""*/,
 // Store/Retrieve a string.
 
 bool StoreString(std::string strContents, std::string strFolder, std::string oneStr/*=""*/,  
-					   std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
+				 std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
 {
 	Storage * pStorage = details::s_pStorage;
 	
@@ -423,7 +427,7 @@ bool StoreString(std::string strContents, std::string strFolder, std::string one
 }
 
 std::string QueryString(std::string strFolder, std::string oneStr/*=""*/,  std::string twoStr/*=""*/,  
-							  std::string threeStr/*=""*/)
+						std::string threeStr/*=""*/)
 {
 	Storage * pStorage = details::s_pStorage;
 	
@@ -436,10 +440,39 @@ std::string QueryString(std::string strFolder, std::string oneStr/*=""*/,  std::
 }
 
 // -----------------------------------------
+// Store/Retrieve a plain string.
+
+bool StorePlainString(std::string strContents, std::string strFolder, std::string oneStr/*=""*/,  
+					  std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
+{
+	Storage * pStorage = details::s_pStorage;
+	
+	if (NULL == pStorage) 
+	{
+		return false;
+	}
+	
+	return pStorage->StorePlainString(strContents, strFolder, oneStr, twoStr, threeStr);
+}
+
+std::string QueryPlainString(std::string strFolder, std::string oneStr/*=""*/,  std::string twoStr/*=""*/,  
+							 std::string threeStr/*=""*/)
+{
+	Storage * pStorage = details::s_pStorage;
+	
+	if (NULL == pStorage) 
+	{
+		return std::string("");
+	}
+	
+	return pStorage->QueryPlainString(strFolder, oneStr, twoStr, threeStr);
+}
+
+// -----------------------------------------
 // Store/Retrieve an object. (Storable.)
 
 bool StoreObject(Storable & theContents, std::string strFolder, std::string oneStr/*=""*/,  
-					   std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
+				 std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
 {
 	Storage * pStorage = details::s_pStorage;
 	
@@ -453,8 +486,8 @@ bool StoreObject(Storable & theContents, std::string strFolder, std::string oneS
 
 // Use %newobject Storage::Query();
 Storable * QueryObject(StoredObjectType theObjectType,
-							 std::string strFolder, std::string oneStr/*=""*/,  std::string twoStr/*=""*/,  
-							 std::string threeStr/*=""*/)
+					   std::string strFolder, std::string oneStr/*=""*/,  std::string twoStr/*=""*/,  
+					   std::string threeStr/*=""*/)
 {
 	Storage * pStorage = details::s_pStorage;
 	
@@ -681,15 +714,23 @@ bool scope CPPCAT3(Add,name)(name & theDataObject) { CPPCAT(list_,CPPCAT3(name,s
 */
 	
 #define IMPLEMENT_GET_ADD_REMOVE(scope, name) \
-size_t  scope Get##name##Count() { return list_##name##s.size(); } \
-name * scope Get##name(size_t nIndex) \
-{ if ((nIndex >= 0) && (nIndex < list_##name##s.size())) \
-return dynamic_cast<name *>(list_##name##s.at(nIndex)); return NULL; } \
-bool scope Remove##name(size_t nIndex) \
-{ if ((nIndex >= 0) && (nIndex < list_##name##s.size())) \
-{ name * pData = list_##name##s.at(nIndex); delete pData; \
-list_##name##s.erase(list_##name##s.begin() + nIndex); return true; } return false; } \
-bool scope Add##name(name & disownObject) { list_##name##s.push_back(&disownObject); return true; }
+	\
+	typedef stlplus::simple_ptr_clone<name> PointerTo##name; \
+	\
+	typedef std::deque< PointerTo##name > listOf##name##s; \
+	\
+	size_t  scope Get##name##Count() { return list_##name##s.size(); } \
+	\
+	name * scope Get##name(size_t nIndex) \
+		{ if ((nIndex >= 0) && (nIndex < list_##name##s.size())) \
+		{ PointerTo##name theP = list_##name##s.at(nIndex); return theP.pointer(); } return NULL; } \
+	\
+	bool scope Remove##name(size_t nIndex) \
+		{ if ((nIndex >= 0) && (nIndex < list_##name##s.size())) \
+			{ list_##name##s.erase(list_##name##s.begin() + nIndex); return true; } return false; } \
+	\
+	bool scope Add##name(name & disownObject) \
+		{ PointerTo##name theP; theP.set(&disownObject); list_##name##s.push_back(theP); return true; }
 
 
 
@@ -707,17 +748,22 @@ IMPLEMENT_GET_ADD_REMOVE(Contact::, ContactAcct)   // No semicolon on this one!
 IMPLEMENT_GET_ADD_REMOVE(AddressBook::, Contact)   // No semicolon on this one!
 	
 
+	
+
 
 // Make sure SWIG "loses ownership" of any objects pushed onto these lists.
 // (So I am safe to destruct them indiscriminately.)
-
+// UPDATE: Nevertheless, no need to erase the lists (below) since they now
+// store smart pointers, instead of regular pointers, so they are self-cleaning.
+//
+	
 WalletData::~WalletData()
 {
-	while (GetBitcoinServerCount() > 0)
-		RemoveBitcoinServer(0);
-	
-	while (GetBitcoinAcctCount() > 0)
-		RemoveBitcoinAcct(0);
+//	while (GetBitcoinServerCount() > 0)
+//		RemoveBitcoinServer(0);
+//	
+//	while (GetBitcoinAcctCount() > 0)
+//		RemoveBitcoinAcct(0);
 }
 
 // ----------------------------------------------
@@ -726,19 +772,19 @@ WalletData::~WalletData()
 
 ContactNym::~ContactNym()
 {
-	while (GetServerInfoCount() > 0)
-		RemoveServerInfo(0);
+//	while (GetServerInfoCount() > 0)
+//		RemoveServerInfo(0);
 }
 
 // ----------------------------------------------
 
 Contact::~Contact()
 {
-	while (GetContactNymCount() > 0)
-		RemoveContactNym(0);
-	
-	while (GetContactAcctCount() > 0)
-		RemoveContactAcct(0);
+//	while (GetContactNymCount() > 0)
+//		RemoveContactNym(0);
+//	
+//	while (GetContactAcctCount() > 0)
+//		RemoveContactAcct(0);
 }
 
 // ----------------------------------------------
@@ -747,8 +793,8 @@ Contact::~Contact()
 
 AddressBook::~AddressBook()
 {
-	while (GetContactCount() > 0)
-		RemoveContact(0);
+//	while (GetContactCount() > 0)
+//		RemoveContact(0);
 }
 
 // ----------------------------------------------
@@ -923,12 +969,16 @@ void ContactNymMsgpack::hookBeforePack()
 	
 	// Loop through all the objects in the list, and add them to deque_ServerInfos.
 	//
-	for (std::deque<ServerInfo *>::iterator ii = list_ServerInfos.begin(); ii != list_ServerInfos.end(); ++ii)
+	for (std::deque<PointerToServerInfo>::iterator ii = list_ServerInfos.begin(); ii != list_ServerInfos.end(); ++ii)
 	{
-		ServerInfoMsgpack * pObject = dynamic_cast<ServerInfoMsgpack *>(*ii);
+		PointerToServerInfo thePtr = (*ii);
+		
+		ServerInfoMsgpack * pObject = dynamic_cast<ServerInfoMsgpack *>(thePtr.pointer());
 		
 		if (NULL == pObject)
 			continue;
+		
+		pObject->hookBeforePack();
 		
 		deque_ServerInfos.push_back(*pObject); // The deque acquires its own copy here, due to the default assignment operator.
 	}
@@ -948,7 +998,11 @@ void ContactNymMsgpack::hookAfterUnpack()
 		
 		(*pNewWrapper) = (*ii);  // COPYING THE DATA
 		
-		list_ServerInfos.push_back(dynamic_cast<ServerInfo*>(pNewWrapper));
+		pNewWrapper->hookAfterUnpack();
+		
+		PointerToServerInfo thePtr; thePtr.set(dynamic_cast<ServerInfo*>(pNewWrapper));
+		
+		list_ServerInfos.push_back(thePtr);
 	}
 	// ---------------------------------
 }
@@ -964,12 +1018,16 @@ void ContactMsgpack::hookBeforePack()
 	
 	// Loop through all the objects in the list, and add them to deque_Nyms.
 	//
-	for (std::deque<ContactNym *>::iterator ii = list_ContactNyms.begin(); ii != list_ContactNyms.end(); ++ii)
+	for (std::deque<PointerToContactNym>::iterator ii = list_ContactNyms.begin(); ii != list_ContactNyms.end(); ++ii)
 	{
-		ContactNymMsgpack * pObject = dynamic_cast<ContactNymMsgpack *>(*ii);
+		PointerToContactNym thePtr = (*ii);
+		
+		ContactNymMsgpack * pObject = dynamic_cast<ContactNymMsgpack *>(thePtr.pointer());
 		
 		if (NULL == pObject)
 			continue;
+		
+		pObject->hookBeforePack();
 		
 		deque_Nyms.push_back(*pObject); // The deque acquires its own copy here, due to the default assignment operator.
 	}
@@ -984,12 +1042,16 @@ void ContactMsgpack::hookBeforePack()
 	
 	// Loop through all the objects in the deque, and add them to deque_Accounts.
 	//
-	for (std::deque<ContactAcct *>::iterator ii = list_ContactAccts.begin(); ii != list_ContactAccts.end(); ++ii)
+	for (std::deque<PointerToContactAcct>::iterator ii = list_ContactAccts.begin(); ii != list_ContactAccts.end(); ++ii)
 	{
-		ContactAcctMsgpack * pObject = dynamic_cast<ContactAcctMsgpack *>(*ii);
+		PointerToContactAcct thePtr = (*ii);
+		
+		ContactAcctMsgpack * pObject = dynamic_cast<ContactAcctMsgpack *>(thePtr.pointer());
 		
 		if (NULL == pObject)
 			continue;
+		
+		pObject->hookBeforePack();
 		
 		deque_Accounts.push_back(*pObject);
 	}
@@ -1016,7 +1078,11 @@ void ContactMsgpack::hookAfterUnpack()
 		
 		(*pNewWrapper) = (*ii);  // COPYING THE DATA
 		
-		list_ContactNyms.push_back(dynamic_cast<ContactNym*>(pNewWrapper));
+		pNewWrapper->hookAfterUnpack();
+		
+		PointerToContactNym thePtr; thePtr.set(dynamic_cast<ContactNym*>(pNewWrapper));
+		
+		list_ContactNyms.push_back(thePtr);
 	}
 	
 	// ---------------------------------
@@ -1028,7 +1094,11 @@ void ContactMsgpack::hookAfterUnpack()
 		
 		(*pNewWrapper) = (*ii);  // COPYING THE DATA
 		
-		list_ContactAccts.push_back(dynamic_cast<ContactAcct*>(pNewWrapper));
+		pNewWrapper->hookAfterUnpack();
+		
+		PointerToContactAcct thePtr; thePtr.set(dynamic_cast<ContactAcct*>(pNewWrapper));
+		
+		list_ContactAccts.push_back(thePtr);
 	}
 }
 
@@ -1045,12 +1115,16 @@ void AddressBookMsgpack::hookBeforePack()
 	
 	// Loop through all the objects in the list, and add them to deque_Contacts.
 	//
-	for (std::deque<Contact *>::iterator ii = list_Contacts.begin(); ii != list_Contacts.end(); ++ii)
+	for (std::deque<PointerToContact>::iterator ii = list_Contacts.begin(); ii != list_Contacts.end(); ++ii)
 	{
-		ContactMsgpack * pObject = dynamic_cast<ContactMsgpack *>(*ii);
+		PointerToContact thePtr = (*ii);
+		
+		ContactMsgpack * pObject = dynamic_cast<ContactMsgpack *>(thePtr.pointer());
 		
 		if (NULL == pObject)
 			continue;
+		
+		pObject->hookBeforePack();
 		
 		deque_Contacts.push_back(*pObject); // The deque acquires its own copy here, due to the default assignment operator.
 	}
@@ -1070,7 +1144,11 @@ void AddressBookMsgpack::hookAfterUnpack()
 		
 		(*pNewWrapper) = (*ii);  // COPYING THE DATA
 		
-		list_Contacts.push_back(dynamic_cast<Contact*>(pNewWrapper));
+		pNewWrapper->hookAfterUnpack();
+		
+		PointerToContact thePtr; thePtr.set(dynamic_cast<Contact*>(pNewWrapper));
+		
+		list_Contacts.push_back(thePtr);
 	}
 	// ---------------------------------
 }
@@ -1085,12 +1163,16 @@ void WalletDataMsgpack::hookBeforePack()
 	
 	// Loop through all the objects in the list, and add them to deque_BitcoinServers.
 	//
-	for (std::deque<BitcoinServer *>::iterator ii = list_BitcoinServers.begin(); ii != list_BitcoinServers.end(); ++ii)
+	for (std::deque<PointerToBitcoinServer>::iterator ii = list_BitcoinServers.begin(); ii != list_BitcoinServers.end(); ++ii)
 	{
-		BitcoinServerMsgpack * pObject = dynamic_cast<BitcoinServerMsgpack *>(*ii);
+		PointerToBitcoinServer thePtr = (*ii);
+		
+		BitcoinServerMsgpack * pObject = dynamic_cast<BitcoinServerMsgpack *>(thePtr.pointer());
 		
 		if (NULL == pObject)
 			continue;
+		
+		pObject->hookBeforePack();
 		
 		deque_BitcoinServers.push_back(*pObject); // The deque acquires its own copy here, due to the default assignment operator.
 	}
@@ -1105,13 +1187,17 @@ void WalletDataMsgpack::hookBeforePack()
 	
 	// Loop through all the objects in the deque, and add them to deque_BitcoinAccts.
 	//
-	for (std::deque<BitcoinAcct *>::iterator ii = list_BitcoinAccts.begin(); ii != list_BitcoinAccts.end(); ++ii)
+	for (std::deque<PointerToBitcoinAcct>::iterator ii = list_BitcoinAccts.begin(); ii != list_BitcoinAccts.end(); ++ii)
 	{
-		BitcoinAcctMsgpack * pObject = dynamic_cast<BitcoinAcctMsgpack *>(*ii);
+		PointerToBitcoinAcct thePtr = (*ii);
+		
+		BitcoinAcctMsgpack * pObject = dynamic_cast<BitcoinAcctMsgpack *>(thePtr.pointer());
 		
 		if (NULL == pObject)
 			continue;
 				
+		pObject->hookBeforePack();
+		
 		deque_BitcoinAccts.push_back(*pObject);
 	}
 	// ----------------------------------------------------
@@ -1137,7 +1223,11 @@ void WalletDataMsgpack::hookAfterUnpack()
 				
 		(*pNewWrapper) = (*ii);  // COPYING THE DATA
 		
-		list_BitcoinServers.push_back(dynamic_cast<BitcoinServer*>(pNewWrapper));
+		pNewWrapper->hookAfterUnpack();
+		
+		PointerToBitcoinServer thePtr; thePtr.set(dynamic_cast<BitcoinServer*>(pNewWrapper));
+		
+		list_BitcoinServers.push_back(thePtr);
 	}
 	
 	// ---------------------------------
@@ -1149,7 +1239,11 @@ void WalletDataMsgpack::hookAfterUnpack()
 				
 		(*pNewWrapper) = (*ii);  // COPYING THE DATA
 		
-		list_BitcoinAccts.push_back(dynamic_cast<BitcoinAcct*>(pNewWrapper));
+		pNewWrapper->hookAfterUnpack();
+		
+		PointerToBitcoinAcct thePtr; thePtr.set(dynamic_cast<BitcoinAcct*>(pNewWrapper));
+		
+		list_BitcoinAccts.push_back(thePtr);
 	}
 }
 	
@@ -1511,9 +1605,11 @@ void WalletDataPB::hookBeforePack()
 	
 	// Loop through all the objects in the deque, and add them to __pb_obj.bitcoin_server.
 	//
-	for (std::deque<BitcoinServer *>::iterator ii = list_BitcoinServers.begin(); ii != list_BitcoinServers.end(); ++ii)
+	for (std::deque<PointerToBitcoinServer>::iterator ii = list_BitcoinServers.begin(); ii != list_BitcoinServers.end(); ++ii)
 	{
-		BitcoinServerPB * pObject = dynamic_cast<BitcoinServerPB *>(*ii);
+		PointerToBitcoinServer thePtr = (*ii);
+		
+		BitcoinServerPB * pObject = dynamic_cast<BitcoinServerPB *>(thePtr.pointer());
 		
 		if (NULL == pObject)
 			continue;
@@ -1534,6 +1630,14 @@ void WalletDataPB::hookBeforePack()
 		// -----------------------
 		
 		BitcoinServer_InternalPB * pNewInternal = __pb_obj.add_bitcoin_server();
+		if (NULL == pNewInternal)
+			continue;
+		
+		// -----------------------
+		
+		pObject->hookBeforePack(); // Give it a chance to pack up, too.
+		
+		// -----------------------
 		
 		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
 	}
@@ -1548,9 +1652,11 @@ void WalletDataPB::hookBeforePack()
 	
 	// Loop through all the objects in the deque, and add them to __pb_obj.bitcoin_acct.
 	//
-	for (std::deque<BitcoinAcct *>::iterator ii = list_BitcoinAccts.begin(); ii != list_BitcoinAccts.end(); ++ii)
+	for (std::deque<PointerToBitcoinAcct>::iterator ii = list_BitcoinAccts.begin(); ii != list_BitcoinAccts.end(); ++ii)
 	{
-		BitcoinAcctPB * pObject = dynamic_cast<BitcoinAcctPB *>(*ii);
+		PointerToBitcoinAcct thePtr = (*ii);
+		
+		BitcoinAcctPB * pObject = dynamic_cast<BitcoinAcctPB *>(thePtr.pointer());
 		
 		if (NULL == pObject)
 			continue;
@@ -1566,10 +1672,19 @@ void WalletDataPB::hookBeforePack()
 		BitcoinAcct_InternalPB * pInternal = dynamic_cast<BitcoinAcct_InternalPB *>(pMessage);
 		
 		if (NULL == pInternal)
-			continue;		
+			continue;
+		
 		// -----------------------
 		
 		BitcoinAcct_InternalPB * pNewInternal = __pb_obj.add_bitcoin_acct();
+		if (NULL == pNewInternal)
+			continue;
+		
+		// -----------------------
+		
+		pObject->hookBeforePack(); // Give it a chance to pack up, too.
+		
+		// -----------------------
 		
 		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
 	}
@@ -1623,7 +1738,11 @@ void WalletDataPB::hookAfterUnpack()
 		
 		(*pInternal) = theInternal;  // COPYING THE DATA
 		
-		list_BitcoinServers.push_back(dynamic_cast<BitcoinServer*>(pNewWrapper));
+		pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
+				
+		PointerToBitcoinServer thePtr; thePtr.set(dynamic_cast<BitcoinServer*>(pNewWrapper));
+		
+		list_BitcoinServers.push_back(thePtr);		
 	}
 	
 	// ---------------------------------
@@ -1660,7 +1779,11 @@ void WalletDataPB::hookAfterUnpack()
 		
 		(*pInternal) = theInternal;  // COPYING THE DATA
 		
-		list_BitcoinAccts.push_back(dynamic_cast<BitcoinAcct*>(pNewWrapper));
+		pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
+		
+		PointerToBitcoinAcct thePtr; thePtr.set(dynamic_cast<BitcoinAcct*>(pNewWrapper));
+		
+		list_BitcoinAccts.push_back(thePtr);
 	}
 }
 // ---------------------------------------------
@@ -1714,6 +1837,7 @@ template<>
 void ContactPB::hookBeforePack()
 {
 	__pb_obj.set_gui_label(gui_label); 
+	__pb_obj.set_contact_id(contact_id); 
 	__pb_obj.set_email(email); 
 	__pb_obj.set_public_key(public_key); 
 	__pb_obj.set_memo(memo); 
@@ -1725,9 +1849,11 @@ void ContactPB::hookBeforePack()
 	
 	// Loop through all the objects in the deque, and add them to __pb_obj.nyms.
 	//
-	for (std::deque<ContactNym *>::iterator ii = list_ContactNyms.begin(); ii != list_ContactNyms.end(); ++ii)
+	for (std::deque<PointerToContactNym>::iterator ii = list_ContactNyms.begin(); ii != list_ContactNyms.end(); ++ii)
 	{
-		ContactNymPB * pObject = dynamic_cast<ContactNymPB *>(*ii);
+		PointerToContactNym thePtr = (*ii);
+		
+		ContactNymPB * pObject = dynamic_cast<ContactNymPB *>(thePtr.pointer());
 		
 		if (NULL == pObject)
 			continue;
@@ -1748,7 +1874,15 @@ void ContactPB::hookBeforePack()
 		// -----------------------
 		
 		ContactNym_InternalPB * pNewInternal = __pb_obj.add_nyms();
+		if (NULL == pNewInternal)
+			continue;
 		
+		// -----------------------
+		
+		pObject->hookBeforePack(); // Give it a chance to pack up, too.
+		
+		// -----------------------
+				
 		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
 	}
 	// ----------------------------------------------------
@@ -1762,9 +1896,11 @@ void ContactPB::hookBeforePack()
 	
 	// Loop through all the objects in the deque, and add them to __pb_obj.accounts.
 	//
-	for (std::deque<ContactAcct *>::iterator ii = list_ContactAccts.begin(); ii != list_ContactAccts.end(); ++ii)
+	for (std::deque<PointerToContactAcct>::iterator ii = list_ContactAccts.begin(); ii != list_ContactAccts.end(); ++ii)
 	{
-		ContactAcctPB * pObject = dynamic_cast<ContactAcctPB *>(*ii);
+		PointerToContactAcct thePtr = (*ii);
+		
+		ContactAcctPB * pObject = dynamic_cast<ContactAcctPB *>(thePtr.pointer());
 		
 		if (NULL == pObject)
 			continue;
@@ -1784,6 +1920,14 @@ void ContactPB::hookBeforePack()
 		// -----------------------
 		
 		ContactAcct_InternalPB * pNewInternal = __pb_obj.add_accounts();
+		if (NULL == pNewInternal)
+			continue;
+		
+		// -----------------------
+		
+		pObject->hookBeforePack(); // Give it a chance to pack up, too.
+		
+		// -----------------------
 		
 		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
 	}
@@ -1795,10 +1939,11 @@ void ContactPB::hookBeforePack()
 template<> 
 void ContactPB::hookAfterUnpack()
 { 	
-	gui_label = __pb_obj.gui_label();
-	email = __pb_obj.email();
-	public_key = __pb_obj.public_key();
-	memo = __pb_obj.memo();
+	gui_label	= __pb_obj.gui_label();
+	contact_id	= __pb_obj.contact_id();
+	email		= __pb_obj.email();
+	public_key	= __pb_obj.public_key();
+	memo		= __pb_obj.memo();
 
 	// ---------------------------------
 
@@ -1842,7 +1987,11 @@ void ContactPB::hookAfterUnpack()
 		
 		(*pInternal) = theInternal;  // COPYING THE DATA
 		
-		list_ContactNyms.push_back(dynamic_cast<ContactNym*>(pNewWrapper));
+		pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
+		
+		PointerToContactNym thePtr; thePtr.set(dynamic_cast<ContactNym*>(pNewWrapper));
+		
+		list_ContactNyms.push_back(thePtr);
 	}
 	
 	// ---------------------------------
@@ -1879,7 +2028,10 @@ void ContactPB::hookAfterUnpack()
 		
 		(*pInternal) = theInternal;  // COPYING THE DATA
 		
-		list_ContactAccts.push_back(dynamic_cast<ContactAcct*>(pNewWrapper));
+		pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
+		
+		PointerToContactAcct thePtr; thePtr.set(dynamic_cast<ContactAcct*>(pNewWrapper));
+		list_ContactAccts.push_back(thePtr);
 	}
 }
 // ---------------------------------------------
@@ -1902,9 +2054,11 @@ void ContactNymPB::hookBeforePack()
 	
 	// Loop through all the objects in the deque, and add them to __pb_obj.servers.
 	//
-	for (std::deque<ServerInfo *>::iterator ii = list_ServerInfos.begin(); ii != list_ServerInfos.end(); ++ii)
+	for (std::deque<PointerToServerInfo>::iterator ii = list_ServerInfos.begin(); ii != list_ServerInfos.end(); ++ii)
 	{
-		ServerInfoPB * pObject = dynamic_cast<ServerInfoPB *>(*ii);
+		PointerToServerInfo thePtr = (*ii);
+		
+		ServerInfoPB * pObject = dynamic_cast<ServerInfoPB *>(thePtr.pointer());
 		
 		if (NULL == pObject)
 			continue;
@@ -1925,6 +2079,14 @@ void ContactNymPB::hookBeforePack()
 		// -----------------------
 		
 		ServerInfo_InternalPB * pNewInternal = __pb_obj.add_servers();
+		if (NULL == pNewInternal)
+			continue;
+		
+		// -----------------------
+		
+		pObject->hookBeforePack(); // Give it a chance to pack up, too.
+		
+		// -----------------------
 		
 		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
 	}
@@ -1978,7 +2140,10 @@ void ContactNymPB::hookAfterUnpack()
 		
 		(*pInternal) = theInternal;  // COPYING THE DATA
 		
-		list_ServerInfos.push_back(dynamic_cast<ServerInfo*>(pNewWrapper));
+		pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
+		
+		PointerToServerInfo thePtr; thePtr.set(dynamic_cast<ServerInfo*>(pNewWrapper));
+		list_ServerInfos.push_back(thePtr);
 	}
 }
 // ---------------------------------------------
@@ -1997,9 +2162,11 @@ void AddressBookPB::hookBeforePack()
 	
 	// Loop through all the objects in the deque, and add them to __pb_obj.contacts.
 	//
-	for (std::deque<Contact *>::iterator ii = list_Contacts.begin(); ii != list_Contacts.end(); ++ii)
+	for (std::deque<PointerToContact>::iterator ii = list_Contacts.begin(); ii != list_Contacts.end(); ++ii)
 	{
-		ContactPB * pObject = dynamic_cast<ContactPB *>(*ii);
+		PointerToContact thePtr = (*ii);
+		
+		ContactPB * pObject = dynamic_cast<ContactPB *>(thePtr.pointer());
 		
 		if (NULL == pObject)
 			continue;
@@ -2020,7 +2187,15 @@ void AddressBookPB::hookBeforePack()
 		// -----------------------
 		
 		Contact_InternalPB * pNewInternal = __pb_obj.add_contacts();
+		if (NULL == pNewInternal)
+			continue;
 		
+		// -----------------------
+		
+		pObject->hookBeforePack(); // Give it a chance to pack up, too.
+		
+		// -----------------------
+				
 		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
 	}
 	// ----------------------------------------------------
@@ -2069,7 +2244,10 @@ void AddressBookPB::hookAfterUnpack()
 		
 		(*pInternal) = theInternal;  // COPYING THE DATA
 		
-		list_Contacts.push_back(dynamic_cast<Contact*>(pNewWrapper));
+		pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
+		
+		PointerToContact thePtr; thePtr.set(dynamic_cast<Contact*>(pNewWrapper));
+		list_Contacts.push_back(thePtr);
 	}
 }
 // ---------------------------------------------
@@ -2156,6 +2334,7 @@ void BitcoinServerPB::hookAfterUnpack()
 }
 // ---------------------------------------------
 
+	
 #endif // defined (OTDB_PROTOCOL_BUFFERS)
 // ********************************************************************
 
@@ -2279,7 +2458,7 @@ StorageType Storage::GetType() const
 // ----------------------------------------------------------------------
 
 bool Storage::StoreString(std::string strContents, std::string strFolder, 
-								std::string oneStr/*=""*/, std::string twoStr/*=""*/, std::string threeStr/*=""*/)
+						  std::string oneStr/*=""*/, std::string twoStr/*=""*/, std::string threeStr/*=""*/)
 {
 	OTPacker * pPacker = GetPacker();
 	
@@ -2302,7 +2481,7 @@ bool Storage::StoreString(std::string strContents, std::string strFolder,
 }
 
 std::string Storage::QueryString(std::string strFolder, 
-									   std::string oneStr/*=""*/, std::string twoStr/*=""*/, std::string threeStr/*=""*/)
+								 std::string oneStr/*=""*/, std::string twoStr/*=""*/, std::string threeStr/*=""*/)
 {
 	std::string theString("");
 
@@ -2356,6 +2535,30 @@ std::string Storage::QueryString(std::string strFolder,
 	return theString; 	
 }
 
+// ----------------------------------------------------------------------
+	
+	// For when you want NO PACKING.
+	
+bool Storage::StorePlainString(std::string strContents, std::string strFolder, 
+							   std::string oneStr/*=""*/, std::string twoStr/*=""*/, std::string threeStr/*=""*/)
+{	
+	return onStorePlainString(strContents, strFolder, oneStr, twoStr, threeStr);
+}
+
+std::string Storage::QueryPlainString(std::string strFolder, 
+									  std::string oneStr/*=""*/, std::string twoStr/*=""*/, std::string threeStr/*=""*/)
+{
+	std::string theString("");
+		
+	if (!onQueryPlainString(theString, strFolder, oneStr, twoStr, threeStr))
+		theString = "";
+	
+	return theString; 	
+}
+
+// ----------------------------------------------------------------------
+	
+	
 
 bool Storage::StoreObject(Storable & theContents, std::string strFolder, 
 								std::string oneStr/*=""*/, std::string twoStr/*=""*/, std::string threeStr/*=""*/)
@@ -2516,7 +2719,6 @@ bool StorageFS::ConfirmFile(const char * szFileName, struct stat * pst/*=NULL*/)
 {
 	OT_ASSERT(NULL != szFileName);
 	
-	
 	struct stat st;
 
 	// FILE IS PRESENT?
@@ -2545,8 +2747,8 @@ bool StorageFS::ConfirmFile(const char * szFileName, struct stat * pst/*=NULL*/)
  
  */
 long StorageFS::ConstructAndConfirmPath(std::string & strOutput, 
-											 const std::string& strFolder, const std::string& oneStr/*=""*/,  
-											 const std::string& twoStr/*=""*/,  const std::string& threeStr/*=""*/)
+										const std::string& strFolder, const std::string& oneStr/*=""*/,  
+										const std::string& twoStr/*=""*/,  const std::string& threeStr/*=""*/)
 {		
 	struct stat st;
 
@@ -2557,7 +2759,7 @@ long StorageFS::ConstructAndConfirmPath(std::string & strOutput,
 		
 		return -1;
 	}
-	
+
 	// -----------------------------------------------------------------
 
 	bool bConfirmed = false;
@@ -2650,7 +2852,7 @@ long StorageFS::ConstructAndConfirmPath(std::string & strOutput,
 // Store/Retrieve an object. (Storable.)
 
 bool StorageFS::onStorePackedBuffer(PackedBuffer & theBuffer, std::string strFolder, 
-										  std::string oneStr/*=""*/, std::string twoStr/*=""*/, std::string threeStr/*=""*/)
+									std::string oneStr/*=""*/, std::string twoStr/*=""*/, std::string threeStr/*=""*/)
 {
 	std::string strOutput;
 	
@@ -2688,7 +2890,7 @@ bool StorageFS::onStorePackedBuffer(PackedBuffer & theBuffer, std::string strFol
 
 
 bool StorageFS::onQueryPackedBuffer(PackedBuffer & theBuffer, std::string strFolder, 
-										  std::string oneStr/*=""*/, std::string twoStr/*=""*/, std::string threeStr/*=""*/)
+									std::string oneStr/*=""*/, std::string twoStr/*=""*/, std::string threeStr/*=""*/)
 {
 	std::string strOutput;
 	
@@ -2727,11 +2929,120 @@ bool StorageFS::onQueryPackedBuffer(PackedBuffer & theBuffer, std::string strFol
 
 
 
+// -----------------------------------------
+// Store/Retrieve a plain string, (without any packing.)
 
+	
+bool StorageFS::onStorePlainString(std::string & theBuffer, std::string strFolder, 
+									std::string oneStr/*=""*/, std::string twoStr/*=""*/, std::string threeStr/*=""*/)
+{
+	std::string strOutput;
+	
+	if (-1 == ConstructAndConfirmPath(strOutput, strFolder, oneStr, twoStr, threeStr))
+	{
+		OTLog::vError("StorageFS::onStorePlainString: Error writing to %s.\n", strOutput.c_str());
+		return false;
+	}
+	
+	// TODO: Should check here to see if there is a .lock file for the target...
+	
+	// TODO: If not, next I should actually create a .lock file for myself right here..
+	
+	// ----------------------------------------------
+	
+	// SAVE to the file here.
+	//
+	// Here's where the serialization code would be changed to CouchDB or whatever.
+	// In a key/value database, szFilename is the "key" and strFinal.Get() is the "value".
+	//
+	std::ofstream ofs(strOutput.c_str(), std::ios::binary);
+	
+	if (ofs.fail())
+	{
+		OTLog::vError("Error opening file in StorageFS::onStorePlainString: %s\n", 
+					  strOutput.c_str());
+		return false;
+	}
+	
+	ofs.clear();
+	
+	ofs << theBuffer.c_str();
+	
+	bool bSuccess = ofs.good() ? true : false;
+	
+	ofs.close();
+	
+	// ------------------------------------
+	
+	// TODO: Remove the .lock file.
+	
+	return bSuccess;
+}
+
+
+bool StorageFS::onQueryPlainString(std::string & theBuffer, std::string strFolder, 
+								   std::string oneStr/*=""*/, std::string twoStr/*=""*/, std::string threeStr/*=""*/)
+{
+	std::string strOutput;
+	
+	long lRet = ConstructAndConfirmPath(strOutput, strFolder, oneStr, twoStr, threeStr);
+	
+	if (-1 == lRet)
+	{
+		OTLog::vError("StorageFS::onQueryPlainString: Error with %s.\n", strOutput.c_str());
+		return false;
+	}
+	else if (0 == lRet)
+	{
+		OTLog::vError("StorageFS::onQueryPlainString: Failure reading from %s: file does not exist.\n", strOutput.c_str());
+		return false;
+	}
+	
+	// -------------------------------
+	
+	// Open the file here
+	
+	std::ifstream fin(strOutput.c_str(), std::ios::binary);
+	
+	if (!fin.is_open())
+	{
+		OTLog::vError("Error opening file in StorageFS::onQueryPlainString: %s\n", strOutput.c_str());
+		return false;
+	}
+	// -------------------------
+	
+	// Read from the file as a plain string.
+	
+	std::stringstream buffer;
+	buffer << fin.rdbuf();
+	
+	bool bSuccess = fin.good();
+
+	if (bSuccess)
+		theBuffer = buffer.str(); // here's the actual output of this function.
+	else 
+	{
+		theBuffer = "";
+		return false;
+	}
+	
+	bSuccess = (theBuffer.length() > 0);
+
+	fin.close();
+	
+	return bSuccess;
+}
+
+
+// -----------------------------------------------------------------
+
+	
+	
+	
 // ----------------------------------------------
 // Constructor for Filesystem storage context. 
 //
-StorageFS::StorageFS() : Storage::Storage(), m_strFullPath(""), m_strWalletFile("")
+StorageFS::StorageFS() : Storage(), m_strFullPath(""), m_strWalletFile("")
 {
 	
 }
@@ -2750,13 +3061,14 @@ StorageFS::~StorageFS()
 // (The other strings are unused in StorageFS.)
 //
 bool StorageFS::Init(std::string oneStr/*=""*/,  std::string twoStr/*=""*/,  std::string threeStr/*=""*/, 
-						   std::string fourStr/*=""*/, std::string fiveStr/*=""*/, std::string sixStr/*=""*/)
+					 std::string fourStr/*=""*/, std::string fiveStr/*=""*/, std::string sixStr/*=""*/)
 {
 	// This is where I verify the directory path exists, and the wallet file within.
 	
 	if ((oneStr.length() < 1) || (twoStr.length() < 1))
 	{
-		OTLog::vError("Unable to locate data_folder/wallet: %s/%s\n", oneStr.c_str(), twoStr.c_str());
+		OTLog::vError("Expected a data_folder path, and a wallet filename. But got this: %s%s%s\n",
+					  oneStr.c_str(), PathSeparator(), twoStr.c_str());
 		return false;
 	}
 	// --------------------------------
@@ -2793,7 +3105,7 @@ bool StorageFS::Init(std::string oneStr/*=""*/,  std::string twoStr/*=""*/,  std
 // -----------------------------------------
 // See if the file is there.
 bool StorageFS::Exists(std::string strFolder, std::string oneStr/*=""*/,  
-							 std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
+					   std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
 {
 	std::string strOutput;
 	

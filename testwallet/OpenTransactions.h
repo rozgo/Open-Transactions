@@ -170,10 +170,21 @@ class OT_API // The C++ high-level interface to the Open Transactions client-sid
 
 	bool			m_bInitialized;
 	
+	OTString *		m_pstrStoragePath;
+	OTString *		m_pstrWalletFilename;
+	
 public:
 
 	inline OTWallet * GetWallet() { return m_pWallet; }
 	inline OTClient * GetClient() { return m_pClient; }
+	
+	inline const char * GetStoragePath() { return ((NULL == m_pstrStoragePath) ? NULL : m_pstrStoragePath->Get()); }
+	inline const char * GetWalletFilename() { return ((NULL == m_pstrWalletFilename) ? NULL : m_pstrWalletFilename->Get()); }
+	
+	inline bool SetStoragePath(const OTString & strPath) 
+	{ return ((NULL == m_pstrStoragePath) ? false : (m_pstrStoragePath->Set(strPath), true) ); }
+	inline bool SetWalletFilename(const OTString & strFilename) 
+	{ return ((NULL == m_pstrWalletFilename) ? false : (m_pstrWalletFilename->Set(strFilename), true) ); }
 	
 	OT_API();
 	~OT_API();
@@ -183,7 +194,7 @@ public:
 
 	bool IsInitialized() const { return m_bInitialized; }
 	
-	bool LoadWallet(OTString & strPath);
+	bool LoadWallet(const OTString & strFilename);
 	
 	// Note: these two functions are NOT used in XmlRpc Mode
 	// ONLY for SSL/TCP mode...

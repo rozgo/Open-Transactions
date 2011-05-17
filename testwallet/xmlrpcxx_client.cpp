@@ -350,9 +350,12 @@ int main(int argc, char* argv[])
 		if (strLine.compare(0,4,"load") == 0)
 		{
 			OTLog::Output(0, "User has instructed to load wallet.xml...\n");
-			g_OT_API.GetWallet()->LoadWallet("wallet.xml");
 			
-			//			g_OT_API.GetWallet()->SaveWallet("NEWwallet.xml"); // todo remove this test code.
+			const OTString strTheWalletFilename("wallet.xml");
+			
+			g_OT_API.LoadWallet(strTheWalletFilename);
+			
+//			g_OT_API.GetWallet()->SaveWallet("NEWwallet.xml"); // todo remove this test code.
 			
 			continue;
 		}
@@ -371,15 +374,16 @@ int main(int argc, char* argv[])
 				
 				if (bSuccessInit)
 				{
+					{
 					std::string strContents("JUST TESTING OUT THE NEW MessagePack CODE!!!!");
 					std::string strRetrieved("");
 					bool bSuccessStore = pStorage->StoreString(strContents, "temp", "msgpack.tst");
 					strRetrieved = pStorage->QueryString("temp", "msgpack.tst");
-					OTLog::vOutput(0, "Success Store:  %s\nQuery:  %s\n", 
+					OTLog::vOutput(0, "\nPACKED STRING: Success Store:  %s\nQuery:  %s\n", 
 								   bSuccessStore ? "TRUE" : "FALSE", strRetrieved.c_str());
-					
+					}
 					// --------------------------------------------------
-					
+					{
 					OTDB::BitcoinAcct * pAcct = dynamic_cast<OTDB::BitcoinAcct *>(pStorage->CreateObject(OTDB::STORED_OBJ_BITCOIN_ACCT));
 					OT_ASSERT(NULL != pAcct);
 					
@@ -388,16 +392,29 @@ int main(int argc, char* argv[])
 					pAcct->bitcoin_acct_name	= "Read-Only Label (Bitcoin Internal acct)";
 					pAcct->gui_label			= "Editable Label (Moneychanger)";
 
-					bSuccessStore = pStorage->StoreObject(*pAcct, "temp", "msgpack-obj.tst");
+					bool bSuccessStore = pStorage->StoreObject(*pAcct, "temp", "msgpack-obj.tst");
 					
 					OTDB::BitcoinAcct * pAcct2 = 
 					dynamic_cast<OTDB::BitcoinAcct *>(pStorage->QueryObject(OTDB::STORED_OBJ_BITCOIN_ACCT,"temp", "msgpack-obj.tst"));
-					OTLog::vOutput(0, "Success Store:  %s\n Success Retrieved:  %s\n Address:  %s\n Name:  %s\n Label:  %s\n", 
+					OTLog::vOutput(0, "\nBITCOIN ACCOUNT: Success Store:  %s\n Success Retrieved:  %s\n Address:  %s\n Name:  %s\n Label:  %s\n", 
 								   bSuccessStore ? "TRUE" : "FALSE", 
 								   (pAcct2 != NULL) ? "TRUE" : "FALSE", 
 								   (pAcct2 != NULL) ? pAcct->acct_id.c_str() : "FALSE", 
 								   (pAcct2 != NULL) ? pAcct->bitcoin_acct_name.c_str() : "FALSE", 
-								   (pAcct2 != NULL) ? pAcct->gui_label.c_str() : "FALSE");					
+								   (pAcct2 != NULL) ? pAcct->gui_label.c_str() : "FALSE");	
+					}
+					// --------------------------------------------------
+					{
+					std::string strContents("THIS is a test of the PLAIN STRING system...\nAnd hopefully it will work :)\n");
+					std::string strRetrieved("");
+					bool bSuccessStore = pStorage->StorePlainString(strContents, "temp", "plaintext.txt");
+					strRetrieved = pStorage->QueryPlainString("temp", "plaintext.txt");
+					OTLog::vOutput(0, "\nPLAIN STRING: Success Store:  %s\nQuery:  %s\n", 
+								   bSuccessStore ? "TRUE" : "FALSE", strRetrieved.c_str());
+					}
+					// --------------------------------------------------
+					
+					
 				}
 				
 				delete pStorage;
@@ -414,7 +431,8 @@ int main(int argc, char* argv[])
 					std::string strRetrieved("");
 					bool bSuccessStore = pStorage->StoreString(strContents, "temp", "protobuf.tst");
 					strRetrieved = pStorage->QueryString("temp", "protobuf.tst");
-					OTLog::vOutput(0, "Success Store:  %s\nQuery:  %s\n", 
+					OTLog::vOutput(0, "--------------------- PROTOBUF BELOW -------------\n\n"
+								   "PACKED STRING: Success Store:  %s\nQuery:  %s\n", 
 								   bSuccessStore ? "TRUE" : "FALSE", strRetrieved.c_str());
 
 					// --------------------------------------------------
@@ -445,7 +463,7 @@ int main(int argc, char* argv[])
 					OT_ASSERT(NULL != pAcct2);
 
 					
-					OTLog::vOutput(0, "Storing WALLET, with a Bitcoin Acct INSIDE it:  %s\n Success Retrieved:  %s\n AcctID:  %s\n Name:  %s\n Label:  %s\n", 
+					OTLog::vOutput(0, "\nWALLET, w/ Bitcoin Acct INSIDE: Store: %s\n Success Retrieved:  %s\n AcctID:  %s\n Name:  %s\n Label:  %s\n", 
 								   bSuccessStore ? "TRUE" : "FALSE", 
 								   (pAcct2 != NULL) ? "TRUE" : "FALSE", 
 								   (pAcct2 != NULL) ? pAcct->acct_id.c_str() : "FALSE", 

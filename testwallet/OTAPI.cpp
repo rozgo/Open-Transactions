@@ -215,15 +215,7 @@ OT_BOOL OT_API_Init(const char * szClientPath)
 			bool bInit = g_OT_API.Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
 			
 			if (bInit)
-			{
-				std::string strPath = szClientPath;
-				
-				// This way, everywhere else I can use the default storage context (for now) and it will work
-				// everywhere I put it. (Because it's now set up...)
-				bool bDefaultStore = OTDB::InitDefaultStorage(OTDB_DEFAULT_STORAGE, OTDB_DEFAULT_PACKER, strPath);
-				
 				return OT_TRUE;
-			}
 		}
 	}
 	
@@ -232,13 +224,22 @@ OT_BOOL OT_API_Init(const char * szClientPath)
 
 
 
-OT_BOOL OT_API_LoadWallet(const char * szPath)
+OT_BOOL OT_API_LoadWallet(const char * szWalletFilename)
 {
-	OT_ASSERT_MSG(NULL != szPath, "Null filename passed to OT_API_LoadWallet");
-
-	OTString strPath(szPath);
+	OT_ASSERT_MSG(NULL != szWalletFilename, "Null filename passed to OT_API_LoadWallet");
 	
-	bool bLoaded = g_OT_API.LoadWallet(strPath);
+	OT_ASSERT_MSG(g_OT_API.IsInitialized(), "Not initialized; call OT_API::Init first.");
+	
+	// ------------------------
+	//the g_OT_API now has:
+//	inline const char * GetStoragePath() { return ((NULL == m_pstrStoragePath) ? NULL : m_pstrStoragePath->Get()); }
+//	inline const char * GetWalletFilename() { return ((NULL == m_pstrWalletFilename) ? NULL : m_pstrWalletFilename->Get()); }
+//	inline bool SetStoragePath(const OTString & strPath) 
+//	inline bool SetWalletFilename(const OTString & strFilename) 
+		
+	const OTString strWalletFilename(szWalletFilename);
+	
+	bool bLoaded = g_OT_API.LoadWallet(strWalletFilename);
 	
 	if (bLoaded)
 		return OT_TRUE;
@@ -253,20 +254,36 @@ OT_BOOL OT_API_SwitchWallet(const char * szDataFolderPath, const char * szWallet
 	OT_ASSERT_MSG(NULL != szWalletFilename, "Null szWalletFilename passed to OT_API_SwitchWallet");
 
 	OT_ASSERT_MSG(g_OT_API.IsInitialized(), "Not initialized; call OT_API::Init first.");
-	
-	OTLog::SetMainPath(szDataFolderPath);
 
-	bool bDefaultStore = false;
-	{
-		std::string strPath = szDataFolderPath;
-		
-		// This way, everywhere else I can use the default storage context (for now) and it will work
-		// everywhere I put it. (Because it's now set up...)
-		bDefaultStore = OTDB::InitDefaultStorage(OTDB_DEFAULT_STORAGE, OTDB_DEFAULT_PACKER, strPath);		
-	}
+	// -------------------------------------------
+	const char * szOldStoragePath = g_OT_API.GetStoragePath();
 	
-	if (bDefaultStore)
-		return OT_API_LoadWallet(szWalletFilename);
+	OTString strOldStoragePath;
+	
+	if (NULL != szOldStoragePath)
+		strOldStoragePath.Set(szOldStoragePath);
+	else 
+		strOldStoragePath.Set("ERROR_OLD_PATH_WAS_EMPTY");
+
+	// -------------------------------------------
+	
+	// At some point, REMOVE this, since each instance of OT API should eventually store its OWN path.
+	OTLog::SetMainPath(szDataFolderPath);
+		
+	// -------------------------------------------
+	
+	// Keep this though.
+	const OTString strStoragePath(szDataFolderPath);
+	g_OT_API.SetStoragePath(strStoragePath); // Set to new path.
+	
+	if (OT_TRUE == OT_API_LoadWallet(szWalletFilename))
+		return OT_TRUE;
+	else 
+	{
+		OTLog::SetMainPath(strOldStoragePath.Get());  // remove this at some point, todo. This is the old way of doing it.
+
+		g_OT_API.SetStoragePath(strOldStoragePath); // Set to old path again.	
+	}
 	
 	return OT_FALSE;
 }

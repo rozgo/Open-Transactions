@@ -36,6 +36,8 @@
 %typemap("javapackage") Exists "com.wrapper.core.jni";
 %typemap("javapackage") StoreString "com.wrapper.core.jni";
 %typemap("javapackage") QueryString "com.wrapper.core.jni";
+%typemap("javapackage") StorePlainString "com.wrapper.core.jni";
+%typemap("javapackage") QueryPlainString "com.wrapper.core.jni";
 %typemap("javapackage") StoreObject "com.wrapper.core.jni";
 %typemap("javapackage") QueryObject "com.wrapper.core.jni";
 
@@ -86,7 +88,6 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 
 %ignore Storable::Create(StoredObjectType eType, PackType thePackType);
 
-
 %ignore PackedBuffer;
 
 %ignore OTPacker;
@@ -105,6 +106,7 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 
 %ignore std::map<std::string, std::string>;
 
+%ignore stlplus::simple_ptr_clone;
 
 // -------------------------------------------
 
@@ -128,6 +130,8 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 %newobject Storage::CreateObject(StoredObjectType eType);
 
 %newobject CreateStorageContext(StorageType eStoreType, PackType ePackType=OTDB_DEFAULT_PACKER);
+
+%newobject CreateObject(StoredObjectType eType);
 
 %newobject QueryObject(StoredObjectType theObjectType, std::string strFolder, std::string oneStr="", std::string twoStr="", std::string threeStr="");
 
@@ -220,6 +224,12 @@ protected:
 	virtual bool onQueryPackedBuffer(PackedBuffer & theBuffer, std::string strFolder, std::string oneStr="",
 									 std::string twoStr="", std::string threeStr="")=0;
 	
+	virtual bool onStorePlainString(std::string & theBuffer, std::string strFolder, std::string oneStr="", 
+									std::string twoStr="", std::string threeStr="")=0;
+	
+	virtual bool onQueryPlainString(std::string & theBuffer, std::string strFolder, std::string oneStr="",
+									std::string twoStr="", std::string threeStr="")=0;
+	
 	// -------------------------------------
 	
 public:
@@ -241,6 +251,12 @@ public:
 	
 	std::string QueryString(std::string strFolder, std::string oneStr="",
 							std::string twoStr="", std::string threeStr="");
+	
+	bool StorePlainString(std::string strContents, std::string strFolder, 
+						  std::string oneStr="", std::string twoStr="", std::string threeStr="");
+	
+	std::string QueryPlainString(std::string strFolder, std::string oneStr="",
+								 std::string twoStr="", std::string threeStr="");
 	
 	// -----------------------------------------
 	// Store/Retrieve an object. (Storable.)
@@ -304,10 +320,16 @@ bool Exists(std::string strFolder,
 //
 bool StoreString(std::string strContents, std::string strFolder, 
 				 std::string oneStr="", std::string twoStr="", std::string threeStr="");
-
+	
 std::string QueryString(std::string strFolder, std::string oneStr="",
 						std::string twoStr="", std::string threeStr="");
-
+	
+bool StorePlainString(std::string strContents, std::string strFolder, 
+					  std::string oneStr="", std::string twoStr="", std::string threeStr="");
+	
+std::string QueryPlainString(std::string strFolder, std::string oneStr="",
+							 std::string twoStr="", std::string threeStr="");
+	
 // --------
 // Store/Retrieve an object. (Storable.)
 //
@@ -341,6 +363,10 @@ public:
 		if (ii != the_map.end()) ret_val = (*ii).second; return ret_val; }
 };
 
+	
+	
+	
+	
 // ------------------------------------------------
 
 class Displayable : public Storable
@@ -481,7 +507,7 @@ public:
 	std::string memo;
 	
 protected:
-	std::deque<ServerInfo *> list_ServerInfos;
+	std::deque< stlplus::simple_ptr_clone<ServerInfo> > list_ServerInfos;
 public:
 	size_t GetServerInfoCount();
 	ServerInfo * GetServerInfo(size_t nIndex);
@@ -519,19 +545,20 @@ class Contact : public Displayable {
 	// You never actually get an instance of this, only its subclasses.
 	// Therefore, I don't allow you to access the constructor except through factory.
 protected:
-	Contact() : Displayable(), email(""), memo(""), public_key("") { }
+	Contact() : Displayable(), contact_id(""), email(""), memo(""), public_key("") { }
 	
 public:
 	virtual ~Contact();
 	
 //		std::string gui_label;  // The label that appears in the GUI
 	
+	std::string contact_id;
 	std::string email;
 	std::string memo;
 	std::string public_key;
 	
 protected:
-	std::deque<ContactNym *> list_ContactNyms;
+	std::deque< stlplus::simple_ptr_clone<ContactNym> > list_ContactNyms;
 public:
 	size_t GetContactNymCount();
 	ContactNym * GetContactNym(size_t nIndex);
@@ -539,7 +566,7 @@ public:
 	bool AddContactNym(ContactNym & disownObject);
 	
 protected:
-	std::deque<ContactAcct *> list_ContactAccts;
+	std::deque< stlplus::simple_ptr_clone<ContactAcct> > list_ContactAccts;
 public:
 	size_t GetContactAcctCount();
 	ContactAcct * GetContactAcct(size_t nIndex);
@@ -559,7 +586,7 @@ public:
 	virtual ~AddressBook();
 	
 protected:
-	std::deque<Contact *> list_Contacts;
+	std::deque< stlplus::simple_ptr_clone<Contact> > list_Contacts;
 public:
 	size_t GetContactCount();
 	Contact * GetContact(size_t nIndex);
@@ -569,6 +596,16 @@ public:
 
 // ----------------------------
 
+	
+	%define OT_SWIG_DECLARE_GET_ADD_REMOVE(name)
+	protected:
+		std::deque< stlplus::simple_ptr_clone<name> > list_##name##s;
+	public:
+		size_t Get##name##Count();
+		name * Get##name(size_t nIndex);
+		bool Remove##name(size_t nIndex);
+		bool Add##name(name & disownObject)	
+	%enddef
 
 class WalletData : public Storable
 {
@@ -584,23 +621,32 @@ public:
 	// List of Bitcoin accounts
 	// Loom, etc.
 	
-protected:
-	std::deque<BitcoinServer *> list_BitcoinServers;
-public:
-	size_t GetBitcoinServerCount();
-	BitcoinServer * GetBitcoinServer(size_t nIndex);
-	bool RemoveBitcoinServer(size_t nIndex);
-	bool AddBitcoinServer(BitcoinServer & disownObject);
+	OT_SWIG_DECLARE_GET_ADD_REMOVE(BitcoinServer);
+	OT_SWIG_DECLARE_GET_ADD_REMOVE(BitcoinAcct);
 	
-protected:
-	std::deque<BitcoinAcct *> list_BitcoinAccts;
-public:
-	size_t GetBitcoinAcctCount();
-	BitcoinAcct * GetBitcoinAcct(size_t nIndex);
-	bool RemoveBitcoinAcct(size_t nIndex);
-	bool AddBitcoinAcct(BitcoinAcct & disownObject);
+//protected:
+//	std::deque< stlplus::simple_ptr_clone<BitcoinServer> > list_BitcoinServers;
+//public:
+//	size_t GetBitcoinServerCount();
+//	BitcoinServer * GetBitcoinServer(size_t nIndex);
+//	bool RemoveBitcoinServer(size_t nIndex);
+//	bool AddBitcoinServer(BitcoinServer & disownObject);
+//	
+//protected:
+//	std::deque< stlplus::simple_ptr_clone<BitcoinAcct> > list_BitcoinAccts;
+//public:
+//	size_t GetBitcoinAcctCount();
+//	BitcoinAcct * GetBitcoinAcct(size_t nIndex);
+//	bool RemoveBitcoinAcct(size_t nIndex);
+//	bool AddBitcoinAcct(BitcoinAcct & disownObject);
 };
 
+	
+	
+	
+
+	
+	
 } // namespace OTDB 
 
 
@@ -611,7 +657,44 @@ public:
 using namespace OTDB;
 %}
 
+
+// ------------------------------------------------
+
+
+
+// For dynamic casting, so the Java side has access to subclass methods.
+//
+%define OT_STORABLE_HELPER(STORABLE_TYPE)
+%exception STORABLE_TYPE::dynamic_cast(Storable * pObject) {
+	$action
+	if (!result) {
+		jclass excep = jenv->FindClass("java/lang/ClassCastException");
+		if (excep) {
+			jenv->ThrowNew(excep, "dynamic_cast exception");
+		}
+	}
+}
+%extend STORABLE_TYPE {
+	static STORABLE_TYPE * dynamic_cast(Storable * pObject) {
+		return dynamic_cast<STORABLE_TYPE *>(pObject);
+	}
+};
+%enddef
+
+OT_STORABLE_HELPER(OTDB::StringMap)
+OT_STORABLE_HELPER(OTDB::BitcoinAcct)
+OT_STORABLE_HELPER(OTDB::BitcoinServer)
+OT_STORABLE_HELPER(OTDB::ServerInfo)
+OT_STORABLE_HELPER(OTDB::ContactNym)
+OT_STORABLE_HELPER(OTDB::ContactAcct)
+OT_STORABLE_HELPER(OTDB::Contact)
+OT_STORABLE_HELPER(OTDB::AddressBook)
+OT_STORABLE_HELPER(OTDB::WalletData)
+
+
+
 %feature("director") Storage;
+
 
 
 

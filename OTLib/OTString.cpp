@@ -365,13 +365,19 @@ OTString::OTString(OTPseudonym & theValue)
 OTString::OTString(const OTString & strValue)
 {
 	Initialize();
-	Set(strValue);
+	LowLevelSetStr(strValue);
 }
 
 OTString::OTString(const char * new_string)
 {
 	Initialize();
-	Set(new_string);
+	LowLevelSet(new_string, 0);
+}
+
+OTString::OTString(const std::string& new_string)
+{
+	Initialize();
+	LowLevelSet(new_string.c_str(), 0);
 }
 
 void OTString::Initialize()
@@ -394,31 +400,63 @@ void OTString::Release(void)
 	m_lLength  = 0;
 }
 
-bool OTString::Exists(void) const
-{
-	return m_strBuffer ? true : false;
+
+void OTString::LowLevelSetStr(const OTString & strBuf)
+{ 
+	if (strBuf.Exists()) 
+	{ 
+		m_lLength = strBuf.m_lLength; 
+		m_strBuffer = str_dup2(strBuf.m_strBuffer, m_lLength); 
+	} 
 }
 
-uint32_t OTString::GetLength(void) const
+void OTString::LowLevelSet(const char * new_string, uint32_t nEnforcedMaxLength)
 {
-	return m_lLength;
+	if (NULL != new_string)
+	{
+		if (nEnforcedMaxLength > 0)	// Enforce the max length before calling strlen. If Max length is 10, then buf[9] is zero'd out.
+			((char *)new_string)[nEnforcedMaxLength-1] = '\0'; 
+		
+		// Now this can never be larger than nEnforcedMaxLength
+		// If there was already a NULL terminator, the strlen will stop there first.
+		// Otherwise, worst case, it will be stopped by the one that I set above.
+		uint32_t nLength = strlen(new_string); // TODO Security: use something more secure than strlen
+		
+		// don't bother allocating memory for a 0 length string.
+		if (0 == nLength)
+			return;
+
+		m_lLength = nLength;
+		m_strBuffer = str_dup2(new_string, nLength);	
+	}
 }
 
 
-
-
-OTString& OTString::operator=(const OTString& rhs)
+OTString& OTString::operator=(OTString rhs)
 {
-   Set(rhs);
-   return *this;
-}
-
-OTString& OTString::operator=(const char * new_string)
-{
-	Set(new_string);
+	this->swap(rhs);
 	return *this;
 }
 
+/*
+OTString& OTString::operator=(const char * new_string)
+{
+	OTString strTemp(new_string);
+	
+	this->swap(strTemp);
+	return *this;
+}
+*/
+
+/*
+OTString& OTString::operator=(const std::string & strValue)
+{
+	OTString strTemp(strValue.c_str());
+	
+	this->swap(strTemp);
+	return *this;
+}
+*/
 
 
 // 
@@ -563,12 +601,6 @@ void OTString::OTfgets(FILE * fl)
 }
 */
 
-
-const char * OTString::Get(void) const
-{
-  return m_strBuffer ? (const char*)m_strBuffer : "";
-}
-
 void OTString::ConvertToLowerCase()
 {
 	if (m_strBuffer == NULL) {
@@ -598,31 +630,6 @@ void OTString::Truncate(uint32_t lAt)
 	this->Set(strTruncated);
 }
 
-// new_string MUST be at least nEnforcedMaxLength in size if nEnforcedMaxLength is passed in at all.
-// That's because this function forces the null terminator at that length of the string minus 1.
-void OTString::Set(const char * new_string, uint32_t nEnforcedMaxLength/*=0*/)
-{
-	Release();
-	
-	if (NULL == new_string)
-		return; 
-	
-	if (nEnforcedMaxLength > 0)	// Enforce the max length before calling strlen. If Max length is 10, then buf[9] is zero'd out.
-		((char *)new_string)[nEnforcedMaxLength-1] = '\0'; 
-	
-	// Now this can never be larger than nEnforcedMaxLength
-	// If there was already a NULL terminator, the strlen will stop there first.
-	// Otherwise, worst case, it will be stopped by the one that I set above.
-	uint32_t nLength = strlen(new_string); // TODO Security: use something more secure than strlen
-
-	// don't bother allocating memory for a 0 length string.
-	if (!nLength)
-		return;
-
-	m_lLength = nLength;
-		
-	m_strBuffer = str_dup2(new_string, nLength);
-}
 
 /*
  char *str_dup2(const char *str, int length)
@@ -639,17 +646,8 @@ void OTString::Set(const char * new_string, uint32_t nEnforcedMaxLength/*=0*/)
  }
  */
 
-void OTString::Set(const OTString & strBuf)
-{
-  Release();
-  
-  if (strBuf.Exists()) 
-  {
-	m_lLength = strBuf.m_lLength;
-  
-	m_strBuffer = str_dup2(strBuf.m_strBuffer, m_lLength);
-  }
-}
+
+
 
 void OTString::Format(const char *arg, ...)
 {

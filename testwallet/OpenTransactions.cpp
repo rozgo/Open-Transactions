@@ -129,6 +129,7 @@
  **************************************************************/
 
 
+#include <string>
 
 extern "C" 
 {
@@ -143,6 +144,8 @@ extern "C"
 
 
 #include "OTString.h"
+
+#include "OTStorage.h"
 
 
 #include "OTPseudonym.h"
@@ -286,6 +289,9 @@ OT_API::OT_API()
 	m_pClient = NULL;
 		
 	m_bInitialized = false;
+	
+	m_pstrStoragePath		= NULL;
+	m_pstrWalletFilename	= NULL;
 }
 
 OT_API::~OT_API()
@@ -294,9 +300,16 @@ OT_API::~OT_API()
 		delete m_pWallet;
 	if (NULL != m_pClient)
 		delete m_pClient;
+	if (NULL != m_pstrStoragePath)
+		delete m_pstrStoragePath;
+	if (NULL != m_pstrWalletFilename)
+		delete m_pstrWalletFilename;
 	
 	m_pWallet = NULL;
 	m_pClient = NULL;
+	
+	m_pstrStoragePath		= NULL;
+	m_pstrWalletFilename	= NULL;
 }
 
 
@@ -316,17 +329,38 @@ bool OT_API::Init(OTString & strClientPath)
 	
 	OT_ASSERT_MSG(false == m_bInitialized, "OTAPI was already initialized, please do not call it twice.");
 	
+	// At some point, remove this, since each instance of OT API should eventually store its OWN path.
 	OTLog::SetMainPath(strClientPath.Get()); // This currently does NOT support multiple instances of OT_API.  :-(
 	
 	m_pWallet = new OTWallet;
 	m_pClient = new OTClient;
 	
+	m_pstrStoragePath		= new OTString;
+	m_pstrWalletFilename	= new OTString;
+
 	OT_ASSERT_MSG(NULL != m_pWallet, "Error allocating memory for m_pWallet in OT_API::Init");
 	OT_ASSERT_MSG(NULL != m_pClient, "Error allocating memory for m_pClient in OT_API::Init");
+	OT_ASSERT_MSG(NULL != m_pstrStoragePath, "Error allocating memory for m_pstrStoragePath in OT_API::Init");
+	OT_ASSERT_MSG(NULL != m_pstrWalletFilename, "Error allocating memory for m_pstrWalletFilename in OT_API::Init");
 	
+	// Keep this though.
+	SetStoragePath(strClientPath); // sets m_pstrStoragePath
+
 	m_bInitialized = m_pClient->InitClient(*m_pWallet);
 	
-	return m_bInitialized;
+	if (m_bInitialized)
+	{
+		std::string strPath = strClientPath.Get();
+		
+		// This way, everywhere else I can use the default storage context (for now) and it will work
+		// everywhere I put it. (Because it's now set up...)
+		bool bDefaultStore = OTDB::InitDefaultStorage(OTDB_DEFAULT_STORAGE, OTDB_DEFAULT_PACKER, strPath); // notice no wallet filename here... InitDefaultStorage() will thus get called again...
+		
+		if (bDefaultStore)
+			return true;
+	}
+	
+	return false;
 }
 
 // Call this once per run of the software. Static.
@@ -352,11 +386,47 @@ bool OT_API::InitOTAPI()
 
 
 // "wallet.xml" (path set above.)
-bool OT_API::LoadWallet(OTString & strPath)
+bool OT_API::LoadWallet(const OTString & strFilename)
 {
 	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	OT_ASSERT(strFilename.Exists());
+	OT_ASSERT(NULL != m_pWallet);
+	
+	// ----------------------------
+	// Grab the old name for safe keeping..
+	
+	OTString strOldName;
+	const char * szOldFilename = GetWalletFilename();
+	
+	if (NULL != szOldFilename)
+		strOldName.Set(szOldFilename);
+	else 
+	{
+		strOldName.Set("wallet.xml"); // todo stop hardcoding this DEFAULT VALUE.
+	}
+
+	// ----------------------------
+	// set to new name.
+	
+	SetWalletFilename(strFilename); 
+	
+	// ------------------------------------------
+	
+	
+		std::string strDataFolderPath = GetStoragePath();
+		std::string strWalletFilename = GetWalletFilename();
 		
-	return m_pWallet->LoadWallet(strPath.Get());
+		// This way, everywhere else I can use the default storage context (for now) and it will work
+		// everywhere I put it. (Because it's now set up...)
+		bool bSuccessInitDefault = OTDB::InitDefaultStorage(OTDB_DEFAULT_STORAGE, OTDB_DEFAULT_PACKER, strDataFolderPath, strWalletFilename);
+	
+	
+	bool bSuccess = m_pWallet->LoadWallet(GetWalletFilename());
+	
+	if (false == bSuccess)
+		SetWalletFilename(strOldName);
+	
+	return bSuccess;
 }
 
 
@@ -496,7 +566,7 @@ OTPseudonym * OT_API::CreateNym()
 // Returns success, true or false.
 //
 bool OT_API::SetAssetType_Name(const OTIdentifier	&	ASSET_ID, 
-							   const OTString		&	STR_NEW_NAME)
+							   const OTString		&	STR_NEW_NAME) 
 {
 	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 	

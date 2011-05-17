@@ -63,21 +63,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib\irrxml;C:\~\Open-Transactions\OTLib\bigint;C:\~\Open-Transactions\OTLib\Lucre;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\~\OpenSSL-Win32\lib\VC\static;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\~\protobuf\include;C:\~\msgpack\include;C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib\irrxml;C:\~\Open-Transactions\OTLib\bigint;C:\~\Open-Transactions\OTLib\Lucre;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\~\protobuf\vsprojects\Debug;C:\~\msgpack\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TCP Debug|Win32'">
-    <IncludePath>C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib\irrxml;C:\~\Open-Transactions\OTLib\bigint;C:\~\Open-Transactions\OTLib\Lucre;$(IncludePath)</IncludePath>
-    <LibraryPath>
-    </LibraryPath>
+    <IncludePath>C:\~\protobuf\include;C:\~\msgpack\include;C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib\irrxml;C:\~\Open-Transactions\OTLib\bigint;C:\~\Open-Transactions\OTLib\Lucre;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\~\protobuf\vsprojects\Debug;C:\~\msgpack\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib\bigint;C:\~\Open-Transactions\OTLib\irrxml;C:\~\Open-Transactions\OTLib\Lucre;$(IncludePath)</IncludePath>
+    <IncludePath>C:\~\protobuf\include;C:\~\msgpack\include;C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib\bigint;C:\~\Open-Transactions\OTLib\irrxml;C:\~\Open-Transactions\OTLib\Lucre;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\~\protobuf\vsprojects\Release;C:\~\msgpack\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TCP Release|Win32'">
-    <IncludePath>C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib\bigint;C:\~\Open-Transactions\OTLib\irrxml;C:\~\Open-Transactions\OTLib\Lucre;$(IncludePath)</IncludePath>
-    <LibraryPath>
-    </LibraryPath>
+    <IncludePath>C:\~\protobuf\include;C:\~\msgpack\include;C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib\bigint;C:\~\Open-Transactions\OTLib\irrxml;C:\~\Open-Transactions\OTLib\Lucre;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\~\protobuf\vsprojects\Release;C:\~\msgpack\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -150,9 +149,12 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Bitcoin.pb.h" />
     <ClInclude Include="..\easyzlib.h" />
+    <ClInclude Include="..\Generics.pb.h" />
     <ClInclude Include="..\irrxml\irrXML.h" />
     <ClInclude Include="..\Lucre\bank.h" />
+    <ClInclude Include="..\Moneychanger.pb.h" />
     <ClInclude Include="..\OTAccount.h" />
     <ClInclude Include="..\OTAgreement.h" />
     <ClInclude Include="..\OTASCIIArmor.h" />
@@ -184,6 +186,7 @@
     <ClInclude Include="..\OTServerContract.h" />
     <ClInclude Include="..\OTSignature.h" />
     <ClInclude Include="..\OTSignedFile.h" />
+    <ClInclude Include="..\OTStorage.h" />
     <ClInclude Include="..\OTString.h" />
     <ClInclude Include="..\OTStringXML.h" />
     <ClInclude Include="..\OTToken.h" />
@@ -201,10 +204,13 @@
     <ClCompile Include="..\bigint\BigIntegerUtils.cc" />
     <ClCompile Include="..\bigint\BigUnsigned.cc" />
     <ClCompile Include="..\bigint\BigUnsignedInABase.cc" />
+    <ClCompile Include="..\Bitcoin.pb.cpp" />
     <ClCompile Include="..\easyzlib.c" />
+    <ClCompile Include="..\Generics.pb.cpp" />
     <ClCompile Include="..\irrxml\irrXML.cpp" />
     <ClCompile Include="..\Lucre\bankimp.cpp" />
     <ClCompile Include="..\mkcert.c" />
+    <ClCompile Include="..\Moneychanger.pb.cpp" />
     <ClCompile Include="..\OTAccount.cpp" />
     <ClCompile Include="..\OTAgreement.cpp" />
     <ClCompile Include="..\OTASCIIArmor.cpp" />
@@ -235,6 +241,7 @@
     <ClCompile Include="..\OTServerContract.cpp" />
     <ClCompile Include="..\OTSignature.cpp" />
     <ClCompile Include="..\OTSignedFile.cpp" />
+    <ClCompile Include="..\OTStorage.cpp" />
     <ClCompile Include="..\OTString.cpp" />
     <ClCompile Include="..\OTStringXML.cpp" />
     <ClCompile Include="..\OTToken.cpp" />

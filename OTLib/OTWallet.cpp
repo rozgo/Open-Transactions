@@ -132,6 +132,13 @@
 #include <cstdio>
 #include <cstring>	
 
+
+#include "irrxml/irrXML.h"
+
+using namespace irr;
+using namespace io;
+
+
 #include "OTIdentifier.h"
 #include "OTString.h"
 #include "OTPseudonym.h"
@@ -146,10 +153,7 @@
 #include "OTEnvelope.h"
 #include "OTPurse.h"
 
-#include "irrxml/irrXML.h"
-
-using namespace irr;
-using namespace io;
+#include "OTStorage.h"
 
 
 // TODO remove this pTemporaryNym variable, used for testing only.
@@ -488,189 +492,6 @@ void OTWallet::DisplayStatistics(OTString & strOutput)
 }
 
 
-
-// Pass in the name only, NOT the full path.
-// If you pass NULL, it remembers full path from last time.
-// (Better to do that.)
-//
-bool OTWallet::SaveWallet(const char * szFilename/*=NULL*/)
-{	
-	char * szFilenameToUse = NULL;
-	
-	if (NULL != szFilename)
-		m_strFilename.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), szFilename);
-	
-	szFilenameToUse = (char *)m_strFilename.Get();
-	
-	OT_ASSERT_MSG(NULL != szFilenameToUse, "Null filename in OTWallet::SaveWallet\n");
-
-	/*
-#ifdef _WIN32
-	FILE * fl = NULL;
-	errno_t err = fopen_s(&fl, szFilenameToUse, "wb");
-#else
-	FILE * fl = fopen(szFilenameToUse, "w");
-#endif
-
-	if (NULL == fl)
-	{
-		OTLog::vOutput(0, "Failed opening file in OTWallet::SaveWallet: %s\n", szFilenameToUse);
-		return false;
-	}
-	*/
-	
-	std::ofstream ofs(szFilenameToUse, std::ios::binary);
-	
-	if (ofs.fail())
-	{
-		OTLog::vOutput(0, "Failed opening file in OTWallet::SaveWallet: %s\n", szFilenameToUse);
-		return false;
-	}
-
-	ofs.clear();
-	
-	// ---------------------------------------------------------------
-	
-	OTASCIIArmor ascName;
-	
-	if (m_strName.Exists()) // name is in the clear in memory, and base64 in storage.
-	{
-		ascName.SetString(m_strName, false); // linebreaks == false
-	}
-	
-	
-	ofs << "<?xml version=\"1.0\"?>\n<wallet name=\"" << ascName.Get() <<
-	"\" version=\"" << m_strVersion.Get() <<
-	"\">\n\n";
-	
-	//mapOfNyms			m_mapNyms;		// So far no file writing for these (and none needed...)
-	//mapOfContracts	m_mapContracts; // This is what I'm testing now, which includes the other 3.
-	//mapOfServers		m_mapServers;
-	//mapOfAccounts		m_mapAccounts; 
-
-	OTPseudonym * pNym = NULL;
-	
-	for (mapOfNyms::iterator ii = m_mapNyms.begin(); ii != m_mapNyms.end(); ++ii)
-	{	
-		pNym = (*ii).second;
-		
-		OT_ASSERT_MSG(NULL != pNym, "NULL pseudonym pointer in OTWallet::m_mapNyms, OTWallet::SaveWallet");
-		
-		pNym->SavePseudonymWallet(ofs);
-	}
-
-	// ---------------------------------------------------------------
-
-	OTContract * pContract = NULL;
-	
-	for (mapOfContracts::iterator ii = m_mapContracts.begin(); ii != m_mapContracts.end(); ++ii)
-	{
-		pContract = (*ii).second;
-		
-		OT_ASSERT_MSG(NULL != pContract, "NULL contract pointer in OTWallet::m_mapContracts, OTWallet::SaveWallet");
-		
-		pContract->SaveContractWallet(ofs);
-
-		//TODO remove this test code---------------
-		// Used for putting new signatures on contracts
-/*
-		{
-			// Right now it's configured to sign with USER public key, not server.
-//			OTString strNewFile, strIdentifier("1"); // This is where I've got the server Nym
-			OTString strNewFile;
-			pContract->GetFilename(strNewFile);
-			strNewFile.Concatenate("NEW");
-		
-//			OTPseudonym theSigningNym;
-//			theSigningNym.SetIdentifier(strIdentifier);
-			
-//			if (theSigningNym.Loadx509CertAndPrivateKey()) // with ID 1 in the certs folder.
-				if (g_pTemporaryNym)
-					pContract->SignContract(*g_pTemporaryNym);						
-
-			//TODO remove this test code.
-			pContract->SaveContract(strNewFile.Get());
-		}
-*/
-		// ----------------------------------------
-	}
-	
-	// ---------------------------------------------------------------
-	
-	OTContract * pServer = NULL;
-	
-	for (mapOfServers::iterator ii = m_mapServers.begin(); ii != m_mapServers.end(); ++ii)
-	{
-		pServer = (*ii).second;
-		
-		OT_ASSERT_MSG(NULL != pServer, "NULL server pointer in OTWallet::m_mapServers, OTWallet::SaveWallet");
-		
-		pServer->SaveContractWallet(ofs);
-		/*
-		//TODO remove this test code---------------
-		// Used for putting new signatures on contracts
-	
-		{
-			OTString strNewFile, strIdentifier("1");
-			pServer->GetFilename(strNewFile);
-			strNewFile.Concatenate("NEW");
-			
-			OTPseudonym theSigningNym;
-			theSigningNym.SetIdentifier(strIdentifier);
-			
-			if (theSigningNym.Loadx509CertAndPrivateKey()) // with ID 1 in the certs folder
-				pServer->SignContract(theSigningNym);						
-			
-			//TODO remove this test code.
-			pServer->SaveContract(strNewFile.Get());
-		}
-		*/
-		// ----------------------------------------
-	}
-	
-	// ---------------------------------------------------------------
-	
-	OTContract * pAccount = NULL;
-	
-	for (mapOfAccounts::iterator ii = m_mapAccounts.begin(); ii != m_mapAccounts.end(); ++ii)
-	{
-		pAccount = (*ii).second;
-		
-		OT_ASSERT_MSG(NULL != pAccount, "NULL account pointer in OTWallet::m_mapAccounts, OTWallet::SaveWallet");
-		
-		pAccount->SaveContractWallet(ofs);
-
-		//TODO remove this test code
-		/*
-		OTString strNewFile;
-		pAccount->GetFilename(strNewFile);
-		strNewFile.Concatenate("NEW");
-		
-		// The others, I merely save them.
-		// But the accounts, I must sign them first.
-		// Only when the account is signed, is the signed portion
-		// updated to match the new account balance and date.
-		if (g_pTemporaryNym)
-		{
-			if (!pAccount->SignContract(*g_pTemporaryNym))
-			{
-				OTLog::Error("Error signing account in OTWallet::SaveWallet\n");
-			}
-		}
-		
-		pAccount->SaveContract(strNewFile.Get());
-		*/
-		// ----------------------------------------
-	}
-	
-	// ---------------------------------------------------------------
-	
-	ofs << "</wallet>\n";
-
-	ofs.close();
-	
-	return true;
-}
 
 
 
@@ -1019,6 +840,183 @@ OTAssetContract * OTWallet::GetAssetContract(const OTIdentifier & theContractID)
 
 
 
+bool OTWallet::SaveContract(OTString & strContract)
+{		
+	OTASCIIArmor ascName;
+	
+	if (m_strName.Exists()) // name is in the clear in memory, and base64 in storage.
+	{
+		ascName.SetString(m_strName, false); // linebreaks == false
+	}
+	
+	
+	strContract.Concatenate("<?xml version=\"1.0\"?>\n<wallet name=\"%s\" version=\"%s\">\n\n", 
+							ascName.Get(), m_strVersion.Get());
+	
+	//mapOfNyms			m_mapNyms;		// So far no file writing for these (and none needed...)
+	//mapOfContracts	m_mapContracts; // This is what I'm testing now, which includes the other 3.
+	//mapOfServers		m_mapServers;
+	//mapOfAccounts		m_mapAccounts; 
+	
+	OTPseudonym * pNym = NULL;
+	
+	for (mapOfNyms::iterator ii = m_mapNyms.begin(); ii != m_mapNyms.end(); ++ii)
+	{	
+		pNym = (*ii).second;
+		
+		OT_ASSERT_MSG(NULL != pNym, "NULL pseudonym pointer in OTWallet::m_mapNyms, OTWallet::SaveContract");
+		
+		pNym->SavePseudonymWallet(strContract);
+	}
+	
+	// ---------------------------------------------------------------
+	
+	OTContract * pContract = NULL;
+	
+	for (mapOfContracts::iterator ii = m_mapContracts.begin(); ii != m_mapContracts.end(); ++ii)
+	{
+		pContract = (*ii).second;
+		
+		OT_ASSERT_MSG(NULL != pContract, "NULL contract pointer in OTWallet::m_mapContracts, OTWallet::SaveContract");
+		
+		pContract->SaveContractWallet(strContract);
+		
+		//TODO remove this test code---------------
+		// Used for putting new signatures on contracts
+		/*
+		 {
+		 // Right now it's configured to sign with USER public key, not server.
+		 //			OTString strNewFile, strIdentifier("1"); // This is where I've got the server Nym
+		 OTString strNewFile;
+		 pContract->GetFilename(strNewFile);
+		 strNewFile.Concatenate("NEW");
+		 
+		 //			OTPseudonym theSigningNym;
+		 //			theSigningNym.SetIdentifier(strIdentifier);
+		 
+		 //			if (theSigningNym.Loadx509CertAndPrivateKey()) // with ID 1 in the certs folder.
+		 if (g_pTemporaryNym)
+		 pContract->SignContract(*g_pTemporaryNym);						
+		 
+		 //TODO remove this test code.
+		 pContract->SaveContract(strNewFile.Get());
+		 }
+		 */
+		// ----------------------------------------
+	}
+	
+	// ---------------------------------------------------------------
+	
+	OTContract * pServer = NULL;
+	
+	for (mapOfServers::iterator ii = m_mapServers.begin(); ii != m_mapServers.end(); ++ii)
+	{
+		pServer = (*ii).second;
+		
+		OT_ASSERT_MSG(NULL != pServer, "NULL server pointer in OTWallet::m_mapServers, OTWallet::SaveContract");
+		
+		pServer->SaveContractWallet(strContract);
+		/*
+		 //TODO remove this test code---------------
+		 // Used for putting new signatures on contracts
+		 
+		 {
+		 OTString strNewFile, strIdentifier("1");
+		 pServer->GetFilename(strNewFile);
+		 strNewFile.Concatenate("NEW");
+		 
+		 OTPseudonym theSigningNym;
+		 theSigningNym.SetIdentifier(strIdentifier);
+		 
+		 if (theSigningNym.Loadx509CertAndPrivateKey()) // with ID 1 in the certs folder
+		 pServer->SignContract(theSigningNym);						
+		 
+		 //TODO remove this test code.
+		 pServer->SaveContract(strNewFile.Get());
+		 }
+		 */
+		// ----------------------------------------
+	}
+	
+	// ---------------------------------------------------------------
+	
+	OTContract * pAccount = NULL;
+	
+	for (mapOfAccounts::iterator ii = m_mapAccounts.begin(); ii != m_mapAccounts.end(); ++ii)
+	{
+		pAccount = (*ii).second;
+		
+		OT_ASSERT_MSG(NULL != pAccount, "NULL account pointer in OTWallet::m_mapAccounts, OTWallet::SaveContract");
+		
+		pAccount->SaveContractWallet(strContract);
+		
+		//TODO remove this test code
+		/*
+		 OTString strNewFile;
+		 pAccount->GetFilename(strNewFile);
+		 strNewFile.Concatenate("NEW");
+		 
+		 // The others, I merely save them.
+		 // But the accounts, I must sign them first.
+		 // Only when the account is signed, is the signed portion
+		 // updated to match the new account balance and date.
+		 if (g_pTemporaryNym)
+		 {
+		 if (!pAccount->SignContract(*g_pTemporaryNym))
+		 {
+		 OTLog::Error("Error signing account in OTWallet::SaveWallet\n");
+		 }
+		 }
+		 
+		 pAccount->SaveContract(strNewFile.Get());
+		 */
+		// ----------------------------------------
+	}
+	
+	// ---------------------------------------------------------------
+	
+	strContract.Concatenate("%s", "</wallet>\n");
+	
+	return true;		
+}
+
+
+
+
+
+
+
+// Pass in the name only, NOT the full path.
+// If you pass NULL, it remembers full path from last time.
+// (Better to do that.)
+//
+bool OTWallet::SaveWallet(const char * szFilename/*=NULL*/)
+{	
+	char * szFilenameToUse = NULL;
+	
+	if (NULL != szFilename)
+		m_strFilename.Set(szFilename);
+	
+	szFilenameToUse = (char *)m_strFilename.Get();
+	
+	OT_ASSERT_MSG(NULL != szFilenameToUse, "Null filename in OTWallet::SaveWallet\n");
+	
+	// ---------------------------------------------------------------
+	
+	bool bSuccess = false;
+	
+	OTString strContract;
+	
+	if (this->SaveContract(strContract))
+		// Wallet file is the only one in data_folder (".") and not a subfolder of that.
+		bSuccess = OTDB::StorePlainString(strContract.Get(), ".", szFilenameToUse); 
+	
+	// ---------------------------------------------------------------
+	
+	return bSuccess;
+}
+
+
 
 bool OTWallet::LoadWallet(const char * szFilename)
 {
@@ -1026,50 +1024,38 @@ bool OTWallet::LoadWallet(const char * szFilename)
 			
 	Release();
 	
+	// --------------------------------------------------------------------
+	
 	// Save this for later... (the full path to this file.)
-	m_strFilename.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), szFilename);
+//	m_strFilename.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), szFilename);
+	
+	m_strFilename.Set(szFilename);
 	
 	// --------------------------------------------------------------------
 	
-	if (!OTLog::ConfirmExactPath(OTLog::Path()))
+	if (false == OTDB::Exists(szFilename))
 	{
-		OTLog::vError("Unable to find data folder: %s\n", OTLog::Path());
-		return false;
-	}
-	
-	if (!OTLog::ConfirmFile(szFilename))
-	{
-		OTLog::vError("Unable to find wallet file: %s\n", szFilename);
-		return false;
-	}
-	
-	// --------------------------------------------------------------------
-	
-	OTStringXML xmlFileContents;
-		
-	std::ifstream in(m_strFilename.Get(), std::ios::binary);
-	
-	if (in.fail())
-	{
-		OTLog::vError("Error opening wallet file: %s\n", m_strFilename.Get());
-		return false;		
-	}
-	
-	std::stringstream buffer;
-	buffer << in.rdbuf();
-	
-	std::string contents(buffer.str());
-	
-	xmlFileContents.Set(contents.c_str());
-	
-	if (xmlFileContents.GetLength() < 2)
-	{
-		OTLog::vError("Error reading wallet file: %s\n", m_strFilename.Get());
+		OTLog::vError("Wallet file does not exist: %s\n", szFilename);
 		return false;
 	}
 	
 	// --------------------------------------------------------------------
 
+	// The directory is "." because unlike every other OT file, the wallet file
+	// doesn't go into a subdirectory, but it goes into the main data_folder itself.
+	// Every other file, however, needs to specify its folder AND filename (and both
+	// of those will be appended to the local path to form the complete file path.)
+	//
+	OTStringXML xmlFileContents(OTDB::QueryPlainString(".", szFilename)); // <=== LOADING FROM DATA STORE.
+	
+	if (xmlFileContents.GetLength() < 2)
+	{
+		OTLog::vError("Error reading wallet file: %s\n",szFilename);
+		return false;
+	}
+
+	// --------------------------------------------------------------------
+	
 	IrrXMLReader* xml = createIrrXMLReader(&xmlFileContents);
 
 	// parse the file until end reached

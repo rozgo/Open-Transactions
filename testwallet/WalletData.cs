@@ -83,4 +83,11 @@ public class WalletData : Storable {
     return ret;
   }
 
+  public static WalletData dynamic_cast(Storable pObject) {
+    IntPtr cPtr = otapiPINVOKE.WalletData_dynamic_cast(Storable.getCPtr(pObject));
+    WalletData ret = (cPtr == IntPtr.Zero) ? null : new WalletData(cPtr, false);
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
 }
