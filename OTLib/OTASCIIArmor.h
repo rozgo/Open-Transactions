@@ -163,7 +163,7 @@ public:
 	OTASCIIArmor & operator=(const OTString & strValue);
 	OTASCIIArmor & operator=(const OTASCIIArmor & strValue);
 	
-	bool LoadFromFile(const OTString & filename);
+	bool LoadFromFile(const OTString & foldername, const OTString & filename);
 	bool LoadFromifstream(const std::ifstream & fin);
 	bool LoadFromString(OTString & theStr, bool bEscaped=false);
 

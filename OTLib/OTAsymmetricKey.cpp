@@ -1261,7 +1261,7 @@ OTAsymmetricKey & OTAsymmetricKey::operator=(const OTAsymmetricKey & rhs)
 
 
 // Load the public key from a .pem file
-bool OTAsymmetricKey::LoadPublicKey(const OTString & strFilename)
+bool OTAsymmetricKey::LoadPublicKey(const OTString & strFoldername, const OTString & strFilename)
 {
 	Release();
 	
@@ -1334,7 +1334,7 @@ bool OTAsymmetricKey::LoadPublicKey(OTString & strFilename)
 
 
 // Load the public key from a x509 stored in a .pem file
-bool OTAsymmetricKey::LoadPublicKeyFromCertFile(const OTString & strFilename)
+bool OTAsymmetricKey::LoadPublicKeyFromCertFile(const OTString & strFoldername, const OTString & strFilename)
 {
 	Release();
 	
@@ -1418,7 +1418,7 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertFile(const OTString & strFilename)
 
 
 // Load the private key from a .pem file
-bool OTAsymmetricKey::LoadPrivateKey(const OTString & strFilename)
+bool OTAsymmetricKey::LoadPrivateKey(const OTString & strFoldername, const OTString & strFilename)
 {
 	Release();
 

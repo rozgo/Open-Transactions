@@ -290,7 +290,7 @@ void OTSignedFile::SetFilename(const OTString & LOCAL_SUBDIR, const OTString & F
 	m_strLocalDir		= LOCAL_SUBDIR;
 	m_strSignedFilename	= FILE_NAME;
 	
-	m_strFilename.Format("%s%s" // transaction/
+	m_strFilename.Format("%s%s" // data_folder/
 						 "%s%s" // nyms/
 						 "%s",  // 5bf9a88c.nym
 						 OTLog::Path(), OTLog::PathSeparator(),

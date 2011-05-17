@@ -345,9 +345,7 @@ uint8_t* OT_base64_decode(const char *input, size_t* out_len, int bLineBreaks)
  return buffer;
  }
  
- 
- I'm not sure of the difference between the BIO and EVP interfaces.
- 
+
  */
 
 
@@ -671,8 +669,9 @@ bool OTASCIIArmor::SetData(const OTData & theData, bool bLineBreaks/*=true*/)
 
 
 // This code reads up the file, discards the bookends, and saves only the gibberish itself.
-bool OTASCIIArmor::LoadFromFile(const OTString & filename)
+bool OTASCIIArmor::LoadFromFile(const OTString & foldername, const OTString & filename)
 {	
+	/*
 	std::ifstream fin(filename.Get(), std::ios::binary);
 		
 	if (!fin.is_open())
@@ -682,6 +681,31 @@ bool OTASCIIArmor::LoadFromFile(const OTString & filename)
 	}
 
 	return LoadFromifstream(fin);	
+	 */
+	
+	// --------------------------------------------------------------------
+	
+	if (false == OTDB::Exists(foldername.Get(), filename.Get()))
+	{
+		OTLog::vError("OTASCIIArmor::LoadFromFile: File does not exist: %s%s%s\n", 
+					  foldername.Get(), OTLog::PathSeparator(), filename.Get());
+		return false;
+	}
+	
+	// --------------------------------------------------------------------
+	//
+	OTString strFileContents(OTDB::QueryPlainString(foldername.Get(), filename.Get())); // <=== LOADING FROM DATA STORE.
+	
+	if (strFileContents.GetLength() < 2)
+	{
+		OTLog::vError("OTASCIIArmor::LoadFromFile: Error reading file: %s%s%s\n", 
+					  foldername.Get(), OTLog::PathSeparator(), filename.Get());
+		return false;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	return LoadFromString(strFileContents);	
 }
 
 // This code reads up the file, discards the bookends, and saves only the gibberish itself.

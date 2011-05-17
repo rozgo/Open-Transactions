@@ -168,7 +168,8 @@ class OTContract
 	
 protected:
 	OTString		m_strName;			// Contract name as shown in the wallet.
-	OTString		m_strFilename;		// Filename for this contract
+	OTString		m_strFoldername;	// Foldername for this contract (nyms, contracts, accounts, etc)
+	OTString		m_strFilename;		// Filename for this contract (usually an ID.)
 	OTIdentifier	m_ID;				// Hash of the contract, including signatures. (the "raw file")
 	OTStringXML		m_xmlUnsigned;		// The Unsigned Clear Text (XML contents without signatures.)
 	OTString		m_strRawFile;		// The complete raw file including signatures.
@@ -285,6 +286,7 @@ public:
 	virtual void GetIdentifier(OTString & theIdentifier);    // The Contract ID is a hash of the contract raw file.
 	
 	void GetFilename(OTString & strFilename);
+	void GetFoldername(OTString & strFoldername);
 	
 	
 	// If you have a contract in string form, and you don't know what subclass it is,
@@ -297,7 +299,8 @@ public:
 	// assumes m_strFilename is already set. Then it reads that file into a string.
 	// Then it parses that string into the object.	
 	virtual bool LoadContract();
-	bool LoadContract(const char * szFilename);
+//	bool LoadContract(const char * szFilename);
+	bool LoadContract(const char * szFoldername, const char * szFilename);
 	
 	bool LoadContractFromString(const OTString & theStr); // Just like it says. If you have a contract in
 														  // string form, pass it in here to import it.
@@ -311,8 +314,8 @@ public:
 	bool SaveContract(); // This saves the Contract to its own internal member string, m_strRawFile (and does
 						 // NOT actually save it to a file.)
 	bool SaveContract(OTString & strContract); // Saves the contract to any string you want to pass in.
-	bool SaveContract(const char * szFilename); // Saves the contract to its internal member, then saves 
-												// that to a specific filename
+	bool SaveContract(const char * szFoldername, const char * szFilename); // Saves the contract to its internal member, then saves 
+																			// that to a specific filename
 	
 	// Update the internal unsigned contents based on the member variables
 	virtual void UpdateContents(); // default behavior does nothing.

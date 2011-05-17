@@ -165,7 +165,11 @@ extern "C"
 // Which storage mechanism are we building?
 // (Option is for both...)
 //
+
+#ifndef _WIN32 // Until I get it working on Windows.
 #define OTDB_MESSAGE_PACK   1
+#endif
+
 #define OTDB_PROTOCOL_BUFFERS 1
 //#define OTDB_JSON_PACKING 1 // coming soon.
 

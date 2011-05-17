@@ -1172,53 +1172,71 @@ bool OTContract::VerifySignature(const EVP_PKEY * pkey, const OTSignature & theS
 
 // Sign the Contract using a private key from a file.
 // theSignature will contain the output.
-bool OTContract::SignContract(const char * szFilename, OTSignature & theSignature)
+bool OTContract::SignContract(const char * szFoldername, const char * szFilename, OTSignature & theSignature)
 {	
+	OT_ASSERT(NULL != szFoldername);
 	OT_ASSERT(NULL != szFilename);
 	
-//	FILE * fp = NULL; // _WIN32
 	EVP_PKEY * pkey = NULL; 
 		
-/*
-	// Read private key 
-#ifdef _WIN32
-	errno_t err = fopen_s(&fp, szFilename, "rb"); 
-#else
-	fp = fopen (szFilename, "r"); 
-#endif
-
-	if (NULL == fp)
-	{ 
-		OTLog::Error("Error opening private key in OTContract::SignContract.\n"); 
-		return false; 
-	} 
-	
-    pkey = PEM_read_PrivateKey(fp, NULL, NULL, NULL); 
-	
-	fclose (fp); 
-*/
+	/*
 	BIO *bio = BIO_new( BIO_s_file() );
 	
 	OT_ASSERT(NULL != bio);
 	
 	BIO_read_filename( bio, szFilename );
+	*/
+	// --------------------------------------------------------------------
 	
-	pkey = PEM_read_bio_PrivateKey( bio, NULL, NULL, NULL );
+	if (false == OTDB::Exists(szFoldername, szFilename))
+	{
+		OTLog::vError("OTContract::SignContract: File does not exist: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
+		return false;
+	}
+	
+	// --------------------------------------------------------------------
+	//
+	std::string strFileContents(OTDB::QueryPlainString(szFoldername, szFilename)); // <=== LOADING FROM DATA STORE.
+	
+	if (strFileContents.length() < 2)
+	{
+		OTLog::vError("OTContract::SignContract: Error reading file: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
+		return false;
+	}
+	// --------------------------------------------------------------------
+
+	// Create a new memory buffer on the OpenSSL side
+	BIO *bio = BIO_new(BIO_s_mem());
+	OT_ASSERT(NULL != bio);
+	//BIO_puts(bmem, Get());
+	
+	int nPutsResult = BIO_puts(bio, strFileContents.c_str());
+
+	// --------------------------------------------------------------------
+		
+	if (nPutsResult > 0)
+	{
+		pkey = PEM_read_bio_PrivateKey( bio, NULL, NULL, NULL );
+		
+		if (NULL == pkey) 
+		{ 
+			OTLog::Error("Error reading private key from BIO in OTContract::SignContract.\n"); 
+			BIO_free_all(bio);
+			return false; 
+		} 
+		
+		bool bSigned = SignContract(pkey, theSignature, m_strSigHashType);
+		
+		EVP_PKEY_free (pkey);  pkey = NULL;
+		BIO_free_all(bio);
+		
+		return bSigned;
+	}
 	
 	BIO_free_all(bio);
-	
-	if (NULL == pkey) 
-	{ 
-		OTLog::Error("Error reading private key in OTContract::SignContract.\n"); 
-		return false; 
-	} 
-	
-	bool bSigned = SignContract(pkey, theSignature, m_strSigHashType);
-	
-	EVP_PKEY_free (pkey); 
-	pkey = NULL;
-	
-	return bSigned;
+	return false;
 }
 
 
@@ -1297,8 +1315,9 @@ bool OTContract::VerifySignature(const OTAsymmetricKey & theKey, const OTSignatu
 
 // Presumably the Signature passed in here was just loaded as part of this contract and is
 // somewhere in m_listSignatures. Now it is being verified.
-bool OTContract::VerifySignature(const char * szFilename, const OTSignature & theSignature) const
+bool OTContract::VerifySignature(const char * szFoldername, const char * szFilename, const OTSignature & theSignature) const
 {
+	OT_ASSERT_MSG(NULL != szFoldername, "Null foldername pointer passed to OTContract::VerifySignature");
 	OT_ASSERT_MSG(NULL != szFilename, "Null filename pointer passed to OTContract::VerifySignature");
 	
 //	FILE	 * fp	= NULL; 
@@ -1308,35 +1327,56 @@ bool OTContract::VerifySignature(const char * szFilename, const OTSignature & th
 	// Read public key
 	OTLog::Output(2, "Reading public key from certfile in order to verify signature...\n"); 
 
+	/*
 	BIO * bio = BIO_new( BIO_s_file() );
 	OT_ASSERT(NULL != bio);
 	BIO_read_filename( bio, szFilename );
+	*/
+	
+	// --------------------------------------------------------------------
+	
+	if (false == OTDB::Exists(szFoldername, szFilename))
+	{
+		OTLog::vError("OTContract::VerifySignature: File does not exist: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
+		return false;
+	}
+	
+	// --------------------------------------------------------------------
+	//
+	std::string strFileContents(OTDB::QueryPlainString(szFoldername, szFilename)); // <=== LOADING FROM DATA STORE.
+	
+	if (strFileContents.length() < 2)
+	{
+		OTLog::vError("OTContract::VerifySignature: Error reading file: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
+		return false;
+	}
+	// --------------------------------------------------------------------
+	
+	// Create a new memory buffer on the OpenSSL side
+	BIO *bio = BIO_new(BIO_s_mem());
+	OT_ASSERT(NULL != bio);
+	//BIO_puts(bmem, Get());
+	
+	int nPutsResult = BIO_puts(bio, strFileContents.c_str());
+	
+	// --------------------------------------------------------------------
+	if (nPutsResult <= 0)
+	{
+		BIO_free_all(bio);
+		return false;
+	}
+	
 	x509 = PEM_read_bio_X509(bio, NULL, NULL, NULL); 
 	BIO_free_all(bio);
 	
-/*
- // Older version. Works but uses fopen.
- 
-#ifdef _WIN32
-	errno_t err = fopen_s(&fp, szFilename, "rb"); 
-#else
-	fp = fopen (szFilename, "r"); 
-#endif
-
-	if (fp == NULL) 
-	{ 
-		OTLog::Error("Error opening cert file in OTContract::VerifySignature.\n"); 
-		return false; 
-	} 
-	
-	x509 = PEM_read_X509(fp, NULL, NULL, NULL); 
-	
-	fclose (fp); 
- */
+	// --------------------------
 	
 	if (x509 == NULL) 
 	{ 
-		OTLog::vError("Failed reading x509 out of cert file: %s\n", szFilename); 
+		OTLog::vError("OTContract::VerifySignature: Failed reading x509 out of cert file: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
 		return false; 
 	}
 	
@@ -1346,7 +1386,7 @@ bool OTContract::VerifySignature(const char * szFilename, const OTSignature & th
 	
 	if (pkey == NULL) 
 	{ 
-		OTLog::vError("Failed reading public key from x509 from certfile: %s\n", szFilename); 
+		OTLog::vError("OTContract::VerifySignature: Failed reading public key from x509 from certfile: %s\n", szFilename); 
 	} 
 	else 
 	{
