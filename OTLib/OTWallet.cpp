@@ -1009,7 +1009,7 @@ bool OTWallet::SaveWallet(const char * szFilename/*=NULL*/)
 	
 	if (this->SaveContract(strContract))
 		// Wallet file is the only one in data_folder (".") and not a subfolder of that.
-		bSuccess = OTDB::StorePlainString(strContract.Get(), ".", szFilenameToUse); 
+		bSuccess = OTDB::StorePlainString(strContract.Get(), ".", szFilenameToUse); // <==== Store Plain String
 	
 	// ---------------------------------------------------------------
 	

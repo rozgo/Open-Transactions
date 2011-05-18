@@ -511,89 +511,40 @@ bool OTMarket::LoadMarket()
 	
 	OTIdentifier	MARKET_ID(*this);
 	OTString		str_MARKET_ID(MARKET_ID);
+
 	// ------------------------------------------------------------------------
 	
-	bool bFolderExists = OTLog::ConfirmOrCreateFolder(OTLog::MarketFolder()); // <path>/markets is where all markets go.
+	const char * szFoldername	= OTLog::MarketFolder();
+	const char * szFilename		= str_MARKET_ID.Get();
 	
-	if (!bFolderExists)
-	{
-		OTLog::vError("Unable to create or confirm folder \"%s\" in order to save Market:\n%s\n",
-					  OTLog::MarketFolder(), str_MARKET_ID.Get());
-		return false;
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	OTString strLocalPath;
-	strLocalPath.Format("%s%s%s", OTLog::MarketFolder(), OTLog::PathSeparator(), str_MARKET_ID.Get());
-	
-	// ------------------------------------------------------------------------
-	
-	OTString strFullPath;
-	strFullPath.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), strLocalPath.Get());
-	
-	std::ifstream in(strFullPath.Get(), std::ios::binary);
-	
-	if (in.fail())
-	{
-		OTLog::vError("Error opening file in OTMarket::LoadMarket: %s\n",
-					  strFullPath.Get());
-		return false;
-	}
-	
-	std::stringstream buffer;
-	buffer << in.rdbuf();
-	
-	std::string contents(buffer.str());
-	
-	OTString strRawFile = contents.c_str();
+	// --------------------------------------------------------------------
 	
 	bool bSuccess = false;
 	
-	if (strRawFile.GetLength())
-	{
-		bSuccess = LoadContractFromString(strRawFile);
-		
-		if (bSuccess)
-		{
-			bSuccess = VerifySignature(*(GetCron()->GetServerNym()));
-		}
-	}
+	bSuccess = LoadContract(szFoldername, szFilename);
+	
+	if (bSuccess)
+		bSuccess = VerifySignature(*(GetCron()->GetServerNym()));
 	
 	return bSuccess;
-	
 }
 
 
 
-
 bool OTMarket::SaveMarket()
-{	
+{
 	OT_ASSERT(NULL != GetCron());
 	OT_ASSERT(NULL != GetCron()->GetServerNym());
 	
 	OTIdentifier	MARKET_ID(*this);
 	OTString		str_MARKET_ID(MARKET_ID);
+
 	// ------------------------------------------------------------------------
 	
-	bool bFolderExists = OTLog::ConfirmOrCreateFolder(OTLog::MarketFolder()); // <path>/markets is where all markets go.
-	
-	if (!bFolderExists)
-	{
-		OTLog::vError("Unable to create or confirm folder \"%s\" in order to save Market:\n%s\n",
-					  OTLog::MarketFolder(), str_MARKET_ID.Get());
-		return false;
-	}
-	
+	const char * szFoldername	= OTLog::MarketFolder();
+	const char * szFilename		= str_MARKET_ID.Get();
+		
 	// ------------------------------------------------------------------------
-	
-	OTString strLocalPath;
-	strLocalPath.Format("%s%s%s", OTLog::MarketFolder(), OTLog::PathSeparator(), str_MARKET_ID.Get());
-	
-	// ------------------------------------------------------------------------
-	
-	OTString strFullPath;
-	strFullPath.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), strLocalPath.Get());
 	
 	// Remember, if the market has changed, the new contents will not be written anywhere
 	// until that market has been signed. So I have to re-sign here, or it would just save
@@ -601,15 +552,17 @@ bool OTMarket::SaveMarket()
 	ReleaseSignatures();
 	
 	// Sign it, save it internally to string, and then save that out to the file.
-	if (!SignContract(*(GetCron()->GetServerNym())) || !SaveContract() || !SaveContract(strFullPath.Get()))
+	if (!SignContract(*(GetCron()->GetServerNym())) || !SaveContract() || !SaveContract(szFoldername, szFilename))
 	{
-		OTLog::vError("Error saving Market:\n%s\n", strFullPath.Get());
+		OTLog::vError("Error saving Market:\n%s%s%s\n", szFoldername,
+					  OTLog::PathSeparator(), szFilename);
 		return false;
 	}
 	else
 		return true;	
 }
-
+								   
+								   
 
 // A Market's ID is based on the asset type, the currency type, and the scale.
 void OTMarket::GetIdentifier(OTIdentifier & theIdentifier)
@@ -1875,6 +1828,7 @@ OTMarket::OTMarket(const char * szFilename) : OTContract()
 	InitMarket();
 	
 	m_strFilename.Set(szFilename);
+	m_strFoldername.Set(OTLog::MarketFolder());
 }
 
 

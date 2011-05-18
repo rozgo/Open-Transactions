@@ -162,98 +162,40 @@ using namespace std;
 // used for signing and verifying..
 bool OTCron::LoadCron()
 {
-	static const char * szCronFile = "OT-CRON.crn"; // todo stop hardcoding filenames.
+	const char * szFoldername	= OTLog::CronFolder();
+	const char * szFilename		= "OT-CRON.crn"; // todo stop hardcoding filenames.
 	
 	OT_ASSERT(NULL != GetServerNym());
-	
-	// ------------------------------------------------------------------------
-	
-	bool bFolderExists = OTLog::ConfirmOrCreateFolder(OTLog::CronFolder()); // <path>/cron is where all cronlogs go.
-	
-	if (!bFolderExists)
-	{
-		OTLog::vError("Unable to create or confirm folder \"%s\" in order to load Cron file.\n",
-					  OTLog::CronFolder());
-		return false;
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	OTString strCronfileLocalPath;
-	strCronfileLocalPath.Format("%s%s%s", OTLog::CronFolder(), OTLog::PathSeparator(), szCronFile);
-	
-	// ------------------------------------------------------------------------
-	
-	OTString strCronfilePath;
-	strCronfilePath.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), strCronfileLocalPath.Get());
-	
-	std::ifstream in(strCronfilePath.Get(), std::ios::binary);
-	
-	if (in.fail())
-	{
-		OTLog::vError("Error opening file in OTCron::LoadCron: %s\n",
-					  strCronfilePath.Get());
-		return false;
-	}
-	
-	std::stringstream buffer;
-	buffer << in.rdbuf();
-	
-	std::string contents(buffer.str());
-	
-	OTString strRawFile = contents.c_str();
+		
+	// --------------------------------------------------------------------
 	
 	bool bSuccess = false;
 
-	if (strRawFile.GetLength())
-	{
-		bSuccess = LoadContractFromString(strRawFile);
+	bSuccess = LoadContract(szFoldername, szFilename);
 		
-		if (bSuccess)
-		{
-			bSuccess = VerifySignature(*GetServerNym());
-		}
-	}
+	if (bSuccess)
+		bSuccess = VerifySignature(*GetServerNym());
 	
 	return bSuccess;
-	
-	// ------------------------------------------------------------------------
 }
 
 
 bool OTCron::SaveCron()
 {
-	static const char * szCronFile = "OT-CRON.crn"; // todo stop hardcoding filenames.
+	const char * szFoldername	= OTLog::CronFolder();
+	const char * szFilename		= "OT-CRON.crn"; // todo stop hardcoding filenames.
 	
 	OT_ASSERT(NULL != GetServerNym());
 	
 	// ------------------------------------------------------------------------
 	
-	bool bFolderExists = OTLog::ConfirmOrCreateFolder(OTLog::CronFolder()); // <path>/cron is where all cronlogs go.
-	
-	if (!bFolderExists)
-	{
-		OTLog::vError("Unable to create or confirm folder \"%s\" in order to save Cron file.\n",
-					  OTLog::CronFolder());
-		return false;
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	OTString strCronfileLocalPath;
-	strCronfileLocalPath.Format("%s%s%s", OTLog::CronFolder(), OTLog::PathSeparator(), szCronFile);
-	
-	// ------------------------------------------------------------------------
-	
-	OTString strCronfilePath;
-	strCronfilePath.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), strCronfileLocalPath.Get());
-	
 	ReleaseSignatures();
 
 	// Sign it, save it internally to string, and then save that out to the file.
-	if (!SignContract(*m_pServerNym) || !SaveContract() || !SaveContract(strCronfilePath.Get()))
+	if (!SignContract(*m_pServerNym) || !SaveContract() || !SaveContract(szFoldername, szFilename))
 	{
-		OTLog::vError("Error saving main Cronfile:\n%s\n", strCronfilePath.Get());
+		OTLog::vError("Error saving main Cronfile:\n%s%s%s\n", szFoldername,
+					  OTLog::PathSeparator(), szFilename);
 		return false;
 	}
 	else
@@ -885,6 +827,7 @@ OTCron::OTCron(const char * szFilename) : OTContract()
 	m_pServerNym	= NULL;  // just here for convenience, not responsible to cleanup this pointer.
 	InitCron();
 	
+	m_strFoldername.Set(OTLog::CronFolder());
 	m_strFilename.Set(szFilename);
 	OTLog::Output(3, "Finished calling InitCron.\n");
 }

@@ -312,11 +312,12 @@ OTContract::OTContract()
 	Initialize();
 }
 
-OTContract::OTContract(const OTString & name, const OTString & filename, const OTString & strID)
+OTContract::OTContract(const OTString & name, const OTString & foldername, const OTString & filename, const OTString & strID)
 {
 	Initialize();
 	
 	m_strName			= name;
+	m_strFoldername		= foldername;
 	m_strFilename		= filename;
 	
 	m_ID.SetString(strID);
@@ -390,32 +391,21 @@ OTContract::~OTContract()
 
 
 
-
-
+	
 bool OTContract::SaveToContractFolder()
 {
-	OTString strID, strFilename;
+	OTString strFoldername(OTLog::ContractFolder()), strFilename;
 	
-	GetIdentifier(strID);
-	
-	strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-					   OTLog::ContractFolder(),
-					   OTLog::PathSeparator(), strID.Get());
-	
-	bool bFolderExists = OTLog::ConfirmOrCreateFolder(OTLog::ContractFolder()); // <path>/contracts is where all contracts go.
-	
-	if (!bFolderExists)
-	{
-		OTLog::vError("Unable to create or confirm folder \"%s\" in SaveToContractFolder:\n%s\n",
-					  OTLog::ContractFolder(), strFilename.Get());
-		return false;
-	}
-	
-	m_strFilename = strFilename;
+	GetIdentifier(strFilename);
+
+	// -------------------------------------
+	// These are already set in SaveContract(), called below.
+//	m_strFoldername	= strFoldername;
+//	m_strFilename	= strFilename;
 	
 	OTLog::Output(2, "OTContract::SaveToContractFolder: Saving asset contract to disk...\n");
 	
-	return SaveContract(strFilename.Get());
+	return SaveContract(strFoldername.Get(), strFilename.Get());
 }
 
 
@@ -1523,31 +1513,30 @@ bool OTContract::SaveContract(OTString & strContract)
 }
 
 
-bool OTContract::SaveContract(const char * szFilename)
+
+	
+bool OTContract::SaveContract(const char * szFoldername, const char * szFilename)
 {
 	OT_ASSERT_MSG(NULL != szFilename, "Null filename sent to OTContract::SaveContract\n");
+	OT_ASSERT_MSG(NULL != szFoldername, "Null foldername sent to OTContract::SaveContract\n");
 	
+	m_strFoldername.Set(szFoldername);
 	m_strFilename.Set(szFilename);
+	
+	// --------------------------------------------------------------------
+	OTString strFinal;
+	SaveContract(strFinal);
 
-/*
-	FILE* fl = NULL; // _WIN32
-
-#ifdef _WIN32
-	errno_t err = fopen_s(&fl, szFilename, "wb"); 
-#else
-	fl = fopen (szFilename, "w"); 
-#endif
-
-	if (NULL == fl)
+	bool bSaved = OTDB::StorePlainString(strFinal.Get(), szFoldername, szFilename);
+	
+	if (!bSaved)
 	{
-		OTLog::vError("Error opening file in OTContract::SaveContract: %s\n", szFilename);
+		OTLog::vError("OTContract::SaveContract: Error saving file: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
 		return false;
 	}
-*/
- 
-	// --------
-	// Here's where the serialization code would be changed to CouchDB or whatever.
-	// In a key/value database, szFilename is the "key" and strFinal.Get() is the "value".
+	// --------------------------------------------------------------------
+/*
 	std::ofstream ofs(szFilename, std::ios::binary);
 	
 	if (ofs.fail())
@@ -1563,6 +1552,7 @@ bool OTContract::SaveContract(const char * szFilename)
 	
 	ofs << strFinal.Get();
 	ofs.close();
+ */
 	// --------
 
 	/*
@@ -1601,6 +1591,11 @@ bool OTContract::LoadContractFromString(const OTString & theStr)
 }
 
 
+	
+
+	
+	
+	
 // The entire Raw File, signatures and all, is used to calculate the hash 
 // value that becomes the ID of the contract. If you change even one letter,
 // then you get a different ID.
@@ -1609,6 +1604,33 @@ bool OTContract::LoadContractFromString(const OTString & theStr)
 // but instead is chosen at random when the account is created.
 bool OTContract::LoadContractRawFile()
 {	
+	const char * szFoldername = m_strFoldername.Get();
+	const char * szFilename = m_strFilename.Get();
+	
+	if (!m_strFoldername.Exists() || !m_strFilename.Exists())
+		return false;
+	
+	// --------------------------------------------------------------------
+	
+	if (false == OTDB::Exists(szFoldername, szFilename))
+	{
+		OTLog::vError("OTContract::LoadContractRawFile: File does not exist: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
+		return false;
+	}
+	
+	// --------------------------------------------------------------------
+	//
+	std::string strFileContents(OTDB::QueryPlainString(szFoldername, szFilename)); // <=== LOADING FROM DATA STORE.
+	
+	if (strFileContents.length() < 2)
+	{
+		OTLog::vError("OTContract::LoadContractRawFile: Error reading file: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
+		return false;
+	}
+	// --------------------------------------------------------------------
+/*
 	std::ifstream in(m_strFilename.Get(), std::ios::binary);
 	
 	if (in.fail())
@@ -1622,8 +1644,8 @@ bool OTContract::LoadContractRawFile()
 	buffer << in.rdbuf();
 	
 	std::string contents(buffer.str());
-	
-	m_strRawFile = contents.c_str();
+*/
+	m_strRawFile = strFileContents.c_str();
 	
 	if (m_strRawFile.GetLength())
 		return true;
@@ -1632,20 +1654,21 @@ bool OTContract::LoadContractRawFile()
 }
 
 
-bool OTContract::LoadContract(const char * szFilename)
+bool OTContract::LoadContract(const char * szFoldername, const char * szFilename)
 {
 	Release();
 	
+	m_strFoldername.Set(szFoldername);
 	m_strFilename.Set(szFilename);
 	
 	// --------------------------------------------
-	
+	/*
 	if (false == OTLog::ConfirmExactPath(m_strFilename.Get()))
 	{
 		OTLog::vOutput(3, "LoadContract: File does not exist: %s\n", m_strFilename.Get());
 		return false;
 	}
-	
+	*/
 	// --------------------------------------------
 	
 	// opens m_strFilename and reads into m_strRawFile
@@ -1653,7 +1676,8 @@ bool OTContract::LoadContract(const char * szFilename)
 		return ParseRawFile(); // Parses m_strRawFile into the various member variables.
 	else 
 	{
-		OTLog::vError("Failed loading raw contract file: %s\n", m_strFilename.Get());
+		OTLog::vError("Failed loading raw contract file: %s%s%s\n", 
+					  m_strFoldername.Get(), OTLog::PathSeparator(), m_strFilename.Get());
 	}
 
 	return false;
@@ -1685,7 +1709,8 @@ bool OTContract::ParseRawFile()
 	
 	if (!m_strRawFile.GetLength())
 	{
-		OTLog::vError("Empty m_strRawFile in OTContract::ParseRawFile. Filename: %s.\n", m_strFilename.Get());
+		OTLog::vError("Empty m_strRawFile in OTContract::ParseRawFile. Filename: %s%s%s.\n", 
+					  m_strFoldername.Get(), OTLog::PathSeparator(), m_strFilename.Get());
 		return false;
 	}
 	

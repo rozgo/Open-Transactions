@@ -154,6 +154,7 @@ extern "C"
 
 #include "OTSignature.h"
 #include "OTStringXML.h"
+#include "OTStorage.h"
 
 class OTPseudonym;
 class OTIdentifier;

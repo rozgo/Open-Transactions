@@ -232,65 +232,37 @@ bool OTCronItem::ProcessCron()
 }
 
 
+
 OTCronItem * OTCronItem::LoadCronReceipt(const long & lTransactionNum)
 {
+	OTString strFilename;
+	strFilename.Format("%ld.crn", lTransactionNum);
 	
-	// ------------------------------------------------------------------------
+	const char * szFoldername	= OTLog::CronFolder();
+	const char * szFilename		= strFilename.Get();
+		
+	// --------------------------------------------------------------------
 	
-	bool bFolderExists = OTLog::ConfirmOrCreateFolder(OTLog::CronFolder()); // <path>/cron is where all cronlogs go.
-	
-	if (!bFolderExists)
+	if (false == OTDB::Exists(szFoldername, szFilename))
 	{
-		OTLog::vError("Unable to create or confirm folder \"%s\"\n in order to load Cron Receipt %ld.\n",
-					  OTLog::CronFolder(), lTransactionNum);
+		OTLog::vError("OTCronItem::LoadCronReceipt: File does not exist: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
 		return NULL;
 	}
 	
-	// ------------------------------------------------------------------------
+	// --------------------------------------------------------------------
+	//
+	OTString strFileContents(OTDB::QueryPlainString(szFoldername, szFilename)); // <=== LOADING FROM DATA STORE.
 	
-	OTString strCronItemLocalPath;
-	strCronItemLocalPath.Format("%s%s%ld.crn", OTLog::CronFolder(), 
-								OTLog::PathSeparator(), lTransactionNum);
-	
-	bool bFileExists = OTLog::ConfirmFile(strCronItemLocalPath.Get());
-	
-	if (!bFileExists)
+	if (strFileContents.GetLength() < 2)
 	{
-		OTLog::vError("Attempted to load non-existent Cron Record for transaction %ld in folder %s.\n",
-					  lTransactionNum, strCronItemLocalPath.Get());
+		OTLog::vError("OTCronItem::LoadCronReceipt: Error reading file: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
 		return NULL;
 	}
-	
-	// ------------------------------------------------------------------------
-	
-	OTString strCronItemPath;
-	strCronItemPath.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-						   strCronItemLocalPath.Get());
-	
-	std::ifstream in(strCronItemPath.Get(), std::ios::binary);
-	
-	if (in.fail())
-	{
-		OTLog::vError("Error opening file in OTCronItem::LoadCronReceipt: %s\n",
-					  strCronItemPath.Get());
-		return NULL;
-	}
-	
-	std::stringstream buffer;
-	buffer << in.rdbuf();
-	
-	std::string contents(buffer.str());
-	
-	OTString strRawFile = contents.c_str();
-	
-	if (strRawFile.GetLength())
-		return OTCronItem::NewCronItem(strRawFile);
-	
-	return NULL;
-	
-	// ------------------------------------------------------------------------
+	else
+		return OTCronItem::NewCronItem(strFileContents);
 }
-
 
 
 // When first adding anything to Cron, a copy needs to be saved in a folder somewhere.
@@ -302,6 +274,40 @@ OTCronItem * OTCronItem::LoadCronReceipt(const long & lTransactionNum)
 
 bool OTCronItem::SaveCronReceipt()
 {
+	OTString strFilename;
+	strFilename.Format("%ld.crn", GetTransactionNum());
+	
+	const char * szFoldername	= OTLog::CronFolder();
+	const char * szFilename		= strFilename.Get();
+	
+	// ------------------------------------------------------------------------
+	
+	OTString strCronItemLocalPath;
+	strCronItemLocalPath.Format("%s%s%ld.crn", OTLog::CronFolder(), OTLog::PathSeparator(), GetTransactionNum());
+	
+	bool bFileExists = OTLog::ConfirmFile(strCronItemLocalPath.Get());
+	
+	if (bFileExists)
+	{
+		OTLog::vError("Cron Record exists for transaction %ld in folder %s,\nyet attempted to record it again.\n",
+					  GetTransactionNum(), strCronItemLocalPath.Get());
+		return false;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	OTString strFinal;
+	SaveContract(strFinal);
+	
+	bool bSaved = OTDB::StorePlainString(strFinal.Get(), szFoldername, szFilename);
+	
+	if (!bSaved)
+	{
+		OTLog::vError("OTContract::SaveContract: Error saving file: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
+		return false;
+	}
+	// --------------------------------------------------------------------
 	
 	// ------------------------------------------------------------------------
 
@@ -314,20 +320,6 @@ bool OTCronItem::SaveCronReceipt()
 		return false;
 	}
 	
-	// ------------------------------------------------------------------------
-
-	OTString strCronItemLocalPath;
-	strCronItemLocalPath.Format("%s%s%ld.crn", OTLog::CronFolder(), OTLog::PathSeparator(), GetTransactionNum());
-	
-	bool bFileExists = OTLog::ConfirmFile(strCronItemLocalPath.Get());
-	
-	if (bFileExists)
-	{
-		OTLog::vError("Cron Record exists for transaction %ld in folder %s,\nyet attempted to record it again.\n",
-					  GetTransactionNum(), strCronItemLocalPath.Get());
-		return false;
-	}
-
 	// ------------------------------------------------------------------------
 	
 	OTString strCronItemPath;

@@ -727,7 +727,7 @@ bool scope CPPCAT3(Add,name)(name & theDataObject) { CPPCAT(list_,CPPCAT3(name,s
 	\
 	bool scope Remove##name(size_t nIndex) \
 		{ if ((nIndex >= 0) && (nIndex < list_##name##s.size())) \
-			{ list_##name##s.erase(list_##name##s.begin() + nIndex); return true; } return false; } \
+			{ list_##name##s.erase(list_##name##s.begin() + nIndex); return true; } else return false; } \
 	\
 	bool scope Add##name(name & disownObject) \
 		{ PointerTo##name theP; theP.set(&disownObject); list_##name##s.push_back(theP); return true; }
