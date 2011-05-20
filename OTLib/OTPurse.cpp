@@ -333,6 +333,127 @@ void OTPurse::Release()
 	OTContract::Release();
 }
 
+/*	
+ OTIdentifier	m_UserID;	// Optional
+ OTIdentifier	m_ServerID;	// Mandatory
+ OTIdentifier	m_AssetID;	// Mandatory
+ */
+
+bool OTPurse::LoadContract()
+{
+	return LoadPurse();
+}
+
+
+bool OTPurse::LoadPurse(const char * szServerID/*=NULL*/, const char * szUserID/*=NULL*/, const char * szAssetTypeID/*=NULL*/)
+{
+	if (!m_strFoldername.Exists())
+		m_strFoldername.Set(OTLog::PurseFolder());
+	// -----------------------------------------
+	OTString strServerID(m_ServerID), strUserID(m_UserID), strAssetTypeID(m_AssetID);
+	
+	if (NULL != szServerID)
+		strServerID = szServerID;
+	if (NULL != szUserID)
+		strUserID = szUserID;
+	if (NULL != szAssetTypeID)
+		strAssetTypeID = szAssetTypeID;
+	// -------------------------------
+	if (!m_strFilename.Exists())
+	{
+		m_strFilename.Format("%s%s%s%s%s", strServerID.Get(), OTLog::PathSeparator(), 
+							 strUserID.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
+	}
+	
+	const char * szFolder1name	= OTLog::PurseFolder();
+	const char * szFolder2name	= strServerID.Get();
+	const char * szFolder3name	= strUserID.Get();
+	const char * szFilename		= strAssetTypeID.Get();
+	
+	// --------------------------------------------------------------------
+	
+	if (false == OTDB::Exists(szFolder1name, szFolder2name, szFolder3name, szFilename))
+	{
+		OTLog::vError("OTPurse::LoadPurse: File does not exist: %s%s%s%s%s%s%s\n", 
+					  szFolder1name, OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), 
+					  szFolder3name, OTLog::PathSeparator(), szFilename);
+		return false;
+	}
+	
+	// --------------------------------------------------------------------
+	//
+	std::string strFileContents(OTDB::QueryPlainString(szFolder1name, szFolder2name, szFolder3name, szFilename)); // <=== LOADING FROM DATA STORE.
+	
+	if (strFileContents.length() < 2)
+	{
+		OTLog::vError("OTPurse::LoadPurse: Error reading file: %s%s%s%s%s%s%s\n", 
+					  szFolder1name, OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), 
+					  szFolder3name, OTLog::PathSeparator(), szFilename);
+		return false;
+	}
+	// --------------------------------------------------------------------
+	
+	OTString strRawFile(strFileContents.c_str());
+	
+	return LoadContractFromString(strRawFile);
+}
+
+
+
+bool OTPurse::SavePurse(const char * szServerID/*=NULL*/, const char * szUserID/*=NULL*/, const char * szAssetTypeID/*=NULL*/)
+{
+	if (!m_strFoldername.Exists())
+		m_strFoldername.Set(OTLog::PurseFolder());
+	// -----------------------------------------
+	OTString strServerID(m_ServerID), strUserID(m_UserID), strAssetTypeID(m_AssetID);
+	
+	if (NULL != szServerID)
+		strServerID = szServerID;
+	if (NULL != szUserID)
+		strUserID = szUserID;
+	if (NULL != szAssetTypeID)
+		strAssetTypeID = szAssetTypeID;
+	// -------------------------------
+	if (!m_strFilename.Exists())
+	{
+		m_strFilename.Format("%s%s%s%s%s", strServerID.Get(), OTLog::PathSeparator(), 
+							 strUserID.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
+	}
+	
+	const char * szFolder1name	= OTLog::PurseFolder();
+	const char * szFolder2name	= strServerID.Get();
+	const char * szFolder3name	= strUserID.Get();
+	const char * szFilename		= strAssetTypeID.Get();
+	
+	// --------------------------------------------------------------------
+	
+	OTString strRawFile;
+	
+	// Save it internally to string, and then save that out to the file.
+	if (!SaveContract() || !SaveContract(strRawFile))
+	{
+		OTLog::vError("Error saving Pursefile (to string):\n%s%s%s%s%s%s%s\n", szFolder1name,
+					  OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), 
+					  szFolder3name, OTLog::PathSeparator(), szFilename);
+		return false;
+	}
+	
+	// --------------------------------------------------------------------
+	//
+	bool bSaved = OTDB::StorePlainString(strRawFile.Get(), szFolder1name, szFolder2name,  
+										 szFolder3name, szFilename); // <=== SAVING TO DATA STORE.
+	if (!bSaved)
+	{
+		OTLog::vError("OTPurse::SavePurse: Error writing to file: %s%s%s%s%s%s%s\n", szFolder1name,
+					  OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), 
+					  szFolder3name, OTLog::PathSeparator(), szFilename);
+		return false;
+	}
+	// --------------------------------------------------------------------
+	
+	return true;
+}
+
 
 
 int OTPurse::ProcessXMLNode(irr::io::IrrXMLReader*& xml)

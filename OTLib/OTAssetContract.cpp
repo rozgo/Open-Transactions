@@ -154,8 +154,8 @@ OTAssetContract::OTAssetContract() : OTContract()
 	
 }
 
-OTAssetContract::OTAssetContract(OTString & name, OTString & filename, OTString & strID) 
-: OTContract(name, filename, strID)
+OTAssetContract::OTAssetContract(OTString & name, OTString & foldername, OTString & filename, OTString & strID) 
+: OTContract(name, foldername, filename, strID)
 {
 
 }

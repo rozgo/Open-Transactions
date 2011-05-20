@@ -280,17 +280,12 @@ bool OTCronItem::SaveCronReceipt()
 	const char * szFoldername	= OTLog::CronFolder();
 	const char * szFilename		= strFilename.Get();
 	
-	// ------------------------------------------------------------------------
+	// --------------------------------------------------------------------
 	
-	OTString strCronItemLocalPath;
-	strCronItemLocalPath.Format("%s%s%ld.crn", OTLog::CronFolder(), OTLog::PathSeparator(), GetTransactionNum());
-	
-	bool bFileExists = OTLog::ConfirmFile(strCronItemLocalPath.Get());
-	
-	if (bFileExists)
+	if (OTDB::Exists(szFoldername, szFilename))
 	{
-		OTLog::vError("Cron Record exists for transaction %ld in folder %s,\nyet attempted to record it again.\n",
-					  GetTransactionNum(), strCronItemLocalPath.Get());
+		OTLog::vError("Cron Record exists for transaction %ld %s%s%s,\nyet attempted to record it again.\n",
+					  GetTransactionNum(), szFoldername, OTLog::PathSeparator(), szFilename);
 		return false;
 	}
 	
@@ -303,36 +298,12 @@ bool OTCronItem::SaveCronReceipt()
 	
 	if (!bSaved)
 	{
-		OTLog::vError("OTContract::SaveContract: Error saving file: %s%s%s\n", 
+		OTLog::vError("OTCronItem::SaveCronReceipt: Error saving file: %s%s%s\n", 
 					  szFoldername, OTLog::PathSeparator(), szFilename);
 		return false;
 	}
 	// --------------------------------------------------------------------
-	
-	// ------------------------------------------------------------------------
-
-	bool bFolderExists = OTLog::ConfirmOrCreateFolder(OTLog::CronFolder()); // <path>/cron is where all cronlogs go.
-
-	if (!bFolderExists)
-	{
-		OTLog::vError("Unable to create or confirm folder \"%s\"\n in order to save Cron Receipt:\n%s\n",
-					  OTLog::CronFolder(), m_xmlUnsigned.Get());
-		return false;
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	OTString strCronItemPath;
-	strCronItemPath.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), strCronItemLocalPath.Get());
-
-	bool bSaved =  SaveContract(strCronItemPath.Get());
-	
-	if (!bSaved)
-	{
-		OTLog::vError("Error saving Transaction Number %ld, Cron Receipt:\n%s\n",
-					  GetTransactionNum(), m_xmlUnsigned.Get());
-	}
-	
+		
 	return bSaved;
 }
 

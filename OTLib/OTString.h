@@ -355,7 +355,7 @@ public:
    void sungetc(void);
    void reset(void);
 
-	void WriteToFile(std::ofstream & ofs) const;
+	void WriteToFile(std::ostream & ofs) const;
 //	void WriteToFile(FILE * fl = NULL) const;
 
    virtual void Release(void);

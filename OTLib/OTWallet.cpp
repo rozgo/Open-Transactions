@@ -1160,10 +1160,8 @@ bool OTWallet::LoadWallet(const char * szFilename)
 								   AssetName.Get(), AssetID.Get());
 					
 					OTString strContractPath;
-					strContractPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-										   OTLog::ContractFolder(),
-										   OTLog::PathSeparator(), AssetID.Get());
-					OTAssetContract * pContract = new OTAssetContract(AssetName, strContractPath, AssetID);
+					strContractPath.Format(OTLog::ContractFolder());
+					OTAssetContract * pContract = new OTAssetContract(AssetName, strContractPath, AssetID, AssetID);
 
 					OT_ASSERT_MSG(NULL != pContract, "Error allocating memory for Asset Contract in OTWallet::LoadWallet\n");
 			
@@ -1203,13 +1201,9 @@ bool OTWallet::LoadWallet(const char * szFilename)
 					OTLog::vOutput(0, "\n\n\n****Notary Server (contract)**** (wallet listing): %s\n ServerID:\n%s\n",
 							ServerName.Get(), ServerID.Get());
 				
-					OTString strContractPath;
-					strContractPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-										   OTLog::ContractFolder(),
-										   OTLog::PathSeparator(), ServerID.Get());
-
+					OTString strContractPath(OTLog::ContractFolder());
 					
-					OTServerContract * pContract = new OTServerContract(ServerName, strContractPath, ServerID);
+					OTServerContract * pContract = new OTServerContract(ServerName, strContractPath, ServerID, ServerID);
 					
 					OT_ASSERT_MSG(NULL != pContract, "Error allocating memory for Server Contract in OTWallet::LoadWallet\n");
 					

@@ -177,6 +177,7 @@ using namespace std;
 #include "OTOffer.h"
 #include "OTPaymentPlan.h"
 #include "OTLog.h"
+#include "OTStorage.h"
 
 #include "OTCron.h"
 
@@ -441,7 +442,7 @@ OTMint * OTServer::GetMint(const OTIdentifier & ASSET_TYPE_ID, int nSeries) // E
 	{
 		pMint = (*ii).second;
 		
-		OT_ASSERT_MSG(NULL != pMint, "NULL mint pointer in  OTServer::GetMint\n");
+		OT_ASSERT_MSG(NULL != pMint, "NULL mint pointer in OTServer::GetMint\n");
 		
 		OTIdentifier theID;
 		pMint->GetIdentifier(theID);
@@ -451,21 +452,34 @@ OTMint * OTServer::GetMint(const OTIdentifier & ASSET_TYPE_ID, int nSeries) // E
 			return pMint;							// return the pointer right here, we're done.
 	}
 	
-	
 	// The mint isn't in memory for the series requested.
-	OTString strMintPath, ASSET_ID_STR(ASSET_TYPE_ID);
-	strMintPath.Format("%s%s%s%s%s.%d", OTLog::Path(), OTLog::PathSeparator(), 
-					   OTLog::MintFolder(), OTLog::PathSeparator(), ASSET_ID_STR.Get(), nSeries);
-	pMint = new OTMint(ASSET_ID_STR.Get(), strMintPath, ASSET_ID_STR.Get());
+	const OTString ASSET_ID_STR(ASSET_TYPE_ID);
+	OTString	strMintFilename; strMintFilename.Format("%s%s%d", ASSET_ID_STR.Get(), ".", nSeries);
+	
+	const char * szFoldername	= OTLog::MintFolder();
+	const char * szFilename		= strMintFilename.Get();
+	
+	// --------------------------------------------------------------------
+	
+	if (false == OTDB::Exists(szFoldername, szFilename))
+	{
+		OTLog::vError("OTServer::GetMint: File does not exist: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
+		return NULL;
+	}
+	
+	// --------------------------------------------------------------------
+	//
+	
+	pMint = new OTMint(m_strServerID, ASSET_ID_STR);
 
 	// You cannot hash the Mint to get its ID. (The ID is a hash of the asset contract.)
 	// Instead, you must READ the ID from the Mint file, and then compare it to the one expected
 	// to see if they match (similar to how Account IDs are verified.)
 
 	OT_ASSERT_MSG(NULL != pMint, "Error allocating memory for Mint in OTServer::GetMint");
-
-
-	if (pMint->LoadContract())
+	
+	if (pMint->OTContract::LoadContract(szFoldername, szFilename)) // Notice I don't call LoadMint() here since it is more like the client side.
 	{
 		if (pMint->VerifyMint(m_nymServer)) // I don't verify the Mint's expiration date here, just its signature, ID, etc.
 		{									// (Expiry dates are enforced on tokens during deposit--and checked against mint-- 
@@ -478,14 +492,16 @@ OTMint * OTServer::GetMint(const OTIdentifier & ASSET_TYPE_ID, int nSeries) // E
 		}
 		else 
 		{
-			OTLog::vError("Error verifying Mint in OTServer::GetMint:\n%s\n", strMintPath.Get());
+			OTLog::vError("Error verifying Mint in OTServer::GetMint:\n%s%s%s\n", 
+						  szFoldername, OTLog::PathSeparator(), szFilename);
 			delete pMint;
 			pMint = NULL;
 		}
 	}
 	else 
 	{
-		OTLog::vError("Error loading Mint in OTServer::GetMint:\n%s\n", strMintPath.Get());
+		OTLog::vError("Error loading Mint in OTServer::GetMint:\n%s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
 		delete pMint;
 		pMint = NULL;
 	}
@@ -708,50 +724,16 @@ bool OTServer::AddAssetContract(OTAssetContract & theContract)
 }
 
 
-bool OTServer::SaveMainFile()
+bool OTServer::SaveMainFileToString(OTString & strMainFile)
 {
-	static OTString strMainFilePath;
-	
-	if (!strMainFilePath.Exists())
-	{
-		strMainFilePath.Format(
-							   "%s%snotaryServer.xml", // todo fix hardcoding
-							   OTLog::Path(), OTLog::PathSeparator());
-	}
-
-	
-	std::ofstream ofs(strMainFilePath.Get(), std::ios::binary);
-
-/*
-#ifdef _WIN32
-	errno_t err;
-	FILE * fl;
-	err = fopen_s(&fl, strMainFilePath.Get(), "wb");
-#else
-	FILE * fl = fopen(strMainFilePath.Get(), "w");
-#endif
-
-	if (NULL == fl)
-	{
-		OTLog::vError("Error opening file in OTServer::SaveMainFile: %s\n", strMainFilePath.Get());
-		return false;
-	}
-*/
-	
-	if (ofs.fail())
-	{
-		OTLog::vError("Error opening file in OTServer::SaveMainFile: %s\n", strMainFilePath.Get());
-		return false;
-	}	
-	ofs.clear();
-	
 	// ---------------------------------------------------------------
 	
-	ofs << "<?xml version=\"1.0\"?>\n"
-	"<notaryServer version=\"" << m_strVersion.Get() << "\"\n"
-	" serverID=\"" << m_strServerID.Get() << "\"\n"
-	" serverUserID=\"" << m_strServerUserID.Get() << "\"\n"
-	" transactionNum=\"" << m_lTransactionNumber << "\" >\n\n";
+	strMainFile.Format("<?xml version=\"1.0\"?>\n"
+					   "<notaryServer version=\"%s\"\n"
+					   " serverID=\"%s\"\n"
+					   " serverUserID=\"%s\"\n"
+					   " transactionNum=\"%ld\" >\n\n", m_strVersion.Get(), m_strServerID.Get(),
+					   m_strServerUserID.Get(), m_lTransactionNumber);
 	
 	//mapOfContracts	m_mapContracts;   // If the server needs to store copies of the asset contracts, then here they are.
 	//mapOfMints		m_mapMints;		  // Mints for each of those.
@@ -765,9 +747,9 @@ bool OTServer::SaveMainFile()
 		pContract = (*ii).second;
 		
 		OT_ASSERT_MSG(NULL != pContract, "NULL contract pointer in OTServer::SaveMainFile.\n");
-	
+		
 		// This is like the Server's wallet.
-		pContract->SaveContractWallet(ofs);
+		pContract->SaveContractWallet(strMainFile);
 		
 		// ----------------------------------------
 	}
@@ -787,51 +769,79 @@ bool OTServer::SaveMainFile()
 		if (!bContractID)
 		{
 			OTLog::vError("Error in OTServer::SaveMainFile: Missing Contract ID for basket ID %s\n",
-					strBasketID.Get());
+						  strBasketID.Get());
 			break;
 		}
 		
 		OTString strBasketContractID(BASKET_CONTRACT_ID);
 		
-		ofs << "<basketInfo basketID=\"" << strBasketID.Get() << "\"\n basketAcctID=\"" << strBasketAcctID.Get() << 
-		"\"\n basketContractID=\"" << strBasketContractID.Get() << "\" />\n\n";
+		strMainFile.Concatenate("<basketInfo basketID=\"%s\"\n"
+								" basketAcctID=\"%s\"\n"
+								" basketContractID=\"%s\" />\n\n", 
+								strBasketID.Get(), strBasketAcctID.Get(), strBasketContractID.Get());
 	}
 	
 	/*
-	OTPseudonym * pNym = NULL;
-	
-	for (mapOfNyms::iterator ii = m_mapNyms.begin(); ii != m_mapNyms.end(); ++ii)
-	{		
-		pNym = (*ii).second;
+	 OTPseudonym * pNym = NULL;
 	 
-		OT_ASSERT_MSG(NULL != pNym, "NULL pseudonym pointer in OTWallet::m_mapNyms, OTWallet::SaveWallet");
-		
-		pNym->SavePseudonymWallet(fl);
-	}
-	
-	
-	// ---------------------------------------------------------------
-	
-	OTContract * pServer = NULL;
-	
-	for (mapOfServers::iterator ii = m_mapServers.begin(); ii != m_mapServers.end(); ++ii)
-	{
-		pServer = (*ii).second;
+	 for (mapOfNyms::iterator ii = m_mapNyms.begin(); ii != m_mapNyms.end(); ++ii)
+	 {		
+	 pNym = (*ii).second;
 	 
-		OT_ASSERT_MSG(NULL != pServer, "NULL server pointer in OTWallet::m_mapServers, OTWallet::SaveWallet");
+	 OT_ASSERT_MSG(NULL != pNym, "NULL pseudonym pointer in OTWallet::m_mapNyms, OTWallet::SaveWallet");
 	 
-		pServer->SaveContractWallet(fl);
-	}
-	
-	// ---------------------------------------------------------------
+	 pNym->SavePseudonymWallet(fl);
+	 }
+	 
+	 
+	 // ---------------------------------------------------------------
+	 
+	 OTContract * pServer = NULL;
+	 
+	 for (mapOfServers::iterator ii = m_mapServers.begin(); ii != m_mapServers.end(); ++ii)
+	 {
+	 pServer = (*ii).second;
+	 
+	 OT_ASSERT_MSG(NULL != pServer, "NULL server pointer in OTWallet::m_mapServers, OTWallet::SaveWallet");
+	 
+	 pServer->SaveContractWallet(fl);
+	 }
+	 
+	 // ---------------------------------------------------------------
 	 */
+	
+	strMainFile.Concatenate("</notaryServer>\n");
+	
+	return true;	
+}
 
+bool OTServer::SaveMainFile()
+{
+	static OTString strMainFilePath;
 	
-	ofs << "</notaryServer>\n" << endl;
+	if (!strMainFilePath.Exists())
+	{
+		strMainFilePath = "notaryServer.xml"; // todo fix hardcoding
+	}
+
+	// ---------------------------------------------------------------	
 	
-	ofs.close();
+	OTString strMainFile;
 	
-	return true;
+	if (false == SaveMainFileToString(strMainFile))
+	{
+		OTLog::Error("Error saving to string in OTServer::SaveMainFile.\n");
+		return false;
+	}	
+	
+	// ---------------------------------------------------------------
+	
+	bool bSaved = OTDB::StorePlainString(strMainFile.Get(), ".", strMainFilePath.Get());
+	
+	if (!bSaved)
+		OTLog::vError("Error saving main file: %s\n", strMainFilePath.Get());
+	
+	return bSaved;
 }
 
 
@@ -840,6 +850,11 @@ bool OTServer::SaveMainFile()
 
 void OTServer::Init()
 {
+	bool bSuccessInitDefault = 
+	OTDB::InitDefaultStorage(OTDB_DEFAULT_STORAGE, 
+							 OTDB_DEFAULT_PACKER, OTLog::Path(), 
+							 "notaryServer.xml"); // todo stop hardcoding
+	
 	OTLog::ConfirmOrCreateFolder(OTLog::MarketFolder()); 
 	OTLog::ConfirmOrCreateFolder(OTLog::CronFolder());
 	OTLog::ConfirmOrCreateFolder(OTLog::NymFolder());
@@ -872,56 +887,30 @@ void OTServer::Init()
 
 bool OTServer::LoadMainFile()
 {
-#ifdef _WIN32
-	static const char * szFilename = "notaryServer-Windows.xml"; // todo stop hardcoding filename
-#else 
-	static const char * szFilename = "notaryServer.xml";
-#endif
+	const char * szFoldername = "."; // todo stop hardcoding.
+	const char * szFilename = "notaryServer.xml"; // todo stop hardcoding.
 	
-	static OTString strMainFilePath;
-	
-	if (!strMainFilePath.Exists())
+	if (false == OTDB::Exists(szFoldername, szFilename))
 	{
-		strMainFilePath.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), szFilename);
-	}
-	
-	if (!OTLog::ConfirmExactPath(OTLog::Path()))
-	{
-		OTLog::vError("Unable to find the main data folder: %s\n", OTLog::Path());
+		OTLog::vError("OTServer::LoadMainFile: %s%s%s does not exist.\n", szFoldername, 
+					  OTLog::PathSeparator(), szFilename);
 		return false;
 	}
 	
-	if (!OTLog::ConfirmFile(szFilename))
+	// --------------------------------------------------------------------
+	//
+	std::string strFileContents(OTDB::QueryPlainString(szFoldername, szFilename)); // <=== LOADING FROM DATA STORE.
+	
+	if (strFileContents.length() < 2)
 	{
-		OTLog::vError("Unable to find main file: %s\n", strMainFilePath.Get());
+		OTLog::vError("OTServer::LoadMainFile: Error reading file: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
 		return false;
 	}
+	// --------------------------------------------------------------------
 
-	
-	OTStringXML xmlFileContents;
-	
-	std::ifstream in(strMainFilePath.Get(), std::ios::binary);
-	
-	if (in.fail())
-	{
-		OTLog::vError("Error opening main file: %s\n", strMainFilePath.Get());
-		return false;		
-	}
-	
-	std::stringstream buffer;
-	buffer << in.rdbuf();
-	
-	std::string contents(buffer.str());
-	
-	xmlFileContents.Set(contents.c_str());
-	
-	if (xmlFileContents.GetLength() < 2)
-	{
-		OTLog::vError("Error reading main file: %s\n", strMainFilePath.Get());
-		return false;
-	}
-	
-	
+	OTStringXML xmlFileContents(strFileContents.c_str());
+
 	IrrXMLReader* xml = createIrrXMLReader(&xmlFileContents);
 	
 	OTCleanup<IrrXMLReader> theXMLGuardian(xml); // So I don't have to clean it up later.
@@ -1006,12 +995,9 @@ bool OTServer::LoadMainFile()
 						OTLog::Output(0, "Next loading the server contract...\n");
 						
 						// We have the serverID, so let's load  up the server Contract!
-						OTString strContractPath;
-						strContractPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-											   OTLog::ContractFolder(),
-											   OTLog::PathSeparator(), m_strServerID.Get());
+						OTString strContractPath(OTLog::ContractFolder());
 						
-						OTServerContract * pContract = new OTServerContract(m_strServerID, strContractPath, m_strServerID);
+						OTServerContract * pContract = new OTServerContract(m_strServerID, strContractPath, m_strServerID, m_strServerID);
 						
 						OT_ASSERT_MSG(NULL != pContract, "Error allocating memory for main Server Contract in OTServer::LoadMainFile\n");
 						
@@ -1062,17 +1048,15 @@ bool OTServer::LoadMainFile()
 					if (ascAssetName.Exists())
 						ascAssetName.GetString(AssetName, false); // linebreaks == false
 					
-//					AssetName		= xml->getAttributeValue("name");			
 					AssetID			= xml->getAttributeValue("assetTypeID");	// hash of contract itself
 					
 					OTLog::vOutput(0, "\n\n****Asset Contract**** (server listing) Name: %s\nContract ID:\n%s\n",
 								   AssetName.Get(), AssetID.Get());
 					
 					OTString strContractPath;
-					strContractPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-										   OTLog::ContractFolder(),
-										   OTLog::PathSeparator(), AssetID.Get());
-					OTAssetContract * pContract = new OTAssetContract(AssetName, strContractPath, AssetID);
+					strContractPath = OTLog::ContractFolder();
+
+					OTAssetContract * pContract = new OTAssetContract(AssetName, strContractPath, AssetID, AssetID);
 					
 					OT_ASSERT_MSG(NULL != pContract, "Error allocating memory for Asset Contract in OTServer::LoadMainFile\n");
 					
@@ -1457,13 +1441,10 @@ void OTServer::UserCmdIssueAssetType(OTPseudonym & theNym, OTMessage & MsgIn, OT
 	else
 	{		
 		// Pull the contract out of the message and verify it.
-		OTString strFilename;
-		strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-						   OTLog::ContractFolder(),
-						   OTLog::PathSeparator(), MsgIn.m_strAssetID.Get());
+		OTString strFoldername(OTLog::ContractFolder()), strFilename(MsgIn.m_strAssetID.Get());
 
 		OTString strContract(MsgIn.m_ascPayload);
-		pAssetContract = new OTAssetContract(MsgIn.m_strAssetID, strFilename, MsgIn.m_strAssetID);
+		pAssetContract = new OTAssetContract(MsgIn.m_strAssetID, strFoldername, strFilename, MsgIn.m_strAssetID);
 		
 		OTIdentifier	ASSET_USER_ID;
 		bool			bSuccessLoadingContract	= false;
@@ -1536,7 +1517,7 @@ void OTServer::UserCmdIssueAssetType(OTPseudonym & theNym, OTMessage & MsgIn, OT
 						SaveMainFile(); // So the main xml file knows to load this asset type next time we run.
 						
 						// Make sure the contracts/%s file is created for next time.
-						pAssetContract->SaveContract(strFilename.Get());
+						pAssetContract->SaveContract(OTLog::ContractFolder(), strFilename.Get());
 						
 						// ---------------------------------------------------
 
@@ -1808,14 +1789,11 @@ void OTServer::UserCmdIssueBasket(OTPseudonym & theNym, OTMessage & MsgIn, OTMes
 				msgOut.m_strAssetID = STR_BASKET_CONTRACT_ID;
 				
 				// Save the new Asset Contract to disk
-				OTString strFilename;
-				strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-								   OTLog::ContractFolder(),
-								   OTLog::PathSeparator(), STR_BASKET_CONTRACT_ID.Get());
-				
+				const OTString strFoldername(OTLog::ContractFolder()), strFilename(STR_BASKET_CONTRACT_ID.Get());
+
 				// Save the new basket contract to the contracts folder 
 				// (So the users can use it the same as they would use any other contract.)
-				pBasketContract->SaveContract(strFilename.Get());
+				pBasketContract->SaveContract(strFoldername.Get(), strFilename.Get());
 				
 				AddAssetContract(*pBasketContract);
 				// I don't save this here. Instead, I wait for AddBasketAccountID and then I call SaveMainFile after that. See below.
@@ -4895,34 +4873,68 @@ void OTServer::UserCmdGetMint(OTPseudonym & theNym, OTMessage & MsgIn, OTMessage
 	msgOut.m_strAssetID		= MsgIn.m_strAssetID;	// The Asset Type ID in question
 	
 	const OTIdentifier ASSET_TYPE_ID(MsgIn.m_strAssetID);	
-	OTString strMintPath, ASSET_ID_STR(ASSET_TYPE_ID);
-		
-	strMintPath.Format("%s%s%s%s%s.PUBLIC", OTLog::Path(), OTLog::PathSeparator(), 
-					   OTLog::MintFolder(), OTLog::PathSeparator(), ASSET_ID_STR.Get());
+	const OTString ASSET_ID_STR(ASSET_TYPE_ID);
+	OTString strMintFilename; strMintFilename.Format("%s%sPUBLIC", ASSET_ID_STR.Get(), ".");
+	
+	const char * szFoldername	= OTLog::MintFolder();
+	const char * szFilename		= strMintFilename.Get();
 
-	OTMint theMint(ASSET_ID_STR.Get(), strMintPath, ASSET_ID_STR.Get());
+	OTString strMint;
 	
-	// You cannot hash the Mint to get its ID. (The ID is a hash of the asset contract.)
-	// Instead, you must READ the ID from the Mint file, and then compare it to the one expected
-	// to see if they match (similar to how Account IDs are verified.)
+	// --------------------------------------------------------------------
+	bool bSuccessLoadingMint = false;
 	
-	//	bool bSuccessLoadingMint = theMint.LoadContract();
-	bool bSuccessLoadingMint = theMint.LoadContract();
-	
-	if (bSuccessLoadingMint)
-		bSuccessLoadingMint = theMint.VerifyMint(m_nymServer);
-	
-	// Yup the asset contract exists.
+	if (false == OTDB::Exists(szFoldername, szFilename))
+	{
+		OTLog::vError("OTServer::UserCmdGetMint: File does not exist: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
+	}
+	else 
+	{
+		// --------------------------------------------------------------------
+		//
+		std::string strFileContents(OTDB::QueryPlainString(szFoldername, szFilename)); // <=== LOADING FROM DATA STORE.
+		
+		if (strFileContents.length() < 2)
+		{
+			OTLog::vError("OTServer::UserCmdGetMint: Error reading file: %s%s%s\n", 
+						  szFoldername, OTLog::PathSeparator(), szFilename);
+		}
+		// --------------------------------------------------------------------
+		else
+		{
+			bSuccessLoadingMint = true;
+			strMint.Set(strFileContents.c_str());
+		}
+	}
+
+	OTMint theMint(m_strServerID, ASSET_ID_STR);
+
 	if (bSuccessLoadingMint)
 	{
-		msgOut.m_bSuccess = true;
+		// You cannot hash the Mint to get its ID. (The ID is a hash of the asset contract.)
+		// Instead, you must READ the ID from the Mint file, and then compare it to the one expected
+		// to see if they match (similar to how Account IDs are verified.)
 		
-		// extract the account in ascii-armored form on the outgoing message
-		OTString strPayload(theMint); // first grab it in plaintext string form
-		msgOut.m_ascPayload.SetString(strPayload);  // now the outgoing message has the inbox ledger in its payload in base64 form.
+		//	bool bSuccessLoadingMint = theMint.LoadContract();
+		bSuccessLoadingMint = theMint.LoadContractFromString(strMint);
+		
+		if (bSuccessLoadingMint)
+			bSuccessLoadingMint = theMint.VerifyMint(m_nymServer);
+		
+		// Yup the asset contract exists.
+		if (bSuccessLoadingMint)
+		{
+			msgOut.m_bSuccess = true;
+			
+			// extract the account in ascii-armored form on the outgoing message
+			OTString strPayload(theMint); // first grab it in plaintext string form
+			msgOut.m_ascPayload.SetString(strPayload);  // now the outgoing message has the inbox ledger in its payload in base64 form.
+		}
+		// Send the user's command back to him if failure.
 	}
-	// Send the user's command back to him if failure.
-	else
+	
+	if (!bSuccessLoadingMint)
 	{
 		msgOut.m_bSuccess = false;
 		OTString tempInMessage(MsgIn); // Grab the incoming message in plaintext form
@@ -5511,16 +5523,14 @@ void OTServer::NotarizeProcessNymbox(OTPseudonym & theNym, OTTransaction & tranI
 			
 			theNym.HarvestIssuedNumbers(m_nymServer, theTempNym, true); // bSave=true
 			
-			strPath.Format((char*)"%s%s%s%s%s.success", OTLog::Path(), OTLog::PathSeparator(), 
-						   OTLog::ReceiptFolder(),
-						   OTLog::PathSeparator(), strNymID.Get());
+			strPath.Format((char*)"%s.success", strNymID.Get());
 		}
 		else
-			strPath.Format((char*)"%s%s%s%s%s.fail", OTLog::Path(), OTLog::PathSeparator(), 
-						   OTLog::ReceiptFolder(),
-						   OTLog::PathSeparator(), strNymID.Get());
+			strPath.Format((char*)"%s.fail", strNymID.Get());
 		
-		tranOut.SaveContract(strPath.Get());	
+		const char * szFoldername = OTLog::ReceiptFolder();
+		
+		tranOut.SaveContract(szFoldername, strPath.Get());	
 	}
 }
 
@@ -6465,17 +6475,15 @@ void OTServer::NotarizeProcessInbox(OTPseudonym & theNym, OTAccount & theAccount
 		
 		//-------------------------------------------
 		
-		strPath.Format((char*)"%s%s%s%s%s.success", OTLog::Path(), OTLog::PathSeparator(), 
-					   OTLog::ReceiptFolder(),
-					   OTLog::PathSeparator(), strAcctID.Get());
+		strPath.Format((char*)"%s.success", strAcctID.Get());
 	}
 	else
-		strPath.Format((char*)"%s%s%s%s%s.fail", OTLog::Path(), OTLog::PathSeparator(), 
-					   OTLog::ReceiptFolder(),
-					   OTLog::PathSeparator(), strAcctID.Get());
+		strPath.Format((char*)"%s.fail", strAcctID.Get());
+	
+	const char * szFoldername = OTLog::ReceiptFolder();
 	
 	// Save the receipt. (My outgoing transaction including the client's signed request that triggered it.)
-	tranOut.SaveContract(strPath.Get());	
+	tranOut.SaveContract(szFoldername, strPath.Get());	
 }
 
 
@@ -6734,19 +6742,13 @@ bool OTServer::ProcessUserCommand(OTMessage & theMessage, OTMessage & msgOut, OT
 					{
 						// Good -- this means the account doesn't already exist.
 						// Let's create it.
-						OTString strPath;
-						strPath.Format((char*)"%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-									   OTLog::UserAcctFolder(),
-									   OTLog::PathSeparator(), theMessage.m_strNymID.Get());
-						
+
 						// First we save the createUserAccount message in the accounts folder...
-						if (msgOut.m_bSuccess = theMessage.SaveContract(strPath.Get()))
+						if (msgOut.m_bSuccess = theMessage.SaveContract(OTLog::UserAcctFolder(), theMessage.m_strNymID.Get()))
 						{
 							OTLog::Output(0, "Success saving new user account verification file.\n");
 							
-							strPath.Format((char*)"%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-										   OTLog::PubkeyFolder(),
-										   OTLog::PathSeparator(), theMessage.m_strNymID.Get());
+							OTString strPath(theMessage.m_strNymID.Get());
 							
 							// Next we save the public key in the pubkeys folder...
 							if (msgOut.m_bSuccess = theNym.SavePublicKey(strPath))

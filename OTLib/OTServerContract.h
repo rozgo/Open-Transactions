@@ -150,7 +150,7 @@ protected:
 	virtual int ProcessXMLNode(irr::io::IrrXMLReader*& xml);	
 public:
 	OTServerContract();
-	OTServerContract(OTString & name, OTString & filename, OTString & strID);
+	OTServerContract(OTString & name, OTString & foldername, OTString & filename, OTString & strID);
 
 	bool GetConnectInfo(OTString & strHostname, int & nPort);
 	

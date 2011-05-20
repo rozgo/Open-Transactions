@@ -168,6 +168,13 @@
 
 #include <iostream>
 #include <list>
+#include <string>
+#include <unistd.h>
+
+
+#include <zmq.hpp>
+
+//#include "zhelpers.hpp"
 
 
 extern "C" 
@@ -182,7 +189,7 @@ extern "C"
 #include <openssl/ssl.h>
 }
 
-#include "XmlRpc.h"
+//#include "XmlRpc.h"
 
 #include "main.h"
 
@@ -194,13 +201,15 @@ extern "C"
 #include "OTLog.h"
 
 
+void ProcessMessage_ZMQ(const std::string & str_Message, std::string & str_Reply);
+
 // -------------------------------------------------------------
 
-using namespace XmlRpc;
+//using namespace XmlRpc;
 
 
 // The HTTP server
-XmlRpcServer theXmlRpcServer; // This object handles the network transport. (Over HHTP, in this case.)
+//XmlRpcServer theXmlRpcServer; // This object handles the network transport. (Over HHTP, in this case.)
 
 
 // The Open Transactions server
@@ -212,6 +221,7 @@ OTServer * g_pServer = NULL;  // This object handles all the actual OT notarizat
 // This function is called for every OT Message that is sent for processing.
 // One argument is passed, and a result string is passed back.
 //
+/*
 class OT_XML_RPC : public XmlRpcServerMethod
 {
 public:
@@ -300,6 +310,8 @@ public:
 		
 	}
 } theOTXmlRpc(&theXmlRpcServer);
+*/
+
 
 
 // ----------------------------------------------------------------------
@@ -311,7 +323,7 @@ public:
 int main(int argc, char* argv[])
 {
 	OTLog::vOutput(0, "\n\nWelcome to Open Transactions... Test Server -- version %s\n"
-				   "(transport build: OTMessage -> XmlRpc -> HTTP)\n\n", OTLog::Version());
+				   "(transport build: OTMessage -> ZMQ -> TCP)\n\n", OTLog::Version());
 	// -----------------------------------------------------------------------
 
 #ifdef _WIN32
@@ -433,20 +445,36 @@ int main(int argc, char* argv[])
 	// For re-occuring actions (like markets and payment plans.)
 	//
 	g_pServer->ActivateCron();
+
+	// -----------------------------------
 	
+	//  Prepare our context and socket
+	zmq::context_t context(1);
+	zmq::socket_t socket(context, ZMQ_REP);
+
+	OTString strBindPath; strBindPath.Format("%s%d", "tcp://*:", nServerPort);
+
+	socket.bind(strBindPath.Get());
+
 	// -----------------------------------------------------------------------
-	
 	// Let's get the HTTP server up and running...
-	
-	XmlRpc::setVerbosity(1);
-
-	// Create the server socket on the specified port
-	theXmlRpcServer.bindAndListen(nServerPort);
-
-	// Enable introspection, so clients can see what services this server supports. (Open Transactions...)
-	theXmlRpcServer.enableIntrospection(true);
+	// Switching out XmlRpc for 0MQ (ZeroMQ)
+	//
+//	XmlRpc::setVerbosity(1);
+//
+//	// Create the server socket on the specified port
+//	theXmlRpcServer.bindAndListen(nServerPort);
+//
+//	// Enable introspection, so clients can see what services this server supports. (Open Transactions...)
+//	theXmlRpcServer.enableIntrospection(true);
 
 	// -----------------------------------------------------------------------
+
+	//  Initialize poll set
+	zmq::pollitem_t items [] =
+	{
+	{ socket, 0, ZMQ_POLLIN, 0 },
+	};
 
 	do 
 	{
@@ -459,10 +487,48 @@ int main(int argc, char* argv[])
 		
 		// Wait for client http requests (and process replies out to them.)
 		//
-		theXmlRpcServer.work(10.0); // supposedly milliseconds -- but it's actually seconds.
-		
+//		theXmlRpcServer.work(10.0); // supposedly milliseconds -- but it's actually seconds.
+
+		// process up to 10 requests, sleep for 1/10th second, check for shutdown, process cron, repeat.
+		for (int i = 0; i < 10; i++) 
+		{
+			// Switching to ZeroMQ library.
+			zmq::message_t message;
+
+			zmq::poll(&items[0], 1, -1);
+
+			if (items[0].revents & ZMQ_POLLIN)
+			{
+				socket.recv(&message);
+
+				// Convert the ZMQ message to a std::string
+				std::string str_Message;
+				str_Message.reserve(message.size());
+				str_Message.append(static_cast<const char *>(message.data()), message.size());
+
+				//  Process task
+				std::string str_Reply; // Output.
+				ProcessMessage_ZMQ(str_Message, str_Reply);
+
+				// Convert the std::string (reply) into a ZMQ message
+				zmq::message_t reply (str_Reply.length());
+
+				if (str_Reply.length() > 0)
+					memcpy((void *) reply.data(), str_Reply.c_str(), str_Reply.length());
+
+				//  Send reply back to client
+				socket.send (reply);
+			}
+		} //  for		
 		// -----------------------------------------------------------------------
 		
+		// Now go to sleep for a tenth of a second.
+		// (Main loop processes ten times per second, currently.)
+		
+		OTLog::SleepMilliseconds(100); // 100 ms == (1 second / 10)
+		
+		// -----------------------------------------------------------------------
+
 		if (g_pServer->IsFlaggedForShutdown())
 		{
 			OTLog::Output(0, "Server is shutting down gracefully....\n");
@@ -478,6 +544,85 @@ int main(int argc, char* argv[])
 #endif
 	
 	return 0;
+}
+
+
+
+void ProcessMessage_ZMQ(const std::string & str_Message, std::string & str_Reply)
+{
+	OT_ASSERT(NULL != g_pServer);
+	
+	// return value.
+	std::string resultString = ""; // Whatever we put in this string is what will get returned.
+	
+	// First we grab the client's message
+	OTASCIIArmor ascMessage = str_Message.c_str();
+	
+	// ----------------------------------------------------------------------
+	
+	OTMessage theMsg, theReply; // we'll need these in a sec...
+	
+	OTEnvelope theEnvelope(ascMessage); // Now the base64 is decoded and the envelope is in binary form again.
+	if (ascMessage.Exists())
+	{
+		OTLog::Output(2, "Successfully retrieved envelope from ZMQ message...\n");
+		
+		OTString strEnvelopeContents;
+		
+		// Decrypt the Envelope.    
+		if (theEnvelope.Open(g_pServer->GetServerNym(), strEnvelopeContents)) // now strEnvelopeContents contains the decoded message.
+		{
+			// All decrypted--now let's load the results into an OTMessage.
+			// No need to call theMsg.ParseRawFile() after, since
+			// LoadContractFromString handles it.
+			//
+			if (strEnvelopeContents.Exists() && theMsg.LoadContractFromString(strEnvelopeContents))
+			{
+				
+				// In case you want to see all the incoming messages...
+				//					OTLog::vOutput(0, "%s\n\n", strEnvelopeContents.Get());
+				
+				// By constructing this without a socket, I put it in XmlRpc/http mode, instead of tcp/ssl.
+				OTClientConnection theClient(*g_pServer); 
+				
+				// By optionally passing in &theClient, the client Nym's public key will be
+				// set on it whenever verification is complete. (So for the reply, I'll 
+				// have the key and thus I'll be able to encrypt reply to the recipient.)
+				if (g_pServer->ProcessUserCommand(theMsg, theReply, &theClient))	
+				{	
+					// At this point the reply is ready to go, and theClient has the public key of the recipient...
+					
+					OTLog::vOutput(0, "Successfully processed user command: %s.\n", theMsg.m_strCommand.Get());
+					
+					// The transaction is now processed, and the server's reply message is in theReply.
+					// Let's seal it up to the recipient's nym (in an envelope) and send back to the user...
+					OTEnvelope theRecipientEnvelope;
+					
+					bool bSealed = theClient.SealMessageForRecipient(theReply, theRecipientEnvelope);
+					
+					if (bSealed)
+					{
+						OTASCIIArmor ascReply(theRecipientEnvelope);
+						resultString = ascReply.Get();
+					}
+					else
+						OTLog::Output(0, "Unable to seal envelope in ProcessMessage_ZMQ.\n");
+				}
+				else
+					OTLog::Output(0, "Unable to process user command in ProcessMessage_ZMQ.\n");
+			}
+			else 
+				OTLog::Error("Error loading message from envelope contents. ProcessMessage_ZMQ.\n");
+		}
+		else 
+			OTLog::Error("Unable to open envelope. ProcessMessage_ZMQ.\n");
+	}
+	else 
+		OTLog::Error("Error retrieving envelope from ProcessMessage_ZMQ.\n");
+
+	// ----------------------------------------------------------------------
+	
+	str_Reply = resultString;	
 }
 
 

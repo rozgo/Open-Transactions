@@ -18,6 +18,7 @@ extern "C"
 #include "OTServerContract.h"
 #include "OTSignedFile.h"
 #include "OTLog.h"
+//#include "OTStorage.h"
 
 
 // Run this program from inside the testwallet directory.

@@ -153,11 +153,11 @@
 #include <cstdio>
 #include <cstdlib>
 
-// ---------------------------------------------------------------------------
+
+#include <string>
 
 #include <iostream>
 
-// ---------------------------------------------------------------------------
 
 extern "C" 
 {
@@ -170,16 +170,19 @@ extern "C"
 
 // ---------------------------------------------------------------------------
 
-#if defined(OT_XMLRPC_MODE)
+#if defined(OT_ZMQ_MODE)
+
+#include <zmq.hpp>
+
 
 // If you build in tcp/ssl mode, this file will build even if you don't have this library.
 // But if you build in xml/rpc/http mode, 
-#ifdef _WIN32
-#include "timxmlrpc.h" // XmlRpcC4Win
-#else
-#include "XmlRpc.h"  // xmlrpcpp
-using namespace XmlRpc;
-#endif
+//#ifdef _WIN32
+//#include "timxmlrpc.h" // XmlRpcC4Win
+//#else
+//#include "XmlRpc.h"  // xmlrpcpp
+//using namespace XmlRpc;
+//#endif
 
 #endif
 // ---------------------------------------------------------------------------
@@ -224,7 +227,7 @@ extern OTPseudonym *g_pTemporaryNym;
 int main(int argc, char* argv[])
 {
 	OTLog::vOutput(0, "\n\nWelcome to Open Transactions... Test Client -- version %s\n"
-				   "(transport build: OTMessage -> XmlRpc -> HTTP)\n", 
+				   "(transport build: OTMessage -> ZMQ -> TCP)\n", 
 				   OTLog::Version());
 	
 	OT_API::InitOTAPI();
@@ -319,12 +322,14 @@ int main(int argc, char* argv[])
 	
 	// Set the logging level for the network transport code.
 #ifndef _WIN32
-	XmlRpc::setVerbosity(1);
+//	XmlRpc::setVerbosity(1);
 #endif
 	
+	//  Prepare our context and socket
+	zmq::context_t context(1);
+
 	// -----------------------------------------------------------------------
-	
-	
+
 	for(;;)
 	{
 		buf[0] = 0; // Making it fresh again.
@@ -1054,7 +1059,7 @@ int main(int argc, char* argv[])
 			// are in place (since in RPC mode, each message could be from a different nym 
 			// and to a different server.)
 			//
-			g_OT_API.GetClient()->SetFocusToServerAndNym(*pServerContract, *g_pTemporaryNym, &OT_XmlRpcCallback);
+			g_OT_API.GetClient()->SetFocusToServerAndNym(*pServerContract, *g_pTemporaryNym, &OT_API::TransportCallback);
 			// NOTE -- This MAY be unnecessary for ProcessUserCommand (since these args are passed
 			// in there already) but it's definitely necessary soon after for ProcessServerReply()
 			// (which comes next.)
@@ -1690,7 +1695,7 @@ int main(int argc, char* argv[])
 		
 		else
 		{
-			//		OTLog::Error( "Your command was unrecognized or required resources that were not loaded.\n");
+//			OTLog::Error( "Your command was unrecognized or required resources that were not loaded.\n");
 			OTLog::Output(0, "\n");
 		}
 		
@@ -1712,35 +1717,50 @@ int main(int argc, char* argv[])
 			
 			if (ascEnvelope.Exists())
 			{
+				zmq::socket_t socket(context, ZMQ_REQ);
+				
+				OTString strConnectPath; strConnectPath.Format("tcp://%s:%d", strServerHostname.Get(), nServerPort);
+				socket.connect(strConnectPath.Get());
+				
+				zmq::message_t request(ascEnvelope.GetLength());
+				memcpy((void*)request.data(), ascEnvelope.Get(), ascEnvelope.GetLength());
+				socket.send(request);
+
 				// Here's our connection...
-#if defined (linux)
-				XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort, 0); // serverhost, port.
-#elif defined (_WIN32) 
-				XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort, "fellowtraveler"); // serverhost, port, value that crashes if NULL.
-#else
-				XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort); // serverhost, port.
-#endif
+//#if defined (linux)
+//				XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort, 0); // serverhost, port.
+//#elif defined (_WIN32) 
+//				XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort, "fellowtraveler"); // serverhost, port, value that crashes if NULL.
+//#else
+//				XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort); // serverhost, port.
+//#endif
 				
 				// -----------------------------------------------------------
 				//
 				// Call the OT_XML_RPC method (thus passing the message to the server.)
 				//
-				XmlRpcValue oneArg, result;		// oneArg contains the outgoing message; result will contain the server reply.
-				oneArg[0] = ascEnvelope.Get();	// Here's where I set the envelope string, as the only argument for the rpc call.
-				
-				if (theXmlRpcClient.execute("OT_XML_RPC", oneArg, result)) // The actual call to the server. (Hope my envelope string isn't too long for this...)
-				{					
-					std::string str_Result = result;
+//				XmlRpcValue oneArg, result;		// oneArg contains the outgoing message; result will contain the server reply.
+//				oneArg[0] = ascEnvelope.Get();	// Here's where I set the envelope string, as the only argument for the rpc call.
+//				
+//				if (theXmlRpcClient.execute("OT_XML_RPC", oneArg, result)) // The actual call to the server. (Hope my envelope string isn't too long for this...)
+				{
+					//  Get the reply.
+					zmq::message_t reply;
+					socket.recv(&reply);
+
+					std::string str_Result;
+					str_Result.reserve(reply.size());
+					str_Result.append(static_cast<const char*>(reply.data()), reply.size());
 					OTASCIIArmor ascServerReply = str_Result.c_str();
-					
+
 					OTEnvelope theServerEnvelope(ascServerReply);
 					OTString	strServerReply;				// Maybe should use g_OT_API.GetClient()->GetNym or some such...
 					bool bOpened = theServerEnvelope.Open(*g_pTemporaryNym, strServerReply);
-					
+
 					OTMessage * pServerReply = new OTMessage;
-					
+
 					OT_ASSERT(NULL != pServerReply);
-					
+
 					if (bOpened && strServerReply.Exists() && pServerReply->LoadContractFromString(strServerReply))
 					{
 						// Now the fully-loaded message object (from the server, this time) can be processed by the OT library...
@@ -1753,10 +1773,10 @@ int main(int argc, char* argv[])
 						OTLog::Error("Error loading server reply from string after call to 'OT_XML_RPC'\n");
 					}
 				}
-				else
-				{
-					OTLog::Error("Error calling 'OT_XML_RPC' over the XmlRpc transport layer.\n");
-				}
+//				else
+//				{
+//					OTLog::Error("Error calling 'OT_XML_RPC' over the XmlRpc transport layer.\n");
+//				}
 			}
 		} // if bSendCommand		
 		

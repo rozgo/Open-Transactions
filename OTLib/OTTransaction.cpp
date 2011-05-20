@@ -336,55 +336,41 @@ bool OTTransaction::VerifyTransactionReceipt(OTPseudonym & SERVER_NYM,
 {
 	OTIdentifier USER_ID(THE_NYM), SERVER_USER_ID(SERVER_NYM);
 	const OTString strServerID(SERVER_ID), strReceiptID(USER_ID);
-	
-	// -----------------------------------
-	
-	// Load the last successful TRANSACTION STATEMENT...
-	
+
 	OTTransaction tranOut(SERVER_USER_ID, USER_ID, SERVER_ID);
+
+	OTString strFilename; strFilename.Format("%s.success", strReceiptID.Get());
 	
-	bool bConfirmReceiptMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::ReceiptFolder());
+	const char * szFolder1name	= OTLog::ReceiptFolder();
+	const char * szFolder2name	= strServerID.Get();
+	const char * szFilename		= strFilename.Get();
 	
-	if (!bConfirmReceiptMAINFolder)
+	if (false == OTDB::Exists(szFolder1name, szFolder2name, szFilename))
 	{
-		OTLog::vError("OTTransaction::VerifyTransactionReceipt: Unable to find or "
-					  "create main Receipt directory: %s%s%s\n", 
-					  OTLog::Path(), OTLog::PathSeparator(), OTLog::ReceiptFolder());	
+		OTLog::Output(1, "Receipt file doesn't exist in OTTransaction::VerifyTransactionReceipt.\n");
 		return false;
 	}
-	// -----------------------------------------------------------------
-	else 
+	
+	// ----------------------------------------------------------------------------
+	//
+	std::string strFileContents(OTDB::QueryPlainString(szFolder1name, szFolder2name, szFilename)); // <=== LOADING FROM DATA STORE.
+	
+	if (strFileContents.length() < 2)
 	{
-		OTString strReceiptDirectoryPath;
-		strReceiptDirectoryPath.Format("%s%s%s", 
-									   OTLog::ReceiptFolder(), OTLog::PathSeparator(),
-									   strServerID.Get());
-		
-		bool bConfirmReceiptFolder = OTLog::ConfirmOrCreateFolder(strReceiptDirectoryPath.Get());
-		
-		if (!bConfirmReceiptFolder)
-		{
-			OTLog::vError("OTTransaction::VerifyTransactionReceipt: Unable to find or create Receipt subdir "
-						  "for server ID: %s\n\n", 
-						  strReceiptDirectoryPath.Get());
-			return false;
-		}				
-		// ----------------------------------------------------------------------------
-		else 
-		{			
-			OTString strReceiptPath;
-			
-			strReceiptPath.Format("%s%s%s%s%s.success", OTLog::Path(), OTLog::PathSeparator(), 
-								  strReceiptDirectoryPath.Get(), OTLog::PathSeparator(), strReceiptID.Get());
-			
-			if (!tranOut.LoadContract(strReceiptPath.Get()) || !tranOut.VerifySignature(SERVER_NYM))
-			{
-				OTLog::vError("OTTransaction::VerifyTransactionReceipt: Unable to load transaction statement: %s\n", 
-							  strReceiptPath.Get());
-				return false;
-			}				
-		}
+		OTLog::vError("OTTransaction::VerifyTransactionReceipt: Error reading file: %s%s%s%s%s\n", 
+					  szFolder1name, OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), szFilename);
+		return false;
 	}
+	// --------------------------------------------------------------------
+		
+	OTString strTransaction(strFileContents.c_str());
+	
+	if (!tranOut.LoadContractFromString(strTransaction) || !tranOut.VerifySignature(SERVER_NYM))
+	{
+		OTLog::vError("OTTransaction::VerifyTransactionReceipt: Unable to load transaction statement: %s%s%s%s%s\n", 
+					  szFolder1name, OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), szFilename);
+		return false;
+	}				
 	
 	// At this point, tranOut is successfully loaded and verified, containing the last transaction receipt.
 	
@@ -400,7 +386,7 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM,
 										 OTIdentifier & ACCT_ID)
 {
 	OTIdentifier USER_ID(THE_NYM), SERVER_USER_ID(SERVER_NYM);
-	const OTString strServerID(SERVER_ID), strReceiptID(ACCT_ID);
+	OTString strServerID(SERVER_ID), strReceiptID(ACCT_ID);
 	
 	// -----------------------------------
 	
@@ -408,48 +394,38 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM,
 	
 	OTTransaction tranOut(SERVER_USER_ID, ACCT_ID, SERVER_ID);
 	
-	bool bConfirmReceiptMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::ReceiptFolder());
+	OTString strFilename; strFilename.Format("%s.success", strReceiptID.Get());
 	
-	if (!bConfirmReceiptMAINFolder)
+	const char * szFolder1name	= OTLog::ReceiptFolder();
+	const char * szFolder2name	= strServerID.Get();
+	const char * szFilename		= strFilename.Get();
+			
+	if (false == OTDB::Exists(szFolder1name, szFolder2name, szFilename))
 	{
-		OTLog::vError("OTTransaction::VerifyBalanceReceipt: Unable to find or "
-					  "create main Receipt directory: %s%s%s\n", 
-					  OTLog::Path(), OTLog::PathSeparator(), OTLog::ReceiptFolder());	
+		OTLog::Output(1, "Receipt file doesn't exist in OTTransaction::VerifyBalanceReceipt.\n");
 		return false;
 	}
-	// -----------------------------------------------------------------
-	else 
+	
+	// ----------------------------------------------------------------------------
+	//
+	std::string strFileContents(OTDB::QueryPlainString(szFolder1name, szFolder2name, szFilename)); // <=== LOADING FROM DATA STORE.
+	
+	if (strFileContents.length() < 2)
 	{
-		OTString strReceiptDirectoryPath;
-		strReceiptDirectoryPath.Format("%s%s%s", 
-									   OTLog::ReceiptFolder(), OTLog::PathSeparator(),
-									   strServerID.Get());
-		
-		bool bConfirmReceiptFolder = OTLog::ConfirmOrCreateFolder(strReceiptDirectoryPath.Get());
-		
-		if (!bConfirmReceiptFolder)
-		{
-			OTLog::vError("OTTransaction::VerifyBalanceReceipt: Unable to find or create Receipt subdir "
-						  "for server ID: %s\n\n", 
-						  strReceiptDirectoryPath.Get());
-			return false;
-		}				
-		// ----------------------------------------------------------------------------
-		else 
-		{			
-			OTString strReceiptPath;
-			
-			strReceiptPath.Format("%s%s%s%s%s.success", OTLog::Path(), OTLog::PathSeparator(), 
-								  strReceiptDirectoryPath.Get(), OTLog::PathSeparator(), strReceiptID.Get());
-			
-			if (!tranOut.LoadContract(strReceiptPath.Get()) || !tranOut.VerifySignature(SERVER_NYM))
-			{
-				OTLog::vError("OTTransaction::VerifyBalanceReceipt: Unable to load balance statement: %s\n", 
-							  strReceiptPath.Get());
-				return false;
-			}				
-		}
+		OTLog::vError("OTTransaction::VerifyBalanceReceipt: Error reading file: %s%s%s%s%s\n", 
+					  szFolder1name, OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), szFilename);
+		return false;
 	}
+	// --------------------------------------------------------------------
+	
+	OTString strTransaction(strFileContents.c_str());
+	
+	if (!tranOut.LoadContractFromString(strTransaction) || !tranOut.VerifySignature(SERVER_NYM))
+	{
+		OTLog::vError("OTTransaction::VerifyBalanceReceipt: Unable to load balance statement: %s%s%s%s%s\n", 
+					  szFolder1name, OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), szFilename);
+		return false;
+	}				
 	
 	// At this point, tranOut is successfully loaded and verified, containing the last balance receipt.
 	
@@ -598,48 +574,38 @@ bool OTTransaction::VerifyBalanceReceipt(OTPseudonym & SERVER_NYM, // For verify
 	
 	OTTransaction tranOut(SERVER_USER_ID, USER_ID, GetRealServerID());
 
-	bool bConfirmReceiptMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::ReceiptFolder());
+	OTString strFilename; strFilename.Format("%s.success", strReceiptID.Get());
 	
-	if (!bConfirmReceiptMAINFolder)
+	const char * szFolder1name	= OTLog::ReceiptFolder();
+	const char * szFolder2name	= strServerID.Get();
+	const char * szFilename		= strFilename.Get();
+	
+	if (false == OTDB::Exists(szFolder1name, szFolder2name, szFilename))
 	{
-		OTLog::vError("OTTransaction::VerifyBalanceReceipt: Unable to find or "
-					  "create main Receipt directory: %s%s%s\n", 
-					  OTLog::Path(), OTLog::PathSeparator(), OTLog::ReceiptFolder());	
+		OTLog::Output(1, "Receipt file doesn't exist in OTTransaction::VerifyBalanceReceipt.\n");
 		return false;
 	}
-	// -----------------------------------------------------------------
-	else 
+	
+	// ----------------------------------------------------------------------------
+	//
+	std::string strFileContents(OTDB::QueryPlainString(szFolder1name, szFolder2name, szFilename)); // <=== LOADING FROM DATA STORE.
+	
+	if (strFileContents.length() < 2)
 	{
-		OTString strReceiptDirectoryPath;
-		strReceiptDirectoryPath.Format("%s%s%s", 
-									   OTLog::ReceiptFolder(), OTLog::PathSeparator(),
-									   strServerID.Get());
-		
-		bool bConfirmReceiptFolder = OTLog::ConfirmOrCreateFolder(strReceiptDirectoryPath.Get());
-		
-		if (!bConfirmReceiptFolder)
-		{
-			OTLog::vError("OTTransaction::VerifyBalanceReceipt: Unable to find or create Receipt subdir "
-						  "for server ID: %s\n\n", 
-						  strReceiptDirectoryPath.Get());
-			return false;
-		}				
-		// ----------------------------------------------------------------------------
-		else 
-		{			
-			OTString strReceiptPath;
-			
-			strReceiptPath.Format("%s%s%s%s%s.success", OTLog::Path(), OTLog::PathSeparator(), 
-									  strReceiptDirectoryPath.Get(), OTLog::PathSeparator(), strReceiptID.Get());
-			
-			if (!tranOut.LoadContract(strReceiptPath.Get()) || !tranOut.VerifySignature(SERVER_NYM))
-			{
-				OTLog::vError("OTTransaction::VerifyBalanceReceipt: Unable to load transaction statement: %s\n", 
-							  strReceiptPath.Get());
-				return false;
-			}				
-		}
+		OTLog::vError("OTTransaction::VerifyBalanceReceipt: Error reading file: %s%s%s%s%s\n", 
+					  szFolder1name, OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), szFilename);
+		return false;
 	}
+	// --------------------------------------------------------------------
+	
+	OTString strTransaction(strFileContents.c_str());
+	
+	if (!tranOut.LoadContractFromString(strTransaction) || !tranOut.VerifySignature(SERVER_NYM))
+	{
+		OTLog::vError("OTTransaction::VerifyBalanceReceipt: Unable to load transaction statement: %s%s%s%s%s\n", 
+					  szFolder1name, OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), szFilename);
+		return false;
+	}				
 
 	// I ONLY need this transaction statement if it's newer than the balance statement.
 	// Otherwise, I don't use it at all.  But if it's newer, then I use it instead of the current 

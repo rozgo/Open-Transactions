@@ -154,8 +154,8 @@ OTServerContract::OTServerContract() : OTContract()
 	m_nPort = 0;
 }
 
-OTServerContract::OTServerContract(OTString & name, OTString & filename, OTString & strID) 
-: OTContract(name, filename, strID)
+OTServerContract::OTServerContract(OTString & name, OTString & foldername, OTString & filename, OTString & strID) 
+: OTContract(name, foldername, filename, strID)
 {
 	m_nPort = 0;
 }

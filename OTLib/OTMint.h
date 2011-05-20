@@ -197,10 +197,15 @@ public:
 	inline OTAccount * GetCashReserveAccount() const { return m_pReserveAcct; }
 	
 	OTMint();
-	OTMint(const OTString & name, const OTString & filename, const OTString & strID);
+	OTMint(const OTString & strServerID, const OTString & strAssetTypeID);
 	virtual ~OTMint();
 	virtual void Release();
 	void ReleaseDenominations();
+	
+	bool LoadMint(const char * szAppend=NULL);
+	bool SaveMint(const char * szAppend=NULL);
+	
+	virtual bool LoadContract();
 	
 	// Will save the private keys on next serialization (not just public keys)
 	// (SignContract sets m_bSavePrivateKeys back to false again.)

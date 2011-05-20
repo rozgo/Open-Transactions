@@ -269,7 +269,7 @@ public:
 	bool SavePublicKey(std::ofstream & ofs) const;
 
 	bool SavePseudonym(); // saves to filename m_strNymfile
-	bool SavePseudonym(const char * strPath);
+	bool SavePseudonym(const char * szFoldername, const char * szFilename);
 	bool SavePseudonym(OTString & strNym);
 //	bool SavePseudonym(FILE * fl);
 	bool SavePseudonym(std::ofstream & ofs);

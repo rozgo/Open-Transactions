@@ -149,6 +149,7 @@ extern "C"
 #include "OTAsymmetricKey.h"
 #include "OTPayload.h"
 #include "OTASCIIArmor.h"
+#include "OTStorage.h"
 #include "OTLog.h"
 
 
@@ -1265,36 +1266,44 @@ bool OTAsymmetricKey::LoadPublicKey(const OTString & strFoldername, const OTStri
 {
 	Release();
 	
-	if (false == OTLog::ConfirmExactPath(strFilename.Get()))
-	{
-		OTLog::vOutput(2, "Unable to open pubkey file in OTAsymmetricKey::LoadPublicKey: %s\n", strFilename.Get());
-		return false;
-	}
-	
+	OTLog::Error("DEBUG OTAsymmetricKey 0 \n");
+
 	// -----------------------
 	
 	OTASCIIArmor theArmor;
 	
-	if (theArmor.LoadFromFile(strFilename))
+	if (theArmor.LoadFromFile(strFoldername, strFilename))
 	{
+		OTLog::Error("DEBUG OTAsymmetricKey 1 \n");
+
 		if (SetPublicKey(theArmor))
 		{
+			OTLog::Error("DEBUG OTAsymmetricKey 2 \n");
+
 			OTLog::Output(4, "Success setting public key from OTASCIIArmor in OTAsymmetricKey::LoadPublicKey.\n"); 
 			return true; 			
 		}
 		else
 		{
+			OTLog::Error("DEBUG OTAsymmetricKey 3 \n");
+
 			OTLog::vError("Unable to convert from OTASCIIArmor to public key in "
 					 "OTAsymmetricKey::LoadPublicKey: %s\n",
 					 strFilename.Get()); 
 			return false; 			
 		}
+		OTLog::Error("DEBUG OTAsymmetricKey 4 \n");
+
 	}
 	else 
 	{
+		OTLog::Error("DEBUG OTAsymmetricKey 5 \n");
+
 		OTLog::vError("Unable to read pubkey file in OTAsymmetricKey::LoadPublicKey: %s\n", strFilename.Get()); 
 		return false; 
 	}
+
+	OTLog::Error("DEBUG OTAsymmetricKey 6 \n");
 
 	return false;
 }
@@ -1338,80 +1347,79 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertFile(const OTString & strFoldername, 
 {
 	Release();
 	
-	if (false == OTLog::ConfirmExactPath(strFilename.Get()))
+	// ---------------
+
+	X509 *	x509	= NULL; 
+
+	const char * szFoldername = strFoldername.Get();
+	const char * szFilename = strFilename.Get();
+	
+	// --------------------------------------------------------------------
+	
+	if (false == OTDB::Exists(szFoldername, szFilename))
 	{
-		OTLog::vOutput(2, "Unable to open certfile in OTAsymmetricKey::LoadPublicKeyFromCertFile: %s\n", strFilename.Get());
+		OTLog::vError("OTAsymmetricKey::LoadPublicKeyFromCertFile: File does not exist: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
 		return false;
 	}
 	
-	// -----------------------
+	// --------------------------------------------------------------------
+	//
+	std::string strFileContents(OTDB::QueryPlainString(szFoldername, szFilename)); // <=== LOADING FROM DATA STORE.
 	
-	
-	X509 *	x509	= NULL; 
-	
-	/*
-	 // -------------------------------------------------
-	 // Version 1   (works but uses fopen)
-	 FILE * fp		= NULL; 
-	 
-	 // Read public key
-	 OTLog::vOutput(3, "\nReading public key from certfile: %s\n", strFilename.Get()); 
-	 
-	 #ifdef _WIN32
-	 errno_t err = fopen_s(&fp, strFilename.Get(), "rb"); 
-	 #else
-	 fp = fopen (strFilename.Get(), "r"); 
-	 #endif
-	 
-	 if (fp == NULL) 
-	 { 
-	 fprintf (stderr, "Error opening cert file in OTContract::VerifySignatureFromCertFile: %s\n",
-	 strFilename.Get()); 
-	 return false; 
-	 } 
-	 
-	 x509 = PEM_read_X509(fp, NULL, NULL, NULL); 
-	 
-	 fclose (fp); 
-	 // -------------------------------------------------
-	 */
-	
-	
-	// -------------------------------------------------
-	// Version 2
-	BIO *bio = BIO_new( BIO_s_file() );
-	OT_ASSERT(NULL != bio);
-	BIO_read_filename( bio, strFilename.Get() );
-	
-	x509 = PEM_read_bio_X509(bio, NULL, NULL, NULL); 
-	
-	BIO_free_all(bio);
-	bio = NULL;
-	// -------------------------------------------------
-	
-	
-	if (x509 == NULL) 
-	{ 
-		OTLog::vError("Error reading x509 out of cert file: %s\n", strFilename.Get()); 
-		return false; 
-	}
-	
-	m_pKey = X509_get_pubkey(x509); 
-	X509_free(x509);  
-	x509 = NULL;
-	
-	if (m_pKey == NULL) 
-	{ 
-		OTLog::vError("Error reading public key from x509 from certfile: %s\n", 
-					  strFilename.Get()); 
-		return false; 
-	}
-	else
+	if (strFileContents.length() < 2)
 	{
-		OTLog::vOutput(3, "Successfully loaded public key from x509 from certfile: %s\n", 
-					   strFilename.Get());
-		return true; 
+		OTLog::vError("OTAsymmetricKey::LoadPublicKeyFromCertFile: Error reading file: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
+		return false;
 	}
+	// --------------------------------------------------------------------
+	
+	// Create a new memory buffer on the OpenSSL side
+	BIO *bio = BIO_new(BIO_s_mem());
+	OT_ASSERT(NULL != bio);
+	
+	int nPutsResult = BIO_puts(bio, strFileContents.c_str());
+	
+	// --------------------------------------------------------------------
+	
+	if (nPutsResult > 0)
+	{
+		x509 = PEM_read_bio_X509(bio, NULL, NULL, NULL); 
+		
+		BIO_free_all(bio);
+		bio = NULL;
+		// -------------------------------------------------
+		
+		if (x509 == NULL) 
+		{ 
+			OTLog::vError("Error reading x509 out of cert file: %s%s%s\n", 
+						  szFoldername, OTLog::PathSeparator(), szFilename);
+			return false; 
+		}
+		
+		m_pKey = X509_get_pubkey(x509); 
+		X509_free(x509);  
+		x509 = NULL;
+		
+		if (m_pKey == NULL) 
+		{ 
+			OTLog::vError("Error reading public key from x509 from certfile: %s%s%s\n", 
+						  szFoldername, OTLog::PathSeparator(), szFilename); 
+			return false; 
+		}
+		else
+		{
+			OTLog::vOutput(3, "Successfully loaded public key from x509 from certfile: %s%s%s\n", 
+						   szFoldername, OTLog::PathSeparator(), szFilename);
+			return true; 
+		}
+	}
+	
+	if (NULL != bio)
+		BIO_free_all(bio);
+
+	return false;
 }
 
 
@@ -1421,68 +1429,65 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertFile(const OTString & strFoldername, 
 bool OTAsymmetricKey::LoadPrivateKey(const OTString & strFoldername, const OTString & strFilename)
 {
 	Release();
-
-	if (false == OTLog::ConfirmExactPath(strFilename.Get()))
+	
+	const char * szFoldername = strFoldername.Get();
+	const char * szFilename = strFilename.Get();
+	
+	// --------------------------------------------------------------------
+	
+	if (false == OTDB::Exists(szFoldername, szFilename))
 	{
-		OTLog::vOutput(2, "Unable to open private key file in OTAsymmetricKey::LoadPrivateKey: %s\n", strFilename.Get());
+		OTLog::vOutput(2, "Unable to find private key file in OTAsymmetricKey::LoadPrivateKey: %s%s%s\n", 
+					   szFoldername, OTLog::PathSeparator(), szFilename);
 		return false;
 	}
 	
-	// -----------------------
-
-	/*
-	// ------------------------------------------------------
-	// Version 1  (works but uses fopen)
-	FILE * fp = NULL; // _WIN32 
+	// --------------------------------------------------------------------
+	//
+	std::string strFileContents(OTDB::QueryPlainString(szFoldername, szFilename)); // <=== LOADING FROM DATA STORE.
 	
-	// Read private key 
-#ifdef _WIN32
-	errno_t err = fopen_s(&fp, strFilename.Get(), "rb"); 
-#else
-	fp = fopen (strFilename.Get(), "r"); 
-#endif
+	if (strFileContents.length() < 2)
+	{
+		OTLog::vError("OTAsymmetricKey::LoadPrivateKey: Error reading file: %s%s%s\n", 
+					  szFoldername, OTLog::PathSeparator(), szFilename);
+		return false;
+	}
+	// --------------------------------------------------------------------
 	
-	if (NULL == fp)
-	{ 
-		fprintf (stderr, "Error opening private keyfile in OTAsymmetricKey::LoadPrivateKey:\n%s\n", 
-				 strFilename.Get()); 
-		return false; 
-	} 
 	
-    m_pKey = PEM_read_PrivateKey(fp, NULL, pass_cb, NULL); 
-	
-	fclose (fp); 
-	// ------------------------------------------------------
-	 */
-
-	// ------------------------------------------------------
-	// Version 2
-	BIO *bio = NULL;
-	bio = BIO_new( BIO_s_file() );
-	
+	// Create a new memory buffer on the OpenSSL side
+	BIO *bio = BIO_new(BIO_s_mem());
 	OT_ASSERT(NULL != bio);
 	
-	BIO_read_filename( bio, strFilename.Get() );
+	int nPutsResult = BIO_puts(bio, strFileContents.c_str());
 	
-	m_pKey = PEM_read_bio_PrivateKey( bio, NULL, GetPasswordCallback(), NULL );
+	// --------------------------------------------------------------------
 	
-	BIO_free_all(bio);
-	bio = NULL;
-	// ------------------------------------------------------
-
-
-
-	if (NULL == m_pKey) 
-	{ 
-		OTLog::vError("Error reading private key from file in OTAsymmetricKey::LoadPrivateKey: %s\n", strFilename.Get()); 
-		return false; 
-	}
-	else 
+	if (nPutsResult > 0)
 	{
-		OTLog::vOutput(3, "Successfully loaded private key:\n%s\n", strFilename.Get());
-		return true;
+		m_pKey = PEM_read_bio_PrivateKey( bio, NULL, GetPasswordCallback(), NULL );
+		
+		BIO_free_all(bio);
+		bio = NULL;
+		// ------------------------------------------------------
+		
+		if (NULL == m_pKey) 
+		{ 
+			OTLog::vError("Error reading private key from file in OTAsymmetricKey::LoadPrivateKey: %s%s%s\n", 
+						  szFoldername, OTLog::PathSeparator(), szFilename);
+			return false; 
+		}
+		else 
+		{
+			OTLog::vOutput(3, "Successfully loaded private key:\n%s%s%s\n", 
+						   szFoldername, OTLog::PathSeparator(), szFilename);
+			return true;
+		}
 	}
-
+	
+	if (NULL != bio)
+		BIO_free_all(bio);
+	
 	OTLog::vError("STRANGE error while loading private key:\n%s\n", strFilename.Get());
 	return false;
 }

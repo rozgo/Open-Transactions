@@ -170,7 +170,7 @@ public:
 	inline const OTString & GetBasketInfo() const { return m_strBasketInfo; }
 	
 	OTAssetContract();
-	OTAssetContract(OTString & name, OTString & filename, OTString & strID);
+	OTAssetContract(OTString & name, OTString & foldername, OTString & filename, OTString & strID);
 	virtual ~OTAssetContract();
 	
 	virtual bool CreateContract(OTString & strContract, OTPseudonym & theSigner);

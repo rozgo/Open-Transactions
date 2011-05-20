@@ -183,6 +183,7 @@ using namespace io;
 #include "OTStringXML.h"
 #include "OTPseudonym.h"
 #include "OTLog.h"
+#include "OTStorage.h"
 
 
 
@@ -255,40 +256,16 @@ bool OTAccount::LoadContract()
 {
 	OTString strID;
 	GetIdentifier(strID);
-	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-						 OTLog::AccountFolder(),
-						 OTLog::PathSeparator(), strID.Get());
-
-	return OTContract::LoadContract();
+	
+	return OTContract::LoadContract(OTLog::AccountFolder(), strID.Get());
 }
 
 bool OTAccount::SaveAccount()
 {
 	OTString strID;
 	GetIdentifier(strID);
-	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-						 OTLog::AccountFolder(),
-						 OTLog::PathSeparator(), strID.Get());
-		
-	// the const char * version (used here) expects a filename.
-	// If I passed in the OTString it would try to save to that string instead of opening the file.
-	OTString strTemp(m_strFilename);
 	
-	bool bSaved = SaveContract(strTemp.Get());
-	
-	if (bSaved)
-	{
-		OTLog::vOutput(2, "Successfully saved account: %s\nFilename: %s\n", 
-					   m_strFilename.Get(), strTemp.Get());
-	}
-	else 
-	{
-		OTLog::vError("Error saving account: %s\nFilename: %s\n",
-					  m_strFilename.Get(), strTemp.Get());
-	}
-
-	
-	return bSaved;
+	return SaveContract(OTLog::AccountFolder(), strID.Get());
 }
 
 // Debit a certain amount from the account (presumably the same amount is being credited somewhere else)
@@ -489,12 +466,21 @@ OTAccount * OTAccount::LoadExistingAccount(const OTIdentifier & theAccountID, co
 	
 	OTString strAcctID(theAccountID);
 	
-	pAccount->m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-								   OTLog::AccountFolder(),
-								   OTLog::PathSeparator(), strAcctID.Get());
+	pAccount->m_strFoldername	= OTLog::AccountFolder();
+	pAccount->m_strFilename		= strAcctID.Get();
 	
-	if (OTLog::ConfirmExactPath(pAccount->m_strFilename.Get()) && 
-		pAccount->LoadContract() && pAccount->VerifyContractID())
+	// --------------------------------------------------------------------
+	
+	if (false == OTDB::Exists(pAccount->m_strFoldername.Get(), pAccount->m_strFilename.Get()))
+	{
+		OTLog::vError("OTAccount::LoadExistingAccount: File does not exist: %s%s%s\n", 
+					  pAccount->m_strFoldername.Get(), OTLog::PathSeparator(), pAccount->m_strFilename.Get());
+		return NULL;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	if (pAccount->LoadContract() && pAccount->VerifyContractID())
 		return pAccount;
 	else 
 	{
@@ -568,17 +554,21 @@ bool OTAccount::GenerateNewAccount(const OTPseudonym & theServer, const OTMessag
 	m_strName.Set(strID); // So it's not blank. The user can always change it.
 	
 	// Next we create the full path filename for the account using the ID.
-	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-						 OTLog::AccountFolder(),
-						 OTLog::PathSeparator(), strID.Get());
+	m_strFoldername = OTLog::AccountFolder();
+	m_strFilename = strID.Get();
 	
 	// Then we try to load it, in order to make sure that it doesn't already exist.
-	if (LoadContractRawFile())
+	// --------------------------------------------------------------------
+	
+	if (OTDB::Exists(m_strFoldername.Get(), m_strFilename.Get()))
 	{
-		OTLog::Error("Error generating new account ID, account already exists.\n");
-		return false;	
+		OTLog::vError("OTAccount::GenerateNewAccount: Account already exists: %s\n", 
+					  m_strFilename.Get());
+		return false;
 	}
-
+	
+	// --------------------------------------------------------------------
+	
 	// Set up the various important starting values of the account.
 	m_AcctType = eAcctType; // account type defaults to OTAccount::simple. But there are also issuer accts...
 	

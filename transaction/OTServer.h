@@ -250,7 +250,8 @@ public:
 	
 	bool LoadMainFile(); // Called in Init. Loads transaction number.
 	bool SaveMainFile(); // Called in IssueNextTransactionNumber.
-	
+	bool SaveMainFileToString(OTString & strMainFile);
+
 	bool ProcessUserCommand(OTMessage & theMessage, OTMessage & msgOut, OTClientConnection * pConnection=NULL);
 	bool ValidateServerIDfromUser(OTString & strServerID);
 	

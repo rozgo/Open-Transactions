@@ -155,10 +155,9 @@ class OTLedger;
 // This function is what makes Open Transactions go over XmlRpc/HTTP instead of TCP/SSL
 // (If you compile it in rpc mode using "make rpc"
 //
-#if defined(OT_XMLRPC_MODE)
-void OT_XmlRpcCallback(OTServerContract & theServerContract, OTEnvelope & theEnvelope);
+#if defined(OT_ZMQ_MODE)
+#include <zmq.hpp>
 #endif
-
 
 
 // --------------------------------------------------------------------
@@ -173,7 +172,11 @@ class OT_API // The C++ high-level interface to the Open Transactions client-sid
 	OTString *		m_pstrStoragePath;
 	OTString *		m_pstrWalletFilename;
 	
+	static zmq::context_t	s_ZMQ_Context;
+
 public:
+
+	static void TransportCallback(OTServerContract & theServerContract, OTEnvelope & theEnvelope);
 
 	inline OTWallet * GetWallet() { return m_pWallet; }
 	inline OTClient * GetClient() { return m_pClient; }

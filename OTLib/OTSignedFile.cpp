@@ -265,7 +265,8 @@ OTSignedFile::OTSignedFile(const char * LOCAL_SUBDIR, const char * FILE_NAME) : 
 // this method assumes has already been set (using SetFilename())
 bool OTSignedFile::SaveFile()
 {
-	OTString strTheFileName(m_strFilename);
+	const OTString strTheFileName(m_strFilename);
+	const OTString strTheFolderName(m_strFoldername);
 	
 	// OTContract doesn't natively make it easy to save a contract to its own filename.
 	// Funny, I know, but OTContract is designed to save either to a specific filename,
@@ -273,30 +274,36 @@ bool OTSignedFile::SaveFile()
 	// save to its own filename that was used to load it. But OTSignedFile is different...
 	
 	// This saves to a file, the name passed in as a char *.
-	return SaveContract(strTheFileName.Get());
+	return SaveContract(strTheFolderName.Get(), strTheFileName.Get());
 }
 
 // Assumes SetFilename() has already been set.
 bool OTSignedFile::LoadFile()
 {
-	if (OTLog::ConfirmExactPath(m_strFilename.Get()))
+	if (OTDB::Exists(m_strFoldername.Get(), m_strFilename.Get()))
 		return LoadContract();
-	
+
 	return false;
 }
 
 void OTSignedFile::SetFilename(const OTString & LOCAL_SUBDIR, const OTString & FILE_NAME)
 {
+	// OTSignedFile specific variables.
 	m_strLocalDir		= LOCAL_SUBDIR;
 	m_strSignedFilename	= FILE_NAME;
 	
+	// OTContract variables.
+	m_strFoldername	= m_strLocalDir;
+	m_strFilename	= m_strSignedFilename;
+
+	/*
 	m_strFilename.Format("%s%s" // data_folder/
 						 "%s%s" // nyms/
 						 "%s",  // 5bf9a88c.nym
 						 OTLog::Path(), OTLog::PathSeparator(),
 						 m_strLocalDir.Get(), OTLog::PathSeparator(),
 						 m_strSignedFilename.Get());
-	
+	*/
 	// Software Path + Local Sub-directory + Filename
 	//
 	// Finished Product:    "transaction/nyms/5bf9a88c.nym"

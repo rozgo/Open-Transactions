@@ -99,6 +99,7 @@ extern "C"
 #include "OTMint.h"
 
 #include "OTLog.h"
+//#include "OTStorage.h"
 
 
 // run this program from inside the transaction directory (it's a tool for creating mints for the server.)
@@ -161,7 +162,7 @@ int main (int argc, char * const argv[])
 	// nSeries now contains the number we need to use for the next series.
 	// and strMintPath now contains the correct file path.
 	
-	OTMint * pMint = new OTMint(strAssetTypeID, strMintPath, strAssetTypeID);
+	OTMint * pMint = new OTMint(strServerID, strAssetTypeID);
 	
 	if (pMint && pMint->LoadContract())
 	{
@@ -209,16 +210,23 @@ int main (int argc, char * const argv[])
 									   ASSET_TYPE_ID, theNym, 1, 5, 10, 25, 100, 500, 1000, 2000, 10000, 100000);
 												// should be: 1, 2, 4,   8,  16,  32,   64,  128,   256,    512, 1024, 2048, 4096, 8192, 16384, 32768, 65536
 				
+				OTString strFilename;		strFilename.		Format("%s",			strAssetTypeID.Get());
+				OTString strPUBLICFilename;	strPUBLICFilename.	Format("%s%sPUBLIC",	strAssetTypeID.Get(), ".");
+				
+
 				pMint->SetSavePrivateKeys(); // This causes the next serialization to save the private, not just public, keys.
+				
 				pMint->SignContract(theNym);
-				pMint->SaveContract(strMintPath.Get());  // save the mint file.
+				pMint->SaveContract();
+				pMint->SaveContract(OTLog::MintFolder(), strFilename.Get());  // save the mint file.
 				
 				// Now I sign it again, to get the private keys out of there.
 				pMint->ReleaseSignatures();
 				pMint->SignContract(theNym);
-				strMintPath.Format("%s%smints%s%s.PUBLIC", OTLog::Path(), OTLog::PathSeparator(),
-								   OTLog::PathSeparator(), strAssetTypeID.Get());
-				pMint->SaveContract(strMintPath.Get());
+				pMint->SaveContract();
+				
+				pMint->SaveContract(OTLog::MintFolder(), strPUBLICFilename.Get());  // save the public mint file.
+				
 				printf("Done.\n");
 			}
 			else {

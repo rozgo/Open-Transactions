@@ -150,6 +150,7 @@ extern "C"
 #include "easyzlib.h"
 
 #include "OTLog.h"
+#include "OTStorage.h"
 
 
 #include "OTString.h"
@@ -685,12 +686,15 @@ bool OTASCIIArmor::LoadFromFile(const OTString & foldername, const OTString & fi
 	
 	// --------------------------------------------------------------------
 	
+	OTLog::Error("DEBUG OTASCIIArmor 0 \n");
+	
 	if (false == OTDB::Exists(foldername.Get(), filename.Get()))
 	{
 		OTLog::vError("OTASCIIArmor::LoadFromFile: File does not exist: %s%s%s\n", 
 					  foldername.Get(), OTLog::PathSeparator(), filename.Get());
 		return false;
 	}
+	OTLog::Error("DEBUG OTASCIIArmor 1 \n");
 	
 	// --------------------------------------------------------------------
 	//
@@ -702,7 +706,8 @@ bool OTASCIIArmor::LoadFromFile(const OTString & foldername, const OTString & fi
 					  foldername.Get(), OTLog::PathSeparator(), filename.Get());
 		return false;
 	}
-	
+	OTLog::Error("DEBUG OTASCIIArmor 2 \n");
+
 	// --------------------------------------------------------------------
 	
 	return LoadFromString(strFileContents);	

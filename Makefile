@@ -4,7 +4,7 @@
 #
 # For Mac and Linux, just type 'make'. For FreeBSD, type 'gmake'.
 #
-# RPC is the PREFERRED mode to run the software, since it uses xmlrpc over
+# RPC is the PREFERRED mode to run the software, since it uses ZMQ over
 # http.  'make rpc'
 #
 # (Both of the above options will also build the API in C.)
@@ -149,11 +149,25 @@ EXTRA_CLEAN_TARGETS1 += cd util/otcreatemint && $(OT_MAKE_PLATFORM_INC_LIBS)  cl
 EXTRA_CLEAN_TARGETS2 += cd util/signcontract && $(OT_MAKE_PLATFORM_INC_LIBS)  clean && touch ../../testwallet/data_folder/signcontract.tmp && rm ../../testwallet/data_folder/signcontract.*
 
 
-
-
 # -------------------------------------
 
 all:
+	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) 
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=ZMQ
+	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=ZMQ
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=c
+	$(EXTRA_RPC_TARGETS1)
+	$(EXTRA_RPC_TARGETS2)
+
+debug:
+	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS)  debug
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=ZMQ debug
+	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)   TRANSPORT=ZMQ debug
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=c debug
+	$(EXTRA_DEBUGRPC_TARGETS1)
+	$(EXTRA_DEBUGRPC_TARGETS2)
+
+tcp:
 	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS)   
 	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS) 
 	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS) 
@@ -161,7 +175,7 @@ all:
 	$(EXTRA_TARGETS1)
 	$(EXTRA_TARGETS2)
 
-debug:
+debugtcp:
 	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS)  debug
 	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  debug
 	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)  debug
@@ -170,110 +184,84 @@ debug:
 	$(EXTRA_DEBUG_TARGETS2)
 
 c:
-	cd xmlrpcpp && $(OT_MAKE) $(DYNAMIC_FLAG)
 	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) $(DYNAMIC_FLAG)
-	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
-	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=java clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=ruby clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=python clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=perl5 clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=php5 clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=ZMQ
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=c clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=java clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=ruby clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=python clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=perl5 clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=php5 clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=c
 	$(EXTRA_RPC_TARGETS1)
 	$(EXTRA_RPC_TARGETS2)
 
 java:
-	cd xmlrpcpp && $(OT_MAKE) $(DYNAMIC_FLAG)
 	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) $(DYNAMIC_FLAG)
-	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
-	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=java clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=java
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=ZMQ
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=c clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=java clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=java
 	$(EXTRA_RPC_TARGETS1)
 	$(EXTRA_RPC_TARGETS2)
 
 csharp:
-	cd xmlrpcpp && $(OT_MAKE) $(DYNAMIC_FLAG)
 	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) $(DYNAMIC_FLAG)
-	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
-	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=csharp clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=csharp
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=ZMQ
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=c clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=csharp clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=csharp
 	$(EXTRA_RPC_TARGETS1)
 	$(EXTRA_RPC_TARGETS2)
 
 ruby:
-	cd xmlrpcpp && $(OT_MAKE) $(DYNAMIC_FLAG)
 	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) $(DYNAMIC_FLAG)
-	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
-	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=ruby clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=ruby
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=ZMQ
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=c clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=ruby clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=ruby
 	$(EXTRA_RPC_TARGETS1)
 	$(EXTRA_RPC_TARGETS2)
 
 perl5:
-	cd xmlrpcpp && $(OT_MAKE) $(DYNAMIC_FLAG)
 	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) $(DYNAMIC_FLAG)
-	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
-	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=perl5 clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=perl5
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=ZMQ
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=c clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=perl5 clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=perl5
 	$(EXTRA_RPC_TARGETS1)
 	$(EXTRA_RPC_TARGETS2)
 
 python:
-	cd xmlrpcpp && $(OT_MAKE) $(DYNAMIC_FLAG)
 	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) $(DYNAMIC_FLAG)
-	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
-	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=ruby clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=python clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=python
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=ZMQ
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=c clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=ruby clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=python clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=python
 	$(EXTRA_RPC_TARGETS1)
 	$(EXTRA_RPC_TARGETS2)
 
 php5:
-	cd xmlrpcpp && $(OT_MAKE) $(DYNAMIC_FLAG)
 	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) $(DYNAMIC_FLAG)
-	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
-	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=php5 clean
-	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=php5
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=ZMQ
+	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=c clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=php5 clean
+	cd testwallet && $(OT_MAKE) -f Makefile.API $(DYNAMIC_FLAG) PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=ZMQ LANGUAGE=php5
 	$(EXTRA_RPC_TARGETS1)
 	$(EXTRA_RPC_TARGETS2)
-
-rpc:
-	cd xmlrpcpp && $(OT_MAKE)
-	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS) 
-	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
-	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc
-	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c
-	$(EXTRA_RPC_TARGETS1)
-	$(EXTRA_RPC_TARGETS2)
-
-debugrpc:
-	cd xmlrpcpp && $(OT_MAKE)
-	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS)  debug
-	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc debug
-	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)   TRANSPORT=XmlRpc debug
-	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) TRANSPORT=XmlRpc LANGUAGE=c debug
-	$(EXTRA_DEBUGRPC_TARGETS1)
-	$(EXTRA_DEBUGRPC_TARGETS2)
 
 clean:
-	cd xmlrpcpp && $(OT_MAKE) clean
 	cd OTLib && $(OT_MAKE_PLATFORM_INC_LIBS)  clean
 	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  clean
-	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc clean
+	cd transaction && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=ZMQ clean
 	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=c clean
 	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=ruby clean
 	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=python clean
 	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=perl5 clean
 	cd testwallet && $(OT_MAKE) -f Makefile.API PLATFORM=$(OT_PLATFORM) $(OT_SSL_INCLUDE_AND_LIBS) LANGUAGE=php5 clean
 	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)  clean
-	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=XmlRpc clean
+	cd testwallet && $(OT_MAKE_PLATFORM_INC_LIBS)  TRANSPORT=ZMQ clean
 	$(EXTRA_CLEAN_TARGETS1)
 	$(EXTRA_CLEAN_TARGETS2)
 

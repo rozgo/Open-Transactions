@@ -212,8 +212,8 @@ int main (int argc, char **argv)
 {
 	OTLog::vOutput(0, "\n\nWelcome to Open Transactions... Test Client -- version %s\n"
 				   "(transport build: OTMessage -> TCP -> SSL)\n"
-				   "IF YOU PREFER TO USE XmlRpc with HTTP, then rebuild from main folder like this:\n"
-				   "cd ..; make clean; make rpc\n\n", 
+				   "IF YOU PREFER TO USE ZMQ (message based), then rebuild from main folder like this:\n"
+				   "cd ..; make clean; make\n\n", 
 				   OTLog::Version());
 	
 	OT_API::InitOTAPI();

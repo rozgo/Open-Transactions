@@ -80,8 +80,8 @@ API_LDFLAGS = # empty
 
 # The LIBS macro contains a list of libraries that the the
 # executable must be linked against.
-#API_LIBS =  -lssl -lcrypto  -lOTLib -lssl -lcrypto  -lOTLib  -lssl -lcrypto -lOTLib  -lssl -lcrypto -lOTLib
-#API_DEBUG_LIBS = -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd  -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd
+#API_LIBS =  -lssl -lcrypto  -lOTLib -lssl -lcrypto  -lOTLib  -lssl -lcrypto -lOTLib  -lssl -lcrypto -lprotobuf -lmsgpack -lOTLib
+#API_DEBUG_LIBS = -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd  -lssl -lcrypto -lOTLibd -lssl -lcrypto -lprotobuf -lmsgpack -lOTLibd
 
 
 
@@ -139,8 +139,8 @@ endif
 # --- DARWIN
 #
 ifeq ($(PLATFORM), darwin)
-API_LIBS = -lssl  -lcrypto -lOTLib 
-API_DEBUG_LIBS =  -lssl -lcrypto -lOTLibd 
+API_LIBS = -lssl -lcrypto -lprotobuf -lmsgpack -lOTLib 
+API_DEBUG_LIBS =  -lssl -lcrypto -lprotobuf -lmsgpack -lOTLibd 
 endif
 # End DARWIN -------------------------------------------------------------
 
@@ -150,8 +150,8 @@ ifeq ($(PLATFORM), linux)
 
 API_LDFLAGS += -ldl
 
-API_LIBS = -lOTLib -lssl  -lcrypto 
-API_DEBUG_LIBS =  -lOTLibd -lssl -lcrypto  
+API_LIBS = -lOTLib -lssl -lcrypto -lprotobuf -lmsgpack 
+API_DEBUG_LIBS =  -lOTLibd -lssl -lcrypto -lprotobuf -lmsgpack 
 
 endif
 # End LINUX -------------------------------------------------------------
@@ -162,8 +162,8 @@ endif
 # --- FreeBSD ----
 
 ifeq ($(PLATFORM), freebsd)
-API_LIBS = -lssl  -lcrypto -lOTLib 
-API_DEBUG_LIBS =  -lssl -lcrypto -lOTLibd 
+API_LIBS = -lssl  -lcrypto -lprotobuf -lmsgpack -lOTLib 
+API_DEBUG_LIBS =  -lssl -lcrypto -lprotobuf -lmsgpack -lOTLibd 
 endif
 # End FreeBSD -------------------------------------------------------------
 

@@ -195,6 +195,11 @@ public:
 	OTPurse(const OTIdentifier & SERVER_ID, const OTIdentifier & ASSET_ID, const OTIdentifier & USER_ID); // UserID optional
 	virtual ~OTPurse();
 
+	bool LoadPurse(const char * szServerID=NULL, const char * szUserID=NULL, const char * szAssetTypeID=NULL);
+	bool SavePurse(const char * szServerID=NULL, const char * szUserID=NULL, const char * szAssetTypeID=NULL);
+
+	virtual bool LoadContract();
+
 	inline const OTIdentifier & GetServerID() const { return m_ServerID; }
 	inline const OTIdentifier & GetAssetID() const { return m_AssetID; }
 	

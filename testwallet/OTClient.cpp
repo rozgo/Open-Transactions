@@ -970,80 +970,48 @@ void OTClient::ProcessIncomingTransactions(OTServerConnection & theConnection, O
 			//
 			// SAVE THE RECEIPT....
 			
-			OTString strServerID(SERVER_ID);
+			//OTLog::ReceiptFolder()
+			const OTString strServerID(SERVER_ID);
+			OTString strReceiptFilename; //contains: strReceiptID .success, fail, or error.
+			// ---------------------------------------------------------
 			
-			bool bConfirmReceiptMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::ReceiptFolder());
+			OTItem * pItem = pTransaction->GetItem(OTItem::atBalanceStatement);
 			
-			if (!bConfirmReceiptMAINFolder)
+			if (NULL == pItem)
 			{
-				OTLog::vError("OTClient::ProcessIncomingTransactions: Unable to find or "
-							  "create main Receipt directory: %s%s%s\n", 
-							  OTLog::Path(), OTLog::PathSeparator(), OTLog::ReceiptFolder());				
+				pItem = pTransaction->GetItem(OTItem::atTransactionStatement);
+				
+				if (NULL != pItem)
+					pNym->GetIdentifier(strReceiptID); // In this case, the receipt ID is the Nym ID
 			}
-			// -----------------------------------------------------------------
 			else 
 			{
-				OTString strReceiptDirectoryPath;
-				strReceiptDirectoryPath.Format("%s%s%s", 
-											OTLog::ReceiptFolder(), OTLog::PathSeparator(),
-											strServerID.Get());
+				strReceiptID = theReply.m_strAcctID; // If a balance statement, then the receipt ID is the Account ID.
+			}
+			
+			// ---------------------------------------------------------
+			
+			OTString strTransaction;
+			pTransaction->SaveContract(strTransaction);
+			
+			if (NULL != pItem)
+			{
+				if (pTransaction->GetSuccess())
+					strReceiptFilename.Format("%s.success", strReceiptID.Get());
+				else
+					strReceiptFilename.Format("%s.fail", strReceiptID.Get());
 				
-				bool bConfirmReceiptFolder = OTLog::ConfirmOrCreateFolder(strReceiptDirectoryPath.Get());
+				OTDB::StorePlainString(strTransaction.Get(), OTLog::ReceiptFolder(), 
+									   strServerID.Get(), strReceiptFilename.Get());
+			}
+			else // This should never happen...
+			{
+				strReceiptFilename.Format("%s.error", strReceiptID.Get());
 				
-				if (!bConfirmReceiptFolder)
-				{
-					OTLog::vError("OTClient::ProcessIncomingTransactions: Unable to find or create Receipt subdir "
-								  "for server ID: %s\n\n", 
-								  strReceiptDirectoryPath.Get());
-				}				
-				// ----------------------------------------------------------------------------
-				else 
-				{
-					OTItem * pItem = pTransaction->GetItem(OTItem::atBalanceStatement);
-
-					if (NULL == pItem)
-					{
-						pItem = pTransaction->GetItem(OTItem::atTransactionStatement);
-						
-						if (NULL != pItem)
-							pNym->GetIdentifier(strReceiptID); // In this case, the receipt ID is the Nym ID
-					}
-					else 
-					{
-						strReceiptID = theReply.m_strAcctID; // If a balance statement, then the receipt ID is the Account ID.
-					}
-
-					// ---------------------------------------------------------
-					
-					if (NULL != pItem)
-					{
-						OTString strReceiptPath;
-						
-						if (pTransaction->GetSuccess())
-						{							
-							strReceiptPath.Format("%s%s%s%s%s.success", OTLog::Path(), OTLog::PathSeparator(), 
-												  strReceiptDirectoryPath.Get(), OTLog::PathSeparator(), strReceiptID.Get());
-						}
-						else
-						{
-							strReceiptPath.Format("%s%s%s%s%s.fail", OTLog::Path(), OTLog::PathSeparator(), 
-											  strReceiptDirectoryPath.Get(), OTLog::PathSeparator(), strReceiptID.Get());
-						}
-						
-						pTransaction->SaveContract(strReceiptPath.Get());	
-					}
-					else // This should never happen...
-					{
-						OTString strReceiptPath;
-						
-						strReceiptPath.Format("%s%s%s%s%s.error", OTLog::Path(), OTLog::PathSeparator(), 
-											  strReceiptDirectoryPath.Get(), OTLog::PathSeparator(), strReceiptID.Get());
-						
-						OTLog::vError("Error saving transaction receipt:  %s\n", strReceiptPath.Get());
-						
-						pTransaction->SaveContract(strReceiptPath.Get());	
-					}
-				}
+				OTLog::vError("Error saving transaction receipt: %s\n", strReceiptFilename.Get());
+				
+				OTDB::StorePlainString(strTransaction.Get(), OTLog::ReceiptFolder(), 
+									   strServerID.Get(), strReceiptFilename.Get());				
 			}
 			
 			// No matter what kind of transaction it is,
@@ -1204,105 +1172,12 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 				
 				OTString strAssetID(thePurse.GetAssetID());
 				
-				// -----------------------------------------------------------------
-				
-				bool bConfirmMintMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::MintFolder());
-				
-				if (!bConfirmMintMAINFolder)
-				{
-					OTLog::vError("OTClient::ProcessWithdrawalResponse: Unable to find or "
-								  "create main Mint directory: %s%s%s\n", 
-								  OTLog::Path(), OTLog::PathSeparator(), OTLog::MintFolder());
-					
-					return;
-				}
-				
-				// -----------------------------------------------------------------
-				
-				OTString strMintDirectoryPath;
-				strMintDirectoryPath.Format("%s%s%s", 
-											OTLog::MintFolder(), OTLog::PathSeparator(),
-											strServerID.Get());
-				
-				bool bConfirmMintFolder = OTLog::ConfirmOrCreateFolder(strMintDirectoryPath.Get());
-				
-				if (!bConfirmMintFolder)
-				{
-					OTLog::vError("OTClient::ProcessWithdrawalResponse: Unable to find or create Mint subdir "
-								  "for server ID: %s\n\n", 
-								  strMintDirectoryPath.Get());
-					return;
-				}
-				
-				// ----------------------------------------------------------------------------
-				
-				OTString strMintPath;
-				strMintPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-								   strMintDirectoryPath.Get(), OTLog::PathSeparator(), strAssetID.Get());
-				
 				// -----------------------------------------------------------------	
 
-				OTMint theMint(strAssetID, strMintPath, strAssetID);
+				OTMint theMint(strServerID, strAssetID);
 
 				// -----------------------------------------------------------------
 
-				bool bConfirmPurseMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::PurseFolder());
-				
-				if (!bConfirmPurseMAINFolder)
-				{
-					OTLog::vError("ProcessWithdrawalResponse: Unable to find or "
-								  "create main purse directory: %s%s%s\n%s\n", 
-								  OTLog::Path(), OTLog::PathSeparator(), OTLog::PurseFolder(),
-								  strPurse.Get()); // Output it so it's safe in the log. (Since couldn't write.)
-					return;
-				}
-				
-				// -----------------------------------------------------------------
-				
-				
-				OTString strPurseDirectoryPath;
-				strPurseDirectoryPath.Format("%s%s%s", 
-											 OTLog::PurseFolder(), OTLog::PathSeparator(),
-											 strServerID.Get());
-				
-				bool bConfirmPurseFolder = OTLog::ConfirmOrCreateFolder(strPurseDirectoryPath.Get());
-				
-				if (!bConfirmPurseFolder)
-				{
-					OTLog::vError("ProcessWithdrawalResponse: Unable to find or create purse subdir "
-								  "for server ID: %s\n\n%s\n", 
-								  strPurseDirectoryPath.Get(),
-								  strPurse.Get()); // Output the purse so it's safe in the log. (Since couldn't write.)
-					return;
-				}
-				
-				// ----------------------------------------------------------------------------
-				
-				OTString strPurseUserPath;
-				strPurseUserPath.Format("%s%s%s", 
-											 strPurseDirectoryPath.Get(), OTLog::PathSeparator(),
-											 strUserID.Get());
-				
-				bool bConfirmPurseUserFolder = OTLog::ConfirmOrCreateFolder(strPurseUserPath.Get());
-				
-				if (!bConfirmPurseUserFolder)
-				{
-					OTLog::vError("ProcessWithdrawalResponse: Unable to find or create purse subdir "
-								  "for User ID: %s\n\n%s\n", 
-								  strPurseUserPath.Get(),
-								  strPurse.Get()); // Output the purse so it's safe in the log. (Since couldn't write.)
-					return;
-				}
-				
-				// ----------------------------------------------------------------------------
-				
-				OTString strPursePath;
-				strPursePath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-									strPurseUserPath.Get(), OTLog::PathSeparator(), strAssetID.Get());
-				
-				// -------------------------------------------------------------
-				
-				
 				// Unlike the purse which we read out of a message,
 				// now we try to open a purse as a file on the client side,
 				// keyed by Asset ID.  (The client should already have one
@@ -1320,17 +1195,16 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 				// strategy.  In the event that tokens are overwritten here, it
 				// shouldn't be a problem since they would be in the archive somewhere.
 				
-				if ( OTLog::ConfirmExactPath(strPursePath.Get()))
-				{
-					theWalletPurse.LoadContract(strPursePath.Get());
-//					if Load, theWalletPurse.VerifySignature();
-				}
+				theWalletPurse.LoadPurse(strServerID.Get(), strUserID.Get(), strAssetID.Get());
+//				if Load, theWalletPurse.VerifySignature();
+
 				
 				// -------------------------------------------------------------
 
 				bool bSuccess = false;
 				
-				if ((NULL != pRequestPurse) && pServerNym && theMint.LoadContract() && theMint.VerifyMint(*pServerNym))
+				if ((NULL != pRequestPurse) && (NULL != pServerNym) && 
+					theMint.LoadMint() && theMint.VerifyMint(*pServerNym))
 				while (pToken = thePurse.Pop(*pNym))
 				{
 					pOriginalToken = pRequestPurse->Pop(*pNym);
@@ -1395,7 +1269,7 @@ void OTClient::ProcessWithdrawalResponse(OTTransaction & theTransaction, OTServe
 					// Sign it, save it.
 					theWalletPurse.ReleaseSignatures(); // Might as well, they're no good anyway once the data has changed.
 					theWalletPurse.SignContract(*pNym);
-					theWalletPurse.SaveContract(strPursePath.Get());
+					theWalletPurse.SavePurse(strServerID.Get(), strUserID.Get(), strAssetID.Get());
 					
 					OTLog::Output(1, "SUCCESSFULLY UNBLINDED token, and added the cash to the local purse, and saved.\n");
 				}
@@ -1493,23 +1367,8 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		const OTString strNymID2(theReply.m_strNymID2), strPubkey(theReply.m_strNymPublicKey.Get());
 				
 		// ----------------------------------
-
-		bool bConfirmPubkeyFolder = OTLog::ConfirmOrCreateFolder(OTLog::PubkeyFolder());
 		
-		if (!bConfirmPubkeyFolder)
-		{
-			OTLog::vError("ProcessServerReply: Unable to find or "
-						  "create main pubkey directory: %s%s%s\n", 
-						  OTLog::Path(), OTLog::PathSeparator(), OTLog::PubkeyFolder());
-			
-			return true;
-		}
-
-		// ----------------------------------
-		
-		OTString strPath;
-		strPath.Format((char*)"%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), OTLog::PubkeyFolder(),
-					   OTLog::PathSeparator(), strNymID2.Get());
+		OTString strPath = strNymID2.Get();
 								
 		// ----------------------------------
 		// Next we save the public key in the pubkeys folder...
@@ -2063,108 +1922,78 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 					
 					OTString strServerID(SERVER_ID);
 					
-					bool bConfirmReceiptMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::ReceiptFolder());
+					OTString strReceiptID("NOT_SET_YET");
 					
-					if (!bConfirmReceiptMAINFolder)
+					OTItem * pReplyItem = pReplyTransaction->GetItem(OTItem::atBalanceStatement);
+					
+					if (NULL == pReplyItem)
 					{
-						OTLog::vError("OTClient::ProcessServerReply: Unable to find or "
-									  "create main Receipt directory: %s%s%s\n", 
-									  OTLog::Path(), OTLog::PathSeparator(), OTLog::ReceiptFolder());				
+						pReplyItem = pReplyTransaction->GetItem(OTItem::atTransactionStatement);
+						
+						if (NULL != pReplyItem)
+							pNym->GetIdentifier(strReceiptID); // In this case, the receipt ID is the Nym ID
 					}
-					// -----------------------------------------------------------------
 					else 
 					{
-						OTString strReceiptDirectoryPath;
-						strReceiptDirectoryPath.Format("%s%s%s", 
-													   OTLog::ReceiptFolder(), OTLog::PathSeparator(),
-													   strServerID.Get());
+						strReceiptID = theReply.m_strAcctID; // If a balance statement, then the receipt ID is the Account ID.
+					}
+					
+					// ---------------------------------------------------------
+					
+					OTString strReceiptFilename;
+					
+					if (NULL != pReplyItem)
+					{
+						if (pReplyTransaction->GetSuccess())					
+							strReceiptFilename.Format("%s.success", strReceiptID.Get());
+						else
+							strReceiptFilename.Format("%s.fail", strReceiptID.Get());
 						
-						bool bConfirmReceiptFolder = OTLog::ConfirmOrCreateFolder(strReceiptDirectoryPath.Get());
+						OTString strTransaction;
+						pReplyTransaction->SaveContract(strTransaction); // <=========== Save that receipt!
 						
-						if (!bConfirmReceiptFolder)
-						{
-							OTLog::vError("OTClient::ProcessServerReply: Unable to find or create Receipt subdir "
-										  "for server ID: %s\n\n", 
-										  strReceiptDirectoryPath.Get());
-						}				
-						// ----------------------------------------------------------------------------
-						else 
-						{
-							OTString strReceiptID("NOT_SET_YET");
-							
-							OTItem * pReplyItem = pReplyTransaction->GetItem(OTItem::atBalanceStatement);
-							
-							if (NULL == pReplyItem)
-							{
-								pReplyItem = pReplyTransaction->GetItem(OTItem::atTransactionStatement);
-								
-								if (NULL != pReplyItem)
-									pNym->GetIdentifier(strReceiptID); // In this case, the receipt ID is the Nym ID
-							}
-							else 
-							{
-								strReceiptID = theReply.m_strAcctID; // If a balance statement, then the receipt ID is the Account ID.
-							}
-							
-							// ---------------------------------------------------------
-							
-							if (NULL != pReplyItem)
-							{
-								OTString strReceiptPath;
-								
-								if (pReplyTransaction->GetSuccess())
-								{							
-									strReceiptPath.Format("%s%s%s%s%s.success", OTLog::Path(), OTLog::PathSeparator(), 
-														  strReceiptDirectoryPath.Get(), OTLog::PathSeparator(), strReceiptID.Get());
-								}
-								else
-								{
-									strReceiptPath.Format("%s%s%s%s%s.fail", OTLog::Path(), OTLog::PathSeparator(), 
-														  strReceiptDirectoryPath.Get(), OTLog::PathSeparator(), strReceiptID.Get());
-								}
-								
-								pReplyTransaction->SaveContract(strReceiptPath.Get()); // <=========== Save that receipt!
-								
-								// -------------------------------------------------
-								
-								// If this was a successful processInbox, then I go ahead and getAccount again, since it's probably changed.
-								// Careful in case this might infinite loop  :P
-
+						OTDB::StorePlainString(strTransaction.Get(), OTLog::ReceiptFolder(), 
+											   strServerID.Get(), strReceiptFilename.Get());
+						
+						// -------------------------------------------------
+						
+						// If this was a successful processInbox, then I go ahead and getAccount again, since it's probably changed.
+						// Careful in case this might infinite loop  :P
+						
 #if defined (TEST_CLIENT)
-								if ((OTItem::acknowledgement == pReplyItem->GetStatus()) &&
-									(theReply.m_strCommand.Compare("@processInbox")))
-								{							
-									OTMessage theMessage;
-									OTAccount * pAccount = NULL;
-									
-									if ( (NULL != (pAccount = m_pWallet->GetAccount(ACCOUNT_ID))) && 
-										ProcessUserCommand(OTClient::getAccount, theMessage, 
-														   *pNym, 
-//														   *(pAssetContract),
-														   *(theConnection.GetServerContract()), 
-														   pAccount)) 
-									{
-										// Sign it and send it out.
-										theConnection.ProcessMessageOut(theMessage);
-									}
-									else
-										OTLog::Error("Error processing getAccount command in OTClient::ProcessServerReply\n");
-								}
-#endif
-							}
-							else // This should never happen...
+						if ((OTItem::acknowledgement == pReplyItem->GetStatus()) &&
+							(theReply.m_strCommand.Compare("@processInbox")))
+						{							
+							OTMessage theMessage;
+							OTAccount * pAccount = NULL;
+							
+							if ( (NULL != (pAccount = m_pWallet->GetAccount(ACCOUNT_ID))) && 
+								ProcessUserCommand(OTClient::getAccount, theMessage, 
+												   *pNym, 
+//													*(pAssetContract),
+												   *(theConnection.GetServerContract()), 
+												   pAccount)) 
 							{
-								OTString strReceiptPath;
-								
-								strReceiptPath.Format("%s%s%s%s%s.error", OTLog::Path(), OTLog::PathSeparator(), 
-													  strReceiptDirectoryPath.Get(), OTLog::PathSeparator(), strReceiptID.Get());
-								
-								OTLog::vError("OTClient::ProcessServerReply: Error saving transaction receipt:  %s\n", 
-											  strReceiptPath.Get());
-								
-								pReplyTransaction->SaveContract(strReceiptPath.Get());	
+								// Sign it and send it out.
+								theConnection.ProcessMessageOut(theMessage);
 							}
+							else
+								OTLog::Error("Error processing getAccount command in OTClient::ProcessServerReply\n");
 						}
+#endif
+					}
+					else // This should never happen...
+					{
+						strReceiptFilename.Format("%s.error", strReceiptID.Get());
+						
+						OTLog::vError("OTClient::ProcessServerReply: Error saving transaction receipt:  %s%s%s\n", 
+									  strServerID.Get(), OTLog::PathSeparator(), strReceiptFilename.Get());
+						
+						OTString strTransaction;
+						pReplyTransaction->SaveContract(strTransaction); // <=========== Save that receipt!
+						
+						OTDB::StorePlainString(strTransaction.Get(), OTLog::ReceiptFolder(), 
+											   strServerID.Get(), strReceiptFilename.Get());
 					}
 				}
 				else 
@@ -2318,14 +2147,14 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		// base64-Decode the server reply's payload into strContract
 		OTString strContract(theReply.m_ascPayload);
 		
+		OTString strFoldername(OTLog::ContractFolder());
 		OTString strFilename;	// In this case the filename isn't actually used, since SaveToContractFolder will
 								// handle setting up the filename and overwrite it anyway. But I still prefer to set it
 								// up correctly, rather than pass a blank. I'm just funny like that.
-		strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-						   OTLog::ContractFolder(),
-						   OTLog::PathSeparator(), theReply.m_strAssetID.Get());
+		strFilename = theReply.m_strAssetID.Get();
 
-		OTAssetContract * pContract = new OTAssetContract(theReply.m_strAssetID, strFilename, theReply.m_strAssetID);
+		OTAssetContract * pContract = new OTAssetContract(theReply.m_strAssetID, strFoldername, 
+														  strFilename, theReply.m_strAssetID);
 		
 		OT_ASSERT(NULL != pContract);
 		
@@ -2353,56 +2182,17 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 	}
 	else if (theReply.m_bSuccess && theReply.m_strCommand.Compare("@getMint"))
 	{
-		// -----------------------------------------------------------------
-		
-		bool bConfirmMintMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::MintFolder());
-		
-		if (!bConfirmMintMAINFolder)
-		{
-			OTLog::vError("@getMint: Unable to find or "
-						  "create main Mint directory: %s%s%s\n", 
-						  OTLog::Path(), OTLog::PathSeparator(), OTLog::MintFolder());
-			
-			return true;
-		}
-		
-		// -----------------------------------------------------------------
-		
-		OTString strMintDirectoryPath;
-		strMintDirectoryPath.Format("%s%s%s", 
-									OTLog::MintFolder(), OTLog::PathSeparator(),
-									theReply.m_strServerID.Get());
-		
-		bool bConfirmMintFolder = OTLog::ConfirmOrCreateFolder(strMintDirectoryPath.Get());
-		
-		if (!bConfirmMintFolder)
-		{
-			OTLog::vError("@getMint: Unable to find or create Mint subdir "
-						  "for server ID: %s\n\n", 
-						  strMintDirectoryPath.Get());
-			return true;
-		}
-		
-		// ----------------------------------------------------------------------------
-		
-		OTString strMintPath;
-		strMintPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-						   strMintDirectoryPath.Get(), OTLog::PathSeparator(), 
-						   theReply.m_strAssetID.Get());
-		
-		// -----------------------------------------------------------------	
-		
 		// base64-Decode the server reply's payload into strMint
 		OTString strMint(theReply.m_ascPayload);
 				
 		// Load the mint object from that string...				
-		OTMint theMint(theReply.m_strAssetID, strMintPath, theReply.m_strAssetID);
+		OTMint theMint(theReply.m_strServerID, theReply.m_strAssetID);
 		
 		// TODO check the server signature on the mint here...
 		if (theMint.LoadContractFromString(strMint))
 		{
 			OTLog::Output(0, "Saving mint file to disk...\n");
-			theMint.SaveContract(strMintPath.Get());
+			theMint.SaveMint();
 		}
 		return true;
 	}
@@ -2426,16 +2216,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 				pAccount->SaveContract();
 				
 				// (3) Save the Account to file
-				OTString strPath, strID;
-				pAccount->GetIdentifier(strID);
-				strPath.Format((char*)"%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-							   OTLog::AccountFolder(),
-							   OTLog::PathSeparator(), strID.Get());
-				pAccount->SaveContract(strPath.Get()); // Saving to strPath would save the account into the 
-				// strPath variable. (Which we don't want to do...)
-				// Instead of passing an OTString, I pass a char*.
-				// That's cause saving to strPath.Get() saves into the filename
-				// that's stored in the strPath variable. (Opens that file.)
+				pAccount->SaveAccount();
 				
 				// Need to consider other security considerations.
 				// What if I wasn't EXPECTING a @issueAssetType message?
@@ -2495,6 +2276,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 											// Will eventually end up keeping the signature, however, just for reasons of proof. 
 			// UPDATE (above) I now release signatures again since we have receipts functional. As long as receipt has server's signature, it can prove the others.
 			pAccount->SignContract(*pNym);
+			pAccount->SaveContract();
 			pAccount->SaveAccount();
 			
 			// Next let's make sure the wallet's copy of this account is replaced with the new one...
@@ -2557,16 +2339,7 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 				pAccount->SaveContract();
 				
 				// (3) Save the Account to file
-				OTString strPath, strID;
-				pAccount->GetIdentifier(strID);
-				strPath.Format((char*)"%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-							   OTLog::AccountFolder(),
-							   OTLog::PathSeparator(), strID.Get());
-				pAccount->SaveContract(strPath.Get()); // Saving to strPath would save the account into the 
-				// strPath variable. (Which we don't want to do...)
-				// Instead of passing an OTString, I pass a char*.
-				// That's cause saving to strPath.Get() saves into the filename
-				// that's stored in the strPath variable. (Opens that file.)
+				pAccount->SaveAccount();
 				
 				// Need to consider other security considerations.
 				// What if I wasn't EXPECTING a @createAccount message?
@@ -2951,15 +2724,13 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			// ------------------------------------ 
 			// Save the contract to local storage and add to wallet.
 			
-			OTString strFilename;	// In this case the filename isn't actually used, since SaveToContractFolder will
+			OTString strFoldername(OTLog::ContractFolder());
+			OTString strFilename(theMessage.m_strAssetID.Get());	// In this case the filename isn't actually used, since SaveToContractFolder will
 			// handle setting up the filename and overwrite it anyway. But I still prefer to set it
 			// up correctly, rather than pass a blank. I'm just funny like that.
-			strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-							   OTLog::ContractFolder(),
-							   OTLog::PathSeparator(), theMessage.m_strAssetID.Get());
 			
-			OTAssetContract * pContract = new OTAssetContract(theMessage.m_strAssetID, strFilename, theMessage.m_strAssetID);
-			
+			OTAssetContract * pContract = new OTAssetContract(theMessage.m_strAssetID, strFoldername, 
+															  strFilename, theMessage.m_strAssetID);
 			OT_ASSERT(NULL != pContract);
 			
 			// Check the server signature on the contract here. (Perhaps the message is good enough?
@@ -3016,11 +2787,10 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			theMessage.m_bBool	= true;
 		
 		// load up the asset contract
-		OTString strContractPath;
-		strContractPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-							   OTLog::ContractFolder(),
-							   OTLog::PathSeparator(), str_BASKET_CONTRACT_ID.Get());
-		OTAssetContract * pContract = new OTAssetContract(str_BASKET_CONTRACT_ID, strContractPath, str_BASKET_CONTRACT_ID);
+		OTString strFoldername(OTLog::ContractFolder());
+		OTString strContractPath(str_BASKET_CONTRACT_ID.Get());
+		OTAssetContract * pContract = new OTAssetContract(str_BASKET_CONTRACT_ID, strFoldername,
+														  strContractPath, str_BASKET_CONTRACT_ID);
 		
 		OT_ASSERT(NULL != pContract);
 
@@ -4326,25 +4096,10 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			
 			// -----------------------------------------------------------------
 
-			OTString strMintDirectoryPath;
-			strMintDirectoryPath.Format("%s%s%s", 
-										OTLog::MintFolder(), OTLog::PathSeparator(),
-										strServerID.Get());
-
-			// ----------------------------------------------------------------------------
+			OTMint theMint(strServerID, strContractID);
 			
-			OTString strMintPath;
-			strMintPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-							   strMintDirectoryPath.Get(), OTLog::PathSeparator(), strContractID.Get());
-			
-			// -----------------------------------------------------------------	
-			
-			OTMint theMint(strContractID, strMintPath, strContractID);
-			
-			if (pServerNym && 
-				OTLog::ConfirmOrCreateFolder(OTLog::MintFolder()) &&
-				OTLog::ConfirmOrCreateFolder(strMintDirectoryPath.Get()) &&
-				theMint.LoadContract() && 
+			if (pServerNym &&
+				theMint.LoadMint() && 
 				theMint.VerifyMint((OTPseudonym&)*pServerNym))
 			{
 				OTPurse * pPurse		= new OTPurse(SERVER_ID, CONTRACT_ID);

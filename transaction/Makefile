@@ -87,8 +87,8 @@ C_COMPILER = cc
 
 # The LIBS macro contains a list of libraries that the the
 # executable must be linked against.
-API_LIBS =  -lssl -lcrypto  -lOTLib -lssl -lcrypto  -lOTLib  -lssl -lcrypto -lOTLib  -lssl -lcrypto -lOTLib
-API_DEBUG_LIBS = -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd  -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd
+API_LIBS =  -lssl -lcrypto  -lOTLib -lssl -lcrypto  -lOTLib  -lssl -lcrypto -lOTLib  -lssl -lcrypto -lprotobuf -lmsgpack -lzmq -lOTLib
+API_DEBUG_LIBS = -lssl -lcrypto -lOTLibd -lssl -lcrypto -lOTLibd  -lssl -lcrypto -lOTLibd -lssl -lcrypto -lprotobuf -lmsgpack -lzmq -lOTLibd
 #
 # FT: I tested this. The above version worked on Linux, and the below version did not.
 #
@@ -182,20 +182,20 @@ endif
 
 # This is not a target, but a command-line option.
 #
-# So you have to do: make PLATFORM=linux TRANSPORT=XmlRpc
-#                OR: make PLATFORM=darwin TRANSPORT=XmlRpc debug
-#                OR: make PLATFORM=freebsd TRANSPORT=XmlRpc
+# So you have to do: make PLATFORM=linux TRANSPORT=ZMQ
+#                OR: make PLATFORM=darwin TRANSPORT=ZMQ debug
+#                OR: make PLATFORM=freebsd TRANSPORT=ZMQ
 # 		Etc...
 #
 
-XMLRPCPP_INCLUDEDIR = -I../xmlrpcpp/src
-XMLRPCPP_LIBDIR = -L../xmlrpcpp/
+#XMLRPCPP_INCLUDEDIR = -I../xmlrpcpp/src
+#XMLRPCPP_LIBDIR = -L../xmlrpcpp/
 
-ifeq ($(TRANSPORT), XmlRpc)
-API_CFLAGS += -DOT_XMLRPC_MODE
-API_LDFLAGS += -lXmlRpc
-PLATFORM_INCLUDEDIRS += $(XMLRPCPP_INCLUDEDIR)
-PLATFORM_LIBDIRS += $(XMLRPCPP_LIBDIR)
+ifeq ($(TRANSPORT), ZMQ)
+API_CFLAGS += -DOT_ZMQ_MODE
+#API_LDFLAGS += -lXmlRpc
+#PLATFORM_INCLUDEDIRS += $(XMLRPCPP_INCLUDEDIR)
+#PLATFORM_LIBDIRS += $(XMLRPCPP_LIBDIR)
 API_CXXSOURCES += xmlrpcxx_server.cpp
 else
 API_CXXSOURCES += testserver.cpp

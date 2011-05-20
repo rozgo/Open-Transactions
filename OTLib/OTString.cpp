@@ -265,7 +265,7 @@ bool OTString::operator >=(const OTString &s2)  const
 }
 
 
-void fwrite_string(std::ofstream & ofs, const char *str)
+void fwrite_string(std::ostream & ofs, const char *str)
 {
 	char * pchar;
 	
@@ -797,7 +797,7 @@ void OTString::Concatenate(const char *arg_string)
 
 
 
-void OTString::WriteToFile(std::ofstream & ofs) const
+void OTString::WriteToFile(std::ostream & ofs) const
 {
 	fwrite_string(ofs, m_strBuffer);
 }

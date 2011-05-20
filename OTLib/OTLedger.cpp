@@ -197,30 +197,36 @@ bool OTLedger::LoadGeneric(OTLedger::ledgerType theType)
 		default:
 			return false;
 	}
+	// --------------------------------------------------------
 	
-	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-						 pszFolder,
-						 OTLog::PathSeparator(), strID.Get());
+	m_strFoldername = pszFolder;
+	m_strFilename = strID.Get();
 	
-	// -------------
+	const char * szFoldername = m_strFoldername.Get();
+	const char * szFilename = m_strFilename.Get();
 	
-	if (false == OTLog::ConfirmExactPath(m_strFilename.Get()))
+	// --------------------------------------------------------------------
+	
+	if (false == OTDB::Exists(szFoldername, szFilename))
 	{
-		OTLog::vOutput(3, "%s does not exist in OTLedger::Load%s:\n%s\n", pszType,
-					  pszType, m_strFilename.Get());
+		OTLog::vOutput(3, "%s does not exist in OTLedger::Load%s:\n%s%s%s\n", pszType,
+					   pszType, m_strFoldername.Get(), OTLog::PathSeparator(), m_strFilename.Get());
 		return false;
 	}
+	
+	// --------------------------------------------------------------------
+	
 	// Try to load the ledger from disk.
 	else if (false == LoadContract())
 	{
-		OTLog::vError("Failed loading %s in OTLedger::Load%s:\n%s\n", 
-					  pszType, pszType, m_strFilename.Get());
+		OTLog::vError("Failed loading %s in OTLedger::Load%s:\n%s%s%s\n", 
+					  pszType, pszType, m_strFoldername.Get(), OTLog::PathSeparator(), m_strFilename.Get());
 		return false;
 	}
 	else 
 	{
-		OTLog::vOutput(2, "Successfully loaded %s in OTLedger::Load%s:\n%s\n", 
-					   pszType, pszType, m_strFilename.Get());
+		OTLog::vOutput(2, "Successfully loaded %s in OTLedger::Load%s:\n%s%s%s\n", 
+					   pszType, pszType, m_strFoldername.Get(), OTLog::PathSeparator(), m_strFilename.Get());
 	}
 	
 	return true;	
@@ -275,23 +281,21 @@ bool OTLedger::SaveGeneric(OTLedger::ledgerType theType)
 		default:
 			return false;
 	}
+	// -------------------------------------
 	
-	m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-						 pszFolder,
-						 OTLog::PathSeparator(), strID.Get());
+	m_strFoldername = pszFolder;
+	m_strFilename = strID.Get();
 	
-	OTString strTemp(m_strFilename);
-	
-	if (false == SaveContract((const char*)strTemp.Get()))
+	if (false == SaveContract(m_strFoldername.Get(), m_strFilename.Get()))
 	{
-		OTLog::vError("Error saving %s in OTLedger::Save%s: %s\nFilename: %s\n", 
-					  pszType, pszType, m_strFilename.Get(), strTemp.Get());
+		OTLog::vError("Error saving %s in OTLedger::Save%s: %s%s%s\n", 
+					  pszType, pszType, m_strFoldername.Get(), OTLog::PathSeparator(), m_strFilename.Get());
 		return false;
 	}
 	else 
 	{
-		OTLog::vOutput(2, "Successfully saved %s: %s\nFilename: %s\n", pszType, 
-					   m_strFilename.Get(), strTemp.Get());
+		OTLog::vOutput(2, "Successfully saved %s: %s%s%s\n", pszType, 
+					   m_strFoldername.Get(), OTLog::PathSeparator(), m_strFilename.Get());
 	}
 	
 	return true;
@@ -359,19 +363,16 @@ bool OTLedger::GenerateLedger(const OTIdentifier & theAcctID,
 	
 	switch (theType) {
 		case OTLedger::nymbox:
-			m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-								 OTLog::NymboxFolder(),
-								 OTLog::PathSeparator(), strID.Get());
+			m_strFoldername = OTLog::NymboxFolder();
+			m_strFilename = strID.Get();
 			break;
 		case OTLedger::inbox:
-			m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-								 OTLog::InboxFolder(),
-								 OTLog::PathSeparator(), strID.Get());
+			m_strFoldername = OTLog::InboxFolder();
+			m_strFilename = strID.Get();
 			break;
 		case OTLedger::outbox:
-			m_strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-								 OTLog::OutboxFolder(),
-								 OTLog::PathSeparator(), strID.Get());
+			m_strFoldername = OTLog::OutboxFolder();
+			m_strFilename = strID.Get();
 			break;
 		case OTLedger::message:
 			OTLog::Output(4, "Generating message ledger...\n");
@@ -393,17 +394,22 @@ bool OTLedger::GenerateLedger(const OTIdentifier & theAcctID,
 
 	if (bCreateFile)
 	{
-		// Try to load the ledger from disk.
-		bool bAlreadyThere	= OTLog::ConfirmExactPath(m_strFilename.Get());
+		// --------------------------------------------------------------------
+		const char * szFoldername = m_strFoldername.Get();
+		const char * szFilename = m_strFilename.Get();
 		
-		if (bAlreadyThere)
+		if (OTDB::Exists(szFoldername, szFilename))
 		{
-			OTLog::vOutput(0, "ERROR: trying to generate ledger that already exists: %s\n", strID.Get());
+			OTLog::vOutput(0, "ERROR: trying to generate ledger that already exists: %s%s%s\n", 
+						   szFoldername, OTLog::PathSeparator(), szFilename);
 			return false;
 		}
+		
+		// --------------------------------------------------------------------
 	
 		// Okay, it doesn't already exist. Let's generate it.
-		OTLog::vOutput(0, "Generating %s\n", m_strFilename.Get());
+		OTLog::vOutput(0, "Generating %s%s%s\n", 
+					   szFoldername, OTLog::PathSeparator(), szFilename);
 	}
 	
 	if (OTLedger::nymbox != theType)

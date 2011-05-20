@@ -128,8 +128,9 @@
  -----END PGP SIGNATURE-----
  **************************************************************/
 
-
+#include <zmq.hpp>
 #include <string>
+#include <iostream>
 
 extern "C" 
 {
@@ -146,7 +147,6 @@ extern "C"
 #include "OTString.h"
 
 #include "OTStorage.h"
-
 
 #include "OTPseudonym.h"
 
@@ -191,16 +191,16 @@ extern OT_API g_OT_API;
 // use your own transport mechanism instead of the xmlrpc in this example.
 // Of course, the server would also have to support this transport layer...
 
-#if defined(OT_XMLRPC_MODE)
+#if defined(OT_ZMQ_MODE)
 
 // If you build in tcp/ssl mode, this file will build even if you don't have this library.
 // But if you build in xml/rpc/http mode, 
-#ifdef _WIN32
-#include "timxmlrpc.h" // XmlRpcC4Win
-#else
-#include "XmlRpc.h"  // xmlrpcpp
-using namespace XmlRpc;
-#endif
+//#ifdef _WIN32
+//#include "timxmlrpc.h" // XmlRpcC4Win
+//#else
+//#include "XmlRpc.h"  // xmlrpcpp
+//using namespace XmlRpc;
+//#endif
 
 // The Callback so OT can give us messages to send using our xmlrpc transport.
 // Whenever OT needs to pop a message on over to the server, it calls this so we
@@ -208,14 +208,19 @@ using namespace XmlRpc;
 //
 //typedef bool (*OT_CALLBACK_MSG)(OTPayload & thePayload);
 //
-void OT_XmlRpcCallback(OTServerContract & theServerContract, OTEnvelope & theEnvelope)
+
+zmq::context_t	OT_API::s_ZMQ_Context(1);
+
+
+void OT_API::TransportCallback(OTServerContract & theServerContract, OTEnvelope & theEnvelope)
 {	
 	int			nServerPort = 0;
 	OTString	strServerHostname;
 	
 	OT_ASSERT_MSG((NULL != g_OT_API.GetClient()) && 
 			  (NULL != g_OT_API.GetClient()->m_pConnection) && 
-			  (NULL != g_OT_API.GetClient()->m_pConnection->GetNym()), "OT_XmlRpcCallback: Important things are NULL that shouldn't be.");
+			  (NULL != g_OT_API.GetClient()->m_pConnection->GetNym()), 
+				  "OT_API::TransportCallback: Important things are NULL that shouldn't be.");
 	
 	if (false == theServerContract.GetConnectInfo(strServerHostname, nServerPort))
 	{
@@ -227,7 +232,19 @@ void OT_XmlRpcCallback(OTServerContract & theServerContract, OTEnvelope & theEnv
 	
 	if (ascEnvelope.Exists())
 	{
+		//  Prepare our context and socket
+		zmq::context_t & context = s_ZMQ_Context;
+		zmq::socket_t socket(context, ZMQ_REQ);
+
+		OTString strConnectPath; strConnectPath.Format("tcp://%s:%d", strServerHostname.Get(), nServerPort);
+		socket.connect(strConnectPath.Get());
+
+		zmq::message_t request(ascEnvelope.GetLength());
+		memcpy((void*)request.data(), ascEnvelope.Get(), ascEnvelope.GetLength());
+		socket.send(request);
+
 		// Here's our connection...
+		/*
 #if defined (linux)
 		XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort, 0); // serverhost, port.
 #elif defined (_WIN32) 
@@ -235,26 +252,34 @@ void OT_XmlRpcCallback(OTServerContract & theServerContract, OTEnvelope & theEnv
 #else
 		XmlRpcClient theXmlRpcClient(strServerHostname.Get(), nServerPort); // serverhost, port.
 #endif
+		 */
 		// -----------------------------------------------------------
 		//
 		// Call the OT_XML_RPC method (thus passing the message to the server.)
 		//
-		XmlRpcValue oneArg, result;		// oneArg contains the outgoing message; result will contain the server reply.
-		oneArg[0] = ascEnvelope.Get();	// Here's where I set the envelope string, as the only argument for the rpc call.
+//		XmlRpcValue oneArg, result;		// oneArg contains the outgoing message; result will contain the server reply.
+//		oneArg[0] = ascEnvelope.Get();	// Here's where I set the envelope string, as the only argument for the rpc call.
 		
-		if (theXmlRpcClient.execute("OT_XML_RPC", oneArg, result)) // The actual call to the server. (Hope my envelope string isn't too long for this...)
-		{					
-			std::string str_Result = result;
+//		if (theXmlRpcClient.execute("OT_XML_RPC", oneArg, result)) // The actual call to the server. (Hope my envelope string isn't too long for this...)
+		{	
+			//  Get the reply.
+			zmq::message_t reply;
+			socket.recv(&reply);
+
+			std::string str_Result;
+			str_Result.reserve(reply.size());
+			str_Result.append(static_cast<const char *>(reply.data()), reply.size());
 			OTASCIIArmor ascServerReply = str_Result.c_str();
-			
+		
 			OTEnvelope theServerEnvelope(ascServerReply);
-			OTString	strServerReply;	
+			OTString	strServerReply;
+			
 			bool bOpened = theServerEnvelope.Open(*(g_OT_API.GetClient()->m_pConnection->GetNym()), strServerReply);
 			
 			OTMessage * pServerReply = new OTMessage;
 			
 			OT_ASSERT_MSG(NULL != pServerReply, "Error allocating memory in the OT API.");
-			
+
 			if (bOpened && strServerReply.Exists() && pServerReply->LoadContractFromString(strServerReply))
 			{
 				// Now the fully-loaded message object (from the server, this time) can be processed by the OT library...
@@ -264,17 +289,17 @@ void OT_XmlRpcCallback(OTServerContract & theServerContract, OTEnvelope & theEnv
 			{
 				delete pServerReply;
 				pServerReply = NULL;
-				OTLog::Error("Error loading server reply from string after call to 'OT_XML_RPC'\n");
+				OTLog::Error("Error loading server reply from string after call to 'OT_API::TransportCallback'\n");
 			}
 		}
-		else
-		{
-			OTLog::Error("Error calling 'OT_XML_RPC' over the XmlRpc transport layer.\n");
-		}
+//		else
+//		{
+//			OTLog::Error("Error calling 'OT_API::TransportCallback'.\n");
+//		}
 	}
 }
 
-#endif  // (OT_XMLRPC_MODE)
+#endif  // (OT_ZMQ_MODE)
 // -------------------------------------------------------------------------
 
 
@@ -283,15 +308,10 @@ void OT_XmlRpcCallback(OTServerContract & theServerContract, OTEnvelope & theEnv
 // The API begins here...
 
 
-OT_API::OT_API()
+OT_API::OT_API() : m_pWallet(NULL), m_pClient(NULL), m_bInitialized(false), 
+	m_pstrStoragePath(NULL), m_pstrWalletFilename(NULL)
 {
-	m_pWallet = NULL;
-	m_pClient = NULL;
-		
-	m_bInitialized = false;
-	
-	m_pstrStoragePath		= NULL;
-	m_pstrWalletFilename	= NULL;
+
 }
 
 OT_API::~OT_API()
@@ -412,13 +432,12 @@ bool OT_API::LoadWallet(const OTString & strFilename)
 	
 	// ------------------------------------------
 	
+	std::string strDataFolderPath = GetStoragePath();
+	std::string strWalletFilename = GetWalletFilename();
 	
-		std::string strDataFolderPath = GetStoragePath();
-		std::string strWalletFilename = GetWalletFilename();
-		
-		// This way, everywhere else I can use the default storage context (for now) and it will work
-		// everywhere I put it. (Because it's now set up...)
-		bool bSuccessInitDefault = OTDB::InitDefaultStorage(OTDB_DEFAULT_STORAGE, OTDB_DEFAULT_PACKER, strDataFolderPath, strWalletFilename);
+	// This way, everywhere else I can use the default storage context (for now) and it will work
+	// everywhere I put it. (Because it's now set up...)
+	bool bSuccessInitDefault = OTDB::InitDefaultStorage(OTDB_DEFAULT_STORAGE, OTDB_DEFAULT_PACKER, strDataFolderPath, strWalletFilename);
 	
 	
 	bool bSuccess = m_pWallet->LoadWallet(GetWalletFilename());
@@ -1332,7 +1351,6 @@ OTPaymentPlan * OT_API::WritePaymentPlan(const OTIdentifier & SERVER_ID,
 
 
 
-
 // LOAD PURSE
 //
 // Returns an OTPurse pointer, or NULL. 
@@ -1344,80 +1362,17 @@ OTPurse * OT_API::LoadPurse(const OTIdentifier & SERVER_ID,
 {	
 	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 	
-	const OTString strAssetTypeID(ASSET_ID);
+	const OTString strServerID(SERVER_ID);
 	const OTString strUserID(USER_ID);
-	
+	const OTString strAssetTypeID(ASSET_ID);
+
 	// -----------------------------------------------------------------
-	
-	bool bConfirmPurseMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::PurseFolder());
-	
-	if (!bConfirmPurseMAINFolder)
-	{
-		OTLog::vError("OT_API::LoadPurse: Unable to find or "
-					  "create main purse directory: %s%s%s\n", 
-					  OTLog::Path(), OTLog::PathSeparator(), OTLog::PurseFolder());
-		
-		return NULL;
-	}
-	
-	// -----------------------------------------------------------------
-	
-	OTString strServerID(SERVER_ID);
-	
-	OTString strPurseDirectoryPath;
-	strPurseDirectoryPath.Format("%s%s%s", 
-								 OTLog::PurseFolder(), OTLog::PathSeparator(),
-								 strServerID.Get());
-	
-	bool bConfirmPurseFolder = OTLog::ConfirmOrCreateFolder(strPurseDirectoryPath.Get());
-	
-	if (!bConfirmPurseFolder)
-	{
-		OTLog::vError("OT_API::LoadPurse: Unable to find or create purse subdir "
-					  "for server ID: %s\n\n", 
-					  strPurseDirectoryPath.Get());
-		return NULL;
-	}
-	
-	// ----------------------------------------------------------------------------
-	
-	OTString strPurseUserPath;
-	strPurseUserPath.Format("%s%s%s", 
-							strPurseDirectoryPath.Get(), OTLog::PathSeparator(),
-							strUserID.Get());
-	
-	bool bConfirmPurseUserFolder = OTLog::ConfirmOrCreateFolder(strPurseUserPath.Get());
-	
-	if (!bConfirmPurseUserFolder)
-	{
-		OTLog::vError("OT_API::LoadPurse: Unable to find or create purse subdir "
-					  "for user ID: %s\n\n", 
-					  strPurseUserPath.Get());
-		return NULL;
-	}
-	
-	// ----------------------------------------------------------------------------
-	
-	OTString strPursePath;
-	strPursePath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-						strPurseUserPath.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
-	
-	// -------------------------------------------------------------
-	
-	if (false == OTLog::ConfirmExactPath(strPursePath.Get()))
-	{
-		OTLog::vOutput(2, "OT_API::LoadPurse: Purse does not exist: %s\n\n", 
-					   strPursePath.Get());
-		return NULL;
-	}
-	
-	// -------------------------------------------------------------
 	
 	OTPurse * pPurse = new OTPurse(SERVER_ID, ASSET_ID);
 	
 	OT_ASSERT_MSG(NULL != pPurse, "Error allocating memory in the OT API."); // responsible to delete or return pPurse below this point.
 	
-	if (pPurse->LoadContract(strPursePath.Get()))
+	if (pPurse->LoadPurse(strServerID.Get(), strUserID.Get(), strAssetTypeID.Get()))
 		return pPurse;
 	
 	delete pPurse; 
@@ -1434,67 +1389,13 @@ bool OT_API::SavePurse(const OTIdentifier & SERVER_ID,
 {	
 	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 	
-	const OTString strAssetTypeID(ASSET_ID);
+	const OTString strServerID(SERVER_ID);
 	const OTString strUserID(USER_ID);
+	const OTString strAssetTypeID(ASSET_ID);
 	
 	// -----------------------------------------------------------------
 	
-	bool bConfirmPurseMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::PurseFolder());
-	
-	if (!bConfirmPurseMAINFolder)
-	{
-		OTLog::vError("OT_API::SavePurse: Unable to find or "
-					  "create main purse directory: %s%s%s\n", 
-					  OTLog::Path(), OTLog::PathSeparator(), OTLog::PurseFolder());
-		
-		return false;
-	}
-	
-	// -----------------------------------------------------------------
-	
-	OTString strServerID(SERVER_ID);
-	
-	OTString strPurseDirectoryPath;
-	strPurseDirectoryPath.Format("%s%s%s", 
-								 OTLog::PurseFolder(), OTLog::PathSeparator(),
-								 strServerID.Get());
-	
-	bool bConfirmPurseFolder = OTLog::ConfirmOrCreateFolder(strPurseDirectoryPath.Get());
-	
-	if (!bConfirmPurseFolder)
-	{
-		OTLog::vError("OT_API::SavePurse: Unable to find or create purse subdir "
-					  "for server ID: %s\n\n", 
-					  strPurseDirectoryPath.Get());
-		return false;
-	}
-	
-	// ----------------------------------------------------------------------------
-	
-	OTString strPurseUserPath;
-	strPurseUserPath.Format("%s%s%s", 
-							strPurseDirectoryPath.Get(), OTLog::PathSeparator(),
-							strUserID.Get());
-	
-	bool bConfirmPurseUserFolder = OTLog::ConfirmOrCreateFolder(strPurseUserPath.Get());
-	
-	if (!bConfirmPurseUserFolder)
-	{
-		OTLog::vError("OT_API::SavePurse: Unable to find or create purse subdir "
-					  "for user ID: %s\n\n", 
-					  strPurseUserPath.Get());
-		return false;
-	}
-	
-	// ----------------------------------------------------------------------------
-	
-	OTString strPursePath;
-	strPursePath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-						strPurseUserPath.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
-	
-	// -------------------------------------------------------------	
-		
-	if (THE_PURSE.SaveContract(strPursePath.Get()))
+	if (THE_PURSE.SavePurse(strServerID.Get(), strUserID.Get(), strAssetTypeID.Get()))
 		return true;
 	
 	return false;
@@ -1514,67 +1415,24 @@ OTMint * OT_API::LoadMint(const OTIdentifier & SERVER_ID,
 	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 	
 	const OTString strAssetTypeID(ASSET_ID);
-	
-	// -----------------------------------------------------------------
-	
-	bool bConfirmMintMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::MintFolder());
-	
-	if (!bConfirmMintMAINFolder)
-	{
-		OTLog::vError("OT_API::LoadMint: Unable to find or "
-					  "create main Mint directory: %s%s%s\n", 
-					  OTLog::Path(), OTLog::PathSeparator(), OTLog::MintFolder());
-		
-		return NULL;
-	}
-	
-	// -----------------------------------------------------------------
-	
-	OTString strServerID(SERVER_ID);
-	
-	OTString strMintDirectoryPath;
-	strMintDirectoryPath.Format("%s%s%s", 
-								 OTLog::MintFolder(), OTLog::PathSeparator(),
-								 strServerID.Get());
-	
-	bool bConfirmMintFolder = OTLog::ConfirmOrCreateFolder(strMintDirectoryPath.Get());
-	
-	if (!bConfirmMintFolder)
-	{
-		OTLog::vError("OT_API::LoadMint: Unable to find or create Mint subdir "
-					  "for server ID: %s\n\n", 
-					  strMintDirectoryPath.Get());
-		return NULL;
-	}
-	
-	// ----------------------------------------------------------------------------
-	
-	OTString strMintPath;
-	strMintPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-						strMintDirectoryPath.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
-	
-	// -------------------------------------------------------------
+	const OTString strServerID(SERVER_ID);
 
-	if (false == OTLog::ConfirmExactPath(strMintPath.Get()))
-	{
-		OTLog::vOutput(2, "OT_API::LoadMint: Mint file does not exist: %s\n\n", 
-					   strMintPath.Get());
-		return NULL;
-	}
+	// -----------------------------------------------------------------
 	
-	// -------------------------------------------------------------
-	
-	OTMint * pMint = new OTMint(strAssetTypeID, strMintPath, strAssetTypeID);
+	OTMint * pMint = new OTMint(strServerID, strAssetTypeID);
 	
 	OT_ASSERT_MSG(NULL != pMint, "Error allocating memory in the OT API"); // responsible to delete or return pMint below this point.
 	
-	if (false == pMint->LoadContract())
+	if (false == pMint->LoadMint())
 	{
-		OTLog::vOutput(0, "OT_API::LoadMint: Unable to load Mintfile : %s\n", 
-					   strMintPath.Get());
+		OTLog::vOutput(0, "OT_API::LoadMint: Unable to load Mintfile : %s%s%s%s%s\n", 
+					   OTLog::MintFolder(), OTLog::PathSeparator(), strServerID.Get(),
+					   OTLog::PathSeparator(), strAssetTypeID.Get());
 		delete pMint; pMint = NULL;
 		return NULL;		
 	}
+	
+	// TODO:  some kind of Mint Verification here ... ?
 	
 	// I know by this point that pMint is a good pointer AND
 	// that I have successfully loaded the Mint file...
@@ -1596,36 +1454,22 @@ OTServerContract * OT_API::LoadServerContract(const OTIdentifier & SERVER_ID)
 	
 	// -----------------------------------------------------------------
 	
-	bool bConfirmContractFolder = OTLog::ConfirmOrCreateFolder(OTLog::ContractFolder());
+	OTString strFoldername	= OTLog::ContractFolder();
+	OTString strFilename		= strServerID.Get();
 	
-	if (!bConfirmContractFolder)
+	// --------------------------------------------------------------------
+	
+	if (false == OTDB::Exists(strFoldername.Get(), strFilename.Get()))
 	{
-		OTLog::vError("OT_API::LoadServerContract: Unable to find or "
-					  "create Contract directory: %s%s%s\n", 
-					  OTLog::Path(), OTLog::PathSeparator(), OTLog::ContractFolder());
-		
+		OTLog::vError("OT_API::LoadServerContract: File does not exist: %s%s%s\n", 
+					  strFoldername.Get(), OTLog::PathSeparator(), strFilename.Get());
 		return NULL;
 	}
 	
-	// -----------------------------------------------------------------
+	// --------------------------------------------------------------------
 	
-	OTString strContractPath;
-	strContractPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-						   OTLog::ContractFolder(),
-						   OTLog::PathSeparator(), strServerID.Get());
-	
-	// -------------------------------------------------------------
-	
-	if (false == OTLog::ConfirmExactPath(strContractPath.Get()))
-	{
-		OTLog::vOutput(2, "OT_API::LoadServerContract: File does not exist: %s\n\n", 
-					   strContractPath.Get());
-		return NULL;
-	}
-	
-	// -------------------------------------------------------------
-	
-	OTServerContract * pContract = new OTServerContract(strServerID, strContractPath, strServerID);
+	OTServerContract * pContract = new OTServerContract(strServerID, strFoldername,
+														strFilename, strServerID);
 	
 	OT_ASSERT_MSG(NULL != pContract, "Error allocating memory for Server "
 				  "Contract in OT_API::LoadServerContract\n");
@@ -1654,36 +1498,22 @@ OTAssetContract * OT_API::LoadAssetContract(const OTIdentifier & ASSET_ID)
 	
 	// -----------------------------------------------------------------
 	
-	bool bConfirmContractFolder = OTLog::ConfirmOrCreateFolder(OTLog::ContractFolder());
+	OTString strFoldername	= OTLog::ContractFolder();
+	OTString strFilename		= strAssetTypeID.Get();
 	
-	if (!bConfirmContractFolder)
+	// --------------------------------------------------------------------
+	
+	if (false == OTDB::Exists(strFoldername.Get(), strFilename.Get()))
 	{
-		OTLog::vError("OT_API::LoadAssetContract: Unable to find or "
-					  "create Contract directory: %s%s%s\n", 
-					  OTLog::Path(), OTLog::PathSeparator(), OTLog::ContractFolder());
-		
+		OTLog::vError("OT_API::LoadAssetContract: File does not exist: %s%s%s\n", 
+					  strFoldername.Get(), OTLog::PathSeparator(), strFilename.Get());
 		return NULL;
 	}
 	
 	// -----------------------------------------------------------------
-	
-	OTString strContractPath;
-	strContractPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-						   OTLog::ContractFolder(),
-						   OTLog::PathSeparator(), strAssetTypeID.Get());
-	
-	// -------------------------------------------------------------
-	
-	if (false == OTLog::ConfirmExactPath(strContractPath.Get()))
-	{
-		OTLog::vOutput(2, "OT_API::LoadAssetContract: File does not exist: %s\n\n", 
-					   strContractPath.Get());
-		return NULL;
-	}
-	
-	// -------------------------------------------------------------
-	
-	OTAssetContract * pContract = new OTAssetContract(strAssetTypeID, strContractPath, strAssetTypeID);
+
+	OTAssetContract * pContract = new OTAssetContract(strAssetTypeID, strFoldername,
+													  strFilename, strAssetTypeID);
 	
 	OT_ASSERT_MSG(NULL != pContract, "Error allocating memory for Asset "
 				  "Contract in OT_API::LoadAssetContract\n");
@@ -2045,8 +1875,8 @@ bool OT_API::ConnectServer(OTIdentifier & SERVER_ID, OTIdentifier	& USER_ID,
 {
 	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 	
-#if defined(OT_XMLRPC_MODE)
-	OT_ASSERT_MSG(m_bInitialized, "OT_API::ConnectServer not necessary in XmlRpc mode.");
+#if defined(OT_ZMQ_MODE)
+	OT_ASSERT_MSG(m_bInitialized, "OT_API::ConnectServer not necessary in ZMQ mode.");
 #endif
 	
 	// Wallet, after loading, should contain a list of server
@@ -2090,7 +1920,7 @@ bool OT_API::ProcessSockets()
 {
 	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 
-#if defined(OT_XMLRPC_MODE)
+#if defined(OT_ZMQ_MODE)
 	OT_ASSERT_MSG(m_bInitialized, "OT_API::ProcessSockets not necessary in XmlRpc mode.");
 #endif
 	
@@ -2927,8 +2757,8 @@ void OT_API::issueBasket(OTIdentifier	& SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-#if defined(OT_XMLRPC_MODE)
-	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 	m_pClient->ProcessMessageOut(theMessage);
 }
@@ -3022,8 +2852,8 @@ void OT_API::exchangeBasket(OTIdentifier	& SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-#if defined(OT_XMLRPC_MODE)
-	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 	m_pClient->ProcessMessageOut(theMessage);		
 }
@@ -3075,8 +2905,8 @@ void OT_API::getTransactionNumber(OTIdentifier & SERVER_ID,
 									*pNym, *pServer,
 									NULL)) // NULL pAccount on this command.
 	{				
-#if defined(OT_XMLRPC_MODE)
-		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 		m_pClient->ProcessMessageOut(theMessage);
 	}
@@ -3127,7 +2957,7 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 	// -----------------------------------------------------
 	
 	OTIdentifier	CONTRACT_ID;
-	OTString		strContractID;
+	OTString		strContractID, strServerID(SERVER_ID);
 	
 	OTAccount * pAccount = m_pWallet->GetAccount(ACCT_ID);
 	
@@ -3143,46 +2973,19 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 		CONTRACT_ID.GetString(strContractID);
 	}
 	
+	// --------------------------------------------------------------------
 	
-	// -----------------------------------------------------------------
-	
-	bool bConfirmMintMAINFolder = OTLog::ConfirmOrCreateFolder(OTLog::MintFolder());
-	
-	if (!bConfirmMintMAINFolder)
+	if (false == OTDB::Exists(OTLog::MintFolder(), strServerID.Get(), strContractID.Get()))
 	{
-		OTLog::vError("OT_API::notarizeWithdrawal: Unable to find or "
-					  "create main Mint directory: %s%s%s\n", 
-					  OTLog::Path(), OTLog::PathSeparator(), OTLog::MintFolder());
-		
+		OTLog::vError("OTContract::SignContract: File does not exist: %s%s%s%s%s\n", 
+					  OTLog::MintFolder(), OTLog::PathSeparator(), strServerID.Get(),
+					  OTLog::PathSeparator(), strContractID.Get());
 		return;
 	}
 	
-	// -----------------------------------------------------------------
-	
-	OTString strServerID(SERVER_ID);
-	
-	OTString strMintDirectoryPath;
-	strMintDirectoryPath.Format("%s%s%s", 
-								OTLog::MintFolder(), OTLog::PathSeparator(),
-								strServerID.Get());
-	
-	bool bConfirmMintFolder = OTLog::ConfirmOrCreateFolder(strMintDirectoryPath.Get());
-	
-	if (!bConfirmMintFolder)
-	{
-		OTLog::vError("OT_API::notarizeWithdrawal: Unable to find or create Mint subdir "
-					  "for server ID: %s\n\n", 
-					  strMintDirectoryPath.Get());
-		return;
-	}
-	
-	// ----------------------------------------------------------------------------
-	
-	OTString strMintPath;
-	strMintPath.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(), 
-					   strMintDirectoryPath.Get(), OTLog::PathSeparator(), strContractID.Get());
-	
-	OTMint theMint(strContractID, strMintPath, strContractID); // <=================
+	// --------------------------------------------------------------------
+
+	OTMint theMint(strServerID, strContractID); // <=================
 
 	// -----------------------------------------------------------------	
 	
@@ -3234,7 +3037,7 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 		// -----------------------------------------------------------------
 
 		if (pServerNym && 
-			theMint.LoadContract() && 
+			theMint.LoadMint() && 
 			theMint.VerifyMint((OTPseudonym&)*pServerNym))
 		{
 			OTPurse * pPurse		= new OTPurse(SERVER_ID, CONTRACT_ID);
@@ -3362,8 +3165,8 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 			theMessage.SaveContract();
 			
 			// (Send it)
-#if defined(OT_XMLRPC_MODE)
-			m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+			m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 			m_pClient->ProcessMessageOut(theMessage);	
 		}
@@ -3604,8 +3407,8 @@ void OT_API::notarizeDeposit(OTIdentifier	& SERVER_ID,
 			theMessage.SaveContract();
 			
 			// (Send it)
-#if defined(OT_XMLRPC_MODE)
-			m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+			m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 			m_pClient->ProcessMessageOut(theMessage);	
 			
@@ -3817,8 +3620,8 @@ void OT_API::withdrawVoucher(OTIdentifier	& SERVER_ID,
 			theMessage.SaveContract();
 			
 			// (Send it)
-#if defined(OT_XMLRPC_MODE)
-			m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+			m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 			m_pClient->ProcessMessageOut(theMessage);	
 		}
@@ -4034,8 +3837,8 @@ void OT_API::depositCheque(OTIdentifier	& SERVER_ID,
 			theMessage.SaveContract();
 			
 			// (Send it)
-#if defined(OT_XMLRPC_MODE)
-			m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+			m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 			m_pClient->ProcessMessageOut(theMessage);
 		}
@@ -4265,8 +4068,8 @@ void OT_API::depositPaymentPlan(const OTIdentifier	& SERVER_ID,
 		theMessage.SaveContract();
 		
 		// (Send it)
-#if defined(OT_XMLRPC_MODE)
-		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 		m_pClient->ProcessMessageOut(theMessage);	
 	} // thePlan.LoadContractFromString()
@@ -4528,8 +4331,8 @@ void OT_API::issueMarketOffer(const OTIdentifier	& SERVER_ID,
 			theMessage.SaveContract();
 			
 			// (Send it)
-#if defined(OT_XMLRPC_MODE)
-			m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+			m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 			m_pClient->ProcessMessageOut(theMessage);	
 		} // if (bCreateOffer && bIssueTrade)
@@ -4735,8 +4538,8 @@ void OT_API::notarizeTransfer(OTIdentifier	& SERVER_ID,
 			theMessage.SaveContract();
 
 			// (Send it)
-	#if defined(OT_XMLRPC_MODE)
-			m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+	#if defined(OT_ZMQ_MODE)
+			m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 	#endif	
 			m_pClient->ProcessMessageOut(theMessage);	
 		}
@@ -4813,8 +4616,8 @@ void OT_API::getNymbox(OTIdentifier & SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-#if defined(OT_XMLRPC_MODE)
-	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 	m_pClient->ProcessMessageOut(theMessage);	
 }
@@ -4893,8 +4696,8 @@ void OT_API::getInbox(OTIdentifier & SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-#if defined(OT_XMLRPC_MODE)
-	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 	m_pClient->ProcessMessageOut(theMessage);	
 }
@@ -4974,8 +4777,8 @@ void OT_API::getOutbox(OTIdentifier & SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-#if defined(OT_XMLRPC_MODE)
-	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 	m_pClient->ProcessMessageOut(theMessage);	
 }
@@ -5047,8 +4850,8 @@ void OT_API::processNymbox(OTIdentifier	& SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-#if defined(OT_XMLRPC_MODE)
-	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 	m_pClient->ProcessMessageOut(theMessage);	
 }
@@ -5133,8 +4936,8 @@ void OT_API::processInbox(OTIdentifier	& SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-#if defined(OT_XMLRPC_MODE)
-	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 	m_pClient->ProcessMessageOut(theMessage);	
 }
@@ -5218,11 +5021,12 @@ void OT_API::issueAssetType(OTIdentifier	&	SERVER_ID,
 		OTString strFilename;	// In this case the filename isn't actually used, since SaveToContractFolder will
 		// handle setting up the filename and overwrite it anyway. But I still prefer to set it
 		// up correctly, rather than pass a blank. I'm just funny like that.
-		strFilename.Format("%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
-						   OTLog::ContractFolder(),
-						   OTLog::PathSeparator(), theMessage.m_strAssetID.Get());
+		strFilename = theMessage.m_strAssetID.Get();
 		
-		OTAssetContract * pContract = new OTAssetContract(theMessage.m_strAssetID, strFilename, theMessage.m_strAssetID);
+		OTString strFoldername(OTLog::ContractFolder());
+		
+		OTAssetContract * pContract = new OTAssetContract(theMessage.m_strAssetID, strFoldername,
+														  strFilename, theMessage.m_strAssetID);
 		
 		OT_ASSERT(NULL != pContract);
 		
@@ -5250,8 +5054,8 @@ void OT_API::issueAssetType(OTIdentifier	&	SERVER_ID,
 		// ----------------------------
 		
 		// (Send it)
-#if defined(OT_XMLRPC_MODE)
-		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 		m_pClient->ProcessMessageOut(theMessage);
 	}
@@ -5331,8 +5135,8 @@ void OT_API::getContract(OTIdentifier & SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-#if defined(OT_XMLRPC_MODE)
-	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 	m_pClient->ProcessMessageOut(theMessage);	
 }
@@ -5414,8 +5218,8 @@ void OT_API::getMint(OTIdentifier & SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-#if defined(OT_XMLRPC_MODE)
-	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 	m_pClient->ProcessMessageOut(theMessage);	
 }
@@ -5512,8 +5316,8 @@ void OT_API::createAssetAccount(OTIdentifier & SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-#if defined(OT_XMLRPC_MODE)
-	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 	m_pClient->ProcessMessageOut(theMessage);
 }
@@ -5593,8 +5397,8 @@ void OT_API::getAccount(OTIdentifier	& SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-#if defined(OT_XMLRPC_MODE)
-	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 	m_pClient->ProcessMessageOut(theMessage);
 }
@@ -5642,8 +5446,8 @@ void OT_API::getRequest(OTIdentifier	& SERVER_ID,
 									*pNym, *pServer,
 									NULL)) // NULL pAccount on this command.
 	{				
-#if defined(OT_XMLRPC_MODE)
-		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 		m_pClient->ProcessMessageOut(theMessage);
 	}
@@ -5702,7 +5506,7 @@ void OT_API::checkUser(OTIdentifier & SERVER_ID,
 	theMessage.SaveContract();
 	
 	// (Send it)
-#if defined(OT_XMLRPC_MODE)
+#if defined(OT_ZMQ_MODE)
 	// -----------------------------------------------------------------
 	
 	OTServerContract * pServer = m_pWallet->GetServerContract(SERVER_ID);
@@ -5714,7 +5518,7 @@ void OT_API::checkUser(OTIdentifier & SERVER_ID,
 		return;
 	}
 	
-	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 	m_pClient->ProcessMessageOut(theMessage);
 }
@@ -5793,10 +5597,10 @@ void OT_API::sendUserMessage(OTIdentifier	& SERVER_ID,
 		theMessage.SaveContract();
 		
 		// (Send it)
-#if defined(OT_XMLRPC_MODE)
+#if defined(OT_ZMQ_MODE)
 		// -----------------------------------------------------------------
 		
-		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 		m_pClient->ProcessMessageOut(theMessage);
 		
@@ -5876,8 +5680,8 @@ void OT_API::createUserAccount(OTIdentifier	& SERVER_ID,
 									*pNym, *pServer,
 									NULL)) // NULL pAccount on this command.
 	{				
-#if defined(OT_XMLRPC_MODE)
-		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 		m_pClient->ProcessMessageOut(theMessage);
 	}
@@ -5930,8 +5734,8 @@ void OT_API::checkServerID(OTIdentifier	& SERVER_ID,
 									*pNym, *pServer,
 									NULL)) // NULL pAccount on this command.
 	{				
-#if defined(OT_XMLRPC_MODE)
-		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_XmlRpcCallback);
+#if defined(OT_ZMQ_MODE)
+		m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
 #endif	
 		m_pClient->ProcessMessageOut(theMessage);
 	}

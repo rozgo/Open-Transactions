@@ -213,9 +213,15 @@ void OTMint::Release()
 	InitMint();
 }
 
-OTMint::OTMint(const OTString & name, const OTString & filename, const OTString & strID)
- : OTContract(name, filename, strID)
+OTMint::OTMint(const OTString & strServerID, const OTString & strAssetTypeID)
+: OTContract(strAssetTypeID, strServerID, strServerID, strAssetTypeID)
 {
+	m_strFoldername = OTLog::MintFolder();
+	m_strFilename.Format("%s%s%s", strServerID.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
+
+	m_ServerID.SetString(strServerID);
+	m_AssetID.SetString(strAssetTypeID);
+	
 	InitMint();
 }
 
@@ -223,6 +229,123 @@ OTMint::OTMint() : OTContract()
 {
 	InitMint();
 }
+
+
+bool OTMint::LoadContract()
+{
+	OTLog::Output(0, "OTMint::LoadContract OVERRIDE.\n");
+	return LoadMint();
+}
+
+bool OTMint::LoadMint(const char * szAppend/*=NULL*/)
+{
+	if (!m_strFoldername.Exists())
+		m_strFoldername.Set(OTLog::MintFolder());
+	
+	const OTString strServerID(m_ServerID), strAssetTypeID(m_AssetID);
+
+	if (!m_strFilename.Exists())
+	{
+		if (NULL != szAppend)
+			m_strFilename.Format("%s%s%s%s", strServerID.Get(), OTLog::PathSeparator(), 
+								 strAssetTypeID.Get(), szAppend);
+		else
+			m_strFilename.Format("%s%s%s", strServerID.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
+	}
+		
+	OTString strFilename;
+	if (NULL != szAppend) 
+		strFilename.Format("%s%s", strAssetTypeID.Get(), szAppend);
+	else
+		strFilename = strAssetTypeID.Get();
+
+	const char * szFolder1name	= OTLog::MintFolder();
+	const char * szFolder2name	= strServerID.Get();
+	const char * szFilename		= strFilename.Get();
+	
+	// --------------------------------------------------------------------
+	
+	if (false == OTDB::Exists(szFolder1name, szFolder2name, szFilename))
+	{
+		OTLog::vError("OTMint::LoadMint: File does not exist: %s%s%s%s%s\n", 
+					  szFolder1name, OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), szFilename);
+		return false;
+	}
+	
+	// --------------------------------------------------------------------
+	//
+	std::string strFileContents(OTDB::QueryPlainString(szFolder1name, szFolder2name, szFilename)); // <=== LOADING FROM DATA STORE.
+	
+	if (strFileContents.length() < 2)
+	{
+		OTLog::vError("OTMint::LoadMint: Error reading file: %s%s%s%s%s\n", 
+					  szFolder1name, OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), szFilename);
+		return false;
+	}
+	// --------------------------------------------------------------------
+	
+	OTString strRawFile(strFileContents.c_str());
+	
+	bool bSuccess = LoadContractFromString(strRawFile);
+	
+	return bSuccess;
+}
+
+
+bool OTMint::SaveMint(const char * szAppend/*=NULL*/)
+{
+	if (!m_strFoldername.Exists())
+		m_strFoldername.Set(OTLog::MintFolder());
+	
+	const OTString strServerID(m_ServerID), strAssetTypeID(m_AssetID);
+	
+	if (!m_strFilename.Exists())
+	{
+		if (NULL != szAppend)
+			m_strFilename.Format("%s%s%s%s", strServerID.Get(), OTLog::PathSeparator(), 
+								 strAssetTypeID.Get(), szAppend);
+		else
+			m_strFilename.Format("%s%s%s", strServerID.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
+	}
+	
+	OTString strFilename;
+	if (NULL != szAppend) 
+		strFilename.Format("%s%s", strAssetTypeID.Get(), szAppend);
+	else
+		strFilename = strAssetTypeID.Get();
+	
+	const char * szFolder1name	= OTLog::MintFolder();
+	const char * szFolder2name	= strServerID.Get();
+	const char * szFilename		= strFilename.Get();
+	
+	// --------------------------------------------------------------------
+
+	OTString strRawFile;
+
+	// Sign it, save it internally to string, and then save that out to the file.
+	if (!SaveContract() || !SaveContract(strRawFile))
+	{
+		OTLog::vError("Error saving Mintfile (to string):\n%s%s%s%s%s\n", szFolder1name,
+					  OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), szFilename);
+		return false;
+	}
+
+	// --------------------------------------------------------------------
+	//
+	bool bSaved = OTDB::StorePlainString(strRawFile.Get(), szFolder1name, 
+										 szFolder2name, szFilename); // <=== SAVING TO DATA STORE.
+	
+	if (!bSaved)
+	{
+		OTLog::vError("OTMint::SaveMint: Error writing to file: %s%s%s%s%s\n", szFolder1name,
+					  OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), szFilename);
+		return false;
+	}
+	// --------------------------------------------------------------------
+	
+	return true;
+}
+
 
 
 OTMint::~OTMint()
@@ -478,6 +601,7 @@ bool OTMint::AddDenomination(OTPseudonym & theNotary, long lDenomination, int nP
 	
 	return bReturnValue;
 }
+
 
 
 

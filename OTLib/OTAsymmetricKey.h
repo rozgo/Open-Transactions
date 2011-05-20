@@ -229,12 +229,12 @@ public:
 	
 	void SetKey(EVP_PKEY * pKey);
 	
-	bool LoadPrivateKey(const OTString & strFilename);
-	bool LoadPublicKey(const OTString & strFilename);
+	bool LoadPrivateKey(const OTString & strFoldername, const OTString & strFilename);
+	bool LoadPublicKey(const OTString & strFoldername, const OTString & strFilename);
 	
 	bool LoadPublicKeyFromPGPKey(const OTASCIIArmor & strKey); // does NOT handle bookends.
 
-	bool LoadPublicKeyFromCertFile(const OTString & strFilename); // DOES handle bookends.
+	bool LoadPublicKeyFromCertFile(const OTString & strFoldername, const OTString & strFilename); // DOES handle bookends.
 	bool LoadPublicKeyFromCertString(const OTString & strCert, bool bEscaped=true); // DOES handle bookends, AND escapes.
 
 	// Get the public key in ASCII-armored format with bookends 

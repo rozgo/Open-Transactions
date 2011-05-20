@@ -224,7 +224,7 @@ public:
 	inline void SetIdentifier(const OTIdentifier & theID) { m_ID = theID; }
 	
 	OTContract();
-	OTContract(const OTString & name, const OTString & filename, const OTString & strID);
+	OTContract(const OTString & name, const OTString & foldername, const OTString & filename, const OTString & strID);
 	OTContract(const OTString & strID);
 	OTContract(const OTIdentifier & theID);
  
@@ -340,7 +340,7 @@ public:
 	bool SignContract(const OTPseudonym & theNym, OTSignature & theSignature);
 	bool SignContract(const OTAsymmetricKey & theKey, OTSignature & theSignature, 
 					  const OTString & strHashType);
-	bool SignContract(const char * szFilename, OTSignature & theSignature);
+	bool SignContract(const char * szFoldername, const char * szFilename, OTSignature & theSignature);
 	
 	// Calculates a hash of m_strRawFile (the xml portion of the contract plus the signatures)
 	// and compares to m_ID (supposedly the same. The ID is calculated by hashing the file.)
@@ -363,7 +363,7 @@ public:
 	bool VerifySignature(const OTPseudonym & theNym, const OTSignature & theSignature) const;
 	bool VerifySignature(const OTAsymmetricKey & theKey, const OTSignature & theSignature,
 						 const OTString & strHashType) const;
-	bool VerifySignature(const char * szFilename, const OTSignature & theSignature) const;
+	bool VerifySignature(const char * szFoldername, const char * szFilename, const OTSignature & theSignature) const;
 	
 	
 	
