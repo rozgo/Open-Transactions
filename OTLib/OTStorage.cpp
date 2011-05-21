@@ -447,6 +447,14 @@ bool StorePlainString(std::string strContents, std::string strFolder, std::strin
 {
 	Storage * pStorage = details::s_pStorage;
 	
+	
+	// TEMP DEBUG
+	OTLog::vError("DEBUG StorePlainString: folder: %s  file: %s \n", strFolder.c_str(), oneStr.c_str());
+		
+	OT_ASSERT((strFolder.length() > 3) || (0 == strFolder.compare(0, 1, ".")));
+	
+	OT_ASSERT((oneStr.length() < 1) || (oneStr.length() > 3));
+		
 	if (NULL == pStorage) 
 	{
 		return false;
@@ -459,6 +467,17 @@ std::string QueryPlainString(std::string strFolder, std::string oneStr/*=""*/,  
 							 std::string threeStr/*=""*/)
 {
 	Storage * pStorage = details::s_pStorage;
+	
+	
+	// TEMP DEBUG
+	OTLog::vError("DEBUG QueryPlainString: folder: %s  file: %s \n", strFolder.c_str(), oneStr.c_str());
+	
+		
+	OT_ASSERT((strFolder.length() > 3) || (0 == strFolder.compare(0, 1, ".")));
+	
+	OT_ASSERT((oneStr.length() < 1) || (oneStr.length() > 3));
+
+	
 	
 	if (NULL == pStorage) 
 	{

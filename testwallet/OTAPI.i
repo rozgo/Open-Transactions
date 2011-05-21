@@ -117,8 +117,10 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 
 // So there aren't memory leaks from passing the objects back and forth.
 
-%typemap(in) SWIGTYPE *DISOWN { * & disownObject };
+//%apply SWIGTYPE & DISOWN { SWIGTYPE & disownObject };
 
+//%typemap(in) SWIGTYPE & DISOWN { SWIGTYPE & disownObject };
+//
 //%typemap(in) SWIGTYPE *DISOWN { BitcoinAcct & disownObject };
 //
 //%typemap(in) SWIGTYPE *DISOWN { BitcoinServer & disownObject };
@@ -143,6 +145,45 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 %newobject CreateStorageContext(StorageType eStoreType, PackType ePackType=OTDB_DEFAULT_PACKER);
 
 // -------------------------------------------
+
+
+// ------------------------------------------------
+#ifdef SWIGJAVA
+
+// For dynamic casting, so the Java side has access to subclass methods.
+//
+%define OT_STORABLE_HELPER(STORABLE_TYPE)
+%exception STORABLE_TYPE::dynamic_cast(Storable * pObject) {
+	$action
+	if (!result) {
+		jclass excep = jenv->FindClass("java/lang/ClassCastException");
+		if (excep) {
+			jenv->ThrowNew(excep, "dynamic_cast exception");
+		}
+	}
+}
+%extend STORABLE_TYPE {
+	static STORABLE_TYPE * dynamic_cast(Storable * pObject) {
+		return dynamic_cast<STORABLE_TYPE *>(pObject);
+	}
+};
+%enddef
+
+OT_STORABLE_HELPER(OTDB::Storable)
+OT_STORABLE_HELPER(OTDB::StringMap)
+OT_STORABLE_HELPER(OTDB::BitcoinAcct)
+OT_STORABLE_HELPER(OTDB::BitcoinServer)
+OT_STORABLE_HELPER(OTDB::ServerInfo)
+OT_STORABLE_HELPER(OTDB::ContactAcct)
+OT_STORABLE_HELPER(OTDB::ContactNym)
+OT_STORABLE_HELPER(OTDB::Contact)
+OT_STORABLE_HELPER(OTDB::AddressBook)
+OT_STORABLE_HELPER(OTDB::WalletData)
+
+#endif
+// ------------------------------------------------
+
+
 
 
 
@@ -498,6 +539,8 @@ public:
 
 // ----------------------------	
 	
+	
+	
 %define OT_SWIG_DECLARE_GET_ADD_REMOVE(name)
 protected:
 	std::deque< stlplus::simple_ptr_clone<name> > list_##name##s;
@@ -505,11 +548,14 @@ public:
 	size_t Get##name##Count();
 	name * Get##name(size_t nIndex);
 	bool Remove##name(size_t nIndex);
+%delobject Add##name;
 	bool Add##name(name & disownObject)	
 %enddef
 	
 
 	
+// ----------------------------	
+
 class ContactNym : public Displayable
 {
 	// You never actually get an instance of this, only its subclasses.
@@ -625,41 +671,6 @@ public:
 	%}
 
 
-// ------------------------------------------------
-#ifdef SWIGJAVA
-
-// For dynamic casting, so the Java side has access to subclass methods.
-//
-%define OT_STORABLE_HELPER(STORABLE_TYPE)
-%exception STORABLE_TYPE::dynamic_cast(Storable * pObject) {
-	$action
-	if (!result) {
-		jclass excep = jenv->FindClass("java/lang/ClassCastException");
-		if (excep) {
-			jenv->ThrowNew(excep, "dynamic_cast exception");
-		}
-	}
-}
-%extend STORABLE_TYPE {
-	static STORABLE_TYPE * dynamic_cast(Storable * pObject) {
-		return dynamic_cast<STORABLE_TYPE *>(pObject);
-	}
-};
-%enddef
-
-OT_STORABLE_HELPER(OTDB::Storable)
-OT_STORABLE_HELPER(OTDB::StringMap)
-OT_STORABLE_HELPER(OTDB::BitcoinAcct)
-OT_STORABLE_HELPER(OTDB::BitcoinServer)
-OT_STORABLE_HELPER(OTDB::ServerInfo)
-OT_STORABLE_HELPER(OTDB::ContactAcct)
-OT_STORABLE_HELPER(OTDB::ContactNym)
-OT_STORABLE_HELPER(OTDB::Contact)
-OT_STORABLE_HELPER(OTDB::AddressBook)
-OT_STORABLE_HELPER(OTDB::WalletData)
-
-#endif
-// ------------------------------------------------
 
 
 %feature("director") Storage;

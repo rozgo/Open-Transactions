@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -65,27 +65,27 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\~\protobuf\include;C:\~\Java\include\win32;C:\~\Java\include;C:\Program Files\Java\jdk1.6.0\include\win32;C:\Program Files\Java\jdk1.6.0\include;C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\~\OpenSSL-Win32\lib\VC\static;C:\~\Open-Transactions\OTLib\OTLib\Debug;C:\~\Open-Transactions\testwallet\CPP_API_Windows\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\~\zeromq\builds\msvc\Release;C:\~\OpenSSL-Win32\lib\VC\static;C:\~\Open-Transactions\OTLib\OTLib\Debug;C:\~\Open-Transactions\testwallet\CPP_API_Windows\Debug;$(LibraryPath)</LibraryPath>
     <TargetName>otapi</TargetName>
     <OutDir>C:\~\Open-Transactions\testwallet\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TCP Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\~\protobuf\include;C:\~\Java\include\win32;C:\~\Java\include;C:\Program Files\Java\jdk1.6.0\include\win32;C:\Program Files\Java\jdk1.6.0\include;C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\~\OpenSSL-Win32\lib\VC\static;C:\~\Open-Transactions\OTLib\OTLib\TCP Debug;C:\~\Open-Transactions\testwallet\CPP_API_Windows\TCP Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\~\zeromq\builds\msvc\Release;C:\~\OpenSSL-Win32\lib\VC\static;C:\~\Open-Transactions\OTLib\OTLib\TCP Debug;C:\~\Open-Transactions\testwallet\CPP_API_Windows\TCP Debug;$(LibraryPath)</LibraryPath>
     <TargetName>otapi</TargetName>
     <OutDir>C:\~\Open-Transactions\testwallet\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\~\protobuf\include;C:\~\Java\include\win32;C:\~\Java\include;C:\Program Files\Java\jdk1.6.0\include\win32;C:\Program Files\Java\jdk1.6.0\include;C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\~\protobuf\vsprojects\Release;C:\~\OpenSSL-Win32\lib\VC\static;C:\~\Open-Transactions\OTLib\OTLib\Release;C:\~\Open-Transactions\testwallet\CPP_API_Windows\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\~\zeromq\builds\msvc\Release;C:\~\protobuf\vsprojects\Release;C:\~\OpenSSL-Win32\lib\VC\static;C:\~\Open-Transactions\OTLib\OTLib\Release;C:\~\Open-Transactions\testwallet\CPP_API_Windows\Release;$(LibraryPath)</LibraryPath>
     <TargetName>otapi</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TCP Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\~\protobuf\include;C:\~\Java\include\win32;C:\~\Java\include;C:\Program Files\Java\jdk1.6.0\include\win32;C:\Program Files\Java\jdk1.6.0\include;C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\~\OpenSSL-Win32\lib\VC\static;C:\~\Open-Transactions\OTLib\OTLib\TCP Release;C:\~\Open-Transactions\testwallet\CPP_API_Windows\TCP Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\~\zeromq\builds\msvc\Release;C:\~\OpenSSL-Win32\lib\VC\static;C:\~\Open-Transactions\OTLib\OTLib\TCP Release;C:\~\Open-Transactions\testwallet\CPP_API_Windows\TCP Release;$(LibraryPath)</LibraryPath>
     <TargetName>otapi</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -99,7 +99,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winmm.lib;wininet.lib;ws2_32.lib;libeay32MTd.lib;ssleay32MTd.lib;OTLib.lib;CPP_API_Windows.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libzmq.lib;winmm.lib;wininet.lib;ws2_32.lib;libeay32MTd.lib;ssleay32MTd.lib;OTLib.lib;CPP_API_Windows.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
@@ -114,7 +114,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winmm.lib;wininet.lib;ws2_32.lib;libeay32MTd.lib;ssleay32MTd.lib;OTLib.lib;CPP_API_Windows.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libzmq.lib;winmm.lib;wininet.lib;ws2_32.lib;libeay32MTd.lib;ssleay32MTd.lib;OTLib.lib;CPP_API_Windows.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
@@ -133,7 +133,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>winmm.lib;wininet.lib;ws2_32.lib;libeay32MT.lib;ssleay32MT.lib;libprotobuf.lib;OTLib.lib;CPP_API_Windows.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libzmq.lib;winmm.lib;wininet.lib;ws2_32.lib;libeay32MT.lib;ssleay32MT.lib;libprotobuf.lib;OTLib.lib;CPP_API_Windows.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TCP Release|Win32'">
@@ -151,7 +151,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>winmm.lib;wininet.lib;ws2_32.lib;libeay32MT.lib;ssleay32MT.lib;OTLib.lib;CPP_API_Windows.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libzmq.lib;winmm.lib;wininet.lib;ws2_32.lib;libeay32MT.lib;ssleay32MT.lib;OTLib.lib;CPP_API_Windows.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

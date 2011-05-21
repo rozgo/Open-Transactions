@@ -130,6 +130,7 @@
  **************************************************************/
 
 
+
 extern "C" 
 {
 
@@ -146,7 +147,6 @@ extern "C"
 using namespace irr;
 using namespace io;
 
-#include "Lucre/bank.h"  // Lucre
 
 #include "OTToken.h"
 #include "OTEnvelope.h"
@@ -155,6 +155,8 @@ using namespace io;
 #include "OTPurse.h"
 #include "OTLog.h"
 
+
+#include "Lucre/bank.h"  // Lucre
 
 
 // The current implementation for withdrawals (using Lucre) requires only a single proto-token
@@ -783,8 +785,16 @@ bool OTToken::GenerateTokenRequest(const OTPseudonym & theNym, OTMint & theMint,
 	// and then sets the decoded plaintext string onto the string.
 	//OTString::OTString(const OTASCIIArmor & strValue)
 	OTASCIIArmor ascPublicMint;
+	
 	theMint.GetPublic(ascPublicMint, lDenomination);
+	
+	OTLog::vError("DEBUG: OTToken  public asc: \n%s\n", ascPublicMint.Get());
+
+	
 	OTString strPublicMint(ascPublicMint);
+
+	OTLog::vError("DEBUG: OTToken  public str: \n%s\n", strPublicMint.Get());
+	
 
 	// Get the bank's public key (now decoded in strPublicMint)
 	// and put it into bioBank so we can use it with Lucre.

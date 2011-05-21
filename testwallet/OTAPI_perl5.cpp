@@ -18836,7 +18836,7 @@ XS(_wrap_ContactNym_AddServerInfo) {
     if ((items < 2) || (items > 2)) {
       SWIG_croak("Usage: ContactNym_AddServerInfo(self,disownObject);");
     }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__ContactNym, SWIG_POINTER_DISOWN |  0 );
     if (!SWIG_IsOK(res1)) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactNym_AddServerInfo" "', argument " "1"" of type '" "OTDB::ContactNym *""'"); 
     }
@@ -19008,7 +19008,7 @@ XS(_wrap_WalletData_AddBitcoinServer) {
     if ((items < 2) || (items > 2)) {
       SWIG_croak("Usage: WalletData_AddBitcoinServer(self,disownObject);");
     }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, SWIG_POINTER_DISOWN |  0 );
     if (!SWIG_IsOK(res1)) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_AddBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
     }
@@ -19153,7 +19153,7 @@ XS(_wrap_WalletData_AddBitcoinAcct) {
     if ((items < 2) || (items > 2)) {
       SWIG_croak("Usage: WalletData_AddBitcoinAcct(self,disownObject);");
     }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, SWIG_POINTER_DISOWN |  0 );
     if (!SWIG_IsOK(res1)) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_AddBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
     }
@@ -20122,7 +20122,7 @@ XS(_wrap_Contact_AddContactNym) {
     if ((items < 2) || (items > 2)) {
       SWIG_croak("Usage: Contact_AddContactNym(self,disownObject);");
     }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Contact, SWIG_POINTER_DISOWN |  0 );
     if (!SWIG_IsOK(res1)) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_AddContactNym" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
     }
@@ -20267,7 +20267,7 @@ XS(_wrap_Contact_AddContactAcct) {
     if ((items < 2) || (items > 2)) {
       SWIG_croak("Usage: Contact_AddContactAcct(self,disownObject);");
     }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Contact, SWIG_POINTER_DISOWN |  0 );
     if (!SWIG_IsOK(res1)) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_AddContactAcct" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
     }
@@ -20439,7 +20439,7 @@ XS(_wrap_AddressBook_AddContact) {
     if ((items < 2) || (items > 2)) {
       SWIG_croak("Usage: AddressBook_AddContact(self,disownObject);");
     }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__AddressBook, 0 |  0 );
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__AddressBook, SWIG_POINTER_DISOWN |  0 );
     if (!SWIG_IsOK(res1)) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "AddressBook_AddContact" "', argument " "1"" of type '" "OTDB::AddressBook *""'"); 
     }

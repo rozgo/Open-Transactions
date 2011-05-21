@@ -286,8 +286,7 @@ public:
 //	OTString& operator=(const char * new_string);
 //	OTString& operator=(const std::string & strValue);
 
-	inline void swap(OTString & rhs) throw()
-	{ std::swap(m_lLength, rhs.m_lLength); std::swap(m_lPosition, rhs.m_lPosition); std::swap(m_strBuffer, rhs.m_strBuffer); } 
+	void swap(OTString & rhs);
 	
    bool operator >(const OTString &s2) const;
    bool operator <(const OTString &s2) const;
@@ -309,12 +308,11 @@ private:
 	
 	// Operations
 public:	
-	inline bool At(uint32_t lIndex, char &c) 
-	{ if (lIndex < m_lLength) { c = m_strBuffer[lIndex]; return true; } else return false; }
+	bool At(uint32_t lIndex, char &c);
 	
-	inline bool Exists(void) const { return m_strBuffer ? true : false; }
+	bool Exists(void) const;
    
-	inline uint32_t GetLength(void) const { return m_lLength; }
+	uint32_t GetLength(void) const;
 
 	bool Compare(const char * strCompare) const;
 	bool Compare(const OTString& strCompare) const;
@@ -322,15 +320,14 @@ public:
 	bool Contains(const char * strCompare) const;
 	bool Contains(const OTString& strCompare) const;
 	
-	inline const char * Get(void) const { return m_strBuffer ? (const char*)m_strBuffer : ""; }
+	const char * Get(void) const;
 	
 	// ----------------------------
-	inline void Set(const char * new_string, uint32_t nEnforcedMaxLength=0)
-		{ Release(); if (NULL == new_string) return; LowLevelSet(new_string, nEnforcedMaxLength); }
+	void Set(const char * new_string, uint32_t nEnforcedMaxLength=0);
 	
 	// new_string MUST be at least nEnforcedMaxLength in size if nEnforcedMaxLength is passed in at all.
 	// That's because this function forces the null terminator at that length of the string minus 1.
-	inline void Set(const OTString & strBuf) { this->operator=(strBuf); }
+	void Set(const OTString & strBuf);
 	// ----------------------------
 
 //	void   Concatenate(const char *arg);

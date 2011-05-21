@@ -146,7 +146,7 @@ void Bank::cb(int n, int, void * /*arg*/)
     return BtoA;
     }
 
-boolean Bank::Verify(Coin &coin)
+LAURIE_BOOLEAN Bank::Verify(Coin &coin)
     {
     InitCTX();
 
@@ -157,7 +157,7 @@ boolean Bank::Verify(Coin &coin)
     DumpNumber("y^k=      ",t);
 
     BN_sub(t,t,coin.Signature());
-    boolean bRet=BN_is_zero(t);
+    LAURIE_BOOLEAN bRet=BN_is_zero(t);
 
     BN_free(t);
 

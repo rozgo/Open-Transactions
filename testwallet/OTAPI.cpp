@@ -131,9 +131,13 @@
  -----END PGP SIGNATURE-----
  **************************************************************/
 
+#include <cstring>
+
 #include <string>
 
-#include <cstring>
+#if defined (OT_ZMQ_MODE)
+#include <zmq.hpp>
+#endif
 
 
 #include "OTIdentifier.h"

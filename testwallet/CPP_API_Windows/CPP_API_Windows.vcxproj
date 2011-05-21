@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,10 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\XmlRpcC4Win\timxmlrpc.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TCP Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TCP Release|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="..\main.h" />
     <ClInclude Include="..\OpenTransactions.h" />
     <ClInclude Include="..\OTAPI.h" />
@@ -32,10 +28,6 @@
     <ClInclude Include="..\SSL-Example\SFSocket.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\XmlRpcC4Win\TimXmlRpc.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TCP Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TCP Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\OpenTransactions.cpp" />
     <ClCompile Include="..\OTAPI.cpp" />
     <ClCompile Include="..\OTClient.cpp" />
@@ -99,7 +91,7 @@
     <LibraryPath>C:\~\Open-Transactions\OTLib\OTLib\TCP Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\~\protobuf\include;C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\XmlRpcC4Win;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
+    <IncludePath>C:\~\zeromq\include;C:\~\protobuf\include;C:\~\OpenSSL-Win32\include;C:\~\Open-Transactions\XmlRpcC4Win;C:\~\Open-Transactions\OTLib;$(IncludePath)</IncludePath>
     <LibraryPath>C:\~\Open-Transactions\OTLib\OTLib\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TCP Release|Win32'">

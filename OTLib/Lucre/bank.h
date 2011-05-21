@@ -1,5 +1,8 @@
 //-*-C++-*-
 
+#ifndef __LUCRE_WRAPPER__
+#define __LUCRE_WRAPPER__
+
 extern "C"
 {
 #include <openssl/bio.h>
@@ -21,7 +24,7 @@ extern "C"
 #define BLINDING_LENGTH		8
 #define DIGEST_LENGTH		SHA_DIGEST_LENGTH
 
-typedef int boolean;
+typedef int LAURIE_BOOLEAN;
 
 class Bank;
 class PublicCoinRequest;
@@ -115,7 +118,7 @@ public:
     const BIGNUM *priv_key()
 	{ return m_pDH->priv_key; }
     /*const*/ BIGNUM *SignRequest(PublicCoinRequest &req);
-    boolean Verify(Coin &coin);
+    LAURIE_BOOLEAN Verify(Coin &coin);
     void WriteBIO(BIO *bio);
     void ReadBIO(BIO *bio);
     };
@@ -154,7 +157,7 @@ public:
 	
     BIGNUM *ID()
 	{ return m_bnCoinID; }
-    boolean GenerateCoinNumber(BIGNUM *bnNumber,const PublicBank &bank)
+    LAURIE_BOOLEAN GenerateCoinNumber(BIGNUM *bnNumber,const PublicBank &bank)
 	{
 	int nCoinLength=BN_num_bytes(m_bnCoinID);
 	int nDigestIterations=(bank.PrimeLength()-nCoinLength)/DIGEST_LENGTH;
@@ -346,3 +349,5 @@ public:
 	DumpNumber("blinding= ",m_bnBlindingFactor);
 	}
     };
+
+#endif // __LUCRE_WRAPPER__

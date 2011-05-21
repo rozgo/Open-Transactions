@@ -442,6 +442,63 @@ OTString& OTString::operator=(OTString rhs)
 	return *this;
 }
 
+void OTString::swap(OTString & rhs)
+{ 
+	std::swap(m_lLength, rhs.m_lLength); 
+	std::swap(m_lPosition, rhs.m_lPosition); 
+	std::swap(m_strBuffer, rhs.m_strBuffer); 
+} 
+
+bool OTString::At(uint32_t lIndex, char &c) 
+{ 
+	if (lIndex < m_lLength) 
+	{ 
+		c = m_strBuffer[lIndex]; 
+		return true; 
+	} 
+	else 
+		return false; 
+}
+
+bool OTString::Exists(void) const 
+{ 
+	return (NULL != m_strBuffer) ? true : false; 
+}
+
+uint32_t OTString::GetLength(void) const 
+{ 
+	return m_lLength; 
+}
+
+const char * OTString::Get(void) const 
+{ 
+	return (NULL != m_strBuffer) ? const_cast<const char*>(m_strBuffer) : "";
+}
+
+
+
+// new_string MUST be at least nEnforcedMaxLength in size if nEnforcedMaxLength is passed in at all.
+// That's because this function forces the null terminator at that length of the string minus 1.
+
+void OTString::Set(const char * new_string, uint32_t nEnforcedMaxLength/*=0*/)
+{ 
+	Release(); 
+	
+	if (NULL == new_string) 
+		return; 
+	
+	LowLevelSet(new_string, nEnforcedMaxLength); 
+}
+
+
+void OTString::Set(const OTString & strBuf) 
+{ 
+	Release();
+	
+	LowLevelSetStr(strBuf);
+}
+
+
 /*
 OTString& OTString::operator=(const char * new_string)
 {

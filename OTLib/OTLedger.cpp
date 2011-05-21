@@ -286,7 +286,12 @@ bool OTLedger::SaveGeneric(OTLedger::ledgerType theType)
 	m_strFoldername = pszFolder;
 	m_strFilename = strID.Get();
 	
-	if (false == SaveContract(m_strFoldername.Get(), m_strFilename.Get()))
+	OTLog::vError("DEBUG OTLedger::SaveGeneric: folder: %s  file: %s \n", m_strFoldername.Get(), m_strFilename.Get());
+	
+	OT_ASSERT(m_strFoldername.GetLength() > 2);
+	OT_ASSERT(m_strFilename.GetLength() > 2);
+	
+	if (false == SaveContract(pszFolder, strID.Get()))
 	{
 		OTLog::vError("Error saving %s in OTLedger::Save%s: %s%s%s\n", 
 					  pszType, pszType, m_strFoldername.Get(), OTLog::PathSeparator(), m_strFilename.Get());

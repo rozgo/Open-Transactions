@@ -2032,6 +2032,14 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		OTLedger theInbox(USER_ID, ACCOUNT_ID, SERVER_ID);	
 		
 		
+		// TEMP DEBUG
+		
+		OTString strTemp1(USER_ID);
+		OTString strTemp2(ACCOUNT_ID);
+		OTString strTemp3(SERVER_ID);
+		
+		OTLog::vError("@getInbox:  USER: %s  ACCT: %s  SERVER: %s \n", strTemp1.Get(), strTemp2.Get(), strTemp3.Get());
+		
 		// I receive the inbox, verify the server's signature, then RE-SIGN IT WITH MY OWN
 		// SIGNATURE, then SAVE it to local storage.  So any FUTURE checks of this inbox
 		// would require MY signature, not the server's, to verify. But in this one spot, 

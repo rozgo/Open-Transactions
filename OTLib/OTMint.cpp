@@ -135,8 +135,6 @@ using namespace irr;
 using namespace io;
 
 
-#include "Lucre/bank.h"  // Lucre
-
 #include "OTToken.h"
 #include "OTMint.h"
 #include "OTPseudonym.h"
@@ -144,6 +142,9 @@ using namespace io;
 #include "OTMessage.h"
 #include "OTLog.h"
 
+
+
+#include "Lucre/bank.h"  // Lucre
 
 
 
@@ -443,8 +444,11 @@ bool OTMint::GetPublic(OTASCIIArmor & theArmor, long lDenomination)
 		OT_ASSERT_MSG(NULL != pArmor, "NULL mint pointer in OTMint::GetPublic.\n");
 		
 		if ((*ii).first == lDenomination) // if this denomination (say, 50) matches the one passed in...
-		{							   
+		{
+			OTLog::vError("DEBUG HOLY GRAIL:\n%s\n", pArmor->Get());
+			
 			theArmor.Set(*pArmor);
+			OTLog::vError("DEBUG HOLY GRAIL (2):\n%s\n", theArmor.Get());
 			return true;
 		}
 	}

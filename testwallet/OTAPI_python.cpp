@@ -17663,7 +17663,7 @@ SWIGINTERN PyObject *_wrap_ContactNym_AddServerInfo(PyObject *SWIGUNUSEDPARM(sel
   bool result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:ContactNym_AddServerInfo",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_OTDB__ContactNym, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactNym_AddServerInfo" "', argument " "1"" of type '" "OTDB::ContactNym *""'"); 
   }
@@ -17809,7 +17809,7 @@ SWIGINTERN PyObject *_wrap_WalletData_AddBitcoinServer(PyObject *SWIGUNUSEDPARM(
   bool result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:WalletData_AddBitcoinServer",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_OTDB__WalletData, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_AddBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
   }
@@ -17927,7 +17927,7 @@ SWIGINTERN PyObject *_wrap_WalletData_AddBitcoinAcct(PyObject *SWIGUNUSEDPARM(se
   bool result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:WalletData_AddBitcoinAcct",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_OTDB__WalletData, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_AddBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
   }
@@ -18750,7 +18750,7 @@ SWIGINTERN PyObject *_wrap_Contact_AddContactNym(PyObject *SWIGUNUSEDPARM(self),
   bool result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:Contact_AddContactNym",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_OTDB__Contact, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_AddContactNym" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
   }
@@ -18868,7 +18868,7 @@ SWIGINTERN PyObject *_wrap_Contact_AddContactAcct(PyObject *SWIGUNUSEDPARM(self)
   bool result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:Contact_AddContactAcct",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_OTDB__Contact, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_AddContactAcct" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
   }
@@ -19014,7 +19014,7 @@ SWIGINTERN PyObject *_wrap_AddressBook_AddContact(PyObject *SWIGUNUSEDPARM(self)
   bool result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:AddressBook_AddContact",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_OTDB__AddressBook, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_OTDB__AddressBook, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "AddressBook_AddContact" "', argument " "1"" of type '" "OTDB::AddressBook *""'"); 
   }

@@ -128,14 +128,17 @@
  -----END PGP SIGNATURE-----
  **************************************************************/
 
-#include <zmq.hpp>
 #include <string>
 #include <iostream>
+
+#if defined (OT_ZMQ_MODE)
+#include <zmq.hpp>
+#endif
 
 extern "C" 
 {
 #ifdef _WIN32
-#include <WinSock.h>
+//#include <WinSock.h>
 #else
 #include <netinet/in.h>
 #endif
