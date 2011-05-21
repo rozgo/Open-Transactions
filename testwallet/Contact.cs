@@ -131,11 +131,4 @@ public class Contact : Displayable {
     return ret;
   }
 
-  public static Contact dynamic_cast(Storable pObject) {
-    IntPtr cPtr = otapiPINVOKE.Contact_dynamic_cast(Storable.getCPtr(pObject));
-    Contact ret = (cPtr == IntPtr.Zero) ? null : new Contact(cPtr, false);
-    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
-    return ret;
-  }
-
 }

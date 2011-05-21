@@ -61,11 +61,4 @@ public class AddressBook : Storable {
     return ret;
   }
 
-  public static AddressBook dynamic_cast(Storable pObject) {
-    IntPtr cPtr = otapiPINVOKE.AddressBook_dynamic_cast(Storable.getCPtr(pObject));
-    AddressBook ret = (cPtr == IntPtr.Zero) ? null : new AddressBook(cPtr, false);
-    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
-    return ret;
-  }
-
 }

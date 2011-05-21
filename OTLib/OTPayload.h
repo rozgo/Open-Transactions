@@ -143,14 +143,17 @@ bool OTPAYLOAD_GetMessage(OTPayload & thePayload, OTMessage & theMessage);
 
 class OTPayload : public OTData 
 {
-
 public:
 	OTPayload();
-   virtual ~OTPayload();
+	OTPayload(const OTPayload & rhs);
+	virtual ~OTPayload();
+
+	using OTData::swap;
+	using OTData::operator=;
 
 	uint32_t ReadBytesFrom(OTData & theData, uint32_t lSize);
 	
-	void  SetPayloadSize(uint32_t lNewSize);
+	void SetPayloadSize(uint32_t lNewSize);
 	const void * GetPayloadPointer() const;
 	
 	// pass in an OTMessage and if the Payload
@@ -164,4 +167,25 @@ public:
 };
 
 #endif // __OTPAYLOAD_H__ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

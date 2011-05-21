@@ -51,11 +51,4 @@ public class BitcoinAcct : Acct {
     } 
   }
 
-  public static BitcoinAcct dynamic_cast(Storable pObject) {
-    IntPtr cPtr = otapiPINVOKE.BitcoinAcct_dynamic_cast(Storable.getCPtr(pObject));
-    BitcoinAcct ret = (cPtr == IntPtr.Zero) ? null : new BitcoinAcct(cPtr, false);
-    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
-    return ret;
-  }
-
 }

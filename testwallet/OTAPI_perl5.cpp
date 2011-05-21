@@ -1534,11 +1534,10 @@ SWIG_Perl_SetModule(swig_module_info *module) {
 #define SWIGTYPE_p_OTDB__Storage swig_types[13]
 #define SWIGTYPE_p_OTDB__StringMap swig_types[14]
 #define SWIGTYPE_p_OTDB__WalletData swig_types[15]
-#define SWIGTYPE_p__javaenum swig_types[16]
-#define SWIGTYPE_p_char swig_types[17]
-#define SWIGTYPE_p_std__mapT_std__string_std__string_t swig_types[18]
-static swig_type_info *swig_types[20];
-static swig_module_info swig_module = {swig_types, 19, 0, 0, 0, 0};
+#define SWIGTYPE_p_char swig_types[16]
+#define SWIGTYPE_p_std__mapT_std__string_std__string_t swig_types[17]
+static swig_type_info *swig_types[19];
+static swig_module_info swig_module = {swig_types, 18, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1576,13 +1575,9 @@ SWIGEXPORT void SWIG_init (CV *cv, CPerlObj *);
 
 #include <string>
 #include <map>
-#include <msgpack.hpp>
 #include "../OTLib/OTAsymmetricKey.h"
 #include "OTAPI_funcdef.h"
 #include "../OTLib/OTStorage.h"
-//#include "../OTLib/Generics.pb.h"
-//#include "../OTLib/Bitcoin.pb.h"
-//#include "../OTLib/Moneychanger.pb.h"
 
 
 #include <string>
@@ -1860,18 +1855,6 @@ SWIG_AsPtr_std_string SWIG_PERL_DECL_ARGS_2(SV * obj, std::string **val)
   return SWIG_ERROR;
 }
 
-SWIGINTERN OTDB::StringMap *OTDB_StringMap_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::StringMap *>(pObject);
-	}
-SWIGINTERN OTDB::BitcoinAcct *OTDB_BitcoinAcct_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::BitcoinAcct *>(pObject);
-	}
-SWIGINTERN OTDB::ServerInfo *OTDB_ServerInfo_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::ServerInfo *>(pObject);
-	}
-SWIGINTERN OTDB::BitcoinServer *OTDB_BitcoinServer_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::BitcoinServer *>(pObject);
-	}
 
 SWIGINTERNINLINE SV *
 SWIG_From_unsigned_SS_long  SWIG_PERL_DECL_ARGS_1(unsigned long value)
@@ -1943,24 +1926,9 @@ SWIG_AsVal_size_t SWIG_PERL_DECL_ARGS_2(SV * obj, size_t *val)
   return res;
 }
 
-SWIGINTERN OTDB::ContactNym *OTDB_ContactNym_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::ContactNym *>(pObject);
-	}
-SWIGINTERN OTDB::ContactAcct *OTDB_ContactAcct_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::ContactAcct *>(pObject);
-	}
-SWIGINTERN OTDB::Contact *OTDB_Contact_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::Contact *>(pObject);
-	}
-SWIGINTERN OTDB::AddressBook *OTDB_AddressBook_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::AddressBook *>(pObject);
-	}
-SWIGINTERN OTDB::WalletData *OTDB_WalletData_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::WalletData *>(pObject);
-	}
 
-using namespace OTDB;
-
+	using namespace OTDB;
+	
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -1977,32 +1945,6 @@ SWIGCLASS_STATIC int swig_magic_readonly(pTHX_ SV *SWIGUNUSEDPARM(sv), MAGIC *SW
     croak("Value is read-only.");
     return 0;
 }
-SWIGCLASS_STATIC int _wrap_typeunsafe_set(pTHX_ SV* sv, MAGIC * SWIGUNUSEDPARM(mg)) {
-  MAGIC_PPERL
-  {
-    void *argp = 0;
-    int res = SWIG_ConvertPtr(sv, &argp, SWIGTYPE_p__javaenum,  0 );
-    if (!SWIG_IsOK(res)) {
-      SWIG_exception_fail(SWIG_ArgError(res), "in variable '""typeunsafe""' of type '""%javaenum""'");
-    }
-    if (!argp) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""typeunsafe""' of type '""%javaenum""'");
-    } else {
-      typeunsafe = *(reinterpret_cast< %javaenum * >(argp));
-    }
-  }
-fail:
-  return 1;
-}
-
-
-SWIGCLASS_STATIC int _wrap_typeunsafe_get(pTHX_ SV *sv, MAGIC *SWIGUNUSEDPARM(mg)) {
-  MAGIC_PPERL
-  sv_setiv(SvRV(sv), PTR2IV(&typeunsafe));
-  return 1;
-}
-
-
 
 
 #ifdef PERL_OBJECT
@@ -9326,6 +9268,10 @@ XS(_wrap_Storable_Create) {
   {
     OTDB::StoredObjectType arg1 ;
     OTDB::PackType arg2 ;
+    int val1 ;
+    int ecode1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
     int argvi = 0;
     OTDB::Storable *result = 0 ;
     dXSARGS;
@@ -9333,8 +9279,16 @@ XS(_wrap_Storable_Create) {
     if ((items < 2) || (items > 2)) {
       SWIG_croak("Usage: Storable_Create(eType,thePackType);");
     }
-    arg1 = (OTDB::StoredObjectType)ST(0); 
-    arg2 = (OTDB::PackType)ST(1); 
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "Storable_Create" "', argument " "1"" of type '" "OTDB::StoredObjectType""'");
+    } 
+    arg1 = static_cast< OTDB::StoredObjectType >(val1);
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Storable_Create" "', argument " "2"" of type '" "OTDB::PackType""'");
+    } 
+    arg2 = static_cast< OTDB::PackType >(val2);
     result = (OTDB::Storable *)OTDB::Storable::Create(arg1,arg2);
     ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
     
@@ -12946,6 +12900,8 @@ XS(_wrap_Storage_QueryObject__SWIG_0) {
     std::string arg6 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
     int argvi = 0;
     OTDB::Storable *result = 0 ;
     dXSARGS;
@@ -12958,7 +12914,11 @@ XS(_wrap_Storage_QueryObject__SWIG_0) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Storage_QueryObject" "', argument " "1"" of type '" "OTDB::Storage *""'"); 
     }
     arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
-    arg2 = (OTDB::StoredObjectType)ST(1); 
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Storage_QueryObject" "', argument " "2"" of type '" "OTDB::StoredObjectType""'");
+    } 
+    arg2 = static_cast< OTDB::StoredObjectType >(val2);
     {
       std::string *ptr = (std::string *)0;
       int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(2), &ptr);
@@ -13025,6 +12985,8 @@ XS(_wrap_Storage_QueryObject__SWIG_1) {
     std::string arg5 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
     int argvi = 0;
     OTDB::Storable *result = 0 ;
     dXSARGS;
@@ -13037,7 +12999,11 @@ XS(_wrap_Storage_QueryObject__SWIG_1) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Storage_QueryObject" "', argument " "1"" of type '" "OTDB::Storage *""'"); 
     }
     arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
-    arg2 = (OTDB::StoredObjectType)ST(1); 
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Storage_QueryObject" "', argument " "2"" of type '" "OTDB::StoredObjectType""'");
+    } 
+    arg2 = static_cast< OTDB::StoredObjectType >(val2);
     {
       std::string *ptr = (std::string *)0;
       int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(2), &ptr);
@@ -13092,6 +13058,8 @@ XS(_wrap_Storage_QueryObject__SWIG_2) {
     std::string arg4 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
     int argvi = 0;
     OTDB::Storable *result = 0 ;
     dXSARGS;
@@ -13104,7 +13072,11 @@ XS(_wrap_Storage_QueryObject__SWIG_2) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Storage_QueryObject" "', argument " "1"" of type '" "OTDB::Storage *""'"); 
     }
     arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
-    arg2 = (OTDB::StoredObjectType)ST(1); 
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Storage_QueryObject" "', argument " "2"" of type '" "OTDB::StoredObjectType""'");
+    } 
+    arg2 = static_cast< OTDB::StoredObjectType >(val2);
     {
       std::string *ptr = (std::string *)0;
       int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(2), &ptr);
@@ -13147,6 +13119,8 @@ XS(_wrap_Storage_QueryObject__SWIG_3) {
     std::string arg3 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
     int argvi = 0;
     OTDB::Storable *result = 0 ;
     dXSARGS;
@@ -13159,7 +13133,11 @@ XS(_wrap_Storage_QueryObject__SWIG_3) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Storage_QueryObject" "', argument " "1"" of type '" "OTDB::Storage *""'"); 
     }
     arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
-    arg2 = (OTDB::StoredObjectType)ST(1); 
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Storage_QueryObject" "', argument " "2"" of type '" "OTDB::StoredObjectType""'");
+    } 
+    arg2 = static_cast< OTDB::StoredObjectType >(val2);
     {
       std::string *ptr = (std::string *)0;
       int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(2), &ptr);
@@ -13205,7 +13183,10 @@ XS(_wrap_Storage_QueryObject) {
       _rankm += _pi;
       _pi *= SWIG_MAXCASTRANK;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_1;
       _ranki += _v*_pi;
@@ -13241,7 +13222,10 @@ XS(_wrap_Storage_QueryObject) {
       _rankm += _pi;
       _pi *= SWIG_MAXCASTRANK;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_2;
       _ranki += _v*_pi;
@@ -13285,7 +13269,10 @@ XS(_wrap_Storage_QueryObject) {
       _rankm += _pi;
       _pi *= SWIG_MAXCASTRANK;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_3;
       _ranki += _v*_pi;
@@ -13337,7 +13324,10 @@ XS(_wrap_Storage_QueryObject) {
       _rankm += _pi;
       _pi *= SWIG_MAXCASTRANK;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_4;
       _ranki += _v*_pi;
@@ -13406,6 +13396,8 @@ XS(_wrap_Storage_CreateObject) {
     OTDB::StoredObjectType arg2 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
     int argvi = 0;
     OTDB::Storable *result = 0 ;
     dXSARGS;
@@ -13418,7 +13410,11 @@ XS(_wrap_Storage_CreateObject) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Storage_CreateObject" "', argument " "1"" of type '" "OTDB::Storage *""'"); 
     }
     arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
-    arg2 = (OTDB::StoredObjectType)ST(1); 
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Storage_CreateObject" "', argument " "2"" of type '" "OTDB::StoredObjectType""'");
+    } 
+    arg2 = static_cast< OTDB::StoredObjectType >(val2);
     result = (OTDB::Storable *)(arg1)->CreateObject(arg2);
     ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
     
@@ -13436,6 +13432,10 @@ XS(_wrap_Storage_Create) {
   {
     OTDB::StorageType arg1 ;
     OTDB::PackType arg2 ;
+    int val1 ;
+    int ecode1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
     int argvi = 0;
     OTDB::Storage *result = 0 ;
     dXSARGS;
@@ -13443,8 +13443,16 @@ XS(_wrap_Storage_Create) {
     if ((items < 2) || (items > 2)) {
       SWIG_croak("Usage: Storage_Create(eStorageType,ePackType);");
     }
-    arg1 = (OTDB::StorageType)ST(0); 
-    arg2 = (OTDB::PackType)ST(1); 
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "Storage_Create" "', argument " "1"" of type '" "OTDB::StorageType""'");
+    } 
+    arg1 = static_cast< OTDB::StorageType >(val1);
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Storage_Create" "', argument " "2"" of type '" "OTDB::PackType""'");
+    } 
+    arg2 = static_cast< OTDB::PackType >(val2);
     result = (OTDB::Storage *)OTDB::Storage::Create(arg1,arg2);
     ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, 0 | SWIG_SHADOW); argvi++ ;
     
@@ -13476,7 +13484,7 @@ XS(_wrap_Storage_GetType) {
     }
     arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
     result = (OTDB::StorageType)((OTDB::Storage const *)arg1)->GetType();
-    ST(argvi) = (jint)result; 
+    ST(argvi) = SWIG_From_int  SWIG_PERL_CALL_ARGS_1(static_cast< int >(result)); argvi++ ;
     
     XSRETURN(argvi);
   fail:
@@ -13496,6 +13504,10 @@ XS(_wrap_InitDefaultStorage__SWIG_0) {
     std::string arg6 ;
     std::string arg7 ;
     std::string arg8 ;
+    int val1 ;
+    int ecode1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
     int argvi = 0;
     bool result;
     dXSARGS;
@@ -13503,8 +13515,16 @@ XS(_wrap_InitDefaultStorage__SWIG_0) {
     if ((items < 8) || (items > 8)) {
       SWIG_croak("Usage: InitDefaultStorage(eStoreType,ePackType,oneStr,twoStr,threeStr,fourStr,fiveStr,sixStr);");
     }
-    arg1 = (OTDB::StorageType)ST(0); 
-    arg2 = (OTDB::PackType)ST(1); 
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "InitDefaultStorage" "', argument " "1"" of type '" "OTDB::StorageType""'");
+    } 
+    arg1 = static_cast< OTDB::StorageType >(val1);
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "InitDefaultStorage" "', argument " "2"" of type '" "OTDB::PackType""'");
+    } 
+    arg2 = static_cast< OTDB::PackType >(val2);
     {
       std::string *ptr = (std::string *)0;
       int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(2), &ptr);
@@ -13593,6 +13613,10 @@ XS(_wrap_InitDefaultStorage__SWIG_1) {
     std::string arg5 ;
     std::string arg6 ;
     std::string arg7 ;
+    int val1 ;
+    int ecode1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
     int argvi = 0;
     bool result;
     dXSARGS;
@@ -13600,8 +13624,16 @@ XS(_wrap_InitDefaultStorage__SWIG_1) {
     if ((items < 7) || (items > 7)) {
       SWIG_croak("Usage: InitDefaultStorage(eStoreType,ePackType,oneStr,twoStr,threeStr,fourStr,fiveStr);");
     }
-    arg1 = (OTDB::StorageType)ST(0); 
-    arg2 = (OTDB::PackType)ST(1); 
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "InitDefaultStorage" "', argument " "1"" of type '" "OTDB::StorageType""'");
+    } 
+    arg1 = static_cast< OTDB::StorageType >(val1);
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "InitDefaultStorage" "', argument " "2"" of type '" "OTDB::PackType""'");
+    } 
+    arg2 = static_cast< OTDB::PackType >(val2);
     {
       std::string *ptr = (std::string *)0;
       int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(2), &ptr);
@@ -13678,6 +13710,10 @@ XS(_wrap_InitDefaultStorage__SWIG_2) {
     std::string arg4 ;
     std::string arg5 ;
     std::string arg6 ;
+    int val1 ;
+    int ecode1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
     int argvi = 0;
     bool result;
     dXSARGS;
@@ -13685,8 +13721,16 @@ XS(_wrap_InitDefaultStorage__SWIG_2) {
     if ((items < 6) || (items > 6)) {
       SWIG_croak("Usage: InitDefaultStorage(eStoreType,ePackType,oneStr,twoStr,threeStr,fourStr);");
     }
-    arg1 = (OTDB::StorageType)ST(0); 
-    arg2 = (OTDB::PackType)ST(1); 
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "InitDefaultStorage" "', argument " "1"" of type '" "OTDB::StorageType""'");
+    } 
+    arg1 = static_cast< OTDB::StorageType >(val1);
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "InitDefaultStorage" "', argument " "2"" of type '" "OTDB::PackType""'");
+    } 
+    arg2 = static_cast< OTDB::PackType >(val2);
     {
       std::string *ptr = (std::string *)0;
       int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(2), &ptr);
@@ -13751,6 +13795,10 @@ XS(_wrap_InitDefaultStorage__SWIG_3) {
     std::string arg3 ;
     std::string arg4 ;
     std::string arg5 ;
+    int val1 ;
+    int ecode1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
     int argvi = 0;
     bool result;
     dXSARGS;
@@ -13758,8 +13806,16 @@ XS(_wrap_InitDefaultStorage__SWIG_3) {
     if ((items < 5) || (items > 5)) {
       SWIG_croak("Usage: InitDefaultStorage(eStoreType,ePackType,oneStr,twoStr,threeStr);");
     }
-    arg1 = (OTDB::StorageType)ST(0); 
-    arg2 = (OTDB::PackType)ST(1); 
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "InitDefaultStorage" "', argument " "1"" of type '" "OTDB::StorageType""'");
+    } 
+    arg1 = static_cast< OTDB::StorageType >(val1);
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "InitDefaultStorage" "', argument " "2"" of type '" "OTDB::PackType""'");
+    } 
+    arg2 = static_cast< OTDB::PackType >(val2);
     {
       std::string *ptr = (std::string *)0;
       int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(2), &ptr);
@@ -13812,6 +13868,10 @@ XS(_wrap_InitDefaultStorage__SWIG_4) {
     OTDB::PackType arg2 ;
     std::string arg3 ;
     std::string arg4 ;
+    int val1 ;
+    int ecode1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
     int argvi = 0;
     bool result;
     dXSARGS;
@@ -13819,8 +13879,16 @@ XS(_wrap_InitDefaultStorage__SWIG_4) {
     if ((items < 4) || (items > 4)) {
       SWIG_croak("Usage: InitDefaultStorage(eStoreType,ePackType,oneStr,twoStr);");
     }
-    arg1 = (OTDB::StorageType)ST(0); 
-    arg2 = (OTDB::PackType)ST(1); 
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "InitDefaultStorage" "', argument " "1"" of type '" "OTDB::StorageType""'");
+    } 
+    arg1 = static_cast< OTDB::StorageType >(val1);
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "InitDefaultStorage" "', argument " "2"" of type '" "OTDB::PackType""'");
+    } 
+    arg2 = static_cast< OTDB::PackType >(val2);
     {
       std::string *ptr = (std::string *)0;
       int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(2), &ptr);
@@ -13861,6 +13929,10 @@ XS(_wrap_InitDefaultStorage__SWIG_5) {
     OTDB::StorageType arg1 ;
     OTDB::PackType arg2 ;
     std::string arg3 ;
+    int val1 ;
+    int ecode1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
     int argvi = 0;
     bool result;
     dXSARGS;
@@ -13868,8 +13940,16 @@ XS(_wrap_InitDefaultStorage__SWIG_5) {
     if ((items < 3) || (items > 3)) {
       SWIG_croak("Usage: InitDefaultStorage(eStoreType,ePackType,oneStr);");
     }
-    arg1 = (OTDB::StorageType)ST(0); 
-    arg2 = (OTDB::PackType)ST(1); 
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "InitDefaultStorage" "', argument " "1"" of type '" "OTDB::StorageType""'");
+    } 
+    arg1 = static_cast< OTDB::StorageType >(val1);
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "InitDefaultStorage" "', argument " "2"" of type '" "OTDB::PackType""'");
+    } 
+    arg2 = static_cast< OTDB::PackType >(val2);
     {
       std::string *ptr = (std::string *)0;
       int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(2), &ptr);
@@ -13898,6 +13978,10 @@ XS(_wrap_InitDefaultStorage__SWIG_6) {
   {
     OTDB::StorageType arg1 ;
     OTDB::PackType arg2 ;
+    int val1 ;
+    int ecode1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
     int argvi = 0;
     bool result;
     dXSARGS;
@@ -13905,8 +13989,16 @@ XS(_wrap_InitDefaultStorage__SWIG_6) {
     if ((items < 2) || (items > 2)) {
       SWIG_croak("Usage: InitDefaultStorage(eStoreType,ePackType);");
     }
-    arg1 = (OTDB::StorageType)ST(0); 
-    arg2 = (OTDB::PackType)ST(1); 
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "InitDefaultStorage" "', argument " "1"" of type '" "OTDB::StorageType""'");
+    } 
+    arg1 = static_cast< OTDB::StorageType >(val1);
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "InitDefaultStorage" "', argument " "2"" of type '" "OTDB::PackType""'");
+    } 
+    arg2 = static_cast< OTDB::PackType >(val2);
     result = (bool)OTDB::InitDefaultStorage(arg1,arg2);
     ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
     
@@ -13932,14 +14024,20 @@ XS(_wrap_InitDefaultStorage) {
       SWIG_TypeRank _pi = 1;
       int _v = 0;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_1;
       _ranki += _v*_pi;
       _rankm += _pi;
       _pi *= SWIG_MAXCASTRANK;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_1;
       _ranki += _v*_pi;
@@ -13958,14 +14056,20 @@ XS(_wrap_InitDefaultStorage) {
       SWIG_TypeRank _pi = 1;
       int _v = 0;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_2;
       _ranki += _v*_pi;
       _rankm += _pi;
       _pi *= SWIG_MAXCASTRANK;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_2;
       _ranki += _v*_pi;
@@ -13992,14 +14096,20 @@ XS(_wrap_InitDefaultStorage) {
       SWIG_TypeRank _pi = 1;
       int _v = 0;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_3;
       _ranki += _v*_pi;
       _rankm += _pi;
       _pi *= SWIG_MAXCASTRANK;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_3;
       _ranki += _v*_pi;
@@ -14034,14 +14144,20 @@ XS(_wrap_InitDefaultStorage) {
       SWIG_TypeRank _pi = 1;
       int _v = 0;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_4;
       _ranki += _v*_pi;
       _rankm += _pi;
       _pi *= SWIG_MAXCASTRANK;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_4;
       _ranki += _v*_pi;
@@ -14084,14 +14200,20 @@ XS(_wrap_InitDefaultStorage) {
       SWIG_TypeRank _pi = 1;
       int _v = 0;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_5;
       _ranki += _v*_pi;
       _rankm += _pi;
       _pi *= SWIG_MAXCASTRANK;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_5;
       _ranki += _v*_pi;
@@ -14142,14 +14264,20 @@ XS(_wrap_InitDefaultStorage) {
       SWIG_TypeRank _pi = 1;
       int _v = 0;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_6;
       _ranki += _v*_pi;
       _rankm += _pi;
       _pi *= SWIG_MAXCASTRANK;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_6;
       _ranki += _v*_pi;
@@ -14208,14 +14336,20 @@ XS(_wrap_InitDefaultStorage) {
       SWIG_TypeRank _pi = 1;
       int _v = 0;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_7;
       _ranki += _v*_pi;
       _rankm += _pi;
       _pi *= SWIG_MAXCASTRANK;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_7;
       _ranki += _v*_pi;
@@ -14322,6 +14456,10 @@ XS(_wrap_CreateStorageContext__SWIG_0) {
   {
     OTDB::StorageType arg1 ;
     OTDB::PackType arg2 ;
+    int val1 ;
+    int ecode1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
     int argvi = 0;
     OTDB::Storage *result = 0 ;
     dXSARGS;
@@ -14329,8 +14467,16 @@ XS(_wrap_CreateStorageContext__SWIG_0) {
     if ((items < 2) || (items > 2)) {
       SWIG_croak("Usage: CreateStorageContext(eStoreType,ePackType);");
     }
-    arg1 = (OTDB::StorageType)ST(0); 
-    arg2 = (OTDB::PackType)ST(1); 
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "CreateStorageContext" "', argument " "1"" of type '" "OTDB::StorageType""'");
+    } 
+    arg1 = static_cast< OTDB::StorageType >(val1);
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CreateStorageContext" "', argument " "2"" of type '" "OTDB::PackType""'");
+    } 
+    arg2 = static_cast< OTDB::PackType >(val2);
     result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1,arg2);
     ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
     
@@ -14347,6 +14493,8 @@ XS(_wrap_CreateStorageContext__SWIG_0) {
 XS(_wrap_CreateStorageContext__SWIG_1) {
   {
     OTDB::StorageType arg1 ;
+    int val1 ;
+    int ecode1 = 0 ;
     int argvi = 0;
     OTDB::Storage *result = 0 ;
     dXSARGS;
@@ -14354,7 +14502,11 @@ XS(_wrap_CreateStorageContext__SWIG_1) {
     if ((items < 1) || (items > 1)) {
       SWIG_croak("Usage: CreateStorageContext(eStoreType);");
     }
-    arg1 = (OTDB::StorageType)ST(0); 
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "CreateStorageContext" "', argument " "1"" of type '" "OTDB::StorageType""'");
+    } 
+    arg1 = static_cast< OTDB::StorageType >(val1);
     result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1);
     ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
     
@@ -14378,7 +14530,10 @@ XS(_wrap_CreateStorageContext) {
       SWIG_TypeRank _pi = 1;
       int _v = 0;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_1;
       _ranki += _v*_pi;
@@ -14397,14 +14552,20 @@ XS(_wrap_CreateStorageContext) {
       SWIG_TypeRank _pi = 1;
       int _v = 0;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_2;
       _ranki += _v*_pi;
       _rankm += _pi;
       _pi *= SWIG_MAXCASTRANK;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_2;
       _ranki += _v*_pi;
@@ -14434,6 +14595,8 @@ XS(_wrap_CreateStorageContext) {
 XS(_wrap_CreateObject) {
   {
     OTDB::StoredObjectType arg1 ;
+    int val1 ;
+    int ecode1 = 0 ;
     int argvi = 0;
     OTDB::Storable *result = 0 ;
     dXSARGS;
@@ -14441,7 +14604,11 @@ XS(_wrap_CreateObject) {
     if ((items < 1) || (items > 1)) {
       SWIG_croak("Usage: CreateObject(eType);");
     }
-    arg1 = (OTDB::StoredObjectType)ST(0); 
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "CreateObject" "', argument " "1"" of type '" "OTDB::StoredObjectType""'");
+    } 
+    arg1 = static_cast< OTDB::StoredObjectType >(val1);
     result = (OTDB::Storable *)OTDB::CreateObject(arg1);
     ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
     
@@ -16772,6 +16939,8 @@ XS(_wrap_QueryObject__SWIG_0) {
     std::string arg3 ;
     std::string arg4 ;
     std::string arg5 ;
+    int val1 ;
+    int ecode1 = 0 ;
     int argvi = 0;
     OTDB::Storable *result = 0 ;
     dXSARGS;
@@ -16779,7 +16948,11 @@ XS(_wrap_QueryObject__SWIG_0) {
     if ((items < 5) || (items > 5)) {
       SWIG_croak("Usage: QueryObject(theObjectType,strFolder,oneStr,twoStr,threeStr);");
     }
-    arg1 = (OTDB::StoredObjectType)ST(0); 
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "QueryObject" "', argument " "1"" of type '" "OTDB::StoredObjectType""'");
+    } 
+    arg1 = static_cast< OTDB::StoredObjectType >(val1);
     {
       std::string *ptr = (std::string *)0;
       int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(1), &ptr);
@@ -16841,6 +17014,8 @@ XS(_wrap_QueryObject__SWIG_1) {
     std::string arg2 ;
     std::string arg3 ;
     std::string arg4 ;
+    int val1 ;
+    int ecode1 = 0 ;
     int argvi = 0;
     OTDB::Storable *result = 0 ;
     dXSARGS;
@@ -16848,7 +17023,11 @@ XS(_wrap_QueryObject__SWIG_1) {
     if ((items < 4) || (items > 4)) {
       SWIG_croak("Usage: QueryObject(theObjectType,strFolder,oneStr,twoStr);");
     }
-    arg1 = (OTDB::StoredObjectType)ST(0); 
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "QueryObject" "', argument " "1"" of type '" "OTDB::StoredObjectType""'");
+    } 
+    arg1 = static_cast< OTDB::StoredObjectType >(val1);
     {
       std::string *ptr = (std::string *)0;
       int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(1), &ptr);
@@ -16898,6 +17077,8 @@ XS(_wrap_QueryObject__SWIG_2) {
     OTDB::StoredObjectType arg1 ;
     std::string arg2 ;
     std::string arg3 ;
+    int val1 ;
+    int ecode1 = 0 ;
     int argvi = 0;
     OTDB::Storable *result = 0 ;
     dXSARGS;
@@ -16905,7 +17086,11 @@ XS(_wrap_QueryObject__SWIG_2) {
     if ((items < 3) || (items > 3)) {
       SWIG_croak("Usage: QueryObject(theObjectType,strFolder,oneStr);");
     }
-    arg1 = (OTDB::StoredObjectType)ST(0); 
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "QueryObject" "', argument " "1"" of type '" "OTDB::StoredObjectType""'");
+    } 
+    arg1 = static_cast< OTDB::StoredObjectType >(val1);
     {
       std::string *ptr = (std::string *)0;
       int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(1), &ptr);
@@ -16943,6 +17128,8 @@ XS(_wrap_QueryObject__SWIG_3) {
   {
     OTDB::StoredObjectType arg1 ;
     std::string arg2 ;
+    int val1 ;
+    int ecode1 = 0 ;
     int argvi = 0;
     OTDB::Storable *result = 0 ;
     dXSARGS;
@@ -16950,7 +17137,11 @@ XS(_wrap_QueryObject__SWIG_3) {
     if ((items < 2) || (items > 2)) {
       SWIG_croak("Usage: QueryObject(theObjectType,strFolder);");
     }
-    arg1 = (OTDB::StoredObjectType)ST(0); 
+    ecode1 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "QueryObject" "', argument " "1"" of type '" "OTDB::StoredObjectType""'");
+    } 
+    arg1 = static_cast< OTDB::StoredObjectType >(val1);
     {
       std::string *ptr = (std::string *)0;
       int res = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(1), &ptr);
@@ -16985,7 +17176,10 @@ XS(_wrap_QueryObject) {
       SWIG_TypeRank _pi = 1;
       int _v = 0;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_1;
       _ranki += _v*_pi;
@@ -17012,7 +17206,10 @@ XS(_wrap_QueryObject) {
       SWIG_TypeRank _pi = 1;
       int _v = 0;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_2;
       _ranki += _v*_pi;
@@ -17047,7 +17244,10 @@ XS(_wrap_QueryObject) {
       SWIG_TypeRank _pi = 1;
       int _v = 0;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_3;
       _ranki += _v*_pi;
@@ -17090,7 +17290,10 @@ XS(_wrap_QueryObject) {
       SWIG_TypeRank _pi = 1;
       int _v = 0;
       {
-        
+        {
+          int res = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(0), NULL);
+          _v = SWIG_CheckState(res);
+        }
       }
       if (!_v) goto check_4;
       _ranki += _v*_pi;
@@ -17340,42 +17543,6 @@ XS(_wrap_StringMap_GetValue) {
   fail:
     
     if (SWIG_IsNewObj(res2)) delete arg2;
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_StringMap_dynamic_cast) {
-  {
-    OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    OTDB::StringMap *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: StringMap_dynamic_cast(pObject);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StringMap_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-    {
-      result = (OTDB::StringMap *)OTDB_StringMap_dynamic_cast(arg1);
-      if (!result) {
-        jclass excep = jenv->FindClass("java/lang/ClassCastException");
-        if (excep) {
-          jenv->ThrowNew(excep, "dynamic_cast exception");
-        }
-      }
-    }
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__StringMap, 0 | SWIG_SHADOW); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
     SWIG_croak_null();
   }
 }
@@ -17742,42 +17909,6 @@ XS(_wrap_BitcoinAcct_bitcoin_acct_name_get) {
 }
 
 
-XS(_wrap_BitcoinAcct_dynamic_cast) {
-  {
-    OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    OTDB::BitcoinAcct *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: BitcoinAcct_dynamic_cast(pObject);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinAcct_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-    {
-      result = (OTDB::BitcoinAcct *)OTDB_BitcoinAcct_dynamic_cast(arg1);
-      if (!result) {
-        jclass excep = jenv->FindClass("java/lang/ClassCastException");
-        if (excep) {
-          jenv->ThrowNew(excep, "dynamic_cast exception");
-        }
-      }
-    }
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinAcct, 0 | SWIG_SHADOW); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
 XS(_wrap_delete_ServerInfo) {
   {
     OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
@@ -17936,42 +18067,6 @@ XS(_wrap_ServerInfo_server_type_get) {
     arg1 = reinterpret_cast< OTDB::ServerInfo * >(argp1);
     result = (std::string *) & ((arg1)->server_type);
     ST(argvi) = SWIG_From_std_string  SWIG_PERL_CALL_ARGS_1(static_cast< std::string >(*result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_ServerInfo_dynamic_cast) {
-  {
-    OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    OTDB::ServerInfo *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: ServerInfo_dynamic_cast(pObject);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ServerInfo_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-    {
-      result = (OTDB::ServerInfo *)OTDB_ServerInfo_dynamic_cast(arg1);
-      if (!result) {
-        jclass excep = jenv->FindClass("java/lang/ClassCastException");
-        if (excep) {
-          jenv->ThrowNew(excep, "dynamic_cast exception");
-        }
-      }
-    }
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ServerInfo, 0 | SWIG_SHADOW); argvi++ ;
     
     XSRETURN(argvi);
   fail:
@@ -18306,42 +18401,6 @@ XS(_wrap_BitcoinServer_bitcoin_password_get) {
     arg1 = reinterpret_cast< OTDB::BitcoinServer * >(argp1);
     result = (std::string *) & ((arg1)->bitcoin_password);
     ST(argvi) = SWIG_From_std_string  SWIG_PERL_CALL_ARGS_1(static_cast< std::string >(*result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_BitcoinServer_dynamic_cast) {
-  {
-    OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    OTDB::BitcoinServer *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: BitcoinServer_dynamic_cast(pObject);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinServer_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-    {
-      result = (OTDB::BitcoinServer *)OTDB_BitcoinServer_dynamic_cast(arg1);
-      if (!result) {
-        jclass excep = jenv->FindClass("java/lang/ClassCastException");
-        if (excep) {
-          jenv->ThrowNew(excep, "dynamic_cast exception");
-        }
-      }
-    }
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinServer, 0 | SWIG_SHADOW); argvi++ ;
     
     XSRETURN(argvi);
   fail:
@@ -18803,36 +18862,317 @@ XS(_wrap_ContactNym_AddServerInfo) {
 }
 
 
-XS(_wrap_ContactNym_dynamic_cast) {
+XS(_wrap_delete_WalletData) {
   {
-    OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
     int argvi = 0;
-    OTDB::ContactNym *result = 0 ;
     dXSARGS;
     
     if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: ContactNym_dynamic_cast(pObject);");
+      SWIG_croak("Usage: delete_WalletData(self);");
     }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, SWIG_POINTER_DISOWN |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactNym_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_WalletData" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
     }
-    arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-    {
-      result = (OTDB::ContactNym *)OTDB_ContactNym_dynamic_cast(arg1);
-      if (!result) {
-        jclass excep = jenv->FindClass("java/lang/ClassCastException");
-        if (excep) {
-          jenv->ThrowNew(excep, "dynamic_cast exception");
-        }
-      }
-    }
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ContactNym, 0 | SWIG_SHADOW); argvi++ ;
+    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+    delete arg1;
+    ST(argvi) = sv_newmortal();
     
     XSRETURN(argvi);
   fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_WalletData_GetBitcoinServerCount) {
+  {
+    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    size_t result;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: WalletData_GetBitcoinServerCount(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinServerCount" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+    }
+    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+    result = (arg1)->GetBitcoinServerCount();
+    ST(argvi) = SWIG_From_size_t  SWIG_PERL_CALL_ARGS_1(static_cast< size_t >(result)); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_WalletData_GetBitcoinServer) {
+  {
+    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+    size_t arg2 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    size_t val2 ;
+    int ecode2 = 0 ;
+    int argvi = 0;
+    OTDB::BitcoinServer *result = 0 ;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: WalletData_GetBitcoinServer(self,nIndex);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+    }
+    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_GetBitcoinServer" "', argument " "2"" of type '" "size_t""'");
+    } 
+    arg2 = static_cast< size_t >(val2);
+    result = (OTDB::BitcoinServer *)(arg1)->GetBitcoinServer(arg2);
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinServer, 0 | SWIG_SHADOW); argvi++ ;
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_WalletData_RemoveBitcoinServer) {
+  {
+    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+    size_t arg2 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    size_t val2 ;
+    int ecode2 = 0 ;
+    int argvi = 0;
+    bool result;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: WalletData_RemoveBitcoinServer(self,nIndex);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_RemoveBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+    }
+    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_RemoveBitcoinServer" "', argument " "2"" of type '" "size_t""'");
+    } 
+    arg2 = static_cast< size_t >(val2);
+    result = (bool)(arg1)->RemoveBitcoinServer(arg2);
+    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_WalletData_AddBitcoinServer) {
+  {
+    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+    OTDB::BitcoinServer *arg2 = 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    void *argp2 = 0 ;
+    int res2 = 0 ;
+    int argvi = 0;
+    bool result;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: WalletData_AddBitcoinServer(self,disownObject);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_AddBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+    }
+    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+    res2 = SWIG_ConvertPtr(ST(1), &argp2, SWIGTYPE_p_OTDB__BitcoinServer,  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "WalletData_AddBitcoinServer" "', argument " "2"" of type '" "OTDB::BitcoinServer &""'"); 
+    }
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "WalletData_AddBitcoinServer" "', argument " "2"" of type '" "OTDB::BitcoinServer &""'"); 
+    }
+    arg2 = reinterpret_cast< OTDB::BitcoinServer * >(argp2);
+    result = (bool)(arg1)->AddBitcoinServer(*arg2);
+    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_WalletData_GetBitcoinAcctCount) {
+  {
+    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    size_t result;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: WalletData_GetBitcoinAcctCount(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinAcctCount" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+    }
+    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+    result = (arg1)->GetBitcoinAcctCount();
+    ST(argvi) = SWIG_From_size_t  SWIG_PERL_CALL_ARGS_1(static_cast< size_t >(result)); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_WalletData_GetBitcoinAcct) {
+  {
+    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+    size_t arg2 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    size_t val2 ;
+    int ecode2 = 0 ;
+    int argvi = 0;
+    OTDB::BitcoinAcct *result = 0 ;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: WalletData_GetBitcoinAcct(self,nIndex);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+    }
+    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_GetBitcoinAcct" "', argument " "2"" of type '" "size_t""'");
+    } 
+    arg2 = static_cast< size_t >(val2);
+    result = (OTDB::BitcoinAcct *)(arg1)->GetBitcoinAcct(arg2);
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinAcct, 0 | SWIG_SHADOW); argvi++ ;
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_WalletData_RemoveBitcoinAcct) {
+  {
+    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+    size_t arg2 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    size_t val2 ;
+    int ecode2 = 0 ;
+    int argvi = 0;
+    bool result;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: WalletData_RemoveBitcoinAcct(self,nIndex);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_RemoveBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+    }
+    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_RemoveBitcoinAcct" "', argument " "2"" of type '" "size_t""'");
+    } 
+    arg2 = static_cast< size_t >(val2);
+    result = (bool)(arg1)->RemoveBitcoinAcct(arg2);
+    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_WalletData_AddBitcoinAcct) {
+  {
+    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+    OTDB::BitcoinAcct *arg2 = 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    void *argp2 = 0 ;
+    int res2 = 0 ;
+    int argvi = 0;
+    bool result;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: WalletData_AddBitcoinAcct(self,disownObject);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_AddBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+    }
+    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+    res2 = SWIG_ConvertPtr(ST(1), &argp2, SWIGTYPE_p_OTDB__BitcoinAcct,  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "WalletData_AddBitcoinAcct" "', argument " "2"" of type '" "OTDB::BitcoinAcct &""'"); 
+    }
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "WalletData_AddBitcoinAcct" "', argument " "2"" of type '" "OTDB::BitcoinAcct &""'"); 
+    }
+    arg2 = reinterpret_cast< OTDB::BitcoinAcct * >(argp2);
+    result = (bool)(arg1)->AddBitcoinAcct(*arg2);
+    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
     
     SWIG_croak_null();
   }
@@ -19347,42 +19687,6 @@ XS(_wrap_ContactAcct_public_key_get) {
     arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
     result = (std::string *) & ((arg1)->public_key);
     ST(argvi) = SWIG_From_std_string  SWIG_PERL_CALL_ARGS_1(static_cast< std::string >(*result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_ContactAcct_dynamic_cast) {
-  {
-    OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    OTDB::ContactAcct *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: ContactAcct_dynamic_cast(pObject);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactAcct_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-    {
-      result = (OTDB::ContactAcct *)OTDB_ContactAcct_dynamic_cast(arg1);
-      if (!result) {
-        jclass excep = jenv->FindClass("java/lang/ClassCastException");
-        if (excep) {
-          jenv->ThrowNew(excep, "dynamic_cast exception");
-        }
-      }
-    }
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ContactAcct, 0 | SWIG_SHADOW); argvi++ ;
     
     XSRETURN(argvi);
   fail:
@@ -19989,42 +20293,6 @@ XS(_wrap_Contact_AddContactAcct) {
 }
 
 
-XS(_wrap_Contact_dynamic_cast) {
-  {
-    OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    OTDB::Contact *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: Contact_dynamic_cast(pObject);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-    {
-      result = (OTDB::Contact *)OTDB_Contact_dynamic_cast(arg1);
-      if (!result) {
-        jclass excep = jenv->FindClass("java/lang/ClassCastException");
-        if (excep) {
-          jenv->ThrowNew(excep, "dynamic_cast exception");
-        }
-      }
-    }
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Contact, 0 | SWIG_SHADOW); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
 XS(_wrap_delete_AddressBook) {
   {
     OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
@@ -20197,395 +20465,6 @@ XS(_wrap_AddressBook_AddContact) {
 }
 
 
-XS(_wrap_AddressBook_dynamic_cast) {
-  {
-    OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    OTDB::AddressBook *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: AddressBook_dynamic_cast(pObject);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "AddressBook_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-    {
-      result = (OTDB::AddressBook *)OTDB_AddressBook_dynamic_cast(arg1);
-      if (!result) {
-        jclass excep = jenv->FindClass("java/lang/ClassCastException");
-        if (excep) {
-          jenv->ThrowNew(excep, "dynamic_cast exception");
-        }
-      }
-    }
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__AddressBook, 0 | SWIG_SHADOW); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_delete_WalletData) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: delete_WalletData(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, SWIG_POINTER_DISOWN |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_WalletData" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    delete arg1;
-    ST(argvi) = sv_newmortal();
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_GetBitcoinServerCount) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    size_t result;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: WalletData_GetBitcoinServerCount(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinServerCount" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    result = (arg1)->GetBitcoinServerCount();
-    ST(argvi) = SWIG_From_size_t  SWIG_PERL_CALL_ARGS_1(static_cast< size_t >(result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_GetBitcoinServer) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    size_t arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    size_t val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    OTDB::BitcoinServer *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: WalletData_GetBitcoinServer(self,nIndex);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_GetBitcoinServer" "', argument " "2"" of type '" "size_t""'");
-    } 
-    arg2 = static_cast< size_t >(val2);
-    result = (OTDB::BitcoinServer *)(arg1)->GetBitcoinServer(arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinServer, 0 | SWIG_SHADOW); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_RemoveBitcoinServer) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    size_t arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    size_t val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: WalletData_RemoveBitcoinServer(self,nIndex);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_RemoveBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_RemoveBitcoinServer" "', argument " "2"" of type '" "size_t""'");
-    } 
-    arg2 = static_cast< size_t >(val2);
-    result = (bool)(arg1)->RemoveBitcoinServer(arg2);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_AddBitcoinServer) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    OTDB::BitcoinServer *arg2 = 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    void *argp2 = 0 ;
-    int res2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: WalletData_AddBitcoinServer(self,disownObject);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_AddBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    res2 = SWIG_ConvertPtr(ST(1), &argp2, SWIGTYPE_p_OTDB__BitcoinServer,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "WalletData_AddBitcoinServer" "', argument " "2"" of type '" "OTDB::BitcoinServer &""'"); 
-    }
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "WalletData_AddBitcoinServer" "', argument " "2"" of type '" "OTDB::BitcoinServer &""'"); 
-    }
-    arg2 = reinterpret_cast< OTDB::BitcoinServer * >(argp2);
-    result = (bool)(arg1)->AddBitcoinServer(*arg2);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_GetBitcoinAcctCount) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    size_t result;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: WalletData_GetBitcoinAcctCount(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinAcctCount" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    result = (arg1)->GetBitcoinAcctCount();
-    ST(argvi) = SWIG_From_size_t  SWIG_PERL_CALL_ARGS_1(static_cast< size_t >(result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_GetBitcoinAcct) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    size_t arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    size_t val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    OTDB::BitcoinAcct *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: WalletData_GetBitcoinAcct(self,nIndex);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_GetBitcoinAcct" "', argument " "2"" of type '" "size_t""'");
-    } 
-    arg2 = static_cast< size_t >(val2);
-    result = (OTDB::BitcoinAcct *)(arg1)->GetBitcoinAcct(arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinAcct, 0 | SWIG_SHADOW); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_RemoveBitcoinAcct) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    size_t arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    size_t val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: WalletData_RemoveBitcoinAcct(self,nIndex);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_RemoveBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_RemoveBitcoinAcct" "', argument " "2"" of type '" "size_t""'");
-    } 
-    arg2 = static_cast< size_t >(val2);
-    result = (bool)(arg1)->RemoveBitcoinAcct(arg2);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_AddBitcoinAcct) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    OTDB::BitcoinAcct *arg2 = 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    void *argp2 = 0 ;
-    int res2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: WalletData_AddBitcoinAcct(self,disownObject);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_AddBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    res2 = SWIG_ConvertPtr(ST(1), &argp2, SWIGTYPE_p_OTDB__BitcoinAcct,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "WalletData_AddBitcoinAcct" "', argument " "2"" of type '" "OTDB::BitcoinAcct &""'"); 
-    }
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "WalletData_AddBitcoinAcct" "', argument " "2"" of type '" "OTDB::BitcoinAcct &""'"); 
-    }
-    arg2 = reinterpret_cast< OTDB::BitcoinAcct * >(argp2);
-    result = (bool)(arg1)->AddBitcoinAcct(*arg2);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_dynamic_cast) {
-  {
-    OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    OTDB::WalletData *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: WalletData_dynamic_cast(pObject);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-    {
-      result = (OTDB::WalletData *)OTDB_WalletData_dynamic_cast(arg1);
-      if (!result) {
-        jclass excep = jenv->FindClass("java/lang/ClassCastException");
-        if (excep) {
-          jenv->ThrowNew(excep, "dynamic_cast exception");
-        }
-      }
-    }
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__WalletData, 0 | SWIG_SHADOW); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -20677,7 +20556,6 @@ static swig_type_info _swigt__p_OTDB__Storable = {"_p_OTDB__Storable", "OTDB::St
 static swig_type_info _swigt__p_OTDB__Storage = {"_p_OTDB__Storage", "OTDB::Storage *", 0, 0, (void*)"otapi::Storage", 0};
 static swig_type_info _swigt__p_OTDB__StringMap = {"_p_OTDB__StringMap", "OTDB::StringMap *", 0, 0, (void*)"otapi::StringMap", 0};
 static swig_type_info _swigt__p_OTDB__WalletData = {"_p_OTDB__WalletData", "OTDB::WalletData *", 0, 0, (void*)"otapi::WalletData", 0};
-static swig_type_info _swigt__p__javaenum = {"_p__javaenum", "%javaenum *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__mapT_std__string_std__string_t = {"_p_std__mapT_std__string_std__string_t", "std::map< std::string,std::string > *", 0, 0, (void*)0, 0};
 
@@ -20698,7 +20576,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_OTDB__Storage,
   &_swigt__p_OTDB__StringMap,
   &_swigt__p_OTDB__WalletData,
-  &_swigt__p__javaenum,
   &_swigt__p_char,
   &_swigt__p_std__mapT_std__string_std__string_t,
 };
@@ -20719,7 +20596,6 @@ static swig_cast_info _swigc__p_OTDB__Storable[] = {  {&_swigt__p_OTDB__AddressB
 static swig_cast_info _swigc__p_OTDB__Storage[] = {  {&_swigt__p_OTDB__Storage, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__StringMap[] = {  {&_swigt__p_OTDB__StringMap, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__WalletData[] = {  {&_swigt__p_OTDB__WalletData, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__javaenum[] = {  {&_swigt__p__javaenum, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__mapT_std__string_std__string_t[] = {  {&_swigt__p_std__mapT_std__string_std__string_t, 0, 0, 0},{0, 0, 0, 0}};
 
@@ -20740,7 +20616,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_OTDB__Storage,
   _swigc__p_OTDB__StringMap,
   _swigc__p_OTDB__WalletData,
-  _swigc__p__javaenum,
   _swigc__p_char,
   _swigc__p_std__mapT_std__string_std__string_t,
 };
@@ -20755,7 +20630,6 @@ static swig_constant_info swig_constants[] = {
 }
 #endif
 static swig_variable_info swig_variables[] = {
-    { "otapic::typeunsafe", MAGIC_CLASS _wrap_typeunsafe_set, MAGIC_CLASS _wrap_typeunsafe_get,&SWIGTYPE_p__javaenum },
 {0,0,0,0}
 };
 static swig_command_info swig_commands[] = {
@@ -20955,7 +20829,6 @@ static swig_command_info swig_commands[] = {
 {"otapic::StringMap_the_map_get", _wrap_StringMap_the_map_get},
 {"otapic::StringMap_SetValue", _wrap_StringMap_SetValue},
 {"otapic::StringMap_GetValue", _wrap_StringMap_GetValue},
-{"otapic::StringMap_dynamic_cast", _wrap_StringMap_dynamic_cast},
 {"otapic::delete_Displayable", _wrap_delete_Displayable},
 {"otapic::Displayable_gui_label_set", _wrap_Displayable_gui_label_set},
 {"otapic::Displayable_gui_label_get", _wrap_Displayable_gui_label_get},
@@ -20967,13 +20840,11 @@ static swig_command_info swig_commands[] = {
 {"otapic::delete_BitcoinAcct", _wrap_delete_BitcoinAcct},
 {"otapic::BitcoinAcct_bitcoin_acct_name_set", _wrap_BitcoinAcct_bitcoin_acct_name_set},
 {"otapic::BitcoinAcct_bitcoin_acct_name_get", _wrap_BitcoinAcct_bitcoin_acct_name_get},
-{"otapic::BitcoinAcct_dynamic_cast", _wrap_BitcoinAcct_dynamic_cast},
 {"otapic::delete_ServerInfo", _wrap_delete_ServerInfo},
 {"otapic::ServerInfo_server_id_set", _wrap_ServerInfo_server_id_set},
 {"otapic::ServerInfo_server_id_get", _wrap_ServerInfo_server_id_get},
 {"otapic::ServerInfo_server_type_set", _wrap_ServerInfo_server_type_set},
 {"otapic::ServerInfo_server_type_get", _wrap_ServerInfo_server_type_get},
-{"otapic::ServerInfo_dynamic_cast", _wrap_ServerInfo_dynamic_cast},
 {"otapic::delete_Server", _wrap_delete_Server},
 {"otapic::Server_server_host_set", _wrap_Server_server_host_set},
 {"otapic::Server_server_host_get", _wrap_Server_server_host_get},
@@ -20984,7 +20855,6 @@ static swig_command_info swig_commands[] = {
 {"otapic::BitcoinServer_bitcoin_username_get", _wrap_BitcoinServer_bitcoin_username_get},
 {"otapic::BitcoinServer_bitcoin_password_set", _wrap_BitcoinServer_bitcoin_password_set},
 {"otapic::BitcoinServer_bitcoin_password_get", _wrap_BitcoinServer_bitcoin_password_get},
-{"otapic::BitcoinServer_dynamic_cast", _wrap_BitcoinServer_dynamic_cast},
 {"otapic::delete_ContactNym", _wrap_delete_ContactNym},
 {"otapic::ContactNym_nym_type_set", _wrap_ContactNym_nym_type_set},
 {"otapic::ContactNym_nym_type_get", _wrap_ContactNym_nym_type_get},
@@ -20998,7 +20868,15 @@ static swig_command_info swig_commands[] = {
 {"otapic::ContactNym_GetServerInfo", _wrap_ContactNym_GetServerInfo},
 {"otapic::ContactNym_RemoveServerInfo", _wrap_ContactNym_RemoveServerInfo},
 {"otapic::ContactNym_AddServerInfo", _wrap_ContactNym_AddServerInfo},
-{"otapic::ContactNym_dynamic_cast", _wrap_ContactNym_dynamic_cast},
+{"otapic::delete_WalletData", _wrap_delete_WalletData},
+{"otapic::WalletData_GetBitcoinServerCount", _wrap_WalletData_GetBitcoinServerCount},
+{"otapic::WalletData_GetBitcoinServer", _wrap_WalletData_GetBitcoinServer},
+{"otapic::WalletData_RemoveBitcoinServer", _wrap_WalletData_RemoveBitcoinServer},
+{"otapic::WalletData_AddBitcoinServer", _wrap_WalletData_AddBitcoinServer},
+{"otapic::WalletData_GetBitcoinAcctCount", _wrap_WalletData_GetBitcoinAcctCount},
+{"otapic::WalletData_GetBitcoinAcct", _wrap_WalletData_GetBitcoinAcct},
+{"otapic::WalletData_RemoveBitcoinAcct", _wrap_WalletData_RemoveBitcoinAcct},
+{"otapic::WalletData_AddBitcoinAcct", _wrap_WalletData_AddBitcoinAcct},
 {"otapic::delete_ContactAcct", _wrap_delete_ContactAcct},
 {"otapic::ContactAcct_server_type_set", _wrap_ContactAcct_server_type_set},
 {"otapic::ContactAcct_server_type_get", _wrap_ContactAcct_server_type_get},
@@ -21014,7 +20892,6 @@ static swig_command_info swig_commands[] = {
 {"otapic::ContactAcct_memo_get", _wrap_ContactAcct_memo_get},
 {"otapic::ContactAcct_public_key_set", _wrap_ContactAcct_public_key_set},
 {"otapic::ContactAcct_public_key_get", _wrap_ContactAcct_public_key_get},
-{"otapic::ContactAcct_dynamic_cast", _wrap_ContactAcct_dynamic_cast},
 {"otapic::delete_Contact", _wrap_delete_Contact},
 {"otapic::Contact_contact_id_set", _wrap_Contact_contact_id_set},
 {"otapic::Contact_contact_id_get", _wrap_Contact_contact_id_get},
@@ -21032,23 +20909,11 @@ static swig_command_info swig_commands[] = {
 {"otapic::Contact_GetContactAcct", _wrap_Contact_GetContactAcct},
 {"otapic::Contact_RemoveContactAcct", _wrap_Contact_RemoveContactAcct},
 {"otapic::Contact_AddContactAcct", _wrap_Contact_AddContactAcct},
-{"otapic::Contact_dynamic_cast", _wrap_Contact_dynamic_cast},
 {"otapic::delete_AddressBook", _wrap_delete_AddressBook},
 {"otapic::AddressBook_GetContactCount", _wrap_AddressBook_GetContactCount},
 {"otapic::AddressBook_GetContact", _wrap_AddressBook_GetContact},
 {"otapic::AddressBook_RemoveContact", _wrap_AddressBook_RemoveContact},
 {"otapic::AddressBook_AddContact", _wrap_AddressBook_AddContact},
-{"otapic::AddressBook_dynamic_cast", _wrap_AddressBook_dynamic_cast},
-{"otapic::delete_WalletData", _wrap_delete_WalletData},
-{"otapic::WalletData_GetBitcoinServerCount", _wrap_WalletData_GetBitcoinServerCount},
-{"otapic::WalletData_GetBitcoinServer", _wrap_WalletData_GetBitcoinServer},
-{"otapic::WalletData_RemoveBitcoinServer", _wrap_WalletData_RemoveBitcoinServer},
-{"otapic::WalletData_AddBitcoinServer", _wrap_WalletData_AddBitcoinServer},
-{"otapic::WalletData_GetBitcoinAcctCount", _wrap_WalletData_GetBitcoinAcctCount},
-{"otapic::WalletData_GetBitcoinAcct", _wrap_WalletData_GetBitcoinAcct},
-{"otapic::WalletData_RemoveBitcoinAcct", _wrap_WalletData_RemoveBitcoinAcct},
-{"otapic::WalletData_AddBitcoinAcct", _wrap_WalletData_AddBitcoinAcct},
-{"otapic::WalletData_dynamic_cast", _wrap_WalletData_dynamic_cast},
 {0,0}
 };
 /* -----------------------------------------------------------------------------
@@ -21430,10 +21295,10 @@ XS(SWIG_init) {
   SWIG_TypeClientData(SWIGTYPE_p_OTDB__Server, (void*) "otapi::Server");
   SWIG_TypeClientData(SWIGTYPE_p_OTDB__BitcoinServer, (void*) "otapi::BitcoinServer");
   SWIG_TypeClientData(SWIGTYPE_p_OTDB__ContactNym, (void*) "otapi::ContactNym");
+  SWIG_TypeClientData(SWIGTYPE_p_OTDB__WalletData, (void*) "otapi::WalletData");
   SWIG_TypeClientData(SWIGTYPE_p_OTDB__ContactAcct, (void*) "otapi::ContactAcct");
   SWIG_TypeClientData(SWIGTYPE_p_OTDB__Contact, (void*) "otapi::Contact");
   SWIG_TypeClientData(SWIGTYPE_p_OTDB__AddressBook, (void*) "otapi::AddressBook");
-  SWIG_TypeClientData(SWIGTYPE_p_OTDB__WalletData, (void*) "otapi::WalletData");
   ST(0) = &PL_sv_yes;
   XSRETURN(1);
 }

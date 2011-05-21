@@ -165,6 +165,7 @@ public:
 	static const EVP_MD * GetOpenSSLDigestByName(const OTString & theName);
 
 	OTIdentifier();
+	OTIdentifier(const OTIdentifier &theID);
 	OTIdentifier(const char * szStr);
 	OTIdentifier(const OTString &theStr);
 	OTIdentifier(const OTPseudonym &theNym);
@@ -173,9 +174,11 @@ public:
 	OTIdentifier(const OTMarket &theMarket);
 	virtual ~OTIdentifier();
 				
+	using OTData::swap;
+	using OTData::operator=;
+	
 	bool operator==(const OTIdentifier &s2) const;
 	bool operator!=(const OTIdentifier &s2) const;
-
 	
 	bool CalculateDigest(const OTData & dataInput);
 	bool CalculateDigest(const OTString & strInput);
@@ -202,4 +205,20 @@ public:
 
 
 #endif // __OTIDENTIFIER_H__
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

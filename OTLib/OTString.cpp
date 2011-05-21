@@ -302,26 +302,33 @@ OTString::~OTString()
 	Release();
 }
 
-
-OTString::OTString()
+void OTString::Initialize()
 {
-	Initialize();
+	m_lLength   = 0;
+	m_lPosition = 0;
+	m_strBuffer  = NULL;
+}
+
+
+OTString::OTString() : m_lLength(0), m_lPosition(0), m_strBuffer(NULL)
+{
+//	Initialize();
 }
 
 // This constructor gets the string version of the ID passed in,
 // and sets that string on this object. (For when you need a string
 // version of an ID.)
-OTString::OTString(const OTIdentifier & theValue)
+OTString::OTString(const OTIdentifier & theValue) : m_lLength(0), m_lPosition(0), m_strBuffer(NULL)
 {
-	Initialize();
+//	Initialize();
 	
 	if (theValue.GetSize() > 0)
 		theValue.GetString(*this);
 }
 
-OTString::OTString(const OTContract & theValue)
+OTString::OTString(const OTContract & theValue) : m_lLength(0), m_lPosition(0), m_strBuffer(NULL)
 {
-	Initialize();
+//	Initialize();
 	
 	((OTContract &)theValue).SaveContract(*this);	
 }
@@ -330,9 +337,9 @@ OTString::OTString(const OTContract & theValue)
 
 // This version base64-DECODES the ascii-armored string passed in,
 // and then sets the decoded plaintext string onto this object.
-OTString::OTString(const OTASCIIArmor & strValue)
+OTString::OTString(const OTASCIIArmor & strValue) : m_lLength(0), m_lPosition(0), m_strBuffer(NULL)
 {
-	Initialize();
+//	Initialize();
 	
 	if (strValue.Exists())
 		strValue.GetString(*this);
@@ -346,50 +353,43 @@ OTString::OTString(const OTASCIIArmor & strValue)
 // But Lucre signatures, as used in this library, ARE in text form, so I
 // provided this constructor to easily base64-decode them to prepare for
 // loading into a bio and then a Lucre object.
-OTString::OTString(const OTSignature & strValue)
+OTString::OTString(const OTSignature & strValue) : m_lLength(0), m_lPosition(0), m_strBuffer(NULL)
 {
-	Initialize();
+//	Initialize();
 	
 	if (strValue.Exists())
 		strValue.GetString(*this);
 }
 
 
-OTString::OTString(OTPseudonym & theValue)
+OTString::OTString(OTPseudonym & theValue) : m_lLength(0), m_lPosition(0), m_strBuffer(NULL)
 {
-	Initialize();
+//	Initialize();
 	
 	theValue.SavePseudonym(*this);
 }
 
-OTString::OTString(const OTString & strValue)
+OTString::OTString(const OTString & strValue) : m_lLength(0), m_lPosition(0), m_strBuffer(NULL)
 {
-	Initialize();
+//	Initialize();
 	LowLevelSetStr(strValue);
 }
 
-OTString::OTString(const char * new_string)
+OTString::OTString(const char * new_string) : m_lLength(0), m_lPosition(0), m_strBuffer(NULL)
 {
-	Initialize();
+//	Initialize();
 	LowLevelSet(new_string, 0);
 }
 
-OTString::OTString(const std::string& new_string)
+OTString::OTString(const std::string& new_string) : m_lLength(0), m_lPosition(0), m_strBuffer(NULL)
 {
-	Initialize();
+//	Initialize();
 	LowLevelSet(new_string.c_str(), 0);
-}
-
-void OTString::Initialize()
-{
-  m_lLength   = 0;
-  m_lPosition = 0;
-  m_strBuffer  = NULL;
 }
 
 void OTString::Release(void)
 {
-	if (m_strBuffer)
+	if (NULL != m_strBuffer)
 	{
 		// for security purposes.
 		memset(m_strBuffer, 0, m_lLength);
@@ -403,6 +403,8 @@ void OTString::Release(void)
 
 void OTString::LowLevelSetStr(const OTString & strBuf)
 { 
+	OT_ASSERT(NULL == m_strBuffer); // otherwise memory leak.
+	
 	if (strBuf.Exists()) 
 	{ 
 		m_lLength = strBuf.m_lLength; 
@@ -412,6 +414,8 @@ void OTString::LowLevelSetStr(const OTString & strBuf)
 
 void OTString::LowLevelSet(const char * new_string, uint32_t nEnforcedMaxLength)
 {
+	OT_ASSERT(NULL == m_strBuffer); // otherwise memory leak.
+	
 	if (NULL != new_string)
 	{
 		if (nEnforcedMaxLength > 0)	// Enforce the max length before calling strlen. If Max length is 10, then buf[9] is zero'd out.

@@ -152,31 +152,33 @@ private:
 	uint32_t m_lSize;
 
 protected:
-	const void * GetPointer() const;
+	inline const void * GetPointer() const { return m_pData; }
 	void  SetSize(uint32_t lNewSize);
-
+	
+	inline void Initialize() { m_pData = NULL; m_lSize = 0; m_lPosition = 0; }
+	
 public:
 	OTData();
 	OTData(const void * pNewData, uint32_t nNewSize);
 	OTData(const OTData &theSource);
 
-	virtual ~OTData();
+	virtual void Release();
+	virtual ~OTData() { Release(); }
 
-	void Initialize();
-
-	OTData & operator+=(const OTData & rhs);
-
-	OTData & operator=(const OTData &theSource);
-
-	bool operator==(const OTData &s2) const;
-	bool operator!=(const OTData &s2) const;
+	OTData & operator=(OTData rhs);
 	
-	uint32_t  GetSize() const;
+	void swap (OTData & rhs);
+		
+	bool		operator==(const OTData &s2) const;
+	bool		operator!=(const OTData &s2) const;
+	OTData &	operator+=(const OTData & rhs);
+	
+	
+	inline uint32_t	GetSize() const { return m_lSize; } 
+	inline bool		IsEmpty() const { return (m_lSize > 0) ? false : true; }
 
-   bool IsEmpty() const;
-   virtual void Release();
-   void Assign(const OTData &theSource);
-   void Assign(const void * pNewData, uint32_t lNewSize);
+	void Assign(const OTData &theSource);
+	void Assign(const void * pNewData, uint32_t lNewSize);
 	
 	int OTfread(char * buf, int buflen);
 	inline void reset() { m_lPosition = 0; };

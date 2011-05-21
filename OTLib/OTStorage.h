@@ -505,7 +505,9 @@ EndInterface
 		
 	protected:
 		Storage() : m_pPacker(NULL) {}
-
+		
+		Storage(const Storage & rhs) : m_pPacker(NULL) { } // We don't want to copy the pointer. Let it create its own.
+		
 		// Use GetPacker() to access the Packer, throughout duration of this Storage object.
 		// If it doesn't exist yet, this function will create it on the first call. (The 
 		// parameter allows you the choose what type will be created, other than default.)
@@ -538,7 +540,7 @@ EndInterface
 		// -------------------------------------
 		
 	public:
-		virtual ~Storage() { if (NULL != m_pPacker) delete m_pPacker; }
+		virtual ~Storage() { if (NULL != m_pPacker) delete m_pPacker; m_pPacker = NULL; }
 
 		virtual bool Init(std::string oneStr="", std::string twoStr="", std::string threeStr="", 
 						  std::string fourStr="", std::string fiveStr="", std::string sixStr="")=0;
@@ -688,7 +690,7 @@ EndInterface
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		Displayable() : Storable(),  gui_label("") { }
+		Displayable() : Storable() { }
 		
 	public:
 		virtual ~Displayable() { }
@@ -705,7 +707,7 @@ EndInterface
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		Acct() : Displayable(), acct_id(""), server_id("")  { }
+		Acct() : Displayable() { }
 		
 	public:
 		virtual ~Acct() { }
@@ -723,7 +725,7 @@ EndInterface
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		BitcoinAcct() : Acct(), bitcoin_acct_name("") { }
+		BitcoinAcct() : Acct() { }
 		
 	public:
 		virtual ~BitcoinAcct() { }
@@ -745,7 +747,7 @@ EndInterface
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		ServerInfo() : Displayable(), server_id(""), server_type("") { }
+		ServerInfo() : Displayable() { }
 		
 	public:
 		virtual ~ServerInfo() { }
@@ -763,7 +765,7 @@ EndInterface
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		Server() : ServerInfo(), server_host(""), server_port("") { }
+		Server() : ServerInfo() { }
 		
 	public:
 		virtual ~Server() { }
@@ -784,7 +786,7 @@ EndInterface
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		BitcoinServer() : Server(), bitcoin_username(""), bitcoin_password("") { }
+		BitcoinServer() : Server() { }
 		
 	public:
 		virtual ~BitcoinServer() { }
@@ -805,12 +807,12 @@ EndInterface
 	
 #define DECLARE_GET_ADD_REMOVE(name) \
 	protected: \
-	std::deque< stlplus::simple_ptr_clone<name> > list_##name##s; \
+		std::deque< stlplus::simple_ptr_clone<name> > list_##name##s; \
 	public: \
-	size_t Get##name##Count(); \
-	name * Get##name(size_t nIndex); \
-	bool Remove##name(size_t nIndex); \
-	bool Add##name(name & disownObject)
+		size_t Get##name##Count(); \
+		name * Get##name(size_t nIndex); \
+		bool Remove##name(size_t nIndex); \
+		bool Add##name(name & disownObject)
 	
 	
 	class ContactNym : public Displayable
@@ -818,7 +820,7 @@ EndInterface
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		ContactNym() : Displayable(), nym_type(""), nym_id(""), public_key(""), memo("") { }
+		ContactNym() : Displayable() { }
 		
 	public:
 		virtual ~ContactNym();
@@ -860,7 +862,7 @@ EndInterface
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		ContactAcct() : Displayable(), server_type(""), server_id(""), asset_type_id(""), acct_id(""), nym_id(""), memo(""), public_key("")  { }
+		ContactAcct() : Displayable() { }
 		
 	public:
 		virtual ~ContactAcct() { }
@@ -883,7 +885,7 @@ EndInterface
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		Contact() : Displayable(), contact_id(""), email(""), memo(""), public_key("") { }
+		Contact() : Displayable() { }
 		
 	public:
 		virtual ~Contact();
@@ -1107,8 +1109,8 @@ namespace OTDB
 class theType : public theBaseType, implements IStorableMsgpack \
 {		\
 public: \
-	theType() : theBaseType() { } \
-	IStorable * clone(void) const {return dynamic_cast<IStorable *>(new theType(*this));} \
+	theType() : theBaseType(), IStorableMsgpack() { } \
+	IStorable * clone(void) const { return dynamic_cast<IStorable *>(new theType(*this)); } \
 	static Storable * Instantiate() { return dynamic_cast<Storable *>(new theType); } \
 	virtual ~theType() { } \
 	virtual bool PerformPack(BufferMsgpack& theBuffer) { msgpack::pack(theBuffer.GetBuffer(), *this); return true; } \
@@ -1426,7 +1428,7 @@ namespace OTDB
 	private:
 		theInternalType __pb_obj; 
 	public: 
-		ProtobufSubclass() : theBaseType() { } 
+		ProtobufSubclass() : theBaseType(), IStorablePB() { } 
 		virtual ::google::protobuf::Message * getPBMessage(); 
 		IStorable * clone(void) const 
 			{return dynamic_cast<IStorable *>(new ProtobufSubclass<theBaseType, theInternalType>(*this));} \

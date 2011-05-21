@@ -151,6 +151,11 @@ OTPayload::OTPayload() : OTData()
 	
 }
 
+OTPayload::OTPayload(const OTPayload & rhs) : OTData(rhs)
+{
+	
+}
+
 OTPayload::~OTPayload()
 {
 

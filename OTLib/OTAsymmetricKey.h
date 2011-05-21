@@ -219,6 +219,7 @@ public:
 	static OTCaller * GetPasswordCaller();
 	
 	OTAsymmetricKey();
+	OTAsymmetricKey(const OTAsymmetricKey & rhs);
 	virtual ~OTAsymmetricKey();
 	
 	OTAsymmetricKey & operator=(const OTAsymmetricKey & rhs);

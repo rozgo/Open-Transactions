@@ -63,11 +63,4 @@ public class ServerInfo : Displayable {
     } 
   }
 
-  public static ServerInfo dynamic_cast(Storable pObject) {
-    IntPtr cPtr = otapiPINVOKE.ServerInfo_dynamic_cast(Storable.getCPtr(pObject));
-    ServerInfo ret = (cPtr == IntPtr.Zero) ? null : new ServerInfo(cPtr, false);
-    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
-    return ret;
-  }
-
 }

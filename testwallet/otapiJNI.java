@@ -196,6 +196,7 @@ public class otapiJNI {
   public final static native int STORED_OBJ_ERROR_get();
   public final static native void delete_Storable(long jarg1);
   public final static native long Storable_Create(int jarg1, int jarg2);
+  public final static native long Storable_dynamic_cast(long jarg1, Storable jarg1_);
   public final static native void delete_Storage(long jarg1);
   public final static native boolean Storage_Init__SWIG_0(long jarg1, Storage jarg1_, String jarg2, String jarg3, String jarg4, String jarg5, String jarg6, String jarg7);
   public final static native boolean Storage_Init__SWIG_1(long jarg1, Storage jarg1_, String jarg2, String jarg3, String jarg4, String jarg5, String jarg6);
@@ -323,6 +324,16 @@ public class otapiJNI {
   public final static native boolean ContactNym_RemoveServerInfo(long jarg1, ContactNym jarg1_, long jarg2);
   public final static native boolean ContactNym_AddServerInfo(long jarg1, ContactNym jarg1_, long jarg2, ServerInfo jarg2_);
   public final static native long ContactNym_dynamic_cast(long jarg1, Storable jarg1_);
+  public final static native void delete_WalletData(long jarg1);
+  public final static native long WalletData_GetBitcoinServerCount(long jarg1, WalletData jarg1_);
+  public final static native long WalletData_GetBitcoinServer(long jarg1, WalletData jarg1_, long jarg2);
+  public final static native boolean WalletData_RemoveBitcoinServer(long jarg1, WalletData jarg1_, long jarg2);
+  public final static native boolean WalletData_AddBitcoinServer(long jarg1, WalletData jarg1_, long jarg2, BitcoinServer jarg2_);
+  public final static native long WalletData_GetBitcoinAcctCount(long jarg1, WalletData jarg1_);
+  public final static native long WalletData_GetBitcoinAcct(long jarg1, WalletData jarg1_, long jarg2);
+  public final static native boolean WalletData_RemoveBitcoinAcct(long jarg1, WalletData jarg1_, long jarg2);
+  public final static native boolean WalletData_AddBitcoinAcct(long jarg1, WalletData jarg1_, long jarg2, BitcoinAcct jarg2_);
+  public final static native long WalletData_dynamic_cast(long jarg1, Storable jarg1_);
   public final static native void delete_ContactAcct(long jarg1);
   public final static native void ContactAcct_server_type_set(long jarg1, ContactAcct jarg1_, String jarg2);
   public final static native String ContactAcct_server_type_get(long jarg1, ContactAcct jarg1_);
@@ -363,16 +374,6 @@ public class otapiJNI {
   public final static native boolean AddressBook_RemoveContact(long jarg1, AddressBook jarg1_, long jarg2);
   public final static native boolean AddressBook_AddContact(long jarg1, AddressBook jarg1_, long jarg2, Contact jarg2_);
   public final static native long AddressBook_dynamic_cast(long jarg1, Storable jarg1_);
-  public final static native void delete_WalletData(long jarg1);
-  public final static native long WalletData_GetBitcoinServerCount(long jarg1, WalletData jarg1_);
-  public final static native long WalletData_GetBitcoinServer(long jarg1, WalletData jarg1_, long jarg2);
-  public final static native boolean WalletData_RemoveBitcoinServer(long jarg1, WalletData jarg1_, long jarg2);
-  public final static native boolean WalletData_AddBitcoinServer(long jarg1, WalletData jarg1_, long jarg2, BitcoinServer jarg2_);
-  public final static native long WalletData_GetBitcoinAcctCount(long jarg1, WalletData jarg1_);
-  public final static native long WalletData_GetBitcoinAcct(long jarg1, WalletData jarg1_, long jarg2);
-  public final static native boolean WalletData_RemoveBitcoinAcct(long jarg1, WalletData jarg1_, long jarg2);
-  public final static native boolean WalletData_AddBitcoinAcct(long jarg1, WalletData jarg1_, long jarg2, BitcoinAcct jarg2_);
-  public final static native long WalletData_dynamic_cast(long jarg1, Storable jarg1_);
   public final static native long StringMap_SWIGUpcast(long jarg1);
   public final static native long Displayable_SWIGUpcast(long jarg1);
   public final static native long Acct_SWIGUpcast(long jarg1);
@@ -381,10 +382,10 @@ public class otapiJNI {
   public final static native long Server_SWIGUpcast(long jarg1);
   public final static native long BitcoinServer_SWIGUpcast(long jarg1);
   public final static native long ContactNym_SWIGUpcast(long jarg1);
+  public final static native long WalletData_SWIGUpcast(long jarg1);
   public final static native long ContactAcct_SWIGUpcast(long jarg1);
   public final static native long Contact_SWIGUpcast(long jarg1);
   public final static native long AddressBook_SWIGUpcast(long jarg1);
-  public final static native long WalletData_SWIGUpcast(long jarg1);
 
   public static String SwigDirector_OTCallback_runOne(OTCallback self) {
     return self.runOne();

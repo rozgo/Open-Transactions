@@ -159,6 +159,42 @@ extern "C"
 
 
 
+
+// initializes blank.
+OTASCIIArmor::OTASCIIArmor() : OTString()
+{
+	
+}
+
+// encodes
+OTASCIIArmor::OTASCIIArmor(const OTString & strValue) : OTString(/*Don't pass here, since we're encoding.*/)
+{
+	this->SetString(strValue);
+}
+
+// Copies (already encoded)
+OTASCIIArmor::OTASCIIArmor(const OTASCIIArmor & strValue) : OTString(dynamic_cast<const OTString&>(strValue))
+{
+	
+}
+
+
+// assumes envelope contains encrypted data; 
+// grabs that data in base64-form onto *this.
+OTASCIIArmor::OTASCIIArmor(const OTEnvelope & theEnvelope) : OTString()
+{
+	theEnvelope.GetAsciiArmoredData(*this);
+}
+
+
+// copies (already encoded)
+OTASCIIArmor::OTASCIIArmor(const char * szValue) : OTString(szValue)
+{
+
+}
+
+// -------------------------------------------------------------
+
 // copies, assumes already encoded.
 OTASCIIArmor & OTASCIIArmor::operator=(const char * szValue)
 {
@@ -169,52 +205,22 @@ OTASCIIArmor & OTASCIIArmor::operator=(const char * szValue)
 // encodes
 OTASCIIArmor & OTASCIIArmor::operator=(const OTString & strValue)
 {
-	this->SetString(strValue);
-	return *this;
+	if ((&strValue) != (&(dynamic_cast<const OTString&>(*this))))
+	{
+		this->SetString(strValue);
+	}
+	return *this;	
 }
 
 // assumes is already encoded and just copies the encoded text
 OTASCIIArmor & OTASCIIArmor::operator=(const OTASCIIArmor & strValue)
 {
-	this->Set(strValue);
+	if ((&strValue) != this) // prevent self-assignment
+	{
+		this->OTString::operator=(dynamic_cast<const OTString&>(strValue));
+	}
 	return *this;
 }
-
-
-
-// assumes already encoded
-OTASCIIArmor::OTASCIIArmor(const OTEnvelope & theEnvelope)
-{
-	theEnvelope.GetAsciiArmoredData(*this);
-}
-
-
-// copies (already encoded)
-OTASCIIArmor::OTASCIIArmor(const char * szValue) : OTString()
-{
-	OTString strValue(szValue);
-	this->Set(strValue);
-}
-
-// encodes
-OTASCIIArmor::OTASCIIArmor(const OTString & strValue) : OTString()
-{
-	this->SetString(strValue);
-}
-
-// Copies (already encoded)
-OTASCIIArmor::OTASCIIArmor(const OTASCIIArmor & strValue) : OTString()
-{
-	this->Set(strValue);
-}
-
-
-
-OTASCIIArmor::OTASCIIArmor() : OTString()
-{
-	
-}
-
 
 
 
@@ -684,6 +690,9 @@ bool OTASCIIArmor::LoadFromFile(const OTString & foldername, const OTString & fi
 	return LoadFromifstream(fin);	
 	 */
 	
+	OT_ASSERT(foldername.Exists());
+	OT_ASSERT(filename.Exists());
+	
 	// --------------------------------------------------------------------
 	
 	OTLog::Error("DEBUG OTASCIIArmor 0 \n");
@@ -842,6 +851,6 @@ bool OTASCIIArmor::LoadFromString(OTString & theStr, bool bEscaped/*=false*/)
 
 OTASCIIArmor::~OTASCIIArmor()
 {
-	
+	// ~OTString called automatically, which calls Release().
 }
 

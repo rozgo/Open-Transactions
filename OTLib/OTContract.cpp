@@ -1198,15 +1198,16 @@ bool OTContract::SignContract(const char * szFoldername, const char * szFilename
 	// --------------------------------------------------------------------
 
 	// Create a new memory buffer on the OpenSSL side
-	BIO *bio = BIO_new(BIO_s_mem());
+	BIO * bio = BIO_new_mem_buf((void*)strFileContents.c_str(), strFileContents.length()); 
+//	BIO *bio = BIO_new(BIO_s_mem());
 	OT_ASSERT(NULL != bio);
 	//BIO_puts(bmem, Get());
 	
-	int nPutsResult = BIO_puts(bio, strFileContents.c_str());
+//	int nPutsResult = BIO_puts(bio, strFileContents.c_str());
 
 	// --------------------------------------------------------------------
 		
-	if (nPutsResult > 0)
+//	if (nPutsResult > 0)
 	{
 		pkey = PEM_read_bio_PrivateKey( bio, NULL, NULL, NULL );
 		
@@ -1345,18 +1346,19 @@ bool OTContract::VerifySignature(const char * szFoldername, const char * szFilen
 	// --------------------------------------------------------------------
 	
 	// Create a new memory buffer on the OpenSSL side
-	BIO *bio = BIO_new(BIO_s_mem());
+	BIO * bio = BIO_new_mem_buf((void*)strFileContents.c_str(), strFileContents.length()); 
+//	BIO *bio = BIO_new(BIO_s_mem());
 	OT_ASSERT(NULL != bio);
 	//BIO_puts(bmem, Get());
 	
-	int nPutsResult = BIO_puts(bio, strFileContents.c_str());
+//	int nPutsResult = BIO_puts(bio, strFileContents.c_str());
 	
 	// --------------------------------------------------------------------
-	if (nPutsResult <= 0)
-	{
-		BIO_free_all(bio);
-		return false;
-	}
+//	if (nPutsResult <= 0)
+//	{
+//		BIO_free_all(bio);
+//		return false;
+//	}
 	
 	x509 = PEM_read_bio_X509(bio, NULL, NULL, NULL); 
 	BIO_free_all(bio);

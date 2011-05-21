@@ -63,11 +63,4 @@ public class BitcoinServer : Server {
     } 
   }
 
-  public new static BitcoinServer dynamic_cast(Storable pObject) {
-    IntPtr cPtr = otapiPINVOKE.BitcoinServer_dynamic_cast(Storable.getCPtr(pObject));
-    BitcoinServer ret = (cPtr == IntPtr.Zero) ? null : new BitcoinServer(cPtr, false);
-    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
-    return ret;
-  }
-
 }

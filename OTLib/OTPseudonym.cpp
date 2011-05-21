@@ -1819,11 +1819,10 @@ bool OTPseudonym::LoadPublicKey()
 	OTLog::Error("DEBUG OTPseudonym 0 \n");
 
 	OTString strID;
-	
 	GetIdentifier(strID);
 	
 	const char * szFoldername	= OTLog::PubkeyFolder();
-	const char * szFilename	= strID.Get();
+	const char * szFilename		= strID.Get();
 
 	// --------------------------------------------------------------------
 	OTLog::Error("DEBUG OTPseudonym 1 \n");
@@ -2582,6 +2581,9 @@ bool OTPseudonym::Loadx509CertAndPrivateKey()
 	const char * szFoldername	= OTLog::CertFolder();
 	const char * szFilename		= strID.Get();
 	
+	OT_ASSERT(NULL != szFoldername);
+	OT_ASSERT(NULL != szFilename);
+	
 //	m_strCertfile.Format((char *)"%s%s%s%s%s", OTLog::Path(), OTLog::PathSeparator(),
 //						 OTLog::CertFolder(),
 //						 OTLog::PathSeparator(), strID.Get());
@@ -2597,13 +2599,20 @@ bool OTPseudonym::Loadx509CertAndPrivateKey()
 	
 	// --------------------------------------------------------------------
 
+	OTLog::Error("DEBUG OTPseudonym::Loadx509CertAndPrivateKey  0  \n");
+	
 	const OTString strFoldername(szFoldername);
 	const OTString strFilename(szFilename);
+	
+	OT_ASSERT(strFoldername.Exists());
+	OT_ASSERT(strFilename.Exists());
 	
 	// This loads up the ascii-armored Cert from the certfile, minus the ------ bookends.
 	// Later we will use this to create a hash and verify against the NymID that was in the wallet.
 	bool bRetVal = m_ascCert.LoadFromFile(strFoldername, strFilename);
 	
+	OTLog::Error("DEBUG OTPseudonym::Loadx509CertAndPrivateKey  1  \n");
+
 	// I load the same file again, but this time using OpenSSL functions to read the public
 	// key and private key (if necessary) from the same file.
 	if (bRetVal)
@@ -2611,8 +2620,17 @@ bool OTPseudonym::Loadx509CertAndPrivateKey()
 		bool bPublic  = false;
 		bool bPrivate = false;
 		
+		OTLog::Error("DEBUG OTPseudonym::Loadx509CertAndPrivateKey  2  \n");
+
 		bPublic  = m_pkeyPublic->LoadPublicKeyFromCertFile(strFoldername, strFilename);
+		
+		OTLog::vError("DEBUG OTPseudonym::Loadx509CertAndPrivateKey  3  folder: %s file: %s\n",
+					 strFoldername.Get(), strFilename.Get());
+
 		bPrivate = m_pkeyPrivate->LoadPrivateKey(strFoldername, strFilename);
+		
+		OTLog::Error("DEBUG OTPseudonym::Loadx509CertAndPrivateKey  4  \n");
+
 //		bPrivate = true;
 		
 		if (!bPublic)

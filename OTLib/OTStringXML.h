@@ -143,11 +143,40 @@ class OTStringXML : public OTString, public irr::io::IFileReadCallBack
 public:
 	OTStringXML();
 	OTStringXML(const OTString & strValue);
+	OTStringXML(const OTStringXML & strValue);
 	virtual ~OTStringXML();
 	
+	OTStringXML& operator=(const OTString & rhs);
+	OTStringXML& operator=(const OTStringXML & rhs);
+
+	using OTString::swap;
+
 	int read(void* buffer, unsigned sizeToRead);
 	int getSize();
 };
 
 #endif // __OTSTRING_XML_H__
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -393,7 +393,6 @@ sub DESTROY {
 *swig_the_map_set = *otapic::StringMap_the_map_set;
 *SetValue = *otapic::StringMap_SetValue;
 *GetValue = *otapic::StringMap_GetValue;
-*dynamic_cast = *otapic::StringMap_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -495,7 +494,6 @@ sub DESTROY {
 
 *swig_bitcoin_acct_name_get = *otapic::BitcoinAcct_bitcoin_acct_name_get;
 *swig_bitcoin_acct_name_set = *otapic::BitcoinAcct_bitcoin_acct_name_set;
-*dynamic_cast = *otapic::BitcoinAcct_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -531,7 +529,6 @@ sub DESTROY {
 *swig_server_id_set = *otapic::ServerInfo_server_id_set;
 *swig_server_type_get = *otapic::ServerInfo_server_type_get;
 *swig_server_type_set = *otapic::ServerInfo_server_type_set;
-*dynamic_cast = *otapic::ServerInfo_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -602,7 +599,6 @@ sub DESTROY {
 *swig_bitcoin_username_set = *otapic::BitcoinServer_bitcoin_username_set;
 *swig_bitcoin_password_get = *otapic::BitcoinServer_bitcoin_password_get;
 *swig_bitcoin_password_set = *otapic::BitcoinServer_bitcoin_password_set;
-*dynamic_cast = *otapic::BitcoinServer_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -646,7 +642,45 @@ sub DESTROY {
 *GetServerInfo = *otapic::ContactNym_GetServerInfo;
 *RemoveServerInfo = *otapic::ContactNym_RemoveServerInfo;
 *AddServerInfo = *otapic::ContactNym_AddServerInfo;
-*dynamic_cast = *otapic::ContactNym_dynamic_cast;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : otapi::WalletData ##############
+
+package otapi::WalletData;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi::Storable otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_WalletData($self);
+        delete $OWNER{$self};
+    }
+}
+
+*GetBitcoinServerCount = *otapic::WalletData_GetBitcoinServerCount;
+*GetBitcoinServer = *otapic::WalletData_GetBitcoinServer;
+*RemoveBitcoinServer = *otapic::WalletData_RemoveBitcoinServer;
+*AddBitcoinServer = *otapic::WalletData_AddBitcoinServer;
+*GetBitcoinAcctCount = *otapic::WalletData_GetBitcoinAcctCount;
+*GetBitcoinAcct = *otapic::WalletData_GetBitcoinAcct;
+*RemoveBitcoinAcct = *otapic::WalletData_RemoveBitcoinAcct;
+*AddBitcoinAcct = *otapic::WalletData_AddBitcoinAcct;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -692,7 +726,6 @@ sub DESTROY {
 *swig_memo_set = *otapic::ContactAcct_memo_set;
 *swig_public_key_get = *otapic::ContactAcct_public_key_get;
 *swig_public_key_set = *otapic::ContactAcct_public_key_set;
-*dynamic_cast = *otapic::ContactAcct_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -740,7 +773,6 @@ sub DESTROY {
 *GetContactAcct = *otapic::Contact_GetContactAcct;
 *RemoveContactAcct = *otapic::Contact_RemoveContactAcct;
 *AddContactAcct = *otapic::Contact_AddContactAcct;
-*dynamic_cast = *otapic::Contact_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -776,47 +808,6 @@ sub DESTROY {
 *GetContact = *otapic::AddressBook_GetContact;
 *RemoveContact = *otapic::AddressBook_RemoveContact;
 *AddContact = *otapic::AddressBook_AddContact;
-*dynamic_cast = *otapic::AddressBook_dynamic_cast;
-sub DISOWN {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    delete $OWNER{$ptr};
-}
-
-sub ACQUIRE {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    $OWNER{$ptr} = 1;
-}
-
-
-############# Class : otapi::WalletData ##############
-
-package otapi::WalletData;
-use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
-@ISA = qw( otapi::Storable otapi );
-%OWNER = ();
-%ITERATORS = ();
-sub DESTROY {
-    return unless $_[0]->isa('HASH');
-    my $self = tied(%{$_[0]});
-    return unless defined $self;
-    delete $ITERATORS{$self};
-    if (exists $OWNER{$self}) {
-        otapic::delete_WalletData($self);
-        delete $OWNER{$self};
-    }
-}
-
-*GetBitcoinServerCount = *otapic::WalletData_GetBitcoinServerCount;
-*GetBitcoinServer = *otapic::WalletData_GetBitcoinServer;
-*RemoveBitcoinServer = *otapic::WalletData_RemoveBitcoinServer;
-*AddBitcoinServer = *otapic::WalletData_AddBitcoinServer;
-*GetBitcoinAcctCount = *otapic::WalletData_GetBitcoinAcctCount;
-*GetBitcoinAcct = *otapic::WalletData_GetBitcoinAcct;
-*RemoveBitcoinAcct = *otapic::WalletData_RemoveBitcoinAcct;
-*AddBitcoinAcct = *otapic::WalletData_AddBitcoinAcct;
-*dynamic_cast = *otapic::WalletData_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -834,7 +825,6 @@ sub ACQUIRE {
 
 package otapi;
 
-*typeunsafe = *otapic::typeunsafe;
 *PACK_MESSAGE_PACK = *otapic::PACK_MESSAGE_PACK;
 *PACK_PROTOCOL_BUFFERS = *otapic::PACK_PROTOCOL_BUFFERS;
 *PACK_TYPE_ERROR = *otapic::PACK_TYPE_ERROR;

@@ -132,19 +132,56 @@
 #include "OTString.h"
 #include "OTStringXML.h"
 
-OTStringXML::OTStringXML() : OTString()
+OTStringXML::OTStringXML() : OTString(), irr::io::IFileReadCallBack()
 {
 	
 }
 
-OTStringXML::OTStringXML(const OTString & strValue) : OTString(strValue)
+OTStringXML::OTStringXML(const OTString & strValue) : OTString(strValue), irr::io::IFileReadCallBack()
 {
 	
+}
+
+OTStringXML::OTStringXML(const OTStringXML & strValue) : OTString(strValue), irr::io::IFileReadCallBack(strValue)
+{
+	
+}
+
+
+/*
+ Derived& Derived::operator= (Derived const& d)
+ {
+	← make sure self-assignment is benign
+	Base::operator= (d);
+	← do the rest of your assignment operator here...
+	...do the rest of your assignment operator here...
+	return *this;
+ } 
+ */
+OTStringXML& OTStringXML::operator=(const OTString & rhs)
+{
+	if ((&rhs) != (&(dynamic_cast<const OTString&>(*this))))
+	{
+		this->OTString::operator=(rhs); // no need to cast here since same type.
+//		irr::io::IFileReadCallBack::operator=(rhs); // rhs is not derived from irr::io::IFileReadCallBack like *this is.
+	}
+	return *this;
+}
+
+OTStringXML& OTStringXML::operator=(const OTStringXML & rhs)
+{
+	if ((&rhs) != this)
+	{
+		this->OTString::operator=(dynamic_cast<const OTString&>(rhs));
+		irr::io::IFileReadCallBack::operator=(rhs);
+	}
+	return *this;
 }
 
 OTStringXML::~OTStringXML()
 {
-	
+	// Base class destructor is called automatically.
+	// (And that calls Release().)
 }
 
 int OTStringXML::read(void* buffer, unsigned sizeToRead)
@@ -160,7 +197,8 @@ int OTStringXML::read(void* buffer, unsigned sizeToRead)
 		}
 		return i;
 	}
-	else {
+	else 
+	{
 		return 0;
 	}
 
@@ -170,4 +208,18 @@ int OTStringXML::getSize()
 {
 	return GetLength();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

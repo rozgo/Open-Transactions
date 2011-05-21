@@ -330,47 +330,16 @@ namespace Swig {
 
 #include <string>
 #include <map>
-#include <msgpack.hpp>
 #include "../OTLib/OTAsymmetricKey.h"
 #include "OTAPI_funcdef.h"
 #include "../OTLib/OTStorage.h"
-//#include "../OTLib/Generics.pb.h"
-//#include "../OTLib/Bitcoin.pb.h"
-//#include "../OTLib/Moneychanger.pb.h"
 
 
 #include <string>
 
-SWIGINTERN OTDB::StringMap *OTDB_StringMap_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::StringMap *>(pObject);
-	}
-SWIGINTERN OTDB::BitcoinAcct *OTDB_BitcoinAcct_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::BitcoinAcct *>(pObject);
-	}
-SWIGINTERN OTDB::ServerInfo *OTDB_ServerInfo_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::ServerInfo *>(pObject);
-	}
-SWIGINTERN OTDB::BitcoinServer *OTDB_BitcoinServer_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::BitcoinServer *>(pObject);
-	}
-SWIGINTERN OTDB::ContactNym *OTDB_ContactNym_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::ContactNym *>(pObject);
-	}
-SWIGINTERN OTDB::ContactAcct *OTDB_ContactAcct_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::ContactAcct *>(pObject);
-	}
-SWIGINTERN OTDB::Contact *OTDB_Contact_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::Contact *>(pObject);
-	}
-SWIGINTERN OTDB::AddressBook *OTDB_AddressBook_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::AddressBook *>(pObject);
-	}
-SWIGINTERN OTDB::WalletData *OTDB_WalletData_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::WalletData *>(pObject);
-	}
 
-using namespace OTDB;
-
+	using namespace OTDB;
+	
 
 
 /* ---------------------------------------------------
@@ -436,30 +405,6 @@ void SwigDirector_OTCallback::swig_init_callbacks() {
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-SWIGEXPORT void SWIGSTDCALL CSharp_typeunsafe_set(void * jarg1) {
-  %javaenum arg1 ;
-  %javaenum *argp1 ;
-  
-  argp1 = (%javaenum *)jarg1; 
-  if (!argp1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null %javaenum", 0);
-    return ;
-  }
-  arg1 = *argp1; 
-  typeunsafe = arg1;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_typeunsafe_get() {
-  void * jresult ;
-  %javaenum result;
-  
-  result = typeunsafe;
-  jresult = new %javaenum((const %javaenum &)result); 
-  return jresult;
-}
-
 
 SWIGEXPORT void * SWIGSTDCALL CSharp_new_OTCallback() {
   void * jresult ;
@@ -3928,7 +3873,7 @@ SWIGEXPORT int SWIGSTDCALL CSharp_Storage_GetType(void * jarg1) {
   
   arg1 = (OTDB::Storage *)jarg1; 
   result = (OTDB::StorageType)((OTDB::Storage const *)arg1)->GetType();
-  jresult = (jint)result; 
+  jresult = result; 
   return jresult;
 }
 
@@ -5056,26 +5001,6 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_StringMap_GetValue(void * jarg1, char * jar
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_StringMap_dynamic_cast(void * jarg1) {
-  void * jresult ;
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  OTDB::StringMap *result = 0 ;
-  
-  arg1 = (OTDB::Storable *)jarg1; 
-  {
-    result = (OTDB::StringMap *)OTDB_StringMap_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_Displayable(void * jarg1) {
   OTDB::Displayable *arg1 = (OTDB::Displayable *) 0 ;
   
@@ -5208,26 +5133,6 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_BitcoinAcct_bitcoin_acct_name_get(void * ja
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_BitcoinAcct_dynamic_cast(void * jarg1) {
-  void * jresult ;
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  OTDB::BitcoinAcct *result = 0 ;
-  
-  arg1 = (OTDB::Storable *)jarg1; 
-  {
-    result = (OTDB::BitcoinAcct *)OTDB_BitcoinAcct_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_ServerInfo(void * jarg1) {
   OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
   
@@ -5286,26 +5191,6 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_ServerInfo_server_type_get(void * jarg1) {
   arg1 = (OTDB::ServerInfo *)jarg1; 
   result = (std::string *) & ((arg1)->server_type);
   jresult = SWIG_csharp_string_callback(result->c_str()); 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_ServerInfo_dynamic_cast(void * jarg1) {
-  void * jresult ;
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  OTDB::ServerInfo *result = 0 ;
-  
-  arg1 = (OTDB::Storable *)jarg1; 
-  {
-    result = (OTDB::ServerInfo *)OTDB_ServerInfo_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  jresult = (void *)result; 
   return jresult;
 }
 
@@ -5430,26 +5315,6 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_BitcoinServer_bitcoin_password_get(void * j
   arg1 = (OTDB::BitcoinServer *)jarg1; 
   result = (std::string *) & ((arg1)->bitcoin_password);
   jresult = SWIG_csharp_string_callback(result->c_str()); 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BitcoinServer_dynamic_cast(void * jarg1) {
-  void * jresult ;
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  OTDB::BitcoinServer *result = 0 ;
-  
-  arg1 = (OTDB::Storable *)jarg1; 
-  {
-    result = (OTDB::BitcoinServer *)OTDB_BitcoinServer_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  jresult = (void *)result; 
   return jresult;
 }
 
@@ -5628,22 +5493,126 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ContactNym_AddServerInfo(void * jarg1
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_ContactNym_dynamic_cast(void * jarg1) {
-  void * jresult ;
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  OTDB::ContactNym *result = 0 ;
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_WalletData(void * jarg1) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
   
-  arg1 = (OTDB::Storable *)jarg1; 
-  {
-    result = (OTDB::ContactNym *)OTDB_ContactNym_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
+  arg1 = (OTDB::WalletData *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT unsigned long SWIGSTDCALL CSharp_WalletData_GetBitcoinServerCount(void * jarg1) {
+  unsigned long jresult ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t result;
+  
+  arg1 = (OTDB::WalletData *)jarg1; 
+  result = (arg1)->GetBitcoinServerCount();
+  jresult = (unsigned long)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_WalletData_GetBitcoinServer(void * jarg1, unsigned long jarg2) {
+  void * jresult ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  OTDB::BitcoinServer *result = 0 ;
+  
+  arg1 = (OTDB::WalletData *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (OTDB::BitcoinServer *)(arg1)->GetBitcoinServer(arg2);
   jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_WalletData_RemoveBitcoinServer(void * jarg1, unsigned long jarg2) {
+  unsigned int jresult ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  bool result;
+  
+  arg1 = (OTDB::WalletData *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (bool)(arg1)->RemoveBitcoinServer(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_WalletData_AddBitcoinServer(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  OTDB::BitcoinServer *arg2 = 0 ;
+  bool result;
+  
+  arg1 = (OTDB::WalletData *)jarg1; 
+  arg2 = (OTDB::BitcoinServer *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "OTDB::BitcoinServer & type is null", 0);
+    return 0;
+  } 
+  result = (bool)(arg1)->AddBitcoinServer(*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned long SWIGSTDCALL CSharp_WalletData_GetBitcoinAcctCount(void * jarg1) {
+  unsigned long jresult ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t result;
+  
+  arg1 = (OTDB::WalletData *)jarg1; 
+  result = (arg1)->GetBitcoinAcctCount();
+  jresult = (unsigned long)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_WalletData_GetBitcoinAcct(void * jarg1, unsigned long jarg2) {
+  void * jresult ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  OTDB::BitcoinAcct *result = 0 ;
+  
+  arg1 = (OTDB::WalletData *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (OTDB::BitcoinAcct *)(arg1)->GetBitcoinAcct(arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_WalletData_RemoveBitcoinAcct(void * jarg1, unsigned long jarg2) {
+  unsigned int jresult ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  bool result;
+  
+  arg1 = (OTDB::WalletData *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (bool)(arg1)->RemoveBitcoinAcct(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_WalletData_AddBitcoinAcct(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  OTDB::BitcoinAcct *arg2 = 0 ;
+  bool result;
+  
+  arg1 = (OTDB::WalletData *)jarg1; 
+  arg2 = (OTDB::BitcoinAcct *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "OTDB::BitcoinAcct & type is null", 0);
+    return 0;
+  } 
+  result = (bool)(arg1)->AddBitcoinAcct(*arg2);
+  jresult = result; 
   return jresult;
 }
 
@@ -5841,26 +5810,6 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_ContactAcct_public_key_get(void * jarg1) {
   arg1 = (OTDB::ContactAcct *)jarg1; 
   result = (std::string *) & ((arg1)->public_key);
   jresult = SWIG_csharp_string_callback(result->c_str()); 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_ContactAcct_dynamic_cast(void * jarg1) {
-  void * jresult ;
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  OTDB::ContactAcct *result = 0 ;
-  
-  arg1 = (OTDB::Storable *)jarg1; 
-  {
-    result = (OTDB::ContactAcct *)OTDB_ContactAcct_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  jresult = (void *)result; 
   return jresult;
 }
 
@@ -6097,26 +6046,6 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Contact_AddContactAcct(void * jarg1, 
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_Contact_dynamic_cast(void * jarg1) {
-  void * jresult ;
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  OTDB::Contact *result = 0 ;
-  
-  arg1 = (OTDB::Storable *)jarg1; 
-  {
-    result = (OTDB::Contact *)OTDB_Contact_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_AddressBook(void * jarg1) {
   OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
   
@@ -6183,170 +6112,6 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_AddressBook_AddContact(void * jarg1, 
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_AddressBook_dynamic_cast(void * jarg1) {
-  void * jresult ;
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  OTDB::AddressBook *result = 0 ;
-  
-  arg1 = (OTDB::Storable *)jarg1; 
-  {
-    result = (OTDB::AddressBook *)OTDB_AddressBook_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_delete_WalletData(void * jarg1) {
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  
-  arg1 = (OTDB::WalletData *)jarg1; 
-  delete arg1;
-}
-
-
-SWIGEXPORT unsigned long SWIGSTDCALL CSharp_WalletData_GetBitcoinServerCount(void * jarg1) {
-  unsigned long jresult ;
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  size_t result;
-  
-  arg1 = (OTDB::WalletData *)jarg1; 
-  result = (arg1)->GetBitcoinServerCount();
-  jresult = (unsigned long)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_WalletData_GetBitcoinServer(void * jarg1, unsigned long jarg2) {
-  void * jresult ;
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  size_t arg2 ;
-  OTDB::BitcoinServer *result = 0 ;
-  
-  arg1 = (OTDB::WalletData *)jarg1; 
-  arg2 = (size_t)jarg2; 
-  result = (OTDB::BitcoinServer *)(arg1)->GetBitcoinServer(arg2);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_WalletData_RemoveBitcoinServer(void * jarg1, unsigned long jarg2) {
-  unsigned int jresult ;
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  size_t arg2 ;
-  bool result;
-  
-  arg1 = (OTDB::WalletData *)jarg1; 
-  arg2 = (size_t)jarg2; 
-  result = (bool)(arg1)->RemoveBitcoinServer(arg2);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_WalletData_AddBitcoinServer(void * jarg1, void * jarg2) {
-  unsigned int jresult ;
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  OTDB::BitcoinServer *arg2 = 0 ;
-  bool result;
-  
-  arg1 = (OTDB::WalletData *)jarg1; 
-  arg2 = (OTDB::BitcoinServer *)jarg2;
-  if (!arg2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "OTDB::BitcoinServer & type is null", 0);
-    return 0;
-  } 
-  result = (bool)(arg1)->AddBitcoinServer(*arg2);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned long SWIGSTDCALL CSharp_WalletData_GetBitcoinAcctCount(void * jarg1) {
-  unsigned long jresult ;
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  size_t result;
-  
-  arg1 = (OTDB::WalletData *)jarg1; 
-  result = (arg1)->GetBitcoinAcctCount();
-  jresult = (unsigned long)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_WalletData_GetBitcoinAcct(void * jarg1, unsigned long jarg2) {
-  void * jresult ;
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  size_t arg2 ;
-  OTDB::BitcoinAcct *result = 0 ;
-  
-  arg1 = (OTDB::WalletData *)jarg1; 
-  arg2 = (size_t)jarg2; 
-  result = (OTDB::BitcoinAcct *)(arg1)->GetBitcoinAcct(arg2);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_WalletData_RemoveBitcoinAcct(void * jarg1, unsigned long jarg2) {
-  unsigned int jresult ;
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  size_t arg2 ;
-  bool result;
-  
-  arg1 = (OTDB::WalletData *)jarg1; 
-  arg2 = (size_t)jarg2; 
-  result = (bool)(arg1)->RemoveBitcoinAcct(arg2);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_WalletData_AddBitcoinAcct(void * jarg1, void * jarg2) {
-  unsigned int jresult ;
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  OTDB::BitcoinAcct *arg2 = 0 ;
-  bool result;
-  
-  arg1 = (OTDB::WalletData *)jarg1; 
-  arg2 = (OTDB::BitcoinAcct *)jarg2;
-  if (!arg2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "OTDB::BitcoinAcct & type is null", 0);
-    return 0;
-  } 
-  result = (bool)(arg1)->AddBitcoinAcct(*arg2);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_WalletData_dynamic_cast(void * jarg1) {
-  void * jresult ;
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  OTDB::WalletData *result = 0 ;
-  
-  arg1 = (OTDB::Storable *)jarg1; 
-  {
-    result = (OTDB::WalletData *)OTDB_WalletData_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
 SWIGEXPORT OTDB::Storable * SWIGSTDCALL CSharp_StringMap_SWIGUpcast(OTDB::StringMap *jarg1) {
     return (OTDB::Storable *)jarg1;
 }
@@ -6379,6 +6144,10 @@ SWIGEXPORT OTDB::Displayable * SWIGSTDCALL CSharp_ContactNym_SWIGUpcast(OTDB::Co
     return (OTDB::Displayable *)jarg1;
 }
 
+SWIGEXPORT OTDB::Storable * SWIGSTDCALL CSharp_WalletData_SWIGUpcast(OTDB::WalletData *jarg1) {
+    return (OTDB::Storable *)jarg1;
+}
+
 SWIGEXPORT OTDB::Displayable * SWIGSTDCALL CSharp_ContactAcct_SWIGUpcast(OTDB::ContactAcct *jarg1) {
     return (OTDB::Displayable *)jarg1;
 }
@@ -6388,10 +6157,6 @@ SWIGEXPORT OTDB::Displayable * SWIGSTDCALL CSharp_Contact_SWIGUpcast(OTDB::Conta
 }
 
 SWIGEXPORT OTDB::Storable * SWIGSTDCALL CSharp_AddressBook_SWIGUpcast(OTDB::AddressBook *jarg1) {
-    return (OTDB::Storable *)jarg1;
-}
-
-SWIGEXPORT OTDB::Storable * SWIGSTDCALL CSharp_WalletData_SWIGUpcast(OTDB::WalletData *jarg1) {
     return (OTDB::Storable *)jarg1;
 }
 

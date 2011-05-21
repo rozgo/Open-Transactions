@@ -15,6 +15,7 @@ touch OTAPI_ruby.cpp; rm OTAPI_ruby.cpp;
 touch OTAPI_tcl.cpp; rm OTAPI_tcl.cpp;
 touch php_otapi.h; rm php_otapi.h;
 touch OTAPI_wrap.h; rm OTAPI_wrap.h;
+
 touch OTAPI_wrap.cxx; rm OTAPI_wrap.cxx; /usr/bin/swig -c++ -tcl OTAPI.i; touch OTAPI_wrap.cxx; mv OTAPI_wrap.cxx OTAPI_tcl.cpp; touch OTAPI_wrap.h; mv OTAPI_wrap.h OTAPI_tcl.h
 touch OTAPI_wrap.cxx; rm OTAPI_wrap.cxx; /usr/bin/swig -c++ -ruby OTAPI.i; touch OTAPI_wrap.cxx; mv OTAPI_wrap.cxx OTAPI_ruby.cpp; touch OTAPI_wrap.h; mv OTAPI_wrap.h OTAPI_ruby.h
 touch OTAPI_wrap.cxx; rm OTAPI_wrap.cxx; /usr/bin/swig -c++ -python OTAPI.i; touch OTAPI_wrap.cxx; mv OTAPI_wrap.cxx OTAPI_python.cpp; touch OTAPI_wrap.h; mv OTAPI_wrap.h OTAPI_python.h

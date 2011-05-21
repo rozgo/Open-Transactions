@@ -1655,11 +1655,10 @@ SWIG_Tcl_GetArgs(Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[], const char
 #define SWIGTYPE_p_OTDB__Storage swig_types[13]
 #define SWIGTYPE_p_OTDB__StringMap swig_types[14]
 #define SWIGTYPE_p_OTDB__WalletData swig_types[15]
-#define SWIGTYPE_p__javaenum swig_types[16]
-#define SWIGTYPE_p_char swig_types[17]
-#define SWIGTYPE_p_std__mapT_std__string_std__string_t swig_types[18]
-static swig_type_info *swig_types[20];
-static swig_module_info swig_module = {swig_types, 19, 0, 0, 0, 0};
+#define SWIGTYPE_p_char swig_types[16]
+#define SWIGTYPE_p_std__mapT_std__string_std__string_t swig_types[17]
+static swig_type_info *swig_types[19];
+static swig_module_info swig_module = {swig_types, 18, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1705,13 +1704,9 @@ SWIGEXPORT int SWIG_init(Tcl_Interp *);
 
 #include <string>
 #include <map>
-#include <msgpack.hpp>
 #include "../OTLib/OTAsymmetricKey.h"
 #include "OTAPI_funcdef.h"
 #include "../OTLib/OTStorage.h"
-//#include "../OTLib/Generics.pb.h"
-//#include "../OTLib/Bitcoin.pb.h"
-//#include "../OTLib/Moneychanger.pb.h"
 
 
 #include <string>
@@ -1845,18 +1840,6 @@ SWIG_AsPtr_std_string SWIG_TCL_DECL_ARGS_2(Tcl_Obj * obj, std::string **val)
   return SWIG_ERROR;
 }
 
-SWIGINTERN OTDB::StringMap *OTDB_StringMap_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::StringMap *>(pObject);
-	}
-SWIGINTERN OTDB::BitcoinAcct *OTDB_BitcoinAcct_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::BitcoinAcct *>(pObject);
-	}
-SWIGINTERN OTDB::ServerInfo *OTDB_ServerInfo_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::ServerInfo *>(pObject);
-	}
-SWIGINTERN OTDB::BitcoinServer *OTDB_BitcoinServer_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::BitcoinServer *>(pObject);
-	}
 
 #include <stdio.h>
 #if defined(_MSC_VER) || defined(__BORLANDC__) || defined(_WATCOM)
@@ -1934,65 +1917,12 @@ SWIG_AsVal_size_t SWIG_TCL_DECL_ARGS_2(Tcl_Obj * obj, size_t *val)
   return res;
 }
 
-SWIGINTERN OTDB::ContactNym *OTDB_ContactNym_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::ContactNym *>(pObject);
-	}
-SWIGINTERN OTDB::ContactAcct *OTDB_ContactAcct_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::ContactAcct *>(pObject);
-	}
-SWIGINTERN OTDB::Contact *OTDB_Contact_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::Contact *>(pObject);
-	}
-SWIGINTERN OTDB::AddressBook *OTDB_AddressBook_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::AddressBook *>(pObject);
-	}
-SWIGINTERN OTDB::WalletData *OTDB_WalletData_dynamic_cast(OTDB::Storable *pObject){
-		return dynamic_cast<OTDB::WalletData *>(pObject);
-	}
 
-using namespace OTDB;
-
+	using namespace OTDB;
+	
 #ifdef __cplusplus
 extern "C" {
 #endif
-SWIGINTERN const char *_wrap_typeunsafe_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, char *name1, char *name2, int flags) {
-  Tcl_Obj *value = 0;
-  
-  value = SWIG_NewInstanceObj(SWIG_as_voidptr(&typeunsafe), SWIGTYPE_p__javaenum, 0 );
-  if (value) {
-    Tcl_SetVar2(interp,name1,name2,Tcl_GetStringFromObj(value,NULL), flags);
-    Tcl_DecrRefCount(value);
-  }
-  return NULL;
-}
-
-
-SWIGINTERN const char *_wrap_typeunsafe_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, char *name1, char *name2 SWIGUNUSED, int flags) {
-  Tcl_Obj *value = 0;
-  Tcl_Obj *name1o = 0;
-  
-  name1o = Tcl_NewStringObj(name1,-1);
-  value = Tcl_ObjGetVar2(interp, name1o, 0, flags);
-  Tcl_DecrRefCount(name1o);
-  if (!value) SWIG_fail;
-  {
-    void *argp = 0;
-    int res = SWIG_ConvertPtr(value, &argp, SWIGTYPE_p__javaenum,  0 );
-    if (!SWIG_IsOK(res)) {
-      SWIG_exception_fail(SWIG_ArgError(res), "in variable '""typeunsafe""' of type '""%javaenum""'");
-    }
-    if (!argp) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""typeunsafe""' of type '""%javaenum""'");
-    } else {
-      typeunsafe = *(reinterpret_cast< %javaenum * >(argp));
-    }
-  }
-  return NULL;
-fail:
-  return "typeunsafe";
-}
-
-
 SWIGINTERN int
 _wrap_new_OTCallback(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   OTCallback *result = 0 ;
@@ -8429,11 +8359,23 @@ SWIGINTERN int
 _wrap_Storable_Create(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   OTDB::StoredObjectType arg1 ;
   OTDB::PackType arg2 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   OTDB::Storable *result = 0 ;
   
   if (SWIG_GetArgs(interp, objc, objv,"oo:Storable_Create eType thePackType ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  arg1 = (OTDB::StoredObjectType)objv[1]; 
-  arg2 = (OTDB::PackType)objv[2]; 
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "Storable_Create" "', argument " "1"" of type '" "OTDB::StoredObjectType""'");
+  } 
+  arg1 = static_cast< OTDB::StoredObjectType >(val1);
+  ecode2 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Storable_Create" "', argument " "2"" of type '" "OTDB::PackType""'");
+  } 
+  arg2 = static_cast< OTDB::PackType >(val2);
   result = (OTDB::Storable *)OTDB::Storable::Create(arg1,arg2);
   Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable,0));
   return TCL_OK;
@@ -10833,6 +10775,8 @@ _wrap_Storage_QueryObject__SWIG_0(ClientData clientData SWIGUNUSED, Tcl_Interp *
   std::string arg6 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   OTDB::Storable *result = 0 ;
   
   if (SWIG_GetArgs(interp, objc, objv,"oooooo:Storage_QueryObject self theObjectType strFolder oneStr twoStr threeStr ",(void *)0,(void *)0,(void *)0,(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
@@ -10841,7 +10785,11 @@ _wrap_Storage_QueryObject__SWIG_0(ClientData clientData SWIGUNUSED, Tcl_Interp *
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Storage_QueryObject" "', argument " "1"" of type '" "OTDB::Storage *""'"); 
   }
   arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
-  arg2 = (OTDB::StoredObjectType)objv[2]; 
+  ecode2 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Storage_QueryObject" "', argument " "2"" of type '" "OTDB::StoredObjectType""'");
+  } 
+  arg2 = static_cast< OTDB::StoredObjectType >(val2);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[3], &ptr);
@@ -10895,6 +10843,8 @@ _wrap_Storage_QueryObject__SWIG_1(ClientData clientData SWIGUNUSED, Tcl_Interp *
   std::string arg5 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   OTDB::Storable *result = 0 ;
   
   if (SWIG_GetArgs(interp, objc, objv,"ooooo:Storage_QueryObject self theObjectType strFolder oneStr twoStr ",(void *)0,(void *)0,(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
@@ -10903,7 +10853,11 @@ _wrap_Storage_QueryObject__SWIG_1(ClientData clientData SWIGUNUSED, Tcl_Interp *
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Storage_QueryObject" "', argument " "1"" of type '" "OTDB::Storage *""'"); 
   }
   arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
-  arg2 = (OTDB::StoredObjectType)objv[2]; 
+  ecode2 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Storage_QueryObject" "', argument " "2"" of type '" "OTDB::StoredObjectType""'");
+  } 
+  arg2 = static_cast< OTDB::StoredObjectType >(val2);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[3], &ptr);
@@ -10947,6 +10901,8 @@ _wrap_Storage_QueryObject__SWIG_2(ClientData clientData SWIGUNUSED, Tcl_Interp *
   std::string arg4 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   OTDB::Storable *result = 0 ;
   
   if (SWIG_GetArgs(interp, objc, objv,"oooo:Storage_QueryObject self theObjectType strFolder oneStr ",(void *)0,(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
@@ -10955,7 +10911,11 @@ _wrap_Storage_QueryObject__SWIG_2(ClientData clientData SWIGUNUSED, Tcl_Interp *
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Storage_QueryObject" "', argument " "1"" of type '" "OTDB::Storage *""'"); 
   }
   arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
-  arg2 = (OTDB::StoredObjectType)objv[2]; 
+  ecode2 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Storage_QueryObject" "', argument " "2"" of type '" "OTDB::StoredObjectType""'");
+  } 
+  arg2 = static_cast< OTDB::StoredObjectType >(val2);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[3], &ptr);
@@ -10989,6 +10949,8 @@ _wrap_Storage_QueryObject__SWIG_3(ClientData clientData SWIGUNUSED, Tcl_Interp *
   std::string arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   OTDB::Storable *result = 0 ;
   
   if (SWIG_GetArgs(interp, objc, objv,"ooo:Storage_QueryObject self theObjectType strFolder ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
@@ -10997,7 +10959,11 @@ _wrap_Storage_QueryObject__SWIG_3(ClientData clientData SWIGUNUSED, Tcl_Interp *
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Storage_QueryObject" "', argument " "1"" of type '" "OTDB::Storage *""'"); 
   }
   arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
-  arg2 = (OTDB::StoredObjectType)objv[2]; 
+  ecode2 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Storage_QueryObject" "', argument " "2"" of type '" "OTDB::StoredObjectType""'");
+  } 
+  arg2 = static_cast< OTDB::StoredObjectType >(val2);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[3], &ptr);
@@ -11025,6 +10991,10 @@ _wrap_Storage_QueryObject(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, 
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_OTDB__Storage, 0);
     _v = SWIG_CheckState(res);
     if (_v) {
+      {
+        int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
       if (_v) {
         int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -11040,6 +11010,10 @@ _wrap_Storage_QueryObject(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, 
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_OTDB__Storage, 0);
     _v = SWIG_CheckState(res);
     if (_v) {
+      {
+        int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
       if (_v) {
         int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -11059,6 +11033,10 @@ _wrap_Storage_QueryObject(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, 
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_OTDB__Storage, 0);
     _v = SWIG_CheckState(res);
     if (_v) {
+      {
+        int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
       if (_v) {
         int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -11082,6 +11060,10 @@ _wrap_Storage_QueryObject(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, 
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_OTDB__Storage, 0);
     _v = SWIG_CheckState(res);
     if (_v) {
+      {
+        int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
       if (_v) {
         int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -11120,6 +11102,8 @@ _wrap_Storage_CreateObject(ClientData clientData SWIGUNUSED, Tcl_Interp *interp,
   OTDB::StoredObjectType arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   OTDB::Storable *result = 0 ;
   
   if (SWIG_GetArgs(interp, objc, objv,"oo:Storage_CreateObject self eType ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
@@ -11128,7 +11112,11 @@ _wrap_Storage_CreateObject(ClientData clientData SWIGUNUSED, Tcl_Interp *interp,
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Storage_CreateObject" "', argument " "1"" of type '" "OTDB::Storage *""'"); 
   }
   arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
-  arg2 = (OTDB::StoredObjectType)objv[2]; 
+  ecode2 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Storage_CreateObject" "', argument " "2"" of type '" "OTDB::StoredObjectType""'");
+  } 
+  arg2 = static_cast< OTDB::StoredObjectType >(val2);
   result = (OTDB::Storable *)(arg1)->CreateObject(arg2);
   Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable,0));
   return TCL_OK;
@@ -11141,11 +11129,23 @@ SWIGINTERN int
 _wrap_Storage_Create(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   OTDB::StorageType arg1 ;
   OTDB::PackType arg2 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   OTDB::Storage *result = 0 ;
   
   if (SWIG_GetArgs(interp, objc, objv,"oo:Storage_Create eStorageType ePackType ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  arg1 = (OTDB::StorageType)objv[1]; 
-  arg2 = (OTDB::PackType)objv[2]; 
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "Storage_Create" "', argument " "1"" of type '" "OTDB::StorageType""'");
+  } 
+  arg1 = static_cast< OTDB::StorageType >(val1);
+  ecode2 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Storage_Create" "', argument " "2"" of type '" "OTDB::PackType""'");
+  } 
+  arg2 = static_cast< OTDB::PackType >(val2);
   result = (OTDB::Storage *)OTDB::Storage::Create(arg1,arg2);
   Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage,0));
   return TCL_OK;
@@ -11168,7 +11168,7 @@ _wrap_Storage_GetType(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int 
   }
   arg1 = reinterpret_cast< OTDB::Storage * >(argp1);
   result = (OTDB::StorageType)((OTDB::Storage const *)arg1)->GetType();
-  (Tcl_GetObjResult(interp)) = (jint)result; 
+  Tcl_SetObjResult(interp,SWIG_From_int(static_cast< int >(result)));
   return TCL_OK;
 fail:
   return TCL_ERROR;
@@ -11208,11 +11208,23 @@ _wrap_InitDefaultStorage__SWIG_0(ClientData clientData SWIGUNUSED, Tcl_Interp *i
   std::string arg6 ;
   std::string arg7 ;
   std::string arg8 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   bool result;
   
   if (SWIG_GetArgs(interp, objc, objv,"oooooooo:InitDefaultStorage eStoreType ePackType oneStr twoStr threeStr fourStr fiveStr sixStr ",(void *)0,(void *)0,(void *)0,(void *)0,(void *)0,(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  arg1 = (OTDB::StorageType)objv[1]; 
-  arg2 = (OTDB::PackType)objv[2]; 
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "InitDefaultStorage" "', argument " "1"" of type '" "OTDB::StorageType""'");
+  } 
+  arg1 = static_cast< OTDB::StorageType >(val1);
+  ecode2 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "InitDefaultStorage" "', argument " "2"" of type '" "OTDB::PackType""'");
+  } 
+  arg2 = static_cast< OTDB::PackType >(val2);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[3], &ptr);
@@ -11284,11 +11296,23 @@ _wrap_InitDefaultStorage__SWIG_1(ClientData clientData SWIGUNUSED, Tcl_Interp *i
   std::string arg5 ;
   std::string arg6 ;
   std::string arg7 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   bool result;
   
   if (SWIG_GetArgs(interp, objc, objv,"ooooooo:InitDefaultStorage eStoreType ePackType oneStr twoStr threeStr fourStr fiveStr ",(void *)0,(void *)0,(void *)0,(void *)0,(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  arg1 = (OTDB::StorageType)objv[1]; 
-  arg2 = (OTDB::PackType)objv[2]; 
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "InitDefaultStorage" "', argument " "1"" of type '" "OTDB::StorageType""'");
+  } 
+  arg1 = static_cast< OTDB::StorageType >(val1);
+  ecode2 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "InitDefaultStorage" "', argument " "2"" of type '" "OTDB::PackType""'");
+  } 
+  arg2 = static_cast< OTDB::PackType >(val2);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[3], &ptr);
@@ -11350,11 +11374,23 @@ _wrap_InitDefaultStorage__SWIG_2(ClientData clientData SWIGUNUSED, Tcl_Interp *i
   std::string arg4 ;
   std::string arg5 ;
   std::string arg6 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   bool result;
   
   if (SWIG_GetArgs(interp, objc, objv,"oooooo:InitDefaultStorage eStoreType ePackType oneStr twoStr threeStr fourStr ",(void *)0,(void *)0,(void *)0,(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  arg1 = (OTDB::StorageType)objv[1]; 
-  arg2 = (OTDB::PackType)objv[2]; 
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "InitDefaultStorage" "', argument " "1"" of type '" "OTDB::StorageType""'");
+  } 
+  arg1 = static_cast< OTDB::StorageType >(val1);
+  ecode2 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "InitDefaultStorage" "', argument " "2"" of type '" "OTDB::PackType""'");
+  } 
+  arg2 = static_cast< OTDB::PackType >(val2);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[3], &ptr);
@@ -11406,11 +11442,23 @@ _wrap_InitDefaultStorage__SWIG_3(ClientData clientData SWIGUNUSED, Tcl_Interp *i
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   bool result;
   
   if (SWIG_GetArgs(interp, objc, objv,"ooooo:InitDefaultStorage eStoreType ePackType oneStr twoStr threeStr ",(void *)0,(void *)0,(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  arg1 = (OTDB::StorageType)objv[1]; 
-  arg2 = (OTDB::PackType)objv[2]; 
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "InitDefaultStorage" "', argument " "1"" of type '" "OTDB::StorageType""'");
+  } 
+  arg1 = static_cast< OTDB::StorageType >(val1);
+  ecode2 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "InitDefaultStorage" "', argument " "2"" of type '" "OTDB::PackType""'");
+  } 
+  arg2 = static_cast< OTDB::PackType >(val2);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[3], &ptr);
@@ -11452,11 +11500,23 @@ _wrap_InitDefaultStorage__SWIG_4(ClientData clientData SWIGUNUSED, Tcl_Interp *i
   OTDB::PackType arg2 ;
   std::string arg3 ;
   std::string arg4 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   bool result;
   
   if (SWIG_GetArgs(interp, objc, objv,"oooo:InitDefaultStorage eStoreType ePackType oneStr twoStr ",(void *)0,(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  arg1 = (OTDB::StorageType)objv[1]; 
-  arg2 = (OTDB::PackType)objv[2]; 
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "InitDefaultStorage" "', argument " "1"" of type '" "OTDB::StorageType""'");
+  } 
+  arg1 = static_cast< OTDB::StorageType >(val1);
+  ecode2 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "InitDefaultStorage" "', argument " "2"" of type '" "OTDB::PackType""'");
+  } 
+  arg2 = static_cast< OTDB::PackType >(val2);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[3], &ptr);
@@ -11488,11 +11548,23 @@ _wrap_InitDefaultStorage__SWIG_5(ClientData clientData SWIGUNUSED, Tcl_Interp *i
   OTDB::StorageType arg1 ;
   OTDB::PackType arg2 ;
   std::string arg3 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   bool result;
   
   if (SWIG_GetArgs(interp, objc, objv,"ooo:InitDefaultStorage eStoreType ePackType oneStr ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  arg1 = (OTDB::StorageType)objv[1]; 
-  arg2 = (OTDB::PackType)objv[2]; 
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "InitDefaultStorage" "', argument " "1"" of type '" "OTDB::StorageType""'");
+  } 
+  arg1 = static_cast< OTDB::StorageType >(val1);
+  ecode2 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "InitDefaultStorage" "', argument " "2"" of type '" "OTDB::PackType""'");
+  } 
+  arg2 = static_cast< OTDB::PackType >(val2);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[3], &ptr);
@@ -11514,11 +11586,23 @@ SWIGINTERN int
 _wrap_InitDefaultStorage__SWIG_6(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   OTDB::StorageType arg1 ;
   OTDB::PackType arg2 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   bool result;
   
   if (SWIG_GetArgs(interp, objc, objv,"oo:InitDefaultStorage eStoreType ePackType ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  arg1 = (OTDB::StorageType)objv[1]; 
-  arg2 = (OTDB::PackType)objv[2]; 
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "InitDefaultStorage" "', argument " "1"" of type '" "OTDB::StorageType""'");
+  } 
+  arg1 = static_cast< OTDB::StorageType >(val1);
+  ecode2 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "InitDefaultStorage" "', argument " "2"" of type '" "OTDB::PackType""'");
+  } 
+  arg2 = static_cast< OTDB::PackType >(val2);
   result = (bool)OTDB::InitDefaultStorage(arg1,arg2);
   Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
   return TCL_OK;
@@ -11533,8 +11617,15 @@ _wrap_InitDefaultStorage(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, i
   int argc = objc-1;
   if (argc == 2) {
     int _v;
-    
+    {
+      int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
     if (_v) {
+      {
+        int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
       if (_v) {
         return _wrap_InitDefaultStorage__SWIG_6(clientData, interp, objc, argv - 1);
       }
@@ -11542,8 +11633,15 @@ _wrap_InitDefaultStorage(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, i
   }
   if (argc == 3) {
     int _v;
-    
+    {
+      int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
     if (_v) {
+      {
+        int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
       if (_v) {
         int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -11555,8 +11653,15 @@ _wrap_InitDefaultStorage(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, i
   }
   if (argc == 4) {
     int _v;
-    
+    {
+      int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
     if (_v) {
+      {
+        int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
       if (_v) {
         int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -11572,8 +11677,15 @@ _wrap_InitDefaultStorage(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, i
   }
   if (argc == 5) {
     int _v;
-    
+    {
+      int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
     if (_v) {
+      {
+        int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
       if (_v) {
         int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -11593,8 +11705,15 @@ _wrap_InitDefaultStorage(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, i
   }
   if (argc == 6) {
     int _v;
-    
+    {
+      int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
     if (_v) {
+      {
+        int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
       if (_v) {
         int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -11618,8 +11737,15 @@ _wrap_InitDefaultStorage(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, i
   }
   if (argc == 7) {
     int _v;
-    
+    {
+      int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
     if (_v) {
+      {
+        int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
       if (_v) {
         int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -11647,8 +11773,15 @@ _wrap_InitDefaultStorage(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, i
   }
   if (argc == 8) {
     int _v;
-    
+    {
+      int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
     if (_v) {
+      {
+        int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
       if (_v) {
         int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(argv[2], (std::string**)(0));
         _v = SWIG_CheckState(res);
@@ -11709,11 +11842,23 @@ SWIGINTERN int
 _wrap_CreateStorageContext__SWIG_0(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   OTDB::StorageType arg1 ;
   OTDB::PackType arg2 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   OTDB::Storage *result = 0 ;
   
   if (SWIG_GetArgs(interp, objc, objv,"oo:CreateStorageContext eStoreType ePackType ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  arg1 = (OTDB::StorageType)objv[1]; 
-  arg2 = (OTDB::PackType)objv[2]; 
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "CreateStorageContext" "', argument " "1"" of type '" "OTDB::StorageType""'");
+  } 
+  arg1 = static_cast< OTDB::StorageType >(val1);
+  ecode2 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CreateStorageContext" "', argument " "2"" of type '" "OTDB::PackType""'");
+  } 
+  arg2 = static_cast< OTDB::PackType >(val2);
   result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1,arg2);
   Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage,0));
   return TCL_OK;
@@ -11725,10 +11870,16 @@ fail:
 SWIGINTERN int
 _wrap_CreateStorageContext__SWIG_1(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   OTDB::StorageType arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
   OTDB::Storage *result = 0 ;
   
   if (SWIG_GetArgs(interp, objc, objv,"o:CreateStorageContext eStoreType ",(void *)0) == TCL_ERROR) SWIG_fail;
-  arg1 = (OTDB::StorageType)objv[1]; 
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "CreateStorageContext" "', argument " "1"" of type '" "OTDB::StorageType""'");
+  } 
+  arg1 = static_cast< OTDB::StorageType >(val1);
   result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1);
   Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage,0));
   return TCL_OK;
@@ -11743,15 +11894,25 @@ _wrap_CreateStorageContext(ClientData clientData SWIGUNUSED, Tcl_Interp *interp,
   int argc = objc-1;
   if (argc == 1) {
     int _v;
-    
+    {
+      int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
     if (_v) {
       return _wrap_CreateStorageContext__SWIG_1(clientData, interp, objc, argv - 1);
     }
   }
   if (argc == 2) {
     int _v;
-    
+    {
+      int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
     if (_v) {
+      {
+        int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
       if (_v) {
         return _wrap_CreateStorageContext__SWIG_0(clientData, interp, objc, argv - 1);
       }
@@ -11769,10 +11930,16 @@ _wrap_CreateStorageContext(ClientData clientData SWIGUNUSED, Tcl_Interp *interp,
 SWIGINTERN int
 _wrap_CreateObject(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   OTDB::StoredObjectType arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
   OTDB::Storable *result = 0 ;
   
   if (SWIG_GetArgs(interp, objc, objv,"o:CreateObject eType ",(void *)0) == TCL_ERROR) SWIG_fail;
-  arg1 = (OTDB::StoredObjectType)objv[1]; 
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "CreateObject" "', argument " "1"" of type '" "OTDB::StoredObjectType""'");
+  } 
+  arg1 = static_cast< OTDB::StoredObjectType >(val1);
   result = (OTDB::Storable *)OTDB::CreateObject(arg1);
   Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable,0));
   return TCL_OK;
@@ -13302,10 +13469,16 @@ _wrap_QueryObject__SWIG_0(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, 
   std::string arg3 ;
   std::string arg4 ;
   std::string arg5 ;
+  int val1 ;
+  int ecode1 = 0 ;
   OTDB::Storable *result = 0 ;
   
   if (SWIG_GetArgs(interp, objc, objv,"ooooo:QueryObject theObjectType strFolder oneStr twoStr threeStr ",(void *)0,(void *)0,(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  arg1 = (OTDB::StoredObjectType)objv[1]; 
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "QueryObject" "', argument " "1"" of type '" "OTDB::StoredObjectType""'");
+  } 
+  arg1 = static_cast< OTDB::StoredObjectType >(val1);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
@@ -13356,10 +13529,16 @@ _wrap_QueryObject__SWIG_1(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, 
   std::string arg2 ;
   std::string arg3 ;
   std::string arg4 ;
+  int val1 ;
+  int ecode1 = 0 ;
   OTDB::Storable *result = 0 ;
   
   if (SWIG_GetArgs(interp, objc, objv,"oooo:QueryObject theObjectType strFolder oneStr twoStr ",(void *)0,(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  arg1 = (OTDB::StoredObjectType)objv[1]; 
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "QueryObject" "', argument " "1"" of type '" "OTDB::StoredObjectType""'");
+  } 
+  arg1 = static_cast< OTDB::StoredObjectType >(val1);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
@@ -13400,10 +13579,16 @@ _wrap_QueryObject__SWIG_2(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, 
   OTDB::StoredObjectType arg1 ;
   std::string arg2 ;
   std::string arg3 ;
+  int val1 ;
+  int ecode1 = 0 ;
   OTDB::Storable *result = 0 ;
   
   if (SWIG_GetArgs(interp, objc, objv,"ooo:QueryObject theObjectType strFolder oneStr ",(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  arg1 = (OTDB::StoredObjectType)objv[1]; 
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "QueryObject" "', argument " "1"" of type '" "OTDB::StoredObjectType""'");
+  } 
+  arg1 = static_cast< OTDB::StoredObjectType >(val1);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
@@ -13434,10 +13619,16 @@ SWIGINTERN int
 _wrap_QueryObject__SWIG_3(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   OTDB::StoredObjectType arg1 ;
   std::string arg2 ;
+  int val1 ;
+  int ecode1 = 0 ;
   OTDB::Storable *result = 0 ;
   
   if (SWIG_GetArgs(interp, objc, objv,"oo:QueryObject theObjectType strFolder ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  arg1 = (OTDB::StoredObjectType)objv[1]; 
+  ecode1 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[1], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "QueryObject" "', argument " "1"" of type '" "OTDB::StoredObjectType""'");
+  } 
+  arg1 = static_cast< OTDB::StoredObjectType >(val1);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
@@ -13461,7 +13652,10 @@ _wrap_QueryObject(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc
   int argc = objc-1;
   if (argc == 2) {
     int _v;
-    
+    {
+      int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
     if (_v) {
       int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(argv[1], (std::string**)(0));
       _v = SWIG_CheckState(res);
@@ -13472,7 +13666,10 @@ _wrap_QueryObject(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc
   }
   if (argc == 3) {
     int _v;
-    
+    {
+      int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
     if (_v) {
       int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(argv[1], (std::string**)(0));
       _v = SWIG_CheckState(res);
@@ -13487,7 +13684,10 @@ _wrap_QueryObject(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc
   }
   if (argc == 4) {
     int _v;
-    
+    {
+      int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
     if (_v) {
       int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(argv[1], (std::string**)(0));
       _v = SWIG_CheckState(res);
@@ -13506,7 +13706,10 @@ _wrap_QueryObject(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc
   }
   if (argc == 5) {
     int _v;
-    
+    {
+      int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
     if (_v) {
       int res = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(argv[1], (std::string**)(0));
       _v = SWIG_CheckState(res);
@@ -13689,35 +13892,6 @@ _wrap_StringMap_GetValue(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, i
   return TCL_OK;
 fail:
   if (SWIG_IsNewObj(res2)) delete arg2;
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_StringMap_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  OTDB::StringMap *result = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:StringMap_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StringMap_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-  {
-    result = (OTDB::StringMap *)OTDB_StringMap_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__StringMap,0));
-  return TCL_OK;
-fail:
   return TCL_ERROR;
 }
 
@@ -14051,35 +14225,6 @@ fail:
 }
 
 
-SWIGINTERN int
-_wrap_BitcoinAcct_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  OTDB::BitcoinAcct *result = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:BitcoinAcct_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinAcct_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-  {
-    result = (OTDB::BitcoinAcct *)OTDB_BitcoinAcct_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinAcct,0));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
 SWIGINTERN void swig_delete_BitcoinAcct(void *obj) {
 OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) obj;
 delete arg1;
@@ -14220,35 +14365,6 @@ _wrap_ServerInfo_server_type_get(ClientData clientData SWIGUNUSED, Tcl_Interp *i
   arg1 = reinterpret_cast< OTDB::ServerInfo * >(argp1);
   result = (std::string *) & ((arg1)->server_type);
   Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_ServerInfo_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  OTDB::ServerInfo *result = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:ServerInfo_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ServerInfo_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-  {
-    result = (OTDB::ServerInfo *)OTDB_ServerInfo_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ServerInfo,0));
   return TCL_OK;
 fail:
   return TCL_ERROR;
@@ -14543,35 +14659,6 @@ _wrap_BitcoinServer_bitcoin_password_get(ClientData clientData SWIGUNUSED, Tcl_I
   arg1 = reinterpret_cast< OTDB::BitcoinServer * >(argp1);
   result = (std::string *) & ((arg1)->bitcoin_password);
   Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_BitcoinServer_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  OTDB::BitcoinServer *result = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:BitcoinServer_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinServer_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-  {
-    result = (OTDB::BitcoinServer *)OTDB_BitcoinServer_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinServer,0));
   return TCL_OK;
 fail:
   return TCL_ERROR;
@@ -14948,35 +15035,6 @@ fail:
 }
 
 
-SWIGINTERN int
-_wrap_ContactNym_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  OTDB::ContactNym *result = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:ContactNym_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactNym_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-  {
-    result = (OTDB::ContactNym *)OTDB_ContactNym_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ContactNym,0));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
 SWIGINTERN void swig_delete_ContactNym(void *obj) {
 OTDB::ContactNym *arg1 = (OTDB::ContactNym *) obj;
 delete arg1;
@@ -14998,6 +15056,269 @@ static swig_attribute swig_OTDB_ContactNym_attributes[] = {
 static swig_class *swig_OTDB_ContactNym_bases[] = {0,0};
 static const char * swig_OTDB_ContactNym_base_names[] = {"OTDB::Displayable *",0};
 static swig_class _wrap_class_OTDB_ContactNym = { "ContactNym", &SWIGTYPE_p_OTDB__ContactNym,0, swig_delete_ContactNym, swig_OTDB_ContactNym_methods, swig_OTDB_ContactNym_attributes, swig_OTDB_ContactNym_bases,swig_OTDB_ContactNym_base_names, &swig_module };
+SWIGINTERN int
+_wrap_delete_WalletData(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:delete_WalletData self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_WalletData" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  delete arg1;
+  
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_WalletData_GetBitcoinServerCount(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:WalletData_GetBitcoinServerCount self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinServerCount" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  result = (arg1)->GetBitcoinServerCount();
+  Tcl_SetObjResult(interp,SWIG_From_size_t(static_cast< size_t >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_WalletData_GetBitcoinServer(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  OTDB::BitcoinServer *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_GetBitcoinServer self nIndex ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_GetBitcoinServer" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (OTDB::BitcoinServer *)(arg1)->GetBitcoinServer(arg2);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinServer,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_WalletData_RemoveBitcoinServer(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_RemoveBitcoinServer self nIndex ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_RemoveBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_RemoveBitcoinServer" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (bool)(arg1)->RemoveBitcoinServer(arg2);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_WalletData_AddBitcoinServer(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  OTDB::BitcoinServer *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_AddBitcoinServer self disownObject ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_AddBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  res2 = SWIG_ConvertPtr(objv[2], &argp2, SWIGTYPE_p_OTDB__BitcoinServer,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "WalletData_AddBitcoinServer" "', argument " "2"" of type '" "OTDB::BitcoinServer &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "WalletData_AddBitcoinServer" "', argument " "2"" of type '" "OTDB::BitcoinServer &""'"); 
+  }
+  arg2 = reinterpret_cast< OTDB::BitcoinServer * >(argp2);
+  result = (bool)(arg1)->AddBitcoinServer(*arg2);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_WalletData_GetBitcoinAcctCount(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:WalletData_GetBitcoinAcctCount self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinAcctCount" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  result = (arg1)->GetBitcoinAcctCount();
+  Tcl_SetObjResult(interp,SWIG_From_size_t(static_cast< size_t >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_WalletData_GetBitcoinAcct(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  OTDB::BitcoinAcct *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_GetBitcoinAcct self nIndex ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_GetBitcoinAcct" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (OTDB::BitcoinAcct *)(arg1)->GetBitcoinAcct(arg2);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinAcct,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_WalletData_RemoveBitcoinAcct(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_RemoveBitcoinAcct self nIndex ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_RemoveBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_RemoveBitcoinAcct" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (bool)(arg1)->RemoveBitcoinAcct(arg2);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_WalletData_AddBitcoinAcct(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  OTDB::BitcoinAcct *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_AddBitcoinAcct self disownObject ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_AddBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  res2 = SWIG_ConvertPtr(objv[2], &argp2, SWIGTYPE_p_OTDB__BitcoinAcct,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "WalletData_AddBitcoinAcct" "', argument " "2"" of type '" "OTDB::BitcoinAcct &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "WalletData_AddBitcoinAcct" "', argument " "2"" of type '" "OTDB::BitcoinAcct &""'"); 
+  }
+  arg2 = reinterpret_cast< OTDB::BitcoinAcct * >(argp2);
+  result = (bool)(arg1)->AddBitcoinAcct(*arg2);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN void swig_delete_WalletData(void *obj) {
+OTDB::WalletData *arg1 = (OTDB::WalletData *) obj;
+delete arg1;
+}
+static swig_method swig_OTDB_WalletData_methods[] = {
+    {"GetBitcoinServerCount", _wrap_WalletData_GetBitcoinServerCount}, 
+    {"GetBitcoinServer", _wrap_WalletData_GetBitcoinServer}, 
+    {"RemoveBitcoinServer", _wrap_WalletData_RemoveBitcoinServer}, 
+    {"AddBitcoinServer", _wrap_WalletData_AddBitcoinServer}, 
+    {"GetBitcoinAcctCount", _wrap_WalletData_GetBitcoinAcctCount}, 
+    {"GetBitcoinAcct", _wrap_WalletData_GetBitcoinAcct}, 
+    {"RemoveBitcoinAcct", _wrap_WalletData_RemoveBitcoinAcct}, 
+    {"AddBitcoinAcct", _wrap_WalletData_AddBitcoinAcct}, 
+    {0,0}
+};
+static swig_attribute swig_OTDB_WalletData_attributes[] = {
+    {0,0,0}
+};
+static swig_class *swig_OTDB_WalletData_bases[] = {0,0};
+static const char * swig_OTDB_WalletData_base_names[] = {"OTDB::Storable *",0};
+static swig_class _wrap_class_OTDB_WalletData = { "WalletData", &SWIGTYPE_p_OTDB__WalletData,0, swig_delete_WalletData, swig_OTDB_WalletData_methods, swig_OTDB_WalletData_attributes, swig_OTDB_WalletData_bases,swig_OTDB_WalletData_base_names, &swig_module };
 SWIGINTERN int
 _wrap_delete_ContactAcct(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
@@ -15404,35 +15725,6 @@ _wrap_ContactAcct_public_key_get(ClientData clientData SWIGUNUSED, Tcl_Interp *i
   arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
   result = (std::string *) & ((arg1)->public_key);
   Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_ContactAcct_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  OTDB::ContactAcct *result = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:ContactAcct_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactAcct_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-  {
-    result = (OTDB::ContactAcct *)OTDB_ContactAcct_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ContactAcct,0));
   return TCL_OK;
 fail:
   return TCL_ERROR;
@@ -15925,35 +16217,6 @@ fail:
 }
 
 
-SWIGINTERN int
-_wrap_Contact_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  OTDB::Contact *result = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:Contact_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-  {
-    result = (OTDB::Contact *)OTDB_Contact_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Contact,0));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
 SWIGINTERN void swig_delete_Contact(void *obj) {
 OTDB::Contact *arg1 = (OTDB::Contact *) obj;
 delete arg1;
@@ -16110,35 +16373,6 @@ fail:
 }
 
 
-SWIGINTERN int
-_wrap_AddressBook_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  OTDB::AddressBook *result = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:AddressBook_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "AddressBook_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-  {
-    result = (OTDB::AddressBook *)OTDB_AddressBook_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__AddressBook,0));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
 SWIGINTERN void swig_delete_AddressBook(void *obj) {
 OTDB::AddressBook *arg1 = (OTDB::AddressBook *) obj;
 delete arg1;
@@ -16156,298 +16390,6 @@ static swig_attribute swig_OTDB_AddressBook_attributes[] = {
 static swig_class *swig_OTDB_AddressBook_bases[] = {0,0};
 static const char * swig_OTDB_AddressBook_base_names[] = {"OTDB::Storable *",0};
 static swig_class _wrap_class_OTDB_AddressBook = { "AddressBook", &SWIGTYPE_p_OTDB__AddressBook,0, swig_delete_AddressBook, swig_OTDB_AddressBook_methods, swig_OTDB_AddressBook_attributes, swig_OTDB_AddressBook_bases,swig_OTDB_AddressBook_base_names, &swig_module };
-SWIGINTERN int
-_wrap_delete_WalletData(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:delete_WalletData self ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_WalletData" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-  delete arg1;
-  
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_WalletData_GetBitcoinServerCount(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  size_t result;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:WalletData_GetBitcoinServerCount self ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinServerCount" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-  result = (arg1)->GetBitcoinServerCount();
-  Tcl_SetObjResult(interp,SWIG_From_size_t(static_cast< size_t >(result)));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_WalletData_GetBitcoinServer(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  size_t arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  size_t val2 ;
-  int ecode2 = 0 ;
-  OTDB::BitcoinServer *result = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_GetBitcoinServer self nIndex ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_GetBitcoinServer" "', argument " "2"" of type '" "size_t""'");
-  } 
-  arg2 = static_cast< size_t >(val2);
-  result = (OTDB::BitcoinServer *)(arg1)->GetBitcoinServer(arg2);
-  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinServer,0));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_WalletData_RemoveBitcoinServer(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  size_t arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  size_t val2 ;
-  int ecode2 = 0 ;
-  bool result;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_RemoveBitcoinServer self nIndex ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_RemoveBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_RemoveBitcoinServer" "', argument " "2"" of type '" "size_t""'");
-  } 
-  arg2 = static_cast< size_t >(val2);
-  result = (bool)(arg1)->RemoveBitcoinServer(arg2);
-  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_WalletData_AddBitcoinServer(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  OTDB::BitcoinServer *arg2 = 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  bool result;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_AddBitcoinServer self disownObject ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_AddBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-  res2 = SWIG_ConvertPtr(objv[2], &argp2, SWIGTYPE_p_OTDB__BitcoinServer,  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "WalletData_AddBitcoinServer" "', argument " "2"" of type '" "OTDB::BitcoinServer &""'"); 
-  }
-  if (!argp2) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "WalletData_AddBitcoinServer" "', argument " "2"" of type '" "OTDB::BitcoinServer &""'"); 
-  }
-  arg2 = reinterpret_cast< OTDB::BitcoinServer * >(argp2);
-  result = (bool)(arg1)->AddBitcoinServer(*arg2);
-  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_WalletData_GetBitcoinAcctCount(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  size_t result;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:WalletData_GetBitcoinAcctCount self ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinAcctCount" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-  result = (arg1)->GetBitcoinAcctCount();
-  Tcl_SetObjResult(interp,SWIG_From_size_t(static_cast< size_t >(result)));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_WalletData_GetBitcoinAcct(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  size_t arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  size_t val2 ;
-  int ecode2 = 0 ;
-  OTDB::BitcoinAcct *result = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_GetBitcoinAcct self nIndex ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_GetBitcoinAcct" "', argument " "2"" of type '" "size_t""'");
-  } 
-  arg2 = static_cast< size_t >(val2);
-  result = (OTDB::BitcoinAcct *)(arg1)->GetBitcoinAcct(arg2);
-  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinAcct,0));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_WalletData_RemoveBitcoinAcct(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  size_t arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  size_t val2 ;
-  int ecode2 = 0 ;
-  bool result;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_RemoveBitcoinAcct self nIndex ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_RemoveBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_RemoveBitcoinAcct" "', argument " "2"" of type '" "size_t""'");
-  } 
-  arg2 = static_cast< size_t >(val2);
-  result = (bool)(arg1)->RemoveBitcoinAcct(arg2);
-  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_WalletData_AddBitcoinAcct(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-  OTDB::BitcoinAcct *arg2 = 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  bool result;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_AddBitcoinAcct self disownObject ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_AddBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-  res2 = SWIG_ConvertPtr(objv[2], &argp2, SWIGTYPE_p_OTDB__BitcoinAcct,  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "WalletData_AddBitcoinAcct" "', argument " "2"" of type '" "OTDB::BitcoinAcct &""'"); 
-  }
-  if (!argp2) {
-    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "WalletData_AddBitcoinAcct" "', argument " "2"" of type '" "OTDB::BitcoinAcct &""'"); 
-  }
-  arg2 = reinterpret_cast< OTDB::BitcoinAcct * >(argp2);
-  result = (bool)(arg1)->AddBitcoinAcct(*arg2);
-  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN int
-_wrap_WalletData_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  OTDB::WalletData *result = 0 ;
-  
-  if (SWIG_GetArgs(interp, objc, objv,"o:WalletData_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
-  }
-  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
-  {
-    result = (OTDB::WalletData *)OTDB_WalletData_dynamic_cast(arg1);
-    if (!result) {
-      jclass excep = jenv->FindClass("java/lang/ClassCastException");
-      if (excep) {
-        jenv->ThrowNew(excep, "dynamic_cast exception");
-      }
-    }
-  }
-  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__WalletData,0));
-  return TCL_OK;
-fail:
-  return TCL_ERROR;
-}
-
-
-SWIGINTERN void swig_delete_WalletData(void *obj) {
-OTDB::WalletData *arg1 = (OTDB::WalletData *) obj;
-delete arg1;
-}
-static swig_method swig_OTDB_WalletData_methods[] = {
-    {"GetBitcoinServerCount", _wrap_WalletData_GetBitcoinServerCount}, 
-    {"GetBitcoinServer", _wrap_WalletData_GetBitcoinServer}, 
-    {"RemoveBitcoinServer", _wrap_WalletData_RemoveBitcoinServer}, 
-    {"AddBitcoinServer", _wrap_WalletData_AddBitcoinServer}, 
-    {"GetBitcoinAcctCount", _wrap_WalletData_GetBitcoinAcctCount}, 
-    {"GetBitcoinAcct", _wrap_WalletData_GetBitcoinAcct}, 
-    {"RemoveBitcoinAcct", _wrap_WalletData_RemoveBitcoinAcct}, 
-    {"AddBitcoinAcct", _wrap_WalletData_AddBitcoinAcct}, 
-    {0,0}
-};
-static swig_attribute swig_OTDB_WalletData_attributes[] = {
-    {0,0,0}
-};
-static swig_class *swig_OTDB_WalletData_bases[] = {0,0};
-static const char * swig_OTDB_WalletData_base_names[] = {"OTDB::Storable *",0};
-static swig_class _wrap_class_OTDB_WalletData = { "WalletData", &SWIGTYPE_p_OTDB__WalletData,0, swig_delete_WalletData, swig_OTDB_WalletData_methods, swig_OTDB_WalletData_attributes, swig_OTDB_WalletData_bases,swig_OTDB_WalletData_base_names, &swig_module };
 
 static swig_command_info swig_commands[] = {
     { SWIG_prefix "new_OTCallback", (swig_wrapper_func) _wrap_new_OTCallback, NULL},
@@ -16650,7 +16592,6 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "StringMap_the_map_get", (swig_wrapper_func) _wrap_StringMap_the_map_get, NULL},
     { SWIG_prefix "StringMap_SetValue", (swig_wrapper_func) _wrap_StringMap_SetValue, NULL},
     { SWIG_prefix "StringMap_GetValue", (swig_wrapper_func) _wrap_StringMap_GetValue, NULL},
-    { SWIG_prefix "StringMap_dynamic_cast", (swig_wrapper_func) _wrap_StringMap_dynamic_cast, NULL},
     { SWIG_prefix "StringMap", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_StringMap},
     { SWIG_prefix "delete_Displayable", (swig_wrapper_func) _wrap_delete_Displayable, NULL},
     { SWIG_prefix "Displayable_gui_label_set", (swig_wrapper_func) _wrap_Displayable_gui_label_set, NULL},
@@ -16665,14 +16606,12 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "delete_BitcoinAcct", (swig_wrapper_func) _wrap_delete_BitcoinAcct, NULL},
     { SWIG_prefix "BitcoinAcct_bitcoin_acct_name_set", (swig_wrapper_func) _wrap_BitcoinAcct_bitcoin_acct_name_set, NULL},
     { SWIG_prefix "BitcoinAcct_bitcoin_acct_name_get", (swig_wrapper_func) _wrap_BitcoinAcct_bitcoin_acct_name_get, NULL},
-    { SWIG_prefix "BitcoinAcct_dynamic_cast", (swig_wrapper_func) _wrap_BitcoinAcct_dynamic_cast, NULL},
     { SWIG_prefix "BitcoinAcct", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_BitcoinAcct},
     { SWIG_prefix "delete_ServerInfo", (swig_wrapper_func) _wrap_delete_ServerInfo, NULL},
     { SWIG_prefix "ServerInfo_server_id_set", (swig_wrapper_func) _wrap_ServerInfo_server_id_set, NULL},
     { SWIG_prefix "ServerInfo_server_id_get", (swig_wrapper_func) _wrap_ServerInfo_server_id_get, NULL},
     { SWIG_prefix "ServerInfo_server_type_set", (swig_wrapper_func) _wrap_ServerInfo_server_type_set, NULL},
     { SWIG_prefix "ServerInfo_server_type_get", (swig_wrapper_func) _wrap_ServerInfo_server_type_get, NULL},
-    { SWIG_prefix "ServerInfo_dynamic_cast", (swig_wrapper_func) _wrap_ServerInfo_dynamic_cast, NULL},
     { SWIG_prefix "ServerInfo", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_ServerInfo},
     { SWIG_prefix "delete_Server", (swig_wrapper_func) _wrap_delete_Server, NULL},
     { SWIG_prefix "Server_server_host_set", (swig_wrapper_func) _wrap_Server_server_host_set, NULL},
@@ -16685,7 +16624,6 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "BitcoinServer_bitcoin_username_get", (swig_wrapper_func) _wrap_BitcoinServer_bitcoin_username_get, NULL},
     { SWIG_prefix "BitcoinServer_bitcoin_password_set", (swig_wrapper_func) _wrap_BitcoinServer_bitcoin_password_set, NULL},
     { SWIG_prefix "BitcoinServer_bitcoin_password_get", (swig_wrapper_func) _wrap_BitcoinServer_bitcoin_password_get, NULL},
-    { SWIG_prefix "BitcoinServer_dynamic_cast", (swig_wrapper_func) _wrap_BitcoinServer_dynamic_cast, NULL},
     { SWIG_prefix "BitcoinServer", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_BitcoinServer},
     { SWIG_prefix "delete_ContactNym", (swig_wrapper_func) _wrap_delete_ContactNym, NULL},
     { SWIG_prefix "ContactNym_nym_type_set", (swig_wrapper_func) _wrap_ContactNym_nym_type_set, NULL},
@@ -16700,8 +16638,17 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "ContactNym_GetServerInfo", (swig_wrapper_func) _wrap_ContactNym_GetServerInfo, NULL},
     { SWIG_prefix "ContactNym_RemoveServerInfo", (swig_wrapper_func) _wrap_ContactNym_RemoveServerInfo, NULL},
     { SWIG_prefix "ContactNym_AddServerInfo", (swig_wrapper_func) _wrap_ContactNym_AddServerInfo, NULL},
-    { SWIG_prefix "ContactNym_dynamic_cast", (swig_wrapper_func) _wrap_ContactNym_dynamic_cast, NULL},
     { SWIG_prefix "ContactNym", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_ContactNym},
+    { SWIG_prefix "delete_WalletData", (swig_wrapper_func) _wrap_delete_WalletData, NULL},
+    { SWIG_prefix "WalletData_GetBitcoinServerCount", (swig_wrapper_func) _wrap_WalletData_GetBitcoinServerCount, NULL},
+    { SWIG_prefix "WalletData_GetBitcoinServer", (swig_wrapper_func) _wrap_WalletData_GetBitcoinServer, NULL},
+    { SWIG_prefix "WalletData_RemoveBitcoinServer", (swig_wrapper_func) _wrap_WalletData_RemoveBitcoinServer, NULL},
+    { SWIG_prefix "WalletData_AddBitcoinServer", (swig_wrapper_func) _wrap_WalletData_AddBitcoinServer, NULL},
+    { SWIG_prefix "WalletData_GetBitcoinAcctCount", (swig_wrapper_func) _wrap_WalletData_GetBitcoinAcctCount, NULL},
+    { SWIG_prefix "WalletData_GetBitcoinAcct", (swig_wrapper_func) _wrap_WalletData_GetBitcoinAcct, NULL},
+    { SWIG_prefix "WalletData_RemoveBitcoinAcct", (swig_wrapper_func) _wrap_WalletData_RemoveBitcoinAcct, NULL},
+    { SWIG_prefix "WalletData_AddBitcoinAcct", (swig_wrapper_func) _wrap_WalletData_AddBitcoinAcct, NULL},
+    { SWIG_prefix "WalletData", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_WalletData},
     { SWIG_prefix "delete_ContactAcct", (swig_wrapper_func) _wrap_delete_ContactAcct, NULL},
     { SWIG_prefix "ContactAcct_server_type_set", (swig_wrapper_func) _wrap_ContactAcct_server_type_set, NULL},
     { SWIG_prefix "ContactAcct_server_type_get", (swig_wrapper_func) _wrap_ContactAcct_server_type_get, NULL},
@@ -16717,7 +16664,6 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "ContactAcct_memo_get", (swig_wrapper_func) _wrap_ContactAcct_memo_get, NULL},
     { SWIG_prefix "ContactAcct_public_key_set", (swig_wrapper_func) _wrap_ContactAcct_public_key_set, NULL},
     { SWIG_prefix "ContactAcct_public_key_get", (swig_wrapper_func) _wrap_ContactAcct_public_key_get, NULL},
-    { SWIG_prefix "ContactAcct_dynamic_cast", (swig_wrapper_func) _wrap_ContactAcct_dynamic_cast, NULL},
     { SWIG_prefix "ContactAcct", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_ContactAcct},
     { SWIG_prefix "delete_Contact", (swig_wrapper_func) _wrap_delete_Contact, NULL},
     { SWIG_prefix "Contact_contact_id_set", (swig_wrapper_func) _wrap_Contact_contact_id_set, NULL},
@@ -16736,31 +16682,17 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "Contact_GetContactAcct", (swig_wrapper_func) _wrap_Contact_GetContactAcct, NULL},
     { SWIG_prefix "Contact_RemoveContactAcct", (swig_wrapper_func) _wrap_Contact_RemoveContactAcct, NULL},
     { SWIG_prefix "Contact_AddContactAcct", (swig_wrapper_func) _wrap_Contact_AddContactAcct, NULL},
-    { SWIG_prefix "Contact_dynamic_cast", (swig_wrapper_func) _wrap_Contact_dynamic_cast, NULL},
     { SWIG_prefix "Contact", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_Contact},
     { SWIG_prefix "delete_AddressBook", (swig_wrapper_func) _wrap_delete_AddressBook, NULL},
     { SWIG_prefix "AddressBook_GetContactCount", (swig_wrapper_func) _wrap_AddressBook_GetContactCount, NULL},
     { SWIG_prefix "AddressBook_GetContact", (swig_wrapper_func) _wrap_AddressBook_GetContact, NULL},
     { SWIG_prefix "AddressBook_RemoveContact", (swig_wrapper_func) _wrap_AddressBook_RemoveContact, NULL},
     { SWIG_prefix "AddressBook_AddContact", (swig_wrapper_func) _wrap_AddressBook_AddContact, NULL},
-    { SWIG_prefix "AddressBook_dynamic_cast", (swig_wrapper_func) _wrap_AddressBook_dynamic_cast, NULL},
     { SWIG_prefix "AddressBook", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_AddressBook},
-    { SWIG_prefix "delete_WalletData", (swig_wrapper_func) _wrap_delete_WalletData, NULL},
-    { SWIG_prefix "WalletData_GetBitcoinServerCount", (swig_wrapper_func) _wrap_WalletData_GetBitcoinServerCount, NULL},
-    { SWIG_prefix "WalletData_GetBitcoinServer", (swig_wrapper_func) _wrap_WalletData_GetBitcoinServer, NULL},
-    { SWIG_prefix "WalletData_RemoveBitcoinServer", (swig_wrapper_func) _wrap_WalletData_RemoveBitcoinServer, NULL},
-    { SWIG_prefix "WalletData_AddBitcoinServer", (swig_wrapper_func) _wrap_WalletData_AddBitcoinServer, NULL},
-    { SWIG_prefix "WalletData_GetBitcoinAcctCount", (swig_wrapper_func) _wrap_WalletData_GetBitcoinAcctCount, NULL},
-    { SWIG_prefix "WalletData_GetBitcoinAcct", (swig_wrapper_func) _wrap_WalletData_GetBitcoinAcct, NULL},
-    { SWIG_prefix "WalletData_RemoveBitcoinAcct", (swig_wrapper_func) _wrap_WalletData_RemoveBitcoinAcct, NULL},
-    { SWIG_prefix "WalletData_AddBitcoinAcct", (swig_wrapper_func) _wrap_WalletData_AddBitcoinAcct, NULL},
-    { SWIG_prefix "WalletData_dynamic_cast", (swig_wrapper_func) _wrap_WalletData_dynamic_cast, NULL},
-    { SWIG_prefix "WalletData", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_WalletData},
     {0, 0, 0}
 };
 
 static swig_var_info swig_variables[] = {
-    { SWIG_prefix "typeunsafe", 0, (swig_variable_func) _wrap_typeunsafe_get,(swig_variable_func) _wrap_typeunsafe_set},
     {0,0,0,0}
 };
 
@@ -16858,7 +16790,6 @@ static swig_type_info _swigt__p_OTDB__Storable = {"_p_OTDB__Storable", "OTDB::St
 static swig_type_info _swigt__p_OTDB__Storage = {"_p_OTDB__Storage", "OTDB::Storage *", 0, 0, (void*)&_wrap_class_OTDB_Storage, 0};
 static swig_type_info _swigt__p_OTDB__StringMap = {"_p_OTDB__StringMap", "OTDB::StringMap *", 0, 0, (void*)&_wrap_class_OTDB_StringMap, 0};
 static swig_type_info _swigt__p_OTDB__WalletData = {"_p_OTDB__WalletData", "OTDB::WalletData *", 0, 0, (void*)&_wrap_class_OTDB_WalletData, 0};
-static swig_type_info _swigt__p__javaenum = {"_p__javaenum", "%javaenum *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__mapT_std__string_std__string_t = {"_p_std__mapT_std__string_std__string_t", "std::map< std::string,std::string > *", 0, 0, (void*)0, 0};
 
@@ -16879,7 +16810,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_OTDB__Storage,
   &_swigt__p_OTDB__StringMap,
   &_swigt__p_OTDB__WalletData,
-  &_swigt__p__javaenum,
   &_swigt__p_char,
   &_swigt__p_std__mapT_std__string_std__string_t,
 };
@@ -16900,7 +16830,6 @@ static swig_cast_info _swigc__p_OTDB__Storable[] = {  {&_swigt__p_OTDB__AddressB
 static swig_cast_info _swigc__p_OTDB__Storage[] = {  {&_swigt__p_OTDB__Storage, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__StringMap[] = {  {&_swigt__p_OTDB__StringMap, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__WalletData[] = {  {&_swigt__p_OTDB__WalletData, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__javaenum[] = {  {&_swigt__p__javaenum, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__mapT_std__string_std__string_t[] = {  {&_swigt__p_std__mapT_std__string_std__string_t, 0, 0, 0},{0, 0, 0, 0}};
 
@@ -16921,7 +16850,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_OTDB__Storage,
   _swigc__p_OTDB__StringMap,
   _swigc__p_OTDB__WalletData,
-  _swigc__p__javaenum,
   _swigc__p_char,
   _swigc__p_std__mapT_std__string_std__string_t,
 };

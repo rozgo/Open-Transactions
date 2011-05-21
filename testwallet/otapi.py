@@ -97,7 +97,6 @@ class OTCallback(_object):
         return weakref_proxy(self)
 OTCallback_swigregister = _otapi.OTCallback_swigregister
 OTCallback_swigregister(OTCallback)
-cvar = _otapi.cvar
 
 class OTCaller(_object):
     __swig_setmethods__ = {}
@@ -822,8 +821,6 @@ class StringMap(Storable):
     if _newclass:the_map = _swig_property(_otapi.StringMap_the_map_get, _otapi.StringMap_the_map_set)
     def SetValue(self, *args): return _otapi.StringMap_SetValue(self, *args)
     def GetValue(self, *args): return _otapi.StringMap_GetValue(self, *args)
-    __swig_getmethods__["dynamic_cast"] = lambda x: _otapi.StringMap_dynamic_cast
-    if _newclass:dynamic_cast = staticmethod(_otapi.StringMap_dynamic_cast)
 StringMap_swigregister = _otapi.StringMap_swigregister
 StringMap_swigregister(StringMap)
 
@@ -862,10 +859,6 @@ StoreObject = _otapi.StoreObject
 def QueryObject(*args):
   return _otapi.QueryObject(*args)
 QueryObject = _otapi.QueryObject
-
-def StringMap_dynamic_cast(*args):
-  return _otapi.StringMap_dynamic_cast(*args)
-StringMap_dynamic_cast = _otapi.StringMap_dynamic_cast
 
 class Displayable(Storable):
     __swig_setmethods__ = {}
@@ -918,14 +911,8 @@ class BitcoinAcct(Acct):
     __swig_setmethods__["bitcoin_acct_name"] = _otapi.BitcoinAcct_bitcoin_acct_name_set
     __swig_getmethods__["bitcoin_acct_name"] = _otapi.BitcoinAcct_bitcoin_acct_name_get
     if _newclass:bitcoin_acct_name = _swig_property(_otapi.BitcoinAcct_bitcoin_acct_name_get, _otapi.BitcoinAcct_bitcoin_acct_name_set)
-    __swig_getmethods__["dynamic_cast"] = lambda x: _otapi.BitcoinAcct_dynamic_cast
-    if _newclass:dynamic_cast = staticmethod(_otapi.BitcoinAcct_dynamic_cast)
 BitcoinAcct_swigregister = _otapi.BitcoinAcct_swigregister
 BitcoinAcct_swigregister(BitcoinAcct)
-
-def BitcoinAcct_dynamic_cast(*args):
-  return _otapi.BitcoinAcct_dynamic_cast(*args)
-BitcoinAcct_dynamic_cast = _otapi.BitcoinAcct_dynamic_cast
 
 class ServerInfo(Displayable):
     __swig_setmethods__ = {}
@@ -944,14 +931,8 @@ class ServerInfo(Displayable):
     __swig_setmethods__["server_type"] = _otapi.ServerInfo_server_type_set
     __swig_getmethods__["server_type"] = _otapi.ServerInfo_server_type_get
     if _newclass:server_type = _swig_property(_otapi.ServerInfo_server_type_get, _otapi.ServerInfo_server_type_set)
-    __swig_getmethods__["dynamic_cast"] = lambda x: _otapi.ServerInfo_dynamic_cast
-    if _newclass:dynamic_cast = staticmethod(_otapi.ServerInfo_dynamic_cast)
 ServerInfo_swigregister = _otapi.ServerInfo_swigregister
 ServerInfo_swigregister(ServerInfo)
-
-def ServerInfo_dynamic_cast(*args):
-  return _otapi.ServerInfo_dynamic_cast(*args)
-ServerInfo_dynamic_cast = _otapi.ServerInfo_dynamic_cast
 
 class Server(ServerInfo):
     __swig_setmethods__ = {}
@@ -990,14 +971,8 @@ class BitcoinServer(Server):
     __swig_setmethods__["bitcoin_password"] = _otapi.BitcoinServer_bitcoin_password_set
     __swig_getmethods__["bitcoin_password"] = _otapi.BitcoinServer_bitcoin_password_get
     if _newclass:bitcoin_password = _swig_property(_otapi.BitcoinServer_bitcoin_password_get, _otapi.BitcoinServer_bitcoin_password_set)
-    __swig_getmethods__["dynamic_cast"] = lambda x: _otapi.BitcoinServer_dynamic_cast
-    if _newclass:dynamic_cast = staticmethod(_otapi.BitcoinServer_dynamic_cast)
 BitcoinServer_swigregister = _otapi.BitcoinServer_swigregister
 BitcoinServer_swigregister(BitcoinServer)
-
-def BitcoinServer_dynamic_cast(*args):
-  return _otapi.BitcoinServer_dynamic_cast(*args)
-BitcoinServer_dynamic_cast = _otapi.BitcoinServer_dynamic_cast
 
 class ContactNym(Displayable):
     __swig_setmethods__ = {}
@@ -1026,14 +1001,30 @@ class ContactNym(Displayable):
     def GetServerInfo(self, *args): return _otapi.ContactNym_GetServerInfo(self, *args)
     def RemoveServerInfo(self, *args): return _otapi.ContactNym_RemoveServerInfo(self, *args)
     def AddServerInfo(self, *args): return _otapi.ContactNym_AddServerInfo(self, *args)
-    __swig_getmethods__["dynamic_cast"] = lambda x: _otapi.ContactNym_dynamic_cast
-    if _newclass:dynamic_cast = staticmethod(_otapi.ContactNym_dynamic_cast)
 ContactNym_swigregister = _otapi.ContactNym_swigregister
 ContactNym_swigregister(ContactNym)
 
-def ContactNym_dynamic_cast(*args):
-  return _otapi.ContactNym_dynamic_cast(*args)
-ContactNym_dynamic_cast = _otapi.ContactNym_dynamic_cast
+class WalletData(Storable):
+    __swig_setmethods__ = {}
+    for _s in [Storable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, WalletData, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Storable]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, WalletData, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_WalletData
+    __del__ = lambda self : None;
+    def GetBitcoinServerCount(self): return _otapi.WalletData_GetBitcoinServerCount(self)
+    def GetBitcoinServer(self, *args): return _otapi.WalletData_GetBitcoinServer(self, *args)
+    def RemoveBitcoinServer(self, *args): return _otapi.WalletData_RemoveBitcoinServer(self, *args)
+    def AddBitcoinServer(self, *args): return _otapi.WalletData_AddBitcoinServer(self, *args)
+    def GetBitcoinAcctCount(self): return _otapi.WalletData_GetBitcoinAcctCount(self)
+    def GetBitcoinAcct(self, *args): return _otapi.WalletData_GetBitcoinAcct(self, *args)
+    def RemoveBitcoinAcct(self, *args): return _otapi.WalletData_RemoveBitcoinAcct(self, *args)
+    def AddBitcoinAcct(self, *args): return _otapi.WalletData_AddBitcoinAcct(self, *args)
+WalletData_swigregister = _otapi.WalletData_swigregister
+WalletData_swigregister(WalletData)
 
 class ContactAcct(Displayable):
     __swig_setmethods__ = {}
@@ -1067,14 +1058,8 @@ class ContactAcct(Displayable):
     __swig_setmethods__["public_key"] = _otapi.ContactAcct_public_key_set
     __swig_getmethods__["public_key"] = _otapi.ContactAcct_public_key_get
     if _newclass:public_key = _swig_property(_otapi.ContactAcct_public_key_get, _otapi.ContactAcct_public_key_set)
-    __swig_getmethods__["dynamic_cast"] = lambda x: _otapi.ContactAcct_dynamic_cast
-    if _newclass:dynamic_cast = staticmethod(_otapi.ContactAcct_dynamic_cast)
 ContactAcct_swigregister = _otapi.ContactAcct_swigregister
 ContactAcct_swigregister(ContactAcct)
-
-def ContactAcct_dynamic_cast(*args):
-  return _otapi.ContactAcct_dynamic_cast(*args)
-ContactAcct_dynamic_cast = _otapi.ContactAcct_dynamic_cast
 
 class Contact(Displayable):
     __swig_setmethods__ = {}
@@ -1107,14 +1092,8 @@ class Contact(Displayable):
     def GetContactAcct(self, *args): return _otapi.Contact_GetContactAcct(self, *args)
     def RemoveContactAcct(self, *args): return _otapi.Contact_RemoveContactAcct(self, *args)
     def AddContactAcct(self, *args): return _otapi.Contact_AddContactAcct(self, *args)
-    __swig_getmethods__["dynamic_cast"] = lambda x: _otapi.Contact_dynamic_cast
-    if _newclass:dynamic_cast = staticmethod(_otapi.Contact_dynamic_cast)
 Contact_swigregister = _otapi.Contact_swigregister
 Contact_swigregister(Contact)
-
-def Contact_dynamic_cast(*args):
-  return _otapi.Contact_dynamic_cast(*args)
-Contact_dynamic_cast = _otapi.Contact_dynamic_cast
 
 class AddressBook(Storable):
     __swig_setmethods__ = {}
@@ -1131,42 +1110,8 @@ class AddressBook(Storable):
     def GetContact(self, *args): return _otapi.AddressBook_GetContact(self, *args)
     def RemoveContact(self, *args): return _otapi.AddressBook_RemoveContact(self, *args)
     def AddContact(self, *args): return _otapi.AddressBook_AddContact(self, *args)
-    __swig_getmethods__["dynamic_cast"] = lambda x: _otapi.AddressBook_dynamic_cast
-    if _newclass:dynamic_cast = staticmethod(_otapi.AddressBook_dynamic_cast)
 AddressBook_swigregister = _otapi.AddressBook_swigregister
 AddressBook_swigregister(AddressBook)
-
-def AddressBook_dynamic_cast(*args):
-  return _otapi.AddressBook_dynamic_cast(*args)
-AddressBook_dynamic_cast = _otapi.AddressBook_dynamic_cast
-
-class WalletData(Storable):
-    __swig_setmethods__ = {}
-    for _s in [Storable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, WalletData, name, value)
-    __swig_getmethods__ = {}
-    for _s in [Storable]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
-    __getattr__ = lambda self, name: _swig_getattr(self, WalletData, name)
-    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
-    __repr__ = _swig_repr
-    __swig_destroy__ = _otapi.delete_WalletData
-    __del__ = lambda self : None;
-    def GetBitcoinServerCount(self): return _otapi.WalletData_GetBitcoinServerCount(self)
-    def GetBitcoinServer(self, *args): return _otapi.WalletData_GetBitcoinServer(self, *args)
-    def RemoveBitcoinServer(self, *args): return _otapi.WalletData_RemoveBitcoinServer(self, *args)
-    def AddBitcoinServer(self, *args): return _otapi.WalletData_AddBitcoinServer(self, *args)
-    def GetBitcoinAcctCount(self): return _otapi.WalletData_GetBitcoinAcctCount(self)
-    def GetBitcoinAcct(self, *args): return _otapi.WalletData_GetBitcoinAcct(self, *args)
-    def RemoveBitcoinAcct(self, *args): return _otapi.WalletData_RemoveBitcoinAcct(self, *args)
-    def AddBitcoinAcct(self, *args): return _otapi.WalletData_AddBitcoinAcct(self, *args)
-    __swig_getmethods__["dynamic_cast"] = lambda x: _otapi.WalletData_dynamic_cast
-    if _newclass:dynamic_cast = staticmethod(_otapi.WalletData_dynamic_cast)
-WalletData_swigregister = _otapi.WalletData_swigregister
-WalletData_swigregister(WalletData)
-
-def WalletData_dynamic_cast(*args):
-  return _otapi.WalletData_dynamic_cast(*args)
-WalletData_dynamic_cast = _otapi.WalletData_dynamic_cast
 
 
 

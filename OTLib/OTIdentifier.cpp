@@ -210,6 +210,11 @@ OTIdentifier::OTIdentifier() : OTData()
 	
 }
 
+OTIdentifier::OTIdentifier(const OTIdentifier & theID) : OTData(theID)
+{
+
+}
+
 
 OTIdentifier::OTIdentifier(const char * szStr) : OTData()
 {
@@ -220,29 +225,55 @@ OTIdentifier::OTIdentifier(const char * szStr) : OTData()
 
 OTIdentifier::OTIdentifier(const OTString & theStr) : OTData()
 {
-	SetString((OTString&)theStr);
+	SetString(const_cast<OTString&>(theStr));
 }
 
 OTIdentifier::OTIdentifier(const OTContract &theContract)  : OTData() // Get the contract's ID into this identifier.
 {
-	((OTContract &)theContract).GetIdentifier(*this);
+	(const_cast<OTContract &>(theContract)).GetIdentifier(*this);
 }
 
 OTIdentifier::OTIdentifier(const OTPseudonym &theNym)  : OTData() // Get the Nym's ID into this identifier.
 {
-	((OTPseudonym &)theNym).GetIdentifier(*this);
+	(const_cast<OTPseudonym &>(theNym)).GetIdentifier(*this);
 }
 
 OTIdentifier::OTIdentifier(const OTOffer &theOffer)  : OTData() // Get the Offer's Market ID into this identifier.
 {
-	((OTOffer &)theOffer).GetIdentifier(*this);
+	(const_cast<OTOffer &>(theOffer)).GetIdentifier(*this);
 }
 
 OTIdentifier::OTIdentifier(const OTMarket &theMarket)  : OTData() // Get the Market ID into this identifier.
 {
-	((OTMarket &)theMarket).GetIdentifier(*this);
+	(const_cast<OTMarket &>(theMarket)).GetIdentifier(*this);
 }
 
+
+
+
+bool OTIdentifier::operator==(const OTIdentifier &s2) const
+{
+	OTString ots1(*this), ots2(s2);
+	
+	return ots1.Compare(ots2);	
+}
+
+bool OTIdentifier::operator!=(const OTIdentifier &s2) const
+{
+	OTString ots1(*this), ots2(s2);
+	
+	return !(ots1.Compare(ots2));	
+}
+
+
+
+void OTIdentifier::SetString(const char * szString)
+{
+	OT_ASSERT(NULL != szString);
+	
+	const OTString theStr(szString);
+	SetString(theStr);
+}
 
 
 OTIdentifier::~OTIdentifier()
@@ -711,14 +742,6 @@ union CharToShort
 };
 
 
-void OTIdentifier::SetString(const char * szString)
-{
-	OT_ASSERT(NULL != szString);
-	
-	const OTString theStr(szString);
-	SetString(theStr);
-}
-
 //TODO speed this up.
 // could be named "set from string" or "set by string"
 // Basically so you could take one of the hashes out of the
@@ -843,23 +866,6 @@ void OTIdentifier::GetString(OTString & theStr) const
 }
 
 */
-
-
-
-
-bool OTIdentifier::operator==(const OTIdentifier &s2) const
-{
-	OTString ots1(*this), ots2(s2);
-	
-	return ots1.Compare(ots2);	
-}
-
-bool OTIdentifier::operator!=(const OTIdentifier &s2) const
-{
-	OTString ots1(*this), ots2(s2);
-	
-	return !(ots1.Compare(ots2));	
-}
 
 
 

@@ -129,6 +129,7 @@
  -----END PGP SIGNATURE-----
  **************************************************************/
 
+#include <algorithm>
 
 extern "C"
 {
@@ -142,10 +143,14 @@ extern "C"
 
 #include "OTLog.h"
 
-
-// You pass in the buffer where the results go.
+// First use reset() to set the internal position to 0.
+// Then you pass in the buffer where the results go.
 // You pass in the length of that buffer.
 // It returns how much was actually read.
+// If you start at position 0, and read 100 bytes, then
+// you are now on position 100, and the next OTfread will 
+// proceed from that position. (Unless you reset().)
+//
 int OTData::OTfread(char * buf, int buflen)
 {
 	int nSizeToRead = 0;
@@ -199,7 +204,7 @@ bool OTData::operator!=(const OTData &s2) const
 		return true;
 	}
 	
-	if (memcmp(m_pData, s2.m_pData, m_lSize) == 0) 
+	if (0 == memcmp(m_pData, s2.m_pData, m_lSize) ) 
 	{
 		return false;
 	}
@@ -255,16 +260,61 @@ void OTData::AESDecrypt(OTData & theKey)
 
 */
 
-OTData::OTData()
+OTData::OTData() : m_pData(NULL), m_lPosition(0), m_lSize(0)
 {
-	Initialize(); 
+
 }
 
-void OTData::Initialize()
+OTData::OTData(const OTData &theSource) : m_pData(NULL), m_lPosition(0), m_lSize(0)
+{	
+	Assign(theSource); 
+}
+
+OTData::OTData(const void * pNewData, uint32_t lNewSize) : m_pData(NULL), m_lPosition(0), m_lSize(0)
+{	
+	Assign(pNewData, lNewSize);
+}
+
+OTData & OTData::operator=(OTData rhs) 
 {
-	m_pData = NULL;
-	m_lSize = 0;
-	m_lPosition = 0; 	
+	this->swap(rhs);
+	return *this;
+}
+
+void OTData::swap(OTData & rhs) 
+{
+	std::swap(m_pData,		rhs.m_pData);
+	std::swap(m_lPosition,	rhs.m_lPosition);
+	std::swap(m_lSize,		rhs.m_lSize);
+}
+
+void OTData::Assign(const OTData &theSource)
+{
+	if ((&theSource) == this)
+		return; // can't assign to self.
+	
+	if (false == theSource.IsEmpty()) // If something is there...
+	{
+		Assign(theSource.m_pData, theSource.m_lSize); // Copy it.
+	}
+	else
+		Release(); // Otherwise if it's empty, then empty this also.
+}
+
+void OTData::Assign(const void * pNewData, uint32_t lNewSize)
+{
+	Release(); // This releases all memory and zeros out all members.
+	
+	if ((pNewData != NULL) && (lNewSize > 0))
+	{
+		m_pData = static_cast<void*>(new char[lNewSize]);
+		
+		OT_ASSERT(NULL != m_pData);
+		
+		memcpy(m_pData, pNewData, lNewSize); // todo security: replace memcpy with more secure version. Still though, I'm allocating it, and size is passed in.
+		m_lSize = lNewSize;
+	}
+	// else error condition.  Could just ASSERT() this.
 }
 
 
@@ -272,32 +322,15 @@ void OTData::Release()
 {
    if (m_pData != NULL)
    {
-	   // For security reasons, we clear the memory to 0 when deleting the object. Seems smart.
+	   // For security reasons, we clear the memory to 0 when deleting the object. (Seems smart.)
 	   memset(m_pData, 0, m_lSize);
       
-	   delete [] (char *)m_pData;
+	   delete [] (static_cast<char *>(m_pData));
+	   
+	   Initialize(); // If m_pData was already NULL, no need to re-Initialize().
    }
-
-	Initialize();
 }
 
-bool OTData::IsEmpty() const
-{
-   if (m_lSize > 0)
-      return false;
-   else
-      return true;
-}
-
-uint32_t OTData::GetSize() const
-{
-	return m_lSize;
-}
-
-const void * OTData::GetPointer() const
-{
-	return m_pData;
-}
 
 void OTData::SetSize(uint32_t lNewSize)
 {
@@ -314,25 +347,11 @@ void OTData::SetSize(uint32_t lNewSize)
 	}
 }
 
-void OTData::Assign(const void * pNewData, uint32_t lNewSize)
-{
-	Release();
-	
-	if (pNewData != NULL && lNewSize > 0)
-	{
-		m_pData = (void*)new char[lNewSize];
-		
-		OT_ASSERT(NULL != m_pData);
-				
-		memcpy(m_pData, pNewData, lNewSize); // todo security: replace memcpy with more secure version. Still though, I'm allocating it, and size is passed in.
-		m_lSize = lNewSize;
-	}
-}
 
 OTData & OTData::operator+=(const OTData & rhs)
 {
-	void * pNewData = NULL;
-	uint32_t lTotalSize = GetSize() + rhs.GetSize();
+	void * pNewData		= NULL;
+	uint32_t lTotalSize	= GetSize() + rhs.GetSize();
 	
 	if (lTotalSize)
 	{
@@ -343,62 +362,36 @@ OTData & OTData::operator+=(const OTData & rhs)
 		memset(pNewData, 0, lTotalSize);
 	}
 	
-	if (NULL != pNewData)
+	if (NULL != pNewData) // If there's a new memory buffer (for the combined..)
 	{
-		if (GetSize())
+		if (!IsEmpty()) // if THIS object has data inside of it...
 		{
-			memcpy(pNewData, m_pData, GetSize());
+			memcpy(pNewData, m_pData, GetSize()); // Copy THIS object into the new buffer, starting at the beginning.
 		}
 		
-		if (rhs.GetSize())
+		if (!rhs.IsEmpty()) // If the rhs object has data inside of it...
 		{
-			memcpy(((char*)pNewData)+GetSize(), rhs.m_pData, rhs.GetSize());	
+			memcpy((static_cast<char*>(pNewData))+GetSize(), rhs.m_pData, rhs.GetSize());	
 		}
 	}
 
-	if (m_pData)
+	if (m_pData) // If I wasn't already empty, then erase whatever I had in there before...
 		delete [] (char *)m_pData;
 
-	m_pData = pNewData;
-	m_lSize = lTotalSize;
+	m_pData = pNewData;		// Set my internal memory to the new buffer.
+	m_lSize = lTotalSize;	// Set my internal size to the new size.
 	
 	return *this;
 }
 
-void OTData::Assign(const OTData &theSource)
-{
-   if (!theSource.IsEmpty()) 
-   {
-      Assign(theSource.m_pData, theSource.m_lSize);
-   }
-   else
-      Release();
-}
-
-OTData::OTData(const void * pNewData, uint32_t lNewSize)
-{
-	Initialize(); 
-	
-	Assign(pNewData, lNewSize);
-}
 
 
-OTData::OTData(const OTData &theSource)
-{
-	Initialize(); 
-	
-	Assign(theSource); 
-}
 
-OTData & OTData::operator=(const OTData &theSource)
-{
-   Assign(theSource);
 
-   return *this;
-}
 
-OTData::~OTData()
-{
-   Release();
-}
+
+
+
+
+
 

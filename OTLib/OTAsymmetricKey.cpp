@@ -1125,9 +1125,55 @@ bool OTAsymmetricKey::GetPublicKey(OTASCIIArmor & strKey) const
 
 
 
-OTAsymmetricKey::OTAsymmetricKey()
+/*
+ BIO *infile;
+ infile = BIO_new_file(strFilename.Get(), "r");
+ 
+ if (!infile)
+ //Error
+ ;
+ 
+ BIO_printf(infile, "Hello World\n");
+ BIO_free(infile); 
+ */
+
+// Does public key only.
+OTAsymmetricKey & OTAsymmetricKey::operator=(const OTAsymmetricKey & rhs)
 {
-	m_pKey = NULL;
+	if (&rhs != this)
+	{
+		OTASCIIArmor ascTransfer;
+		
+		// Get the Issuer's public key in ASCII-armored format
+		rhs.GetPublicKey(ascTransfer);
+		
+		// Decodes a public key from ASCII armor into m_keyPublic, which stores it as a EVP_PKEY pointer.
+		this->SetPublicKey(ascTransfer);
+	}
+	
+	return *this;
+}
+
+
+
+OTAsymmetricKey::OTAsymmetricKey(const OTAsymmetricKey & rhs) : m_pKey(NULL)
+{
+	if (&rhs != this)
+	{
+		OTASCIIArmor ascTransfer;
+		
+		// Get the Issuer's public key in ASCII-armored format
+		rhs.GetPublicKey(ascTransfer);
+		
+		// Decodes a public key from ASCII armor into m_keyPublic, which stores it as a EVP_PKEY pointer.
+		this->SetPublicKey(ascTransfer);
+	}	
+}
+
+
+OTAsymmetricKey::OTAsymmetricKey() : m_pKey(NULL)
+{
+
 }
 
 OTAsymmetricKey::~OTAsymmetricKey()
@@ -1160,7 +1206,7 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertString(const OTString & strCert, bool
 	// Read public key
 	OTLog::Output(3,  "\nReading public key from x509 stored in bookended string...\n"); 
 
-	OTString		strWithBookends;
+	OTString	strWithBookends;
 	
 	if (bEscaped)
 	{
@@ -1224,39 +1270,11 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertString(const OTString & strCert, bool
 	{ 
 		OTLog::Error("Error reading x509 out of certificate in LoadPublicKeyFromCertArmor.\n"); 
 	}
-	
 		
 	return bReturnValue;
 }
 
 
-
-
-/*
-BIO *infile;
-infile = BIO_new_file(strFilename.Get(), "r");
-
-if (!infile)
-	//Error
-;
-
-BIO_printf(infile, "Hello World\n");
-BIO_free(infile); 
- */
-
-// Does public key only.
-OTAsymmetricKey & OTAsymmetricKey::operator=(const OTAsymmetricKey & rhs)
-{
-	OTASCIIArmor ascTransfer;
-
-	// Get the Issuer's public key in ASCII-armored format
-	rhs.GetPublicKey(ascTransfer);
-
-	// Decodes a public key from ASCII armor into m_keyPublic, which stores it as a EVP_PKEY pointer.
-	this->SetPublicKey(ascTransfer);
-	
-	return *this;
-}
 
 
 
@@ -1268,6 +1286,8 @@ bool OTAsymmetricKey::LoadPublicKey(const OTString & strFoldername, const OTStri
 	
 	OTLog::Error("DEBUG OTAsymmetricKey 0 \n");
 
+	// This doesn't use assert on the arguments, but theArmor.LoadFromFile DOES.
+	
 	// -----------------------
 	
 	OTASCIIArmor theArmor;
@@ -1354,6 +1374,9 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertFile(const OTString & strFoldername, 
 	const char * szFoldername = strFoldername.Get();
 	const char * szFilename = strFilename.Get();
 	
+	OT_ASSERT(strFoldername.Exists());
+	OT_ASSERT(strFilename.Exists());
+
 	// --------------------------------------------------------------------
 	
 	if (false == OTDB::Exists(szFoldername, szFilename))
@@ -1376,14 +1399,16 @@ bool OTAsymmetricKey::LoadPublicKeyFromCertFile(const OTString & strFoldername, 
 	// --------------------------------------------------------------------
 	
 	// Create a new memory buffer on the OpenSSL side
-	BIO *bio = BIO_new(BIO_s_mem());
+	BIO * bio = BIO_new_mem_buf((void*)strFileContents.c_str(), strFileContents.length()); 
+
+//	BIO *bio = BIO_new(BIO_s_mem());
 	OT_ASSERT(NULL != bio);
 	
-	int nPutsResult = BIO_puts(bio, strFileContents.c_str());
+//	int nPutsResult = BIO_puts(bio, strFileContents.c_str());
 	
 	// --------------------------------------------------------------------
 	
-	if (nPutsResult > 0)
+//	if (nPutsResult > 0)
 	{
 		x509 = PEM_read_bio_X509(bio, NULL, NULL, NULL); 
 		
@@ -1433,6 +1458,9 @@ bool OTAsymmetricKey::LoadPrivateKey(const OTString & strFoldername, const OTStr
 	const char * szFoldername = strFoldername.Get();
 	const char * szFilename = strFilename.Get();
 	
+	OT_ASSERT(strFoldername.Exists());
+	OT_ASSERT(strFilename.Exists());
+	
 	// --------------------------------------------------------------------
 	
 	if (false == OTDB::Exists(szFoldername, szFilename))
@@ -1456,14 +1484,15 @@ bool OTAsymmetricKey::LoadPrivateKey(const OTString & strFoldername, const OTStr
 	
 	
 	// Create a new memory buffer on the OpenSSL side
-	BIO *bio = BIO_new(BIO_s_mem());
+	BIO * bio = BIO_new_mem_buf((void*)strFileContents.c_str(), strFileContents.length()); 
+//	BIO * bio = BIO_new(BIO_s_mem());
 	OT_ASSERT(NULL != bio);
 	
-	int nPutsResult = BIO_puts(bio, strFileContents.c_str());
+//	int nPutsResult = BIO_puts(bio, strFileContents.c_str());
 	
 	// --------------------------------------------------------------------
 	
-	if (nPutsResult > 0)
+//	if (nPutsResult > 0)
 	{
 		m_pKey = PEM_read_bio_PrivateKey( bio, NULL, GetPasswordCallback(), NULL );
 		

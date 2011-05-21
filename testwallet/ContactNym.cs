@@ -109,11 +109,4 @@ public class ContactNym : Displayable {
     return ret;
   }
 
-  public static ContactNym dynamic_cast(Storable pObject) {
-    IntPtr cPtr = otapiPINVOKE.ContactNym_dynamic_cast(Storable.getCPtr(pObject));
-    ContactNym ret = (cPtr == IntPtr.Zero) ? null : new ContactNym(cPtr, false);
-    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
-    return ret;
-  }
-
 }

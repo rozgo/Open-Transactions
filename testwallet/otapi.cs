@@ -11,18 +11,6 @@ using System;
 using System.Runtime.InteropServices;
 
 public class otapi {
-  public static SWIGTYPE_p__javaenum typeunsafe {
-    set {
-      otapiPINVOKE.typeunsafe_set(SWIGTYPE_p__javaenum.getCPtr(value));
-      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
-    } 
-    get {
-      SWIGTYPE_p__javaenum ret = new SWIGTYPE_p__javaenum(otapiPINVOKE.typeunsafe_get(), true);
-      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
-      return ret;
-    } 
-  }
-
   public static bool OT_API_Set_PasswordCallback(OTCaller theCaller) {
     bool ret = otapiPINVOKE.OT_API_Set_PasswordCallback(OTCaller.getCPtr(theCaller));
     if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();

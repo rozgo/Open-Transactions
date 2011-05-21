@@ -159,6 +159,8 @@ public:
 	OTASCIIArmor(const OTEnvelope & theEnvelope);
 	virtual ~OTASCIIArmor();
 	
+	using OTString::swap;
+	
 	OTASCIIArmor & operator=(const char * szValue);
 	OTASCIIArmor & operator=(const OTString & strValue);
 	OTASCIIArmor & operator=(const OTASCIIArmor & strValue);
@@ -191,4 +193,19 @@ typedef std::map <long, OTASCIIArmor *> mapOfArmor;
 
 
 #endif // __OT_ASCII_ARMOR_H__ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

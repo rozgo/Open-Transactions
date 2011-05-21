@@ -844,12 +844,19 @@ OTPseudonym * OT_API::LoadPrivateNym(const OTIdentifier & NYM_ID)
 	
 	OT_ASSERT_MSG(NULL != pNym, "Error allocating memory in the OT API.");
 	
+	OTLog::Error("DEBUG OT_API::LoadPrivateNym  0  \n");
+
 	if (pNym->Loadx509CertAndPrivateKey())
 	{
+		OTLog::Error("DEBUG OT_API::LoadPrivateNym  1  \n");
 		if (pNym->VerifyPseudonym()) 
 		{
+			OTLog::Error("DEBUG OT_API::LoadPrivateNym  2  \n");
+
 			if (pNym->LoadSignedNymfile(*pNym)) 
 			{
+				OTLog::Error("DEBUG OT_API::LoadPrivateNym  3  \n");
+
 				return pNym;
 			}
 			else 

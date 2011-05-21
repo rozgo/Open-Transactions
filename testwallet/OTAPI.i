@@ -2,24 +2,24 @@
 %{
 #include <string>
 #include <map>
-#include <msgpack.hpp>
 #include "../OTLib/OTAsymmetricKey.h"
 #include "OTAPI_funcdef.h"
 #include "../OTLib/OTStorage.h"
-//#include "../OTLib/Generics.pb.h"
-//#include "../OTLib/Bitcoin.pb.h"
-//#include "../OTLib/Moneychanger.pb.h"
 %}
  
 %include "std_string.i";
-%include "java/enumtypeunsafe.swg";
 
+// ---------------------------------------------------------------
+#ifdef SWIGJAVA
+
+%include "java/enumtypeunsafe.swg";
 
 %typemap("javapackage") OTCallback, OTCallback *, OTCallback & "com.wrapper.core.jni";
 %typemap("javapackage") OTCaller, OTCaller *, OTCaller & "com.wrapper.core.jni";
 
 %typemap("javapackage") Storage, Storage *, Storage & "com.wrapper.core.jni";
 %typemap("javapackage") Storable, Storable *, Storable & "com.wrapper.core.jni";
+
 %typemap("javapackage") StringMap, StringMap *, StringMap & "com.wrapper.core.jni";
 %typemap("javapackage") BitcoinAcct, BitcoinAcct *, BitcoinAcct & "com.wrapper.core.jni";
 %typemap("javapackage") BitcoinServer, BitcoinServer *, BitcoinServer & "com.wrapper.core.jni";
@@ -29,6 +29,7 @@
 %typemap("javapackage") Contact, Contact *, Contact & "com.wrapper.core.jni";
 %typemap("javapackage") AddressBook, AddressBook *, AddressBook & "com.wrapper.core.jni";
 %typemap("javapackage") WalletData, WalletData *, WalletData & "com.wrapper.core.jni";
+
 %typemap("javapackage") InitDefaultStorage "com.wrapper.core.jni";
 %typemap("javapackage") GetDefaultStorage "com.wrapper.core.jni";
 %typemap("javapackage") CreateStorageContext "com.wrapper.core.jni";
@@ -44,6 +45,10 @@
 %typemap("javapackage") PackType "com.wrapper.core.jni";
 %typemap("javapackage") StorageType "com.wrapper.core.jni";
 %typemap("javapackage") StoredObjectType "com.wrapper.core.jni";
+
+#endif
+// ---------------------------------------------------------------
+
 
 %feature("director") OTCallback;
 
@@ -112,28 +117,30 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 
 // So there aren't memory leaks from passing the objects back and forth.
 
-%typemap(in) SWIGTYPE *DISOWN { BitcoinAcct & disownObject };
+%typemap(in) SWIGTYPE *DISOWN { * & disownObject };
 
-%typemap(in) SWIGTYPE *DISOWN { BitcoinServer & disownObject };
+//%typemap(in) SWIGTYPE *DISOWN { BitcoinAcct & disownObject };
+//
+//%typemap(in) SWIGTYPE *DISOWN { BitcoinServer & disownObject };
+//
+//%typemap(in) SWIGTYPE *DISOWN { ServerInfo & disownObject };
+//
+//%typemap(in) SWIGTYPE *DISOWN { ContactNym & disownObject };
+//
+//%typemap(in) SWIGTYPE *DISOWN { ContactAcct & disownObject };
+//
+//%typemap(in) SWIGTYPE *DISOWN { Contact & disownObject };
 
-%typemap(in) SWIGTYPE *DISOWN { ServerInfo & disownObject };
 
-%typemap(in) SWIGTYPE *DISOWN { ContactNym & disownObject };
+%newobject CreateObject(StoredObjectType eType);
 
-%typemap(in) SWIGTYPE *DISOWN { ContactAcct & disownObject };
-
-%typemap(in) SWIGTYPE *DISOWN { Contact & disownObject };
-
+%newobject QueryObject(StoredObjectType theObjectType, std::string strFolder, std::string oneStr="", std::string twoStr="", std::string threeStr="");
 
 %newobject Storage::QueryObject(StoredObjectType theObjectType, std::string strFolder, std::string oneStr="", std::string twoStr="", std::string threeStr="");
 
 %newobject Storage::CreateObject(StoredObjectType eType);
 
 %newobject CreateStorageContext(StorageType eStoreType, PackType ePackType=OTDB_DEFAULT_PACKER);
-
-%newobject CreateObject(StoredObjectType eType);
-
-%newobject QueryObject(StoredObjectType theObjectType, std::string strFolder, std::string oneStr="", std::string twoStr="", std::string threeStr="");
 
 // -------------------------------------------
 
@@ -200,6 +207,8 @@ private:
 	
 protected:
 	Storage() : m_pPacker(NULL) {}
+	
+	Storage(const Storage & rhs) : m_pPacker(NULL) { } // We don't want to copy the pointer. Let it create its own.
 	
 	// Use GetPacker() to access the Packer, throughout duration of this Storage object.
 	// If it doesn't exist yet, this function will create it on the first call. (The 
@@ -374,7 +383,7 @@ class Displayable : public Storable
 	// You never actually get an instance of this, only its subclasses.
 	// Therefore, I don't allow you to access the constructor except through factory.
 protected:
-	Displayable() : Storable(),  gui_label("") { }
+	Displayable() : Storable() { }
 	
 public:
 	virtual ~Displayable() { }
@@ -391,7 +400,7 @@ class Acct : public Displayable
 	// You never actually get an instance of this, only its subclasses.
 	// Therefore, I don't allow you to access the constructor except through factory.
 protected:
-	Acct() : Displayable(), acct_id(""), server_id("")  { }
+	Acct() : Displayable() { }
 	
 public:
 	virtual ~Acct() { }
@@ -409,7 +418,7 @@ class BitcoinAcct : public Acct
 	// You never actually get an instance of this, only its subclasses.
 	// Therefore, I don't allow you to access the constructor except through factory.
 protected:
-	BitcoinAcct() : Acct(), bitcoin_acct_name("") { }
+	BitcoinAcct() : Acct() { }
 	
 public:
 	virtual ~BitcoinAcct() { }
@@ -431,12 +440,12 @@ class ServerInfo : public Displayable
 	// You never actually get an instance of this, only its subclasses.
 	// Therefore, I don't allow you to access the constructor except through factory.
 protected:
-	ServerInfo() : Displayable(), server_id(""), server_type("") { }
+	ServerInfo() : Displayable() { }
 	
 public:
 	virtual ~ServerInfo() { }
 	
-	//		std::string gui_label;  // The label that appears in the GUI
+//	std::string gui_label;  // The label that appears in the GUI
 	
 	std::string server_id;
 	std::string server_type;
@@ -449,7 +458,7 @@ class Server : public ServerInfo
 	// You never actually get an instance of this, only its subclasses.
 	// Therefore, I don't allow you to access the constructor except through factory.
 protected:
-	Server() : ServerInfo(), server_host(""), server_port("") { }
+	Server() : ServerInfo() { }
 	
 public:
 	virtual ~Server() { }
@@ -470,7 +479,7 @@ class BitcoinServer : public Server
 	// You never actually get an instance of this, only its subclasses.
 	// Therefore, I don't allow you to access the constructor except through factory.
 protected:
-	BitcoinServer() : Server(), bitcoin_username(""), bitcoin_password("") { }
+	BitcoinServer() : Server() { }
 	
 public:
 	virtual ~BitcoinServer() { }
@@ -489,12 +498,24 @@ public:
 
 // ----------------------------	
 	
+%define OT_SWIG_DECLARE_GET_ADD_REMOVE(name)
+protected:
+	std::deque< stlplus::simple_ptr_clone<name> > list_##name##s;
+public:
+	size_t Get##name##Count();
+	name * Get##name(size_t nIndex);
+	bool Remove##name(size_t nIndex);
+	bool Add##name(name & disownObject)	
+%enddef
+	
+
+	
 class ContactNym : public Displayable
 {
 	// You never actually get an instance of this, only its subclasses.
 	// Therefore, I don't allow you to access the constructor except through factory.
 protected:
-	ContactNym() : Displayable(), nym_type(""), nym_id(""), public_key(""), memo("") { }
+	ContactNym() : Displayable() { }
 	
 public:
 	virtual ~ContactNym();
@@ -506,23 +527,35 @@ public:
 	std::string public_key;
 	std::string memo;
 	
-protected:
-	std::deque< stlplus::simple_ptr_clone<ServerInfo> > list_ServerInfos;
-public:
-	size_t GetServerInfoCount();
-	ServerInfo * GetServerInfo(size_t nIndex);
-	bool RemoveServerInfo(size_t nIndex);
-	bool AddServerInfo(ServerInfo & disownObject);
+	OT_SWIG_DECLARE_GET_ADD_REMOVE(ServerInfo);
 };
 
 
 // ------------------------------------------------
 		
+class WalletData : public Storable
+{
+	// You never actually get an instance of this, only its subclasses.
+	// Therefore, I don't allow you to access the constructor except through factory.
+protected:
+	WalletData() : Storable() { }
+	
+public:
+	virtual ~WalletData();
+	
+	// List of Bitcoin servers
+	// List of Bitcoin accounts
+	// Loom, etc.
+	
+	OT_SWIG_DECLARE_GET_ADD_REMOVE(BitcoinServer);
+	OT_SWIG_DECLARE_GET_ADD_REMOVE(BitcoinAcct);
+};
+	
 class ContactAcct : public Displayable {
 	// You never actually get an instance of this, only its subclasses.
 	// Therefore, I don't allow you to access the constructor except through factory.
 protected:
-	ContactAcct() : Displayable(), server_type(""), server_id(""), asset_type_id(""), acct_id(""), nym_id(""), memo(""), public_key("")  { }
+	ContactAcct() : Displayable() { }
 	
 public:
 	virtual ~ContactAcct() { }
@@ -545,7 +578,7 @@ class Contact : public Displayable {
 	// You never actually get an instance of this, only its subclasses.
 	// Therefore, I don't allow you to access the constructor except through factory.
 protected:
-	Contact() : Displayable(), contact_id(""), email(""), memo(""), public_key("") { }
+	Contact() : Displayable() { }
 	
 public:
 	virtual ~Contact();
@@ -557,21 +590,8 @@ public:
 	std::string memo;
 	std::string public_key;
 	
-protected:
-	std::deque< stlplus::simple_ptr_clone<ContactNym> > list_ContactNyms;
-public:
-	size_t GetContactNymCount();
-	ContactNym * GetContactNym(size_t nIndex);
-	bool RemoveContactNym(size_t nIndex);
-	bool AddContactNym(ContactNym & disownObject);
-	
-protected:
-	std::deque< stlplus::simple_ptr_clone<ContactAcct> > list_ContactAccts;
-public:
-	size_t GetContactAcctCount();
-	ContactAcct * GetContactAcct(size_t nIndex);
-	bool RemoveContactAcct(size_t nIndex);
-	bool AddContactAcct(ContactAcct & disownObject);
+	OT_SWIG_DECLARE_GET_ADD_REMOVE(ContactNym);
+	OT_SWIG_DECLARE_GET_ADD_REMOVE(ContactAcct);
 };
 	
 // ----------------------------
@@ -585,62 +605,10 @@ protected:
 public:
 	virtual ~AddressBook();
 	
-protected:
-	std::deque< stlplus::simple_ptr_clone<Contact> > list_Contacts;
-public:
-	size_t GetContactCount();
-	Contact * GetContact(size_t nIndex);
-	bool RemoveContact(size_t nIndex);
-	bool AddContact(Contact & disownObject);		
+	OT_SWIG_DECLARE_GET_ADD_REMOVE(Contact);
 };
 
 // ----------------------------
-
-	
-	%define OT_SWIG_DECLARE_GET_ADD_REMOVE(name)
-	protected:
-		std::deque< stlplus::simple_ptr_clone<name> > list_##name##s;
-	public:
-		size_t Get##name##Count();
-		name * Get##name(size_t nIndex);
-		bool Remove##name(size_t nIndex);
-		bool Add##name(name & disownObject)	
-	%enddef
-
-class WalletData : public Storable
-{
-	// You never actually get an instance of this, only its subclasses.
-	// Therefore, I don't allow you to access the constructor except through factory.
-protected:
-	WalletData() : Storable() { }
-	
-public:
-	virtual ~WalletData();
-	
-	// List of Bitcoin servers
-	// List of Bitcoin accounts
-	// Loom, etc.
-	
-	OT_SWIG_DECLARE_GET_ADD_REMOVE(BitcoinServer);
-	OT_SWIG_DECLARE_GET_ADD_REMOVE(BitcoinAcct);
-	
-//protected:
-//	std::deque< stlplus::simple_ptr_clone<BitcoinServer> > list_BitcoinServers;
-//public:
-//	size_t GetBitcoinServerCount();
-//	BitcoinServer * GetBitcoinServer(size_t nIndex);
-//	bool RemoveBitcoinServer(size_t nIndex);
-//	bool AddBitcoinServer(BitcoinServer & disownObject);
-//	
-//protected:
-//	std::deque< stlplus::simple_ptr_clone<BitcoinAcct> > list_BitcoinAccts;
-//public:
-//	size_t GetBitcoinAcctCount();
-//	BitcoinAcct * GetBitcoinAcct(size_t nIndex);
-//	bool RemoveBitcoinAcct(size_t nIndex);
-//	bool AddBitcoinAcct(BitcoinAcct & disownObject);
-};
-
 	
 	
 	
@@ -652,15 +620,13 @@ public:
 
 
 
-
 %inline %{
-using namespace OTDB;
-%}
+	using namespace OTDB;
+	%}
 
 
 // ------------------------------------------------
-
-
+#ifdef SWIGJAVA
 
 // For dynamic casting, so the Java side has access to subclass methods.
 //
@@ -681,16 +647,19 @@ using namespace OTDB;
 };
 %enddef
 
+OT_STORABLE_HELPER(OTDB::Storable)
 OT_STORABLE_HELPER(OTDB::StringMap)
 OT_STORABLE_HELPER(OTDB::BitcoinAcct)
 OT_STORABLE_HELPER(OTDB::BitcoinServer)
 OT_STORABLE_HELPER(OTDB::ServerInfo)
-OT_STORABLE_HELPER(OTDB::ContactNym)
 OT_STORABLE_HELPER(OTDB::ContactAcct)
+OT_STORABLE_HELPER(OTDB::ContactNym)
 OT_STORABLE_HELPER(OTDB::Contact)
 OT_STORABLE_HELPER(OTDB::AddressBook)
 OT_STORABLE_HELPER(OTDB::WalletData)
 
+#endif
+// ------------------------------------------------
 
 
 %feature("director") Storage;
