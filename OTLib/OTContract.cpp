@@ -180,6 +180,8 @@ using namespace io;
 #include "OTServerContract.h"
 #include "OTAssetContract.h"
 
+#include "OTStorage.h"
+
 
 // Factory (though rarely used; was just added recently for the API.)
 //

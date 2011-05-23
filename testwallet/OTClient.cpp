@@ -169,6 +169,7 @@ extern "C"
 #include "OTClient.h"
 #include "OTLog.h"
 
+#include "OTStorage.h"
 
 
 

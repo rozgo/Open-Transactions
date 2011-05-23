@@ -371,6 +371,39 @@ sub ACQUIRE {
 }
 
 
+############# Class : otapi::String ##############
+
+package otapi::String;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi::Storable otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_String($self);
+        delete $OWNER{$self};
+    }
+}
+
+*swig_m_string_get = *otapic::String_m_string_get;
+*swig_m_string_set = *otapic::String_m_string_set;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
 ############# Class : otapi::StringMap ##############
 
 package otapi::StringMap;
@@ -638,10 +671,6 @@ sub DESTROY {
 *swig_public_key_set = *otapic::ContactNym_public_key_set;
 *swig_memo_get = *otapic::ContactNym_memo_get;
 *swig_memo_set = *otapic::ContactNym_memo_set;
-*GetServerInfoCount = *otapic::ContactNym_GetServerInfoCount;
-*GetServerInfo = *otapic::ContactNym_GetServerInfo;
-*RemoveServerInfo = *otapic::ContactNym_RemoveServerInfo;
-*AddServerInfo = *otapic::ContactNym_AddServerInfo;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -673,14 +702,6 @@ sub DESTROY {
     }
 }
 
-*GetBitcoinServerCount = *otapic::WalletData_GetBitcoinServerCount;
-*GetBitcoinServer = *otapic::WalletData_GetBitcoinServer;
-*RemoveBitcoinServer = *otapic::WalletData_RemoveBitcoinServer;
-*AddBitcoinServer = *otapic::WalletData_AddBitcoinServer;
-*GetBitcoinAcctCount = *otapic::WalletData_GetBitcoinAcctCount;
-*GetBitcoinAcct = *otapic::WalletData_GetBitcoinAcct;
-*RemoveBitcoinAcct = *otapic::WalletData_RemoveBitcoinAcct;
-*AddBitcoinAcct = *otapic::WalletData_AddBitcoinAcct;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -765,14 +786,6 @@ sub DESTROY {
 *swig_memo_set = *otapic::Contact_memo_set;
 *swig_public_key_get = *otapic::Contact_public_key_get;
 *swig_public_key_set = *otapic::Contact_public_key_set;
-*GetContactNymCount = *otapic::Contact_GetContactNymCount;
-*GetContactNym = *otapic::Contact_GetContactNym;
-*RemoveContactNym = *otapic::Contact_RemoveContactNym;
-*AddContactNym = *otapic::Contact_AddContactNym;
-*GetContactAcctCount = *otapic::Contact_GetContactAcctCount;
-*GetContactAcct = *otapic::Contact_GetContactAcct;
-*RemoveContactAcct = *otapic::Contact_RemoveContactAcct;
-*AddContactAcct = *otapic::Contact_AddContactAcct;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -804,10 +817,6 @@ sub DESTROY {
     }
 }
 
-*GetContactCount = *otapic::AddressBook_GetContactCount;
-*GetContact = *otapic::AddressBook_GetContact;
-*RemoveContact = *otapic::AddressBook_RemoveContact;
-*AddContact = *otapic::AddressBook_AddContact;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -830,6 +839,7 @@ package otapi;
 *PACK_TYPE_ERROR = *otapic::PACK_TYPE_ERROR;
 *STORE_FILESYSTEM = *otapic::STORE_FILESYSTEM;
 *STORE_TYPE_SUBCLASS = *otapic::STORE_TYPE_SUBCLASS;
+*STORED_OBJ_STRING = *otapic::STORED_OBJ_STRING;
 *STORED_OBJ_STRING_MAP = *otapic::STORED_OBJ_STRING_MAP;
 *STORED_OBJ_WALLET_DATA = *otapic::STORED_OBJ_WALLET_DATA;
 *STORED_OBJ_BITCOIN_ACCT = *otapic::STORED_OBJ_BITCOIN_ACCT;

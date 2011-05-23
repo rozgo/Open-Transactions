@@ -157,7 +157,7 @@ using namespace io;
 #include "OTPseudonym.h"
 #include "OTLog.h"
 
-
+#include "OTStorage.h"
 
 
 

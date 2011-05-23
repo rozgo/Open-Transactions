@@ -155,6 +155,8 @@ using namespace io;
 #include "OTPurse.h"
 #include "OTLog.h"
 
+#include "OTStorage.h"
+
 
 #include "Lucre/bank.h"  // Lucre
 

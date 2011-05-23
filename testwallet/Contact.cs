@@ -87,48 +87,4 @@ public class Contact : Displayable {
     } 
   }
 
-  public uint GetContactNymCount() {
-    uint ret = otapiPINVOKE.Contact_GetContactNymCount(swigCPtr);
-    return ret;
-  }
-
-  public ContactNym GetContactNym(uint nIndex) {
-    IntPtr cPtr = otapiPINVOKE.Contact_GetContactNym(swigCPtr, nIndex);
-    ContactNym ret = (cPtr == IntPtr.Zero) ? null : new ContactNym(cPtr, false);
-    return ret;
-  }
-
-  public bool RemoveContactNym(uint nIndex) {
-    bool ret = otapiPINVOKE.Contact_RemoveContactNym(swigCPtr, nIndex);
-    return ret;
-  }
-
-  public bool AddContactNym(ContactNym disownObject) {
-    bool ret = otapiPINVOKE.Contact_AddContactNym(swigCPtr, ContactNym.getCPtr(disownObject));
-    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
-    return ret;
-  }
-
-  public uint GetContactAcctCount() {
-    uint ret = otapiPINVOKE.Contact_GetContactAcctCount(swigCPtr);
-    return ret;
-  }
-
-  public ContactAcct GetContactAcct(uint nIndex) {
-    IntPtr cPtr = otapiPINVOKE.Contact_GetContactAcct(swigCPtr, nIndex);
-    ContactAcct ret = (cPtr == IntPtr.Zero) ? null : new ContactAcct(cPtr, false);
-    return ret;
-  }
-
-  public bool RemoveContactAcct(uint nIndex) {
-    bool ret = otapiPINVOKE.Contact_RemoveContactAcct(swigCPtr, nIndex);
-    return ret;
-  }
-
-  public bool AddContactAcct(ContactAcct disownObject) {
-    bool ret = otapiPINVOKE.Contact_AddContactAcct(swigCPtr, ContactAcct.getCPtr(disownObject));
-    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
-    return ret;
-  }
-
 }

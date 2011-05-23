@@ -10,18 +10,18 @@
 using System;
 using System.Runtime.InteropServices;
 
-public class AddressBook : Storable {
+public class String : Storable {
   private HandleRef swigCPtr;
 
-  internal AddressBook(IntPtr cPtr, bool cMemoryOwn) : base(otapiPINVOKE.AddressBook_SWIGUpcast(cPtr), cMemoryOwn) {
+  internal String(IntPtr cPtr, bool cMemoryOwn) : base(otapiPINVOKE.String_SWIGUpcast(cPtr), cMemoryOwn) {
     swigCPtr = new HandleRef(this, cPtr);
   }
 
-  internal static HandleRef getCPtr(AddressBook obj) {
+  internal static HandleRef getCPtr(String obj) {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
   }
 
-  ~AddressBook() {
+  ~String() {
     Dispose();
   }
 
@@ -30,13 +30,25 @@ public class AddressBook : Storable {
       if (swigCPtr.Handle != IntPtr.Zero) {
         if (swigCMemOwn) {
           swigCMemOwn = false;
-          otapiPINVOKE.delete_AddressBook(swigCPtr);
+          otapiPINVOKE.delete_String(swigCPtr);
         }
         swigCPtr = new HandleRef(null, IntPtr.Zero);
       }
       GC.SuppressFinalize(this);
       base.Dispose();
     }
+  }
+
+  public string m_string {
+    set {
+      otapiPINVOKE.String_m_string_set(swigCPtr, value);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    } 
+    get {
+      string ret = otapiPINVOKE.String_m_string_get(swigCPtr);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+      return ret;
+    } 
   }
 
 }

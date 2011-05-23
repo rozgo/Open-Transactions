@@ -43,9 +43,4 @@ public class BitcoinAcct extends Acct {
     return otapiJNI.BitcoinAcct_bitcoin_acct_name_get(swigCPtr, this);
   }
 
-  public static BitcoinAcct dynamic_cast(Storable pObject) {
-    long cPtr = otapiJNI.BitcoinAcct_dynamic_cast(Storable.getCPtr(pObject), pObject);
-    return (cPtr == 0) ? null : new BitcoinAcct(cPtr, false);
-  }
-
 }

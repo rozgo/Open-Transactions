@@ -8,6 +8,7 @@
 %}
  
 %include "std_string.i";
+%include "typemaps.i"
 
 // ---------------------------------------------------------------
 #ifdef SWIGJAVA
@@ -89,6 +90,8 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 
 
 
+//%apply int *INPUT {int *x, int *y};
+//%apply SWIGTYPE *INPUT {int *x, int *y};
 
 
 %ignore Storable::Create(StoredObjectType eType, PackType thePackType);
@@ -119,6 +122,12 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 
 //%apply SWIGTYPE & DISOWN { SWIGTYPE & disownObject };
 
+// //
+//%apply SWIGTYPE * DISOWN {wxCaret* caret};
+
+//DEFAULT REFERENCE HANDLING
+//%typemap(in) SWIGTYPE & { ... default reference handling ...};
+
 //%typemap(in) SWIGTYPE & DISOWN { SWIGTYPE & disownObject };
 //
 //%typemap(in) SWIGTYPE *DISOWN { BitcoinAcct & disownObject };
@@ -144,15 +153,14 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 
 %newobject CreateStorageContext(StorageType eStoreType, PackType ePackType=OTDB_DEFAULT_PACKER);
 
+
+
 // -------------------------------------------
-
-
-// ------------------------------------------------
-#ifdef SWIGJAVA
-
-// For dynamic casting, so the Java side has access to subclass methods.
 //
-%define OT_STORABLE_HELPER(STORABLE_TYPE)
+%define OT_STORABLE_TYPE(STORABLE_TYPE, CONTAINER_TYPE)
+#ifdef SWIGJAVA
+// These two blocks enable the object to dynamic cast back
+// to its true type, after factory construction.
 %exception STORABLE_TYPE::dynamic_cast(Storable * pObject) {
 	$action
 	if (!result) {
@@ -167,20 +175,79 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 		return dynamic_cast<STORABLE_TYPE *>(pObject);
 	}
 };
+// ----------------
+// The STORABLE_TYPE (BitcoinAcct, say) keeps a reference to its OT_CONTAINER (WalletData).
+// USE THIS TYPEMAP *INSIDE* MOST DATA TYPES. (They ALL potentially could be inside a container.)
+//
+%typemap(javacode) STORABLE_TYPE %{
+	// Ensure that the GC doesn't collect any OT_CONTAINER instance set from Java
+	private CONTAINER_TYPE containerReference;
+	
+	protected void addReference(CONTAINER_TYPE theContainer) {
+		containerReference = theContainer;
+	}
+// ----------------
+// ----------------
+	private List elementList = new ArrayList();
+	// This list is used by OT_CONTAINER_HELPER. (below.)
+%}
+#endif
 %enddef
 
-OT_STORABLE_HELPER(OTDB::Storable)
-OT_STORABLE_HELPER(OTDB::StringMap)
-OT_STORABLE_HELPER(OTDB::BitcoinAcct)
-OT_STORABLE_HELPER(OTDB::BitcoinServer)
-OT_STORABLE_HELPER(OTDB::ServerInfo)
-OT_STORABLE_HELPER(OTDB::ContactAcct)
-OT_STORABLE_HELPER(OTDB::ContactNym)
-OT_STORABLE_HELPER(OTDB::Contact)
-OT_STORABLE_HELPER(OTDB::AddressBook)
-OT_STORABLE_HELPER(OTDB::WalletData)
+// -------------------------------------------------------------------------------
 
+
+// The CONTAINER_TYPE (WalletData) uses this for EACH Get/Add/Remove item within.
+// So this macro appears multiple times, if there are multiple deques.
+//
+%define OT_CONTAINER_HELPER(STORABLE_TYPE, CONTAINER_TYPE)
+#ifdef SWIGJAVA
+%typemap(javain) STORABLE_TYPE & disownObject "getCPtrAndAddReference($javainput)"
+
+// When the CONTAINER_TYPE's "getOT_Element" function is called, 
+// Add a Java reference to prevent premature garbage collection and resulting use
+// of dangling C++ pointer. Intended for methods that return pointers or
+// references to a member variable.
+%typemap(javaout) STORABLE_TYPE * Get##STORABLE_TYPE {
+    long cPtr = $jnicall;
+    $javaclassname ret = null;
+    if (cPtr != 0) {
+		ret = new $javaclassname(cPtr, $owner);
+		ret.addReference(this);
+    }
+    return ret;
+}
+
+// This changes the CONTAINER_TYPE class to keep an internal reference to the STORABLE_TYPE.
+//
+%typemap(javacode) CONTAINER_TYPE %{
+	// Ensure that the GC doesn't collect any STORABLE_TYPE set from Java
+	// as the underlying C++ class stores a shallow copy
+	
+	private STORABLE_TYPE the##STORABLE_TYPE##Reference;
+	
+	// Altered the SWIG example so that we store a list of these references, instead
+	// of only the latest one. None of them should go out of scope until this object does.
+	
+	private long getCPtrAndAddReference(STORABLE_TYPE element) {
+		the##STORABLE_TYPE##Reference = element;
+		elementList.add(the##STORABLE_TYPE##Reference);
+		return STORABLE_TYPE.getCPtr(element);
+	}	// Hope I get away with overloading this for every type. Otherwise,
+		// hope I can just change the function name to customize it to type.
+protected:
+		std::deque< stlplus::simple_ptr_clone<STORABLE_TYPE> > list_##STORABLE_TYPE##s;
+	public:
+		size_t Get##STORABLE_TYPE##Count();
+		STORABLE_TYPE * Get##STORABLE_TYPE(size_t nIndex);
+		bool Remove##STORABLE_TYPE(size_t nIndex);
+		bool Add##STORABLE_TYPE(STORABLE_TYPE & disownObject)	
+	
+%}		
 #endif
+%enddef
+
+
 // ------------------------------------------------
 
 
@@ -211,16 +278,17 @@ enum StorageType  // STORAGE TYPE
 	
 enum StoredObjectType
 {
-	STORED_OBJ_STRING_MAP=0,	// A StringMap is a list of Key/Value pairs, useful for storing nearly anything.
+	STORED_OBJ_STRING=0,		// Just a string.
+	STORED_OBJ_STRING_MAP,		// A StringMap is a list of Key/Value pairs, useful for storing nearly anything.
 	STORED_OBJ_WALLET_DATA,		// The GUI wallet's stored data
 	STORED_OBJ_BITCOIN_ACCT,	// The GUI wallet's stored data about a Bitcoin acct
 	STORED_OBJ_BITCOIN_SERVER,	// The GUI wallet's stored data about a Bitcoin RPC port.
 	STORED_OBJ_SERVER_INFO,		// A Nym has a list of these.
 	STORED_OBJ_CONTACT_NYM,		// This is a Nym record inside a contact of your address book.
 	STORED_OBJ_CONTACT_ACCT,	// This is an account record inside a contact of your address book.
-	STORED_OBJ_CONTACT,		// Your address book has a list of these.
+	STORED_OBJ_CONTACT,			// Your address book has a list of these.
 	STORED_OBJ_ADDRESS_BOOK,	// Your address book.
-	STORED_OBJ_ERROR		// (Should never be.)
+	STORED_OBJ_ERROR			// (Should never be.)
 };
 
 
@@ -340,7 +408,12 @@ public:
 };
 
 
-
+	// ********************************************************************
+	//
+	// OTDB Namespace PUBLIC INTERFACE
+	//
+	//
+	
 bool InitDefaultStorage(StorageType eStoreType, PackType ePackType,
 						std::string oneStr="", std::string twoStr="", std::string threeStr="", 
 						std::string fourStr="", std::string fiveStr="", std::string sixStr="");
@@ -392,8 +465,31 @@ Storable * QueryObject(StoredObjectType theObjectType,
 					   std::string twoStr="", std::string threeStr="");		
 
 
+// ------------------------------------------------
 
-class StringMap : public Storable
+	
+	
+	
+	
+class String : public Storable
+{
+	// You never actually get an instance of this, only its subclasses.
+	// Therefore, I don't allow you to access the constructor except through the factory.
+protected:
+	String() : Storable() { }
+	String(const std::string& rhs) : Storable(), m_string(rhs) { }
+	
+public:
+	virtual ~String() { }
+	
+	std::string m_string;
+
+	OT_STORABLE_TYPE(String, Storable)
+};
+	
+// ------------------------------------------------
+	
+	class StringMap : public Storable
 {
 	// You never actually get an instance of this, only its subclasses.
 	// Therefore, I don't allow you to access the constructor except through factory.
@@ -411,11 +507,10 @@ public:
 	std::string GetValue(const std::string& strKey)
 	{ std::string ret_val(""); std::map<std::string, std::string>::iterator ii = the_map.find(strKey);
 		if (ii != the_map.end()) ret_val = (*ii).second; return ret_val; }
+
+	OT_STORABLE_TYPE(StringMap, Storable)
 };
 
-	
-	
-	
 	
 // ------------------------------------------------
 
@@ -470,6 +565,8 @@ public:
 	//		std::string server_id;
 	
 	std::string bitcoin_acct_name;
+
+	OT_STORABLE_TYPE(BitcoinAcct, WalletData)
 };
 
 // **************************************************
@@ -490,6 +587,8 @@ public:
 	
 	std::string server_id;
 	std::string server_type;
+
+	OT_STORABLE_TYPE(ServerInfo, ContactNym)
 };
 
 // ----------------------------
@@ -535,25 +634,13 @@ public:
 	
 	std::string bitcoin_username;
 	std::string bitcoin_password;
+
+	OT_STORABLE_TYPE(BitcoinServer, WalletData)
 };
 
 // ----------------------------	
 	
-	
-	
-%define OT_SWIG_DECLARE_GET_ADD_REMOVE(name)
-protected:
-	std::deque< stlplus::simple_ptr_clone<name> > list_##name##s;
-public:
-	size_t Get##name##Count();
-	name * Get##name(size_t nIndex);
-	bool Remove##name(size_t nIndex);
-%delobject Add##name;
-	bool Add##name(name & disownObject)	
-%enddef
-	
-
-	
+		
 // ----------------------------	
 
 class ContactNym : public Displayable
@@ -573,7 +660,9 @@ public:
 	std::string public_key;
 	std::string memo;
 	
-	OT_SWIG_DECLARE_GET_ADD_REMOVE(ServerInfo);
+	OT_STORABLE_TYPE(ContactNym, Contact)
+	
+	OT_CONTAINER_HELPER(ServerInfo, ContactNym)
 };
 
 
@@ -593,8 +682,10 @@ public:
 	// List of Bitcoin accounts
 	// Loom, etc.
 	
-	OT_SWIG_DECLARE_GET_ADD_REMOVE(BitcoinServer);
-	OT_SWIG_DECLARE_GET_ADD_REMOVE(BitcoinAcct);
+	OT_STORABLE_TYPE(WalletData, Storable)
+
+	OT_CONTAINER_HELPER(BitcoinServer, WalletData)
+	OT_CONTAINER_HELPER(BitcoinAcct, WalletData)
 };
 	
 class ContactAcct : public Displayable {
@@ -606,7 +697,7 @@ protected:
 public:
 	virtual ~ContactAcct() { }
 	
-	//		std::string gui_label;  // The label that appears in the GUI
+//	std::string gui_label;  // The label that appears in the GUI
 	
 	std::string server_type;
 	std::string server_id;
@@ -615,6 +706,8 @@ public:
 	std::string nym_id;
 	std::string memo;
 	std::string public_key;
+
+	OT_STORABLE_TYPE(ContactAcct, Contact)
 };
 
 // ----------------------------
@@ -635,9 +728,11 @@ public:
 	std::string email;
 	std::string memo;
 	std::string public_key;
+
+	OT_STORABLE_TYPE(Contact, AddressBook)
 	
-	OT_SWIG_DECLARE_GET_ADD_REMOVE(ContactNym);
-	OT_SWIG_DECLARE_GET_ADD_REMOVE(ContactAcct);
+	OT_CONTAINER_HELPER(ContactNym, Contact)
+	OT_CONTAINER_HELPER(ContactAcct, Contact)
 };
 	
 // ----------------------------
@@ -651,7 +746,9 @@ protected:
 public:
 	virtual ~AddressBook();
 	
-	OT_SWIG_DECLARE_GET_ADD_REMOVE(Contact);
+	OT_STORABLE_TYPE(AddressBook, Storable)
+
+	OT_CONTAINER_HELPER(Contact, AddressBook)
 };
 
 // ----------------------------

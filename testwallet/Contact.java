@@ -67,43 +67,4 @@ public class Contact extends Displayable {
     return otapiJNI.Contact_public_key_get(swigCPtr, this);
   }
 
-  public long GetContactNymCount() {
-    return otapiJNI.Contact_GetContactNymCount(swigCPtr, this);
-  }
-
-  public ContactNym GetContactNym(long nIndex) {
-    long cPtr = otapiJNI.Contact_GetContactNym(swigCPtr, this, nIndex);
-    return (cPtr == 0) ? null : new ContactNym(cPtr, false);
-  }
-
-  public boolean RemoveContactNym(long nIndex) {
-    return otapiJNI.Contact_RemoveContactNym(swigCPtr, this, nIndex);
-  }
-
-  public boolean AddContactNym(ContactNym disownObject) {
-    return otapiJNI.Contact_AddContactNym(swigCPtr, this, ContactNym.getCPtr(disownObject), disownObject);
-  }
-
-  public long GetContactAcctCount() {
-    return otapiJNI.Contact_GetContactAcctCount(swigCPtr, this);
-  }
-
-  public ContactAcct GetContactAcct(long nIndex) {
-    long cPtr = otapiJNI.Contact_GetContactAcct(swigCPtr, this, nIndex);
-    return (cPtr == 0) ? null : new ContactAcct(cPtr, false);
-  }
-
-  public boolean RemoveContactAcct(long nIndex) {
-    return otapiJNI.Contact_RemoveContactAcct(swigCPtr, this, nIndex);
-  }
-
-  public boolean AddContactAcct(ContactAcct disownObject) {
-    return otapiJNI.Contact_AddContactAcct(swigCPtr, this, ContactAcct.getCPtr(disownObject), disownObject);
-  }
-
-  public static Contact dynamic_cast(Storable pObject) {
-    long cPtr = otapiJNI.Contact_dynamic_cast(Storable.getCPtr(pObject), pObject);
-    return (cPtr == 0) ? null : new Contact(cPtr, false);
-  }
-
 }

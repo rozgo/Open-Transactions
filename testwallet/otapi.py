@@ -740,6 +740,7 @@ PACK_PROTOCOL_BUFFERS = _otapi.PACK_PROTOCOL_BUFFERS
 PACK_TYPE_ERROR = _otapi.PACK_TYPE_ERROR
 STORE_FILESYSTEM = _otapi.STORE_FILESYSTEM
 STORE_TYPE_SUBCLASS = _otapi.STORE_TYPE_SUBCLASS
+STORED_OBJ_STRING = _otapi.STORED_OBJ_STRING
 STORED_OBJ_STRING_MAP = _otapi.STORED_OBJ_STRING_MAP
 STORED_OBJ_WALLET_DATA = _otapi.STORED_OBJ_WALLET_DATA
 STORED_OBJ_BITCOIN_ACCT = _otapi.STORED_OBJ_BITCOIN_ACCT
@@ -805,24 +806,22 @@ GetDefaultStorage = _otapi.GetDefaultStorage
 def CreateObject(*args):
   return _otapi.CreateObject(*args)
 CreateObject = _otapi.CreateObject
-class StringMap(Storable):
+class String(Storable):
     __swig_setmethods__ = {}
     for _s in [Storable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, StringMap, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(self, String, name, value)
     __swig_getmethods__ = {}
     for _s in [Storable]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
-    __getattr__ = lambda self, name: _swig_getattr(self, StringMap, name)
+    __getattr__ = lambda self, name: _swig_getattr(self, String, name)
     def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
     __repr__ = _swig_repr
-    __swig_destroy__ = _otapi.delete_StringMap
+    __swig_destroy__ = _otapi.delete_String
     __del__ = lambda self : None;
-    __swig_setmethods__["the_map"] = _otapi.StringMap_the_map_set
-    __swig_getmethods__["the_map"] = _otapi.StringMap_the_map_get
-    if _newclass:the_map = _swig_property(_otapi.StringMap_the_map_get, _otapi.StringMap_the_map_set)
-    def SetValue(self, *args): return _otapi.StringMap_SetValue(self, *args)
-    def GetValue(self, *args): return _otapi.StringMap_GetValue(self, *args)
-StringMap_swigregister = _otapi.StringMap_swigregister
-StringMap_swigregister(StringMap)
+    __swig_setmethods__["m_string"] = _otapi.String_m_string_set
+    __swig_getmethods__["m_string"] = _otapi.String_m_string_get
+    if _newclass:m_string = _swig_property(_otapi.String_m_string_get, _otapi.String_m_string_set)
+String_swigregister = _otapi.String_swigregister
+String_swigregister(String)
 
 def InitDefaultStorage(*args):
   return _otapi.InitDefaultStorage(*args)
@@ -859,6 +858,25 @@ StoreObject = _otapi.StoreObject
 def QueryObject(*args):
   return _otapi.QueryObject(*args)
 QueryObject = _otapi.QueryObject
+
+class StringMap(Storable):
+    __swig_setmethods__ = {}
+    for _s in [Storable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, StringMap, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Storable]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, StringMap, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_StringMap
+    __del__ = lambda self : None;
+    __swig_setmethods__["the_map"] = _otapi.StringMap_the_map_set
+    __swig_getmethods__["the_map"] = _otapi.StringMap_the_map_get
+    if _newclass:the_map = _swig_property(_otapi.StringMap_the_map_get, _otapi.StringMap_the_map_set)
+    def SetValue(self, *args): return _otapi.StringMap_SetValue(self, *args)
+    def GetValue(self, *args): return _otapi.StringMap_GetValue(self, *args)
+StringMap_swigregister = _otapi.StringMap_swigregister
+StringMap_swigregister(StringMap)
 
 class Displayable(Storable):
     __swig_setmethods__ = {}
@@ -997,10 +1015,6 @@ class ContactNym(Displayable):
     __swig_setmethods__["memo"] = _otapi.ContactNym_memo_set
     __swig_getmethods__["memo"] = _otapi.ContactNym_memo_get
     if _newclass:memo = _swig_property(_otapi.ContactNym_memo_get, _otapi.ContactNym_memo_set)
-    def GetServerInfoCount(self): return _otapi.ContactNym_GetServerInfoCount(self)
-    def GetServerInfo(self, *args): return _otapi.ContactNym_GetServerInfo(self, *args)
-    def RemoveServerInfo(self, *args): return _otapi.ContactNym_RemoveServerInfo(self, *args)
-    def AddServerInfo(self, *args): return _otapi.ContactNym_AddServerInfo(self, *args)
 ContactNym_swigregister = _otapi.ContactNym_swigregister
 ContactNym_swigregister(ContactNym)
 
@@ -1015,14 +1029,6 @@ class WalletData(Storable):
     __repr__ = _swig_repr
     __swig_destroy__ = _otapi.delete_WalletData
     __del__ = lambda self : None;
-    def GetBitcoinServerCount(self): return _otapi.WalletData_GetBitcoinServerCount(self)
-    def GetBitcoinServer(self, *args): return _otapi.WalletData_GetBitcoinServer(self, *args)
-    def RemoveBitcoinServer(self, *args): return _otapi.WalletData_RemoveBitcoinServer(self, *args)
-    def AddBitcoinServer(self, *args): return _otapi.WalletData_AddBitcoinServer(self, *args)
-    def GetBitcoinAcctCount(self): return _otapi.WalletData_GetBitcoinAcctCount(self)
-    def GetBitcoinAcct(self, *args): return _otapi.WalletData_GetBitcoinAcct(self, *args)
-    def RemoveBitcoinAcct(self, *args): return _otapi.WalletData_RemoveBitcoinAcct(self, *args)
-    def AddBitcoinAcct(self, *args): return _otapi.WalletData_AddBitcoinAcct(self, *args)
 WalletData_swigregister = _otapi.WalletData_swigregister
 WalletData_swigregister(WalletData)
 
@@ -1084,14 +1090,6 @@ class Contact(Displayable):
     __swig_setmethods__["public_key"] = _otapi.Contact_public_key_set
     __swig_getmethods__["public_key"] = _otapi.Contact_public_key_get
     if _newclass:public_key = _swig_property(_otapi.Contact_public_key_get, _otapi.Contact_public_key_set)
-    def GetContactNymCount(self): return _otapi.Contact_GetContactNymCount(self)
-    def GetContactNym(self, *args): return _otapi.Contact_GetContactNym(self, *args)
-    def RemoveContactNym(self, *args): return _otapi.Contact_RemoveContactNym(self, *args)
-    def AddContactNym(self, *args): return _otapi.Contact_AddContactNym(self, *args)
-    def GetContactAcctCount(self): return _otapi.Contact_GetContactAcctCount(self)
-    def GetContactAcct(self, *args): return _otapi.Contact_GetContactAcct(self, *args)
-    def RemoveContactAcct(self, *args): return _otapi.Contact_RemoveContactAcct(self, *args)
-    def AddContactAcct(self, *args): return _otapi.Contact_AddContactAcct(self, *args)
 Contact_swigregister = _otapi.Contact_swigregister
 Contact_swigregister(Contact)
 
@@ -1106,10 +1104,6 @@ class AddressBook(Storable):
     __repr__ = _swig_repr
     __swig_destroy__ = _otapi.delete_AddressBook
     __del__ = lambda self : None;
-    def GetContactCount(self): return _otapi.AddressBook_GetContactCount(self)
-    def GetContact(self, *args): return _otapi.AddressBook_GetContact(self, *args)
-    def RemoveContact(self, *args): return _otapi.AddressBook_RemoveContact(self, *args)
-    def AddContact(self, *args): return _otapi.AddressBook_AddContact(self, *args)
 AddressBook_swigregister = _otapi.AddressBook_swigregister
 AddressBook_swigregister(AddressBook)
 

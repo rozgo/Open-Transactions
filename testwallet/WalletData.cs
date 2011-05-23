@@ -39,48 +39,4 @@ public class WalletData : Storable {
     }
   }
 
-  public uint GetBitcoinServerCount() {
-    uint ret = otapiPINVOKE.WalletData_GetBitcoinServerCount(swigCPtr);
-    return ret;
-  }
-
-  public BitcoinServer GetBitcoinServer(uint nIndex) {
-    IntPtr cPtr = otapiPINVOKE.WalletData_GetBitcoinServer(swigCPtr, nIndex);
-    BitcoinServer ret = (cPtr == IntPtr.Zero) ? null : new BitcoinServer(cPtr, false);
-    return ret;
-  }
-
-  public bool RemoveBitcoinServer(uint nIndex) {
-    bool ret = otapiPINVOKE.WalletData_RemoveBitcoinServer(swigCPtr, nIndex);
-    return ret;
-  }
-
-  public bool AddBitcoinServer(BitcoinServer disownObject) {
-    bool ret = otapiPINVOKE.WalletData_AddBitcoinServer(swigCPtr, BitcoinServer.getCPtr(disownObject));
-    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
-    return ret;
-  }
-
-  public uint GetBitcoinAcctCount() {
-    uint ret = otapiPINVOKE.WalletData_GetBitcoinAcctCount(swigCPtr);
-    return ret;
-  }
-
-  public BitcoinAcct GetBitcoinAcct(uint nIndex) {
-    IntPtr cPtr = otapiPINVOKE.WalletData_GetBitcoinAcct(swigCPtr, nIndex);
-    BitcoinAcct ret = (cPtr == IntPtr.Zero) ? null : new BitcoinAcct(cPtr, false);
-    return ret;
-  }
-
-  public bool RemoveBitcoinAcct(uint nIndex) {
-    bool ret = otapiPINVOKE.WalletData_RemoveBitcoinAcct(swigCPtr, nIndex);
-    return ret;
-  }
-
-  public bool AddBitcoinAcct(BitcoinAcct disownObject) {
-    bool ret = otapiPINVOKE.WalletData_AddBitcoinAcct(swigCPtr, BitcoinAcct.getCPtr(disownObject));
-    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
-    return ret;
-  }
-
 }

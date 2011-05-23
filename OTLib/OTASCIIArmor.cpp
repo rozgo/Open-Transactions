@@ -160,6 +160,8 @@ extern "C"
 
 
 
+
+
 // initializes blank.
 OTASCIIArmor::OTASCIIArmor() : OTString()
 {

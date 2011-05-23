@@ -67,26 +67,4 @@ public class ContactNym extends Displayable {
     return otapiJNI.ContactNym_memo_get(swigCPtr, this);
   }
 
-  public long GetServerInfoCount() {
-    return otapiJNI.ContactNym_GetServerInfoCount(swigCPtr, this);
-  }
-
-  public ServerInfo GetServerInfo(long nIndex) {
-    long cPtr = otapiJNI.ContactNym_GetServerInfo(swigCPtr, this, nIndex);
-    return (cPtr == 0) ? null : new ServerInfo(cPtr, false);
-  }
-
-  public boolean RemoveServerInfo(long nIndex) {
-    return otapiJNI.ContactNym_RemoveServerInfo(swigCPtr, this, nIndex);
-  }
-
-  public boolean AddServerInfo(ServerInfo disownObject) {
-    return otapiJNI.ContactNym_AddServerInfo(swigCPtr, this, ServerInfo.getCPtr(disownObject), disownObject);
-  }
-
-  public static ContactNym dynamic_cast(Storable pObject) {
-    long cPtr = otapiJNI.ContactNym_dynamic_cast(Storable.getCPtr(pObject), pObject);
-    return (cPtr == 0) ? null : new ContactNym(cPtr, false);
-  }
-
 }

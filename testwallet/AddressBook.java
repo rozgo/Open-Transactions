@@ -35,26 +35,4 @@ public class AddressBook extends Storable {
     super.delete();
   }
 
-  public long GetContactCount() {
-    return otapiJNI.AddressBook_GetContactCount(swigCPtr, this);
-  }
-
-  public Contact GetContact(long nIndex) {
-    long cPtr = otapiJNI.AddressBook_GetContact(swigCPtr, this, nIndex);
-    return (cPtr == 0) ? null : new Contact(cPtr, false);
-  }
-
-  public boolean RemoveContact(long nIndex) {
-    return otapiJNI.AddressBook_RemoveContact(swigCPtr, this, nIndex);
-  }
-
-  public boolean AddContact(Contact disownObject) {
-    return otapiJNI.AddressBook_AddContact(swigCPtr, this, Contact.getCPtr(disownObject), disownObject);
-  }
-
-  public static AddressBook dynamic_cast(Storable pObject) {
-    long cPtr = otapiJNI.AddressBook_dynamic_cast(Storable.getCPtr(pObject), pObject);
-    return (cPtr == 0) ? null : new AddressBook(cPtr, false);
-  }
-
 }

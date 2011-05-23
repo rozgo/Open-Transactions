@@ -8,15 +8,15 @@
 
 package com.wrapper.core.jni;
 
-public class WalletData extends Storable {
+public class String extends Storable {
   private long swigCPtr;
 
-  public WalletData(long cPtr, boolean cMemoryOwn) {
-    super(otapiJNI.WalletData_SWIGUpcast(cPtr), cMemoryOwn);
+  public String(long cPtr, boolean cMemoryOwn) {
+    super(otapiJNI.String_SWIGUpcast(cPtr), cMemoryOwn);
     swigCPtr = cPtr;
   }
 
-  public static long getCPtr(WalletData obj) {
+  public static long getCPtr(String obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 
@@ -28,11 +28,19 @@ public class WalletData extends Storable {
     if (swigCPtr != 0) {
       if (swigCMemOwn) {
         swigCMemOwn = false;
-        otapiJNI.delete_WalletData(swigCPtr);
+        otapiJNI.delete_String(swigCPtr);
       }
       swigCPtr = 0;
     }
     super.delete();
+  }
+
+  public void setM_string(String value) {
+    otapiJNI.String_m_string_set(swigCPtr, this, value);
+  }
+
+  public String getM_string() {
+    return otapiJNI.String_m_string_get(swigCPtr, this);
   }
 
 }

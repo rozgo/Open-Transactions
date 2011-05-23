@@ -290,6 +290,7 @@ InitOTDBDetails::InitOTDBDetails() // Constructor for namespace
 	// Set up theMap...
 	
 #if defined (OTDB_MESSAGE_PACK)
+	theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_STRING)]		= &StringMsgpack::Instantiate;
 	theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_STRING_MAP)]	= &StringMapMsgpack::Instantiate;
 	theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_WALLET_DATA)]	= &WalletDataMsgpack::Instantiate;
 	theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_BITCOIN_ACCT)]	= &BitcoinAcctMsgpack::Instantiate;
@@ -303,6 +304,7 @@ InitOTDBDetails::InitOTDBDetails() // Constructor for namespace
 	
 #if defined (OTDB_PROTOCOL_BUFFERS)
 	GOOGLE_PROTOBUF_VERIFY_VERSION; 
+	theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_STRING)]		= &StringPB::Instantiate;
 	theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_STRING_MAP)]	= &StringMapPB::Instantiate;
 	theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_WALLET_DATA)]	= &WalletDataPB::Instantiate;
 	theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_BITCOIN_ACCT)]	= &BitcoinAcctPB::Instantiate;
@@ -912,7 +914,7 @@ bool IStorableMsgpack::onUnpack(PackedBuffer& theBuffer, Storable& outObj) // bu
 
 bool BufferMsgpack::PackString(std::string& theString)
 {
-	MsgpackStringWrapper theWrapper(theString);
+	StringMsgpack theWrapper(theString);
 	
 	msgpack::pack(m_buffer, theWrapper);
 	
@@ -929,11 +931,11 @@ bool BufferMsgpack::UnpackString(std::string& theString)
 	
 	if (msgpack::UNPACK_SUCCESS == ret)
 	{	
-		MsgpackStringWrapper theWrapper;
+		StringMsgpack theWrapper;
 		
 		obj.convert(&theWrapper);
 		
-		theString = theWrapper.s;
+		theString = theWrapper.m_string;
 		
 		return true;
 	}
@@ -997,9 +999,9 @@ void ContactNymMsgpack::hookBeforePack()
 		if (NULL == pObject)
 			continue;
 		
-		pObject->hookBeforePack();
+//		pObject->hookBeforePack(); // Unnecessary, since the push_back() below uses the copy constructor, which already packs/unpacks.
 		
-		deque_ServerInfos.push_back(*pObject); // The deque acquires its own copy here, due to the default assignment operator.
+		deque_ServerInfos.push_back(*pObject); // The deque acquires its own copy here, due to the copy constructor.
 	}
 	// ----------------------------------------------------		
 }
@@ -1012,14 +1014,13 @@ void ContactNymMsgpack::hookAfterUnpack()
 	// ---------------------------------
 	for (std::deque<ServerInfoMsgpack>::iterator ii = deque_ServerInfos.begin(); ii != deque_ServerInfos.end(); ++ii)
 	{		
-		ServerInfoMsgpack * pNewWrapper = dynamic_cast<ServerInfoMsgpack *>(Storable::Create(STORED_OBJ_SERVER_INFO, PACK_MESSAGE_PACK));
+		ServerInfoMsgpack * pNewWrapper = dynamic_cast<ServerInfoMsgpack *>(ii->clone());
 		OT_ASSERT(NULL != pNewWrapper);
 		
-		(*pNewWrapper) = (*ii);  // COPYING THE DATA
+		// Operator= copy removed here, in lieu of clone().
+		// hookAfterUnpack remove here, since the push_back() uses copy constructor that now packs/unpacks.
 		
-		pNewWrapper->hookAfterUnpack();
-		
-		PointerToServerInfo thePtr; thePtr.set(dynamic_cast<ServerInfo*>(pNewWrapper));
+		PointerToServerInfo thePtr(dynamic_cast<ServerInfo*>(pNewWrapper));
 		
 		list_ServerInfos.push_back(thePtr);
 	}
@@ -1046,7 +1047,7 @@ void ContactMsgpack::hookBeforePack()
 		if (NULL == pObject)
 			continue;
 		
-		pObject->hookBeforePack();
+//		pObject->hookBeforePack();
 		
 		deque_Nyms.push_back(*pObject); // The deque acquires its own copy here, due to the default assignment operator.
 	}
@@ -1070,7 +1071,7 @@ void ContactMsgpack::hookBeforePack()
 		if (NULL == pObject)
 			continue;
 		
-		pObject->hookBeforePack();
+//		pObject->hookBeforePack();
 		
 		deque_Accounts.push_back(*pObject);
 	}
@@ -1079,6 +1080,7 @@ void ContactMsgpack::hookBeforePack()
 }
 
 
+		
 void ContactMsgpack::hookAfterUnpack()
 { 
 	//	the_map = __pb_obj.the_map();
@@ -1092,14 +1094,14 @@ void ContactMsgpack::hookAfterUnpack()
 	// ---------------------------------
 	for (std::deque<ContactNymMsgpack>::iterator ii = deque_Nyms.begin(); ii != deque_Nyms.end(); ++ii)
 	{		
-		ContactNymMsgpack * pNewWrapper = dynamic_cast<ContactNymMsgpack *>(Storable::Create(STORED_OBJ_CONTACT_NYM, PACK_MESSAGE_PACK));
+		ContactNymMsgpack * pNewWrapper = dynamic_cast<ContactNymMsgpack *>(ii->clone());
 		OT_ASSERT(NULL != pNewWrapper);
 		
-		(*pNewWrapper) = (*ii);  // COPYING THE DATA
+//		(*pNewWrapper) = (*ii);  // COPYING THE DATA
+//		
+//		pNewWrapper->hookAfterUnpack();
 		
-		pNewWrapper->hookAfterUnpack();
-		
-		PointerToContactNym thePtr; thePtr.set(dynamic_cast<ContactNym*>(pNewWrapper));
+		PointerToContactNym thePtr(dynamic_cast<ContactNym*>(pNewWrapper));
 		
 		list_ContactNyms.push_back(thePtr);
 	}
@@ -1108,14 +1110,14 @@ void ContactMsgpack::hookAfterUnpack()
 	
 	for (std::deque<ContactAcctMsgpack>::iterator ii = deque_Accounts.begin(); ii != deque_Accounts.end(); ++ii)
 	{
-		ContactAcctMsgpack * pNewWrapper = dynamic_cast<ContactAcctMsgpack *>(Storable::Create(STORED_OBJ_CONTACT_ACCT, PACK_MESSAGE_PACK));
+		ContactAcctMsgpack * pNewWrapper = dynamic_cast<ContactAcctMsgpack *>(ii->clone());
 		OT_ASSERT(NULL != pNewWrapper);
 		
-		(*pNewWrapper) = (*ii);  // COPYING THE DATA
+//		(*pNewWrapper) = (*ii);  // COPYING THE DATA
+//		
+//		pNewWrapper->hookAfterUnpack();
 		
-		pNewWrapper->hookAfterUnpack();
-		
-		PointerToContactAcct thePtr; thePtr.set(dynamic_cast<ContactAcct*>(pNewWrapper));
+		PointerToContactAcct thePtr(dynamic_cast<ContactAcct*>(pNewWrapper));
 		
 		list_ContactAccts.push_back(thePtr);
 	}
@@ -1143,7 +1145,7 @@ void AddressBookMsgpack::hookBeforePack()
 		if (NULL == pObject)
 			continue;
 		
-		pObject->hookBeforePack();
+//		pObject->hookBeforePack();
 		
 		deque_Contacts.push_back(*pObject); // The deque acquires its own copy here, due to the default assignment operator.
 	}
@@ -1158,14 +1160,14 @@ void AddressBookMsgpack::hookAfterUnpack()
 	// ---------------------------------
 	for (std::deque<ContactMsgpack>::iterator ii = deque_Contacts.begin(); ii != deque_Contacts.end(); ++ii)
 	{		
-		ContactMsgpack * pNewWrapper = dynamic_cast<ContactMsgpack *>(Storable::Create(STORED_OBJ_CONTACT, PACK_MESSAGE_PACK));
+		ContactMsgpack * pNewWrapper = dynamic_cast<ContactMsgpack *>(ii->clone());
 		OT_ASSERT(NULL != pNewWrapper);
 		
-		(*pNewWrapper) = (*ii);  // COPYING THE DATA
+//		(*pNewWrapper) = (*ii);  // COPYING THE DATA
+//		
+//		pNewWrapper->hookAfterUnpack();
 		
-		pNewWrapper->hookAfterUnpack();
-		
-		PointerToContact thePtr; thePtr.set(dynamic_cast<Contact*>(pNewWrapper));
+		PointerToContact thePtr(dynamic_cast<Contact*>(pNewWrapper));
 		
 		list_Contacts.push_back(thePtr);
 	}
@@ -1191,7 +1193,7 @@ void WalletDataMsgpack::hookBeforePack()
 		if (NULL == pObject)
 			continue;
 		
-		pObject->hookBeforePack();
+//		pObject->hookBeforePack();
 		
 		deque_BitcoinServers.push_back(*pObject); // The deque acquires its own copy here, due to the default assignment operator.
 	}
@@ -1215,7 +1217,7 @@ void WalletDataMsgpack::hookBeforePack()
 		if (NULL == pObject)
 			continue;
 				
-		pObject->hookBeforePack();
+//		pObject->hookBeforePack();
 		
 		deque_BitcoinAccts.push_back(*pObject);
 	}
@@ -1237,14 +1239,14 @@ void WalletDataMsgpack::hookAfterUnpack()
 	// ---------------------------------
 	for (std::deque<BitcoinServerMsgpack>::iterator ii = deque_BitcoinServers.begin(); ii != deque_BitcoinServers.end(); ++ii)
 	{		
-		BitcoinServerMsgpack * pNewWrapper = dynamic_cast<BitcoinServerMsgpack *>(Storable::Create(STORED_OBJ_BITCOIN_SERVER, PACK_MESSAGE_PACK));
+		BitcoinServerMsgpack * pNewWrapper = dynamic_cast<BitcoinServerMsgpack *>(ii->clone());
 		OT_ASSERT(NULL != pNewWrapper);
 				
-		(*pNewWrapper) = (*ii);  // COPYING THE DATA
+//		(*pNewWrapper) = (*ii);  // COPYING THE DATA
+//		
+//		pNewWrapper->hookAfterUnpack();
 		
-		pNewWrapper->hookAfterUnpack();
-		
-		PointerToBitcoinServer thePtr; thePtr.set(dynamic_cast<BitcoinServer*>(pNewWrapper));
+		PointerToBitcoinServer thePtr(dynamic_cast<BitcoinServer*>(pNewWrapper));
 		
 		list_BitcoinServers.push_back(thePtr);
 	}
@@ -1253,14 +1255,14 @@ void WalletDataMsgpack::hookAfterUnpack()
 	
 	for (std::deque<BitcoinAcctMsgpack>::iterator ii = deque_BitcoinAccts.begin(); ii != deque_BitcoinAccts.end(); ++ii)
 	{
-		BitcoinAcctMsgpack * pNewWrapper = dynamic_cast<BitcoinAcctMsgpack *>(Storable::Create(STORED_OBJ_BITCOIN_ACCT, PACK_MESSAGE_PACK));
+		BitcoinAcctMsgpack * pNewWrapper = dynamic_cast<BitcoinAcctMsgpack *>(ii->clone());
 		OT_ASSERT(NULL != pNewWrapper);
 				
-		(*pNewWrapper) = (*ii);  // COPYING THE DATA
+//		(*pNewWrapper) = (*ii);  // COPYING THE DATA
+//		
+//		pNewWrapper->hookAfterUnpack();
 		
-		pNewWrapper->hookAfterUnpack();
-		
-		PointerToBitcoinAcct thePtr; thePtr.set(dynamic_cast<BitcoinAcct*>(pNewWrapper));
+		PointerToBitcoinAcct thePtr(dynamic_cast<BitcoinAcct*>(pNewWrapper));
 		
 		list_BitcoinAccts.push_back(thePtr);
 	}
@@ -1446,8 +1448,8 @@ TStorable<T> makeTStorable( T& obj )
 	return NULL; 
 }
 
-template<class theBaseType, class theInternalType>
-::google::protobuf::Message * ProtobufSubclass<theBaseType, theInternalType>::getPBMessage() 
+template<class theBaseType, class theInternalType, StoredObjectType theObjectType>
+::google::protobuf::Message * ProtobufSubclass<theBaseType, theInternalType, theObjectType>::getPBMessage() 
 { 
 	return (&__pb_obj); 
 }
@@ -1658,7 +1660,9 @@ void WalletDataPB::hookBeforePack()
 		
 		// -----------------------
 		
-		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
+		pNewInternal->CopyFrom(*pInternal);
+		
+//		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
 	}
 	// ----------------------------------------------------
 	
@@ -1705,7 +1709,9 @@ void WalletDataPB::hookBeforePack()
 		
 		// -----------------------
 		
-		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
+		pNewInternal->CopyFrom(*pInternal);
+		
+//		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
 	}
 	// ----------------------------------------------------
 	
@@ -1755,11 +1761,13 @@ void WalletDataPB::hookAfterUnpack()
 		// now pInternal is the new object's BitcoinServer_InternalPB, and theInternal is 
 		// the __pb_obj data I want... nothing to do now but copy it over...
 		
-		(*pInternal) = theInternal;  // COPYING THE DATA
+		pInternal->CopyFrom(theInternal);
+
+//		(*pInternal) = theInternal;  // COPYING THE DATA
 		
 		pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
 				
-		PointerToBitcoinServer thePtr; thePtr.set(dynamic_cast<BitcoinServer*>(pNewWrapper));
+		PointerToBitcoinServer thePtr(dynamic_cast<BitcoinServer*>(pNewWrapper));
 		
 		list_BitcoinServers.push_back(thePtr);		
 	}
@@ -1796,11 +1804,13 @@ void WalletDataPB::hookAfterUnpack()
 		// now pInternal is the new object's BitcoinAcct_InternalPB, and theInternal is 
 		// the __pb_obj data I want... nothing to do now but copy it over...
 		
-		(*pInternal) = theInternal;  // COPYING THE DATA
+		pInternal->CopyFrom(theInternal);
+		
+//		(*pInternal) = theInternal;  // COPYING THE DATA
 		
 		pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
 		
-		PointerToBitcoinAcct thePtr; thePtr.set(dynamic_cast<BitcoinAcct*>(pNewWrapper));
+		PointerToBitcoinAcct thePtr(dynamic_cast<BitcoinAcct*>(pNewWrapper));
 		
 		list_BitcoinAccts.push_back(thePtr);
 	}
@@ -1842,12 +1852,16 @@ void StringMapPB::hookAfterUnpack()
 template<> 
 void StringPB::hookBeforePack()
 {
+	__pb_obj.set_value(m_string);
 	// The way StringPB is used, this function will never actually get called.
+	// (But if you used it like the others, it would work, since this function is here.)
 }
 template<> 
 void StringPB::hookAfterUnpack()
 { 
+	m_string = __pb_obj.value();
 	// The way StringPB is used, this function will never actually get called.
+	// (But if you used it like the others, it would work, since this function is here.)
 }
 // ---------------------------------------------
 	
@@ -1902,7 +1916,9 @@ void ContactPB::hookBeforePack()
 		
 		// -----------------------
 				
-		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
+		pNewInternal->CopyFrom(*pInternal);
+		
+//		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
 	}
 	// ----------------------------------------------------
 	
@@ -1948,7 +1964,9 @@ void ContactPB::hookBeforePack()
 		
 		// -----------------------
 		
-		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
+		pNewInternal->CopyFrom(*pInternal);
+		
+//		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
 	}
 	// ----------------------------------------------------
 	
@@ -2004,11 +2022,13 @@ void ContactPB::hookAfterUnpack()
 		// now pInternal is the new object's ContactNym_InternalPB, and theInternal is 
 		// the __pb_obj data I want... nothing to do now but copy it over...
 		
-		(*pInternal) = theInternal;  // COPYING THE DATA
+		pInternal->CopyFrom(theInternal);
+		
+//		(*pInternal) = theInternal;  // COPYING THE DATA
 		
 		pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
 		
-		PointerToContactNym thePtr; thePtr.set(dynamic_cast<ContactNym*>(pNewWrapper));
+		PointerToContactNym thePtr(dynamic_cast<ContactNym*>(pNewWrapper));
 		
 		list_ContactNyms.push_back(thePtr);
 	}
@@ -2045,11 +2065,13 @@ void ContactPB::hookAfterUnpack()
 		// now pInternal is the new object's ContactAcct_InternalPB, and theInternal is 
 		// the __pb_obj data I want... nothing to do now but copy it over...
 		
-		(*pInternal) = theInternal;  // COPYING THE DATA
+		pInternal->CopyFrom(theInternal);
+		
+//		(*pInternal) = theInternal;  // COPYING THE DATA
 		
 		pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
 		
-		PointerToContactAcct thePtr; thePtr.set(dynamic_cast<ContactAcct*>(pNewWrapper));
+		PointerToContactAcct thePtr(dynamic_cast<ContactAcct*>(pNewWrapper));
 		list_ContactAccts.push_back(thePtr);
 	}
 }
@@ -2107,7 +2129,9 @@ void ContactNymPB::hookBeforePack()
 		
 		// -----------------------
 		
-		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
+		pNewInternal->CopyFrom(*pInternal);
+		
+//		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
 	}
 	// ----------------------------------------------------
 		// Now when __pb_obj is serialized, it's up to date!	
@@ -2157,11 +2181,13 @@ void ContactNymPB::hookAfterUnpack()
 		// now pInternal is the new object's ServerInfo_InternalPB, and theInternal is 
 		// the __pb_obj data I want... nothing to do now but copy it over...
 		
-		(*pInternal) = theInternal;  // COPYING THE DATA
+		pInternal->CopyFrom(theInternal);
+		
+//		(*pInternal) = theInternal;  // COPYING THE DATA
 		
 		pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
 		
-		PointerToServerInfo thePtr; thePtr.set(dynamic_cast<ServerInfo*>(pNewWrapper));
+		PointerToServerInfo thePtr(dynamic_cast<ServerInfo*>(pNewWrapper));
 		list_ServerInfos.push_back(thePtr);
 	}
 }
@@ -2215,7 +2241,9 @@ void AddressBookPB::hookBeforePack()
 		
 		// -----------------------
 				
-		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
+		pNewInternal->CopyFrom(*pInternal);
+		
+//		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
 	}
 	// ----------------------------------------------------
 	// Now when __pb_obj is serialized, it's up to date!	
@@ -2261,11 +2289,13 @@ void AddressBookPB::hookAfterUnpack()
 		// now pInternal is the new object's Contact_InternalPB, and theInternal is 
 		// the __pb_obj data I want... nothing to do now but copy it over...
 		
-		(*pInternal) = theInternal;  // COPYING THE DATA
+		pInternal->CopyFrom(theInternal);
+		
+//		(*pInternal) = theInternal;  // COPYING THE DATA
 		
 		pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
 		
-		PointerToContact thePtr; thePtr.set(dynamic_cast<Contact*>(pNewWrapper));
+		PointerToContact thePtr(dynamic_cast<Contact*>(pNewWrapper));
 		list_Contacts.push_back(thePtr);
 	}
 }

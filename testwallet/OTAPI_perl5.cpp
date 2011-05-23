@@ -1532,12 +1532,13 @@ SWIG_Perl_SetModule(swig_module_info *module) {
 #define SWIGTYPE_p_OTDB__ServerInfo swig_types[11]
 #define SWIGTYPE_p_OTDB__Storable swig_types[12]
 #define SWIGTYPE_p_OTDB__Storage swig_types[13]
-#define SWIGTYPE_p_OTDB__StringMap swig_types[14]
-#define SWIGTYPE_p_OTDB__WalletData swig_types[15]
-#define SWIGTYPE_p_char swig_types[16]
-#define SWIGTYPE_p_std__mapT_std__string_std__string_t swig_types[17]
-static swig_type_info *swig_types[19];
-static swig_module_info swig_module = {swig_types, 18, 0, 0, 0, 0};
+#define SWIGTYPE_p_OTDB__String swig_types[14]
+#define SWIGTYPE_p_OTDB__StringMap swig_types[15]
+#define SWIGTYPE_p_OTDB__WalletData swig_types[16]
+#define SWIGTYPE_p_char swig_types[17]
+#define SWIGTYPE_p_std__mapT_std__string_std__string_t swig_types[18]
+static swig_type_info *swig_types[20];
+static swig_module_info swig_module = {swig_types, 19, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1853,77 +1854,6 @@ SWIG_AsPtr_std_string SWIG_PERL_DECL_ARGS_2(SV * obj, std::string **val)
     }
   }
   return SWIG_ERROR;
-}
-
-
-SWIGINTERNINLINE SV *
-SWIG_From_unsigned_SS_long  SWIG_PERL_DECL_ARGS_1(unsigned long value)
-{    
-  SV *obj = sv_newmortal();
-  sv_setuv(obj, (UV) value);
-  return obj;
-}
-
-
-SWIGINTERNINLINE SV *
-SWIG_From_size_t  SWIG_PERL_DECL_ARGS_1(size_t value)
-{    
-  return SWIG_From_unsigned_SS_long  SWIG_PERL_CALL_ARGS_1(static_cast< unsigned long >(value));
-}
-
-
-SWIGINTERN int
-SWIG_AsVal_unsigned_SS_long SWIG_PERL_DECL_ARGS_2(SV *obj, unsigned long *val) 
-{
-  if (SvUOK(obj)) {
-    if (val) *val = SvUV(obj);
-    return SWIG_OK;
-  } else  if (SvIOK(obj)) {
-    long v = SvIV(obj);
-    if (v >= 0) {
-      if (val) *val = v;
-      return SWIG_OK;
-    } else {
-      return SWIG_OverflowError;
-    }
-  } else {
-    int dispatch = 0;
-    const char *nptr = SvPV_nolen(obj);
-    if (nptr) {
-      char *endptr;
-      unsigned long v;
-      errno = 0;
-      v = strtoul(nptr, &endptr,0);
-      if (errno == ERANGE) {
-	errno = 0;
-	return SWIG_OverflowError;
-      } else {
-	if (*endptr == '\0') {
-	  if (val) *val = v;
-	  return SWIG_Str2NumCast(SWIG_OK);
-	}
-      }
-    }
-    if (!dispatch) {
-      double d;
-      int res = SWIG_AddCast(SWIG_AsVal_double SWIG_PERL_CALL_ARGS_2(obj,&d));
-      if (SWIG_IsOK(res) && SWIG_CanCastAsInteger(&d, 0, ULONG_MAX)) {
-	if (val) *val = (unsigned long)(d);
-	return res;
-      }
-    }
-  }
-  return SWIG_TypeError;
-}
-
-
-SWIGINTERNINLINE int
-SWIG_AsVal_size_t SWIG_PERL_DECL_ARGS_2(SV * obj, size_t *val)
-{
-  unsigned long v;
-  int res = SWIG_AsVal_unsigned_SS_long SWIG_PERL_CALL_ARGS_2(obj, val ? &v : 0);
-  if (SWIG_IsOK(res) && val) *val = static_cast< size_t >(v);
-  return res;
 }
 
 
@@ -17356,6 +17286,103 @@ XS(_wrap_QueryObject) {
 }
 
 
+XS(_wrap_delete_String) {
+  {
+    OTDB::String *arg1 = (OTDB::String *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: delete_String(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__String, SWIG_POINTER_DISOWN |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_String" "', argument " "1"" of type '" "OTDB::String *""'"); 
+    }
+    arg1 = reinterpret_cast< OTDB::String * >(argp1);
+    delete arg1;
+    ST(argvi) = sv_newmortal();
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_String_m_string_set) {
+  {
+    OTDB::String *arg1 = (OTDB::String *) 0 ;
+    std::string *arg2 = 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int res2 = SWIG_OLDOBJ ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: String_m_string_set(self,m_string);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__String, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "String_m_string_set" "', argument " "1"" of type '" "OTDB::String *""'"); 
+    }
+    arg1 = reinterpret_cast< OTDB::String * >(argp1);
+    {
+      std::string *ptr = (std::string *)0;
+      res2 = SWIG_AsPtr_std_string SWIG_PERL_CALL_ARGS_2(ST(1), &ptr);
+      if (!SWIG_IsOK(res2)) {
+        SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "String_m_string_set" "', argument " "2"" of type '" "std::string const &""'"); 
+      }
+      if (!ptr) {
+        SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "String_m_string_set" "', argument " "2"" of type '" "std::string const &""'"); 
+      }
+      arg2 = ptr;
+    }
+    if (arg1) (arg1)->m_string = *arg2;
+    ST(argvi) = sv_newmortal();
+    
+    if (SWIG_IsNewObj(res2)) delete arg2;
+    XSRETURN(argvi);
+  fail:
+    
+    if (SWIG_IsNewObj(res2)) delete arg2;
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_String_m_string_get) {
+  {
+    OTDB::String *arg1 = (OTDB::String *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    std::string *result = 0 ;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: String_m_string_get(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__String, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "String_m_string_get" "', argument " "1"" of type '" "OTDB::String *""'"); 
+    }
+    arg1 = reinterpret_cast< OTDB::String * >(argp1);
+    result = (std::string *) & ((arg1)->m_string);
+    ST(argvi) = SWIG_From_std_string  SWIG_PERL_CALL_ARGS_1(static_cast< std::string >(*result)); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
 XS(_wrap_delete_StringMap) {
   {
     OTDB::StringMap *arg1 = (OTDB::StringMap *) 0 ;
@@ -18717,151 +18744,6 @@ XS(_wrap_ContactNym_memo_get) {
 }
 
 
-XS(_wrap_ContactNym_GetServerInfoCount) {
-  {
-    OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    size_t result;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: ContactNym_GetServerInfoCount(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactNym_GetServerInfoCount" "', argument " "1"" of type '" "OTDB::ContactNym *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
-    result = (arg1)->GetServerInfoCount();
-    ST(argvi) = SWIG_From_size_t  SWIG_PERL_CALL_ARGS_1(static_cast< size_t >(result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_ContactNym_GetServerInfo) {
-  {
-    OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
-    size_t arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    size_t val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    OTDB::ServerInfo *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: ContactNym_GetServerInfo(self,nIndex);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactNym_GetServerInfo" "', argument " "1"" of type '" "OTDB::ContactNym *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
-    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ContactNym_GetServerInfo" "', argument " "2"" of type '" "size_t""'");
-    } 
-    arg2 = static_cast< size_t >(val2);
-    result = (OTDB::ServerInfo *)(arg1)->GetServerInfo(arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ServerInfo, 0 | SWIG_SHADOW); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_ContactNym_RemoveServerInfo) {
-  {
-    OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
-    size_t arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    size_t val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: ContactNym_RemoveServerInfo(self,nIndex);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactNym_RemoveServerInfo" "', argument " "1"" of type '" "OTDB::ContactNym *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
-    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ContactNym_RemoveServerInfo" "', argument " "2"" of type '" "size_t""'");
-    } 
-    arg2 = static_cast< size_t >(val2);
-    result = (bool)(arg1)->RemoveServerInfo(arg2);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_ContactNym_AddServerInfo) {
-  {
-    OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
-    OTDB::ServerInfo *arg2 = 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    void *argp2 = 0 ;
-    int res2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: ContactNym_AddServerInfo(self,disownObject);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__ContactNym, SWIG_POINTER_DISOWN |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactNym_AddServerInfo" "', argument " "1"" of type '" "OTDB::ContactNym *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
-    res2 = SWIG_ConvertPtr(ST(1), &argp2, SWIGTYPE_p_OTDB__ServerInfo,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ContactNym_AddServerInfo" "', argument " "2"" of type '" "OTDB::ServerInfo &""'"); 
-    }
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ContactNym_AddServerInfo" "', argument " "2"" of type '" "OTDB::ServerInfo &""'"); 
-    }
-    arg2 = reinterpret_cast< OTDB::ServerInfo * >(argp2);
-    result = (bool)(arg1)->AddServerInfo(*arg2);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
 XS(_wrap_delete_WalletData) {
   {
     OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
@@ -18883,296 +18765,6 @@ XS(_wrap_delete_WalletData) {
     
     XSRETURN(argvi);
   fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_GetBitcoinServerCount) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    size_t result;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: WalletData_GetBitcoinServerCount(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinServerCount" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    result = (arg1)->GetBitcoinServerCount();
-    ST(argvi) = SWIG_From_size_t  SWIG_PERL_CALL_ARGS_1(static_cast< size_t >(result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_GetBitcoinServer) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    size_t arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    size_t val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    OTDB::BitcoinServer *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: WalletData_GetBitcoinServer(self,nIndex);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_GetBitcoinServer" "', argument " "2"" of type '" "size_t""'");
-    } 
-    arg2 = static_cast< size_t >(val2);
-    result = (OTDB::BitcoinServer *)(arg1)->GetBitcoinServer(arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinServer, 0 | SWIG_SHADOW); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_RemoveBitcoinServer) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    size_t arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    size_t val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: WalletData_RemoveBitcoinServer(self,nIndex);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_RemoveBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_RemoveBitcoinServer" "', argument " "2"" of type '" "size_t""'");
-    } 
-    arg2 = static_cast< size_t >(val2);
-    result = (bool)(arg1)->RemoveBitcoinServer(arg2);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_AddBitcoinServer) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    OTDB::BitcoinServer *arg2 = 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    void *argp2 = 0 ;
-    int res2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: WalletData_AddBitcoinServer(self,disownObject);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, SWIG_POINTER_DISOWN |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_AddBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    res2 = SWIG_ConvertPtr(ST(1), &argp2, SWIGTYPE_p_OTDB__BitcoinServer,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "WalletData_AddBitcoinServer" "', argument " "2"" of type '" "OTDB::BitcoinServer &""'"); 
-    }
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "WalletData_AddBitcoinServer" "', argument " "2"" of type '" "OTDB::BitcoinServer &""'"); 
-    }
-    arg2 = reinterpret_cast< OTDB::BitcoinServer * >(argp2);
-    result = (bool)(arg1)->AddBitcoinServer(*arg2);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_GetBitcoinAcctCount) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    size_t result;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: WalletData_GetBitcoinAcctCount(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinAcctCount" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    result = (arg1)->GetBitcoinAcctCount();
-    ST(argvi) = SWIG_From_size_t  SWIG_PERL_CALL_ARGS_1(static_cast< size_t >(result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_GetBitcoinAcct) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    size_t arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    size_t val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    OTDB::BitcoinAcct *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: WalletData_GetBitcoinAcct(self,nIndex);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_GetBitcoinAcct" "', argument " "2"" of type '" "size_t""'");
-    } 
-    arg2 = static_cast< size_t >(val2);
-    result = (OTDB::BitcoinAcct *)(arg1)->GetBitcoinAcct(arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinAcct, 0 | SWIG_SHADOW); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_RemoveBitcoinAcct) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    size_t arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    size_t val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: WalletData_RemoveBitcoinAcct(self,nIndex);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_RemoveBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_RemoveBitcoinAcct" "', argument " "2"" of type '" "size_t""'");
-    } 
-    arg2 = static_cast< size_t >(val2);
-    result = (bool)(arg1)->RemoveBitcoinAcct(arg2);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_WalletData_AddBitcoinAcct) {
-  {
-    OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
-    OTDB::BitcoinAcct *arg2 = 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    void *argp2 = 0 ;
-    int res2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: WalletData_AddBitcoinAcct(self,disownObject);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, SWIG_POINTER_DISOWN |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_AddBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
-    res2 = SWIG_ConvertPtr(ST(1), &argp2, SWIGTYPE_p_OTDB__BitcoinAcct,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "WalletData_AddBitcoinAcct" "', argument " "2"" of type '" "OTDB::BitcoinAcct &""'"); 
-    }
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "WalletData_AddBitcoinAcct" "', argument " "2"" of type '" "OTDB::BitcoinAcct &""'"); 
-    }
-    arg2 = reinterpret_cast< OTDB::BitcoinAcct * >(argp2);
-    result = (bool)(arg1)->AddBitcoinAcct(*arg2);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
     
     SWIG_croak_null();
   }
@@ -20003,296 +19595,6 @@ XS(_wrap_Contact_public_key_get) {
 }
 
 
-XS(_wrap_Contact_GetContactNymCount) {
-  {
-    OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    size_t result;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: Contact_GetContactNymCount(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_GetContactNymCount" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
-    result = (arg1)->GetContactNymCount();
-    ST(argvi) = SWIG_From_size_t  SWIG_PERL_CALL_ARGS_1(static_cast< size_t >(result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_Contact_GetContactNym) {
-  {
-    OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
-    size_t arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    size_t val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    OTDB::ContactNym *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: Contact_GetContactNym(self,nIndex);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_GetContactNym" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
-    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Contact_GetContactNym" "', argument " "2"" of type '" "size_t""'");
-    } 
-    arg2 = static_cast< size_t >(val2);
-    result = (OTDB::ContactNym *)(arg1)->GetContactNym(arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ContactNym, 0 | SWIG_SHADOW); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_Contact_RemoveContactNym) {
-  {
-    OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
-    size_t arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    size_t val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: Contact_RemoveContactNym(self,nIndex);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_RemoveContactNym" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
-    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Contact_RemoveContactNym" "', argument " "2"" of type '" "size_t""'");
-    } 
-    arg2 = static_cast< size_t >(val2);
-    result = (bool)(arg1)->RemoveContactNym(arg2);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_Contact_AddContactNym) {
-  {
-    OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
-    OTDB::ContactNym *arg2 = 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    void *argp2 = 0 ;
-    int res2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: Contact_AddContactNym(self,disownObject);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Contact, SWIG_POINTER_DISOWN |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_AddContactNym" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
-    res2 = SWIG_ConvertPtr(ST(1), &argp2, SWIGTYPE_p_OTDB__ContactNym,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Contact_AddContactNym" "', argument " "2"" of type '" "OTDB::ContactNym &""'"); 
-    }
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Contact_AddContactNym" "', argument " "2"" of type '" "OTDB::ContactNym &""'"); 
-    }
-    arg2 = reinterpret_cast< OTDB::ContactNym * >(argp2);
-    result = (bool)(arg1)->AddContactNym(*arg2);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_Contact_GetContactAcctCount) {
-  {
-    OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    size_t result;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: Contact_GetContactAcctCount(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_GetContactAcctCount" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
-    result = (arg1)->GetContactAcctCount();
-    ST(argvi) = SWIG_From_size_t  SWIG_PERL_CALL_ARGS_1(static_cast< size_t >(result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_Contact_GetContactAcct) {
-  {
-    OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
-    size_t arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    size_t val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    OTDB::ContactAcct *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: Contact_GetContactAcct(self,nIndex);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_GetContactAcct" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
-    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Contact_GetContactAcct" "', argument " "2"" of type '" "size_t""'");
-    } 
-    arg2 = static_cast< size_t >(val2);
-    result = (OTDB::ContactAcct *)(arg1)->GetContactAcct(arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ContactAcct, 0 | SWIG_SHADOW); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_Contact_RemoveContactAcct) {
-  {
-    OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
-    size_t arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    size_t val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: Contact_RemoveContactAcct(self,nIndex);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_RemoveContactAcct" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
-    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Contact_RemoveContactAcct" "', argument " "2"" of type '" "size_t""'");
-    } 
-    arg2 = static_cast< size_t >(val2);
-    result = (bool)(arg1)->RemoveContactAcct(arg2);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_Contact_AddContactAcct) {
-  {
-    OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
-    OTDB::ContactAcct *arg2 = 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    void *argp2 = 0 ;
-    int res2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: Contact_AddContactAcct(self,disownObject);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Contact, SWIG_POINTER_DISOWN |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_AddContactAcct" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
-    res2 = SWIG_ConvertPtr(ST(1), &argp2, SWIGTYPE_p_OTDB__ContactAcct,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Contact_AddContactAcct" "', argument " "2"" of type '" "OTDB::ContactAcct &""'"); 
-    }
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Contact_AddContactAcct" "', argument " "2"" of type '" "OTDB::ContactAcct &""'"); 
-    }
-    arg2 = reinterpret_cast< OTDB::ContactAcct * >(argp2);
-    result = (bool)(arg1)->AddContactAcct(*arg2);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
 XS(_wrap_delete_AddressBook) {
   {
     OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
@@ -20314,151 +19616,6 @@ XS(_wrap_delete_AddressBook) {
     
     XSRETURN(argvi);
   fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_AddressBook_GetContactCount) {
-  {
-    OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    int argvi = 0;
-    size_t result;
-    dXSARGS;
-    
-    if ((items < 1) || (items > 1)) {
-      SWIG_croak("Usage: AddressBook_GetContactCount(self);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__AddressBook, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "AddressBook_GetContactCount" "', argument " "1"" of type '" "OTDB::AddressBook *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::AddressBook * >(argp1);
-    result = (arg1)->GetContactCount();
-    ST(argvi) = SWIG_From_size_t  SWIG_PERL_CALL_ARGS_1(static_cast< size_t >(result)); argvi++ ;
-    
-    XSRETURN(argvi);
-  fail:
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_AddressBook_GetContact) {
-  {
-    OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
-    size_t arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    size_t val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    OTDB::Contact *result = 0 ;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: AddressBook_GetContact(self,nIndex);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__AddressBook, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "AddressBook_GetContact" "', argument " "1"" of type '" "OTDB::AddressBook *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::AddressBook * >(argp1);
-    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "AddressBook_GetContact" "', argument " "2"" of type '" "size_t""'");
-    } 
-    arg2 = static_cast< size_t >(val2);
-    result = (OTDB::Contact *)(arg1)->GetContact(arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Contact, 0 | SWIG_SHADOW); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_AddressBook_RemoveContact) {
-  {
-    OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
-    size_t arg2 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    size_t val2 ;
-    int ecode2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: AddressBook_RemoveContact(self,nIndex);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__AddressBook, 0 |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "AddressBook_RemoveContact" "', argument " "1"" of type '" "OTDB::AddressBook *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::AddressBook * >(argp1);
-    ecode2 = SWIG_AsVal_size_t SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "AddressBook_RemoveContact" "', argument " "2"" of type '" "size_t""'");
-    } 
-    arg2 = static_cast< size_t >(val2);
-    result = (bool)(arg1)->RemoveContact(arg2);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
-    
-    SWIG_croak_null();
-  }
-}
-
-
-XS(_wrap_AddressBook_AddContact) {
-  {
-    OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
-    OTDB::Contact *arg2 = 0 ;
-    void *argp1 = 0 ;
-    int res1 = 0 ;
-    void *argp2 = 0 ;
-    int res2 = 0 ;
-    int argvi = 0;
-    bool result;
-    dXSARGS;
-    
-    if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: AddressBook_AddContact(self,disownObject);");
-    }
-    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__AddressBook, SWIG_POINTER_DISOWN |  0 );
-    if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "AddressBook_AddContact" "', argument " "1"" of type '" "OTDB::AddressBook *""'"); 
-    }
-    arg1 = reinterpret_cast< OTDB::AddressBook * >(argp1);
-    res2 = SWIG_ConvertPtr(ST(1), &argp2, SWIGTYPE_p_OTDB__Contact,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "AddressBook_AddContact" "', argument " "2"" of type '" "OTDB::Contact &""'"); 
-    }
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "AddressBook_AddContact" "', argument " "2"" of type '" "OTDB::Contact &""'"); 
-    }
-    arg2 = reinterpret_cast< OTDB::Contact * >(argp2);
-    result = (bool)(arg1)->AddContact(*arg2);
-    ST(argvi) = SWIG_From_bool  SWIG_PERL_CALL_ARGS_1(static_cast< bool >(result)); argvi++ ;
-    
-    
-    XSRETURN(argvi);
-  fail:
-    
     
     SWIG_croak_null();
   }
@@ -20516,6 +19673,9 @@ static void *_p_OTDB__AcctTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newme
 static void *_p_OTDB__WalletDataTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OTDB::Storable *)  ((OTDB::WalletData *) x));
 }
+static void *_p_OTDB__StringTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *)  ((OTDB::String *) x));
+}
 static void *_p_OTDB__DisplayableTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OTDB::Storable *)  ((OTDB::Displayable *) x));
 }
@@ -20554,6 +19714,7 @@ static swig_type_info _swigt__p_OTDB__Server = {"_p_OTDB__Server", "OTDB::Server
 static swig_type_info _swigt__p_OTDB__ServerInfo = {"_p_OTDB__ServerInfo", "OTDB::ServerInfo *", 0, 0, (void*)"otapi::ServerInfo", 0};
 static swig_type_info _swigt__p_OTDB__Storable = {"_p_OTDB__Storable", "OTDB::Storable *", 0, 0, (void*)"otapi::Storable", 0};
 static swig_type_info _swigt__p_OTDB__Storage = {"_p_OTDB__Storage", "OTDB::Storage *", 0, 0, (void*)"otapi::Storage", 0};
+static swig_type_info _swigt__p_OTDB__String = {"_p_OTDB__String", "OTDB::String *", 0, 0, (void*)"otapi::String", 0};
 static swig_type_info _swigt__p_OTDB__StringMap = {"_p_OTDB__StringMap", "OTDB::StringMap *", 0, 0, (void*)"otapi::StringMap", 0};
 static swig_type_info _swigt__p_OTDB__WalletData = {"_p_OTDB__WalletData", "OTDB::WalletData *", 0, 0, (void*)"otapi::WalletData", 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
@@ -20574,6 +19735,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_OTDB__ServerInfo,
   &_swigt__p_OTDB__Storable,
   &_swigt__p_OTDB__Storage,
+  &_swigt__p_OTDB__String,
   &_swigt__p_OTDB__StringMap,
   &_swigt__p_OTDB__WalletData,
   &_swigt__p_char,
@@ -20592,8 +19754,9 @@ static swig_cast_info _swigc__p_OTDB__ContactNym[] = {  {&_swigt__p_OTDB__Contac
 static swig_cast_info _swigc__p_OTDB__Displayable[] = {  {&_swigt__p_OTDB__BitcoinAcct, _p_OTDB__BitcoinAcctTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__Displayable, 0, 0, 0},  {&_swigt__p_OTDB__ContactNym, _p_OTDB__ContactNymTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__Contact, _p_OTDB__ContactTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__ServerInfo, _p_OTDB__ServerInfoTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__Acct, _p_OTDB__AcctTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__ContactAcct, _p_OTDB__ContactAcctTo_p_OTDB__Displayable, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__Server[] = {  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Server, 0, 0},  {&_swigt__p_OTDB__Server, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__ServerInfo[] = {  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__ServerInfo, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__ServerInfo, 0, 0},  {&_swigt__p_OTDB__ServerInfo, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_OTDB__Storable[] = {  {&_swigt__p_OTDB__AddressBook, _p_OTDB__AddressBookTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__BitcoinAcct, _p_OTDB__BitcoinAcctTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__WalletData, _p_OTDB__WalletDataTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Storable, 0, 0, 0},  {&_swigt__p_OTDB__Displayable, _p_OTDB__DisplayableTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__ContactNym, _p_OTDB__ContactNymTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Contact, _p_OTDB__ContactTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__ServerInfo, _p_OTDB__ServerInfoTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__StringMap, _p_OTDB__StringMapTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Acct, _p_OTDB__AcctTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__ContactAcct, _p_OTDB__ContactAcctTo_p_OTDB__Storable, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__Storable[] = {  {&_swigt__p_OTDB__ContactNym, _p_OTDB__ContactNymTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__StringMap, _p_OTDB__StringMapTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__String, _p_OTDB__StringTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__ContactAcct, _p_OTDB__ContactAcctTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Displayable, _p_OTDB__DisplayableTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__WalletData, _p_OTDB__WalletDataTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Storable, 0, 0, 0},  {&_swigt__p_OTDB__BitcoinAcct, _p_OTDB__BitcoinAcctTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__ServerInfo, _p_OTDB__ServerInfoTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Contact, _p_OTDB__ContactTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__AddressBook, _p_OTDB__AddressBookTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Acct, _p_OTDB__AcctTo_p_OTDB__Storable, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__Storage[] = {  {&_swigt__p_OTDB__Storage, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__String[] = {  {&_swigt__p_OTDB__String, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__StringMap[] = {  {&_swigt__p_OTDB__StringMap, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__WalletData[] = {  {&_swigt__p_OTDB__WalletData, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
@@ -20614,6 +19777,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_OTDB__ServerInfo,
   _swigc__p_OTDB__Storable,
   _swigc__p_OTDB__Storage,
+  _swigc__p_OTDB__String,
   _swigc__p_OTDB__StringMap,
   _swigc__p_OTDB__WalletData,
   _swigc__p_char,
@@ -20824,6 +19988,9 @@ static swig_command_info swig_commands[] = {
 {"otapic::QueryPlainString", _wrap_QueryPlainString},
 {"otapic::StoreObject", _wrap_StoreObject},
 {"otapic::QueryObject", _wrap_QueryObject},
+{"otapic::delete_String", _wrap_delete_String},
+{"otapic::String_m_string_set", _wrap_String_m_string_set},
+{"otapic::String_m_string_get", _wrap_String_m_string_get},
 {"otapic::delete_StringMap", _wrap_delete_StringMap},
 {"otapic::StringMap_the_map_set", _wrap_StringMap_the_map_set},
 {"otapic::StringMap_the_map_get", _wrap_StringMap_the_map_get},
@@ -20864,19 +20031,7 @@ static swig_command_info swig_commands[] = {
 {"otapic::ContactNym_public_key_get", _wrap_ContactNym_public_key_get},
 {"otapic::ContactNym_memo_set", _wrap_ContactNym_memo_set},
 {"otapic::ContactNym_memo_get", _wrap_ContactNym_memo_get},
-{"otapic::ContactNym_GetServerInfoCount", _wrap_ContactNym_GetServerInfoCount},
-{"otapic::ContactNym_GetServerInfo", _wrap_ContactNym_GetServerInfo},
-{"otapic::ContactNym_RemoveServerInfo", _wrap_ContactNym_RemoveServerInfo},
-{"otapic::ContactNym_AddServerInfo", _wrap_ContactNym_AddServerInfo},
 {"otapic::delete_WalletData", _wrap_delete_WalletData},
-{"otapic::WalletData_GetBitcoinServerCount", _wrap_WalletData_GetBitcoinServerCount},
-{"otapic::WalletData_GetBitcoinServer", _wrap_WalletData_GetBitcoinServer},
-{"otapic::WalletData_RemoveBitcoinServer", _wrap_WalletData_RemoveBitcoinServer},
-{"otapic::WalletData_AddBitcoinServer", _wrap_WalletData_AddBitcoinServer},
-{"otapic::WalletData_GetBitcoinAcctCount", _wrap_WalletData_GetBitcoinAcctCount},
-{"otapic::WalletData_GetBitcoinAcct", _wrap_WalletData_GetBitcoinAcct},
-{"otapic::WalletData_RemoveBitcoinAcct", _wrap_WalletData_RemoveBitcoinAcct},
-{"otapic::WalletData_AddBitcoinAcct", _wrap_WalletData_AddBitcoinAcct},
 {"otapic::delete_ContactAcct", _wrap_delete_ContactAcct},
 {"otapic::ContactAcct_server_type_set", _wrap_ContactAcct_server_type_set},
 {"otapic::ContactAcct_server_type_get", _wrap_ContactAcct_server_type_get},
@@ -20901,19 +20056,7 @@ static swig_command_info swig_commands[] = {
 {"otapic::Contact_memo_get", _wrap_Contact_memo_get},
 {"otapic::Contact_public_key_set", _wrap_Contact_public_key_set},
 {"otapic::Contact_public_key_get", _wrap_Contact_public_key_get},
-{"otapic::Contact_GetContactNymCount", _wrap_Contact_GetContactNymCount},
-{"otapic::Contact_GetContactNym", _wrap_Contact_GetContactNym},
-{"otapic::Contact_RemoveContactNym", _wrap_Contact_RemoveContactNym},
-{"otapic::Contact_AddContactNym", _wrap_Contact_AddContactNym},
-{"otapic::Contact_GetContactAcctCount", _wrap_Contact_GetContactAcctCount},
-{"otapic::Contact_GetContactAcct", _wrap_Contact_GetContactAcct},
-{"otapic::Contact_RemoveContactAcct", _wrap_Contact_RemoveContactAcct},
-{"otapic::Contact_AddContactAcct", _wrap_Contact_AddContactAcct},
 {"otapic::delete_AddressBook", _wrap_delete_AddressBook},
-{"otapic::AddressBook_GetContactCount", _wrap_AddressBook_GetContactCount},
-{"otapic::AddressBook_GetContact", _wrap_AddressBook_GetContact},
-{"otapic::AddressBook_RemoveContact", _wrap_AddressBook_RemoveContact},
-{"otapic::AddressBook_AddContact", _wrap_AddressBook_AddContact},
 {0,0}
 };
 /* -----------------------------------------------------------------------------
@@ -21236,6 +20379,11 @@ XS(SWIG_init) {
     SvREADONLY_on(sv);
   } while(0) /*@SWIG@*/;
   /*@SWIG:/usr/local/share/swig/2.0.3/perl5/perltypemaps.swg,65,%set_constant@*/ do {
+    SV *sv = get_sv((char*) SWIG_prefix "STORED_OBJ_STRING", TRUE | 0x2 | GV_ADDMULTI);
+    sv_setsv(sv, SWIG_From_int  SWIG_PERL_CALL_ARGS_1(static_cast< int >(OTDB::STORED_OBJ_STRING)));
+    SvREADONLY_on(sv);
+  } while(0) /*@SWIG@*/;
+  /*@SWIG:/usr/local/share/swig/2.0.3/perl5/perltypemaps.swg,65,%set_constant@*/ do {
     SV *sv = get_sv((char*) SWIG_prefix "STORED_OBJ_STRING_MAP", TRUE | 0x2 | GV_ADDMULTI);
     sv_setsv(sv, SWIG_From_int  SWIG_PERL_CALL_ARGS_1(static_cast< int >(OTDB::STORED_OBJ_STRING_MAP)));
     SvREADONLY_on(sv);
@@ -21287,6 +20435,7 @@ XS(SWIG_init) {
   } while(0) /*@SWIG@*/;
   SWIG_TypeClientData(SWIGTYPE_p_OTDB__Storable, (void*) "otapi::Storable");
   SWIG_TypeClientData(SWIGTYPE_p_OTDB__Storage, (void*) "otapi::Storage");
+  SWIG_TypeClientData(SWIGTYPE_p_OTDB__String, (void*) "otapi::String");
   SWIG_TypeClientData(SWIGTYPE_p_OTDB__StringMap, (void*) "otapi::StringMap");
   SWIG_TypeClientData(SWIGTYPE_p_OTDB__Displayable, (void*) "otapi::Displayable");
   SWIG_TypeClientData(SWIGTYPE_p_OTDB__Acct, (void*) "otapi::Acct");

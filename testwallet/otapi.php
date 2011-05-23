@@ -653,7 +653,9 @@ abstract class otapi {
 
 	const STORE_TYPE_SUBCLASS = STORE_TYPE_SUBCLASS;
 
-	const STORED_OBJ_STRING_MAP = 0;
+	const STORED_OBJ_STRING = 0;
+
+	const STORED_OBJ_STRING_MAP = STORED_OBJ_STRING_MAP;
 
 	const STORED_OBJ_WALLET_DATA = STORED_OBJ_WALLET_DATA;
 
@@ -1048,6 +1050,37 @@ abstract class Storage {
 	}
 }
 
+class String extends Storable {
+	public $_cPtr=null;
+
+	function __set($var,$value) {
+		if ($var === 'm_string') return String_m_string_set($this->_cPtr,$value);
+		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
+		Storable::__set($var,$value);
+	}
+
+	function __isset($var) {
+		if (function_exists('String_'.$var.'_set')) return true;
+		if ($var === 'thisown') return true;
+		return Storable::__isset($var);
+	}
+
+	function __get($var) {
+		$func = 'String_'.$var.'_get';
+		if (function_exists($func)) {
+			$r = call_user_func($func,$this->_cPtr);
+			if (!is_resource($r)) return $r;
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			return new $c($r);
+		}
+		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
+		return Storable::__get($var);
+	}
+	function __construct($h) {
+		$this->_cPtr=$h;
+	}
+}
+
 class StringMap extends Storable {
 	public $_cPtr=null;
 
@@ -1307,30 +1340,6 @@ class ContactNym extends Displayable {
 	function __construct($h) {
 		$this->_cPtr=$h;
 	}
-
-	function GetServerInfoCount() {
-		return ContactNym_GetServerInfoCount($this->_cPtr);
-	}
-
-	function GetServerInfo($nIndex) {
-		$r=ContactNym_GetServerInfo($this->_cPtr,$nIndex);
-		if (is_resource($r)) {
-			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
-			if (!class_exists($c)) {
-				return new ServerInfo($r);
-			}
-			return new $c($r);
-		}
-		return $r;
-	}
-
-	function RemoveServerInfo($nIndex) {
-		return ContactNym_RemoveServerInfo($this->_cPtr,$nIndex);
-	}
-
-	function AddServerInfo($disownObject) {
-		return ContactNym_AddServerInfo($this->_cPtr,$disownObject);
-	}
 }
 
 class WalletData extends Storable {
@@ -1352,54 +1361,6 @@ class WalletData extends Storable {
 	}
 	function __construct($h) {
 		$this->_cPtr=$h;
-	}
-
-	function GetBitcoinServerCount() {
-		return WalletData_GetBitcoinServerCount($this->_cPtr);
-	}
-
-	function GetBitcoinServer($nIndex) {
-		$r=WalletData_GetBitcoinServer($this->_cPtr,$nIndex);
-		if (is_resource($r)) {
-			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
-			if (!class_exists($c)) {
-				return new BitcoinServer($r);
-			}
-			return new $c($r);
-		}
-		return $r;
-	}
-
-	function RemoveBitcoinServer($nIndex) {
-		return WalletData_RemoveBitcoinServer($this->_cPtr,$nIndex);
-	}
-
-	function AddBitcoinServer($disownObject) {
-		return WalletData_AddBitcoinServer($this->_cPtr,$disownObject);
-	}
-
-	function GetBitcoinAcctCount() {
-		return WalletData_GetBitcoinAcctCount($this->_cPtr);
-	}
-
-	function GetBitcoinAcct($nIndex) {
-		$r=WalletData_GetBitcoinAcct($this->_cPtr,$nIndex);
-		if (is_resource($r)) {
-			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
-			if (!class_exists($c)) {
-				return new BitcoinAcct($r);
-			}
-			return new $c($r);
-		}
-		return $r;
-	}
-
-	function RemoveBitcoinAcct($nIndex) {
-		return WalletData_RemoveBitcoinAcct($this->_cPtr,$nIndex);
-	}
-
-	function AddBitcoinAcct($disownObject) {
-		return WalletData_AddBitcoinAcct($this->_cPtr,$disownObject);
 	}
 }
 
@@ -1465,54 +1426,6 @@ class Contact extends Displayable {
 	function __construct($h) {
 		$this->_cPtr=$h;
 	}
-
-	function GetContactNymCount() {
-		return Contact_GetContactNymCount($this->_cPtr);
-	}
-
-	function GetContactNym($nIndex) {
-		$r=Contact_GetContactNym($this->_cPtr,$nIndex);
-		if (is_resource($r)) {
-			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
-			if (!class_exists($c)) {
-				return new ContactNym($r);
-			}
-			return new $c($r);
-		}
-		return $r;
-	}
-
-	function RemoveContactNym($nIndex) {
-		return Contact_RemoveContactNym($this->_cPtr,$nIndex);
-	}
-
-	function AddContactNym($disownObject) {
-		return Contact_AddContactNym($this->_cPtr,$disownObject);
-	}
-
-	function GetContactAcctCount() {
-		return Contact_GetContactAcctCount($this->_cPtr);
-	}
-
-	function GetContactAcct($nIndex) {
-		$r=Contact_GetContactAcct($this->_cPtr,$nIndex);
-		if (is_resource($r)) {
-			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
-			if (!class_exists($c)) {
-				return new ContactAcct($r);
-			}
-			return new $c($r);
-		}
-		return $r;
-	}
-
-	function RemoveContactAcct($nIndex) {
-		return Contact_RemoveContactAcct($this->_cPtr,$nIndex);
-	}
-
-	function AddContactAcct($disownObject) {
-		return Contact_AddContactAcct($this->_cPtr,$disownObject);
-	}
 }
 
 class AddressBook extends Storable {
@@ -1534,30 +1447,6 @@ class AddressBook extends Storable {
 	}
 	function __construct($h) {
 		$this->_cPtr=$h;
-	}
-
-	function GetContactCount() {
-		return AddressBook_GetContactCount($this->_cPtr);
-	}
-
-	function GetContact($nIndex) {
-		$r=AddressBook_GetContact($this->_cPtr,$nIndex);
-		if (is_resource($r)) {
-			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
-			if (!class_exists($c)) {
-				return new Contact($r);
-			}
-			return new $c($r);
-		}
-		return $r;
-	}
-
-	function RemoveContact($nIndex) {
-		return AddressBook_RemoveContact($this->_cPtr,$nIndex);
-	}
-
-	function AddContact($disownObject) {
-		return AddressBook_AddContact($this->_cPtr,$disownObject);
 	}
 }
 

@@ -142,7 +142,7 @@ using namespace io;
 #include "OTMessage.h"
 #include "OTLog.h"
 
-
+#include "OTStorage.h"
 
 #include "Lucre/bank.h"  // Lucre
 

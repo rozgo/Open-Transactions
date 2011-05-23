@@ -9,6 +9,7 @@
 package com.wrapper.core.jni;
 
 public final class StoredObjectType {
+  public final static int STORED_OBJ_STRING = otapiJNI.STORED_OBJ_STRING_get();
   public final static int STORED_OBJ_STRING_MAP = otapiJNI.STORED_OBJ_STRING_MAP_get();
   public final static int STORED_OBJ_WALLET_DATA = otapiJNI.STORED_OBJ_WALLET_DATA_get();
   public final static int STORED_OBJ_BITCOIN_ACCT = otapiJNI.STORED_OBJ_BITCOIN_ACCT_get();

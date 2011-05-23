@@ -87,26 +87,4 @@ public class ContactNym : Displayable {
     } 
   }
 
-  public uint GetServerInfoCount() {
-    uint ret = otapiPINVOKE.ContactNym_GetServerInfoCount(swigCPtr);
-    return ret;
-  }
-
-  public ServerInfo GetServerInfo(uint nIndex) {
-    IntPtr cPtr = otapiPINVOKE.ContactNym_GetServerInfo(swigCPtr, nIndex);
-    ServerInfo ret = (cPtr == IntPtr.Zero) ? null : new ServerInfo(cPtr, false);
-    return ret;
-  }
-
-  public bool RemoveServerInfo(uint nIndex) {
-    bool ret = otapiPINVOKE.ContactNym_RemoveServerInfo(swigCPtr, nIndex);
-    return ret;
-  }
-
-  public bool AddServerInfo(ServerInfo disownObject) {
-    bool ret = otapiPINVOKE.ContactNym_AddServerInfo(swigCPtr, ServerInfo.getCPtr(disownObject));
-    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
-    return ret;
-  }
-
 }

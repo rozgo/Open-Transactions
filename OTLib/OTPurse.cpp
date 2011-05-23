@@ -147,6 +147,8 @@ using namespace io;
 #include "OTASCIIArmor.h"
 #include "OTLog.h"
 
+#include "OTStorage.h"
+
 
 
 // Take all the tokens from a purse and add them to this purse.

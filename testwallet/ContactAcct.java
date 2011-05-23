@@ -91,9 +91,4 @@ public class ContactAcct extends Displayable {
     return otapiJNI.ContactAcct_public_key_get(swigCPtr, this);
   }
 
-  public static ContactAcct dynamic_cast(Storable pObject) {
-    long cPtr = otapiJNI.ContactAcct_dynamic_cast(Storable.getCPtr(pObject), pObject);
-    return (cPtr == 0) ? null : new ContactAcct(cPtr, false);
-  }
-
 }

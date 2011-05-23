@@ -159,6 +159,8 @@ using namespace io;
 #include "OTTransaction.h"
 #include "OTLog.h"
 
+#include "OTStorage.h"
+
 
 const char * OTTransaction::_TypeStrings[] = 
 {
