@@ -39,6 +39,18 @@ public class ContactNym : Displayable {
     }
   }
 
+  public string gui_label {
+    set {
+      otapiPINVOKE.ContactNym_gui_label_set(swigCPtr, value);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    } 
+    get {
+      string ret = otapiPINVOKE.ContactNym_gui_label_get(swigCPtr);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+      return ret;
+    } 
+  }
+
   public string nym_type {
     set {
       otapiPINVOKE.ContactNym_nym_type_set(swigCPtr, value);
@@ -85,6 +97,34 @@ public class ContactNym : Displayable {
       if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
       return ret;
     } 
+  }
+
+  public uint GetServerInfoCount() {
+    uint ret = otapiPINVOKE.ContactNym_GetServerInfoCount(swigCPtr);
+    return ret;
+  }
+
+  public ServerInfo GetServerInfo(uint nIndex) {
+    IntPtr cPtr = otapiPINVOKE.ContactNym_GetServerInfo(swigCPtr, nIndex);
+    ServerInfo ret = (cPtr == IntPtr.Zero) ? null : new ServerInfo(cPtr, false);
+    return ret;
+  }
+
+  public bool RemoveServerInfo(uint nIndexToRemove) {
+    bool ret = otapiPINVOKE.ContactNym_RemoveServerInfo(swigCPtr, nIndexToRemove);
+    return ret;
+  }
+
+  public bool AddServerInfo(ServerInfo disownObject) {
+    bool ret = otapiPINVOKE.ContactNym_AddServerInfo(swigCPtr, ServerInfo.getCPtr(disownObject));
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public new static ContactNym ot_dynamic_cast(Storable pObject) {
+    IntPtr cPtr = otapiPINVOKE.ContactNym_ot_dynamic_cast(Storable.getCPtr(pObject));
+    ContactNym ret = (cPtr == IntPtr.Zero) ? null : new ContactNym(cPtr, false);
+    return ret;
   }
 
 }

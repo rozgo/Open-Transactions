@@ -333,7 +333,7 @@ namespace Swig {
 #include "../OTLib/OTAsymmetricKey.h"
 #include "OTAPI_funcdef.h"
 #include "../OTLib/OTStorage.h"
-
+	
 
 #include <string>
 
@@ -2784,6 +2784,18 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_Storable_Create(int jarg1, int jarg2) {
 }
 
 
+SWIGEXPORT void * SWIGSTDCALL CSharp_Storable_ot_dynamic_cast(void * jarg1) {
+  void * jresult ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  OTDB::Storable *result = 0 ;
+  
+  arg1 = (OTDB::Storable *)jarg1; 
+  result = (OTDB::Storable *)OTDB::Storable::ot_dynamic_cast(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_Storage(void * jarg1) {
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
   
@@ -4930,19 +4942,19 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_QueryObject__SWIG_3(int jarg1, char * jarg2
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_delete_String(void * jarg1) {
-  OTDB::String *arg1 = (OTDB::String *) 0 ;
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_OTDBString(void * jarg1) {
+  OTDB::OTDBString *arg1 = (OTDB::OTDBString *) 0 ;
   
-  arg1 = (OTDB::String *)jarg1; 
+  arg1 = (OTDB::OTDBString *)jarg1; 
   delete arg1;
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_String_m_string_set(void * jarg1, char * jarg2) {
-  OTDB::String *arg1 = (OTDB::String *) 0 ;
+SWIGEXPORT void SWIGSTDCALL CSharp_OTDBString_m_string_set(void * jarg1, char * jarg2) {
+  OTDB::OTDBString *arg1 = (OTDB::OTDBString *) 0 ;
   std::string *arg2 = 0 ;
   
-  arg1 = (OTDB::String *)jarg1; 
+  arg1 = (OTDB::OTDBString *)jarg1; 
   if (!jarg2) {
     SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
     return ;
@@ -4953,14 +4965,26 @@ SWIGEXPORT void SWIGSTDCALL CSharp_String_m_string_set(void * jarg1, char * jarg
 }
 
 
-SWIGEXPORT char * SWIGSTDCALL CSharp_String_m_string_get(void * jarg1) {
+SWIGEXPORT char * SWIGSTDCALL CSharp_OTDBString_m_string_get(void * jarg1) {
   char * jresult ;
-  OTDB::String *arg1 = (OTDB::String *) 0 ;
+  OTDB::OTDBString *arg1 = (OTDB::OTDBString *) 0 ;
   std::string *result = 0 ;
   
-  arg1 = (OTDB::String *)jarg1; 
+  arg1 = (OTDB::OTDBString *)jarg1; 
   result = (std::string *) & ((arg1)->m_string);
   jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_OTDBString_ot_dynamic_cast(void * jarg1) {
+  void * jresult ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  OTDB::OTDBString *result = 0 ;
+  
+  arg1 = (OTDB::Storable *)jarg1; 
+  result = (OTDB::OTDBString *)OTDB::OTDBString::ot_dynamic_cast(arg1);
+  jresult = (void *)result; 
   return jresult;
 }
 
@@ -5036,6 +5060,18 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_StringMap_GetValue(void * jarg1, char * jar
 }
 
 
+SWIGEXPORT void * SWIGSTDCALL CSharp_StringMap_ot_dynamic_cast(void * jarg1) {
+  void * jresult ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  OTDB::StringMap *result = 0 ;
+  
+  arg1 = (OTDB::Storable *)jarg1; 
+  result = (OTDB::StringMap *)OTDB::StringMap::ot_dynamic_cast(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_Displayable(void * jarg1) {
   OTDB::Displayable *arg1 = (OTDB::Displayable *) 0 ;
   
@@ -5071,11 +5107,50 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_Displayable_gui_label_get(void * jarg1) {
 }
 
 
+SWIGEXPORT void * SWIGSTDCALL CSharp_Displayable_ot_dynamic_cast(void * jarg1) {
+  void * jresult ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  OTDB::Displayable *result = 0 ;
+  
+  arg1 = (OTDB::Storable *)jarg1; 
+  result = (OTDB::Displayable *)OTDB::Displayable::ot_dynamic_cast(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_Acct(void * jarg1) {
   OTDB::Acct *arg1 = (OTDB::Acct *) 0 ;
   
   arg1 = (OTDB::Acct *)jarg1; 
   delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Acct_gui_label_set(void * jarg1, char * jarg2) {
+  OTDB::Acct *arg1 = (OTDB::Acct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::Acct *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->gui_label = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_Acct_gui_label_get(void * jarg1) {
+  char * jresult ;
+  OTDB::Acct *arg1 = (OTDB::Acct *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::Acct *)jarg1; 
+  result = (std::string *) & ((arg1)->gui_label);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
 }
 
 
@@ -5133,11 +5208,104 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_Acct_server_id_get(void * jarg1) {
 }
 
 
+SWIGEXPORT void * SWIGSTDCALL CSharp_Acct_ot_dynamic_cast(void * jarg1) {
+  void * jresult ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  OTDB::Acct *result = 0 ;
+  
+  arg1 = (OTDB::Storable *)jarg1; 
+  result = (OTDB::Acct *)OTDB::Acct::ot_dynamic_cast(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_BitcoinAcct(void * jarg1) {
   OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) 0 ;
   
   arg1 = (OTDB::BitcoinAcct *)jarg1; 
   delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BitcoinAcct_gui_label_set(void * jarg1, char * jarg2) {
+  OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::BitcoinAcct *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->gui_label = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BitcoinAcct_gui_label_get(void * jarg1) {
+  char * jresult ;
+  OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::BitcoinAcct *)jarg1; 
+  result = (std::string *) & ((arg1)->gui_label);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BitcoinAcct_acct_id_set(void * jarg1, char * jarg2) {
+  OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::BitcoinAcct *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->acct_id = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BitcoinAcct_acct_id_get(void * jarg1) {
+  char * jresult ;
+  OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::BitcoinAcct *)jarg1; 
+  result = (std::string *) & ((arg1)->acct_id);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BitcoinAcct_server_id_set(void * jarg1, char * jarg2) {
+  OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::BitcoinAcct *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->server_id = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BitcoinAcct_server_id_get(void * jarg1) {
+  char * jresult ;
+  OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::BitcoinAcct *)jarg1; 
+  result = (std::string *) & ((arg1)->server_id);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
 }
 
 
@@ -5168,11 +5336,50 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_BitcoinAcct_bitcoin_acct_name_get(void * ja
 }
 
 
+SWIGEXPORT void * SWIGSTDCALL CSharp_BitcoinAcct_ot_dynamic_cast(void * jarg1) {
+  void * jresult ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  OTDB::BitcoinAcct *result = 0 ;
+  
+  arg1 = (OTDB::Storable *)jarg1; 
+  result = (OTDB::BitcoinAcct *)OTDB::BitcoinAcct::ot_dynamic_cast(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_ServerInfo(void * jarg1) {
   OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
   
   arg1 = (OTDB::ServerInfo *)jarg1; 
   delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ServerInfo_gui_label_set(void * jarg1, char * jarg2) {
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::ServerInfo *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->gui_label = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_ServerInfo_gui_label_get(void * jarg1) {
+  char * jresult ;
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::ServerInfo *)jarg1; 
+  result = (std::string *) & ((arg1)->gui_label);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
 }
 
 
@@ -5230,11 +5437,104 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_ServerInfo_server_type_get(void * jarg1) {
 }
 
 
+SWIGEXPORT void * SWIGSTDCALL CSharp_ServerInfo_ot_dynamic_cast(void * jarg1) {
+  void * jresult ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  OTDB::ServerInfo *result = 0 ;
+  
+  arg1 = (OTDB::Storable *)jarg1; 
+  result = (OTDB::ServerInfo *)OTDB::ServerInfo::ot_dynamic_cast(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_Server(void * jarg1) {
   OTDB::Server *arg1 = (OTDB::Server *) 0 ;
   
   arg1 = (OTDB::Server *)jarg1; 
   delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Server_gui_label_set(void * jarg1, char * jarg2) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::Server *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->gui_label = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_Server_gui_label_get(void * jarg1) {
+  char * jresult ;
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::Server *)jarg1; 
+  result = (std::string *) & ((arg1)->gui_label);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Server_server_id_set(void * jarg1, char * jarg2) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::Server *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->server_id = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_Server_server_id_get(void * jarg1) {
+  char * jresult ;
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::Server *)jarg1; 
+  result = (std::string *) & ((arg1)->server_id);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Server_server_type_set(void * jarg1, char * jarg2) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::Server *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->server_type = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_Server_server_type_get(void * jarg1) {
+  char * jresult ;
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::Server *)jarg1; 
+  result = (std::string *) & ((arg1)->server_type);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
 }
 
 
@@ -5292,11 +5592,158 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_Server_server_port_get(void * jarg1) {
 }
 
 
+SWIGEXPORT void * SWIGSTDCALL CSharp_Server_ot_dynamic_cast(void * jarg1) {
+  void * jresult ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  OTDB::Server *result = 0 ;
+  
+  arg1 = (OTDB::Storable *)jarg1; 
+  result = (OTDB::Server *)OTDB::Server::ot_dynamic_cast(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_BitcoinServer(void * jarg1) {
   OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
   
   arg1 = (OTDB::BitcoinServer *)jarg1; 
   delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BitcoinServer_gui_label_set(void * jarg1, char * jarg2) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::BitcoinServer *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->gui_label = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BitcoinServer_gui_label_get(void * jarg1) {
+  char * jresult ;
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::BitcoinServer *)jarg1; 
+  result = (std::string *) & ((arg1)->gui_label);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BitcoinServer_server_id_set(void * jarg1, char * jarg2) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::BitcoinServer *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->server_id = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BitcoinServer_server_id_get(void * jarg1) {
+  char * jresult ;
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::BitcoinServer *)jarg1; 
+  result = (std::string *) & ((arg1)->server_id);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BitcoinServer_server_type_set(void * jarg1, char * jarg2) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::BitcoinServer *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->server_type = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BitcoinServer_server_type_get(void * jarg1) {
+  char * jresult ;
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::BitcoinServer *)jarg1; 
+  result = (std::string *) & ((arg1)->server_type);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BitcoinServer_server_host_set(void * jarg1, char * jarg2) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::BitcoinServer *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->server_host = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BitcoinServer_server_host_get(void * jarg1) {
+  char * jresult ;
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::BitcoinServer *)jarg1; 
+  result = (std::string *) & ((arg1)->server_host);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BitcoinServer_server_port_set(void * jarg1, char * jarg2) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::BitcoinServer *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->server_port = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BitcoinServer_server_port_get(void * jarg1) {
+  char * jresult ;
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::BitcoinServer *)jarg1; 
+  result = (std::string *) & ((arg1)->server_port);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
 }
 
 
@@ -5354,11 +5801,50 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_BitcoinServer_bitcoin_password_get(void * j
 }
 
 
+SWIGEXPORT void * SWIGSTDCALL CSharp_BitcoinServer_ot_dynamic_cast(void * jarg1) {
+  void * jresult ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  OTDB::BitcoinServer *result = 0 ;
+  
+  arg1 = (OTDB::Storable *)jarg1; 
+  result = (OTDB::BitcoinServer *)OTDB::BitcoinServer::ot_dynamic_cast(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_ContactNym(void * jarg1) {
   OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
   
   arg1 = (OTDB::ContactNym *)jarg1; 
   delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ContactNym_gui_label_set(void * jarg1, char * jarg2) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->gui_label = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_ContactNym_gui_label_get(void * jarg1) {
+  char * jresult ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  result = (std::string *) & ((arg1)->gui_label);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
 }
 
 
@@ -5470,6 +5956,76 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_ContactNym_memo_get(void * jarg1) {
 }
 
 
+SWIGEXPORT unsigned long SWIGSTDCALL CSharp_ContactNym_GetServerInfoCount(void * jarg1) {
+  unsigned long jresult ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  size_t result;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  result = (arg1)->GetServerInfoCount();
+  jresult = (unsigned long)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_ContactNym_GetServerInfo(void * jarg1, unsigned long jarg2) {
+  void * jresult ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  size_t arg2 ;
+  OTDB::ServerInfo *result = 0 ;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (OTDB::ServerInfo *)(arg1)->GetServerInfo(arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ContactNym_RemoveServerInfo(void * jarg1, unsigned long jarg2) {
+  unsigned int jresult ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  size_t arg2 ;
+  bool result;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (bool)(arg1)->RemoveServerInfo(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ContactNym_AddServerInfo(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  OTDB::ServerInfo *arg2 = 0 ;
+  bool result;
+  
+  arg1 = (OTDB::ContactNym *)jarg1; 
+  arg2 = (OTDB::ServerInfo *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "OTDB::ServerInfo & type is null", 0);
+    return 0;
+  } 
+  result = (bool)(arg1)->AddServerInfo(*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_ContactNym_ot_dynamic_cast(void * jarg1) {
+  void * jresult ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  OTDB::ContactNym *result = 0 ;
+  
+  arg1 = (OTDB::Storable *)jarg1; 
+  result = (OTDB::ContactNym *)OTDB::ContactNym::ot_dynamic_cast(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_WalletData(void * jarg1) {
   OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
   
@@ -5478,11 +6034,166 @@ SWIGEXPORT void SWIGSTDCALL CSharp_delete_WalletData(void * jarg1) {
 }
 
 
+SWIGEXPORT unsigned long SWIGSTDCALL CSharp_WalletData_GetBitcoinServerCount(void * jarg1) {
+  unsigned long jresult ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t result;
+  
+  arg1 = (OTDB::WalletData *)jarg1; 
+  result = (arg1)->GetBitcoinServerCount();
+  jresult = (unsigned long)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_WalletData_GetBitcoinServer(void * jarg1, unsigned long jarg2) {
+  void * jresult ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  OTDB::BitcoinServer *result = 0 ;
+  
+  arg1 = (OTDB::WalletData *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (OTDB::BitcoinServer *)(arg1)->GetBitcoinServer(arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_WalletData_RemoveBitcoinServer(void * jarg1, unsigned long jarg2) {
+  unsigned int jresult ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  bool result;
+  
+  arg1 = (OTDB::WalletData *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (bool)(arg1)->RemoveBitcoinServer(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_WalletData_AddBitcoinServer(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  OTDB::BitcoinServer *arg2 = 0 ;
+  bool result;
+  
+  arg1 = (OTDB::WalletData *)jarg1; 
+  arg2 = (OTDB::BitcoinServer *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "OTDB::BitcoinServer & type is null", 0);
+    return 0;
+  } 
+  result = (bool)(arg1)->AddBitcoinServer(*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned long SWIGSTDCALL CSharp_WalletData_GetBitcoinAcctCount(void * jarg1) {
+  unsigned long jresult ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t result;
+  
+  arg1 = (OTDB::WalletData *)jarg1; 
+  result = (arg1)->GetBitcoinAcctCount();
+  jresult = (unsigned long)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_WalletData_GetBitcoinAcct(void * jarg1, unsigned long jarg2) {
+  void * jresult ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  OTDB::BitcoinAcct *result = 0 ;
+  
+  arg1 = (OTDB::WalletData *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (OTDB::BitcoinAcct *)(arg1)->GetBitcoinAcct(arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_WalletData_RemoveBitcoinAcct(void * jarg1, unsigned long jarg2) {
+  unsigned int jresult ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  bool result;
+  
+  arg1 = (OTDB::WalletData *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (bool)(arg1)->RemoveBitcoinAcct(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_WalletData_AddBitcoinAcct(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  OTDB::BitcoinAcct *arg2 = 0 ;
+  bool result;
+  
+  arg1 = (OTDB::WalletData *)jarg1; 
+  arg2 = (OTDB::BitcoinAcct *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "OTDB::BitcoinAcct & type is null", 0);
+    return 0;
+  } 
+  result = (bool)(arg1)->AddBitcoinAcct(*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_WalletData_ot_dynamic_cast(void * jarg1) {
+  void * jresult ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  OTDB::WalletData *result = 0 ;
+  
+  arg1 = (OTDB::Storable *)jarg1; 
+  result = (OTDB::WalletData *)OTDB::WalletData::ot_dynamic_cast(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_ContactAcct(void * jarg1) {
   OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
   
   arg1 = (OTDB::ContactAcct *)jarg1; 
   delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ContactAcct_gui_label_set(void * jarg1, char * jarg2) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->gui_label = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_ContactAcct_gui_label_get(void * jarg1) {
+  char * jresult ;
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::ContactAcct *)jarg1; 
+  result = (std::string *) & ((arg1)->gui_label);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
 }
 
 
@@ -5675,11 +6386,50 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_ContactAcct_public_key_get(void * jarg1) {
 }
 
 
+SWIGEXPORT void * SWIGSTDCALL CSharp_ContactAcct_ot_dynamic_cast(void * jarg1) {
+  void * jresult ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  OTDB::ContactAcct *result = 0 ;
+  
+  arg1 = (OTDB::Storable *)jarg1; 
+  result = (OTDB::ContactAcct *)OTDB::ContactAcct::ot_dynamic_cast(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_Contact(void * jarg1) {
   OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
   
   arg1 = (OTDB::Contact *)jarg1; 
   delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Contact_gui_label_set(void * jarg1, char * jarg2) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *arg2 = 0 ;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  std::string arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  if (arg1) (arg1)->gui_label = *arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_Contact_gui_label_get(void * jarg1) {
+  char * jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *result = 0 ;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  result = (std::string *) & ((arg1)->gui_label);
+  jresult = SWIG_csharp_string_callback(result->c_str()); 
+  return jresult;
 }
 
 
@@ -5791,6 +6541,134 @@ SWIGEXPORT char * SWIGSTDCALL CSharp_Contact_public_key_get(void * jarg1) {
 }
 
 
+SWIGEXPORT unsigned long SWIGSTDCALL CSharp_Contact_GetContactNymCount(void * jarg1) {
+  unsigned long jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t result;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  result = (arg1)->GetContactNymCount();
+  jresult = (unsigned long)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_Contact_GetContactNym(void * jarg1, unsigned long jarg2) {
+  void * jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  OTDB::ContactNym *result = 0 ;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (OTDB::ContactNym *)(arg1)->GetContactNym(arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Contact_RemoveContactNym(void * jarg1, unsigned long jarg2) {
+  unsigned int jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  bool result;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (bool)(arg1)->RemoveContactNym(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Contact_AddContactNym(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  OTDB::ContactNym *arg2 = 0 ;
+  bool result;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  arg2 = (OTDB::ContactNym *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "OTDB::ContactNym & type is null", 0);
+    return 0;
+  } 
+  result = (bool)(arg1)->AddContactNym(*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned long SWIGSTDCALL CSharp_Contact_GetContactAcctCount(void * jarg1) {
+  unsigned long jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t result;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  result = (arg1)->GetContactAcctCount();
+  jresult = (unsigned long)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_Contact_GetContactAcct(void * jarg1, unsigned long jarg2) {
+  void * jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  OTDB::ContactAcct *result = 0 ;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (OTDB::ContactAcct *)(arg1)->GetContactAcct(arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Contact_RemoveContactAcct(void * jarg1, unsigned long jarg2) {
+  unsigned int jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  bool result;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (bool)(arg1)->RemoveContactAcct(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Contact_AddContactAcct(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  OTDB::ContactAcct *arg2 = 0 ;
+  bool result;
+  
+  arg1 = (OTDB::Contact *)jarg1; 
+  arg2 = (OTDB::ContactAcct *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "OTDB::ContactAcct & type is null", 0);
+    return 0;
+  } 
+  result = (bool)(arg1)->AddContactAcct(*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_Contact_ot_dynamic_cast(void * jarg1) {
+  void * jresult ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  OTDB::Contact *result = 0 ;
+  
+  arg1 = (OTDB::Storable *)jarg1; 
+  result = (OTDB::Contact *)OTDB::Contact::ot_dynamic_cast(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_AddressBook(void * jarg1) {
   OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
   
@@ -5799,7 +6677,77 @@ SWIGEXPORT void SWIGSTDCALL CSharp_delete_AddressBook(void * jarg1) {
 }
 
 
-SWIGEXPORT OTDB::Storable * SWIGSTDCALL CSharp_String_SWIGUpcast(OTDB::String *jarg1) {
+SWIGEXPORT unsigned long SWIGSTDCALL CSharp_AddressBook_GetContactCount(void * jarg1) {
+  unsigned long jresult ;
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  size_t result;
+  
+  arg1 = (OTDB::AddressBook *)jarg1; 
+  result = (arg1)->GetContactCount();
+  jresult = (unsigned long)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_AddressBook_GetContact(void * jarg1, unsigned long jarg2) {
+  void * jresult ;
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  size_t arg2 ;
+  OTDB::Contact *result = 0 ;
+  
+  arg1 = (OTDB::AddressBook *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (OTDB::Contact *)(arg1)->GetContact(arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_AddressBook_RemoveContact(void * jarg1, unsigned long jarg2) {
+  unsigned int jresult ;
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  size_t arg2 ;
+  bool result;
+  
+  arg1 = (OTDB::AddressBook *)jarg1; 
+  arg2 = (size_t)jarg2; 
+  result = (bool)(arg1)->RemoveContact(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_AddressBook_AddContact(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  OTDB::Contact *arg2 = 0 ;
+  bool result;
+  
+  arg1 = (OTDB::AddressBook *)jarg1; 
+  arg2 = (OTDB::Contact *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "OTDB::Contact & type is null", 0);
+    return 0;
+  } 
+  result = (bool)(arg1)->AddContact(*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_AddressBook_ot_dynamic_cast(void * jarg1) {
+  void * jresult ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  OTDB::AddressBook *result = 0 ;
+  
+  arg1 = (OTDB::Storable *)jarg1; 
+  result = (OTDB::AddressBook *)OTDB::AddressBook::ot_dynamic_cast(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT OTDB::Storable * SWIGSTDCALL CSharp_OTDBString_SWIGUpcast(OTDB::OTDBString *jarg1) {
     return (OTDB::Storable *)jarg1;
 }
 

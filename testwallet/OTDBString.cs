@@ -10,18 +10,18 @@
 using System;
 using System.Runtime.InteropServices;
 
-public class String : Storable {
+public class OTDBString : Storable {
   private HandleRef swigCPtr;
 
-  internal String(IntPtr cPtr, bool cMemoryOwn) : base(otapiPINVOKE.String_SWIGUpcast(cPtr), cMemoryOwn) {
+  internal OTDBString(IntPtr cPtr, bool cMemoryOwn) : base(otapiPINVOKE.OTDBString_SWIGUpcast(cPtr), cMemoryOwn) {
     swigCPtr = new HandleRef(this, cPtr);
   }
 
-  internal static HandleRef getCPtr(String obj) {
+  internal static HandleRef getCPtr(OTDBString obj) {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
   }
 
-  ~String() {
+  ~OTDBString() {
     Dispose();
   }
 
@@ -30,7 +30,7 @@ public class String : Storable {
       if (swigCPtr.Handle != IntPtr.Zero) {
         if (swigCMemOwn) {
           swigCMemOwn = false;
-          otapiPINVOKE.delete_String(swigCPtr);
+          otapiPINVOKE.delete_OTDBString(swigCPtr);
         }
         swigCPtr = new HandleRef(null, IntPtr.Zero);
       }
@@ -41,14 +41,20 @@ public class String : Storable {
 
   public string m_string {
     set {
-      otapiPINVOKE.String_m_string_set(swigCPtr, value);
+      otapiPINVOKE.OTDBString_m_string_set(swigCPtr, value);
       if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     } 
     get {
-      string ret = otapiPINVOKE.String_m_string_get(swigCPtr);
+      string ret = otapiPINVOKE.OTDBString_m_string_get(swigCPtr);
       if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
       return ret;
     } 
+  }
+
+  public new static OTDBString ot_dynamic_cast(Storable pObject) {
+    IntPtr cPtr = otapiPINVOKE.OTDBString_ot_dynamic_cast(Storable.getCPtr(pObject));
+    OTDBString ret = (cPtr == IntPtr.Zero) ? null : new OTDBString(cPtr, false);
+    return ret;
   }
 
 }

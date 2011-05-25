@@ -39,4 +39,32 @@ public class AddressBook : Storable {
     }
   }
 
+  public uint GetContactCount() {
+    uint ret = otapiPINVOKE.AddressBook_GetContactCount(swigCPtr);
+    return ret;
+  }
+
+  public Contact GetContact(uint nIndex) {
+    IntPtr cPtr = otapiPINVOKE.AddressBook_GetContact(swigCPtr, nIndex);
+    Contact ret = (cPtr == IntPtr.Zero) ? null : new Contact(cPtr, false);
+    return ret;
+  }
+
+  public bool RemoveContact(uint nIndexToRemove) {
+    bool ret = otapiPINVOKE.AddressBook_RemoveContact(swigCPtr, nIndexToRemove);
+    return ret;
+  }
+
+  public bool AddContact(Contact disownObject) {
+    bool ret = otapiPINVOKE.AddressBook_AddContact(swigCPtr, Contact.getCPtr(disownObject));
+    if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    return ret;
+  }
+
+  public new static AddressBook ot_dynamic_cast(Storable pObject) {
+    IntPtr cPtr = otapiPINVOKE.AddressBook_ot_dynamic_cast(Storable.getCPtr(pObject));
+    AddressBook ret = (cPtr == IntPtr.Zero) ? null : new AddressBook(cPtr, false);
+    return ret;
+  }
+
 }

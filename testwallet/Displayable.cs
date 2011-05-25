@@ -51,4 +51,10 @@ public class Displayable : Storable {
     } 
   }
 
+  public new static Displayable ot_dynamic_cast(Storable pObject) {
+    IntPtr cPtr = otapiPINVOKE.Displayable_ot_dynamic_cast(Storable.getCPtr(pObject));
+    Displayable ret = (cPtr == IntPtr.Zero) ? null : new Displayable(cPtr, false);
+    return ret;
+  }
+
 }

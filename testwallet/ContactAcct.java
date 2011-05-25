@@ -34,6 +34,25 @@ public class ContactAcct extends Displayable {
     }
     super.delete();
   }
+{
+	/*@SWIG:OTAPI.i,392,OT_CAN_BE_CONTAINED_BY@*/
+	// Ensure that the GC doesn't collect any OT_CONTAINER instance set from Java
+	private Contact containerRefContact;
+	// ----------------	
+	protected void addReference(Contact theContainer) {  // This is Java code
+		containerRefContact = theContainer;
+	}
+	// ----------------
+/*@SWIG@*/
+	// ------------------------
+}
+  public void setGui_label(String value) {
+    otapiJNI.ContactAcct_gui_label_set(swigCPtr, this, value);
+  }
+
+  public String getGui_label() {
+    return otapiJNI.ContactAcct_gui_label_get(swigCPtr, this);
+  }
 
   public void setServer_type(String value) {
     otapiJNI.ContactAcct_server_type_set(swigCPtr, this, value);
@@ -90,5 +109,15 @@ public class ContactAcct extends Displayable {
   public String getPublic_key() {
     return otapiJNI.ContactAcct_public_key_get(swigCPtr, this);
   }
+
+  public static ContactAcct ot_dynamic_cast(Storable pObject) { 
+    long cPtr = otapiJNI.ContactAcct_ot_dynamic_cast(Storable.getCPtr(pObject), pObject); 
+    ContactAcct ret = null; 
+    if (cPtr != 0) { 
+		ret = new ContactAcct(cPtr, false);
+		ret.addReference(this); 
+    } 
+    return ret; 
+}
 
 }

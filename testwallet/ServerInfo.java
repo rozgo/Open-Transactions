@@ -34,6 +34,25 @@ public class ServerInfo extends Displayable {
     }
     super.delete();
   }
+{
+	/*@SWIG:OTAPI.i,392,OT_CAN_BE_CONTAINED_BY@*/
+	// Ensure that the GC doesn't collect any OT_CONTAINER instance set from Java
+	private ContactNym containerRefContactNym;
+	// ----------------	
+	protected void addReference(ContactNym theContainer) {  // This is Java code
+		containerRefContactNym = theContainer;
+	}
+	// ----------------
+/*@SWIG@*/
+	// ------------------------
+}
+  public void setGui_label(String value) {
+    otapiJNI.ServerInfo_gui_label_set(swigCPtr, this, value);
+  }
+
+  public String getGui_label() {
+    return otapiJNI.ServerInfo_gui_label_get(swigCPtr, this);
+  }
 
   public void setServer_id(String value) {
     otapiJNI.ServerInfo_server_id_set(swigCPtr, this, value);
@@ -50,5 +69,15 @@ public class ServerInfo extends Displayable {
   public String getServer_type() {
     return otapiJNI.ServerInfo_server_type_get(swigCPtr, this);
   }
+
+  public static ServerInfo ot_dynamic_cast(Storable pObject) { 
+    long cPtr = otapiJNI.ServerInfo_ot_dynamic_cast(Storable.getCPtr(pObject), pObject); 
+    ServerInfo ret = null; 
+    if (cPtr != 0) { 
+		ret = new ServerInfo(cPtr, false);
+		ret.addReference(this); 
+    } 
+    return ret; 
+}
 
 }

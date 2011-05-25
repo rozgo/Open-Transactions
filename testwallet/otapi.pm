@@ -316,6 +316,7 @@ sub DESTROY {
 }
 
 *Create = *otapic::Storable_Create;
+*ot_dynamic_cast = *otapic::Storable_ot_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -371,9 +372,9 @@ sub ACQUIRE {
 }
 
 
-############# Class : otapi::String ##############
+############# Class : otapi::OTDBString ##############
 
-package otapi::String;
+package otapi::OTDBString;
 use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 @ISA = qw( otapi::Storable otapi );
 %OWNER = ();
@@ -384,13 +385,14 @@ sub DESTROY {
     return unless defined $self;
     delete $ITERATORS{$self};
     if (exists $OWNER{$self}) {
-        otapic::delete_String($self);
+        otapic::delete_OTDBString($self);
         delete $OWNER{$self};
     }
 }
 
-*swig_m_string_get = *otapic::String_m_string_get;
-*swig_m_string_set = *otapic::String_m_string_set;
+*swig_m_string_get = *otapic::OTDBString_m_string_get;
+*swig_m_string_set = *otapic::OTDBString_m_string_set;
+*ot_dynamic_cast = *otapic::OTDBString_ot_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -426,6 +428,7 @@ sub DESTROY {
 *swig_the_map_set = *otapic::StringMap_the_map_set;
 *SetValue = *otapic::StringMap_SetValue;
 *GetValue = *otapic::StringMap_GetValue;
+*ot_dynamic_cast = *otapic::StringMap_ot_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -459,6 +462,7 @@ sub DESTROY {
 
 *swig_gui_label_get = *otapic::Displayable_gui_label_get;
 *swig_gui_label_set = *otapic::Displayable_gui_label_set;
+*ot_dynamic_cast = *otapic::Displayable_ot_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -490,10 +494,13 @@ sub DESTROY {
     }
 }
 
+*swig_gui_label_get = *otapic::Acct_gui_label_get;
+*swig_gui_label_set = *otapic::Acct_gui_label_set;
 *swig_acct_id_get = *otapic::Acct_acct_id_get;
 *swig_acct_id_set = *otapic::Acct_acct_id_set;
 *swig_server_id_get = *otapic::Acct_server_id_get;
 *swig_server_id_set = *otapic::Acct_server_id_set;
+*ot_dynamic_cast = *otapic::Acct_ot_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -525,8 +532,15 @@ sub DESTROY {
     }
 }
 
+*swig_gui_label_get = *otapic::BitcoinAcct_gui_label_get;
+*swig_gui_label_set = *otapic::BitcoinAcct_gui_label_set;
+*swig_acct_id_get = *otapic::BitcoinAcct_acct_id_get;
+*swig_acct_id_set = *otapic::BitcoinAcct_acct_id_set;
+*swig_server_id_get = *otapic::BitcoinAcct_server_id_get;
+*swig_server_id_set = *otapic::BitcoinAcct_server_id_set;
 *swig_bitcoin_acct_name_get = *otapic::BitcoinAcct_bitcoin_acct_name_get;
 *swig_bitcoin_acct_name_set = *otapic::BitcoinAcct_bitcoin_acct_name_set;
+*ot_dynamic_cast = *otapic::BitcoinAcct_ot_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -558,10 +572,13 @@ sub DESTROY {
     }
 }
 
+*swig_gui_label_get = *otapic::ServerInfo_gui_label_get;
+*swig_gui_label_set = *otapic::ServerInfo_gui_label_set;
 *swig_server_id_get = *otapic::ServerInfo_server_id_get;
 *swig_server_id_set = *otapic::ServerInfo_server_id_set;
 *swig_server_type_get = *otapic::ServerInfo_server_type_get;
 *swig_server_type_set = *otapic::ServerInfo_server_type_set;
+*ot_dynamic_cast = *otapic::ServerInfo_ot_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -593,10 +610,17 @@ sub DESTROY {
     }
 }
 
+*swig_gui_label_get = *otapic::Server_gui_label_get;
+*swig_gui_label_set = *otapic::Server_gui_label_set;
+*swig_server_id_get = *otapic::Server_server_id_get;
+*swig_server_id_set = *otapic::Server_server_id_set;
+*swig_server_type_get = *otapic::Server_server_type_get;
+*swig_server_type_set = *otapic::Server_server_type_set;
 *swig_server_host_get = *otapic::Server_server_host_get;
 *swig_server_host_set = *otapic::Server_server_host_set;
 *swig_server_port_get = *otapic::Server_server_port_get;
 *swig_server_port_set = *otapic::Server_server_port_set;
+*ot_dynamic_cast = *otapic::Server_ot_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -628,10 +652,21 @@ sub DESTROY {
     }
 }
 
+*swig_gui_label_get = *otapic::BitcoinServer_gui_label_get;
+*swig_gui_label_set = *otapic::BitcoinServer_gui_label_set;
+*swig_server_id_get = *otapic::BitcoinServer_server_id_get;
+*swig_server_id_set = *otapic::BitcoinServer_server_id_set;
+*swig_server_type_get = *otapic::BitcoinServer_server_type_get;
+*swig_server_type_set = *otapic::BitcoinServer_server_type_set;
+*swig_server_host_get = *otapic::BitcoinServer_server_host_get;
+*swig_server_host_set = *otapic::BitcoinServer_server_host_set;
+*swig_server_port_get = *otapic::BitcoinServer_server_port_get;
+*swig_server_port_set = *otapic::BitcoinServer_server_port_set;
 *swig_bitcoin_username_get = *otapic::BitcoinServer_bitcoin_username_get;
 *swig_bitcoin_username_set = *otapic::BitcoinServer_bitcoin_username_set;
 *swig_bitcoin_password_get = *otapic::BitcoinServer_bitcoin_password_get;
 *swig_bitcoin_password_set = *otapic::BitcoinServer_bitcoin_password_set;
+*ot_dynamic_cast = *otapic::BitcoinServer_ot_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -663,6 +698,8 @@ sub DESTROY {
     }
 }
 
+*swig_gui_label_get = *otapic::ContactNym_gui_label_get;
+*swig_gui_label_set = *otapic::ContactNym_gui_label_set;
 *swig_nym_type_get = *otapic::ContactNym_nym_type_get;
 *swig_nym_type_set = *otapic::ContactNym_nym_type_set;
 *swig_nym_id_get = *otapic::ContactNym_nym_id_get;
@@ -671,6 +708,11 @@ sub DESTROY {
 *swig_public_key_set = *otapic::ContactNym_public_key_set;
 *swig_memo_get = *otapic::ContactNym_memo_get;
 *swig_memo_set = *otapic::ContactNym_memo_set;
+*GetServerInfoCount = *otapic::ContactNym_GetServerInfoCount;
+*GetServerInfo = *otapic::ContactNym_GetServerInfo;
+*RemoveServerInfo = *otapic::ContactNym_RemoveServerInfo;
+*AddServerInfo = *otapic::ContactNym_AddServerInfo;
+*ot_dynamic_cast = *otapic::ContactNym_ot_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -702,6 +744,15 @@ sub DESTROY {
     }
 }
 
+*GetBitcoinServerCount = *otapic::WalletData_GetBitcoinServerCount;
+*GetBitcoinServer = *otapic::WalletData_GetBitcoinServer;
+*RemoveBitcoinServer = *otapic::WalletData_RemoveBitcoinServer;
+*AddBitcoinServer = *otapic::WalletData_AddBitcoinServer;
+*GetBitcoinAcctCount = *otapic::WalletData_GetBitcoinAcctCount;
+*GetBitcoinAcct = *otapic::WalletData_GetBitcoinAcct;
+*RemoveBitcoinAcct = *otapic::WalletData_RemoveBitcoinAcct;
+*AddBitcoinAcct = *otapic::WalletData_AddBitcoinAcct;
+*ot_dynamic_cast = *otapic::WalletData_ot_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -733,6 +784,8 @@ sub DESTROY {
     }
 }
 
+*swig_gui_label_get = *otapic::ContactAcct_gui_label_get;
+*swig_gui_label_set = *otapic::ContactAcct_gui_label_set;
 *swig_server_type_get = *otapic::ContactAcct_server_type_get;
 *swig_server_type_set = *otapic::ContactAcct_server_type_set;
 *swig_server_id_get = *otapic::ContactAcct_server_id_get;
@@ -747,6 +800,7 @@ sub DESTROY {
 *swig_memo_set = *otapic::ContactAcct_memo_set;
 *swig_public_key_get = *otapic::ContactAcct_public_key_get;
 *swig_public_key_set = *otapic::ContactAcct_public_key_set;
+*ot_dynamic_cast = *otapic::ContactAcct_ot_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -778,6 +832,8 @@ sub DESTROY {
     }
 }
 
+*swig_gui_label_get = *otapic::Contact_gui_label_get;
+*swig_gui_label_set = *otapic::Contact_gui_label_set;
 *swig_contact_id_get = *otapic::Contact_contact_id_get;
 *swig_contact_id_set = *otapic::Contact_contact_id_set;
 *swig_email_get = *otapic::Contact_email_get;
@@ -786,6 +842,15 @@ sub DESTROY {
 *swig_memo_set = *otapic::Contact_memo_set;
 *swig_public_key_get = *otapic::Contact_public_key_get;
 *swig_public_key_set = *otapic::Contact_public_key_set;
+*GetContactNymCount = *otapic::Contact_GetContactNymCount;
+*GetContactNym = *otapic::Contact_GetContactNym;
+*RemoveContactNym = *otapic::Contact_RemoveContactNym;
+*AddContactNym = *otapic::Contact_AddContactNym;
+*GetContactAcctCount = *otapic::Contact_GetContactAcctCount;
+*GetContactAcct = *otapic::Contact_GetContactAcct;
+*RemoveContactAcct = *otapic::Contact_RemoveContactAcct;
+*AddContactAcct = *otapic::Contact_AddContactAcct;
+*ot_dynamic_cast = *otapic::Contact_ot_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -817,6 +882,11 @@ sub DESTROY {
     }
 }
 
+*GetContactCount = *otapic::AddressBook_GetContactCount;
+*GetContact = *otapic::AddressBook_GetContact;
+*RemoveContact = *otapic::AddressBook_RemoveContact;
+*AddContact = *otapic::AddressBook_AddContact;
+*ot_dynamic_cast = *otapic::AddressBook_ot_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);

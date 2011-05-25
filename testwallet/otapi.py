@@ -762,12 +762,18 @@ class Storable(_object):
     __del__ = lambda self : None;
     __swig_getmethods__["Create"] = lambda x: _otapi.Storable_Create
     if _newclass:Create = staticmethod(_otapi.Storable_Create)
+    __swig_getmethods__["ot_dynamic_cast"] = lambda x: _otapi.Storable_ot_dynamic_cast
+    if _newclass:ot_dynamic_cast = staticmethod(_otapi.Storable_ot_dynamic_cast)
 Storable_swigregister = _otapi.Storable_swigregister
 Storable_swigregister(Storable)
 
 def Storable_Create(*args):
   return _otapi.Storable_Create(*args)
 Storable_Create = _otapi.Storable_Create
+
+def Storable_ot_dynamic_cast(*args):
+  return _otapi.Storable_ot_dynamic_cast(*args)
+Storable_ot_dynamic_cast = _otapi.Storable_ot_dynamic_cast
 
 class Storage(_object):
     __swig_setmethods__ = {}
@@ -806,22 +812,24 @@ GetDefaultStorage = _otapi.GetDefaultStorage
 def CreateObject(*args):
   return _otapi.CreateObject(*args)
 CreateObject = _otapi.CreateObject
-class String(Storable):
+class OTDBString(Storable):
     __swig_setmethods__ = {}
     for _s in [Storable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, String, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(self, OTDBString, name, value)
     __swig_getmethods__ = {}
     for _s in [Storable]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
-    __getattr__ = lambda self, name: _swig_getattr(self, String, name)
+    __getattr__ = lambda self, name: _swig_getattr(self, OTDBString, name)
     def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
     __repr__ = _swig_repr
-    __swig_destroy__ = _otapi.delete_String
+    __swig_destroy__ = _otapi.delete_OTDBString
     __del__ = lambda self : None;
-    __swig_setmethods__["m_string"] = _otapi.String_m_string_set
-    __swig_getmethods__["m_string"] = _otapi.String_m_string_get
-    if _newclass:m_string = _swig_property(_otapi.String_m_string_get, _otapi.String_m_string_set)
-String_swigregister = _otapi.String_swigregister
-String_swigregister(String)
+    __swig_setmethods__["m_string"] = _otapi.OTDBString_m_string_set
+    __swig_getmethods__["m_string"] = _otapi.OTDBString_m_string_get
+    if _newclass:m_string = _swig_property(_otapi.OTDBString_m_string_get, _otapi.OTDBString_m_string_set)
+    __swig_getmethods__["ot_dynamic_cast"] = lambda x: _otapi.OTDBString_ot_dynamic_cast
+    if _newclass:ot_dynamic_cast = staticmethod(_otapi.OTDBString_ot_dynamic_cast)
+OTDBString_swigregister = _otapi.OTDBString_swigregister
+OTDBString_swigregister(OTDBString)
 
 def InitDefaultStorage(*args):
   return _otapi.InitDefaultStorage(*args)
@@ -859,6 +867,10 @@ def QueryObject(*args):
   return _otapi.QueryObject(*args)
 QueryObject = _otapi.QueryObject
 
+def OTDBString_ot_dynamic_cast(*args):
+  return _otapi.OTDBString_ot_dynamic_cast(*args)
+OTDBString_ot_dynamic_cast = _otapi.OTDBString_ot_dynamic_cast
+
 class StringMap(Storable):
     __swig_setmethods__ = {}
     for _s in [Storable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
@@ -875,8 +887,14 @@ class StringMap(Storable):
     if _newclass:the_map = _swig_property(_otapi.StringMap_the_map_get, _otapi.StringMap_the_map_set)
     def SetValue(self, *args): return _otapi.StringMap_SetValue(self, *args)
     def GetValue(self, *args): return _otapi.StringMap_GetValue(self, *args)
+    __swig_getmethods__["ot_dynamic_cast"] = lambda x: _otapi.StringMap_ot_dynamic_cast
+    if _newclass:ot_dynamic_cast = staticmethod(_otapi.StringMap_ot_dynamic_cast)
 StringMap_swigregister = _otapi.StringMap_swigregister
 StringMap_swigregister(StringMap)
+
+def StringMap_ot_dynamic_cast(*args):
+  return _otapi.StringMap_ot_dynamic_cast(*args)
+StringMap_ot_dynamic_cast = _otapi.StringMap_ot_dynamic_cast
 
 class Displayable(Storable):
     __swig_setmethods__ = {}
@@ -892,8 +910,14 @@ class Displayable(Storable):
     __swig_setmethods__["gui_label"] = _otapi.Displayable_gui_label_set
     __swig_getmethods__["gui_label"] = _otapi.Displayable_gui_label_get
     if _newclass:gui_label = _swig_property(_otapi.Displayable_gui_label_get, _otapi.Displayable_gui_label_set)
+    __swig_getmethods__["ot_dynamic_cast"] = lambda x: _otapi.Displayable_ot_dynamic_cast
+    if _newclass:ot_dynamic_cast = staticmethod(_otapi.Displayable_ot_dynamic_cast)
 Displayable_swigregister = _otapi.Displayable_swigregister
 Displayable_swigregister(Displayable)
+
+def Displayable_ot_dynamic_cast(*args):
+  return _otapi.Displayable_ot_dynamic_cast(*args)
+Displayable_ot_dynamic_cast = _otapi.Displayable_ot_dynamic_cast
 
 class Acct(Displayable):
     __swig_setmethods__ = {}
@@ -906,14 +930,23 @@ class Acct(Displayable):
     __repr__ = _swig_repr
     __swig_destroy__ = _otapi.delete_Acct
     __del__ = lambda self : None;
+    __swig_setmethods__["gui_label"] = _otapi.Acct_gui_label_set
+    __swig_getmethods__["gui_label"] = _otapi.Acct_gui_label_get
+    if _newclass:gui_label = _swig_property(_otapi.Acct_gui_label_get, _otapi.Acct_gui_label_set)
     __swig_setmethods__["acct_id"] = _otapi.Acct_acct_id_set
     __swig_getmethods__["acct_id"] = _otapi.Acct_acct_id_get
     if _newclass:acct_id = _swig_property(_otapi.Acct_acct_id_get, _otapi.Acct_acct_id_set)
     __swig_setmethods__["server_id"] = _otapi.Acct_server_id_set
     __swig_getmethods__["server_id"] = _otapi.Acct_server_id_get
     if _newclass:server_id = _swig_property(_otapi.Acct_server_id_get, _otapi.Acct_server_id_set)
+    __swig_getmethods__["ot_dynamic_cast"] = lambda x: _otapi.Acct_ot_dynamic_cast
+    if _newclass:ot_dynamic_cast = staticmethod(_otapi.Acct_ot_dynamic_cast)
 Acct_swigregister = _otapi.Acct_swigregister
 Acct_swigregister(Acct)
+
+def Acct_ot_dynamic_cast(*args):
+  return _otapi.Acct_ot_dynamic_cast(*args)
+Acct_ot_dynamic_cast = _otapi.Acct_ot_dynamic_cast
 
 class BitcoinAcct(Acct):
     __swig_setmethods__ = {}
@@ -926,11 +959,26 @@ class BitcoinAcct(Acct):
     __repr__ = _swig_repr
     __swig_destroy__ = _otapi.delete_BitcoinAcct
     __del__ = lambda self : None;
+    __swig_setmethods__["gui_label"] = _otapi.BitcoinAcct_gui_label_set
+    __swig_getmethods__["gui_label"] = _otapi.BitcoinAcct_gui_label_get
+    if _newclass:gui_label = _swig_property(_otapi.BitcoinAcct_gui_label_get, _otapi.BitcoinAcct_gui_label_set)
+    __swig_setmethods__["acct_id"] = _otapi.BitcoinAcct_acct_id_set
+    __swig_getmethods__["acct_id"] = _otapi.BitcoinAcct_acct_id_get
+    if _newclass:acct_id = _swig_property(_otapi.BitcoinAcct_acct_id_get, _otapi.BitcoinAcct_acct_id_set)
+    __swig_setmethods__["server_id"] = _otapi.BitcoinAcct_server_id_set
+    __swig_getmethods__["server_id"] = _otapi.BitcoinAcct_server_id_get
+    if _newclass:server_id = _swig_property(_otapi.BitcoinAcct_server_id_get, _otapi.BitcoinAcct_server_id_set)
     __swig_setmethods__["bitcoin_acct_name"] = _otapi.BitcoinAcct_bitcoin_acct_name_set
     __swig_getmethods__["bitcoin_acct_name"] = _otapi.BitcoinAcct_bitcoin_acct_name_get
     if _newclass:bitcoin_acct_name = _swig_property(_otapi.BitcoinAcct_bitcoin_acct_name_get, _otapi.BitcoinAcct_bitcoin_acct_name_set)
+    __swig_getmethods__["ot_dynamic_cast"] = lambda x: _otapi.BitcoinAcct_ot_dynamic_cast
+    if _newclass:ot_dynamic_cast = staticmethod(_otapi.BitcoinAcct_ot_dynamic_cast)
 BitcoinAcct_swigregister = _otapi.BitcoinAcct_swigregister
 BitcoinAcct_swigregister(BitcoinAcct)
+
+def BitcoinAcct_ot_dynamic_cast(*args):
+  return _otapi.BitcoinAcct_ot_dynamic_cast(*args)
+BitcoinAcct_ot_dynamic_cast = _otapi.BitcoinAcct_ot_dynamic_cast
 
 class ServerInfo(Displayable):
     __swig_setmethods__ = {}
@@ -943,14 +991,23 @@ class ServerInfo(Displayable):
     __repr__ = _swig_repr
     __swig_destroy__ = _otapi.delete_ServerInfo
     __del__ = lambda self : None;
+    __swig_setmethods__["gui_label"] = _otapi.ServerInfo_gui_label_set
+    __swig_getmethods__["gui_label"] = _otapi.ServerInfo_gui_label_get
+    if _newclass:gui_label = _swig_property(_otapi.ServerInfo_gui_label_get, _otapi.ServerInfo_gui_label_set)
     __swig_setmethods__["server_id"] = _otapi.ServerInfo_server_id_set
     __swig_getmethods__["server_id"] = _otapi.ServerInfo_server_id_get
     if _newclass:server_id = _swig_property(_otapi.ServerInfo_server_id_get, _otapi.ServerInfo_server_id_set)
     __swig_setmethods__["server_type"] = _otapi.ServerInfo_server_type_set
     __swig_getmethods__["server_type"] = _otapi.ServerInfo_server_type_get
     if _newclass:server_type = _swig_property(_otapi.ServerInfo_server_type_get, _otapi.ServerInfo_server_type_set)
+    __swig_getmethods__["ot_dynamic_cast"] = lambda x: _otapi.ServerInfo_ot_dynamic_cast
+    if _newclass:ot_dynamic_cast = staticmethod(_otapi.ServerInfo_ot_dynamic_cast)
 ServerInfo_swigregister = _otapi.ServerInfo_swigregister
 ServerInfo_swigregister(ServerInfo)
+
+def ServerInfo_ot_dynamic_cast(*args):
+  return _otapi.ServerInfo_ot_dynamic_cast(*args)
+ServerInfo_ot_dynamic_cast = _otapi.ServerInfo_ot_dynamic_cast
 
 class Server(ServerInfo):
     __swig_setmethods__ = {}
@@ -963,14 +1020,29 @@ class Server(ServerInfo):
     __repr__ = _swig_repr
     __swig_destroy__ = _otapi.delete_Server
     __del__ = lambda self : None;
+    __swig_setmethods__["gui_label"] = _otapi.Server_gui_label_set
+    __swig_getmethods__["gui_label"] = _otapi.Server_gui_label_get
+    if _newclass:gui_label = _swig_property(_otapi.Server_gui_label_get, _otapi.Server_gui_label_set)
+    __swig_setmethods__["server_id"] = _otapi.Server_server_id_set
+    __swig_getmethods__["server_id"] = _otapi.Server_server_id_get
+    if _newclass:server_id = _swig_property(_otapi.Server_server_id_get, _otapi.Server_server_id_set)
+    __swig_setmethods__["server_type"] = _otapi.Server_server_type_set
+    __swig_getmethods__["server_type"] = _otapi.Server_server_type_get
+    if _newclass:server_type = _swig_property(_otapi.Server_server_type_get, _otapi.Server_server_type_set)
     __swig_setmethods__["server_host"] = _otapi.Server_server_host_set
     __swig_getmethods__["server_host"] = _otapi.Server_server_host_get
     if _newclass:server_host = _swig_property(_otapi.Server_server_host_get, _otapi.Server_server_host_set)
     __swig_setmethods__["server_port"] = _otapi.Server_server_port_set
     __swig_getmethods__["server_port"] = _otapi.Server_server_port_get
     if _newclass:server_port = _swig_property(_otapi.Server_server_port_get, _otapi.Server_server_port_set)
+    __swig_getmethods__["ot_dynamic_cast"] = lambda x: _otapi.Server_ot_dynamic_cast
+    if _newclass:ot_dynamic_cast = staticmethod(_otapi.Server_ot_dynamic_cast)
 Server_swigregister = _otapi.Server_swigregister
 Server_swigregister(Server)
+
+def Server_ot_dynamic_cast(*args):
+  return _otapi.Server_ot_dynamic_cast(*args)
+Server_ot_dynamic_cast = _otapi.Server_ot_dynamic_cast
 
 class BitcoinServer(Server):
     __swig_setmethods__ = {}
@@ -983,14 +1055,35 @@ class BitcoinServer(Server):
     __repr__ = _swig_repr
     __swig_destroy__ = _otapi.delete_BitcoinServer
     __del__ = lambda self : None;
+    __swig_setmethods__["gui_label"] = _otapi.BitcoinServer_gui_label_set
+    __swig_getmethods__["gui_label"] = _otapi.BitcoinServer_gui_label_get
+    if _newclass:gui_label = _swig_property(_otapi.BitcoinServer_gui_label_get, _otapi.BitcoinServer_gui_label_set)
+    __swig_setmethods__["server_id"] = _otapi.BitcoinServer_server_id_set
+    __swig_getmethods__["server_id"] = _otapi.BitcoinServer_server_id_get
+    if _newclass:server_id = _swig_property(_otapi.BitcoinServer_server_id_get, _otapi.BitcoinServer_server_id_set)
+    __swig_setmethods__["server_type"] = _otapi.BitcoinServer_server_type_set
+    __swig_getmethods__["server_type"] = _otapi.BitcoinServer_server_type_get
+    if _newclass:server_type = _swig_property(_otapi.BitcoinServer_server_type_get, _otapi.BitcoinServer_server_type_set)
+    __swig_setmethods__["server_host"] = _otapi.BitcoinServer_server_host_set
+    __swig_getmethods__["server_host"] = _otapi.BitcoinServer_server_host_get
+    if _newclass:server_host = _swig_property(_otapi.BitcoinServer_server_host_get, _otapi.BitcoinServer_server_host_set)
+    __swig_setmethods__["server_port"] = _otapi.BitcoinServer_server_port_set
+    __swig_getmethods__["server_port"] = _otapi.BitcoinServer_server_port_get
+    if _newclass:server_port = _swig_property(_otapi.BitcoinServer_server_port_get, _otapi.BitcoinServer_server_port_set)
     __swig_setmethods__["bitcoin_username"] = _otapi.BitcoinServer_bitcoin_username_set
     __swig_getmethods__["bitcoin_username"] = _otapi.BitcoinServer_bitcoin_username_get
     if _newclass:bitcoin_username = _swig_property(_otapi.BitcoinServer_bitcoin_username_get, _otapi.BitcoinServer_bitcoin_username_set)
     __swig_setmethods__["bitcoin_password"] = _otapi.BitcoinServer_bitcoin_password_set
     __swig_getmethods__["bitcoin_password"] = _otapi.BitcoinServer_bitcoin_password_get
     if _newclass:bitcoin_password = _swig_property(_otapi.BitcoinServer_bitcoin_password_get, _otapi.BitcoinServer_bitcoin_password_set)
+    __swig_getmethods__["ot_dynamic_cast"] = lambda x: _otapi.BitcoinServer_ot_dynamic_cast
+    if _newclass:ot_dynamic_cast = staticmethod(_otapi.BitcoinServer_ot_dynamic_cast)
 BitcoinServer_swigregister = _otapi.BitcoinServer_swigregister
 BitcoinServer_swigregister(BitcoinServer)
+
+def BitcoinServer_ot_dynamic_cast(*args):
+  return _otapi.BitcoinServer_ot_dynamic_cast(*args)
+BitcoinServer_ot_dynamic_cast = _otapi.BitcoinServer_ot_dynamic_cast
 
 class ContactNym(Displayable):
     __swig_setmethods__ = {}
@@ -1003,6 +1096,9 @@ class ContactNym(Displayable):
     __repr__ = _swig_repr
     __swig_destroy__ = _otapi.delete_ContactNym
     __del__ = lambda self : None;
+    __swig_setmethods__["gui_label"] = _otapi.ContactNym_gui_label_set
+    __swig_getmethods__["gui_label"] = _otapi.ContactNym_gui_label_get
+    if _newclass:gui_label = _swig_property(_otapi.ContactNym_gui_label_get, _otapi.ContactNym_gui_label_set)
     __swig_setmethods__["nym_type"] = _otapi.ContactNym_nym_type_set
     __swig_getmethods__["nym_type"] = _otapi.ContactNym_nym_type_get
     if _newclass:nym_type = _swig_property(_otapi.ContactNym_nym_type_get, _otapi.ContactNym_nym_type_set)
@@ -1015,8 +1111,18 @@ class ContactNym(Displayable):
     __swig_setmethods__["memo"] = _otapi.ContactNym_memo_set
     __swig_getmethods__["memo"] = _otapi.ContactNym_memo_get
     if _newclass:memo = _swig_property(_otapi.ContactNym_memo_get, _otapi.ContactNym_memo_set)
+    def GetServerInfoCount(self): return _otapi.ContactNym_GetServerInfoCount(self)
+    def GetServerInfo(self, *args): return _otapi.ContactNym_GetServerInfo(self, *args)
+    def RemoveServerInfo(self, *args): return _otapi.ContactNym_RemoveServerInfo(self, *args)
+    def AddServerInfo(self, *args): return _otapi.ContactNym_AddServerInfo(self, *args)
+    __swig_getmethods__["ot_dynamic_cast"] = lambda x: _otapi.ContactNym_ot_dynamic_cast
+    if _newclass:ot_dynamic_cast = staticmethod(_otapi.ContactNym_ot_dynamic_cast)
 ContactNym_swigregister = _otapi.ContactNym_swigregister
 ContactNym_swigregister(ContactNym)
+
+def ContactNym_ot_dynamic_cast(*args):
+  return _otapi.ContactNym_ot_dynamic_cast(*args)
+ContactNym_ot_dynamic_cast = _otapi.ContactNym_ot_dynamic_cast
 
 class WalletData(Storable):
     __swig_setmethods__ = {}
@@ -1029,8 +1135,22 @@ class WalletData(Storable):
     __repr__ = _swig_repr
     __swig_destroy__ = _otapi.delete_WalletData
     __del__ = lambda self : None;
+    def GetBitcoinServerCount(self): return _otapi.WalletData_GetBitcoinServerCount(self)
+    def GetBitcoinServer(self, *args): return _otapi.WalletData_GetBitcoinServer(self, *args)
+    def RemoveBitcoinServer(self, *args): return _otapi.WalletData_RemoveBitcoinServer(self, *args)
+    def AddBitcoinServer(self, *args): return _otapi.WalletData_AddBitcoinServer(self, *args)
+    def GetBitcoinAcctCount(self): return _otapi.WalletData_GetBitcoinAcctCount(self)
+    def GetBitcoinAcct(self, *args): return _otapi.WalletData_GetBitcoinAcct(self, *args)
+    def RemoveBitcoinAcct(self, *args): return _otapi.WalletData_RemoveBitcoinAcct(self, *args)
+    def AddBitcoinAcct(self, *args): return _otapi.WalletData_AddBitcoinAcct(self, *args)
+    __swig_getmethods__["ot_dynamic_cast"] = lambda x: _otapi.WalletData_ot_dynamic_cast
+    if _newclass:ot_dynamic_cast = staticmethod(_otapi.WalletData_ot_dynamic_cast)
 WalletData_swigregister = _otapi.WalletData_swigregister
 WalletData_swigregister(WalletData)
+
+def WalletData_ot_dynamic_cast(*args):
+  return _otapi.WalletData_ot_dynamic_cast(*args)
+WalletData_ot_dynamic_cast = _otapi.WalletData_ot_dynamic_cast
 
 class ContactAcct(Displayable):
     __swig_setmethods__ = {}
@@ -1043,6 +1163,9 @@ class ContactAcct(Displayable):
     __repr__ = _swig_repr
     __swig_destroy__ = _otapi.delete_ContactAcct
     __del__ = lambda self : None;
+    __swig_setmethods__["gui_label"] = _otapi.ContactAcct_gui_label_set
+    __swig_getmethods__["gui_label"] = _otapi.ContactAcct_gui_label_get
+    if _newclass:gui_label = _swig_property(_otapi.ContactAcct_gui_label_get, _otapi.ContactAcct_gui_label_set)
     __swig_setmethods__["server_type"] = _otapi.ContactAcct_server_type_set
     __swig_getmethods__["server_type"] = _otapi.ContactAcct_server_type_get
     if _newclass:server_type = _swig_property(_otapi.ContactAcct_server_type_get, _otapi.ContactAcct_server_type_set)
@@ -1064,8 +1187,14 @@ class ContactAcct(Displayable):
     __swig_setmethods__["public_key"] = _otapi.ContactAcct_public_key_set
     __swig_getmethods__["public_key"] = _otapi.ContactAcct_public_key_get
     if _newclass:public_key = _swig_property(_otapi.ContactAcct_public_key_get, _otapi.ContactAcct_public_key_set)
+    __swig_getmethods__["ot_dynamic_cast"] = lambda x: _otapi.ContactAcct_ot_dynamic_cast
+    if _newclass:ot_dynamic_cast = staticmethod(_otapi.ContactAcct_ot_dynamic_cast)
 ContactAcct_swigregister = _otapi.ContactAcct_swigregister
 ContactAcct_swigregister(ContactAcct)
+
+def ContactAcct_ot_dynamic_cast(*args):
+  return _otapi.ContactAcct_ot_dynamic_cast(*args)
+ContactAcct_ot_dynamic_cast = _otapi.ContactAcct_ot_dynamic_cast
 
 class Contact(Displayable):
     __swig_setmethods__ = {}
@@ -1078,6 +1207,9 @@ class Contact(Displayable):
     __repr__ = _swig_repr
     __swig_destroy__ = _otapi.delete_Contact
     __del__ = lambda self : None;
+    __swig_setmethods__["gui_label"] = _otapi.Contact_gui_label_set
+    __swig_getmethods__["gui_label"] = _otapi.Contact_gui_label_get
+    if _newclass:gui_label = _swig_property(_otapi.Contact_gui_label_get, _otapi.Contact_gui_label_set)
     __swig_setmethods__["contact_id"] = _otapi.Contact_contact_id_set
     __swig_getmethods__["contact_id"] = _otapi.Contact_contact_id_get
     if _newclass:contact_id = _swig_property(_otapi.Contact_contact_id_get, _otapi.Contact_contact_id_set)
@@ -1090,8 +1222,22 @@ class Contact(Displayable):
     __swig_setmethods__["public_key"] = _otapi.Contact_public_key_set
     __swig_getmethods__["public_key"] = _otapi.Contact_public_key_get
     if _newclass:public_key = _swig_property(_otapi.Contact_public_key_get, _otapi.Contact_public_key_set)
+    def GetContactNymCount(self): return _otapi.Contact_GetContactNymCount(self)
+    def GetContactNym(self, *args): return _otapi.Contact_GetContactNym(self, *args)
+    def RemoveContactNym(self, *args): return _otapi.Contact_RemoveContactNym(self, *args)
+    def AddContactNym(self, *args): return _otapi.Contact_AddContactNym(self, *args)
+    def GetContactAcctCount(self): return _otapi.Contact_GetContactAcctCount(self)
+    def GetContactAcct(self, *args): return _otapi.Contact_GetContactAcct(self, *args)
+    def RemoveContactAcct(self, *args): return _otapi.Contact_RemoveContactAcct(self, *args)
+    def AddContactAcct(self, *args): return _otapi.Contact_AddContactAcct(self, *args)
+    __swig_getmethods__["ot_dynamic_cast"] = lambda x: _otapi.Contact_ot_dynamic_cast
+    if _newclass:ot_dynamic_cast = staticmethod(_otapi.Contact_ot_dynamic_cast)
 Contact_swigregister = _otapi.Contact_swigregister
 Contact_swigregister(Contact)
+
+def Contact_ot_dynamic_cast(*args):
+  return _otapi.Contact_ot_dynamic_cast(*args)
+Contact_ot_dynamic_cast = _otapi.Contact_ot_dynamic_cast
 
 class AddressBook(Storable):
     __swig_setmethods__ = {}
@@ -1104,8 +1250,18 @@ class AddressBook(Storable):
     __repr__ = _swig_repr
     __swig_destroy__ = _otapi.delete_AddressBook
     __del__ = lambda self : None;
+    def GetContactCount(self): return _otapi.AddressBook_GetContactCount(self)
+    def GetContact(self, *args): return _otapi.AddressBook_GetContact(self, *args)
+    def RemoveContact(self, *args): return _otapi.AddressBook_RemoveContact(self, *args)
+    def AddContact(self, *args): return _otapi.AddressBook_AddContact(self, *args)
+    __swig_getmethods__["ot_dynamic_cast"] = lambda x: _otapi.AddressBook_ot_dynamic_cast
+    if _newclass:ot_dynamic_cast = staticmethod(_otapi.AddressBook_ot_dynamic_cast)
 AddressBook_swigregister = _otapi.AddressBook_swigregister
 AddressBook_swigregister(AddressBook)
+
+def AddressBook_ot_dynamic_cast(*args):
+  return _otapi.AddressBook_ot_dynamic_cast(*args)
+AddressBook_ot_dynamic_cast = _otapi.AddressBook_ot_dynamic_cast
 
 
 

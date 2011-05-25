@@ -39,6 +39,18 @@ public class ServerInfo : Displayable {
     }
   }
 
+  public string gui_label {
+    set {
+      otapiPINVOKE.ServerInfo_gui_label_set(swigCPtr, value);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    } 
+    get {
+      string ret = otapiPINVOKE.ServerInfo_gui_label_get(swigCPtr);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+      return ret;
+    } 
+  }
+
   public string server_id {
     set {
       otapiPINVOKE.ServerInfo_server_id_set(swigCPtr, value);
@@ -61,6 +73,12 @@ public class ServerInfo : Displayable {
       if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
       return ret;
     } 
+  }
+
+  public new static ServerInfo ot_dynamic_cast(Storable pObject) {
+    IntPtr cPtr = otapiPINVOKE.ServerInfo_ot_dynamic_cast(Storable.getCPtr(pObject));
+    ServerInfo ret = (cPtr == IntPtr.Zero) ? null : new ServerInfo(cPtr, false);
+    return ret;
   }
 
 }

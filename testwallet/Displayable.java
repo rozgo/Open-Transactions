@@ -43,4 +43,9 @@ public class Displayable extends Storable {
     return otapiJNI.Displayable_gui_label_get(swigCPtr, this);
   }
 
+  public static Displayable ot_dynamic_cast(Storable pObject) {
+    long cPtr = otapiJNI.Displayable_ot_dynamic_cast(Storable.getCPtr(pObject), pObject);
+    return (cPtr == 0) ? null : new Displayable(cPtr, false);
+  }
+
 }

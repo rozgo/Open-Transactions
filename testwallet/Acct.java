@@ -35,6 +35,14 @@ public class Acct extends Displayable {
     super.delete();
   }
 
+  public void setGui_label(String value) {
+    otapiJNI.Acct_gui_label_set(swigCPtr, this, value);
+  }
+
+  public String getGui_label() {
+    return otapiJNI.Acct_gui_label_get(swigCPtr, this);
+  }
+
   public void setAcct_id(String value) {
     otapiJNI.Acct_acct_id_set(swigCPtr, this, value);
   }
@@ -49,6 +57,11 @@ public class Acct extends Displayable {
 
   public String getServer_id() {
     return otapiJNI.Acct_server_id_get(swigCPtr, this);
+  }
+
+  public static Acct ot_dynamic_cast(Storable pObject) {
+    long cPtr = otapiJNI.Acct_ot_dynamic_cast(Storable.getCPtr(pObject), pObject);
+    return (cPtr == 0) ? null : new Acct(cPtr, false);
   }
 
 }

@@ -40,4 +40,9 @@ public class Storable {
     return (cPtr == 0) ? null : new Storable(cPtr, false);
   }
 
+  public static Storable ot_dynamic_cast(Storable pObject) {
+    long cPtr = otapiJNI.Storable_ot_dynamic_cast(Storable.getCPtr(pObject), pObject);
+    return (cPtr == 0) ? null : new Storable(cPtr, false);
+  }
+
 }

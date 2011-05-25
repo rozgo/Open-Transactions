@@ -1649,11 +1649,11 @@ SWIG_Tcl_GetArgs(Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[], const char
 #define SWIGTYPE_p_OTDB__ContactAcct swig_types[7]
 #define SWIGTYPE_p_OTDB__ContactNym swig_types[8]
 #define SWIGTYPE_p_OTDB__Displayable swig_types[9]
-#define SWIGTYPE_p_OTDB__Server swig_types[10]
-#define SWIGTYPE_p_OTDB__ServerInfo swig_types[11]
-#define SWIGTYPE_p_OTDB__Storable swig_types[12]
-#define SWIGTYPE_p_OTDB__Storage swig_types[13]
-#define SWIGTYPE_p_OTDB__String swig_types[14]
+#define SWIGTYPE_p_OTDB__OTDBString swig_types[10]
+#define SWIGTYPE_p_OTDB__Server swig_types[11]
+#define SWIGTYPE_p_OTDB__ServerInfo swig_types[12]
+#define SWIGTYPE_p_OTDB__Storable swig_types[13]
+#define SWIGTYPE_p_OTDB__Storage swig_types[14]
 #define SWIGTYPE_p_OTDB__StringMap swig_types[15]
 #define SWIGTYPE_p_OTDB__WalletData swig_types[16]
 #define SWIGTYPE_p_char swig_types[17]
@@ -1708,7 +1708,7 @@ SWIGEXPORT int SWIG_init(Tcl_Interp *);
 #include "../OTLib/OTAsymmetricKey.h"
 #include "OTAPI_funcdef.h"
 #include "../OTLib/OTStorage.h"
-
+	
 
 #include <string>
 
@@ -1839,6 +1839,83 @@ SWIG_AsPtr_std_string SWIG_TCL_DECL_ARGS_2(Tcl_Obj * obj, std::string **val)
     }
   }
   return SWIG_ERROR;
+}
+
+
+#include <stdio.h>
+#if defined(_MSC_VER) || defined(__BORLANDC__) || defined(_WATCOM)
+# ifndef snprintf
+#  define snprintf _snprintf
+# endif
+#endif
+
+
+SWIGINTERNINLINE Tcl_Obj* 
+SWIG_From_unsigned_SS_long  (unsigned long value)
+{
+  if (value < (unsigned long) LONG_MAX) {
+    return SWIG_From_long  (static_cast< long >(value));
+  } else {
+    char temp[256]; 
+    sprintf(temp, "%lu", value);
+    return Tcl_NewStringObj(temp,-1);
+  }
+}
+
+
+SWIGINTERNINLINE Tcl_Obj *
+SWIG_From_size_t  (size_t value)
+{    
+  return SWIG_From_unsigned_SS_long  (static_cast< unsigned long >(value));
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_unsigned_SS_long SWIG_TCL_DECL_ARGS_2(Tcl_Obj *obj, unsigned long *val) {
+  long v;
+  if (Tcl_GetLongFromObj(0,obj, &v) == TCL_OK) {
+    if (v >= 0) {
+      if (val) *val = (unsigned long) v;
+      return SWIG_OK;
+    }
+    /* If v is negative, then this could be a negative number, or an
+       unsigned value which doesn't fit in a signed long, so try to
+       get it as a string so we can distinguish these cases. */
+  }
+  {
+    int len = 0;
+    const char *nptr = Tcl_GetStringFromObj(obj, &len);
+    if (nptr && len > 0) {
+      char *endptr;
+      unsigned long v;
+      if (*nptr == '-') return SWIG_OverflowError;
+      errno = 0;
+      v = strtoul(nptr, &endptr,0);
+      if (nptr[0] == '\0' || *endptr != '\0')
+	return SWIG_TypeError;
+      if (v == ULONG_MAX && errno == ERANGE) {
+	errno = 0;
+	return SWIG_OverflowError;
+      } else {
+	if (*endptr == '\0') {
+	  if (val) *val = v;
+	  return SWIG_OK;
+	}
+      }
+    }
+  }
+  
+  return SWIG_TypeError;
+}
+
+
+SWIGINTERNINLINE int
+SWIG_AsVal_size_t SWIG_TCL_DECL_ARGS_2(Tcl_Obj * obj, size_t *val)
+{
+  unsigned long v;
+  int res = SWIG_AsVal_unsigned_SS_long SWIG_TCL_CALL_ARGS_2(obj, val ? &v : 0);
+  if (SWIG_IsOK(res) && val) *val = static_cast< size_t >(v);
+  return res;
 }
 
 
@@ -8308,6 +8385,27 @@ fail:
 }
 
 
+SWIGINTERN int
+_wrap_Storable_ot_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  OTDB::Storable *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:Storable_ot_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Storable_ot_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
+  result = (OTDB::Storable *)OTDB::Storable::ot_dynamic_cast(arg1);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
 SWIGINTERN void swig_delete_Storable(void *obj) {
 OTDB::Storable *arg1 = (OTDB::Storable *) obj;
 delete arg1;
@@ -13666,17 +13764,17 @@ _wrap_QueryObject(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc
 
 
 SWIGINTERN int
-_wrap_delete_String(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::String *arg1 = (OTDB::String *) 0 ;
+_wrap_delete_OTDBString(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::OTDBString *arg1 = (OTDB::OTDBString *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   
-  if (SWIG_GetArgs(interp, objc, objv,"o:delete_String self ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__String, SWIG_POINTER_DISOWN |  0 );
+  if (SWIG_GetArgs(interp, objc, objv,"o:delete_OTDBString self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__OTDBString, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_String" "', argument " "1"" of type '" "OTDB::String *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_OTDBString" "', argument " "1"" of type '" "OTDB::OTDBString *""'"); 
   }
-  arg1 = reinterpret_cast< OTDB::String * >(argp1);
+  arg1 = reinterpret_cast< OTDB::OTDBString * >(argp1);
   delete arg1;
   
   return TCL_OK;
@@ -13686,27 +13784,27 @@ fail:
 
 
 SWIGINTERN int
-_wrap_String_m_string_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::String *arg1 = (OTDB::String *) 0 ;
+_wrap_OTDBString_m_string_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::OTDBString *arg1 = (OTDB::OTDBString *) 0 ;
   std::string *arg2 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int res2 = SWIG_OLDOBJ ;
   
-  if (SWIG_GetArgs(interp, objc, objv,"oo:String_m_string_set self m_string ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__String, 0 |  0 );
+  if (SWIG_GetArgs(interp, objc, objv,"oo:OTDBString_m_string_set self m_string ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__OTDBString, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "String_m_string_set" "', argument " "1"" of type '" "OTDB::String *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTDBString_m_string_set" "', argument " "1"" of type '" "OTDB::OTDBString *""'"); 
   }
-  arg1 = reinterpret_cast< OTDB::String * >(argp1);
+  arg1 = reinterpret_cast< OTDB::OTDBString * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "String_m_string_set" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "OTDBString_m_string_set" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     if (!ptr) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "String_m_string_set" "', argument " "2"" of type '" "std::string const &""'"); 
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "OTDBString_m_string_set" "', argument " "2"" of type '" "std::string const &""'"); 
     }
     arg2 = ptr;
   }
@@ -13721,18 +13819,18 @@ fail:
 
 
 SWIGINTERN int
-_wrap_String_m_string_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
-  OTDB::String *arg1 = (OTDB::String *) 0 ;
+_wrap_OTDBString_m_string_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::OTDBString *arg1 = (OTDB::OTDBString *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   std::string *result = 0 ;
   
-  if (SWIG_GetArgs(interp, objc, objv,"o:String_m_string_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
-  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__String, 0 |  0 );
+  if (SWIG_GetArgs(interp, objc, objv,"o:OTDBString_m_string_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__OTDBString, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "String_m_string_get" "', argument " "1"" of type '" "OTDB::String *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTDBString_m_string_get" "', argument " "1"" of type '" "OTDB::OTDBString *""'"); 
   }
-  arg1 = reinterpret_cast< OTDB::String * >(argp1);
+  arg1 = reinterpret_cast< OTDB::OTDBString * >(argp1);
   result = (std::string *) & ((arg1)->m_string);
   Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
   return TCL_OK;
@@ -13741,20 +13839,41 @@ fail:
 }
 
 
-SWIGINTERN void swig_delete_String(void *obj) {
-OTDB::String *arg1 = (OTDB::String *) obj;
+SWIGINTERN int
+_wrap_OTDBString_ot_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  OTDB::OTDBString *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:OTDBString_ot_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OTDBString_ot_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
+  result = (OTDB::OTDBString *)OTDB::OTDBString::ot_dynamic_cast(arg1);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__OTDBString,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN void swig_delete_OTDBString(void *obj) {
+OTDB::OTDBString *arg1 = (OTDB::OTDBString *) obj;
 delete arg1;
 }
-static swig_method swig_OTDB_String_methods[] = {
+static swig_method swig_OTDB_OTDBString_methods[] = {
     {0,0}
 };
-static swig_attribute swig_OTDB_String_attributes[] = {
-    { "-m_string",_wrap_String_m_string_get, _wrap_String_m_string_set},
+static swig_attribute swig_OTDB_OTDBString_attributes[] = {
+    { "-m_string",_wrap_OTDBString_m_string_get, _wrap_OTDBString_m_string_set},
     {0,0,0}
 };
-static swig_class *swig_OTDB_String_bases[] = {0,0};
-static const char * swig_OTDB_String_base_names[] = {"OTDB::Storable *",0};
-static swig_class _wrap_class_OTDB_String = { "String", &SWIGTYPE_p_OTDB__String,0, swig_delete_String, swig_OTDB_String_methods, swig_OTDB_String_attributes, swig_OTDB_String_bases,swig_OTDB_String_base_names, &swig_module };
+static swig_class *swig_OTDB_OTDBString_bases[] = {0,0};
+static const char * swig_OTDB_OTDBString_base_names[] = {"OTDB::Storable *",0};
+static swig_class _wrap_class_OTDB_OTDBString = { "OTDBString", &SWIGTYPE_p_OTDB__OTDBString,0, swig_delete_OTDBString, swig_OTDB_OTDBString_methods, swig_OTDB_OTDBString_attributes, swig_OTDB_OTDBString_bases,swig_OTDB_OTDBString_base_names, &swig_module };
 SWIGINTERN int
 _wrap_delete_StringMap(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   OTDB::StringMap *arg1 = (OTDB::StringMap *) 0 ;
@@ -13910,6 +14029,27 @@ fail:
 }
 
 
+SWIGINTERN int
+_wrap_StringMap_ot_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  OTDB::StringMap *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:StringMap_ot_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StringMap_ot_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
+  result = (OTDB::StringMap *)OTDB::StringMap::ot_dynamic_cast(arg1);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__StringMap,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
 SWIGINTERN void swig_delete_StringMap(void *obj) {
 OTDB::StringMap *arg1 = (OTDB::StringMap *) obj;
 delete arg1;
@@ -14002,6 +14142,27 @@ fail:
 }
 
 
+SWIGINTERN int
+_wrap_Displayable_ot_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  OTDB::Displayable *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:Displayable_ot_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Displayable_ot_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
+  result = (OTDB::Displayable *)OTDB::Displayable::ot_dynamic_cast(arg1);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Displayable,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
 SWIGINTERN void swig_delete_Displayable(void *obj) {
 OTDB::Displayable *arg1 = (OTDB::Displayable *) obj;
 delete arg1;
@@ -14030,6 +14191,62 @@ _wrap_delete_Acct(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc
   arg1 = reinterpret_cast< OTDB::Acct * >(argp1);
   delete arg1;
   
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Acct_gui_label_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Acct *arg1 = (OTDB::Acct *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:Acct_gui_label_set self gui_label ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Acct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Acct_gui_label_set" "', argument " "1"" of type '" "OTDB::Acct *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Acct * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Acct_gui_label_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Acct_gui_label_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->gui_label = *arg2;
+  
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_OK;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Acct_gui_label_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Acct *arg1 = (OTDB::Acct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:Acct_gui_label_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Acct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Acct_gui_label_get" "', argument " "1"" of type '" "OTDB::Acct *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Acct * >(argp1);
+  result = (std::string *) & ((arg1)->gui_label);
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
   return TCL_OK;
 fail:
   return TCL_ERROR;
@@ -14148,6 +14365,27 @@ fail:
 }
 
 
+SWIGINTERN int
+_wrap_Acct_ot_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  OTDB::Acct *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:Acct_ot_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Acct_ot_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
+  result = (OTDB::Acct *)OTDB::Acct::ot_dynamic_cast(arg1);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Acct,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
 SWIGINTERN void swig_delete_Acct(void *obj) {
 OTDB::Acct *arg1 = (OTDB::Acct *) obj;
 delete arg1;
@@ -14156,6 +14394,7 @@ static swig_method swig_OTDB_Acct_methods[] = {
     {0,0}
 };
 static swig_attribute swig_OTDB_Acct_attributes[] = {
+    { "-gui_label",_wrap_Acct_gui_label_get, _wrap_Acct_gui_label_set},
     { "-acct_id",_wrap_Acct_acct_id_get, _wrap_Acct_acct_id_set},
     { "-server_id",_wrap_Acct_server_id_get, _wrap_Acct_server_id_set},
     {0,0,0}
@@ -14177,6 +14416,174 @@ _wrap_delete_BitcoinAcct(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, i
   arg1 = reinterpret_cast< OTDB::BitcoinAcct * >(argp1);
   delete arg1;
   
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_BitcoinAcct_gui_label_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:BitcoinAcct_gui_label_set self gui_label ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__BitcoinAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinAcct_gui_label_set" "', argument " "1"" of type '" "OTDB::BitcoinAcct *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::BitcoinAcct * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "BitcoinAcct_gui_label_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "BitcoinAcct_gui_label_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->gui_label = *arg2;
+  
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_OK;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_BitcoinAcct_gui_label_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:BitcoinAcct_gui_label_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__BitcoinAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinAcct_gui_label_get" "', argument " "1"" of type '" "OTDB::BitcoinAcct *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::BitcoinAcct * >(argp1);
+  result = (std::string *) & ((arg1)->gui_label);
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_BitcoinAcct_acct_id_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:BitcoinAcct_acct_id_set self acct_id ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__BitcoinAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinAcct_acct_id_set" "', argument " "1"" of type '" "OTDB::BitcoinAcct *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::BitcoinAcct * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "BitcoinAcct_acct_id_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "BitcoinAcct_acct_id_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->acct_id = *arg2;
+  
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_OK;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_BitcoinAcct_acct_id_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:BitcoinAcct_acct_id_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__BitcoinAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinAcct_acct_id_get" "', argument " "1"" of type '" "OTDB::BitcoinAcct *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::BitcoinAcct * >(argp1);
+  result = (std::string *) & ((arg1)->acct_id);
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_BitcoinAcct_server_id_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:BitcoinAcct_server_id_set self server_id ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__BitcoinAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinAcct_server_id_set" "', argument " "1"" of type '" "OTDB::BitcoinAcct *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::BitcoinAcct * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "BitcoinAcct_server_id_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "BitcoinAcct_server_id_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->server_id = *arg2;
+  
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_OK;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_BitcoinAcct_server_id_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:BitcoinAcct_server_id_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__BitcoinAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinAcct_server_id_get" "', argument " "1"" of type '" "OTDB::BitcoinAcct *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::BitcoinAcct * >(argp1);
+  result = (std::string *) & ((arg1)->server_id);
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
   return TCL_OK;
 fail:
   return TCL_ERROR;
@@ -14239,6 +14646,27 @@ fail:
 }
 
 
+SWIGINTERN int
+_wrap_BitcoinAcct_ot_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  OTDB::BitcoinAcct *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:BitcoinAcct_ot_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinAcct_ot_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
+  result = (OTDB::BitcoinAcct *)OTDB::BitcoinAcct::ot_dynamic_cast(arg1);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinAcct,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
 SWIGINTERN void swig_delete_BitcoinAcct(void *obj) {
 OTDB::BitcoinAcct *arg1 = (OTDB::BitcoinAcct *) obj;
 delete arg1;
@@ -14247,6 +14675,9 @@ static swig_method swig_OTDB_BitcoinAcct_methods[] = {
     {0,0}
 };
 static swig_attribute swig_OTDB_BitcoinAcct_attributes[] = {
+    { "-gui_label",_wrap_BitcoinAcct_gui_label_get, _wrap_BitcoinAcct_gui_label_set},
+    { "-acct_id",_wrap_BitcoinAcct_acct_id_get, _wrap_BitcoinAcct_acct_id_set},
+    { "-server_id",_wrap_BitcoinAcct_server_id_get, _wrap_BitcoinAcct_server_id_set},
     { "-bitcoin_acct_name",_wrap_BitcoinAcct_bitcoin_acct_name_get, _wrap_BitcoinAcct_bitcoin_acct_name_set},
     {0,0,0}
 };
@@ -14267,6 +14698,62 @@ _wrap_delete_ServerInfo(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, in
   arg1 = reinterpret_cast< OTDB::ServerInfo * >(argp1);
   delete arg1;
   
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_ServerInfo_gui_label_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:ServerInfo_gui_label_set self gui_label ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__ServerInfo, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ServerInfo_gui_label_set" "', argument " "1"" of type '" "OTDB::ServerInfo *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::ServerInfo * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ServerInfo_gui_label_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ServerInfo_gui_label_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->gui_label = *arg2;
+  
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_OK;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_ServerInfo_gui_label_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:ServerInfo_gui_label_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__ServerInfo, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ServerInfo_gui_label_get" "', argument " "1"" of type '" "OTDB::ServerInfo *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::ServerInfo * >(argp1);
+  result = (std::string *) & ((arg1)->gui_label);
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
   return TCL_OK;
 fail:
   return TCL_ERROR;
@@ -14385,6 +14872,27 @@ fail:
 }
 
 
+SWIGINTERN int
+_wrap_ServerInfo_ot_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  OTDB::ServerInfo *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:ServerInfo_ot_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ServerInfo_ot_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
+  result = (OTDB::ServerInfo *)OTDB::ServerInfo::ot_dynamic_cast(arg1);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ServerInfo,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
 SWIGINTERN void swig_delete_ServerInfo(void *obj) {
 OTDB::ServerInfo *arg1 = (OTDB::ServerInfo *) obj;
 delete arg1;
@@ -14393,6 +14901,7 @@ static swig_method swig_OTDB_ServerInfo_methods[] = {
     {0,0}
 };
 static swig_attribute swig_OTDB_ServerInfo_attributes[] = {
+    { "-gui_label",_wrap_ServerInfo_gui_label_get, _wrap_ServerInfo_gui_label_set},
     { "-server_id",_wrap_ServerInfo_server_id_get, _wrap_ServerInfo_server_id_set},
     { "-server_type",_wrap_ServerInfo_server_type_get, _wrap_ServerInfo_server_type_set},
     {0,0,0}
@@ -14414,6 +14923,174 @@ _wrap_delete_Server(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int ob
   arg1 = reinterpret_cast< OTDB::Server * >(argp1);
   delete arg1;
   
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Server_gui_label_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:Server_gui_label_set self gui_label ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Server, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Server_gui_label_set" "', argument " "1"" of type '" "OTDB::Server *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Server * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Server_gui_label_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Server_gui_label_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->gui_label = *arg2;
+  
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_OK;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Server_gui_label_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:Server_gui_label_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Server, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Server_gui_label_get" "', argument " "1"" of type '" "OTDB::Server *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Server * >(argp1);
+  result = (std::string *) & ((arg1)->gui_label);
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Server_server_id_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:Server_server_id_set self server_id ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Server, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Server_server_id_set" "', argument " "1"" of type '" "OTDB::Server *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Server * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Server_server_id_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Server_server_id_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->server_id = *arg2;
+  
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_OK;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Server_server_id_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:Server_server_id_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Server, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Server_server_id_get" "', argument " "1"" of type '" "OTDB::Server *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Server * >(argp1);
+  result = (std::string *) & ((arg1)->server_id);
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Server_server_type_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:Server_server_type_set self server_type ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Server, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Server_server_type_set" "', argument " "1"" of type '" "OTDB::Server *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Server * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Server_server_type_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Server_server_type_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->server_type = *arg2;
+  
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_OK;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Server_server_type_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Server *arg1 = (OTDB::Server *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:Server_server_type_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Server, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Server_server_type_get" "', argument " "1"" of type '" "OTDB::Server *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Server * >(argp1);
+  result = (std::string *) & ((arg1)->server_type);
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
   return TCL_OK;
 fail:
   return TCL_ERROR;
@@ -14532,6 +15209,27 @@ fail:
 }
 
 
+SWIGINTERN int
+_wrap_Server_ot_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  OTDB::Server *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:Server_ot_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Server_ot_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
+  result = (OTDB::Server *)OTDB::Server::ot_dynamic_cast(arg1);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Server,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
 SWIGINTERN void swig_delete_Server(void *obj) {
 OTDB::Server *arg1 = (OTDB::Server *) obj;
 delete arg1;
@@ -14540,6 +15238,9 @@ static swig_method swig_OTDB_Server_methods[] = {
     {0,0}
 };
 static swig_attribute swig_OTDB_Server_attributes[] = {
+    { "-gui_label",_wrap_Server_gui_label_get, _wrap_Server_gui_label_set},
+    { "-server_id",_wrap_Server_server_id_get, _wrap_Server_server_id_set},
+    { "-server_type",_wrap_Server_server_type_get, _wrap_Server_server_type_set},
     { "-server_host",_wrap_Server_server_host_get, _wrap_Server_server_host_set},
     { "-server_port",_wrap_Server_server_port_get, _wrap_Server_server_port_set},
     {0,0,0}
@@ -14561,6 +15262,286 @@ _wrap_delete_BitcoinServer(ClientData clientData SWIGUNUSED, Tcl_Interp *interp,
   arg1 = reinterpret_cast< OTDB::BitcoinServer * >(argp1);
   delete arg1;
   
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_BitcoinServer_gui_label_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:BitcoinServer_gui_label_set self gui_label ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__BitcoinServer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinServer_gui_label_set" "', argument " "1"" of type '" "OTDB::BitcoinServer *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::BitcoinServer * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "BitcoinServer_gui_label_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "BitcoinServer_gui_label_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->gui_label = *arg2;
+  
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_OK;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_BitcoinServer_gui_label_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:BitcoinServer_gui_label_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__BitcoinServer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinServer_gui_label_get" "', argument " "1"" of type '" "OTDB::BitcoinServer *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::BitcoinServer * >(argp1);
+  result = (std::string *) & ((arg1)->gui_label);
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_BitcoinServer_server_id_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:BitcoinServer_server_id_set self server_id ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__BitcoinServer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinServer_server_id_set" "', argument " "1"" of type '" "OTDB::BitcoinServer *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::BitcoinServer * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "BitcoinServer_server_id_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "BitcoinServer_server_id_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->server_id = *arg2;
+  
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_OK;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_BitcoinServer_server_id_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:BitcoinServer_server_id_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__BitcoinServer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinServer_server_id_get" "', argument " "1"" of type '" "OTDB::BitcoinServer *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::BitcoinServer * >(argp1);
+  result = (std::string *) & ((arg1)->server_id);
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_BitcoinServer_server_type_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:BitcoinServer_server_type_set self server_type ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__BitcoinServer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinServer_server_type_set" "', argument " "1"" of type '" "OTDB::BitcoinServer *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::BitcoinServer * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "BitcoinServer_server_type_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "BitcoinServer_server_type_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->server_type = *arg2;
+  
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_OK;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_BitcoinServer_server_type_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:BitcoinServer_server_type_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__BitcoinServer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinServer_server_type_get" "', argument " "1"" of type '" "OTDB::BitcoinServer *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::BitcoinServer * >(argp1);
+  result = (std::string *) & ((arg1)->server_type);
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_BitcoinServer_server_host_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:BitcoinServer_server_host_set self server_host ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__BitcoinServer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinServer_server_host_set" "', argument " "1"" of type '" "OTDB::BitcoinServer *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::BitcoinServer * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "BitcoinServer_server_host_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "BitcoinServer_server_host_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->server_host = *arg2;
+  
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_OK;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_BitcoinServer_server_host_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:BitcoinServer_server_host_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__BitcoinServer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinServer_server_host_get" "', argument " "1"" of type '" "OTDB::BitcoinServer *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::BitcoinServer * >(argp1);
+  result = (std::string *) & ((arg1)->server_host);
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_BitcoinServer_server_port_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:BitcoinServer_server_port_set self server_port ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__BitcoinServer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinServer_server_port_set" "', argument " "1"" of type '" "OTDB::BitcoinServer *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::BitcoinServer * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "BitcoinServer_server_port_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "BitcoinServer_server_port_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->server_port = *arg2;
+  
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_OK;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_BitcoinServer_server_port_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:BitcoinServer_server_port_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__BitcoinServer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinServer_server_port_get" "', argument " "1"" of type '" "OTDB::BitcoinServer *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::BitcoinServer * >(argp1);
+  result = (std::string *) & ((arg1)->server_port);
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
   return TCL_OK;
 fail:
   return TCL_ERROR;
@@ -14679,6 +15660,27 @@ fail:
 }
 
 
+SWIGINTERN int
+_wrap_BitcoinServer_ot_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  OTDB::BitcoinServer *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:BitcoinServer_ot_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BitcoinServer_ot_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
+  result = (OTDB::BitcoinServer *)OTDB::BitcoinServer::ot_dynamic_cast(arg1);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinServer,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
 SWIGINTERN void swig_delete_BitcoinServer(void *obj) {
 OTDB::BitcoinServer *arg1 = (OTDB::BitcoinServer *) obj;
 delete arg1;
@@ -14687,6 +15689,11 @@ static swig_method swig_OTDB_BitcoinServer_methods[] = {
     {0,0}
 };
 static swig_attribute swig_OTDB_BitcoinServer_attributes[] = {
+    { "-gui_label",_wrap_BitcoinServer_gui_label_get, _wrap_BitcoinServer_gui_label_set},
+    { "-server_id",_wrap_BitcoinServer_server_id_get, _wrap_BitcoinServer_server_id_set},
+    { "-server_type",_wrap_BitcoinServer_server_type_get, _wrap_BitcoinServer_server_type_set},
+    { "-server_host",_wrap_BitcoinServer_server_host_get, _wrap_BitcoinServer_server_host_set},
+    { "-server_port",_wrap_BitcoinServer_server_port_get, _wrap_BitcoinServer_server_port_set},
     { "-bitcoin_username",_wrap_BitcoinServer_bitcoin_username_get, _wrap_BitcoinServer_bitcoin_username_set},
     { "-bitcoin_password",_wrap_BitcoinServer_bitcoin_password_get, _wrap_BitcoinServer_bitcoin_password_set},
     {0,0,0}
@@ -14708,6 +15715,62 @@ _wrap_delete_ContactNym(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, in
   arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
   delete arg1;
   
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_ContactNym_gui_label_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:ContactNym_gui_label_set self gui_label ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactNym_gui_label_set" "', argument " "1"" of type '" "OTDB::ContactNym *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ContactNym_gui_label_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ContactNym_gui_label_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->gui_label = *arg2;
+  
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_OK;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_ContactNym_gui_label_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:ContactNym_gui_label_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactNym_gui_label_get" "', argument " "1"" of type '" "OTDB::ContactNym *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  result = (std::string *) & ((arg1)->gui_label);
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
   return TCL_OK;
 fail:
   return TCL_ERROR;
@@ -14938,14 +16001,151 @@ fail:
 }
 
 
+SWIGINTERN int
+_wrap_ContactNym_GetServerInfoCount(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:ContactNym_GetServerInfoCount self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactNym_GetServerInfoCount" "', argument " "1"" of type '" "OTDB::ContactNym *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  result = (arg1)->GetServerInfoCount();
+  Tcl_SetObjResult(interp,SWIG_From_size_t(static_cast< size_t >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_ContactNym_GetServerInfo(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  OTDB::ServerInfo *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:ContactNym_GetServerInfo self nIndex ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactNym_GetServerInfo" "', argument " "1"" of type '" "OTDB::ContactNym *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ContactNym_GetServerInfo" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (OTDB::ServerInfo *)(arg1)->GetServerInfo(arg2);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ServerInfo,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_ContactNym_RemoveServerInfo(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:ContactNym_RemoveServerInfo self nIndexToRemove ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactNym_RemoveServerInfo" "', argument " "1"" of type '" "OTDB::ContactNym *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ContactNym_RemoveServerInfo" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (bool)(arg1)->RemoveServerInfo(arg2);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_ContactNym_AddServerInfo(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::ContactNym *arg1 = (OTDB::ContactNym *) 0 ;
+  OTDB::ServerInfo *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:ContactNym_AddServerInfo self disownObject ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactNym_AddServerInfo" "', argument " "1"" of type '" "OTDB::ContactNym *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactNym * >(argp1);
+  res2 = SWIG_ConvertPtr(objv[2], &argp2, SWIGTYPE_p_OTDB__ServerInfo,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ContactNym_AddServerInfo" "', argument " "2"" of type '" "OTDB::ServerInfo &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ContactNym_AddServerInfo" "', argument " "2"" of type '" "OTDB::ServerInfo &""'"); 
+  }
+  arg2 = reinterpret_cast< OTDB::ServerInfo * >(argp2);
+  result = (bool)(arg1)->AddServerInfo(*arg2);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_ContactNym_ot_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  OTDB::ContactNym *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:ContactNym_ot_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactNym_ot_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
+  result = (OTDB::ContactNym *)OTDB::ContactNym::ot_dynamic_cast(arg1);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ContactNym,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
 SWIGINTERN void swig_delete_ContactNym(void *obj) {
 OTDB::ContactNym *arg1 = (OTDB::ContactNym *) obj;
 delete arg1;
 }
 static swig_method swig_OTDB_ContactNym_methods[] = {
+    {"GetServerInfoCount", _wrap_ContactNym_GetServerInfoCount}, 
+    {"GetServerInfo", _wrap_ContactNym_GetServerInfo}, 
+    {"RemoveServerInfo", _wrap_ContactNym_RemoveServerInfo}, 
+    {"AddServerInfo", _wrap_ContactNym_AddServerInfo}, 
     {0,0}
 };
 static swig_attribute swig_OTDB_ContactNym_attributes[] = {
+    { "-gui_label",_wrap_ContactNym_gui_label_get, _wrap_ContactNym_gui_label_set},
     { "-nym_type",_wrap_ContactNym_nym_type_get, _wrap_ContactNym_nym_type_set},
     { "-nym_id",_wrap_ContactNym_nym_id_get, _wrap_ContactNym_nym_id_set},
     { "-public_key",_wrap_ContactNym_public_key_get, _wrap_ContactNym_public_key_set},
@@ -14975,11 +16175,262 @@ fail:
 }
 
 
+SWIGINTERN int
+_wrap_WalletData_GetBitcoinServerCount(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:WalletData_GetBitcoinServerCount self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinServerCount" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  result = (arg1)->GetBitcoinServerCount();
+  Tcl_SetObjResult(interp,SWIG_From_size_t(static_cast< size_t >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_WalletData_GetBitcoinServer(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  OTDB::BitcoinServer *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_GetBitcoinServer self nIndex ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_GetBitcoinServer" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (OTDB::BitcoinServer *)(arg1)->GetBitcoinServer(arg2);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinServer,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_WalletData_RemoveBitcoinServer(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_RemoveBitcoinServer self nIndexToRemove ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_RemoveBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_RemoveBitcoinServer" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (bool)(arg1)->RemoveBitcoinServer(arg2);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_WalletData_AddBitcoinServer(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  OTDB::BitcoinServer *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_AddBitcoinServer self disownObject ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_AddBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  res2 = SWIG_ConvertPtr(objv[2], &argp2, SWIGTYPE_p_OTDB__BitcoinServer,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "WalletData_AddBitcoinServer" "', argument " "2"" of type '" "OTDB::BitcoinServer &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "WalletData_AddBitcoinServer" "', argument " "2"" of type '" "OTDB::BitcoinServer &""'"); 
+  }
+  arg2 = reinterpret_cast< OTDB::BitcoinServer * >(argp2);
+  result = (bool)(arg1)->AddBitcoinServer(*arg2);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_WalletData_GetBitcoinAcctCount(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:WalletData_GetBitcoinAcctCount self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinAcctCount" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  result = (arg1)->GetBitcoinAcctCount();
+  Tcl_SetObjResult(interp,SWIG_From_size_t(static_cast< size_t >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_WalletData_GetBitcoinAcct(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  OTDB::BitcoinAcct *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_GetBitcoinAcct self nIndex ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_GetBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_GetBitcoinAcct" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (OTDB::BitcoinAcct *)(arg1)->GetBitcoinAcct(arg2);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__BitcoinAcct,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_WalletData_RemoveBitcoinAcct(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_RemoveBitcoinAcct self nIndexToRemove ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_RemoveBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "WalletData_RemoveBitcoinAcct" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (bool)(arg1)->RemoveBitcoinAcct(arg2);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_WalletData_AddBitcoinAcct(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::WalletData *arg1 = (OTDB::WalletData *) 0 ;
+  OTDB::BitcoinAcct *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_AddBitcoinAcct self disownObject ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_AddBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::WalletData * >(argp1);
+  res2 = SWIG_ConvertPtr(objv[2], &argp2, SWIGTYPE_p_OTDB__BitcoinAcct,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "WalletData_AddBitcoinAcct" "', argument " "2"" of type '" "OTDB::BitcoinAcct &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "WalletData_AddBitcoinAcct" "', argument " "2"" of type '" "OTDB::BitcoinAcct &""'"); 
+  }
+  arg2 = reinterpret_cast< OTDB::BitcoinAcct * >(argp2);
+  result = (bool)(arg1)->AddBitcoinAcct(*arg2);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_WalletData_ot_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  OTDB::WalletData *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:WalletData_ot_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_ot_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
+  result = (OTDB::WalletData *)OTDB::WalletData::ot_dynamic_cast(arg1);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__WalletData,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
 SWIGINTERN void swig_delete_WalletData(void *obj) {
 OTDB::WalletData *arg1 = (OTDB::WalletData *) obj;
 delete arg1;
 }
 static swig_method swig_OTDB_WalletData_methods[] = {
+    {"GetBitcoinServerCount", _wrap_WalletData_GetBitcoinServerCount}, 
+    {"GetBitcoinServer", _wrap_WalletData_GetBitcoinServer}, 
+    {"RemoveBitcoinServer", _wrap_WalletData_RemoveBitcoinServer}, 
+    {"AddBitcoinServer", _wrap_WalletData_AddBitcoinServer}, 
+    {"GetBitcoinAcctCount", _wrap_WalletData_GetBitcoinAcctCount}, 
+    {"GetBitcoinAcct", _wrap_WalletData_GetBitcoinAcct}, 
+    {"RemoveBitcoinAcct", _wrap_WalletData_RemoveBitcoinAcct}, 
+    {"AddBitcoinAcct", _wrap_WalletData_AddBitcoinAcct}, 
     {0,0}
 };
 static swig_attribute swig_OTDB_WalletData_attributes[] = {
@@ -15002,6 +16453,62 @@ _wrap_delete_ContactAcct(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, i
   arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
   delete arg1;
   
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_ContactAcct_gui_label_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:ContactAcct_gui_label_set self gui_label ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactAcct_gui_label_set" "', argument " "1"" of type '" "OTDB::ContactAcct *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ContactAcct_gui_label_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ContactAcct_gui_label_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->gui_label = *arg2;
+  
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_OK;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_ContactAcct_gui_label_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:ContactAcct_gui_label_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__ContactAcct, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactAcct_gui_label_get" "', argument " "1"" of type '" "OTDB::ContactAcct *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::ContactAcct * >(argp1);
+  result = (std::string *) & ((arg1)->gui_label);
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
   return TCL_OK;
 fail:
   return TCL_ERROR;
@@ -15400,6 +16907,27 @@ fail:
 }
 
 
+SWIGINTERN int
+_wrap_ContactAcct_ot_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  OTDB::ContactAcct *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:ContactAcct_ot_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactAcct_ot_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
+  result = (OTDB::ContactAcct *)OTDB::ContactAcct::ot_dynamic_cast(arg1);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ContactAcct,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
 SWIGINTERN void swig_delete_ContactAcct(void *obj) {
 OTDB::ContactAcct *arg1 = (OTDB::ContactAcct *) obj;
 delete arg1;
@@ -15408,6 +16936,7 @@ static swig_method swig_OTDB_ContactAcct_methods[] = {
     {0,0}
 };
 static swig_attribute swig_OTDB_ContactAcct_attributes[] = {
+    { "-gui_label",_wrap_ContactAcct_gui_label_get, _wrap_ContactAcct_gui_label_set},
     { "-server_type",_wrap_ContactAcct_server_type_get, _wrap_ContactAcct_server_type_set},
     { "-server_id",_wrap_ContactAcct_server_id_get, _wrap_ContactAcct_server_id_set},
     { "-asset_type_id",_wrap_ContactAcct_asset_type_id_get, _wrap_ContactAcct_asset_type_id_set},
@@ -15434,6 +16963,62 @@ _wrap_delete_Contact(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int o
   arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
   delete arg1;
   
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Contact_gui_label_set(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  std::string *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 = SWIG_OLDOBJ ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:Contact_gui_label_set self gui_label ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_gui_label_set" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  {
+    std::string *ptr = (std::string *)0;
+    res2 = SWIG_AsPtr_std_string SWIG_TCL_CALL_ARGS_2(objv[2], &ptr);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Contact_gui_label_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    if (!ptr) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Contact_gui_label_set" "', argument " "2"" of type '" "std::string const &""'"); 
+    }
+    arg2 = ptr;
+  }
+  if (arg1) (arg1)->gui_label = *arg2;
+  
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_OK;
+fail:
+  if (SWIG_IsNewObj(res2)) delete arg2;
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Contact_gui_label_get(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  std::string *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:Contact_gui_label_get self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_gui_label_get" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  result = (std::string *) & ((arg1)->gui_label);
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(*result)));
   return TCL_OK;
 fail:
   return TCL_ERROR;
@@ -15664,14 +17249,266 @@ fail:
 }
 
 
+SWIGINTERN int
+_wrap_Contact_GetContactNymCount(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:Contact_GetContactNymCount self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_GetContactNymCount" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  result = (arg1)->GetContactNymCount();
+  Tcl_SetObjResult(interp,SWIG_From_size_t(static_cast< size_t >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Contact_GetContactNym(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  OTDB::ContactNym *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:Contact_GetContactNym self nIndex ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_GetContactNym" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Contact_GetContactNym" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (OTDB::ContactNym *)(arg1)->GetContactNym(arg2);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ContactNym,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Contact_RemoveContactNym(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:Contact_RemoveContactNym self nIndexToRemove ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_RemoveContactNym" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Contact_RemoveContactNym" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (bool)(arg1)->RemoveContactNym(arg2);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Contact_AddContactNym(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  OTDB::ContactNym *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:Contact_AddContactNym self disownObject ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_AddContactNym" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  res2 = SWIG_ConvertPtr(objv[2], &argp2, SWIGTYPE_p_OTDB__ContactNym,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Contact_AddContactNym" "', argument " "2"" of type '" "OTDB::ContactNym &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Contact_AddContactNym" "', argument " "2"" of type '" "OTDB::ContactNym &""'"); 
+  }
+  arg2 = reinterpret_cast< OTDB::ContactNym * >(argp2);
+  result = (bool)(arg1)->AddContactNym(*arg2);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Contact_GetContactAcctCount(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:Contact_GetContactAcctCount self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_GetContactAcctCount" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  result = (arg1)->GetContactAcctCount();
+  Tcl_SetObjResult(interp,SWIG_From_size_t(static_cast< size_t >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Contact_GetContactAcct(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  OTDB::ContactAcct *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:Contact_GetContactAcct self nIndex ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_GetContactAcct" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Contact_GetContactAcct" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (OTDB::ContactAcct *)(arg1)->GetContactAcct(arg2);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__ContactAcct,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Contact_RemoveContactAcct(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:Contact_RemoveContactAcct self nIndexToRemove ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_RemoveContactAcct" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Contact_RemoveContactAcct" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (bool)(arg1)->RemoveContactAcct(arg2);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Contact_AddContactAcct(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Contact *arg1 = (OTDB::Contact *) 0 ;
+  OTDB::ContactAcct *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:Contact_AddContactAcct self disownObject ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_AddContactAcct" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Contact * >(argp1);
+  res2 = SWIG_ConvertPtr(objv[2], &argp2, SWIGTYPE_p_OTDB__ContactAcct,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Contact_AddContactAcct" "', argument " "2"" of type '" "OTDB::ContactAcct &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Contact_AddContactAcct" "', argument " "2"" of type '" "OTDB::ContactAcct &""'"); 
+  }
+  arg2 = reinterpret_cast< OTDB::ContactAcct * >(argp2);
+  result = (bool)(arg1)->AddContactAcct(*arg2);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_Contact_ot_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  OTDB::Contact *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:Contact_ot_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_ot_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
+  result = (OTDB::Contact *)OTDB::Contact::ot_dynamic_cast(arg1);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Contact,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
 SWIGINTERN void swig_delete_Contact(void *obj) {
 OTDB::Contact *arg1 = (OTDB::Contact *) obj;
 delete arg1;
 }
 static swig_method swig_OTDB_Contact_methods[] = {
+    {"GetContactNymCount", _wrap_Contact_GetContactNymCount}, 
+    {"GetContactNym", _wrap_Contact_GetContactNym}, 
+    {"RemoveContactNym", _wrap_Contact_RemoveContactNym}, 
+    {"AddContactNym", _wrap_Contact_AddContactNym}, 
+    {"GetContactAcctCount", _wrap_Contact_GetContactAcctCount}, 
+    {"GetContactAcct", _wrap_Contact_GetContactAcct}, 
+    {"RemoveContactAcct", _wrap_Contact_RemoveContactAcct}, 
+    {"AddContactAcct", _wrap_Contact_AddContactAcct}, 
     {0,0}
 };
 static swig_attribute swig_OTDB_Contact_attributes[] = {
+    { "-gui_label",_wrap_Contact_gui_label_get, _wrap_Contact_gui_label_set},
     { "-contact_id",_wrap_Contact_contact_id_get, _wrap_Contact_contact_id_set},
     { "-email",_wrap_Contact_email_get, _wrap_Contact_email_set},
     { "-memo",_wrap_Contact_memo_get, _wrap_Contact_memo_set},
@@ -15701,11 +17538,147 @@ fail:
 }
 
 
+SWIGINTERN int
+_wrap_AddressBook_GetContactCount(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:AddressBook_GetContactCount self ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__AddressBook, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "AddressBook_GetContactCount" "', argument " "1"" of type '" "OTDB::AddressBook *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::AddressBook * >(argp1);
+  result = (arg1)->GetContactCount();
+  Tcl_SetObjResult(interp,SWIG_From_size_t(static_cast< size_t >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_AddressBook_GetContact(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  OTDB::Contact *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:AddressBook_GetContact self nIndex ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__AddressBook, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "AddressBook_GetContact" "', argument " "1"" of type '" "OTDB::AddressBook *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::AddressBook * >(argp1);
+  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "AddressBook_GetContact" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (OTDB::Contact *)(arg1)->GetContact(arg2);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Contact,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_AddressBook_RemoveContact(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  size_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  size_t val2 ;
+  int ecode2 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:AddressBook_RemoveContact self nIndexToRemove ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__AddressBook, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "AddressBook_RemoveContact" "', argument " "1"" of type '" "OTDB::AddressBook *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::AddressBook * >(argp1);
+  ecode2 = SWIG_AsVal_size_t SWIG_TCL_CALL_ARGS_2(objv[2], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "AddressBook_RemoveContact" "', argument " "2"" of type '" "size_t""'");
+  } 
+  arg2 = static_cast< size_t >(val2);
+  result = (bool)(arg1)->RemoveContact(arg2);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_AddressBook_AddContact(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::AddressBook *arg1 = (OTDB::AddressBook *) 0 ;
+  OTDB::Contact *arg2 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  bool result;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"oo:AddressBook_AddContact self disownObject ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__AddressBook, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "AddressBook_AddContact" "', argument " "1"" of type '" "OTDB::AddressBook *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::AddressBook * >(argp1);
+  res2 = SWIG_ConvertPtr(objv[2], &argp2, SWIGTYPE_p_OTDB__Contact,  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "AddressBook_AddContact" "', argument " "2"" of type '" "OTDB::Contact &""'"); 
+  }
+  if (!argp2) {
+    SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "AddressBook_AddContact" "', argument " "2"" of type '" "OTDB::Contact &""'"); 
+  }
+  arg2 = reinterpret_cast< OTDB::Contact * >(argp2);
+  result = (bool)(arg1)->AddContact(*arg2);
+  Tcl_SetObjResult(interp,SWIG_From_bool(static_cast< bool >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_AddressBook_ot_dynamic_cast(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  OTDB::AddressBook *result = 0 ;
+  
+  if (SWIG_GetArgs(interp, objc, objv,"o:AddressBook_ot_dynamic_cast pObject ",(void *)0) == TCL_ERROR) SWIG_fail;
+  res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "AddressBook_ot_dynamic_cast" "', argument " "1"" of type '" "OTDB::Storable *""'"); 
+  }
+  arg1 = reinterpret_cast< OTDB::Storable * >(argp1);
+  result = (OTDB::AddressBook *)OTDB::AddressBook::ot_dynamic_cast(arg1);
+  Tcl_SetObjResult(interp, SWIG_NewInstanceObj( SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__AddressBook,0));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
 SWIGINTERN void swig_delete_AddressBook(void *obj) {
 OTDB::AddressBook *arg1 = (OTDB::AddressBook *) obj;
 delete arg1;
 }
 static swig_method swig_OTDB_AddressBook_methods[] = {
+    {"GetContactCount", _wrap_AddressBook_GetContactCount}, 
+    {"GetContact", _wrap_AddressBook_GetContact}, 
+    {"RemoveContact", _wrap_AddressBook_RemoveContact}, 
+    {"AddContact", _wrap_AddressBook_AddContact}, 
     {0,0}
 };
 static swig_attribute swig_OTDB_AddressBook_attributes[] = {
@@ -15886,6 +17859,7 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "OT_API_ProcessSockets", (swig_wrapper_func) _wrap_OT_API_ProcessSockets, NULL},
     { SWIG_prefix "delete_Storable", (swig_wrapper_func) _wrap_delete_Storable, NULL},
     { SWIG_prefix "Storable_Create", (swig_wrapper_func) _wrap_Storable_Create, NULL},
+    { SWIG_prefix "Storable_ot_dynamic_cast", (swig_wrapper_func) _wrap_Storable_ot_dynamic_cast, NULL},
     { SWIG_prefix "Storable", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_Storable},
     { SWIG_prefix "delete_Storage", (swig_wrapper_func) _wrap_delete_Storage, NULL},
     { SWIG_prefix "Storage_Init", (swig_wrapper_func) _wrap_Storage_Init, NULL},
@@ -15911,49 +17885,85 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "QueryPlainString", (swig_wrapper_func) _wrap_QueryPlainString, NULL},
     { SWIG_prefix "StoreObject", (swig_wrapper_func) _wrap_StoreObject, NULL},
     { SWIG_prefix "QueryObject", (swig_wrapper_func) _wrap_QueryObject, NULL},
-    { SWIG_prefix "delete_String", (swig_wrapper_func) _wrap_delete_String, NULL},
-    { SWIG_prefix "String_m_string_set", (swig_wrapper_func) _wrap_String_m_string_set, NULL},
-    { SWIG_prefix "String_m_string_get", (swig_wrapper_func) _wrap_String_m_string_get, NULL},
-    { SWIG_prefix "String", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_String},
+    { SWIG_prefix "delete_OTDBString", (swig_wrapper_func) _wrap_delete_OTDBString, NULL},
+    { SWIG_prefix "OTDBString_m_string_set", (swig_wrapper_func) _wrap_OTDBString_m_string_set, NULL},
+    { SWIG_prefix "OTDBString_m_string_get", (swig_wrapper_func) _wrap_OTDBString_m_string_get, NULL},
+    { SWIG_prefix "OTDBString_ot_dynamic_cast", (swig_wrapper_func) _wrap_OTDBString_ot_dynamic_cast, NULL},
+    { SWIG_prefix "OTDBString", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_OTDBString},
     { SWIG_prefix "delete_StringMap", (swig_wrapper_func) _wrap_delete_StringMap, NULL},
     { SWIG_prefix "StringMap_the_map_set", (swig_wrapper_func) _wrap_StringMap_the_map_set, NULL},
     { SWIG_prefix "StringMap_the_map_get", (swig_wrapper_func) _wrap_StringMap_the_map_get, NULL},
     { SWIG_prefix "StringMap_SetValue", (swig_wrapper_func) _wrap_StringMap_SetValue, NULL},
     { SWIG_prefix "StringMap_GetValue", (swig_wrapper_func) _wrap_StringMap_GetValue, NULL},
+    { SWIG_prefix "StringMap_ot_dynamic_cast", (swig_wrapper_func) _wrap_StringMap_ot_dynamic_cast, NULL},
     { SWIG_prefix "StringMap", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_StringMap},
     { SWIG_prefix "delete_Displayable", (swig_wrapper_func) _wrap_delete_Displayable, NULL},
     { SWIG_prefix "Displayable_gui_label_set", (swig_wrapper_func) _wrap_Displayable_gui_label_set, NULL},
     { SWIG_prefix "Displayable_gui_label_get", (swig_wrapper_func) _wrap_Displayable_gui_label_get, NULL},
+    { SWIG_prefix "Displayable_ot_dynamic_cast", (swig_wrapper_func) _wrap_Displayable_ot_dynamic_cast, NULL},
     { SWIG_prefix "Displayable", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_Displayable},
     { SWIG_prefix "delete_Acct", (swig_wrapper_func) _wrap_delete_Acct, NULL},
+    { SWIG_prefix "Acct_gui_label_set", (swig_wrapper_func) _wrap_Acct_gui_label_set, NULL},
+    { SWIG_prefix "Acct_gui_label_get", (swig_wrapper_func) _wrap_Acct_gui_label_get, NULL},
     { SWIG_prefix "Acct_acct_id_set", (swig_wrapper_func) _wrap_Acct_acct_id_set, NULL},
     { SWIG_prefix "Acct_acct_id_get", (swig_wrapper_func) _wrap_Acct_acct_id_get, NULL},
     { SWIG_prefix "Acct_server_id_set", (swig_wrapper_func) _wrap_Acct_server_id_set, NULL},
     { SWIG_prefix "Acct_server_id_get", (swig_wrapper_func) _wrap_Acct_server_id_get, NULL},
+    { SWIG_prefix "Acct_ot_dynamic_cast", (swig_wrapper_func) _wrap_Acct_ot_dynamic_cast, NULL},
     { SWIG_prefix "Acct", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_Acct},
     { SWIG_prefix "delete_BitcoinAcct", (swig_wrapper_func) _wrap_delete_BitcoinAcct, NULL},
+    { SWIG_prefix "BitcoinAcct_gui_label_set", (swig_wrapper_func) _wrap_BitcoinAcct_gui_label_set, NULL},
+    { SWIG_prefix "BitcoinAcct_gui_label_get", (swig_wrapper_func) _wrap_BitcoinAcct_gui_label_get, NULL},
+    { SWIG_prefix "BitcoinAcct_acct_id_set", (swig_wrapper_func) _wrap_BitcoinAcct_acct_id_set, NULL},
+    { SWIG_prefix "BitcoinAcct_acct_id_get", (swig_wrapper_func) _wrap_BitcoinAcct_acct_id_get, NULL},
+    { SWIG_prefix "BitcoinAcct_server_id_set", (swig_wrapper_func) _wrap_BitcoinAcct_server_id_set, NULL},
+    { SWIG_prefix "BitcoinAcct_server_id_get", (swig_wrapper_func) _wrap_BitcoinAcct_server_id_get, NULL},
     { SWIG_prefix "BitcoinAcct_bitcoin_acct_name_set", (swig_wrapper_func) _wrap_BitcoinAcct_bitcoin_acct_name_set, NULL},
     { SWIG_prefix "BitcoinAcct_bitcoin_acct_name_get", (swig_wrapper_func) _wrap_BitcoinAcct_bitcoin_acct_name_get, NULL},
+    { SWIG_prefix "BitcoinAcct_ot_dynamic_cast", (swig_wrapper_func) _wrap_BitcoinAcct_ot_dynamic_cast, NULL},
     { SWIG_prefix "BitcoinAcct", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_BitcoinAcct},
     { SWIG_prefix "delete_ServerInfo", (swig_wrapper_func) _wrap_delete_ServerInfo, NULL},
+    { SWIG_prefix "ServerInfo_gui_label_set", (swig_wrapper_func) _wrap_ServerInfo_gui_label_set, NULL},
+    { SWIG_prefix "ServerInfo_gui_label_get", (swig_wrapper_func) _wrap_ServerInfo_gui_label_get, NULL},
     { SWIG_prefix "ServerInfo_server_id_set", (swig_wrapper_func) _wrap_ServerInfo_server_id_set, NULL},
     { SWIG_prefix "ServerInfo_server_id_get", (swig_wrapper_func) _wrap_ServerInfo_server_id_get, NULL},
     { SWIG_prefix "ServerInfo_server_type_set", (swig_wrapper_func) _wrap_ServerInfo_server_type_set, NULL},
     { SWIG_prefix "ServerInfo_server_type_get", (swig_wrapper_func) _wrap_ServerInfo_server_type_get, NULL},
+    { SWIG_prefix "ServerInfo_ot_dynamic_cast", (swig_wrapper_func) _wrap_ServerInfo_ot_dynamic_cast, NULL},
     { SWIG_prefix "ServerInfo", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_ServerInfo},
     { SWIG_prefix "delete_Server", (swig_wrapper_func) _wrap_delete_Server, NULL},
+    { SWIG_prefix "Server_gui_label_set", (swig_wrapper_func) _wrap_Server_gui_label_set, NULL},
+    { SWIG_prefix "Server_gui_label_get", (swig_wrapper_func) _wrap_Server_gui_label_get, NULL},
+    { SWIG_prefix "Server_server_id_set", (swig_wrapper_func) _wrap_Server_server_id_set, NULL},
+    { SWIG_prefix "Server_server_id_get", (swig_wrapper_func) _wrap_Server_server_id_get, NULL},
+    { SWIG_prefix "Server_server_type_set", (swig_wrapper_func) _wrap_Server_server_type_set, NULL},
+    { SWIG_prefix "Server_server_type_get", (swig_wrapper_func) _wrap_Server_server_type_get, NULL},
     { SWIG_prefix "Server_server_host_set", (swig_wrapper_func) _wrap_Server_server_host_set, NULL},
     { SWIG_prefix "Server_server_host_get", (swig_wrapper_func) _wrap_Server_server_host_get, NULL},
     { SWIG_prefix "Server_server_port_set", (swig_wrapper_func) _wrap_Server_server_port_set, NULL},
     { SWIG_prefix "Server_server_port_get", (swig_wrapper_func) _wrap_Server_server_port_get, NULL},
+    { SWIG_prefix "Server_ot_dynamic_cast", (swig_wrapper_func) _wrap_Server_ot_dynamic_cast, NULL},
     { SWIG_prefix "Server", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_Server},
     { SWIG_prefix "delete_BitcoinServer", (swig_wrapper_func) _wrap_delete_BitcoinServer, NULL},
+    { SWIG_prefix "BitcoinServer_gui_label_set", (swig_wrapper_func) _wrap_BitcoinServer_gui_label_set, NULL},
+    { SWIG_prefix "BitcoinServer_gui_label_get", (swig_wrapper_func) _wrap_BitcoinServer_gui_label_get, NULL},
+    { SWIG_prefix "BitcoinServer_server_id_set", (swig_wrapper_func) _wrap_BitcoinServer_server_id_set, NULL},
+    { SWIG_prefix "BitcoinServer_server_id_get", (swig_wrapper_func) _wrap_BitcoinServer_server_id_get, NULL},
+    { SWIG_prefix "BitcoinServer_server_type_set", (swig_wrapper_func) _wrap_BitcoinServer_server_type_set, NULL},
+    { SWIG_prefix "BitcoinServer_server_type_get", (swig_wrapper_func) _wrap_BitcoinServer_server_type_get, NULL},
+    { SWIG_prefix "BitcoinServer_server_host_set", (swig_wrapper_func) _wrap_BitcoinServer_server_host_set, NULL},
+    { SWIG_prefix "BitcoinServer_server_host_get", (swig_wrapper_func) _wrap_BitcoinServer_server_host_get, NULL},
+    { SWIG_prefix "BitcoinServer_server_port_set", (swig_wrapper_func) _wrap_BitcoinServer_server_port_set, NULL},
+    { SWIG_prefix "BitcoinServer_server_port_get", (swig_wrapper_func) _wrap_BitcoinServer_server_port_get, NULL},
     { SWIG_prefix "BitcoinServer_bitcoin_username_set", (swig_wrapper_func) _wrap_BitcoinServer_bitcoin_username_set, NULL},
     { SWIG_prefix "BitcoinServer_bitcoin_username_get", (swig_wrapper_func) _wrap_BitcoinServer_bitcoin_username_get, NULL},
     { SWIG_prefix "BitcoinServer_bitcoin_password_set", (swig_wrapper_func) _wrap_BitcoinServer_bitcoin_password_set, NULL},
     { SWIG_prefix "BitcoinServer_bitcoin_password_get", (swig_wrapper_func) _wrap_BitcoinServer_bitcoin_password_get, NULL},
+    { SWIG_prefix "BitcoinServer_ot_dynamic_cast", (swig_wrapper_func) _wrap_BitcoinServer_ot_dynamic_cast, NULL},
     { SWIG_prefix "BitcoinServer", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_BitcoinServer},
     { SWIG_prefix "delete_ContactNym", (swig_wrapper_func) _wrap_delete_ContactNym, NULL},
+    { SWIG_prefix "ContactNym_gui_label_set", (swig_wrapper_func) _wrap_ContactNym_gui_label_set, NULL},
+    { SWIG_prefix "ContactNym_gui_label_get", (swig_wrapper_func) _wrap_ContactNym_gui_label_get, NULL},
     { SWIG_prefix "ContactNym_nym_type_set", (swig_wrapper_func) _wrap_ContactNym_nym_type_set, NULL},
     { SWIG_prefix "ContactNym_nym_type_get", (swig_wrapper_func) _wrap_ContactNym_nym_type_get, NULL},
     { SWIG_prefix "ContactNym_nym_id_set", (swig_wrapper_func) _wrap_ContactNym_nym_id_set, NULL},
@@ -15962,10 +17972,26 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "ContactNym_public_key_get", (swig_wrapper_func) _wrap_ContactNym_public_key_get, NULL},
     { SWIG_prefix "ContactNym_memo_set", (swig_wrapper_func) _wrap_ContactNym_memo_set, NULL},
     { SWIG_prefix "ContactNym_memo_get", (swig_wrapper_func) _wrap_ContactNym_memo_get, NULL},
+    { SWIG_prefix "ContactNym_GetServerInfoCount", (swig_wrapper_func) _wrap_ContactNym_GetServerInfoCount, NULL},
+    { SWIG_prefix "ContactNym_GetServerInfo", (swig_wrapper_func) _wrap_ContactNym_GetServerInfo, NULL},
+    { SWIG_prefix "ContactNym_RemoveServerInfo", (swig_wrapper_func) _wrap_ContactNym_RemoveServerInfo, NULL},
+    { SWIG_prefix "ContactNym_AddServerInfo", (swig_wrapper_func) _wrap_ContactNym_AddServerInfo, NULL},
+    { SWIG_prefix "ContactNym_ot_dynamic_cast", (swig_wrapper_func) _wrap_ContactNym_ot_dynamic_cast, NULL},
     { SWIG_prefix "ContactNym", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_ContactNym},
     { SWIG_prefix "delete_WalletData", (swig_wrapper_func) _wrap_delete_WalletData, NULL},
+    { SWIG_prefix "WalletData_GetBitcoinServerCount", (swig_wrapper_func) _wrap_WalletData_GetBitcoinServerCount, NULL},
+    { SWIG_prefix "WalletData_GetBitcoinServer", (swig_wrapper_func) _wrap_WalletData_GetBitcoinServer, NULL},
+    { SWIG_prefix "WalletData_RemoveBitcoinServer", (swig_wrapper_func) _wrap_WalletData_RemoveBitcoinServer, NULL},
+    { SWIG_prefix "WalletData_AddBitcoinServer", (swig_wrapper_func) _wrap_WalletData_AddBitcoinServer, NULL},
+    { SWIG_prefix "WalletData_GetBitcoinAcctCount", (swig_wrapper_func) _wrap_WalletData_GetBitcoinAcctCount, NULL},
+    { SWIG_prefix "WalletData_GetBitcoinAcct", (swig_wrapper_func) _wrap_WalletData_GetBitcoinAcct, NULL},
+    { SWIG_prefix "WalletData_RemoveBitcoinAcct", (swig_wrapper_func) _wrap_WalletData_RemoveBitcoinAcct, NULL},
+    { SWIG_prefix "WalletData_AddBitcoinAcct", (swig_wrapper_func) _wrap_WalletData_AddBitcoinAcct, NULL},
+    { SWIG_prefix "WalletData_ot_dynamic_cast", (swig_wrapper_func) _wrap_WalletData_ot_dynamic_cast, NULL},
     { SWIG_prefix "WalletData", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_WalletData},
     { SWIG_prefix "delete_ContactAcct", (swig_wrapper_func) _wrap_delete_ContactAcct, NULL},
+    { SWIG_prefix "ContactAcct_gui_label_set", (swig_wrapper_func) _wrap_ContactAcct_gui_label_set, NULL},
+    { SWIG_prefix "ContactAcct_gui_label_get", (swig_wrapper_func) _wrap_ContactAcct_gui_label_get, NULL},
     { SWIG_prefix "ContactAcct_server_type_set", (swig_wrapper_func) _wrap_ContactAcct_server_type_set, NULL},
     { SWIG_prefix "ContactAcct_server_type_get", (swig_wrapper_func) _wrap_ContactAcct_server_type_get, NULL},
     { SWIG_prefix "ContactAcct_server_id_set", (swig_wrapper_func) _wrap_ContactAcct_server_id_set, NULL},
@@ -15980,8 +18006,11 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "ContactAcct_memo_get", (swig_wrapper_func) _wrap_ContactAcct_memo_get, NULL},
     { SWIG_prefix "ContactAcct_public_key_set", (swig_wrapper_func) _wrap_ContactAcct_public_key_set, NULL},
     { SWIG_prefix "ContactAcct_public_key_get", (swig_wrapper_func) _wrap_ContactAcct_public_key_get, NULL},
+    { SWIG_prefix "ContactAcct_ot_dynamic_cast", (swig_wrapper_func) _wrap_ContactAcct_ot_dynamic_cast, NULL},
     { SWIG_prefix "ContactAcct", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_ContactAcct},
     { SWIG_prefix "delete_Contact", (swig_wrapper_func) _wrap_delete_Contact, NULL},
+    { SWIG_prefix "Contact_gui_label_set", (swig_wrapper_func) _wrap_Contact_gui_label_set, NULL},
+    { SWIG_prefix "Contact_gui_label_get", (swig_wrapper_func) _wrap_Contact_gui_label_get, NULL},
     { SWIG_prefix "Contact_contact_id_set", (swig_wrapper_func) _wrap_Contact_contact_id_set, NULL},
     { SWIG_prefix "Contact_contact_id_get", (swig_wrapper_func) _wrap_Contact_contact_id_get, NULL},
     { SWIG_prefix "Contact_email_set", (swig_wrapper_func) _wrap_Contact_email_set, NULL},
@@ -15990,8 +18019,22 @@ static swig_command_info swig_commands[] = {
     { SWIG_prefix "Contact_memo_get", (swig_wrapper_func) _wrap_Contact_memo_get, NULL},
     { SWIG_prefix "Contact_public_key_set", (swig_wrapper_func) _wrap_Contact_public_key_set, NULL},
     { SWIG_prefix "Contact_public_key_get", (swig_wrapper_func) _wrap_Contact_public_key_get, NULL},
+    { SWIG_prefix "Contact_GetContactNymCount", (swig_wrapper_func) _wrap_Contact_GetContactNymCount, NULL},
+    { SWIG_prefix "Contact_GetContactNym", (swig_wrapper_func) _wrap_Contact_GetContactNym, NULL},
+    { SWIG_prefix "Contact_RemoveContactNym", (swig_wrapper_func) _wrap_Contact_RemoveContactNym, NULL},
+    { SWIG_prefix "Contact_AddContactNym", (swig_wrapper_func) _wrap_Contact_AddContactNym, NULL},
+    { SWIG_prefix "Contact_GetContactAcctCount", (swig_wrapper_func) _wrap_Contact_GetContactAcctCount, NULL},
+    { SWIG_prefix "Contact_GetContactAcct", (swig_wrapper_func) _wrap_Contact_GetContactAcct, NULL},
+    { SWIG_prefix "Contact_RemoveContactAcct", (swig_wrapper_func) _wrap_Contact_RemoveContactAcct, NULL},
+    { SWIG_prefix "Contact_AddContactAcct", (swig_wrapper_func) _wrap_Contact_AddContactAcct, NULL},
+    { SWIG_prefix "Contact_ot_dynamic_cast", (swig_wrapper_func) _wrap_Contact_ot_dynamic_cast, NULL},
     { SWIG_prefix "Contact", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_Contact},
     { SWIG_prefix "delete_AddressBook", (swig_wrapper_func) _wrap_delete_AddressBook, NULL},
+    { SWIG_prefix "AddressBook_GetContactCount", (swig_wrapper_func) _wrap_AddressBook_GetContactCount, NULL},
+    { SWIG_prefix "AddressBook_GetContact", (swig_wrapper_func) _wrap_AddressBook_GetContact, NULL},
+    { SWIG_prefix "AddressBook_RemoveContact", (swig_wrapper_func) _wrap_AddressBook_RemoveContact, NULL},
+    { SWIG_prefix "AddressBook_AddContact", (swig_wrapper_func) _wrap_AddressBook_AddContact, NULL},
+    { SWIG_prefix "AddressBook_ot_dynamic_cast", (swig_wrapper_func) _wrap_AddressBook_ot_dynamic_cast, NULL},
     { SWIG_prefix "AddressBook", (swig_wrapper_func) SWIG_ObjectConstructor, (ClientData)&_wrap_class_OTDB_AddressBook},
     {0, 0, 0}
 };
@@ -16054,8 +18097,8 @@ static void *_p_OTDB__AcctTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newme
 static void *_p_OTDB__WalletDataTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OTDB::Storable *)  ((OTDB::WalletData *) x));
 }
-static void *_p_OTDB__StringTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((OTDB::Storable *)  ((OTDB::String *) x));
+static void *_p_OTDB__OTDBStringTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *)  ((OTDB::OTDBString *) x));
 }
 static void *_p_OTDB__DisplayableTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OTDB::Storable *)  ((OTDB::Displayable *) x));
@@ -16091,11 +18134,11 @@ static swig_type_info _swigt__p_OTDB__Contact = {"_p_OTDB__Contact", "OTDB::Cont
 static swig_type_info _swigt__p_OTDB__ContactAcct = {"_p_OTDB__ContactAcct", "OTDB::ContactAcct *", 0, 0, (void*)&_wrap_class_OTDB_ContactAcct, 0};
 static swig_type_info _swigt__p_OTDB__ContactNym = {"_p_OTDB__ContactNym", "OTDB::ContactNym *", 0, 0, (void*)&_wrap_class_OTDB_ContactNym, 0};
 static swig_type_info _swigt__p_OTDB__Displayable = {"_p_OTDB__Displayable", "OTDB::Displayable *", 0, 0, (void*)&_wrap_class_OTDB_Displayable, 0};
+static swig_type_info _swigt__p_OTDB__OTDBString = {"_p_OTDB__OTDBString", "OTDB::OTDBString *", 0, 0, (void*)&_wrap_class_OTDB_OTDBString, 0};
 static swig_type_info _swigt__p_OTDB__Server = {"_p_OTDB__Server", "OTDB::Server *", 0, 0, (void*)&_wrap_class_OTDB_Server, 0};
 static swig_type_info _swigt__p_OTDB__ServerInfo = {"_p_OTDB__ServerInfo", "OTDB::ServerInfo *", 0, 0, (void*)&_wrap_class_OTDB_ServerInfo, 0};
 static swig_type_info _swigt__p_OTDB__Storable = {"_p_OTDB__Storable", "OTDB::Storable *", 0, 0, (void*)&_wrap_class_OTDB_Storable, 0};
 static swig_type_info _swigt__p_OTDB__Storage = {"_p_OTDB__Storage", "OTDB::Storage *", 0, 0, (void*)&_wrap_class_OTDB_Storage, 0};
-static swig_type_info _swigt__p_OTDB__String = {"_p_OTDB__String", "OTDB::String *", 0, 0, (void*)&_wrap_class_OTDB_String, 0};
 static swig_type_info _swigt__p_OTDB__StringMap = {"_p_OTDB__StringMap", "OTDB::StringMap *", 0, 0, (void*)&_wrap_class_OTDB_StringMap, 0};
 static swig_type_info _swigt__p_OTDB__WalletData = {"_p_OTDB__WalletData", "OTDB::WalletData *", 0, 0, (void*)&_wrap_class_OTDB_WalletData, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
@@ -16112,11 +18155,11 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_OTDB__ContactAcct,
   &_swigt__p_OTDB__ContactNym,
   &_swigt__p_OTDB__Displayable,
+  &_swigt__p_OTDB__OTDBString,
   &_swigt__p_OTDB__Server,
   &_swigt__p_OTDB__ServerInfo,
   &_swigt__p_OTDB__Storable,
   &_swigt__p_OTDB__Storage,
-  &_swigt__p_OTDB__String,
   &_swigt__p_OTDB__StringMap,
   &_swigt__p_OTDB__WalletData,
   &_swigt__p_char,
@@ -16133,11 +18176,11 @@ static swig_cast_info _swigc__p_OTDB__Contact[] = {  {&_swigt__p_OTDB__Contact, 
 static swig_cast_info _swigc__p_OTDB__ContactAcct[] = {  {&_swigt__p_OTDB__ContactAcct, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__ContactNym[] = {  {&_swigt__p_OTDB__ContactNym, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__Displayable[] = {  {&_swigt__p_OTDB__BitcoinAcct, _p_OTDB__BitcoinAcctTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__Displayable, 0, 0, 0},  {&_swigt__p_OTDB__ContactNym, _p_OTDB__ContactNymTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__Contact, _p_OTDB__ContactTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__ServerInfo, _p_OTDB__ServerInfoTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__Acct, _p_OTDB__AcctTo_p_OTDB__Displayable, 0, 0},  {&_swigt__p_OTDB__ContactAcct, _p_OTDB__ContactAcctTo_p_OTDB__Displayable, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__OTDBString[] = {  {&_swigt__p_OTDB__OTDBString, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__Server[] = {  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Server, 0, 0},  {&_swigt__p_OTDB__Server, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__ServerInfo[] = {  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__ServerInfo, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__ServerInfo, 0, 0},  {&_swigt__p_OTDB__ServerInfo, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_OTDB__Storable[] = {  {&_swigt__p_OTDB__ContactNym, _p_OTDB__ContactNymTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__StringMap, _p_OTDB__StringMapTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__String, _p_OTDB__StringTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__ContactAcct, _p_OTDB__ContactAcctTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Displayable, _p_OTDB__DisplayableTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__WalletData, _p_OTDB__WalletDataTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Storable, 0, 0, 0},  {&_swigt__p_OTDB__BitcoinAcct, _p_OTDB__BitcoinAcctTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__ServerInfo, _p_OTDB__ServerInfoTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Contact, _p_OTDB__ContactTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__AddressBook, _p_OTDB__AddressBookTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Acct, _p_OTDB__AcctTo_p_OTDB__Storable, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__Storable[] = {  {&_swigt__p_OTDB__ContactNym, _p_OTDB__ContactNymTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__StringMap, _p_OTDB__StringMapTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__ContactAcct, _p_OTDB__ContactAcctTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Displayable, _p_OTDB__DisplayableTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__WalletData, _p_OTDB__WalletDataTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Storable, 0, 0, 0},  {&_swigt__p_OTDB__BitcoinAcct, _p_OTDB__BitcoinAcctTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__OTDBString, _p_OTDB__OTDBStringTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__ServerInfo, _p_OTDB__ServerInfoTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Contact, _p_OTDB__ContactTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__AddressBook, _p_OTDB__AddressBookTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Acct, _p_OTDB__AcctTo_p_OTDB__Storable, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__Storage[] = {  {&_swigt__p_OTDB__Storage, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_OTDB__String[] = {  {&_swigt__p_OTDB__String, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__StringMap[] = {  {&_swigt__p_OTDB__StringMap, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__WalletData[] = {  {&_swigt__p_OTDB__WalletData, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
@@ -16154,11 +18197,11 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_OTDB__ContactAcct,
   _swigc__p_OTDB__ContactNym,
   _swigc__p_OTDB__Displayable,
+  _swigc__p_OTDB__OTDBString,
   _swigc__p_OTDB__Server,
   _swigc__p_OTDB__ServerInfo,
   _swigc__p_OTDB__Storable,
   _swigc__p_OTDB__Storage,
-  _swigc__p_OTDB__String,
   _swigc__p_OTDB__StringMap,
   _swigc__p_OTDB__WalletData,
   _swigc__p_char,

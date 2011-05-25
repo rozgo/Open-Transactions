@@ -34,6 +34,90 @@ public class ContactNym extends Displayable {
     }
     super.delete();
   }
+{
+	/*@SWIG:OTAPI.i,392,OT_CAN_BE_CONTAINED_BY@*/
+	// Ensure that the GC doesn't collect any OT_CONTAINER instance set from Java
+	private Contact containerRefContact;
+	// ----------------	
+	protected void addReference(Contact theContainer) {  // This is Java code
+		containerRefContact = theContainer;
+	}
+	// ----------------
+/*@SWIG@*/
+	// ------------------------
+	/*@SWIG:OTAPI.i,329,OT_CONTAINER_TYPE_MEMBERS@*/
+private List elementList = new ArrayList();
+/*@SWIG@*/
+	/*@SWIG:OTAPI.i,410,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
+// Ensure that the GC doesn't collect any ServerInfo set from Java
+// as the underlying C++ class stores a shallow copy
+
+// Altered the SWIG example so that we store a list of these references, instead
+// of only the latest one. None of them should go out of scope until this object does.
+
+private long removeRefServerInfo(long lIndex) {
+	// 
+	// loop through the elements in the actual container, in order to find the one
+	// at lIndex. Once it is found, then loop through the reference list and remove
+	// the corresponding reference for that element.
+	//
+	ServerInfo refActualElement = GetServerInfo(lIndex);
+
+	if (refActualElement = null)
+		return lIndex; // oh well.
+	
+	// Loop through the reference list and remove the corresponding reference
+	// for the specified element.
+	//
+	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
+	{
+		ServerInfo tempRef = elementList.get(intIndex);
+		
+		if ((tempRef instanceof ServerInfo) &&
+			(ServerInfo.getCPtr(tempRef) == ServerInfo.getCPtr(refActualElement)))
+		{
+			elementList.remove(tempRef);
+			break;
+		}
+	}
+	
+	return lIndex;
+}
+
+private long getCPtrAddRefServerInfo(ServerInfo element) {
+	// Whenever adding a reference to the list, I remove it first (if already there.)
+	// That way we never store more than one reference per actual contained object.
+	//
+	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
+	{
+		ServerInfo tempRef = elementList.get(intIndex);
+		
+		if (tempRef == null) // just in case. Should never happen.
+			continue;
+		
+		if ((tempRef instanceof ServerInfo) &&
+			(ServerInfo.getCPtr(tempRef) == ServerInfo.getCPtr(element)))
+		{
+			elementList.remove(tempRef); // It was already there, so let's remove it before adding (below.)
+			break;
+		}
+	}
+	// Now we add it...
+	//
+	ServerInfo tempLocalRef = element;
+	elementList.add(tempLocalRef);
+	return ServerInfo.getCPtr(element);
+}	// Hope I get away with overloading this for every type. Otherwise,
+// hope I can just change the function name to customize it to type.
+/*@SWIG@*/
+}
+  public void setGui_label(String value) {
+    otapiJNI.ContactNym_gui_label_set(swigCPtr, this, value);
+  }
+
+  public String getGui_label() {
+    return otapiJNI.ContactNym_gui_label_get(swigCPtr, this);
+  }
 
   public void setNym_type(String value) {
     otapiJNI.ContactNym_nym_type_set(swigCPtr, this, value);
@@ -66,5 +150,30 @@ public class ContactNym extends Displayable {
   public String getMemo() {
     return otapiJNI.ContactNym_memo_get(swigCPtr, this);
   }
+
+  public long GetServerInfoCount() { return otapiJNI.ContactNym_GetServerInfoCount(swigCPtr, this); }
+
+  public ServerInfo GetServerInfo(long nIndex) {
+    long cPtr = otapiJNI.ContactNym_GetServerInfo(swigCPtr, this, nIndex);
+    return (cPtr == 0) ? null : new ServerInfo(cPtr, false);
+  }
+
+  public boolean RemoveServerInfo(long nIndexToRemove) {
+    return otapiJNI.ContactNym_RemoveServerInfo(swigCPtr, this, { removeRefContact(nIndexToRemove) });
+  }
+
+  public boolean AddServerInfo(ServerInfo disownObject) {
+    return otapiJNI.ContactNym_AddServerInfo(swigCPtr, this, ServerInfo.getCPtr(disownObject), disownObject);
+  }
+
+  public static ContactNym ot_dynamic_cast(Storable pObject) { 
+    long cPtr = otapiJNI.ContactNym_ot_dynamic_cast(Storable.getCPtr(pObject), pObject); 
+    ContactNym ret = null; 
+    if (cPtr != 0) { 
+		ret = new ContactNym(cPtr, false);
+		ret.addReference(this); 
+    } 
+    return ret; 
+}
 
 }

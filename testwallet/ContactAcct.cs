@@ -39,6 +39,18 @@ public class ContactAcct : Displayable {
     }
   }
 
+  public string gui_label {
+    set {
+      otapiPINVOKE.ContactAcct_gui_label_set(swigCPtr, value);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    } 
+    get {
+      string ret = otapiPINVOKE.ContactAcct_gui_label_get(swigCPtr);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+      return ret;
+    } 
+  }
+
   public string server_type {
     set {
       otapiPINVOKE.ContactAcct_server_type_set(swigCPtr, value);
@@ -121,6 +133,12 @@ public class ContactAcct : Displayable {
       if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
       return ret;
     } 
+  }
+
+  public new static ContactAcct ot_dynamic_cast(Storable pObject) {
+    IntPtr cPtr = otapiPINVOKE.ContactAcct_ot_dynamic_cast(Storable.getCPtr(pObject));
+    ContactAcct ret = (cPtr == IntPtr.Zero) ? null : new ContactAcct(cPtr, false);
+    return ret;
   }
 
 }

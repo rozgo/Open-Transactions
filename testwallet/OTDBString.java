@@ -8,15 +8,15 @@
 
 package com.wrapper.core.jni;
 
-public class String extends Storable {
+public class OTDBString extends Storable {
   private long swigCPtr;
 
-  public String(long cPtr, boolean cMemoryOwn) {
-    super(otapiJNI.String_SWIGUpcast(cPtr), cMemoryOwn);
+  public OTDBString(long cPtr, boolean cMemoryOwn) {
+    super(otapiJNI.OTDBString_SWIGUpcast(cPtr), cMemoryOwn);
     swigCPtr = cPtr;
   }
 
-  public static long getCPtr(String obj) {
+  public static long getCPtr(OTDBString obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 
@@ -28,19 +28,31 @@ public class String extends Storable {
     if (swigCPtr != 0) {
       if (swigCMemOwn) {
         swigCMemOwn = false;
-        otapiJNI.delete_String(swigCPtr);
+        otapiJNI.delete_OTDBString(swigCPtr);
       }
       swigCPtr = 0;
     }
     super.delete();
   }
-
+{
+	// ------------------------
+}
   public void setM_string(String value) {
-    otapiJNI.String_m_string_set(swigCPtr, this, value);
+    otapiJNI.OTDBString_m_string_set(swigCPtr, this, value);
   }
 
   public String getM_string() {
-    return otapiJNI.String_m_string_get(swigCPtr, this);
+    return otapiJNI.OTDBString_m_string_get(swigCPtr, this);
   }
+
+  public static OTDBString ot_dynamic_cast(Storable pObject) { 
+    long cPtr = otapiJNI.OTDBString_ot_dynamic_cast(Storable.getCPtr(pObject), pObject); 
+    OTDBString ret = null; 
+    if (cPtr != 0) { 
+		ret = new OTDBString(cPtr, false);
+		ret.addReference(this); 
+    } 
+    return ret; 
+}
 
 }

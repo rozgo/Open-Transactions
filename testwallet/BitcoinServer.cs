@@ -39,6 +39,66 @@ public class BitcoinServer : Server {
     }
   }
 
+  public string gui_label {
+    set {
+      otapiPINVOKE.BitcoinServer_gui_label_set(swigCPtr, value);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    } 
+    get {
+      string ret = otapiPINVOKE.BitcoinServer_gui_label_get(swigCPtr);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+      return ret;
+    } 
+  }
+
+  public string server_id {
+    set {
+      otapiPINVOKE.BitcoinServer_server_id_set(swigCPtr, value);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    } 
+    get {
+      string ret = otapiPINVOKE.BitcoinServer_server_id_get(swigCPtr);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+      return ret;
+    } 
+  }
+
+  public string server_type {
+    set {
+      otapiPINVOKE.BitcoinServer_server_type_set(swigCPtr, value);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    } 
+    get {
+      string ret = otapiPINVOKE.BitcoinServer_server_type_get(swigCPtr);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+      return ret;
+    } 
+  }
+
+  public string server_host {
+    set {
+      otapiPINVOKE.BitcoinServer_server_host_set(swigCPtr, value);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    } 
+    get {
+      string ret = otapiPINVOKE.BitcoinServer_server_host_get(swigCPtr);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+      return ret;
+    } 
+  }
+
+  public string server_port {
+    set {
+      otapiPINVOKE.BitcoinServer_server_port_set(swigCPtr, value);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    } 
+    get {
+      string ret = otapiPINVOKE.BitcoinServer_server_port_get(swigCPtr);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+      return ret;
+    } 
+  }
+
   public string bitcoin_username {
     set {
       otapiPINVOKE.BitcoinServer_bitcoin_username_set(swigCPtr, value);
@@ -61,6 +121,12 @@ public class BitcoinServer : Server {
       if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
       return ret;
     } 
+  }
+
+  public new static BitcoinServer ot_dynamic_cast(Storable pObject) {
+    IntPtr cPtr = otapiPINVOKE.BitcoinServer_ot_dynamic_cast(Storable.getCPtr(pObject));
+    BitcoinServer ret = (cPtr == IntPtr.Zero) ? null : new BitcoinServer(cPtr, false);
+    return ret;
   }
 
 }

@@ -34,6 +34,152 @@ public class Contact extends Displayable {
     }
     super.delete();
   }
+{
+	/*@SWIG:OTAPI.i,392,OT_CAN_BE_CONTAINED_BY@*/
+	// Ensure that the GC doesn't collect any OT_CONTAINER instance set from Java
+	private AddressBook containerRefAddressBook;
+	// ----------------	
+	protected void addReference(AddressBook theContainer) {  // This is Java code
+		containerRefAddressBook = theContainer;
+	}
+	// ----------------
+/*@SWIG@*/
+	// ------------------------
+	/*@SWIG:OTAPI.i,329,OT_CONTAINER_TYPE_MEMBERS@*/
+private List elementList = new ArrayList();
+/*@SWIG@*/
+	/*@SWIG:OTAPI.i,410,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
+// Ensure that the GC doesn't collect any ContactNym set from Java
+// as the underlying C++ class stores a shallow copy
+
+// Altered the SWIG example so that we store a list of these references, instead
+// of only the latest one. None of them should go out of scope until this object does.
+
+private long removeRefContactNym(long lIndex) {
+	// 
+	// loop through the elements in the actual container, in order to find the one
+	// at lIndex. Once it is found, then loop through the reference list and remove
+	// the corresponding reference for that element.
+	//
+	ContactNym refActualElement = GetContactNym(lIndex);
+
+	if (refActualElement = null)
+		return lIndex; // oh well.
+	
+	// Loop through the reference list and remove the corresponding reference
+	// for the specified element.
+	//
+	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
+	{
+		ContactNym tempRef = elementList.get(intIndex);
+		
+		if ((tempRef instanceof ContactNym) &&
+			(ContactNym.getCPtr(tempRef) == ContactNym.getCPtr(refActualElement)))
+		{
+			elementList.remove(tempRef);
+			break;
+		}
+	}
+	
+	return lIndex;
+}
+
+private long getCPtrAddRefContactNym(ContactNym element) {
+	// Whenever adding a reference to the list, I remove it first (if already there.)
+	// That way we never store more than one reference per actual contained object.
+	//
+	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
+	{
+		ContactNym tempRef = elementList.get(intIndex);
+		
+		if (tempRef == null) // just in case. Should never happen.
+			continue;
+		
+		if ((tempRef instanceof ContactNym) &&
+			(ContactNym.getCPtr(tempRef) == ContactNym.getCPtr(element)))
+		{
+			elementList.remove(tempRef); // It was already there, so let's remove it before adding (below.)
+			break;
+		}
+	}
+	// Now we add it...
+	//
+	ContactNym tempLocalRef = element;
+	elementList.add(tempLocalRef);
+	return ContactNym.getCPtr(element);
+}	// Hope I get away with overloading this for every type. Otherwise,
+// hope I can just change the function name to customize it to type.
+/*@SWIG@*/
+	/*@SWIG:OTAPI.i,410,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
+// Ensure that the GC doesn't collect any ContactAcct set from Java
+// as the underlying C++ class stores a shallow copy
+
+// Altered the SWIG example so that we store a list of these references, instead
+// of only the latest one. None of them should go out of scope until this object does.
+
+private long removeRefContactAcct(long lIndex) {
+	// 
+	// loop through the elements in the actual container, in order to find the one
+	// at lIndex. Once it is found, then loop through the reference list and remove
+	// the corresponding reference for that element.
+	//
+	ContactAcct refActualElement = GetContactAcct(lIndex);
+
+	if (refActualElement = null)
+		return lIndex; // oh well.
+	
+	// Loop through the reference list and remove the corresponding reference
+	// for the specified element.
+	//
+	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
+	{
+		ContactAcct tempRef = elementList.get(intIndex);
+		
+		if ((tempRef instanceof ContactAcct) &&
+			(ContactAcct.getCPtr(tempRef) == ContactAcct.getCPtr(refActualElement)))
+		{
+			elementList.remove(tempRef);
+			break;
+		}
+	}
+	
+	return lIndex;
+}
+
+private long getCPtrAddRefContactAcct(ContactAcct element) {
+	// Whenever adding a reference to the list, I remove it first (if already there.)
+	// That way we never store more than one reference per actual contained object.
+	//
+	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
+	{
+		ContactAcct tempRef = elementList.get(intIndex);
+		
+		if (tempRef == null) // just in case. Should never happen.
+			continue;
+		
+		if ((tempRef instanceof ContactAcct) &&
+			(ContactAcct.getCPtr(tempRef) == ContactAcct.getCPtr(element)))
+		{
+			elementList.remove(tempRef); // It was already there, so let's remove it before adding (below.)
+			break;
+		}
+	}
+	// Now we add it...
+	//
+	ContactAcct tempLocalRef = element;
+	elementList.add(tempLocalRef);
+	return ContactAcct.getCPtr(element);
+}	// Hope I get away with overloading this for every type. Otherwise,
+// hope I can just change the function name to customize it to type.
+/*@SWIG@*/
+}
+  public void setGui_label(String value) {
+    otapiJNI.Contact_gui_label_set(swigCPtr, this, value);
+  }
+
+  public String getGui_label() {
+    return otapiJNI.Contact_gui_label_get(swigCPtr, this);
+  }
 
   public void setContact_id(String value) {
     otapiJNI.Contact_contact_id_set(swigCPtr, this, value);
@@ -66,5 +212,45 @@ public class Contact extends Displayable {
   public String getPublic_key() {
     return otapiJNI.Contact_public_key_get(swigCPtr, this);
   }
+
+  public long GetContactNymCount() { return otapiJNI.Contact_GetContactNymCount(swigCPtr, this); }
+
+  public ContactNym GetContactNym(long nIndex) {
+    long cPtr = otapiJNI.Contact_GetContactNym(swigCPtr, this, nIndex);
+    return (cPtr == 0) ? null : new ContactNym(cPtr, false);
+  }
+
+  public boolean RemoveContactNym(long nIndexToRemove) {
+    return otapiJNI.Contact_RemoveContactNym(swigCPtr, this, { removeRefContact(nIndexToRemove) });
+  }
+
+  public boolean AddContactNym(ContactNym disownObject) {
+    return otapiJNI.Contact_AddContactNym(swigCPtr, this, ContactNym.getCPtr(disownObject), disownObject);
+  }
+
+  public long GetContactAcctCount() { return otapiJNI.Contact_GetContactAcctCount(swigCPtr, this); }
+
+  public ContactAcct GetContactAcct(long nIndex) {
+    long cPtr = otapiJNI.Contact_GetContactAcct(swigCPtr, this, nIndex);
+    return (cPtr == 0) ? null : new ContactAcct(cPtr, false);
+  }
+
+  public boolean RemoveContactAcct(long nIndexToRemove) {
+    return otapiJNI.Contact_RemoveContactAcct(swigCPtr, this, { removeRefContact(nIndexToRemove) });
+  }
+
+  public boolean AddContactAcct(ContactAcct disownObject) {
+    return otapiJNI.Contact_AddContactAcct(swigCPtr, this, ContactAcct.getCPtr(disownObject), disownObject);
+  }
+
+  public static Contact ot_dynamic_cast(Storable pObject) { 
+    long cPtr = otapiJNI.Contact_ot_dynamic_cast(Storable.getCPtr(pObject), pObject); 
+    Contact ret = null; 
+    if (cPtr != 0) { 
+		ret = new Contact(cPtr, false);
+		ret.addReference(this); 
+    } 
+    return ret; 
+}
 
 }

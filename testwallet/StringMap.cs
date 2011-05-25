@@ -61,4 +61,10 @@ public class StringMap : Storable {
     return ret;
   }
 
+  public new static StringMap ot_dynamic_cast(Storable pObject) {
+    IntPtr cPtr = otapiPINVOKE.StringMap_ot_dynamic_cast(Storable.getCPtr(pObject));
+    StringMap ret = (cPtr == IntPtr.Zero) ? null : new StringMap(cPtr, false);
+    return ret;
+  }
+
 }

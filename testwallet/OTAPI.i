@@ -5,8 +5,9 @@
 #include "../OTLib/OTAsymmetricKey.h"
 #include "OTAPI_funcdef.h"
 #include "../OTLib/OTStorage.h"
-%}
- 
+	%}
+
+
 %include "std_string.i";
 %include "typemaps.i"
 
@@ -47,14 +48,52 @@
 %typemap("javapackage") StorageType "com.wrapper.core.jni";
 %typemap("javapackage") StoredObjectType "com.wrapper.core.jni";
 
+
+
+// I found this GEM in the Berekeley DB code!
+//
+%define JAVA_TYPEMAP(_ctype, _jtype, _jnitype)
+%typemap(jstype) _ctype #_jtype
+%typemap(jtype) _ctype #_jtype
+%typemap(jni) _ctype #_jnitype
+%typemap(out) _ctype %{ $result = (_jnitype)$1; %}
+%typemap(javain) _ctype "$javainput"
+%typemap(javaout) _ctype { return $jnicall; }
+%enddef
+
+// Uses the above macro.
+//
+JAVA_TYPEMAP(size_t, long, jlong)
+
 #endif
 // ---------------------------------------------------------------
 
+/*
+ SAMPLE CODE:
+ 
+ %typemap(jni) time_t "jlong"
+ %typemap(jtype) time_t "long"
+ %typemap(jstype) time_t "long"
+ 
+ %typemap(out) time_t %{ $result = (jlong)$1; %}
+ %typemap(in) time_t "(time_t)$input"
+ 
+ */
 
 %feature("director") OTCallback;
 
 
+//%typemap(javain) std::string & SBUF "$javainput"
 
+
+
+// The Callback definitions here, must appear BELOW the above SWIG directives that apply to them.
+// The actual HEADER these definitions come from (OTStorage.h) must be included ABOVE THAT so that
+// the SWIG directives will know what the hell we are talking about. Then those directives are actually
+// applied here.
+// Even below this section, you will see MORE SWIG directives, and then the definitions below those
+// that THEY apply to.
+//
 
 class OTCallback 
 {
@@ -155,60 +194,173 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 
 
 
-// -------------------------------------------
+// Use this inside the class definition itself, farther down below.
 //
-%define OT_STORABLE_TYPE(STORABLE_TYPE, CONTAINER_TYPE)
+%define OT_SWIG_DECLARE_GET_ADD_REMOVE(name)
+	protected:
+	std::deque< stlplus::simple_ptr_clone<name> > list_##name##s;
+public:
+	size_t Get##name##Count();
+	name * Get##name(size_t nIndex);
+	bool Remove##name(size_t nIndexToRemove);
+	bool Add##name(name & disownObject)	
+%enddef
+
+// Use this inside the class definition itself, farther down below.
+//
+%define DEFINE_OT_SWIG_DYNAMIC_CAST(CLASS_NAME)
+	static CLASS_NAME *			ot_dynamic_cast(		Storable *pObject) { return dynamic_cast<CLASS_NAME *>(pObject); }
+//	static const CLASS_NAME	*	ot_dynamic_cast(const	Storable *pObject) { return dynamic_cast<const T *>(pObject); }
+%enddef
+
+
+
+// Put this: inside the %typemap (javacode) for the class that you want to have equals().
+//
+/*
+%define OT_SUPPORT_EQUALS
 #ifdef SWIGJAVA
+public boolean equals(Object obj) {
+    boolean equal = false;
+    if (obj instanceof $javaclassname)
+		equal = ((($javaclassname)obj).swigCPtr == this.swigCPtr);  // Look at this cast! I am using polymorphism, I can't cast like this....
+    return equal;
+}
+public int hashCode() {
+	return (int)getPointer();
+}
+#endif
+%enddef
+*/
+
+// -------------------------------------------------------------------------------
+
+// Put a list of these ABOVE the class definitions below.
+// ALL objects, containers AND elements, are OT Storable objects.
+//
 // These two blocks enable the object to dynamic cast back
 // to its true type, after factory construction.
-%exception STORABLE_TYPE::dynamic_cast(Storable * pObject) {
+//
+%define OT_BEFORE_STORABLE_TYPE(STORABLE_TYPE)
+%typemap(javaout) STORABLE_TYPE * ot_dynamic_cast { 
+    long cPtr = $jnicall; 
+    $javaclassname ret = null; 
+    if (cPtr != 0) { 
+		ret = new $javaclassname(cPtr, $owner);
+		ret.addReference(this); 
+    } 
+    return ret; 
+}
+%enddef
+
+/*%exception STORABLE_TYPE::dynamic_cast(Storable * pObject) {  // Java code
 	$action
-	if (!result) {
+	if (!$result) {
 		jclass excep = jenv->FindClass("java/lang/ClassCastException");
 		if (excep) {
 			jenv->ThrowNew(excep, "dynamic_cast exception");
 		}
 	}
 }
-%extend STORABLE_TYPE {
-	static STORABLE_TYPE * dynamic_cast(Storable * pObject) {
-		return dynamic_cast<STORABLE_TYPE *>(pObject);
-	}
-};
-// ----------------
-// The STORABLE_TYPE (BitcoinAcct, say) keeps a reference to its OT_CONTAINER (WalletData).
-// USE THIS TYPEMAP *INSIDE* MOST DATA TYPES. (They ALL potentially could be inside a container.)
+*/
+ 
+
+/*
+%typemap(out) Storable * OT_SWIG_DYNAMIC_CAST {
+    STORABLE_TYPE *downcast = dynamic_cast<STORABLE_TYPE *>($1);
+    *(STORABLE_TYPE **)&$result = downcast;
+}
+
+%typemap(javaout) Storable * OT_DYNAMIC_CAST {
+    return new STORABLE_TYPE($jnicall, $owner);
+}
+*/
+// Todo: add mapping to Java destruct process, so that when the proxy
+// goes out of scope, it is smart enough to remove itself from the reference list.
+// Why is it being added in the first place? Because it is pointing to a certain
+// object -- therefore according to Java it should have a reference to that object.
+// Otherwise it will end up pointing to bad memory, when that object gets cleaned
+// up by the garbage collector (who THOUGHT no one was referencing it.)
 //
-%typemap(javacode) STORABLE_TYPE %{
-	// Ensure that the GC doesn't collect any OT_CONTAINER instance set from Java
-	private CONTAINER_TYPE containerReference;
-	
-	protected void addReference(CONTAINER_TYPE theContainer) {
-		containerReference = theContainer;
-	}
-// ----------------
-// ----------------
-	private List elementList = new ArrayList();
-	// This list is used by OT_CONTAINER_HELPER. (below.)
-%}
-#endif
-%enddef
+
+
 
 // -------------------------------------------------------------------------------
 
 
-// The CONTAINER_TYPE (WalletData) uses this for EACH Get/Add/Remove item within.
-// So this macro appears multiple times, if there are multiple deques.
-//
-%define OT_CONTAINER_HELPER(STORABLE_TYPE, CONTAINER_TYPE)
-#ifdef SWIGJAVA
-%typemap(javain) STORABLE_TYPE & disownObject "getCPtrAndAddReference($javainput)"
+%define OT_AFTER_STORABLE_TYPE(STORABLE_TYPE) // C++ CODE
+//%extend OTDB::STORABLE_TYPE {
+//	static STORABLE_TYPE * dynamic_cast(Storable * pObject) {  // C++ CODE
+//		return dynamic_cast<STORABLE_TYPE *>(pObject);
+//	}
+//}
+%enddef
 
-// When the CONTAINER_TYPE's "getOT_Element" function is called, 
-// Add a Java reference to prevent premature garbage collection and resulting use
+
+
+
+// -------------------------------------------------------------------------------
+
+// Put this: inside the %typemap(javacode) for the STORABLE_TYPE (near the top of it.)
+//
+/* Will try this soon
+ 
+%define OT_STORABLE_TYPE_MEMBERS
+#ifdef SWIGJAVA
+
+public static Storable OT_DYNAMIC_CAST
+
+#endif
+%enddef
+*/
+// ----------------------------
+
+
+
+
+// -------------------------------------------------------------------------------
+
+// Put this: inside the %typemap(javacode) for the CONTAINER_TYPE (near the top of it.)
+//
+// Any container stores a list of references to its elements,
+// where a reference is added each time you use the "Add" method, so
+// that none of its elements are erased out from under it by the Java Garbage Collector.
+//
+%define OT_CONTAINER_TYPE_MEMBERS 
+private List elementList = new ArrayList();
+%enddef
+
+// ----------------------------
+
+
+
+// FOR REFERENCE ONLY.
+/*
+%define JAVA_TYPEMAP(_ctype, _jtype, _jnitype)
+%typemap(jstype) _ctype #_jtype
+%typemap(jtype) _ctype #_jtype
+%typemap(jni) _ctype #_jnitype
+%typemap(out) _ctype %{ $result = (_jnitype)$1; %}
+%typemap(javain) _ctype "$javainput"
+%typemap(javaout) _ctype { return $jnicall; }
+%enddef
+*/
+
+// If a class is meant to be used as an element inside a container, then use this
+// macro to create the necessary typemap for that class's GET method.
+//
+// Put it: With the rest of the TYPEMAP for the class in question. (Above the class 
+// definition itself, and above the container typemaps.)
+//
+// Swig uses it: Any container that defines a get method for that class based on
+// the signature below: THE_ELEMENT_TYPE * Get##THE_ELEMENT_TYPE
+//
+%define OT_IS_ELEMENT_TYPE(THE_ELEMENT_TYPE)
+// When the CONTAINER_TYPE's "Get" function is called, this will add a Java
+// reference to prevent premature garbage collection and resulting use
 // of dangling C++ pointer. Intended for methods that return pointers or
 // references to a member variable.
-%typemap(javaout) STORABLE_TYPE * Get##STORABLE_TYPE {
+%typemap(javaout) THE_ELEMENT_TYPE * Get##THE_ELEMENT_TYPE {
     long cPtr = $jnicall;
     $javaclassname ret = null;
     if (cPtr != 0) {
@@ -217,41 +369,229 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
     }
     return ret;
 }
-
-// This changes the CONTAINER_TYPE class to keep an internal reference to the STORABLE_TYPE.
+// ----
+// Swig uses this in every CONTAINER_TYPE's "Add" function, which all
+// have a parameter profile matching this typemap.
 //
-%typemap(javacode) CONTAINER_TYPE %{
-	// Ensure that the GC doesn't collect any STORABLE_TYPE set from Java
-	// as the underlying C++ class stores a shallow copy
-	
-	private STORABLE_TYPE the##STORABLE_TYPE##Reference;
-	
-	// Altered the SWIG example so that we store a list of these references, instead
-	// of only the latest one. None of them should go out of scope until this object does.
-	
-	private long getCPtrAndAddReference(STORABLE_TYPE element) {
-		the##STORABLE_TYPE##Reference = element;
-		elementList.add(the##STORABLE_TYPE##Reference);
-		return STORABLE_TYPE.getCPtr(element);
-	}	// Hope I get away with overloading this for every type. Otherwise,
-		// hope I can just change the function name to customize it to type.
-protected:
-		std::deque< stlplus::simple_ptr_clone<STORABLE_TYPE> > list_##STORABLE_TYPE##s;
-	public:
-		size_t Get##STORABLE_TYPE##Count();
-		STORABLE_TYPE * Get##STORABLE_TYPE(size_t nIndex);
-		bool Remove##STORABLE_TYPE(size_t nIndex);
-		bool Add##STORABLE_TYPE(STORABLE_TYPE & disownObject)	
-	
-%}		
-#endif
+%typemap(javain) THE_ELEMENT_TYPE & disownObject { getCPtrAddRef##THE_ELEMENT_TYPE($javainput) }
+
+// This is used by CONTAINER_TYPE's "Remove" function. Do not change the
+// parameter name nIndexToRemove or this typemap will stop working...
+%typemap(javain) size_t nIndexToRemove { removeRef##THE_ELEMENT_TYPE($javainput) }
+
 %enddef
 
 
+// ----------------------------------------------------------------------------------
+
+
+// The STORABLE_TYPE (BitcoinAcct, say) keeps a reference to its CONTAINER_TYPE (WalletData).
+//
+// Put it: inside the %typemap(javacode) for the ELEMENT_TYPE, for EACH possible container type.
+//
+%define OT_CAN_BE_CONTAINED_BY(CONTAINER_TYPE)
+	// Ensure that the GC doesn't collect any OT_CONTAINER instance set from Java
+	private CONTAINER_TYPE containerRef##CONTAINER_TYPE;
+	// ----------------	
+	protected void addReference(CONTAINER_TYPE theContainer) {  // This is Java code
+		containerRef##CONTAINER_TYPE = theContainer;
+	}
+	// ----------------
+%enddef
+
+// -------------------------------------------------------------------------------
+
+// The CONTAINER_TYPE (WalletData) uses this for *EACH* Get/Add/Remove item within.
+// So this macro appears multiple times, if there are multiple deques. (Like a contact
+// has nyms AND accounts inside of it.)
+//
+// Put it: inside the %typemap(javacode) for the CONTAINER_TYPE, for EACH ELEMENT_TYPE.
+//
+%define OT_ADD_ELEMENT(THE_ELEMENT_TYPE)  // THIS BLOCK CONTAINS JAVA CODE.
+// Ensure that the GC doesn't collect any THE_ELEMENT_TYPE set from Java
+// as the underlying C++ class stores a shallow copy
+
+// Altered the SWIG example so that we store a list of these references, instead
+// of only the latest one. None of them should go out of scope until this object does.
+
+private long removeRef##THE_ELEMENT_TYPE(long lIndex) {
+	// 
+	// loop through the elements in the actual container, in order to find the one
+	// at lIndex. Once it is found, then loop through the reference list and remove
+	// the corresponding reference for that element.
+	//
+	THE_ELEMENT_TYPE refActualElement = Get##THE_ELEMENT_TYPE(lIndex);
+
+	if (refActualElement = null)
+		return lIndex; // oh well.
+	
+	// Loop through the reference list and remove the corresponding reference
+	// for the specified element.
+	//
+	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
+	{
+		THE_ELEMENT_TYPE tempRef = elementList.get(intIndex);
+		
+		if ((tempRef instanceof THE_ELEMENT_TYPE) &&
+			(THE_ELEMENT_TYPE.getCPtr(tempRef) == THE_ELEMENT_TYPE.getCPtr(refActualElement)))
+		{
+			elementList.remove(tempRef);
+			break;
+		}
+	}
+	
+	return lIndex;
+}
+
+private long getCPtrAddRef##THE_ELEMENT_TYPE(THE_ELEMENT_TYPE element) {
+	// Whenever adding a reference to the list, I remove it first (if already there.)
+	// That way we never store more than one reference per actual contained object.
+	//
+	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
+	{
+		THE_ELEMENT_TYPE tempRef = elementList.get(intIndex);
+		
+		if (tempRef == null) // just in case. Should never happen.
+			continue;
+		
+		if ((tempRef instanceof THE_ELEMENT_TYPE) &&
+			(THE_ELEMENT_TYPE.getCPtr(tempRef) == THE_ELEMENT_TYPE.getCPtr(element)))
+		{
+			elementList.remove(tempRef); // It was already there, so let's remove it before adding (below.)
+			break;
+		}
+	}
+	// Now we add it...
+	//
+	THE_ELEMENT_TYPE tempLocalRef = element;
+	elementList.add(tempLocalRef);
+	return THE_ELEMENT_TYPE.getCPtr(element);
+}	// Hope I get away with overloading this for every type. Otherwise,
+// hope I can just change the function name to customize it to type.
+%enddef
+
+// ----------------------------------------
+
+
+
+
+
+#ifdef SWIGJAVA
+//
+// ------------------------------------------------------------
+
+OT_BEFORE_STORABLE_TYPE(OTDB::OTDBString)
+OT_IS_ELEMENT_TYPE(OTDBString)
+
+%typemap(javacode) OTDB::OTDBString {
+	// ------------------------
+}
+
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::StringMap)
+OT_IS_ELEMENT_TYPE(StringMap)
+
+%typemap(javacode) OTDB::StringMap {
+	// ------------------------
+}
+
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::BitcoinAcct)
+OT_IS_ELEMENT_TYPE(BitcoinAcct)
+
+%typemap(javacode) OTDB::BitcoinAcct {
+	OT_CAN_BE_CONTAINED_BY(WalletData)
+	// ------------------------
+}
+
+// *******************************
+
+
+OT_BEFORE_STORABLE_TYPE(OTDB::ServerInfo)
+OT_IS_ELEMENT_TYPE(ServerInfo)
+
+%typemap(javacode) OTDB::ServerInfo {
+	OT_CAN_BE_CONTAINED_BY(ContactNym)
+	// ------------------------
+}
+
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::BitcoinServer)
+OT_IS_ELEMENT_TYPE(BitcoinServer)
+
+%typemap(javacode) OTDB::BitcoinServer {
+	OT_CAN_BE_CONTAINED_BY(WalletData)
+	// ------------------------
+}
+
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::ContactNym)
+OT_IS_ELEMENT_TYPE(ContactNym)
+
+%typemap(javacode) OTDB::ContactNym {
+	OT_CAN_BE_CONTAINED_BY(Contact)
+	// ------------------------
+	OT_CONTAINER_TYPE_MEMBERS
+	OT_ADD_ELEMENT(ServerInfo)
+}
+
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::ContactAcct)
+OT_IS_ELEMENT_TYPE(ContactAcct)
+
+%typemap(javacode) OTDB::ContactAcct {
+	OT_CAN_BE_CONTAINED_BY(Contact)
+	// ------------------------
+}
+
+// *******************************
+
+
+
+OT_BEFORE_STORABLE_TYPE(OTDB::WalletData)
+
+%typemap(javacode) OTDB::WalletData {
+	// ------------------------
+	OT_CONTAINER_TYPE_MEMBERS
+	OT_ADD_ELEMENT(BitcoinServer)
+	OT_ADD_ELEMENT(BitcoinAcct)
+}
+
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::Contact)
+OT_IS_ELEMENT_TYPE(Contact)
+
+%typemap(javacode) OTDB::Contact {
+	OT_CAN_BE_CONTAINED_BY(AddressBook)
+	// ------------------------
+	OT_CONTAINER_TYPE_MEMBERS
+	OT_ADD_ELEMENT(ContactNym)
+	OT_ADD_ELEMENT(ContactAcct)
+}
+
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::AddressBook)
+
+%typemap(javacode) OTDB::AddressBook {
+	// ------------------------
+	OT_CONTAINER_TYPE_MEMBERS
+	OT_ADD_ELEMENT(Contact)
+}
+
+// ------------------------------------------------------------
+#endif
+
+
+
+
 // ------------------------------------------------
-
-
-
 
 
 /* Parse the header file to generate wrappers */
@@ -260,110 +600,189 @@ protected:
 
 
 namespace OTDB { 
-
-
-enum PackType // PACKING TYPE
-{
-	PACK_MESSAGE_PACK = 0,	// Using MessagePack as packer.
-	PACK_PROTOCOL_BUFFERS,	// Using Google Protocol Buffers as packer.
-	PACK_TYPE_ERROR		// (Should never be.)
-};
 	
-enum StorageType  // STORAGE TYPE
-{
-	STORE_FILESYSTEM = 0,	// Filesystem
-//	STORE_COUCH_DB,			// Couch DB (not yet supported)
-	STORE_TYPE_SUBCLASS		// (Subclass provided by API client via SWIG.)
-};
 	
-enum StoredObjectType
-{
-	STORED_OBJ_STRING=0,		// Just a string.
-	STORED_OBJ_STRING_MAP,		// A StringMap is a list of Key/Value pairs, useful for storing nearly anything.
-	STORED_OBJ_WALLET_DATA,		// The GUI wallet's stored data
-	STORED_OBJ_BITCOIN_ACCT,	// The GUI wallet's stored data about a Bitcoin acct
-	STORED_OBJ_BITCOIN_SERVER,	// The GUI wallet's stored data about a Bitcoin RPC port.
-	STORED_OBJ_SERVER_INFO,		// A Nym has a list of these.
-	STORED_OBJ_CONTACT_NYM,		// This is a Nym record inside a contact of your address book.
-	STORED_OBJ_CONTACT_ACCT,	// This is an account record inside a contact of your address book.
-	STORED_OBJ_CONTACT,			// Your address book has a list of these.
-	STORED_OBJ_ADDRESS_BOOK,	// Your address book.
-	STORED_OBJ_ERROR			// (Should never be.)
-};
-
-
-class Storable
-{
-	friend class Storage; // for instantiation of storable objects by their storage context.
 	
-protected:
-	Storable() {}
+	enum PackType // PACKING TYPE
+	{
+		PACK_MESSAGE_PACK = 0,	// Using MessagePack as packer.
+		PACK_PROTOCOL_BUFFERS,	// Using Google Protocol Buffers as packer.
+		PACK_TYPE_ERROR		// (Should never be.)
+	};
 	
-public:
-	virtual ~Storable() {}
+	enum StorageType  // STORAGE TYPE
+	{
+		STORE_FILESYSTEM = 0,	// Filesystem
+		//	STORE_COUCH_DB,			// Couch DB (not yet supported)
+		STORE_TYPE_SUBCLASS		// (Subclass provided by API client via SWIG.)
+	};
 	
-	// %ignore spam(unsigned short); API users don't need this function, it's for internal purposes.
-	static Storable * Create(StoredObjectType eType, PackType thePackType);
+	enum StoredObjectType
+	{
+		STORED_OBJ_STRING=0,		// Just a string.
+		STORED_OBJ_STRING_MAP,		// A StringMap is a list of Key/Value pairs, useful for storing nearly anything.
+		STORED_OBJ_WALLET_DATA,		// The GUI wallet's stored data
+		STORED_OBJ_BITCOIN_ACCT,	// The GUI wallet's stored data about a Bitcoin acct
+		STORED_OBJ_BITCOIN_SERVER,	// The GUI wallet's stored data about a Bitcoin RPC port.
+		STORED_OBJ_SERVER_INFO,		// A Nym has a list of these.
+		STORED_OBJ_CONTACT_NYM,		// This is a Nym record inside a contact of your address book.
+		STORED_OBJ_CONTACT_ACCT,	// This is an account record inside a contact of your address book.
+		STORED_OBJ_CONTACT,			// Your address book has a list of these.
+		STORED_OBJ_ADDRESS_BOOK,	// Your address book.
+		STORED_OBJ_ERROR			// (Should never be.)
+	};
 	
-};
-
-
-
-class Storage
-{
-private:
-	OTPacker * m_pPacker;
 	
-protected:
-	Storage() : m_pPacker(NULL) {}
+	class Storable
+	{
+		friend class Storage; // for instantiation of storable objects by their storage context.
+		
+	protected:
+		Storable() {}
+		
+	public:
+		virtual ~Storable() {}
+		
+		// %ignore spam(unsigned short); API users don't need this function, it's for internal purposes.
+		static Storable * Create(StoredObjectType eType, PackType thePackType);
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(Storable)
+	};
 	
-	Storage(const Storage & rhs) : m_pPacker(NULL) { } // We don't want to copy the pointer. Let it create its own.
 	
-	// Use GetPacker() to access the Packer, throughout duration of this Storage object.
-	// If it doesn't exist yet, this function will create it on the first call. (The 
-	// parameter allows you the choose what type will be created, other than default.)
-	// This way, whenever using an OT Storage, you KNOW the packer is always the right
-	// one, and that you don't have to fiddle with it at all. You can also therefore use
-	// it for creating instances of various Storables and PackedBuffers, and knowing
-	// that the right types will be instantiated, with the buffer being the appropriate
-	// subclass for the packer.
+	
+	class Storage
+	{
+	private:
+		OTPacker * m_pPacker;
+		
+	protected:
+		Storage() : m_pPacker(NULL) {}
+		
+		Storage(const Storage & rhs) : m_pPacker(NULL) { } // We don't want to copy the pointer. Let it create its own.
+		
+		// Use GetPacker() to access the Packer, throughout duration of this Storage object.
+		// If it doesn't exist yet, this function will create it on the first call. (The 
+		// parameter allows you the choose what type will be created, other than default.)
+		// This way, whenever using an OT Storage, you KNOW the packer is always the right
+		// one, and that you don't have to fiddle with it at all. You can also therefore use
+		// it for creating instances of various Storables and PackedBuffers, and knowing
+		// that the right types will be instantiated, with the buffer being the appropriate
+		// subclass for the packer.
+		//
+		OTPacker * GetPacker(PackType ePackType=OTDB_DEFAULT_PACKER);
+		
+		// This is called once, in the factory.
+		void SetPacker(OTPacker & thePacker) { OT_ASSERT(NULL == m_pPacker); m_pPacker =  &thePacker; }
+		
+		// -------------------------------------
+		// OVERRIDABLES
+		//
+		virtual bool onStorePackedBuffer(PackedBuffer & theBuffer, std::string strFolder, std::string oneStr="", 
+										 std::string twoStr="", std::string threeStr="")=0;
+		
+		virtual bool onQueryPackedBuffer(PackedBuffer & theBuffer, std::string strFolder, std::string oneStr="",
+										 std::string twoStr="", std::string threeStr="")=0;
+		
+		virtual bool onStorePlainString(std::string & theBuffer, std::string strFolder, std::string oneStr="", 
+										std::string twoStr="", std::string threeStr="")=0;
+		
+		virtual bool onQueryPlainString(std::string & theBuffer, std::string strFolder, std::string oneStr="",
+										std::string twoStr="", std::string threeStr="")=0;
+		
+		// -------------------------------------
+		
+	public:
+		virtual ~Storage() { if (NULL != m_pPacker) delete m_pPacker; }
+		
+		virtual bool Init(std::string oneStr="", std::string twoStr="", std::string threeStr="", 
+						  std::string fourStr="", std::string fiveStr="", std::string sixStr="")=0;
+		
+		// -----------------------------------------
+		// See if the file is there.
+		virtual bool Exists(std::string strFolder, 
+							std::string oneStr="", std::string twoStr="", std::string threeStr="")=0;
+		
+		// -----------------------------------------
+		// Store/Retrieve a string.
+		
+		bool StoreString(std::string strContents, std::string strFolder, 
+						 std::string oneStr="", std::string twoStr="", std::string threeStr="");
+		
+		std::string QueryString(std::string strFolder, std::string oneStr="",
+								std::string twoStr="", std::string threeStr="");
+		
+		bool StorePlainString(std::string strContents, std::string strFolder, 
+							  std::string oneStr="", std::string twoStr="", std::string threeStr="");
+		
+		std::string QueryPlainString(std::string strFolder, std::string oneStr="",
+									 std::string twoStr="", std::string threeStr="");
+		
+		// -----------------------------------------
+		// Store/Retrieve an object. (Storable.)
+		
+		bool StoreObject(Storable & theContents, std::string strFolder, 
+						 std::string oneStr="", std::string twoStr="", std::string threeStr="");
+		
+		// Use %newobject Storage::Query();
+		Storable * QueryObject(StoredObjectType theObjectType,
+							   std::string strFolder, std::string oneStr="",
+							   std::string twoStr="", std::string threeStr="");
+		
+		// --------------------------
+		// Note:
+		// Make sure to use: %newobject Factory::createObj();  IN OTAPI.i file!
+		//
+		// That way, Java garbage cleanup will handle object after this.
+		// (Instead of leaking because it thinks C++ will clean it up.)
+		//
+		// Factory for Storable objects.   %newobject Factory::createObj();
+		Storable * CreateObject(StoredObjectType eType);
+		
+		// --------------------------
+		
+		// Factory for Storage itself.  %ignore this in OTAPI.i  (It's accessed through 
+		// a namespace-level function.)
+		//
+		static Storage * Create(StorageType eStorageType, PackType ePackType); // FACTORY
+		
+		StorageType GetType() const;
+	};
+	
+	
+	// ********************************************************************
 	//
-	OTPacker * GetPacker(PackType ePackType=OTDB_DEFAULT_PACKER);
-	
-	// This is called once, in the factory.
-	void SetPacker(OTPacker & thePacker) { OT_ASSERT(NULL == m_pPacker); m_pPacker =  &thePacker; }
-	
-	// -------------------------------------
-	// OVERRIDABLES
+	// OTDB Namespace PUBLIC INTERFACE
 	//
-	virtual bool onStorePackedBuffer(PackedBuffer & theBuffer, std::string strFolder, std::string oneStr="", 
-									 std::string twoStr="", std::string threeStr="")=0;
+	//
 	
-	virtual bool onQueryPackedBuffer(PackedBuffer & theBuffer, std::string strFolder, std::string oneStr="",
-									 std::string twoStr="", std::string threeStr="")=0;
+	bool InitDefaultStorage(StorageType eStoreType, PackType ePackType,
+							std::string oneStr="", std::string twoStr="", std::string threeStr="", 
+							std::string fourStr="", std::string fiveStr="", std::string sixStr="");
 	
-	virtual bool onStorePlainString(std::string & theBuffer, std::string strFolder, std::string oneStr="", 
-									std::string twoStr="", std::string threeStr="")=0;
+	// Default Storage instance:
+	Storage * GetDefaultStorage();
 	
-	virtual bool onQueryPlainString(std::string & theBuffer, std::string strFolder, std::string oneStr="",
-									std::string twoStr="", std::string threeStr="")=0;
+	// %newobject Factory::createObj();
+	Storage * CreateStorageContext(StorageType eStoreType, PackType ePackType=OTDB_DEFAULT_PACKER);
 	
-	// -------------------------------------
+	Storable * CreateObject(StoredObjectType eType);
 	
-public:
-	virtual ~Storage() { if (NULL != m_pPacker) delete m_pPacker; }
+	// bool bSuccess = StoreString(strInbox, "inbox", "lkjsdf908w345ljkvd");
+	// bool bSuccess = StoreString(strMint,  "mints", SERVER_ID, ASSET_ID);
+	// bool bSuccess = StoreString(strPurse, "purse", SERVER_ID, USER_ID, ASSET_ID);
 	
-	virtual bool Init(std::string oneStr="", std::string twoStr="", std::string threeStr="", 
-					  std::string fourStr="", std::string fiveStr="", std::string sixStr="")=0;
+	// BELOW FUNCTIONS use the DEFAULT Storage context for the OTDB Namespace
 	
-	// -----------------------------------------
+	// --------
 	// See if the file is there.
-	virtual bool Exists(std::string strFolder, 
-						std::string oneStr="", std::string twoStr="", std::string threeStr="")=0;
+	//
+	bool Exists(std::string strFolder, 
+				std::string oneStr="", std::string twoStr="", std::string threeStr="");
 	
-	// -----------------------------------------
+	// --------
 	// Store/Retrieve a string.
-	
+	//
 	bool StoreString(std::string strContents, std::string strFolder, 
 					 std::string oneStr="", std::string twoStr="", std::string threeStr="");
 	
@@ -376,389 +795,326 @@ public:
 	std::string QueryPlainString(std::string strFolder, std::string oneStr="",
 								 std::string twoStr="", std::string threeStr="");
 	
-	// -----------------------------------------
+	// --------
 	// Store/Retrieve an object. (Storable.)
-	
+	//
 	bool StoreObject(Storable & theContents, std::string strFolder, 
 					 std::string oneStr="", std::string twoStr="", std::string threeStr="");
 	
 	// Use %newobject Storage::Query();
 	Storable * QueryObject(StoredObjectType theObjectType,
 						   std::string strFolder, std::string oneStr="",
-						   std::string twoStr="", std::string threeStr="");
+						   std::string twoStr="", std::string threeStr="");		
 	
-	// --------------------------
-	// Note:
-	// Make sure to use: %newobject Factory::createObj();  IN OTAPI.i file!
-	//
-	// That way, Java garbage cleanup will handle object after this.
-	// (Instead of leaking because it thinks C++ will clean it up.)
-	//
-	// Factory for Storable objects.   %newobject Factory::createObj();
-	Storable * CreateObject(StoredObjectType eType);
 	
-	// --------------------------
-	
-	// Factory for Storage itself.  %ignore this in OTAPI.i  (It's accessed through 
-	// a namespace-level function.)
-	//
-	static Storage * Create(StorageType eStorageType, PackType ePackType); // FACTORY
-	
-	StorageType GetType() const;
-};
-
-
-	// ********************************************************************
-	//
-	// OTDB Namespace PUBLIC INTERFACE
-	//
-	//
-	
-bool InitDefaultStorage(StorageType eStoreType, PackType ePackType,
-						std::string oneStr="", std::string twoStr="", std::string threeStr="", 
-						std::string fourStr="", std::string fiveStr="", std::string sixStr="");
-
-// Default Storage instance:
-Storage * GetDefaultStorage();
-
-// %newobject Factory::createObj();
-Storage * CreateStorageContext(StorageType eStoreType, PackType ePackType=OTDB_DEFAULT_PACKER);
-
-Storable * CreateObject(StoredObjectType eType);
-
-// bool bSuccess = StoreString(strInbox, "inbox", "lkjsdf908w345ljkvd");
-// bool bSuccess = StoreString(strMint,  "mints", SERVER_ID, ASSET_ID);
-// bool bSuccess = StoreString(strPurse, "purse", SERVER_ID, USER_ID, ASSET_ID);
-
-// BELOW FUNCTIONS use the DEFAULT Storage context for the OTDB Namespace
-
-// --------
-// See if the file is there.
-//
-bool Exists(std::string strFolder, 
-			std::string oneStr="", std::string twoStr="", std::string threeStr="");
-
-// --------
-// Store/Retrieve a string.
-//
-bool StoreString(std::string strContents, std::string strFolder, 
-				 std::string oneStr="", std::string twoStr="", std::string threeStr="");
-	
-std::string QueryString(std::string strFolder, std::string oneStr="",
-						std::string twoStr="", std::string threeStr="");
-	
-bool StorePlainString(std::string strContents, std::string strFolder, 
-					  std::string oneStr="", std::string twoStr="", std::string threeStr="");
-	
-std::string QueryPlainString(std::string strFolder, std::string oneStr="",
-							 std::string twoStr="", std::string threeStr="");
-	
-// --------
-// Store/Retrieve an object. (Storable.)
-//
-bool StoreObject(Storable & theContents, std::string strFolder, 
-				 std::string oneStr="", std::string twoStr="", std::string threeStr="");
-
-// Use %newobject Storage::Query();
-Storable * QueryObject(StoredObjectType theObjectType,
-					   std::string strFolder, std::string oneStr="",
-					   std::string twoStr="", std::string threeStr="");		
-
-
-// ------------------------------------------------
-
+	// ------------------------------------------------
 	
 	
 	
 	
-class String : public Storable
-{
-	// You never actually get an instance of this, only its subclasses.
-	// Therefore, I don't allow you to access the constructor except through the factory.
-protected:
-	String() : Storable() { }
-	String(const std::string& rhs) : Storable(), m_string(rhs) { }
 	
-public:
-	virtual ~String() { }
+	class OTDBString : public Storable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through the factory.
+	protected:
+		OTDBString() : Storable() { }
+		OTDBString(const std::string& rhs) : Storable(), m_string(rhs) { }
+		
+	public:
+		virtual ~OTDBString() { }
+		
+		std::string m_string;
 	
-	std::string m_string;
-
-	OT_STORABLE_TYPE(String, Storable)
-};
+		DEFINE_OT_SWIG_DYNAMIC_CAST(OTDBString)
+	};
 	
-// ------------------------------------------------
+	// ------------------------------------------------
 	
 	class StringMap : public Storable
-{
-	// You never actually get an instance of this, only its subclasses.
-	// Therefore, I don't allow you to access the constructor except through factory.
-protected:
-	StringMap() : Storable() { }
-	
-public:
-	virtual ~StringMap() { }
-	
-	std::map<std::string, std::string> the_map;  // all strings, key/value pairs.
-	
-	void SetValue(const std::string& strKey, const std::string& strValue)
-	{ the_map[strKey] = strValue; }
-	
-	std::string GetValue(const std::string& strKey)
-	{ std::string ret_val(""); std::map<std::string, std::string>::iterator ii = the_map.find(strKey);
-		if (ii != the_map.end()) ret_val = (*ii).second; return ret_val; }
-
-	OT_STORABLE_TYPE(StringMap, Storable)
-};
-
-	
-// ------------------------------------------------
-
-class Displayable : public Storable
-{
-	// You never actually get an instance of this, only its subclasses.
-	// Therefore, I don't allow you to access the constructor except through factory.
-protected:
-	Displayable() : Storable() { }
-	
-public:
-	virtual ~Displayable() { }
-	
-	std::string gui_label;  // The label that appears in the GUI
-};
-
-// *************************************************
-
-// ACCOUNT (GUI local storage about my own accounts, in my wallet.)
-
-class Acct : public Displayable
-{
-	// You never actually get an instance of this, only its subclasses.
-	// Therefore, I don't allow you to access the constructor except through factory.
-protected:
-	Acct() : Displayable() { }
-	
-public:
-	virtual ~Acct() { }
-	
-	//		std::string gui_label;  // The label that appears in the GUI
-	
-	std::string acct_id;
-	std::string server_id;
-};
-
-// ----------------------------
-	
-class BitcoinAcct : public Acct
-{
-	// You never actually get an instance of this, only its subclasses.
-	// Therefore, I don't allow you to access the constructor except through factory.
-protected:
-	BitcoinAcct() : Acct() { }
-	
-public:
-	virtual ~BitcoinAcct() { }
-	
-	//		std::string gui_label;  // The label that appears in the GUI
-	
-	//		std::string acct_id;
-	//		std::string server_id;
-	
-	std::string bitcoin_acct_name;
-
-	OT_STORABLE_TYPE(BitcoinAcct, WalletData)
-};
-
-// **************************************************
-
-// SERVER (GUI local storage about servers.)
-
-class ServerInfo : public Displayable
-{
-	// You never actually get an instance of this, only its subclasses.
-	// Therefore, I don't allow you to access the constructor except through factory.
-protected:
-	ServerInfo() : Displayable() { }
-	
-public:
-	virtual ~ServerInfo() { }
-	
-//	std::string gui_label;  // The label that appears in the GUI
-	
-	std::string server_id;
-	std::string server_type;
-
-	OT_STORABLE_TYPE(ServerInfo, ContactNym)
-};
-
-// ----------------------------
-	
-class Server : public ServerInfo
-{
-	// You never actually get an instance of this, only its subclasses.
-	// Therefore, I don't allow you to access the constructor except through factory.
-protected:
-	Server() : ServerInfo() { }
-	
-public:
-	virtual ~Server() { }
-	
-	//		std::string gui_label;  // The label that appears in the GUI
-	
-	//		std::string server_id;   // in base class
-	//		std::string server_type; // in base class
-	
-	std::string server_host;
-	std::string server_port;
-};
-
-// ----------------------------
-
-class BitcoinServer : public Server
-{
-	// You never actually get an instance of this, only its subclasses.
-	// Therefore, I don't allow you to access the constructor except through factory.
-protected:
-	BitcoinServer() : Server() { }
-	
-public:
-	virtual ~BitcoinServer() { }
-	
-	//		std::string gui_label;  // The label that appears in the GUI
-	
-	//		std::string server_id;   // in base class
-	//		std::string server_type; // in base class
-	
-	//		std::string server_host;
-	//		std::string server_port;
-	
-	std::string bitcoin_username;
-	std::string bitcoin_password;
-
-	OT_STORABLE_TYPE(BitcoinServer, WalletData)
-};
-
-// ----------------------------	
-	
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		StringMap() : Storable() { }
 		
-// ----------------------------	
-
-class ContactNym : public Displayable
-{
-	// You never actually get an instance of this, only its subclasses.
-	// Therefore, I don't allow you to access the constructor except through factory.
-protected:
-	ContactNym() : Displayable() { }
-	
-public:
-	virtual ~ContactNym();
-	
-	//		std::string gui_label;  // The label that appears in the GUI
-	
-	std::string nym_type;
-	std::string nym_id;
-	std::string public_key;
-	std::string memo;
-	
-	OT_STORABLE_TYPE(ContactNym, Contact)
-	
-	OT_CONTAINER_HELPER(ServerInfo, ContactNym)
-};
-
-
-// ------------------------------------------------
+	public:
+		virtual ~StringMap() { }
 		
-class WalletData : public Storable
-{
-	// You never actually get an instance of this, only its subclasses.
-	// Therefore, I don't allow you to access the constructor except through factory.
-protected:
-	WalletData() : Storable() { }
+		std::map<std::string, std::string> the_map;  // all strings, key/value pairs.
+		
+		void SetValue(const std::string& strKey, const std::string& strValue)
+		{ the_map[strKey] = strValue; }
+		
+		std::string GetValue(const std::string& strKey)
+		{ std::string ret_val(""); std::map<std::string, std::string>::iterator ii = the_map.find(strKey);
+			if (ii != the_map.end()) ret_val = (*ii).second; return ret_val; }
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(StringMap)
+	};
 	
-public:
-	virtual ~WalletData();
 	
-	// List of Bitcoin servers
-	// List of Bitcoin accounts
-	// Loom, etc.
+	// ------------------------------------------------
 	
-	OT_STORABLE_TYPE(WalletData, Storable)
+	class Displayable : public Storable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		Displayable() : Storable() { }
+		
+	public:
+		virtual ~Displayable() { }
+		
+		std::string gui_label;  // The label that appears in the GUI
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(Displayable)
+	};
+	
+	// *************************************************
+	
+	// ACCOUNT (GUI local storage about my own accounts, in my wallet.)
+	
+	class Acct : public Displayable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		Acct() : Displayable() { }
+		
+	public:
+		virtual ~Acct() { }
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		std::string acct_id;
+		std::string server_id;
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(Acct)
+	};
+	
+	// ----------------------------
+	
+	class BitcoinAcct : public Acct
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		BitcoinAcct() : Acct() { }
+		
+	public:
+		virtual ~BitcoinAcct() { }
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		using Acct::acct_id;
+		using Acct::server_id;
+		
+		std::string bitcoin_acct_name;
+				
+		DEFINE_OT_SWIG_DYNAMIC_CAST(BitcoinAcct)
+	};
+	
+	// **************************************************
+	
+	// SERVER (GUI local storage about servers.)
+	
+	class ServerInfo : public Displayable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		ServerInfo() : Displayable() { }
+		
+	public:
+		virtual ~ServerInfo() { }
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		std::string server_id;
+		std::string server_type;
+				
+		DEFINE_OT_SWIG_DYNAMIC_CAST(ServerInfo)
+	};
+	
+	// ----------------------------
+	
+	class Server : public ServerInfo
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		Server() : ServerInfo() { }
+		
+	public:
+		virtual ~Server() { }
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		using ServerInfo::server_id;   // in base class
+		using ServerInfo::server_type; // in base class
+		
+		std::string server_host;
+		std::string server_port;
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(Server)
+	};
+	
+	// ----------------------------
+	
+	class BitcoinServer : public Server
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		BitcoinServer() : Server() { }
+		
+	public:
+		virtual ~BitcoinServer() { }
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		using ServerInfo::server_id;   // in base class
+		using ServerInfo::server_type; // in base class
+		
+		using Server::server_host;   // in base class
+		using Server::server_port; // in base class
+		
+		std::string bitcoin_username;
+		std::string bitcoin_password;
+				
+		DEFINE_OT_SWIG_DYNAMIC_CAST(BitcoinServer)
+	};
+	
+	// ----------------------------	
+	
+	
+	// ----------------------------	
+	
+	class ContactNym : public Displayable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		ContactNym() : Displayable() { }
+		
+	public:
+		virtual ~ContactNym();
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		std::string nym_type;
+		std::string nym_id;
+		std::string public_key;
+		std::string memo;
+		
+		OT_SWIG_DECLARE_GET_ADD_REMOVE(ServerInfo);
+				
+		DEFINE_OT_SWIG_DYNAMIC_CAST(ContactNym)
+	};
+	
+	
+	// ------------------------------------------------
+	
+	class WalletData : public Storable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		WalletData() : Storable() { }
+		
+	public:
+		virtual ~WalletData();
+		
+		// List of Bitcoin servers
+		// List of Bitcoin accounts
+		// Loom, etc.
+		
+		OT_SWIG_DECLARE_GET_ADD_REMOVE(BitcoinServer);
+		OT_SWIG_DECLARE_GET_ADD_REMOVE(BitcoinAcct);
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(WalletData)
+	};
+	
+	// ----------------------------
 
-	OT_CONTAINER_HELPER(BitcoinServer, WalletData)
-	OT_CONTAINER_HELPER(BitcoinAcct, WalletData)
-};
+	class ContactAcct : public Displayable {
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		ContactAcct() : Displayable() { }
+		
+	public:
+		virtual ~ContactAcct() { }
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		std::string server_type;
+		std::string server_id;
+		std::string asset_type_id;
+		std::string acct_id;
+		std::string nym_id;
+		std::string memo;
+		std::string public_key;
+				
+		DEFINE_OT_SWIG_DYNAMIC_CAST(ContactAcct)
+	};
 	
-class ContactAcct : public Displayable {
-	// You never actually get an instance of this, only its subclasses.
-	// Therefore, I don't allow you to access the constructor except through factory.
-protected:
-	ContactAcct() : Displayable() { }
-	
-public:
-	virtual ~ContactAcct() { }
-	
-//	std::string gui_label;  // The label that appears in the GUI
-	
-	std::string server_type;
-	std::string server_id;
-	std::string asset_type_id;
-	std::string acct_id;
-	std::string nym_id;
-	std::string memo;
-	std::string public_key;
-
-	OT_STORABLE_TYPE(ContactAcct, Contact)
-};
-
-// ----------------------------
+	// ----------------------------
 	
 	
-class Contact : public Displayable {
-	// You never actually get an instance of this, only its subclasses.
-	// Therefore, I don't allow you to access the constructor except through factory.
-protected:
-	Contact() : Displayable() { }
+	class Contact : public Displayable {
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		Contact() : Displayable() { }
+		
+	public:
+		virtual ~Contact();
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		std::string contact_id;
+		std::string email;
+		std::string memo;
+		std::string public_key;
+		
+		OT_SWIG_DECLARE_GET_ADD_REMOVE(ContactNym);
+		OT_SWIG_DECLARE_GET_ADD_REMOVE(ContactAcct);
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(Contact)
+	};
 	
-public:
-	virtual ~Contact();
+	// ----------------------------
 	
-//		std::string gui_label;  // The label that appears in the GUI
+	class AddressBook : public Storable {
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		AddressBook() : Storable() { }
+		
+	public:
+		virtual ~AddressBook();
+		
+		OT_SWIG_DECLARE_GET_ADD_REMOVE(Contact);
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(AddressBook)
+	};
 	
-	std::string contact_id;
-	std::string email;
-	std::string memo;
-	std::string public_key;
-
-	OT_STORABLE_TYPE(Contact, AddressBook)
+	// ----------------------------
 	
-	OT_CONTAINER_HELPER(ContactNym, Contact)
-	OT_CONTAINER_HELPER(ContactAcct, Contact)
-};
 	
-// ----------------------------
-
-class AddressBook : public Storable {
-	// You never actually get an instance of this, only its subclasses.
-	// Therefore, I don't allow you to access the constructor except through factory.
-protected:
-	AddressBook() : Storable() { }
-	
-public:
-	virtual ~AddressBook();
-	
-	OT_STORABLE_TYPE(AddressBook, Storable)
-
-	OT_CONTAINER_HELPER(Contact, AddressBook)
-};
-
-// ----------------------------
 	
 	
 	
 
-	
-	
 } // namespace OTDB 
+
+
+
+
+
+%feature("director") OTDB::Storage;
 
 
 
@@ -769,8 +1125,28 @@ public:
 
 
 
+// These have to go AFTER the class definitions.
+//
 
-%feature("director") Storage;
+OT_AFTER_STORABLE_TYPE(OTDBString)
+OT_AFTER_STORABLE_TYPE(StringMap)
+OT_AFTER_STORABLE_TYPE(BitcoinAcct)
+
+OT_AFTER_STORABLE_TYPE(ServerInfo)
+
+OT_AFTER_STORABLE_TYPE(BitcoinServer)
+OT_AFTER_STORABLE_TYPE(ContactNym)
+OT_AFTER_STORABLE_TYPE(ContactAcct)
+OT_AFTER_STORABLE_TYPE(WalletData)
+
+OT_AFTER_STORABLE_TYPE(Contact)
+
+OT_AFTER_STORABLE_TYPE(AddressBook)
+
+
+
+
+
 
 
 

@@ -39,6 +39,42 @@ public class Server : ServerInfo {
     }
   }
 
+  public string gui_label {
+    set {
+      otapiPINVOKE.Server_gui_label_set(swigCPtr, value);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    } 
+    get {
+      string ret = otapiPINVOKE.Server_gui_label_get(swigCPtr);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+      return ret;
+    } 
+  }
+
+  public string server_id {
+    set {
+      otapiPINVOKE.Server_server_id_set(swigCPtr, value);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    } 
+    get {
+      string ret = otapiPINVOKE.Server_server_id_get(swigCPtr);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+      return ret;
+    } 
+  }
+
+  public string server_type {
+    set {
+      otapiPINVOKE.Server_server_type_set(swigCPtr, value);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    } 
+    get {
+      string ret = otapiPINVOKE.Server_server_type_get(swigCPtr);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+      return ret;
+    } 
+  }
+
   public string server_host {
     set {
       otapiPINVOKE.Server_server_host_set(swigCPtr, value);
@@ -61,6 +97,12 @@ public class Server : ServerInfo {
       if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
       return ret;
     } 
+  }
+
+  public new static Server ot_dynamic_cast(Storable pObject) {
+    IntPtr cPtr = otapiPINVOKE.Server_ot_dynamic_cast(Storable.getCPtr(pObject));
+    Server ret = (cPtr == IntPtr.Zero) ? null : new Server(cPtr, false);
+    return ret;
   }
 
 }

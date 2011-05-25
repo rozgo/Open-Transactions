@@ -39,6 +39,18 @@ public class Acct : Displayable {
     }
   }
 
+  public string gui_label {
+    set {
+      otapiPINVOKE.Acct_gui_label_set(swigCPtr, value);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+    } 
+    get {
+      string ret = otapiPINVOKE.Acct_gui_label_get(swigCPtr);
+      if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
+      return ret;
+    } 
+  }
+
   public string acct_id {
     set {
       otapiPINVOKE.Acct_acct_id_set(swigCPtr, value);
@@ -61,6 +73,12 @@ public class Acct : Displayable {
       if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
       return ret;
     } 
+  }
+
+  public new static Acct ot_dynamic_cast(Storable pObject) {
+    IntPtr cPtr = otapiPINVOKE.Acct_ot_dynamic_cast(Storable.getCPtr(pObject));
+    Acct ret = (cPtr == IntPtr.Zero) ? null : new Acct(cPtr, false);
+    return ret;
   }
 
 }
