@@ -39,13 +39,7 @@ public class AddressBook extends Storable {
 	/*@SWIG:OTAPI.i,329,OT_CONTAINER_TYPE_MEMBERS@*/
 private List elementList = new ArrayList();
 /*@SWIG@*/
-	/*@SWIG:OTAPI.i,410,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
-// Ensure that the GC doesn't collect any Contact set from Java
-// as the underlying C++ class stores a shallow copy
-
-// Altered the SWIG example so that we store a list of these references, instead
-// of only the latest one. None of them should go out of scope until this object does.
-
+	/*@SWIG:OTAPI.i,416,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
 private long removeRefContact(long lIndex) {
 	// 
 	// loop through the elements in the actual container, in order to find the one
@@ -99,7 +93,6 @@ private long getCPtrAddRefContact(Contact element) {
 	elementList.add(tempLocalRef);
 	return Contact.getCPtr(element);
 }	// Hope I get away with overloading this for every type. Otherwise,
-// hope I can just change the function name to customize it to type.
 /*@SWIG@*/
 }
   public long GetContactCount() { return otapiJNI.AddressBook_GetContactCount(swigCPtr, this); }
@@ -117,14 +110,9 @@ private long getCPtrAddRefContact(Contact element) {
     return otapiJNI.AddressBook_AddContact(swigCPtr, this, Contact.getCPtr(disownObject), disownObject);
   }
 
-  public static AddressBook ot_dynamic_cast(Storable pObject) { 
-    long cPtr = otapiJNI.AddressBook_ot_dynamic_cast(Storable.getCPtr(pObject), pObject); 
-    AddressBook ret = null; 
-    if (cPtr != 0) { 
-		ret = new AddressBook(cPtr, false);
-		ret.addReference(this); 
-    } 
-    return ret; 
-}
+  public static AddressBook ot_dynamic_cast(Storable pObject) {
+    long cPtr = otapiJNI.AddressBook_ot_dynamic_cast(Storable.getCPtr(pObject), pObject);
+    return (cPtr == 0) ? null : new AddressBook(cPtr, false);
+  }
 
 }

@@ -34,7 +34,7 @@ public class BitcoinServer extends Server {
     }
     super.delete();
   }
-{
+
 	/*@SWIG:OTAPI.i,392,OT_CAN_BE_CONTAINED_BY@*/
 	// Ensure that the GC doesn't collect any OT_CONTAINER instance set from Java
 	private WalletData containerRefWalletData;
@@ -45,7 +45,7 @@ public class BitcoinServer extends Server {
 	// ----------------
 /*@SWIG@*/
 	// ------------------------
-}
+
   public void setGui_label(String value) {
     otapiJNI.BitcoinServer_gui_label_set(swigCPtr, this, value);
   }
@@ -102,14 +102,9 @@ public class BitcoinServer extends Server {
     return otapiJNI.BitcoinServer_bitcoin_password_get(swigCPtr, this);
   }
 
-  public static BitcoinServer ot_dynamic_cast(Storable pObject) { 
-    long cPtr = otapiJNI.BitcoinServer_ot_dynamic_cast(Storable.getCPtr(pObject), pObject); 
-    BitcoinServer ret = null; 
-    if (cPtr != 0) { 
-		ret = new BitcoinServer(cPtr, false);
-		ret.addReference(this); 
-    } 
-    return ret; 
-}
+  public static BitcoinServer ot_dynamic_cast(Storable pObject) {
+    long cPtr = otapiJNI.BitcoinServer_ot_dynamic_cast(Storable.getCPtr(pObject), pObject);
+    return (cPtr == 0) ? null : new BitcoinServer(cPtr, false);
+  }
 
 }

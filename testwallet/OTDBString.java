@@ -45,14 +45,9 @@ public class OTDBString extends Storable {
     return otapiJNI.OTDBString_m_string_get(swigCPtr, this);
   }
 
-  public static OTDBString ot_dynamic_cast(Storable pObject) { 
-    long cPtr = otapiJNI.OTDBString_ot_dynamic_cast(Storable.getCPtr(pObject), pObject); 
-    OTDBString ret = null; 
-    if (cPtr != 0) { 
-		ret = new OTDBString(cPtr, false);
-		ret.addReference(this); 
-    } 
-    return ret; 
-}
+  public static OTDBString ot_dynamic_cast(Storable pObject) {
+    long cPtr = otapiJNI.OTDBString_ot_dynamic_cast(Storable.getCPtr(pObject), pObject);
+    return (cPtr == 0) ? null : new OTDBString(cPtr, false);
+  }
 
 }

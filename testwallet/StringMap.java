@@ -54,14 +54,9 @@ public class StringMap extends Storable {
     return otapiJNI.StringMap_GetValue(swigCPtr, this, strKey);
   }
 
-  public static StringMap ot_dynamic_cast(Storable pObject) { 
-    long cPtr = otapiJNI.StringMap_ot_dynamic_cast(Storable.getCPtr(pObject), pObject); 
-    StringMap ret = null; 
-    if (cPtr != 0) { 
-		ret = new StringMap(cPtr, false);
-		ret.addReference(this); 
-    } 
-    return ret; 
-}
+  public static StringMap ot_dynamic_cast(Storable pObject) {
+    long cPtr = otapiJNI.StringMap_ot_dynamic_cast(Storable.getCPtr(pObject), pObject);
+    return (cPtr == 0) ? null : new StringMap(cPtr, false);
+  }
 
 }

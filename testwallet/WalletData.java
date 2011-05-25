@@ -34,18 +34,12 @@ public class WalletData extends Storable {
     }
     super.delete();
   }
-{
+
 	// ------------------------
 	/*@SWIG:OTAPI.i,329,OT_CONTAINER_TYPE_MEMBERS@*/
 private List elementList = new ArrayList();
 /*@SWIG@*/
-	/*@SWIG:OTAPI.i,410,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
-// Ensure that the GC doesn't collect any BitcoinServer set from Java
-// as the underlying C++ class stores a shallow copy
-
-// Altered the SWIG example so that we store a list of these references, instead
-// of only the latest one. None of them should go out of scope until this object does.
-
+	/*@SWIG:OTAPI.i,416,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
 private long removeRefBitcoinServer(long lIndex) {
 	// 
 	// loop through the elements in the actual container, in order to find the one
@@ -99,15 +93,8 @@ private long getCPtrAddRefBitcoinServer(BitcoinServer element) {
 	elementList.add(tempLocalRef);
 	return BitcoinServer.getCPtr(element);
 }	// Hope I get away with overloading this for every type. Otherwise,
-// hope I can just change the function name to customize it to type.
 /*@SWIG@*/
-	/*@SWIG:OTAPI.i,410,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
-// Ensure that the GC doesn't collect any BitcoinAcct set from Java
-// as the underlying C++ class stores a shallow copy
-
-// Altered the SWIG example so that we store a list of these references, instead
-// of only the latest one. None of them should go out of scope until this object does.
-
+	/*@SWIG:OTAPI.i,416,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
 private long removeRefBitcoinAcct(long lIndex) {
 	// 
 	// loop through the elements in the actual container, in order to find the one
@@ -161,9 +148,8 @@ private long getCPtrAddRefBitcoinAcct(BitcoinAcct element) {
 	elementList.add(tempLocalRef);
 	return BitcoinAcct.getCPtr(element);
 }	// Hope I get away with overloading this for every type. Otherwise,
-// hope I can just change the function name to customize it to type.
 /*@SWIG@*/
-}
+
   public long GetBitcoinServerCount() { return otapiJNI.WalletData_GetBitcoinServerCount(swigCPtr, this); }
 
   public BitcoinServer GetBitcoinServer(long nIndex) {
@@ -194,14 +180,9 @@ private long getCPtrAddRefBitcoinAcct(BitcoinAcct element) {
     return otapiJNI.WalletData_AddBitcoinAcct(swigCPtr, this, BitcoinAcct.getCPtr(disownObject), disownObject);
   }
 
-  public static WalletData ot_dynamic_cast(Storable pObject) { 
-    long cPtr = otapiJNI.WalletData_ot_dynamic_cast(Storable.getCPtr(pObject), pObject); 
-    WalletData ret = null; 
-    if (cPtr != 0) { 
-		ret = new WalletData(cPtr, false);
-		ret.addReference(this); 
-    } 
-    return ret; 
-}
+  public static WalletData ot_dynamic_cast(Storable pObject) {
+    long cPtr = otapiJNI.WalletData_ot_dynamic_cast(Storable.getCPtr(pObject), pObject);
+    return (cPtr == 0) ? null : new WalletData(cPtr, false);
+  }
 
 }

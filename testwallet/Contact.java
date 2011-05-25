@@ -34,7 +34,7 @@ public class Contact extends Displayable {
     }
     super.delete();
   }
-{
+
 	/*@SWIG:OTAPI.i,392,OT_CAN_BE_CONTAINED_BY@*/
 	// Ensure that the GC doesn't collect any OT_CONTAINER instance set from Java
 	private AddressBook containerRefAddressBook;
@@ -48,13 +48,7 @@ public class Contact extends Displayable {
 	/*@SWIG:OTAPI.i,329,OT_CONTAINER_TYPE_MEMBERS@*/
 private List elementList = new ArrayList();
 /*@SWIG@*/
-	/*@SWIG:OTAPI.i,410,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
-// Ensure that the GC doesn't collect any ContactNym set from Java
-// as the underlying C++ class stores a shallow copy
-
-// Altered the SWIG example so that we store a list of these references, instead
-// of only the latest one. None of them should go out of scope until this object does.
-
+	/*@SWIG:OTAPI.i,416,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
 private long removeRefContactNym(long lIndex) {
 	// 
 	// loop through the elements in the actual container, in order to find the one
@@ -108,15 +102,8 @@ private long getCPtrAddRefContactNym(ContactNym element) {
 	elementList.add(tempLocalRef);
 	return ContactNym.getCPtr(element);
 }	// Hope I get away with overloading this for every type. Otherwise,
-// hope I can just change the function name to customize it to type.
 /*@SWIG@*/
-	/*@SWIG:OTAPI.i,410,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
-// Ensure that the GC doesn't collect any ContactAcct set from Java
-// as the underlying C++ class stores a shallow copy
-
-// Altered the SWIG example so that we store a list of these references, instead
-// of only the latest one. None of them should go out of scope until this object does.
-
+	/*@SWIG:OTAPI.i,416,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
 private long removeRefContactAcct(long lIndex) {
 	// 
 	// loop through the elements in the actual container, in order to find the one
@@ -170,9 +157,8 @@ private long getCPtrAddRefContactAcct(ContactAcct element) {
 	elementList.add(tempLocalRef);
 	return ContactAcct.getCPtr(element);
 }	// Hope I get away with overloading this for every type. Otherwise,
-// hope I can just change the function name to customize it to type.
 /*@SWIG@*/
-}
+
   public void setGui_label(String value) {
     otapiJNI.Contact_gui_label_set(swigCPtr, this, value);
   }
@@ -243,14 +229,9 @@ private long getCPtrAddRefContactAcct(ContactAcct element) {
     return otapiJNI.Contact_AddContactAcct(swigCPtr, this, ContactAcct.getCPtr(disownObject), disownObject);
   }
 
-  public static Contact ot_dynamic_cast(Storable pObject) { 
-    long cPtr = otapiJNI.Contact_ot_dynamic_cast(Storable.getCPtr(pObject), pObject); 
-    Contact ret = null; 
-    if (cPtr != 0) { 
-		ret = new Contact(cPtr, false);
-		ret.addReference(this); 
-    } 
-    return ret; 
-}
+  public static Contact ot_dynamic_cast(Storable pObject) {
+    long cPtr = otapiJNI.Contact_ot_dynamic_cast(Storable.getCPtr(pObject), pObject);
+    return (cPtr == 0) ? null : new Contact(cPtr, false);
+  }
 
 }

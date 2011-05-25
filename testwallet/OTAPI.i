@@ -242,15 +242,15 @@ public int hashCode() {
 // to its true type, after factory construction.
 //
 %define OT_BEFORE_STORABLE_TYPE(STORABLE_TYPE)
-%typemap(javaout) STORABLE_TYPE * ot_dynamic_cast { 
-    long cPtr = $jnicall; 
-    $javaclassname ret = null; 
-    if (cPtr != 0) { 
-		ret = new $javaclassname(cPtr, $owner);
-		ret.addReference(this); 
-    } 
-    return ret; 
-}
+//%typemap(javaout) STORABLE_TYPE * ot_dynamic_cast { 
+//    long cPtr = $jnicall; 
+//    $javaclassname ret = null; 
+//    if (cPtr != 0) { 
+//		ret = new $javaclassname(cPtr, $owner);
+//		ret.addReference(this); 
+//    } 
+//    return ret; 
+//}
 %enddef
 
 /*%exception STORABLE_TYPE::dynamic_cast(Storable * pObject) {  // Java code
@@ -407,13 +407,13 @@ private List elementList = new ArrayList();
 //
 // Put it: inside the %typemap(javacode) for the CONTAINER_TYPE, for EACH ELEMENT_TYPE.
 //
-%define OT_ADD_ELEMENT(THE_ELEMENT_TYPE)  // THIS BLOCK CONTAINS JAVA CODE.
 // Ensure that the GC doesn't collect any THE_ELEMENT_TYPE set from Java
 // as the underlying C++ class stores a shallow copy
 
 // Altered the SWIG example so that we store a list of these references, instead
 // of only the latest one. None of them should go out of scope until this object does.
 
+%define OT_ADD_ELEMENT(THE_ELEMENT_TYPE)  // THIS BLOCK CONTAINS JAVA CODE.
 private long removeRef##THE_ELEMENT_TYPE(long lIndex) {
 	// 
 	// loop through the elements in the actual container, in order to find the one
@@ -467,8 +467,8 @@ private long getCPtrAddRef##THE_ELEMENT_TYPE(THE_ELEMENT_TYPE element) {
 	elementList.add(tempLocalRef);
 	return THE_ELEMENT_TYPE.getCPtr(element);
 }	// Hope I get away with overloading this for every type. Otherwise,
-// hope I can just change the function name to customize it to type.
 %enddef
+// hope I can just change the function name to customize it to type.
 
 // ----------------------------------------
 
@@ -1142,16 +1142,6 @@ OT_AFTER_STORABLE_TYPE(WalletData)
 OT_AFTER_STORABLE_TYPE(Contact)
 
 OT_AFTER_STORABLE_TYPE(AddressBook)
-
-
-
-
-
-
-
-
-
-
 
 
 

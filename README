@@ -8,6 +8,9 @@ Radio Interview:
 Part 1: http://agoristradio.com/?p=234
 Part 2: http://agoristradio.com/?p=246
 
+Java GUI: 
+https://github.com/FellowTraveler/Moneychanger
+
 Diagrams:  
 Architecture Overview: http://opentransact.nevermeta.com/OT%20Diagram.jpg
 Fully-Anonymous (cash only): http://opentransact.nevermeta.com/OT-Anon-CashOnly.jpg
@@ -74,7 +77,7 @@ Full anonymity is possible only for 'cash-only' transactions (where
 users only perform token exchanges), whereas pseudonymity means that
 transactions can be linked to the key that signed them. (While the
 real life identity of the owner is hidden, continuity of reputation
-becomes possible.)
+becomes possible when using pseudonyms.)
 
 -- ANY USER CAN ISSUE new digital currencies and digital asset
 types, by uploading the new currency contract to the server. (This
@@ -119,11 +122,11 @@ multiple servers, and asset types can be distributed across multiple
 issuers (via baskets.)
 
 -- Future (possible or planned) instruments include:
-interest-bearing bonds, dividend-paying stocks, and Collateralized
-Debt Obligations. The CDOs work by grouping a tranch of payment
-plans together so that the payments flow into an internal server
-backing account (for a new issuer account, to issue the shares in
-the CDO.) This is similar to how basket currencies are implemented.
+interest-bearing bonds, dividend-paying stocks, real bills, and 
+collateralized debt obligations. The CDOs work by grouping a tranch
+of payment plans together so that the payments flow into an internal
+server backing account (for a new issuer account, to issue the shares
+in the CDO.) This is similar to how basket currencies are implemented.
 The shares can then be traded on markets like any other asset type.
 Stocks and Bonds will also do their payouts via a similar mechanism.
 These features aren't available yet, but they are easy to add given
@@ -145,9 +148,10 @@ and instructions.
 
 -- The library is transfer-protocol neutral as well as storage
 neutral, and could be utilized across a variety of different
-transfer protocols and storage systems. (The current test server and
-client use SSL for transfer in addition to XmlRpc/HTTP, and they use
-the filesystem for storage.)
+transfer protocols and storage systems. The current test server and
+client use the ZeroMQ library for messages, and a storage abstraction
+is employed to make it easy for you to swap in any storage method
+you need. (Default is the filesystem.) 
 
 The intention is for this software to be integrated as many places
 as possible... Games, digital cash wallets, distributed data stores,

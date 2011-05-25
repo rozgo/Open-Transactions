@@ -34,7 +34,7 @@ public class BitcoinAcct extends Acct {
     }
     super.delete();
   }
-{
+
 	/*@SWIG:OTAPI.i,392,OT_CAN_BE_CONTAINED_BY@*/
 	// Ensure that the GC doesn't collect any OT_CONTAINER instance set from Java
 	private WalletData containerRefWalletData;
@@ -45,7 +45,7 @@ public class BitcoinAcct extends Acct {
 	// ----------------
 /*@SWIG@*/
 	// ------------------------
-}
+
   public void setGui_label(String value) {
     otapiJNI.BitcoinAcct_gui_label_set(swigCPtr, this, value);
   }
@@ -78,14 +78,9 @@ public class BitcoinAcct extends Acct {
     return otapiJNI.BitcoinAcct_bitcoin_acct_name_get(swigCPtr, this);
   }
 
-  public static BitcoinAcct ot_dynamic_cast(Storable pObject) { 
-    long cPtr = otapiJNI.BitcoinAcct_ot_dynamic_cast(Storable.getCPtr(pObject), pObject); 
-    BitcoinAcct ret = null; 
-    if (cPtr != 0) { 
-		ret = new BitcoinAcct(cPtr, false);
-		ret.addReference(this); 
-    } 
-    return ret; 
-}
+  public static BitcoinAcct ot_dynamic_cast(Storable pObject) {
+    long cPtr = otapiJNI.BitcoinAcct_ot_dynamic_cast(Storable.getCPtr(pObject), pObject);
+    return (cPtr == 0) ? null : new BitcoinAcct(cPtr, false);
+  }
 
 }
