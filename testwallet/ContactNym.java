@@ -34,8 +34,7 @@ public class ContactNym extends Displayable {
     }
     super.delete();
   }
-
-	/*@SWIG:OTAPI.i,392,OT_CAN_BE_CONTAINED_BY@*/
+/*@SWIG:OTAPI.i,392,OT_CAN_BE_CONTAINED_BY@*/
 	// Ensure that the GC doesn't collect any OT_CONTAINER instance set from Java
 	private Contact containerRefContact;
 	// ----------------	
@@ -65,10 +64,14 @@ private long removeRefServerInfo(long lIndex) {
 	//
 	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
 	{
-		ServerInfo tempRef = elementList.get(intIndex);
+		Object theObject = elementList.get(intIndex);
 		
-		if ((tempRef instanceof ServerInfo) &&
-			(ServerInfo.getCPtr(tempRef) == ServerInfo.getCPtr(refActualElement)))
+		if ((theObject == null) || !(theObject instanceof ServerInfo))
+			continue;
+
+		ServerInfo tempRef = (ServerInfo)(theObject);
+		
+		if ((ServerInfo.getCPtr(tempRef) == ServerInfo.getCPtr(refActualElement)))
 		{
 			elementList.remove(tempRef);
 			break;
@@ -84,13 +87,14 @@ private long getCPtrAddRefServerInfo(ServerInfo element) {
 	//
 	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
 	{
-		ServerInfo tempRef = elementList.get(intIndex);
-		
-		if (tempRef == null) // just in case. Should never happen.
+		Object theObject = elementList.get(intIndex);
+
+		if ((theObject == null) || !(theObject instanceof ServerInfo))
 			continue;
 		
-		if ((tempRef instanceof ServerInfo) &&
-			(ServerInfo.getCPtr(tempRef) == ServerInfo.getCPtr(element)))
+		ServerInfo tempRef = (ServerInfo)(theObject);
+		
+		if ((ServerInfo.getCPtr(tempRef) == ServerInfo.getCPtr(element)))
 		{
 			elementList.remove(tempRef); // It was already there, so let's remove it before adding (below.)
 			break;
@@ -103,7 +107,6 @@ private long getCPtrAddRefServerInfo(ServerInfo element) {
 	return ServerInfo.getCPtr(element);
 }	// Hope I get away with overloading this for every type. Otherwise,
 /*@SWIG@*/
-
   public void setGui_label(String value) {
     otapiJNI.ContactNym_gui_label_set(swigCPtr, this, value);
   }
@@ -152,7 +155,7 @@ private long getCPtrAddRefServerInfo(ServerInfo element) {
   }
 
   public boolean RemoveServerInfo(long nIndexToRemove) {
-    return otapiJNI.ContactNym_RemoveServerInfo(swigCPtr, this, { removeRefContact(nIndexToRemove) });
+    return otapiJNI.ContactNym_RemoveServerInfo(swigCPtr, this, removeRefContact(nIndexToRemove));
   }
 
   public boolean AddServerInfo(ServerInfo disownObject) {

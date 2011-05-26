@@ -34,9 +34,7 @@ public class OTDBString extends Storable {
     }
     super.delete();
   }
-{
-	// ------------------------
-}
+// ------------------------
   public void setM_string(String value) {
     otapiJNI.OTDBString_m_string_set(swigCPtr, this, value);
   }

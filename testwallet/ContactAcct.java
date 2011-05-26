@@ -34,8 +34,7 @@ public class ContactAcct extends Displayable {
     }
     super.delete();
   }
-
-	/*@SWIG:OTAPI.i,392,OT_CAN_BE_CONTAINED_BY@*/
+/*@SWIG:OTAPI.i,392,OT_CAN_BE_CONTAINED_BY@*/
 	// Ensure that the GC doesn't collect any OT_CONTAINER instance set from Java
 	private Contact containerRefContact;
 	// ----------------	
@@ -45,7 +44,6 @@ public class ContactAcct extends Displayable {
 	// ----------------
 /*@SWIG@*/
 	// ------------------------
-
   public void setGui_label(String value) {
     otapiJNI.ContactAcct_gui_label_set(swigCPtr, this, value);
   }

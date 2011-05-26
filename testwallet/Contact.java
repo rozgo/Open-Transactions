@@ -34,8 +34,7 @@ public class Contact extends Displayable {
     }
     super.delete();
   }
-
-	/*@SWIG:OTAPI.i,392,OT_CAN_BE_CONTAINED_BY@*/
+/*@SWIG:OTAPI.i,392,OT_CAN_BE_CONTAINED_BY@*/
 	// Ensure that the GC doesn't collect any OT_CONTAINER instance set from Java
 	private AddressBook containerRefAddressBook;
 	// ----------------	
@@ -65,10 +64,14 @@ private long removeRefContactNym(long lIndex) {
 	//
 	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
 	{
-		ContactNym tempRef = elementList.get(intIndex);
+		Object theObject = elementList.get(intIndex);
 		
-		if ((tempRef instanceof ContactNym) &&
-			(ContactNym.getCPtr(tempRef) == ContactNym.getCPtr(refActualElement)))
+		if ((theObject == null) || !(theObject instanceof ContactNym))
+			continue;
+
+		ContactNym tempRef = (ContactNym)(theObject);
+		
+		if ((ContactNym.getCPtr(tempRef) == ContactNym.getCPtr(refActualElement)))
 		{
 			elementList.remove(tempRef);
 			break;
@@ -84,13 +87,14 @@ private long getCPtrAddRefContactNym(ContactNym element) {
 	//
 	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
 	{
-		ContactNym tempRef = elementList.get(intIndex);
-		
-		if (tempRef == null) // just in case. Should never happen.
+		Object theObject = elementList.get(intIndex);
+
+		if ((theObject == null) || !(theObject instanceof ContactNym))
 			continue;
 		
-		if ((tempRef instanceof ContactNym) &&
-			(ContactNym.getCPtr(tempRef) == ContactNym.getCPtr(element)))
+		ContactNym tempRef = (ContactNym)(theObject);
+		
+		if ((ContactNym.getCPtr(tempRef) == ContactNym.getCPtr(element)))
 		{
 			elementList.remove(tempRef); // It was already there, so let's remove it before adding (below.)
 			break;
@@ -120,10 +124,14 @@ private long removeRefContactAcct(long lIndex) {
 	//
 	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
 	{
-		ContactAcct tempRef = elementList.get(intIndex);
+		Object theObject = elementList.get(intIndex);
 		
-		if ((tempRef instanceof ContactAcct) &&
-			(ContactAcct.getCPtr(tempRef) == ContactAcct.getCPtr(refActualElement)))
+		if ((theObject == null) || !(theObject instanceof ContactAcct))
+			continue;
+
+		ContactAcct tempRef = (ContactAcct)(theObject);
+		
+		if ((ContactAcct.getCPtr(tempRef) == ContactAcct.getCPtr(refActualElement)))
 		{
 			elementList.remove(tempRef);
 			break;
@@ -139,13 +147,14 @@ private long getCPtrAddRefContactAcct(ContactAcct element) {
 	//
 	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
 	{
-		ContactAcct tempRef = elementList.get(intIndex);
-		
-		if (tempRef == null) // just in case. Should never happen.
+		Object theObject = elementList.get(intIndex);
+
+		if ((theObject == null) || !(theObject instanceof ContactAcct))
 			continue;
 		
-		if ((tempRef instanceof ContactAcct) &&
-			(ContactAcct.getCPtr(tempRef) == ContactAcct.getCPtr(element)))
+		ContactAcct tempRef = (ContactAcct)(theObject);
+		
+		if ((ContactAcct.getCPtr(tempRef) == ContactAcct.getCPtr(element)))
 		{
 			elementList.remove(tempRef); // It was already there, so let's remove it before adding (below.)
 			break;
@@ -158,7 +167,6 @@ private long getCPtrAddRefContactAcct(ContactAcct element) {
 	return ContactAcct.getCPtr(element);
 }	// Hope I get away with overloading this for every type. Otherwise,
 /*@SWIG@*/
-
   public void setGui_label(String value) {
     otapiJNI.Contact_gui_label_set(swigCPtr, this, value);
   }
@@ -207,7 +215,7 @@ private long getCPtrAddRefContactAcct(ContactAcct element) {
   }
 
   public boolean RemoveContactNym(long nIndexToRemove) {
-    return otapiJNI.Contact_RemoveContactNym(swigCPtr, this, { removeRefContact(nIndexToRemove) });
+    return otapiJNI.Contact_RemoveContactNym(swigCPtr, this, removeRefContact(nIndexToRemove));
   }
 
   public boolean AddContactNym(ContactNym disownObject) {
@@ -222,7 +230,7 @@ private long getCPtrAddRefContactAcct(ContactAcct element) {
   }
 
   public boolean RemoveContactAcct(long nIndexToRemove) {
-    return otapiJNI.Contact_RemoveContactAcct(swigCPtr, this, { removeRefContact(nIndexToRemove) });
+    return otapiJNI.Contact_RemoveContactAcct(swigCPtr, this, removeRefContact(nIndexToRemove));
   }
 
   public boolean AddContactAcct(ContactAcct disownObject) {

@@ -360,7 +360,7 @@ private List elementList = new ArrayList();
 // reference to prevent premature garbage collection and resulting use
 // of dangling C++ pointer. Intended for methods that return pointers or
 // references to a member variable.
-%typemap(javaout) THE_ELEMENT_TYPE * Get##THE_ELEMENT_TYPE {
+%typemap(javaout,noblock=1) THE_ELEMENT_TYPE * Get##THE_ELEMENT_TYPE {
     long cPtr = $jnicall;
     $javaclassname ret = null;
     if (cPtr != 0) {
@@ -373,11 +373,11 @@ private List elementList = new ArrayList();
 // Swig uses this in every CONTAINER_TYPE's "Add" function, which all
 // have a parameter profile matching this typemap.
 //
-%typemap(javain) THE_ELEMENT_TYPE & disownObject { getCPtrAddRef##THE_ELEMENT_TYPE($javainput) }
+%typemap(javain,noblock=1) THE_ELEMENT_TYPE & disownObject { getCPtrAddRef##THE_ELEMENT_TYPE($javainput) }
 
 // This is used by CONTAINER_TYPE's "Remove" function. Do not change the
 // parameter name nIndexToRemove or this typemap will stop working...
-%typemap(javain) size_t nIndexToRemove { removeRef##THE_ELEMENT_TYPE($javainput) }
+%typemap(javain,noblock=1) size_t nIndexToRemove { removeRef##THE_ELEMENT_TYPE($javainput) }
 
 %enddef
 
@@ -430,10 +430,14 @@ private long removeRef##THE_ELEMENT_TYPE(long lIndex) {
 	//
 	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
 	{
-		THE_ELEMENT_TYPE tempRef = elementList.get(intIndex);
+		Object theObject = elementList.get(intIndex);
 		
-		if ((tempRef instanceof THE_ELEMENT_TYPE) &&
-			(THE_ELEMENT_TYPE.getCPtr(tempRef) == THE_ELEMENT_TYPE.getCPtr(refActualElement)))
+		if ((theObject == null) || !(theObject instanceof THE_ELEMENT_TYPE))
+			continue;
+
+		THE_ELEMENT_TYPE tempRef = (THE_ELEMENT_TYPE)(theObject);
+		
+		if ((THE_ELEMENT_TYPE.getCPtr(tempRef) == THE_ELEMENT_TYPE.getCPtr(refActualElement)))
 		{
 			elementList.remove(tempRef);
 			break;
@@ -449,13 +453,14 @@ private long getCPtrAddRef##THE_ELEMENT_TYPE(THE_ELEMENT_TYPE element) {
 	//
 	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
 	{
-		THE_ELEMENT_TYPE tempRef = elementList.get(intIndex);
-		
-		if (tempRef == null) // just in case. Should never happen.
+		Object theObject = elementList.get(intIndex);
+
+		if ((theObject == null) || !(theObject instanceof THE_ELEMENT_TYPE))
 			continue;
 		
-		if ((tempRef instanceof THE_ELEMENT_TYPE) &&
-			(THE_ELEMENT_TYPE.getCPtr(tempRef) == THE_ELEMENT_TYPE.getCPtr(element)))
+		THE_ELEMENT_TYPE tempRef = (THE_ELEMENT_TYPE)(theObject);
+		
+		if ((THE_ELEMENT_TYPE.getCPtr(tempRef) == THE_ELEMENT_TYPE.getCPtr(element)))
 		{
 			elementList.remove(tempRef); // It was already there, so let's remove it before adding (below.)
 			break;
@@ -483,7 +488,7 @@ private long getCPtrAddRef##THE_ELEMENT_TYPE(THE_ELEMENT_TYPE element) {
 OT_BEFORE_STORABLE_TYPE(OTDB::OTDBString)
 OT_IS_ELEMENT_TYPE(OTDBString)
 
-%typemap(javacode) OTDB::OTDBString {
+%typemap(javacode,noblock=1) OTDB::OTDBString {
 	// ------------------------
 }
 
@@ -492,7 +497,7 @@ OT_IS_ELEMENT_TYPE(OTDBString)
 OT_BEFORE_STORABLE_TYPE(OTDB::StringMap)
 OT_IS_ELEMENT_TYPE(StringMap)
 
-%typemap(javacode) OTDB::StringMap {
+%typemap(javacode,noblock=1) OTDB::StringMap {
 	// ------------------------
 }
 
@@ -501,7 +506,7 @@ OT_IS_ELEMENT_TYPE(StringMap)
 OT_BEFORE_STORABLE_TYPE(OTDB::BitcoinAcct)
 OT_IS_ELEMENT_TYPE(BitcoinAcct)
 
-%typemap(javacode) OTDB::BitcoinAcct {
+%typemap(javacode,noblock=1) OTDB::BitcoinAcct {
 	OT_CAN_BE_CONTAINED_BY(WalletData)
 	// ------------------------
 }
@@ -512,7 +517,7 @@ OT_IS_ELEMENT_TYPE(BitcoinAcct)
 OT_BEFORE_STORABLE_TYPE(OTDB::ServerInfo)
 OT_IS_ELEMENT_TYPE(ServerInfo)
 
-%typemap(javacode) OTDB::ServerInfo {
+%typemap(javacode,noblock=1) OTDB::ServerInfo {
 	OT_CAN_BE_CONTAINED_BY(ContactNym)
 	// ------------------------
 }
@@ -522,7 +527,7 @@ OT_IS_ELEMENT_TYPE(ServerInfo)
 OT_BEFORE_STORABLE_TYPE(OTDB::BitcoinServer)
 OT_IS_ELEMENT_TYPE(BitcoinServer)
 
-%typemap(javacode) OTDB::BitcoinServer {
+%typemap(javacode,noblock=1) OTDB::BitcoinServer {
 	OT_CAN_BE_CONTAINED_BY(WalletData)
 	// ------------------------
 }
@@ -532,7 +537,7 @@ OT_IS_ELEMENT_TYPE(BitcoinServer)
 OT_BEFORE_STORABLE_TYPE(OTDB::ContactNym)
 OT_IS_ELEMENT_TYPE(ContactNym)
 
-%typemap(javacode) OTDB::ContactNym {
+%typemap(javacode,noblock=1) OTDB::ContactNym {
 	OT_CAN_BE_CONTAINED_BY(Contact)
 	// ------------------------
 	OT_CONTAINER_TYPE_MEMBERS
@@ -544,7 +549,7 @@ OT_IS_ELEMENT_TYPE(ContactNym)
 OT_BEFORE_STORABLE_TYPE(OTDB::ContactAcct)
 OT_IS_ELEMENT_TYPE(ContactAcct)
 
-%typemap(javacode) OTDB::ContactAcct {
+%typemap(javacode,noblock=1) OTDB::ContactAcct {
 	OT_CAN_BE_CONTAINED_BY(Contact)
 	// ------------------------
 }
@@ -555,7 +560,7 @@ OT_IS_ELEMENT_TYPE(ContactAcct)
 
 OT_BEFORE_STORABLE_TYPE(OTDB::WalletData)
 
-%typemap(javacode) OTDB::WalletData {
+%typemap(javacode,noblock=1) OTDB::WalletData {
 	// ------------------------
 	OT_CONTAINER_TYPE_MEMBERS
 	OT_ADD_ELEMENT(BitcoinServer)
@@ -567,7 +572,7 @@ OT_BEFORE_STORABLE_TYPE(OTDB::WalletData)
 OT_BEFORE_STORABLE_TYPE(OTDB::Contact)
 OT_IS_ELEMENT_TYPE(Contact)
 
-%typemap(javacode) OTDB::Contact {
+%typemap(javacode,noblock=1) OTDB::Contact {
 	OT_CAN_BE_CONTAINED_BY(AddressBook)
 	// ------------------------
 	OT_CONTAINER_TYPE_MEMBERS
@@ -579,7 +584,7 @@ OT_IS_ELEMENT_TYPE(Contact)
 
 OT_BEFORE_STORABLE_TYPE(OTDB::AddressBook)
 
-%typemap(javacode) OTDB::AddressBook {
+%typemap(javacode,noblock=1) OTDB::AddressBook {
 	// ------------------------
 	OT_CONTAINER_TYPE_MEMBERS
 	OT_ADD_ELEMENT(Contact)

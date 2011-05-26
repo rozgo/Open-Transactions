@@ -34,8 +34,7 @@ public class WalletData extends Storable {
     }
     super.delete();
   }
-
-	// ------------------------
+// ------------------------
 	/*@SWIG:OTAPI.i,329,OT_CONTAINER_TYPE_MEMBERS@*/
 private List elementList = new ArrayList();
 /*@SWIG@*/
@@ -56,10 +55,14 @@ private long removeRefBitcoinServer(long lIndex) {
 	//
 	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
 	{
-		BitcoinServer tempRef = elementList.get(intIndex);
+		Object theObject = elementList.get(intIndex);
 		
-		if ((tempRef instanceof BitcoinServer) &&
-			(BitcoinServer.getCPtr(tempRef) == BitcoinServer.getCPtr(refActualElement)))
+		if ((theObject == null) || !(theObject instanceof BitcoinServer))
+			continue;
+
+		BitcoinServer tempRef = (BitcoinServer)(theObject);
+		
+		if ((BitcoinServer.getCPtr(tempRef) == BitcoinServer.getCPtr(refActualElement)))
 		{
 			elementList.remove(tempRef);
 			break;
@@ -75,13 +78,14 @@ private long getCPtrAddRefBitcoinServer(BitcoinServer element) {
 	//
 	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
 	{
-		BitcoinServer tempRef = elementList.get(intIndex);
-		
-		if (tempRef == null) // just in case. Should never happen.
+		Object theObject = elementList.get(intIndex);
+
+		if ((theObject == null) || !(theObject instanceof BitcoinServer))
 			continue;
 		
-		if ((tempRef instanceof BitcoinServer) &&
-			(BitcoinServer.getCPtr(tempRef) == BitcoinServer.getCPtr(element)))
+		BitcoinServer tempRef = (BitcoinServer)(theObject);
+		
+		if ((BitcoinServer.getCPtr(tempRef) == BitcoinServer.getCPtr(element)))
 		{
 			elementList.remove(tempRef); // It was already there, so let's remove it before adding (below.)
 			break;
@@ -111,10 +115,14 @@ private long removeRefBitcoinAcct(long lIndex) {
 	//
 	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
 	{
-		BitcoinAcct tempRef = elementList.get(intIndex);
+		Object theObject = elementList.get(intIndex);
 		
-		if ((tempRef instanceof BitcoinAcct) &&
-			(BitcoinAcct.getCPtr(tempRef) == BitcoinAcct.getCPtr(refActualElement)))
+		if ((theObject == null) || !(theObject instanceof BitcoinAcct))
+			continue;
+
+		BitcoinAcct tempRef = (BitcoinAcct)(theObject);
+		
+		if ((BitcoinAcct.getCPtr(tempRef) == BitcoinAcct.getCPtr(refActualElement)))
 		{
 			elementList.remove(tempRef);
 			break;
@@ -130,13 +138,14 @@ private long getCPtrAddRefBitcoinAcct(BitcoinAcct element) {
 	//
 	for(int intIndex = 0; intIndex < elementList.size(); intIndex++)
 	{
-		BitcoinAcct tempRef = elementList.get(intIndex);
-		
-		if (tempRef == null) // just in case. Should never happen.
+		Object theObject = elementList.get(intIndex);
+
+		if ((theObject == null) || !(theObject instanceof BitcoinAcct))
 			continue;
 		
-		if ((tempRef instanceof BitcoinAcct) &&
-			(BitcoinAcct.getCPtr(tempRef) == BitcoinAcct.getCPtr(element)))
+		BitcoinAcct tempRef = (BitcoinAcct)(theObject);
+		
+		if ((BitcoinAcct.getCPtr(tempRef) == BitcoinAcct.getCPtr(element)))
 		{
 			elementList.remove(tempRef); // It was already there, so let's remove it before adding (below.)
 			break;
@@ -149,7 +158,6 @@ private long getCPtrAddRefBitcoinAcct(BitcoinAcct element) {
 	return BitcoinAcct.getCPtr(element);
 }	// Hope I get away with overloading this for every type. Otherwise,
 /*@SWIG@*/
-
   public long GetBitcoinServerCount() { return otapiJNI.WalletData_GetBitcoinServerCount(swigCPtr, this); }
 
   public BitcoinServer GetBitcoinServer(long nIndex) {
@@ -158,7 +166,7 @@ private long getCPtrAddRefBitcoinAcct(BitcoinAcct element) {
   }
 
   public boolean RemoveBitcoinServer(long nIndexToRemove) {
-    return otapiJNI.WalletData_RemoveBitcoinServer(swigCPtr, this, { removeRefContact(nIndexToRemove) });
+    return otapiJNI.WalletData_RemoveBitcoinServer(swigCPtr, this, removeRefContact(nIndexToRemove));
   }
 
   public boolean AddBitcoinServer(BitcoinServer disownObject) {
@@ -173,7 +181,7 @@ private long getCPtrAddRefBitcoinAcct(BitcoinAcct element) {
   }
 
   public boolean RemoveBitcoinAcct(long nIndexToRemove) {
-    return otapiJNI.WalletData_RemoveBitcoinAcct(swigCPtr, this, { removeRefContact(nIndexToRemove) });
+    return otapiJNI.WalletData_RemoveBitcoinAcct(swigCPtr, this, removeRefContact(nIndexToRemove));
   }
 
   public boolean AddBitcoinAcct(BitcoinAcct disownObject) {

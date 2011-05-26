@@ -34,9 +34,7 @@ public class StringMap extends Storable {
     }
     super.delete();
   }
-{
-	// ------------------------
-}
+// ------------------------
   public void setThe_map(SWIGTYPE_p_std__mapT_std__string_std__string_t value) {
     otapiJNI.StringMap_the_map_set(swigCPtr, this, SWIGTYPE_p_std__mapT_std__string_std__string_t.getCPtr(value));
   }
