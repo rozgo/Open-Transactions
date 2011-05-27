@@ -12,21 +12,29 @@ https://github.com/FellowTraveler/Open-Transactions/wiki/Install
 GETTING STARTED:
 
 
-1) For most, assuming you have all the necessary libraries installed already, then you just type this:
+1) For most, assuming you have all the necessary libraries installed already, (OpenSSL 1.0.0, MsgPack, Protocol Buffers, and ZeroMQ) then
+you just type this to build:
    
-    make rpc
+    make
 
    (It will auto-detect platform, etc.)
-   XmlRpc is the preferred method of building, so it's better to build
-   with "make rpc", even though it's not the default. YOU'LL PREFER IT.
+
+If you are building the Java version (for the Moneychanger GUI) then
+use this instead:
+
+    make clean && make java
 
 2) To run the server, from this folder, type:
        cd transaction; ./transaction.exe
 
+(It will give you instructions.)
+
 3) To run the test client, from this folder, type:
        cd testwallet; ./testwallet.exe
 
-** password is test (always) 
+(It will give you instructions.)
+
+** PASSWORD ** is test (always) 
 
 
 -------------------------------------------------------------------------
@@ -79,6 +87,13 @@ http://code.google.com/p/protobuf/downloads/list
 
 ---------------------------------------------------------------
 
+INSTALL: ZeroMQ (transport library)
+
+Available here: 
+http://www.zeromq.org/intro:get-the-software
+
+---------------------------------------------------------------
+
 DOWNLOAD OPEN TRANSACTIONS
 
 git clone git://github.com/FellowTraveler/Open-Transactions.git
@@ -90,11 +105,12 @@ https://github.com/FellowTraveler/Open-Transactions
 
 BUILD THE TEST CLIENT
 
-cd Open-Transactions && make clean && make rpc
+cd Open-Transactions && make clean && make
 
-"make rpc" builds the (preferred) XmlRpc version of OT, 
-as well as the command-line test client. (Most likely you
-do not want "make", which is the SSL/TCP version.)
+
+FOR JAVA MODE (If using Moneychanger Java GUI):
+
+cd Open-Transactions && make clean && make java
 
 ---------------------------------------------------------------
 

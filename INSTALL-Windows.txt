@@ -20,11 +20,7 @@ FOR MICROSOFT WINDOWS:
 
 ------------
 
-2) The Windows versions are currently set up for XmlRpc on the client AND on the server. The server doesn't work in XmlRpc mode (IN WINDOWS -- it works fine elsewhere).  
-
-What's important with Windows is the CLIENT, anyway.
-
-FYI, Windows client AND server both work in TCP/SSL mode, but I doubt you want that...
+2) Windows transport should now be operational since XmlRpc was swapped out for the ZeroMQ library.
 
 ------------
 
@@ -59,12 +55,30 @@ To install from command line:  port install msgpack
 Install instructions for all platforms:
 http://wiki.msgpack.org/display/MSGPACK/QuickStart+for+C+Language
 
+Install to:  C:\~\msgpack\
+(VC++ Project files expect it to be there.)
+
 ---------------------------------------------------------------
 
 INSTALL: Google's Protocol Buffers library (another data packer.)
 
 Available here: 
 http://code.google.com/p/protobuf/downloads/list
+
+Install to:  C:\~\protobuf\
+(VC++ Project files expect it to be there.)
+
+---------------------------------------------------------------
+
+
+INSTALL: ZeroMQ (transport library)
+
+Available here: 
+http://www.zeromq.org/intro:get-the-software
+
+Install to:  C:\~\zeromq\
+(VC++ Project files expect it to be there.)
+
 
 ---------------------------------------------------------------
 

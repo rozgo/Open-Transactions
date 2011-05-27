@@ -69,6 +69,15 @@ http://code.google.com/p/protobuf/downloads/list
 
 
 ------------------------------------------------------------------------
+
+INSTALL: ZeroMQ (transport library)
+
+Available here: 
+http://www.zeromq.org/intro:get-the-software
+
+------------------------------------------------------------------------
+
+
 XCode NOTES:  (IGNORE this section if you aren't using XCode on Mac.)
 
 It's better to just use the Makefile. But if you prefer to use the XCode
@@ -113,66 +122,80 @@ NOW YOU ARE READY TO COMPILE THE CODE:
 
 To build everything, use this command:
 
-      make rpc
-Or:   make rpc PLATFORM=[darwin|linux|freebsd]
+      make
 
+Or:   make PLATFORM=[darwin|linux|freebsd]
 (Optional since it WILL try to auto-detect your operating system.)
+
 
 If you prefer to use SSL/TCP transport mode (not recommended)
 then use this instead:
    
-      make
-Or:   make PLATFORM=[darwin|linux|freebsd]
+      make tcp
+Or:   make tcp PLATFORM=[darwin|linux|freebsd]
 
 
-Other build targets are debug, debugrpc, and clean.
+Other build targets are debug, debugtcp, javadebug, and clean.
 
 You can also build the API for several languages (python, ruby,
 perl5, and php5) at the top level. For other languages, see the
 below notes, as well as the testwallet/API-README.txt file. For
 example:
      make java
+     make javadebug
      make python
      make php5
-     make sharp
+     make csharp
+     make ruby
      Etc.
 
 
 !!! For FreeBSD, make sure you have gmake installed, since the Makefiles won't
 work with the default version of make. Once you install it, you can build
 using these commands, depending on which options you prefer:
-      gmake rpc
-      gmake rpc PLATFORM=[darwin|linux|freebsd]
+
       gmake
       gmake PLATFORM=[darwin|linux|freebsd]
+      (Let it auto-detect. This option is only if you are desperate.)
 
+
+IF THERE ARE ANY ISSUES WITH WRONG FOLDER, ETC, OPEN Open-Transactions/Makefile
+AND CHECK OUT THE FOLDERS IN THERE; MAKE SURE THEY ARE CORRECT FOR YOUR SYSTEM.
+
+If you "make java" you may need to make sure $JAVA_HOME is set.
+
+
+==> SKIP DOWN TO THE "To Run" section to see how to run OT, now that it's built.
 
 
 ---------------------------------------------------------------
 
-
 If you prefer to build all of the projects individually, they are below for
-my notes. But the above steps should be enough to take care of everything for
-most people.
-
---- (optional) build the XmlRpc++ library:
-cd xmlrpcpp;
-make
+my notes. (But the above steps should be enough to take care of everything for
+most people.)
 
 --- Build the Library:
 cd OTLib;
-make PLATFORM=[darwin|linux|freebsd]
+make PLATFORM=[darwin|linux|freebsd] [DYNAMIC_OTLIB=1]
 
 output will be libOTLib.a
 (The other projects/Makefiles will expect that library to be built.)
 
 --- Build the server:
 cd ../transaction;
-make PLATFORM=[darwin|linux|freebsd] [TRANSPORT=XmlRpc]
+make PLATFORM=[darwin|linux|freebsd] [TRANSPORT=ZMQ] [DYNAMIC_OTLIB=1]
 
 --- Build the client:
 cd ../testwallet;
-make PLATFORM=[darwin|linux|freebsd] [TRANSPORT=XmlRpc]
+make PLATFORM=[darwin|linux|freebsd] [TRANSPORT=ZMQ]
+
+
+If you fail to use TRANSPORT=ZMQ, then OT will build in TCP/SSL mode,
+instead of ZeroMQ mode. (You don't want that.)
+
+Make sure you use DYNAMIC_OTLIB=1 whenever building OT for other languages.
+For example, Java, Python, Ruby, etc. OT must be built in dynamic mode since
+those languages load it as a DLL, or shared library.
 
 ---------------------------------------------------------------
 
@@ -183,7 +206,7 @@ With the above steps, the library, server, and test client are now built and rea
 
 
 cd Open-Transactions/testwallet; make clean;
-make -f Makefile.API [TRANSPORT=XmlRpc] PLATFORM=[darwin|linux|freebsd] LANGUAGE=[c|csharp|java|ruby|python|perl|php|tcl|lisp]
+make -f Makefile.API [TRANSPORT=ZMQ] PLATFORM=[darwin|linux|freebsd] LANGUAGE=[c|csharp|java|ruby|python|perl|php|tcl|lisp]
 
 
 NOTE:
@@ -216,6 +239,17 @@ If you are in the transaction folder, then run it like this:
 if you are in the testwallet folder, then run the wallet like this:
 ./testwallet.exe
 
+If you have copied the Moneychanger jar file into testwallet folder,
+(Moneychanger is the Java GUI) then run it by typing:
+java -jar JavaWrapper.jar
+
+==> Make sure the lib folder is also unzipped there.
+==> Also, make sure OT is built in java mode. To do that, go to
+the Open-Transactions folder and type this:
+
+make clean && make java
+
+-------
 
 You don't have to specify a hostname and port, because the server contract
 already contains that information.

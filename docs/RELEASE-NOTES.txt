@@ -3,6 +3,15 @@ NOTES on the Version:
 
 // --------------------------------------------------------------------
 
+   0.63 --- Open Transactions has entirely been converted to the NEW
+            STORAGE CLASS. (This means you can easily switch to different
+            storage systems, instead of using the filesystem, just by sub-
+            classing the OTDB::Storage class and overriding a few methods.)
+
+            IN OTHER NEWS: OT now uses the ZeroMQ library for transport!
+            To learn more about OT's new transport capabilities, check out
+            this guide:  http://zguide.zeromq.org/page:all
+
    0.62 --- Load/SaveWallet uses the new Storage class. Dynamic casting
             was added to the storable objects. Pack/Unpack were debugged.
             Store/Query now supports plain strings. Contact ID was added.
