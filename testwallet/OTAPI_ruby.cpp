@@ -12089,7 +12089,7 @@ _wrap_Storage_QueryObject__SWIG_0(int argc, VALUE *argv, VALUE self) {
     if (SWIG_IsNewObj(res)) delete ptr;
   }
   result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4,arg5,arg6);
-  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
   return Qnil;
@@ -12151,7 +12151,7 @@ _wrap_Storage_QueryObject__SWIG_1(int argc, VALUE *argv, VALUE self) {
     if (SWIG_IsNewObj(res)) delete ptr;
   }
   result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4,arg5);
-  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
   return Qnil;
@@ -12203,7 +12203,7 @@ _wrap_Storage_QueryObject__SWIG_2(int argc, VALUE *argv, VALUE self) {
     if (SWIG_IsNewObj(res)) delete ptr;
   }
   result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4);
-  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
   return Qnil;
@@ -12245,7 +12245,7 @@ _wrap_Storage_QueryObject__SWIG_3(int argc, VALUE *argv, VALUE self) {
     if (SWIG_IsNewObj(res)) delete ptr;
   }
   result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3);
-  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
   return Qnil;
@@ -12365,11 +12365,11 @@ SWIGINTERN VALUE _wrap_Storage_QueryObject(int nargs, VALUE *args, VALUE self) {
   }
   
 fail:
-  Ruby_Format_OverloadedError( argc, 7, "Storage.QueryObject", 
-    "    OTDB::Storable * Storage.QueryObject(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr, std::string twoStr, std::string threeStr)\n"
-    "    OTDB::Storable * Storage.QueryObject(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr, std::string twoStr)\n"
-    "    OTDB::Storable * Storage.QueryObject(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr)\n"
-    "    OTDB::Storable * Storage.QueryObject(OTDB::StoredObjectType theObjectType, std::string strFolder)\n");
+  Ruby_Format_OverloadedError( argc, 7, "QueryObject.new", 
+    "    QueryObject.new(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr, std::string twoStr, std::string threeStr)\n"
+    "    QueryObject.new(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr, std::string twoStr)\n"
+    "    QueryObject.new(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr)\n"
+    "    QueryObject.new(OTDB::StoredObjectType theObjectType, std::string strFolder)\n");
   
   return Qnil;
 }
@@ -12400,7 +12400,7 @@ _wrap_Storage_CreateObject(int argc, VALUE *argv, VALUE self) {
   } 
   arg2 = static_cast< OTDB::StoredObjectType >(val2);
   result = (OTDB::Storable *)(arg1)->CreateObject(arg2);
-  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
   return Qnil;
@@ -13159,7 +13159,7 @@ _wrap_CreateStorageContext__SWIG_0(int argc, VALUE *argv, VALUE self) {
   } 
   arg2 = static_cast< OTDB::PackType >(val2);
   result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1,arg2);
-  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, 0 |  0 );
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
   return Qnil;
@@ -13183,7 +13183,7 @@ _wrap_CreateStorageContext__SWIG_1(int argc, VALUE *argv, VALUE self) {
   } 
   arg1 = static_cast< OTDB::StorageType >(val1);
   result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1);
-  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, 0 |  0 );
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
   return Qnil;
@@ -13228,9 +13228,9 @@ SWIGINTERN VALUE _wrap_CreateStorageContext(int nargs, VALUE *args, VALUE self) 
   }
   
 fail:
-  Ruby_Format_OverloadedError( argc, 2, "CreateStorageContext", 
-    "    OTDB::Storage * CreateStorageContext(OTDB::StorageType eStoreType, OTDB::PackType ePackType)\n"
-    "    OTDB::Storage * CreateStorageContext(OTDB::StorageType eStoreType)\n");
+  Ruby_Format_OverloadedError( argc, 2, "CreateStorageContext.new", 
+    "    CreateStorageContext.new(OTDB::StorageType eStoreType, OTDB::PackType ePackType)\n"
+    "    CreateStorageContext.new(OTDB::StorageType eStoreType)\n");
   
   return Qnil;
 }
@@ -13253,7 +13253,7 @@ _wrap_CreateObject(int argc, VALUE *argv, VALUE self) {
   } 
   arg1 = static_cast< OTDB::StoredObjectType >(val1);
   result = (OTDB::Storable *)OTDB::CreateObject(arg1);
-  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
   return Qnil;
@@ -14945,7 +14945,7 @@ _wrap_QueryObject__SWIG_0(int argc, VALUE *argv, VALUE self) {
     if (SWIG_IsNewObj(res)) delete ptr;
   }
   result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3,arg4,arg5);
-  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
   return Qnil;
@@ -14999,7 +14999,7 @@ _wrap_QueryObject__SWIG_1(int argc, VALUE *argv, VALUE self) {
     if (SWIG_IsNewObj(res)) delete ptr;
   }
   result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3,arg4);
-  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
   return Qnil;
@@ -15043,7 +15043,7 @@ _wrap_QueryObject__SWIG_2(int argc, VALUE *argv, VALUE self) {
     if (SWIG_IsNewObj(res)) delete ptr;
   }
   result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3);
-  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
   return Qnil;
@@ -15077,7 +15077,7 @@ _wrap_QueryObject__SWIG_3(int argc, VALUE *argv, VALUE self) {
     if (SWIG_IsNewObj(res)) delete ptr;
   }
   result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2);
-  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
   return vresult;
 fail:
   return Qnil;
@@ -15176,11 +15176,11 @@ SWIGINTERN VALUE _wrap_QueryObject(int nargs, VALUE *args, VALUE self) {
   }
   
 fail:
-  Ruby_Format_OverloadedError( argc, 5, "QueryObject", 
-    "    OTDB::Storable * QueryObject(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr, std::string twoStr, std::string threeStr)\n"
-    "    OTDB::Storable * QueryObject(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr, std::string twoStr)\n"
-    "    OTDB::Storable * QueryObject(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr)\n"
-    "    OTDB::Storable * QueryObject(OTDB::StoredObjectType theObjectType, std::string strFolder)\n");
+  Ruby_Format_OverloadedError( argc, 5, "QueryObject.new", 
+    "    QueryObject.new(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr, std::string twoStr, std::string threeStr)\n"
+    "    QueryObject.new(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr, std::string twoStr)\n"
+    "    QueryObject.new(OTDB::StoredObjectType theObjectType, std::string strFolder, std::string oneStr)\n"
+    "    QueryObject.new(OTDB::StoredObjectType theObjectType, std::string strFolder)\n");
   
   return Qnil;
 }

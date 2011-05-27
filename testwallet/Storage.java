@@ -161,27 +161,27 @@ public class Storage {
 
   public Storable QueryObject(int theObjectType, String strFolder, String oneStr, String twoStr, String threeStr) {
     long cPtr = otapiJNI.Storage_QueryObject__SWIG_0(swigCPtr, this, theObjectType, strFolder, oneStr, twoStr, threeStr);
-    return (cPtr == 0) ? null : new Storable(cPtr, false);
+    return (cPtr == 0) ? null : new Storable(cPtr, true);
   }
 
   public Storable QueryObject(int theObjectType, String strFolder, String oneStr, String twoStr) {
     long cPtr = otapiJNI.Storage_QueryObject__SWIG_1(swigCPtr, this, theObjectType, strFolder, oneStr, twoStr);
-    return (cPtr == 0) ? null : new Storable(cPtr, false);
+    return (cPtr == 0) ? null : new Storable(cPtr, true);
   }
 
   public Storable QueryObject(int theObjectType, String strFolder, String oneStr) {
     long cPtr = otapiJNI.Storage_QueryObject__SWIG_2(swigCPtr, this, theObjectType, strFolder, oneStr);
-    return (cPtr == 0) ? null : new Storable(cPtr, false);
+    return (cPtr == 0) ? null : new Storable(cPtr, true);
   }
 
   public Storable QueryObject(int theObjectType, String strFolder) {
     long cPtr = otapiJNI.Storage_QueryObject__SWIG_3(swigCPtr, this, theObjectType, strFolder);
-    return (cPtr == 0) ? null : new Storable(cPtr, false);
+    return (cPtr == 0) ? null : new Storable(cPtr, true);
   }
 
   public Storable CreateObject(int eType) {
     long cPtr = otapiJNI.Storage_CreateObject(swigCPtr, this, eType);
-    return (cPtr == 0) ? null : new Storable(cPtr, false);
+    return (cPtr == 0) ? null : new Storable(cPtr, true);
   }
 
   public static Storage Create(int eStorageType, int ePackType) {

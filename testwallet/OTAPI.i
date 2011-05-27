@@ -182,7 +182,7 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 //
 //%typemap(in) SWIGTYPE *DISOWN { Contact & disownObject };
 
-/*
+
  
  // NOTE: these are supposed to be here, so that the Java garbage collector
  // can clean up any memory it's finished with (from OT.)
@@ -203,7 +203,7 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 %newobject Storage::CreateObject(StoredObjectType eType);
 
 %newobject CreateStorageContext(StorageType eStoreType, PackType ePackType=OTDB_DEFAULT_PACKER);
-*/
+
 
 
 // Use this inside the class definition itself, farther down below.

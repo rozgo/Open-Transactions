@@ -12985,7 +12985,7 @@ XS(_wrap_Storage_QueryObject__SWIG_0) {
       if (SWIG_IsNewObj(res)) delete ptr;
     }
     result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4,arg5,arg6);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
     
     
     
@@ -13061,7 +13061,7 @@ XS(_wrap_Storage_QueryObject__SWIG_1) {
       if (SWIG_IsNewObj(res)) delete ptr;
     }
     result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4,arg5);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
     
     
     
@@ -13125,7 +13125,7 @@ XS(_wrap_Storage_QueryObject__SWIG_2) {
       if (SWIG_IsNewObj(res)) delete ptr;
     }
     result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
     
     
     
@@ -13177,7 +13177,7 @@ XS(_wrap_Storage_QueryObject__SWIG_3) {
       if (SWIG_IsNewObj(res)) delete ptr;
     }
     result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
     
     
     
@@ -13445,7 +13445,7 @@ XS(_wrap_Storage_CreateObject) {
     } 
     arg2 = static_cast< OTDB::StoredObjectType >(val2);
     result = (OTDB::Storable *)(arg1)->CreateObject(arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
     
     
     XSRETURN(argvi);
@@ -14507,7 +14507,7 @@ XS(_wrap_CreateStorageContext__SWIG_0) {
     } 
     arg2 = static_cast< OTDB::PackType >(val2);
     result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1,arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, 0 | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
     
     
     XSRETURN(argvi);
@@ -14537,7 +14537,7 @@ XS(_wrap_CreateStorageContext__SWIG_1) {
     } 
     arg1 = static_cast< OTDB::StorageType >(val1);
     result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, 0 | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
     
     XSRETURN(argvi);
   fail:
@@ -14639,7 +14639,7 @@ XS(_wrap_CreateObject) {
     } 
     arg1 = static_cast< OTDB::StoredObjectType >(val1);
     result = (OTDB::Storable *)OTDB::CreateObject(arg1);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
     
     XSRETURN(argvi);
   fail:
@@ -17019,7 +17019,7 @@ XS(_wrap_QueryObject__SWIG_0) {
       if (SWIG_IsNewObj(res)) delete ptr;
     }
     result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3,arg4,arg5);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
     
     
     
@@ -17085,7 +17085,7 @@ XS(_wrap_QueryObject__SWIG_1) {
       if (SWIG_IsNewObj(res)) delete ptr;
     }
     result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3,arg4);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
     
     
     
@@ -17139,7 +17139,7 @@ XS(_wrap_QueryObject__SWIG_2) {
       if (SWIG_IsNewObj(res)) delete ptr;
     }
     result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
     
     
     
@@ -17181,7 +17181,7 @@ XS(_wrap_QueryObject__SWIG_3) {
       if (SWIG_IsNewObj(res)) delete ptr;
     }
     result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
     
     
     XSRETURN(argvi);

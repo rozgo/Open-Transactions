@@ -227,35 +227,35 @@ public class Storage : IDisposable {
 
   public Storable QueryObject(StoredObjectType theObjectType, string strFolder, string oneStr, string twoStr, string threeStr) {
     IntPtr cPtr = otapiPINVOKE.Storage_QueryObject__SWIG_0(swigCPtr, (int)theObjectType, strFolder, oneStr, twoStr, threeStr);
-    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, false);
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
     if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 
   public Storable QueryObject(StoredObjectType theObjectType, string strFolder, string oneStr, string twoStr) {
     IntPtr cPtr = otapiPINVOKE.Storage_QueryObject__SWIG_1(swigCPtr, (int)theObjectType, strFolder, oneStr, twoStr);
-    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, false);
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
     if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 
   public Storable QueryObject(StoredObjectType theObjectType, string strFolder, string oneStr) {
     IntPtr cPtr = otapiPINVOKE.Storage_QueryObject__SWIG_2(swigCPtr, (int)theObjectType, strFolder, oneStr);
-    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, false);
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
     if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 
   public Storable QueryObject(StoredObjectType theObjectType, string strFolder) {
     IntPtr cPtr = otapiPINVOKE.Storage_QueryObject__SWIG_3(swigCPtr, (int)theObjectType, strFolder);
-    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, false);
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
     if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 
   public Storable CreateObject(StoredObjectType eType) {
     IntPtr cPtr = otapiPINVOKE.Storage_CreateObject(swigCPtr, (int)eType);
-    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, false);
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
     return ret;
   }
 
