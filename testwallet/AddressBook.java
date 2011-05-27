@@ -35,10 +35,10 @@ public class AddressBook extends Storable {
     super.delete();
   }
 // ------------------------
-	/*@SWIG:OTAPI.i,329,OT_CONTAINER_TYPE_MEMBERS@*/
+	/*@SWIG:OTAPI.i,344,OT_CONTAINER_TYPE_MEMBERS@*/
 private List elementList = new ArrayList();
 /*@SWIG@*/
-	/*@SWIG:OTAPI.i,416,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
+	/*@SWIG:OTAPI.i,431,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
 private long removeRefContact(long lIndex) {
 	// 
 	// loop through the elements in the actual container, in order to find the one
@@ -47,7 +47,7 @@ private long removeRefContact(long lIndex) {
 	//
 	Contact refActualElement = GetContact(lIndex);
 
-	if (refActualElement = null)
+	if (refActualElement == null)
 		return lIndex; // oh well.
 	
 	// Loop through the reference list and remove the corresponding reference
@@ -105,8 +105,8 @@ private long getCPtrAddRefContact(Contact element) {
     return (cPtr == 0) ? null : new Contact(cPtr, false);
   }
 
-  public boolean RemoveContact(long nIndexToRemove) {
-    return otapiJNI.AddressBook_RemoveContact(swigCPtr, this, removeRefContact(nIndexToRemove));
+  public boolean RemoveContact(long nIndexContact) {
+    return otapiJNI.AddressBook_RemoveContact(swigCPtr, this, removeRefContact(nIndexContact));
   }
 
   public boolean AddContact(Contact disownObject) {

@@ -132,6 +132,7 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 //%apply int *INPUT {int *x, int *y};
 //%apply SWIGTYPE *INPUT {int *x, int *y};
 
+%ignore clone;
 
 %ignore Storable::Create(StoredObjectType eType, PackType thePackType);
 
@@ -181,7 +182,18 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 //
 //%typemap(in) SWIGTYPE *DISOWN { Contact & disownObject };
 
-
+/*
+ 
+ // NOTE: these are supposed to be here, so that the Java garbage collector
+ // can clean up any memory it's finished with (from OT.)
+ // Unfortunately I've got crashes going on due to double-deleted memory.
+ // Until I can solve that in SWIG, I'd rather have the memory leak.
+ //
+ // SWIG people: PLEASE update your documentation a bit. I've had to figure out
+ // this crap through trial-and-error. I thought SWIG was supposed to make things easier?
+ // If newobject is support, then delobject should be supported to. Especially for JAVA,
+ // of all languages!!
+ 
 %newobject CreateObject(StoredObjectType eType);
 
 %newobject QueryObject(StoredObjectType theObjectType, std::string strFolder, std::string oneStr="", std::string twoStr="", std::string threeStr="");
@@ -191,7 +203,7 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 %newobject Storage::CreateObject(StoredObjectType eType);
 
 %newobject CreateStorageContext(StorageType eStoreType, PackType ePackType=OTDB_DEFAULT_PACKER);
-
+*/
 
 
 // Use this inside the class definition itself, farther down below.
@@ -202,15 +214,16 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 public:
 	size_t Get##name##Count();
 	name * Get##name(size_t nIndex);
-	bool Remove##name(size_t nIndexToRemove);
+	bool Remove##name(size_t nIndex##name);
 	bool Add##name(name & disownObject)	
 %enddef
 
 // Use this inside the class definition itself, farther down below.
 //
-%define DEFINE_OT_SWIG_DYNAMIC_CAST(CLASS_NAME)
-	static CLASS_NAME *			ot_dynamic_cast(		Storable *pObject) { return dynamic_cast<CLASS_NAME *>(pObject); }
-//	static const CLASS_NAME	*	ot_dynamic_cast(const	Storable *pObject) { return dynamic_cast<const T *>(pObject); }
+%define DEFINE_OT_SWIG_DYNAMIC_CAST(CLASS_NAME_A)
+	CLASS_NAME_A * clone () const { return NULL; std::cout << "********* THIS SHOULD NEVER HAPPEN!!!!! *****************" << std::endl;}
+	static CLASS_NAME_A *		ot_dynamic_cast(		Storable *pObject) { return dynamic_cast<CLASS_NAME_A *>(pObject); }
+//	static const CLASS_NAME_A*	ot_dynamic_cast(const	Storable *pObject) { return dynamic_cast<const CLASS_NAME_A *>(pObject); }
 %enddef
 
 
@@ -241,8 +254,10 @@ public int hashCode() {
 // These two blocks enable the object to dynamic cast back
 // to its true type, after factory construction.
 //
-%define OT_BEFORE_STORABLE_TYPE(STORABLE_TYPE)
-//%typemap(javaout) STORABLE_TYPE * ot_dynamic_cast { 
+// TODO: Fix this since "this" doesn't work at static level.
+// (Anyway, doesn't it already have a pointer to its container?)
+%define OT_BEFORE_STORABLE_TYPE(STORABLE_TYPE_A)
+//%typemap(javaout) STORABLE_TYPE_A * ot_dynamic_cast { 
 //    long cPtr = $jnicall; 
 //    $javaclassname ret = null; 
 //    if (cPtr != 0) { 
@@ -288,10 +303,10 @@ public int hashCode() {
 // -------------------------------------------------------------------------------
 
 
-%define OT_AFTER_STORABLE_TYPE(STORABLE_TYPE) // C++ CODE
-//%extend OTDB::STORABLE_TYPE {
-//	static STORABLE_TYPE * dynamic_cast(Storable * pObject) {  // C++ CODE
-//		return dynamic_cast<STORABLE_TYPE *>(pObject);
+%define OT_AFTER_STORABLE_TYPE(STORABLE_TYPE_B) // C++ CODE
+//%extend OTDB::STORABLE_TYPE_B {
+//	static STORABLE_TYPE_B * dynamic_cast(Storable * pObject) {  // C++ CODE
+//		return dynamic_cast<STORABLE_TYPE_B *>(pObject);
 //	}
 //}
 %enddef
@@ -355,12 +370,12 @@ private List elementList = new ArrayList();
 // Swig uses it: Any container that defines a get method for that class based on
 // the signature below: THE_ELEMENT_TYPE * Get##THE_ELEMENT_TYPE
 //
-%define OT_IS_ELEMENT_TYPE(THE_ELEMENT_TYPE)
+%define OT_IS_ELEMENT_TYPE(THE_ELEMENT_TYPE_A)
 // When the CONTAINER_TYPE's "Get" function is called, this will add a Java
 // reference to prevent premature garbage collection and resulting use
 // of dangling C++ pointer. Intended for methods that return pointers or
 // references to a member variable.
-%typemap(javaout,noblock=1) THE_ELEMENT_TYPE * Get##THE_ELEMENT_TYPE {
+%typemap(javaout,noblock=1) THE_ELEMENT_TYPE_A * Get##THE_ELEMENT_TYPE_A {
     long cPtr = $jnicall;
     $javaclassname ret = null;
     if (cPtr != 0) {
@@ -373,28 +388,28 @@ private List elementList = new ArrayList();
 // Swig uses this in every CONTAINER_TYPE's "Add" function, which all
 // have a parameter profile matching this typemap.
 //
-%typemap(javain,noblock=1) THE_ELEMENT_TYPE & disownObject { getCPtrAddRef##THE_ELEMENT_TYPE($javainput) }
+%typemap(javain,noblock=1) THE_ELEMENT_TYPE_A & disownObject { getCPtrAddRef##THE_ELEMENT_TYPE_A($javainput) }
 
 // This is used by CONTAINER_TYPE's "Remove" function. Do not change the
-// parameter name nIndexToRemove or this typemap will stop working...
-%typemap(javain,noblock=1) size_t nIndexToRemove { removeRef##THE_ELEMENT_TYPE($javainput) }
+// parameter name nIndex##name or this typemap will stop working...
+%typemap(javain,noblock=1) size_t nIndex##THE_ELEMENT_TYPE_A { removeRef##THE_ELEMENT_TYPE_A($javainput) }
 
 %enddef
-
-
 // ----------------------------------------------------------------------------------
+
+
 
 
 // The STORABLE_TYPE (BitcoinAcct, say) keeps a reference to its CONTAINER_TYPE (WalletData).
 //
 // Put it: inside the %typemap(javacode) for the ELEMENT_TYPE, for EACH possible container type.
 //
-%define OT_CAN_BE_CONTAINED_BY(CONTAINER_TYPE)
+%define OT_CAN_BE_CONTAINED_BY(CONTAINER_TYPE_A)
 	// Ensure that the GC doesn't collect any OT_CONTAINER instance set from Java
-	private CONTAINER_TYPE containerRef##CONTAINER_TYPE;
+	private CONTAINER_TYPE_A containerRef##CONTAINER_TYPE_A;
 	// ----------------	
-	protected void addReference(CONTAINER_TYPE theContainer) {  // This is Java code
-		containerRef##CONTAINER_TYPE = theContainer;
+	protected void addReference(CONTAINER_TYPE_A theContainer) {  // This is Java code
+		containerRef##CONTAINER_TYPE_A = theContainer;
 	}
 	// ----------------
 %enddef
@@ -413,16 +428,16 @@ private List elementList = new ArrayList();
 // Altered the SWIG example so that we store a list of these references, instead
 // of only the latest one. None of them should go out of scope until this object does.
 
-%define OT_ADD_ELEMENT(THE_ELEMENT_TYPE)  // THIS BLOCK CONTAINS JAVA CODE.
-private long removeRef##THE_ELEMENT_TYPE(long lIndex) {
+%define OT_ADD_ELEMENT(THE_ELEMENT_TYPE_B)  // THIS BLOCK CONTAINS JAVA CODE.
+private long removeRef##THE_ELEMENT_TYPE_B(long lIndex) {
 	// 
 	// loop through the elements in the actual container, in order to find the one
 	// at lIndex. Once it is found, then loop through the reference list and remove
 	// the corresponding reference for that element.
 	//
-	THE_ELEMENT_TYPE refActualElement = Get##THE_ELEMENT_TYPE(lIndex);
+	THE_ELEMENT_TYPE_B refActualElement = Get##THE_ELEMENT_TYPE_B(lIndex);
 
-	if (refActualElement = null)
+	if (refActualElement == null)
 		return lIndex; // oh well.
 	
 	// Loop through the reference list and remove the corresponding reference
@@ -432,12 +447,12 @@ private long removeRef##THE_ELEMENT_TYPE(long lIndex) {
 	{
 		Object theObject = elementList.get(intIndex);
 		
-		if ((theObject == null) || !(theObject instanceof THE_ELEMENT_TYPE))
+		if ((theObject == null) || !(theObject instanceof THE_ELEMENT_TYPE_B))
 			continue;
 
-		THE_ELEMENT_TYPE tempRef = (THE_ELEMENT_TYPE)(theObject);
+		THE_ELEMENT_TYPE_B tempRef = (THE_ELEMENT_TYPE_B)(theObject);
 		
-		if ((THE_ELEMENT_TYPE.getCPtr(tempRef) == THE_ELEMENT_TYPE.getCPtr(refActualElement)))
+		if ((THE_ELEMENT_TYPE_B.getCPtr(tempRef) == THE_ELEMENT_TYPE_B.getCPtr(refActualElement)))
 		{
 			elementList.remove(tempRef);
 			break;
@@ -447,7 +462,7 @@ private long removeRef##THE_ELEMENT_TYPE(long lIndex) {
 	return lIndex;
 }
 
-private long getCPtrAddRef##THE_ELEMENT_TYPE(THE_ELEMENT_TYPE element) {
+private long getCPtrAddRef##THE_ELEMENT_TYPE_B(THE_ELEMENT_TYPE_B element) {
 	// Whenever adding a reference to the list, I remove it first (if already there.)
 	// That way we never store more than one reference per actual contained object.
 	//
@@ -455,12 +470,12 @@ private long getCPtrAddRef##THE_ELEMENT_TYPE(THE_ELEMENT_TYPE element) {
 	{
 		Object theObject = elementList.get(intIndex);
 
-		if ((theObject == null) || !(theObject instanceof THE_ELEMENT_TYPE))
+		if ((theObject == null) || !(theObject instanceof THE_ELEMENT_TYPE_B))
 			continue;
 		
-		THE_ELEMENT_TYPE tempRef = (THE_ELEMENT_TYPE)(theObject);
+		THE_ELEMENT_TYPE_B tempRef = (THE_ELEMENT_TYPE_B)(theObject);
 		
-		if ((THE_ELEMENT_TYPE.getCPtr(tempRef) == THE_ELEMENT_TYPE.getCPtr(element)))
+		if ((THE_ELEMENT_TYPE_B.getCPtr(tempRef) == THE_ELEMENT_TYPE_B.getCPtr(element)))
 		{
 			elementList.remove(tempRef); // It was already there, so let's remove it before adding (below.)
 			break;
@@ -468,9 +483,9 @@ private long getCPtrAddRef##THE_ELEMENT_TYPE(THE_ELEMENT_TYPE element) {
 	}
 	// Now we add it...
 	//
-	THE_ELEMENT_TYPE tempLocalRef = element;
+	THE_ELEMENT_TYPE_B tempLocalRef = element;
 	elementList.add(tempLocalRef);
-	return THE_ELEMENT_TYPE.getCPtr(element);
+	return THE_ELEMENT_TYPE_B.getCPtr(element);
 }	// Hope I get away with overloading this for every type. Otherwise,
 %enddef
 // hope I can just change the function name to customize it to type.
@@ -559,6 +574,7 @@ OT_IS_ELEMENT_TYPE(ContactAcct)
 
 
 OT_BEFORE_STORABLE_TYPE(OTDB::WalletData)
+OT_IS_ELEMENT_TYPE(WalletData)
 
 %typemap(javacode,noblock=1) OTDB::WalletData {
 	// ------------------------
@@ -583,6 +599,7 @@ OT_IS_ELEMENT_TYPE(Contact)
 // *******************************
 
 OT_BEFORE_STORABLE_TYPE(OTDB::AddressBook)
+OT_IS_ELEMENT_TYPE(AddressBook)
 
 %typemap(javacode,noblock=1) OTDB::AddressBook {
 	// ------------------------
@@ -638,13 +655,19 @@ namespace OTDB {
 	};
 	
 	
+	
+	// ----------------------------------------------------
+	
+	class IStorable;
+	
 	class Storable
 	{
 		friend class Storage; // for instantiation of storable objects by their storage context.
 		
 	protected:
-		Storable() {}
+		Storable() { m_Type = "Storable"; }
 		
+		std::string m_Type;
 	public:
 		virtual ~Storable() {}
 		
@@ -823,8 +846,8 @@ namespace OTDB {
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through the factory.
 	protected:
-		OTDBString() : Storable() { }
-		OTDBString(const std::string& rhs) : Storable(), m_string(rhs) { }
+		OTDBString() : Storable() { m_Type = "OTDBString"; }
+		OTDBString(const std::string& rhs) : Storable(), m_string(rhs) { m_Type = "OTDBString"; }
 		
 	public:
 		virtual ~OTDBString() { }
@@ -841,7 +864,7 @@ namespace OTDB {
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		StringMap() : Storable() { }
+		StringMap() : Storable() { m_Type = "StringMap"; }
 		
 	public:
 		virtual ~StringMap() { }
@@ -866,7 +889,7 @@ namespace OTDB {
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		Displayable() : Storable() { }
+		Displayable() : Storable() { m_Type = "Displayable"; }
 		
 	public:
 		virtual ~Displayable() { }
@@ -885,7 +908,7 @@ namespace OTDB {
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		Acct() : Displayable() { }
+		Acct() : Displayable() { m_Type = "Acct"; }
 		
 	public:
 		virtual ~Acct() { }
@@ -905,10 +928,10 @@ namespace OTDB {
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		BitcoinAcct() : Acct() { }
+		BitcoinAcct() : Acct() {  m_Type = "BitcoinAcct"; std::cout << "BitcoinAcct constructor" << std::endl; }
 		
 	public:
-		virtual ~BitcoinAcct() { }
+		virtual ~BitcoinAcct() { std::cout << "BitcoinAcct destructor" << std::endl; }
 		
 		using Displayable::gui_label;  // The label that appears in the GUI
 		
@@ -929,7 +952,7 @@ namespace OTDB {
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		ServerInfo() : Displayable() { }
+		ServerInfo() : Displayable() { m_Type = "ServerInfo"; }
 		
 	public:
 		virtual ~ServerInfo() { }
@@ -949,7 +972,7 @@ namespace OTDB {
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		Server() : ServerInfo() { }
+		Server() : ServerInfo() { m_Type = "Server"; }
 		
 	public:
 		virtual ~Server() { }
@@ -972,10 +995,10 @@ namespace OTDB {
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		BitcoinServer() : Server() { }
+		BitcoinServer() : Server() {  m_Type = "BitcoinServer"; std::cout << "BitcoinServer constructor" << std::endl; }
 		
 	public:
-		virtual ~BitcoinServer() { }
+		virtual ~BitcoinServer() {  std::cout << "BitcoinServer destructor" << std::endl; }
 		
 		using Displayable::gui_label;  // The label that appears in the GUI
 		
@@ -1001,7 +1024,7 @@ namespace OTDB {
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		ContactNym() : Displayable() { }
+		ContactNym() : Displayable() {  m_Type = "ContactNym"; }
 		
 	public:
 		virtual ~ContactNym();
@@ -1026,10 +1049,10 @@ namespace OTDB {
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		WalletData() : Storable() { }
+		WalletData() : Storable() { m_Type = "WalletData"; std::cout << "WalletData constructor" << std::endl; }
 		
 	public:
-		virtual ~WalletData();
+		virtual ~WalletData() { std::cout << "WalletData destructor" << std::endl; }
 		
 		// List of Bitcoin servers
 		// List of Bitcoin accounts
@@ -1044,10 +1067,11 @@ namespace OTDB {
 	// ----------------------------
 
 	class ContactAcct : public Displayable {
+
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		ContactAcct() : Displayable() { }
+		ContactAcct() : Displayable() { m_Type = "ContactAcct"; }
 		
 	public:
 		virtual ~ContactAcct() { }
@@ -1072,7 +1096,7 @@ namespace OTDB {
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		Contact() : Displayable() { }
+		Contact() : Displayable() { m_Type = "Contact"; }
 		
 	public:
 		virtual ~Contact();
@@ -1096,7 +1120,7 @@ namespace OTDB {
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		AddressBook() : Storable() { }
+		AddressBook() : Storable() { m_Type = "AddressBook"; }
 		
 	public:
 		virtual ~AddressBook();

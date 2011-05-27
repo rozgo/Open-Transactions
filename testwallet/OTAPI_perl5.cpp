@@ -12985,7 +12985,7 @@ XS(_wrap_Storage_QueryObject__SWIG_0) {
       if (SWIG_IsNewObj(res)) delete ptr;
     }
     result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4,arg5,arg6);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
     
     
     
@@ -13061,7 +13061,7 @@ XS(_wrap_Storage_QueryObject__SWIG_1) {
       if (SWIG_IsNewObj(res)) delete ptr;
     }
     result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4,arg5);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
     
     
     
@@ -13125,7 +13125,7 @@ XS(_wrap_Storage_QueryObject__SWIG_2) {
       if (SWIG_IsNewObj(res)) delete ptr;
     }
     result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
     
     
     
@@ -13177,7 +13177,7 @@ XS(_wrap_Storage_QueryObject__SWIG_3) {
       if (SWIG_IsNewObj(res)) delete ptr;
     }
     result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
     
     
     
@@ -13445,7 +13445,7 @@ XS(_wrap_Storage_CreateObject) {
     } 
     arg2 = static_cast< OTDB::StoredObjectType >(val2);
     result = (OTDB::Storable *)(arg1)->CreateObject(arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
     
     
     XSRETURN(argvi);
@@ -14507,7 +14507,7 @@ XS(_wrap_CreateStorageContext__SWIG_0) {
     } 
     arg2 = static_cast< OTDB::PackType >(val2);
     result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1,arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, 0 | SWIG_SHADOW); argvi++ ;
     
     
     XSRETURN(argvi);
@@ -14537,7 +14537,7 @@ XS(_wrap_CreateStorageContext__SWIG_1) {
     } 
     arg1 = static_cast< OTDB::StorageType >(val1);
     result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, 0 | SWIG_SHADOW); argvi++ ;
     
     XSRETURN(argvi);
   fail:
@@ -14639,7 +14639,7 @@ XS(_wrap_CreateObject) {
     } 
     arg1 = static_cast< OTDB::StoredObjectType >(val1);
     result = (OTDB::Storable *)OTDB::CreateObject(arg1);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
     
     XSRETURN(argvi);
   fail:
@@ -17019,7 +17019,7 @@ XS(_wrap_QueryObject__SWIG_0) {
       if (SWIG_IsNewObj(res)) delete ptr;
     }
     result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3,arg4,arg5);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
     
     
     
@@ -17085,7 +17085,7 @@ XS(_wrap_QueryObject__SWIG_1) {
       if (SWIG_IsNewObj(res)) delete ptr;
     }
     result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3,arg4);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
     
     
     
@@ -17139,7 +17139,7 @@ XS(_wrap_QueryObject__SWIG_2) {
       if (SWIG_IsNewObj(res)) delete ptr;
     }
     result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
     
     
     
@@ -17181,7 +17181,7 @@ XS(_wrap_QueryObject__SWIG_3) {
       if (SWIG_IsNewObj(res)) delete ptr;
     }
     result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 | SWIG_SHADOW); argvi++ ;
     
     
     XSRETURN(argvi);
@@ -20126,7 +20126,7 @@ XS(_wrap_ContactNym_RemoveServerInfo) {
     dXSARGS;
     
     if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: ContactNym_RemoveServerInfo(self,nIndexToRemove);");
+      SWIG_croak("Usage: ContactNym_RemoveServerInfo(self,nIndexServerInfo);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
@@ -20326,7 +20326,7 @@ XS(_wrap_WalletData_RemoveBitcoinServer) {
     dXSARGS;
     
     if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: WalletData_RemoveBitcoinServer(self,nIndexToRemove);");
+      SWIG_croak("Usage: WalletData_RemoveBitcoinServer(self,nIndexBitcoinServer);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
@@ -20471,7 +20471,7 @@ XS(_wrap_WalletData_RemoveBitcoinAcct) {
     dXSARGS;
     
     if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: WalletData_RemoveBitcoinAcct(self,nIndexToRemove);");
+      SWIG_croak("Usage: WalletData_RemoveBitcoinAcct(self,nIndexBitcoinAcct);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
@@ -21636,7 +21636,7 @@ XS(_wrap_Contact_RemoveContactNym) {
     dXSARGS;
     
     if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: Contact_RemoveContactNym(self,nIndexToRemove);");
+      SWIG_croak("Usage: Contact_RemoveContactNym(self,nIndexContactNym);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
@@ -21781,7 +21781,7 @@ XS(_wrap_Contact_RemoveContactAcct) {
     dXSARGS;
     
     if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: Contact_RemoveContactAcct(self,nIndexToRemove);");
+      SWIG_croak("Usage: Contact_RemoveContactAcct(self,nIndexContactAcct);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
@@ -21981,7 +21981,7 @@ XS(_wrap_AddressBook_RemoveContact) {
     dXSARGS;
     
     if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: AddressBook_RemoveContact(self,nIndexToRemove);");
+      SWIG_croak("Usage: AddressBook_RemoveContact(self,nIndexContact);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_OTDB__AddressBook, 0 |  0 );
     if (!SWIG_IsOK(res1)) {

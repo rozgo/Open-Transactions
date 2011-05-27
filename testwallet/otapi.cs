@@ -804,19 +804,19 @@ public class otapi {
 
   public static Storage CreateStorageContext(StorageType eStoreType, PackType ePackType) {
     IntPtr cPtr = otapiPINVOKE.CreateStorageContext__SWIG_0((int)eStoreType, (int)ePackType);
-    Storage ret = (cPtr == IntPtr.Zero) ? null : new Storage(cPtr, true);
+    Storage ret = (cPtr == IntPtr.Zero) ? null : new Storage(cPtr, false);
     return ret;
   }
 
   public static Storage CreateStorageContext(StorageType eStoreType) {
     IntPtr cPtr = otapiPINVOKE.CreateStorageContext__SWIG_1((int)eStoreType);
-    Storage ret = (cPtr == IntPtr.Zero) ? null : new Storage(cPtr, true);
+    Storage ret = (cPtr == IntPtr.Zero) ? null : new Storage(cPtr, false);
     return ret;
   }
 
   public static Storable CreateObject(StoredObjectType eType) {
     IntPtr cPtr = otapiPINVOKE.CreateObject((int)eType);
-    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, false);
     return ret;
   }
 
@@ -966,28 +966,28 @@ public class otapi {
 
   public static Storable QueryObject(StoredObjectType theObjectType, string strFolder, string oneStr, string twoStr, string threeStr) {
     IntPtr cPtr = otapiPINVOKE.QueryObject__SWIG_0((int)theObjectType, strFolder, oneStr, twoStr, threeStr);
-    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, false);
     if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 
   public static Storable QueryObject(StoredObjectType theObjectType, string strFolder, string oneStr, string twoStr) {
     IntPtr cPtr = otapiPINVOKE.QueryObject__SWIG_1((int)theObjectType, strFolder, oneStr, twoStr);
-    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, false);
     if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 
   public static Storable QueryObject(StoredObjectType theObjectType, string strFolder, string oneStr) {
     IntPtr cPtr = otapiPINVOKE.QueryObject__SWIG_2((int)theObjectType, strFolder, oneStr);
-    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, false);
     if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }
 
   public static Storable QueryObject(StoredObjectType theObjectType, string strFolder) {
     IntPtr cPtr = otapiPINVOKE.QueryObject__SWIG_3((int)theObjectType, strFolder);
-    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, true);
+    Storable ret = (cPtr == IntPtr.Zero) ? null : new Storable(cPtr, false);
     if (otapiPINVOKE.SWIGPendingException.Pending) throw otapiPINVOKE.SWIGPendingException.Retrieve();
     return ret;
   }

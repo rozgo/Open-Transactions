@@ -701,6 +701,10 @@ abstract class otapi {
 	}
 
 	static function CreateStorageContext($eStoreType,$ePackType=null) {
+		switch (func_num_args()) {
+		case 1: $r=CreateStorageContext($eStoreType); break;
+		default: $r=CreateStorageContext($eStoreType,$ePackType);
+		}
 		if (!is_resource($r)) return $r;
 		switch (get_resource_type($r)) {
 		case '_p_OTDB__Storage': return new Storage($r);
@@ -781,6 +785,12 @@ abstract class otapi {
 	}
 
 	static function QueryObject($theObjectType,$strFolder,$oneStr=null,$twoStr=null,$threeStr=null) {
+		switch (func_num_args()) {
+		case 2: $r=QueryObject($theObjectType,$strFolder); break;
+		case 3: $r=QueryObject($theObjectType,$strFolder,$oneStr); break;
+		case 4: $r=QueryObject($theObjectType,$strFolder,$oneStr,$twoStr); break;
+		default: $r=QueryObject($theObjectType,$strFolder,$oneStr,$twoStr,$threeStr);
+		}
 		if (!is_resource($r)) return $r;
 		switch (get_resource_type($r)) {
 		case '_p_OTDB__Storable': return new Storable($r);
@@ -1026,6 +1036,12 @@ abstract class Storage {
 	}
 
 	function QueryObject($theObjectType,$strFolder,$oneStr=null,$twoStr=null,$threeStr=null) {
+		switch (func_num_args()) {
+		case 2: $r=Storage_QueryObject($this->_cPtr,$theObjectType,$strFolder); break;
+		case 3: $r=Storage_QueryObject($this->_cPtr,$theObjectType,$strFolder,$oneStr); break;
+		case 4: $r=Storage_QueryObject($this->_cPtr,$theObjectType,$strFolder,$oneStr,$twoStr); break;
+		default: $r=Storage_QueryObject($this->_cPtr,$theObjectType,$strFolder,$oneStr,$twoStr,$threeStr);
+		}
 		if (!is_resource($r)) return $r;
 		switch (get_resource_type($r)) {
 		case '_p_OTDB__Storable': return new Storable($r);
@@ -1466,8 +1482,8 @@ class ContactNym extends Displayable {
 		return $r;
 	}
 
-	function RemoveServerInfo($nIndexToRemove) {
-		return ContactNym_RemoveServerInfo($this->_cPtr,$nIndexToRemove);
+	function RemoveServerInfo($nIndexServerInfo) {
+		return ContactNym_RemoveServerInfo($this->_cPtr,$nIndexServerInfo);
 	}
 
 	function AddServerInfo($disownObject) {
@@ -1524,8 +1540,8 @@ class WalletData extends Storable {
 		return $r;
 	}
 
-	function RemoveBitcoinServer($nIndexToRemove) {
-		return WalletData_RemoveBitcoinServer($this->_cPtr,$nIndexToRemove);
+	function RemoveBitcoinServer($nIndexBitcoinServer) {
+		return WalletData_RemoveBitcoinServer($this->_cPtr,$nIndexBitcoinServer);
 	}
 
 	function AddBitcoinServer($disownObject) {
@@ -1548,8 +1564,8 @@ class WalletData extends Storable {
 		return $r;
 	}
 
-	function RemoveBitcoinAcct($nIndexToRemove) {
-		return WalletData_RemoveBitcoinAcct($this->_cPtr,$nIndexToRemove);
+	function RemoveBitcoinAcct($nIndexBitcoinAcct) {
+		return WalletData_RemoveBitcoinAcct($this->_cPtr,$nIndexBitcoinAcct);
 	}
 
 	function AddBitcoinAcct($disownObject) {
@@ -1660,8 +1676,8 @@ class Contact extends Displayable {
 		return $r;
 	}
 
-	function RemoveContactNym($nIndexToRemove) {
-		return Contact_RemoveContactNym($this->_cPtr,$nIndexToRemove);
+	function RemoveContactNym($nIndexContactNym) {
+		return Contact_RemoveContactNym($this->_cPtr,$nIndexContactNym);
 	}
 
 	function AddContactNym($disownObject) {
@@ -1684,8 +1700,8 @@ class Contact extends Displayable {
 		return $r;
 	}
 
-	function RemoveContactAcct($nIndexToRemove) {
-		return Contact_RemoveContactAcct($this->_cPtr,$nIndexToRemove);
+	function RemoveContactAcct($nIndexContactAcct) {
+		return Contact_RemoveContactAcct($this->_cPtr,$nIndexContactAcct);
 	}
 
 	function AddContactAcct($disownObject) {
@@ -1742,8 +1758,8 @@ class AddressBook extends Storable {
 		return $r;
 	}
 
-	function RemoveContact($nIndexToRemove) {
-		return AddressBook_RemoveContact($this->_cPtr,$nIndexToRemove);
+	function RemoveContact($nIndexContact) {
+		return AddressBook_RemoveContact($this->_cPtr,$nIndexContact);
 	}
 
 	function AddContact($disownObject) {

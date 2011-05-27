@@ -110,8 +110,8 @@ public class Contact : Displayable {
     return ret;
   }
 
-  public bool RemoveContactNym(uint nIndexToRemove) {
-    bool ret = otapiPINVOKE.Contact_RemoveContactNym(swigCPtr, nIndexToRemove);
+  public bool RemoveContactNym(uint nIndexContactNym) {
+    bool ret = otapiPINVOKE.Contact_RemoveContactNym(swigCPtr, nIndexContactNym);
     return ret;
   }
 
@@ -132,8 +132,8 @@ public class Contact : Displayable {
     return ret;
   }
 
-  public bool RemoveContactAcct(uint nIndexToRemove) {
-    bool ret = otapiPINVOKE.Contact_RemoveContactAcct(swigCPtr, nIndexToRemove);
+  public bool RemoveContactAcct(uint nIndexContactAcct) {
+    bool ret = otapiPINVOKE.Contact_RemoveContactAcct(swigCPtr, nIndexContactAcct);
     return ret;
   }
 

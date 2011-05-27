@@ -13293,7 +13293,7 @@ SWIGINTERN PyObject *_wrap_Storage_QueryObject__SWIG_0(PyObject *SWIGUNUSEDPARM(
     if (SWIG_IsNewObj(res)) delete ptr;
   }
   result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4,arg5,arg6);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -13357,7 +13357,7 @@ SWIGINTERN PyObject *_wrap_Storage_QueryObject__SWIG_1(PyObject *SWIGUNUSEDPARM(
     if (SWIG_IsNewObj(res)) delete ptr;
   }
   result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4,arg5);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -13410,7 +13410,7 @@ SWIGINTERN PyObject *_wrap_Storage_QueryObject__SWIG_2(PyObject *SWIGUNUSEDPARM(
     if (SWIG_IsNewObj(res)) delete ptr;
   }
   result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -13452,7 +13452,7 @@ SWIGINTERN PyObject *_wrap_Storage_QueryObject__SWIG_3(PyObject *SWIGUNUSEDPARM(
     if (SWIG_IsNewObj(res)) delete ptr;
   }
   result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -13605,7 +13605,7 @@ SWIGINTERN PyObject *_wrap_Storage_CreateObject(PyObject *SWIGUNUSEDPARM(self), 
   } 
   arg2 = static_cast< OTDB::StoredObjectType >(val2);
   result = (OTDB::Storable *)(arg1)->CreateObject(arg2);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -14378,7 +14378,7 @@ SWIGINTERN PyObject *_wrap_CreateStorageContext__SWIG_0(PyObject *SWIGUNUSEDPARM
   } 
   arg2 = static_cast< OTDB::PackType >(val2);
   result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1,arg2);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -14400,7 +14400,7 @@ SWIGINTERN PyObject *_wrap_CreateStorageContext__SWIG_1(PyObject *SWIGUNUSEDPARM
   } 
   arg1 = static_cast< OTDB::StorageType >(val1);
   result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storage, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -14468,7 +14468,7 @@ SWIGINTERN PyObject *_wrap_CreateObject(PyObject *SWIGUNUSEDPARM(self), PyObject
   } 
   arg1 = static_cast< OTDB::StoredObjectType >(val1);
   result = (OTDB::Storable *)OTDB::CreateObject(arg1);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -16162,7 +16162,7 @@ SWIGINTERN PyObject *_wrap_QueryObject__SWIG_0(PyObject *SWIGUNUSEDPARM(self), P
     if (SWIG_IsNewObj(res)) delete ptr;
   }
   result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3,arg4,arg5);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -16217,7 +16217,7 @@ SWIGINTERN PyObject *_wrap_QueryObject__SWIG_1(PyObject *SWIGUNUSEDPARM(self), P
     if (SWIG_IsNewObj(res)) delete ptr;
   }
   result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3,arg4);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -16261,7 +16261,7 @@ SWIGINTERN PyObject *_wrap_QueryObject__SWIG_2(PyObject *SWIGUNUSEDPARM(self), P
     if (SWIG_IsNewObj(res)) delete ptr;
   }
   result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -16294,7 +16294,7 @@ SWIGINTERN PyObject *_wrap_QueryObject__SWIG_3(PyObject *SWIGUNUSEDPARM(self), P
     if (SWIG_IsNewObj(res)) delete ptr;
   }
   result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_OTDB__Storable, 0 |  0 );
   return resultobj;
 fail:
   return NULL;

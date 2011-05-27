@@ -11362,7 +11362,7 @@ ZEND_NAMED_FUNCTION(_wrap_Storage_QueryObject__SWIG_0) {
   
   result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4,arg5,arg6);
   
-  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 0);
   
   return;
 fail:
@@ -11410,7 +11410,7 @@ ZEND_NAMED_FUNCTION(_wrap_Storage_QueryObject__SWIG_1) {
   
   result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4,arg5);
   
-  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 0);
   
   return;
 fail:
@@ -11453,7 +11453,7 @@ ZEND_NAMED_FUNCTION(_wrap_Storage_QueryObject__SWIG_2) {
   
   result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3,arg4);
   
-  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 0);
   
   return;
 fail:
@@ -11491,7 +11491,7 @@ ZEND_NAMED_FUNCTION(_wrap_Storage_QueryObject__SWIG_3) {
   
   result = (OTDB::Storable *)(arg1)->QueryObject(arg2,arg3);
   
-  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 0);
   
   return;
 fail:
@@ -11629,7 +11629,7 @@ ZEND_NAMED_FUNCTION(_wrap_Storage_CreateObject) {
   
   result = (OTDB::Storable *)(arg1)->CreateObject(arg2);
   
-  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 0);
   
   return;
 fail:
@@ -12242,7 +12242,7 @@ ZEND_NAMED_FUNCTION(_wrap_CreateStorageContext__SWIG_0) {
   
   result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1,arg2);
   
-  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storage, 1);
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storage, 0);
   
   return;
 fail:
@@ -12268,7 +12268,7 @@ ZEND_NAMED_FUNCTION(_wrap_CreateStorageContext__SWIG_1) {
   
   result = (OTDB::Storage *)OTDB::CreateStorageContext(arg1);
   
-  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storage, 1);
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storage, 0);
   
   return;
 fail:
@@ -12324,7 +12324,7 @@ ZEND_NAMED_FUNCTION(_wrap_CreateObject) {
   
   result = (OTDB::Storable *)OTDB::CreateObject(arg1);
   
-  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 0);
   
   return;
 fail:
@@ -13680,7 +13680,7 @@ ZEND_NAMED_FUNCTION(_wrap_QueryObject__SWIG_0) {
   
   result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3,arg4,arg5);
   
-  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 0);
   
   return;
 fail:
@@ -13721,7 +13721,7 @@ ZEND_NAMED_FUNCTION(_wrap_QueryObject__SWIG_1) {
   
   result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3,arg4);
   
-  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 0);
   
   return;
 fail:
@@ -13757,7 +13757,7 @@ ZEND_NAMED_FUNCTION(_wrap_QueryObject__SWIG_2) {
   
   result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2,arg3);
   
-  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 0);
   
   return;
 fail:
@@ -13788,7 +13788,7 @@ ZEND_NAMED_FUNCTION(_wrap_QueryObject__SWIG_3) {
   
   result = (OTDB::Storable *)OTDB::QueryObject(arg1,arg2);
   
-  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 1);
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Storable, 0);
   
   return;
 fail:

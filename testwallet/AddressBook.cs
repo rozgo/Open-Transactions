@@ -50,8 +50,8 @@ public class AddressBook : Storable {
     return ret;
   }
 
-  public bool RemoveContact(uint nIndexToRemove) {
-    bool ret = otapiPINVOKE.AddressBook_RemoveContact(swigCPtr, nIndexToRemove);
+  public bool RemoveContact(uint nIndexContact) {
+    bool ret = otapiPINVOKE.AddressBook_RemoveContact(swigCPtr, nIndexContact);
     return ret;
   }
 

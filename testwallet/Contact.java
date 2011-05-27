@@ -34,7 +34,7 @@ public class Contact extends Displayable {
     }
     super.delete();
   }
-/*@SWIG:OTAPI.i,392,OT_CAN_BE_CONTAINED_BY@*/
+/*@SWIG:OTAPI.i,407,OT_CAN_BE_CONTAINED_BY@*/
 	// Ensure that the GC doesn't collect any OT_CONTAINER instance set from Java
 	private AddressBook containerRefAddressBook;
 	// ----------------	
@@ -44,10 +44,10 @@ public class Contact extends Displayable {
 	// ----------------
 /*@SWIG@*/
 	// ------------------------
-	/*@SWIG:OTAPI.i,329,OT_CONTAINER_TYPE_MEMBERS@*/
+	/*@SWIG:OTAPI.i,344,OT_CONTAINER_TYPE_MEMBERS@*/
 private List elementList = new ArrayList();
 /*@SWIG@*/
-	/*@SWIG:OTAPI.i,416,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
+	/*@SWIG:OTAPI.i,431,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
 private long removeRefContactNym(long lIndex) {
 	// 
 	// loop through the elements in the actual container, in order to find the one
@@ -56,7 +56,7 @@ private long removeRefContactNym(long lIndex) {
 	//
 	ContactNym refActualElement = GetContactNym(lIndex);
 
-	if (refActualElement = null)
+	if (refActualElement == null)
 		return lIndex; // oh well.
 	
 	// Loop through the reference list and remove the corresponding reference
@@ -107,7 +107,7 @@ private long getCPtrAddRefContactNym(ContactNym element) {
 	return ContactNym.getCPtr(element);
 }	// Hope I get away with overloading this for every type. Otherwise,
 /*@SWIG@*/
-	/*@SWIG:OTAPI.i,416,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
+	/*@SWIG:OTAPI.i,431,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
 private long removeRefContactAcct(long lIndex) {
 	// 
 	// loop through the elements in the actual container, in order to find the one
@@ -116,7 +116,7 @@ private long removeRefContactAcct(long lIndex) {
 	//
 	ContactAcct refActualElement = GetContactAcct(lIndex);
 
-	if (refActualElement = null)
+	if (refActualElement == null)
 		return lIndex; // oh well.
 	
 	// Loop through the reference list and remove the corresponding reference
@@ -214,8 +214,8 @@ private long getCPtrAddRefContactAcct(ContactAcct element) {
     return (cPtr == 0) ? null : new ContactNym(cPtr, false);
   }
 
-  public boolean RemoveContactNym(long nIndexToRemove) {
-    return otapiJNI.Contact_RemoveContactNym(swigCPtr, this, removeRefContact(nIndexToRemove));
+  public boolean RemoveContactNym(long nIndexContactNym) {
+    return otapiJNI.Contact_RemoveContactNym(swigCPtr, this, removeRefContactNym(nIndexContactNym));
   }
 
   public boolean AddContactNym(ContactNym disownObject) {
@@ -229,8 +229,8 @@ private long getCPtrAddRefContactAcct(ContactAcct element) {
     return (cPtr == 0) ? null : new ContactAcct(cPtr, false);
   }
 
-  public boolean RemoveContactAcct(long nIndexToRemove) {
-    return otapiJNI.Contact_RemoveContactAcct(swigCPtr, this, removeRefContact(nIndexToRemove));
+  public boolean RemoveContactAcct(long nIndexContactAcct) {
+    return otapiJNI.Contact_RemoveContactAcct(swigCPtr, this, removeRefContactAcct(nIndexContactAcct));
   }
 
   public boolean AddContactAcct(ContactAcct disownObject) {

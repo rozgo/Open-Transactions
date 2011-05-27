@@ -16061,7 +16061,7 @@ _wrap_ContactNym_RemoveServerInfo(ClientData clientData SWIGUNUSED, Tcl_Interp *
   int ecode2 = 0 ;
   bool result;
   
-  if (SWIG_GetArgs(interp, objc, objv,"oo:ContactNym_RemoveServerInfo self nIndexToRemove ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  if (SWIG_GetArgs(interp, objc, objv,"oo:ContactNym_RemoveServerInfo self nIndexServerInfo ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
   res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__ContactNym, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ContactNym_RemoveServerInfo" "', argument " "1"" of type '" "OTDB::ContactNym *""'"); 
@@ -16235,7 +16235,7 @@ _wrap_WalletData_RemoveBitcoinServer(ClientData clientData SWIGUNUSED, Tcl_Inter
   int ecode2 = 0 ;
   bool result;
   
-  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_RemoveBitcoinServer self nIndexToRemove ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_RemoveBitcoinServer self nIndexBitcoinServer ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
   res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_RemoveBitcoinServer" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
@@ -16346,7 +16346,7 @@ _wrap_WalletData_RemoveBitcoinAcct(ClientData clientData SWIGUNUSED, Tcl_Interp 
   int ecode2 = 0 ;
   bool result;
   
-  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_RemoveBitcoinAcct self nIndexToRemove ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  if (SWIG_GetArgs(interp, objc, objv,"oo:WalletData_RemoveBitcoinAcct self nIndexBitcoinAcct ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
   res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__WalletData, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "WalletData_RemoveBitcoinAcct" "', argument " "1"" of type '" "OTDB::WalletData *""'"); 
@@ -17309,7 +17309,7 @@ _wrap_Contact_RemoveContactNym(ClientData clientData SWIGUNUSED, Tcl_Interp *int
   int ecode2 = 0 ;
   bool result;
   
-  if (SWIG_GetArgs(interp, objc, objv,"oo:Contact_RemoveContactNym self nIndexToRemove ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  if (SWIG_GetArgs(interp, objc, objv,"oo:Contact_RemoveContactNym self nIndexContactNym ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
   res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_RemoveContactNym" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
@@ -17420,7 +17420,7 @@ _wrap_Contact_RemoveContactAcct(ClientData clientData SWIGUNUSED, Tcl_Interp *in
   int ecode2 = 0 ;
   bool result;
   
-  if (SWIG_GetArgs(interp, objc, objv,"oo:Contact_RemoveContactAcct self nIndexToRemove ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  if (SWIG_GetArgs(interp, objc, objv,"oo:Contact_RemoveContactAcct self nIndexContactAcct ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
   res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__Contact, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Contact_RemoveContactAcct" "', argument " "1"" of type '" "OTDB::Contact *""'"); 
@@ -17598,7 +17598,7 @@ _wrap_AddressBook_RemoveContact(ClientData clientData SWIGUNUSED, Tcl_Interp *in
   int ecode2 = 0 ;
   bool result;
   
-  if (SWIG_GetArgs(interp, objc, objv,"oo:AddressBook_RemoveContact self nIndexToRemove ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  if (SWIG_GetArgs(interp, objc, objv,"oo:AddressBook_RemoveContact self nIndexContact ",(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
   res1 = SWIG_ConvertPtr(objv[1], &argp1,SWIGTYPE_p_OTDB__AddressBook, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "AddressBook_RemoveContact" "', argument " "1"" of type '" "OTDB::AddressBook *""'"); 

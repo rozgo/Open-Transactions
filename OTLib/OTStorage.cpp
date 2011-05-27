@@ -258,6 +258,24 @@ OTDB::Storage * OTDB::details::s_pStorage= NULL;
 
 OTDB::mapOfFunctions * OTDB::details::pFunctionMap=NULL; // This is a pointer so I can control what order it is created in, on startup.
 
+
+const char * OTDB::StoredObjectTypeStrings[] = 
+{
+	"OTDBString",		// Just a string.
+	"StringMap",		// A StringMap is a list of Key/Value pairs, useful for storing nearly anything.
+	"WalletData",		// The GUI wallet's stored data
+	"BitcoinAcct",		// The GUI wallet's stored data about a Bitcoin acct
+	"BitcoinServer",	// The GUI wallet's stored data about a Bitcoin RPC port.
+	"ServerInfo",		// A Nym has a list of these.
+	"ContactNym",		// This is a Nym record inside a contact of your address book.
+	"ContactAcct",		// This is an account record inside a contact of your address book.
+	"Contact",			// Your address book has a list of these.
+	"AddressBook",		// Your address book.
+	"StoredObjError"	// (Should never be.)
+};
+
+
+
 namespace OTDB
 {
 	
@@ -499,6 +517,7 @@ namespace OTDB
 		
 		if (NULL == pStorage) 
 		{
+			OTLog::Error("No Default Storage object allocated in OTDB::StoreObject.\n");
 			return false;
 		}
 		
@@ -617,7 +636,10 @@ namespace OTDB
 		IStorable * pStorable = dynamic_cast<IStorable *> (&inObj);
 		
 		if (NULL == pStorable)  // ALL Storables should implement SOME subinterface of IStorable
+		{
+			OTLog::Error("Error: IStorable dynamic_cast failed in OTPacker::Pack\n");
 			return NULL;
+		}
 		
 		// --------------------------------
 		
@@ -735,23 +757,23 @@ namespace OTDB
 	 */
 	
 #define IMPLEMENT_GET_ADD_REMOVE(scope, name) \
-\
-typedef stlplus::simple_ptr_clone<name> PointerTo##name; \
-\
-typedef std::deque< PointerTo##name > listOf##name##s; \
-\
-size_t  scope Get##name##Count() { return list_##name##s.size(); } \
-\
-name * scope Get##name(size_t nIndex) \
-{ if ((nIndex >= 0) && (nIndex < list_##name##s.size())) \
-{ PointerTo##name theP = list_##name##s.at(nIndex); return theP.pointer(); } return NULL; } \
-\
-bool scope Remove##name(size_t nIndexToRemove) \
-{ if ((nIndexToRemove >= 0) && (nIndexToRemove < list_##name##s.size())) \
-{ list_##name##s.erase(list_##name##s.begin() + nIndexToRemove); return true; } else return false; } \
-\
-bool scope Add##name(name & disownObject) \
-{ PointerTo##name theP; theP.set(&disownObject); list_##name##s.push_back(theP); return true; }
+	\
+	typedef stlplus::simple_ptr_clone<name> PointerTo##name; \
+	\
+	typedef std::deque< PointerTo##name > listOf##name##s; \
+	\
+	size_t  scope Get##name##Count() { return list_##name##s.size(); } \
+	\
+	name * scope Get##name(size_t nIndex) \
+	{ if ((nIndex >= 0) && (nIndex < list_##name##s.size())) \
+	{ PointerTo##name theP = list_##name##s.at(nIndex); return theP.pointer(); } return NULL; } \
+	\
+	bool scope Remove##name(size_t nIndex##name) \
+	{ if ((nIndex##name >= 0) && (nIndex##name < list_##name##s.size())) \
+	{ list_##name##s.erase(list_##name##s.begin() + nIndex##name); return true; } else return false; } \
+	\
+	bool scope Add##name(name & disownObject) \
+	{ PointerTo##name theP(disownObject.clone()); list_##name##s.push_back(theP); return true; }
 	
 	
 	
@@ -777,16 +799,7 @@ bool scope Add##name(name & disownObject) \
 	// UPDATE: Nevertheless, no need to erase the lists (below) since they now
 	// store smart pointers, instead of regular pointers, so they are self-cleaning.
 	//
-	
-	WalletData::~WalletData()
-	{
-		//	while (GetBitcoinServerCount() > 0)
-		//		RemoveBitcoinServer(0);
-		//	
-		//	while (GetBitcoinAcctCount() > 0)
-		//		RemoveBitcoinAcct(0);
-	}
-	
+		
 	// ----------------------------------------------
 	
 	
@@ -842,8 +855,10 @@ bool scope Add##name(name & disownObject) \
 		BufferMsgpack * pBuffer = dynamic_cast<BufferMsgpack *> (&theBuffer);
 		
 		if (NULL == pBuffer) // Buffer is wrong type!!
+		{
+			OTLog::Error("Buffer is wrong type in IStorableMsgpack::onPack()\n");
 			return false;
-		
+		}
 		/*
 		 TEST(pack, BitcoinAcct)
 		 {
@@ -866,7 +881,10 @@ bool scope Add##name(name & disownObject) \
 		BufferMsgpack * pBuffer = dynamic_cast<BufferMsgpack *> (&theBuffer);
 		
 		if (NULL == pBuffer) // Buffer is wrong type!!
+		{
+			OTLog::Error("Buffer is wrong type in IStorableMsgpack::onUnpack()\n");
 			return false;
+		}
 		
 		// --------------------
 		/* 
@@ -971,6 +989,12 @@ bool scope Add##name(name & disownObject) \
 		//	
 		//	outStream << strTemp << std::flush;
 		
+		if (m_buffer.size() < 1) 
+		{
+			OTLog::Error("Buffer had zero (or less) length in BufferPB::WriteToOStream\n");
+			return false;
+		}
+		
 		outStream.write(m_buffer.data(), m_buffer.size());
 		
 		bool bSuccess = outStream.good() ? true : false;
@@ -996,10 +1020,9 @@ bool scope Add##name(name & disownObject) \
 			
 			ServerInfoMsgpack * pObject = dynamic_cast<ServerInfoMsgpack *>(thePtr.pointer());
 			
-			if (NULL == pObject)
-				continue;
+			OT_ASSERT (NULL != pObject);
 			
-			//		pObject->hookBeforePack(); // Unnecessary, since the push_back() below uses the copy constructor, which already packs/unpacks.
+//			pObject->hookBeforePack(); // Unnecessary, since the push_back() below uses the copy constructor, which already packs/unpacks.
 			
 			deque_ServerInfos.push_back(*pObject); // The deque acquires its own copy here, due to the copy constructor.
 		}
@@ -1044,10 +1067,9 @@ bool scope Add##name(name & disownObject) \
 			
 			ContactNymMsgpack * pObject = dynamic_cast<ContactNymMsgpack *>(thePtr.pointer());
 			
-			if (NULL == pObject)
-				continue;
+			OT_ASSERT (NULL != pObject);
 			
-			//		pObject->hookBeforePack();
+	//		pObject->hookBeforePack();
 			
 			deque_Nyms.push_back(*pObject); // The deque acquires its own copy here, due to the default assignment operator.
 		}
@@ -1068,10 +1090,9 @@ bool scope Add##name(name & disownObject) \
 			
 			ContactAcctMsgpack * pObject = dynamic_cast<ContactAcctMsgpack *>(thePtr.pointer());
 			
-			if (NULL == pObject)
-				continue;
+			OT_ASSERT (NULL != pObject);
 			
-			//		pObject->hookBeforePack();
+	//		pObject->hookBeforePack();
 			
 			deque_Accounts.push_back(*pObject);
 		}
@@ -1142,8 +1163,7 @@ bool scope Add##name(name & disownObject) \
 			
 			ContactMsgpack * pObject = dynamic_cast<ContactMsgpack *>(thePtr.pointer());
 			
-			if (NULL == pObject)
-				continue;
+			OT_ASSERT (NULL != pObject);
 			
 			//		pObject->hookBeforePack();
 			
@@ -1190,8 +1210,7 @@ bool scope Add##name(name & disownObject) \
 			
 			BitcoinServerMsgpack * pObject = dynamic_cast<BitcoinServerMsgpack *>(thePtr.pointer());
 			
-			if (NULL == pObject)
-				continue;
+			OT_ASSERT (NULL != pObject);
 			
 			//		pObject->hookBeforePack();
 			
@@ -1214,8 +1233,7 @@ bool scope Add##name(name & disownObject) \
 			
 			BitcoinAcctMsgpack * pObject = dynamic_cast<BitcoinAcctMsgpack *>(thePtr.pointer());
 			
-			if (NULL == pObject)
-				continue;
+			OT_ASSERT (NULL != pObject);
 			
 			//		pObject->hookBeforePack();
 			
@@ -1595,6 +1613,11 @@ bool scope Add##name(name & disownObject) \
 			outStream.write(m_buffer.data(), m_buffer.length());		
 			return outStream.good() ? true : false;
 		}
+		else 
+		{
+			OTLog::Error("Buffer had zero length in BufferPB::WriteToOStream\n");
+		}
+
 		
 		return false;
 		//m_buffer.SerializeToOstream(&outStream);
@@ -1632,27 +1655,23 @@ bool scope Add##name(name & disownObject) \
 			
 			BitcoinServerPB * pObject = dynamic_cast<BitcoinServerPB *>(thePtr.pointer());
 			
-			if (NULL == pObject)
-				continue;
+			OT_ASSERT (NULL != pObject);
 			
 			::google::protobuf::Message * pMessage = pObject->getPBMessage();
 			
-			if (NULL == pMessage)
-				continue;
+			OT_ASSERT (NULL != pMessage);
 			
 			// Now theMessage contains the BitcoinServer_InternalPB from the list...
 			// -----------------------
 			
 			BitcoinServer_InternalPB * pInternal = dynamic_cast<BitcoinServer_InternalPB *>(pMessage);
 			
-			if (NULL == pInternal)
-				continue;
+			OT_ASSERT (NULL != pInternal);
 			
 			// -----------------------
 			
 			BitcoinServer_InternalPB * pNewInternal = __pb_obj.add_bitcoin_server();
-			if (NULL == pNewInternal)
-				continue;
+			OT_ASSERT (NULL != pNewInternal);
 			
 			// -----------------------
 			
@@ -1679,29 +1698,30 @@ bool scope Add##name(name & disownObject) \
 		{
 			PointerToBitcoinAcct thePtr = (*ii);
 			
-			BitcoinAcctPB * pObject = dynamic_cast<BitcoinAcctPB *>(thePtr.pointer());
+//			BitcoinAcctPB * pObject = ii->pointer();
 			
-			if (NULL == pObject)
-				continue;
+			BitcoinAcct * pTempObj = dynamic_cast<BitcoinAcct *>(ii->pointer());
+			
+			BitcoinAcctPB * pObject = dynamic_cast<BitcoinAcctPB *>(ii->pointer());
+			
+			OT_ASSERT (NULL != pTempObj);
+			OT_ASSERT (NULL != pObject);
 			
 			::google::protobuf::Message * pMessage = pObject->getPBMessage();
 			
-			if (NULL == pMessage)
-				continue;
+			OT_ASSERT (NULL != pMessage);
 			
 			// Now theMessage contains the BitcoinAcct_InternalPB from the list...
 			// -----------------------
 			
 			BitcoinAcct_InternalPB * pInternal = dynamic_cast<BitcoinAcct_InternalPB *>(pMessage);
 			
-			if (NULL == pInternal)
-				continue;
+			OT_ASSERT (NULL != pInternal);
 			
 			// -----------------------
 			
 			BitcoinAcct_InternalPB * pNewInternal = __pb_obj.add_bitcoin_acct();
-			if (NULL == pNewInternal)
-				continue;
+			OT_ASSERT (NULL != pNewInternal);
 			
 			// -----------------------
 			
@@ -1741,22 +1761,14 @@ bool scope Add##name(name & disownObject) \
 			
 			::google::protobuf::Message * pMessage = pNewWrapper->getPBMessage();
 			
-			if (NULL == pMessage)
-			{
-				delete pNewWrapper;
-				continue;	
-			}
-			
+			OT_ASSERT (NULL != pMessage);
+
 			// Now theMessage contains the BitcoinServer_InternalPB for the new object we just created.... (and wish to populate)
 			// -----------------------
 			
 			BitcoinServer_InternalPB * pInternal = dynamic_cast<BitcoinServer_InternalPB *>(pMessage);
 			
-			if (NULL == pInternal)
-			{
-				delete pNewWrapper;
-				continue;	
-			}
+			OT_ASSERT (NULL != pInternal);
 			
 			// now pInternal is the new object's BitcoinServer_InternalPB, and theInternal is 
 			// the __pb_obj data I want... nothing to do now but copy it over...
@@ -1784,29 +1796,21 @@ bool scope Add##name(name & disownObject) \
 			
 			::google::protobuf::Message * pMessage = pNewWrapper->getPBMessage();
 			
-			if (NULL == pMessage)
-			{
-				delete pNewWrapper;
-				continue;	
-			}
+			OT_ASSERT (NULL != pMessage);
 			
 			// Now theMessage contains the BitcoinAcct_InternalPB for the new object we just created.... (and wish to populate)
 			// -----------------------
 			
 			BitcoinAcct_InternalPB * pInternal = dynamic_cast<BitcoinAcct_InternalPB *>(pMessage);
 			
-			if (NULL == pInternal)
-			{
-				delete pNewWrapper;
-				continue;	
-			}
+			OT_ASSERT (NULL != pInternal);
 			
 			// now pInternal is the new object's BitcoinAcct_InternalPB, and theInternal is 
 			// the __pb_obj data I want... nothing to do now but copy it over...
 			
 			pInternal->CopyFrom(theInternal);
 			
-			//		(*pInternal) = theInternal;  // COPYING THE DATA
+//			(*pInternal) = theInternal;  // COPYING THE DATA
 			
 			pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
 			
@@ -1888,27 +1892,23 @@ bool scope Add##name(name & disownObject) \
 			
 			ContactNymPB * pObject = dynamic_cast<ContactNymPB *>(thePtr.pointer());
 			
-			if (NULL == pObject)
-				continue;
+			OT_ASSERT (NULL != pObject);
 			
 			::google::protobuf::Message * pMessage = pObject->getPBMessage();
 			
-			if (NULL == pMessage)
-				continue;
+			OT_ASSERT (NULL != pMessage);
 			
 			// Now theMessage contains the ContactNym_InternalPB from the list...
 			// -----------------------
 			
 			ContactNym_InternalPB * pInternal = dynamic_cast<ContactNym_InternalPB *>(pMessage);
 			
-			if (NULL == pInternal)
-				continue;
+			OT_ASSERT (NULL != pInternal);
 			
 			// -----------------------
 			
 			ContactNym_InternalPB * pNewInternal = __pb_obj.add_nyms();
-			if (NULL == pNewInternal)
-				continue;
+			OT_ASSERT (NULL != pNewInternal);
 			
 			// -----------------------
 			
@@ -1937,26 +1937,22 @@ bool scope Add##name(name & disownObject) \
 			
 			ContactAcctPB * pObject = dynamic_cast<ContactAcctPB *>(thePtr.pointer());
 			
-			if (NULL == pObject)
-				continue;
+			OT_ASSERT (NULL != pObject);
 			
 			::google::protobuf::Message * pMessage = pObject->getPBMessage();
 			
-			if (NULL == pMessage)
-				continue;
+			OT_ASSERT (NULL != pMessage);
 			
 			// Now theMessage contains the ContactAcct_InternalPB from the list...
 			// -----------------------
 			
 			ContactAcct_InternalPB * pInternal = dynamic_cast<ContactAcct_InternalPB *>(pMessage);
 			
-			if (NULL == pInternal)
-				continue;		
+			OT_ASSERT (NULL != pInternal);
 			// -----------------------
 			
 			ContactAcct_InternalPB * pNewInternal = __pb_obj.add_accounts();
-			if (NULL == pNewInternal)
-				continue;
+			OT_ASSERT (NULL != pNewInternal);
 			
 			// -----------------------
 			
@@ -2002,29 +1998,21 @@ bool scope Add##name(name & disownObject) \
 			
 			::google::protobuf::Message * pMessage = pNewWrapper->getPBMessage();
 			
-			if (NULL == pMessage)
-			{
-				delete pNewWrapper;
-				continue;	
-			}
+			OT_ASSERT(NULL != pMessage);
 			
 			// Now theMessage contains the ContactNym_InternalPB for the new object we just created.... (and wish to populate)
 			// -----------------------
 			
 			ContactNym_InternalPB * pInternal = dynamic_cast<ContactNym_InternalPB *>(pMessage);
 			
-			if (NULL == pInternal)
-			{
-				delete pNewWrapper;
-				continue;	
-			}
+			OT_ASSERT(NULL != pInternal);
 			
 			// now pInternal is the new object's ContactNym_InternalPB, and theInternal is 
 			// the __pb_obj data I want... nothing to do now but copy it over...
 			
 			pInternal->CopyFrom(theInternal);
 			
-			//		(*pInternal) = theInternal;  // COPYING THE DATA
+//			(*pInternal) = theInternal;  // COPYING THE DATA
 			
 			pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
 			
@@ -2045,29 +2033,21 @@ bool scope Add##name(name & disownObject) \
 			
 			::google::protobuf::Message * pMessage = pNewWrapper->getPBMessage();
 			
-			if (NULL == pMessage)
-			{
-				delete pNewWrapper;
-				continue;	
-			}
+			OT_ASSERT(NULL != pMessage);
 			
 			// Now theMessage contains the ContactAcct_InternalPB for the new object we just created.... (and wish to populate)
 			// -----------------------
 			
 			ContactAcct_InternalPB * pInternal = dynamic_cast<ContactAcct_InternalPB *>(pMessage);
 			
-			if (NULL == pInternal)
-			{
-				delete pNewWrapper;
-				continue;	
-			}
+			OT_ASSERT(NULL != pInternal);
 			
 			// now pInternal is the new object's ContactAcct_InternalPB, and theInternal is 
 			// the __pb_obj data I want... nothing to do now but copy it over...
 			
 			pInternal->CopyFrom(theInternal);
 			
-			//		(*pInternal) = theInternal;  // COPYING THE DATA
+//			(*pInternal) = theInternal;  // COPYING THE DATA
 			
 			pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
 			
@@ -2101,27 +2081,23 @@ bool scope Add##name(name & disownObject) \
 			
 			ServerInfoPB * pObject = dynamic_cast<ServerInfoPB *>(thePtr.pointer());
 			
-			if (NULL == pObject)
-				continue;
+			OT_ASSERT(NULL != pObject);
 			
 			::google::protobuf::Message * pMessage = pObject->getPBMessage();
 			
-			if (NULL == pMessage)
-				continue;
+			OT_ASSERT(NULL != pMessage);
 			
 			// Now theMessage contains the ServerInfo_InternalPB from the list...
 			// -----------------------
 			
 			ServerInfo_InternalPB * pInternal = dynamic_cast<ServerInfo_InternalPB *>(pMessage);
 			
-			if (NULL == pInternal)
-				continue;
+			OT_ASSERT(NULL != pInternal);
 			
 			// -----------------------
 			
 			ServerInfo_InternalPB * pNewInternal = __pb_obj.add_servers();
-			if (NULL == pNewInternal)
-				continue;
+			OT_ASSERT(NULL != pNewInternal);
 			
 			// -----------------------
 			
@@ -2131,7 +2107,7 @@ bool scope Add##name(name & disownObject) \
 			
 			pNewInternal->CopyFrom(*pInternal);
 			
-			//		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
+//			(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
 		}
 		// ----------------------------------------------------
 		// Now when __pb_obj is serialized, it's up to date!	
@@ -2161,29 +2137,21 @@ bool scope Add##name(name & disownObject) \
 			
 			::google::protobuf::Message * pMessage = pNewWrapper->getPBMessage();
 			
-			if (NULL == pMessage)
-			{
-				delete pNewWrapper;
-				continue;	
-			}
+			OT_ASSERT(NULL != pMessage);
 			
 			// Now theMessage contains the ServerInfo_InternalPB for the new object we just created.... (and wish to populate)
 			// -----------------------
 			
 			ServerInfo_InternalPB * pInternal = dynamic_cast<ServerInfo_InternalPB *>(pMessage);
 			
-			if (NULL == pInternal)
-			{
-				delete pNewWrapper;
-				continue;	
-			}
+			OT_ASSERT(NULL != pInternal);
 			
 			// now pInternal is the new object's ServerInfo_InternalPB, and theInternal is 
 			// the __pb_obj data I want... nothing to do now but copy it over...
 			
 			pInternal->CopyFrom(theInternal);
 			
-			//		(*pInternal) = theInternal;  // COPYING THE DATA
+//			(*pInternal) = theInternal;  // COPYING THE DATA
 			
 			pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
 			
@@ -2213,27 +2181,23 @@ bool scope Add##name(name & disownObject) \
 			
 			ContactPB * pObject = dynamic_cast<ContactPB *>(thePtr.pointer());
 			
-			if (NULL == pObject)
-				continue;
+			OT_ASSERT(NULL != pObject);
 			
 			::google::protobuf::Message * pMessage = pObject->getPBMessage();
 			
-			if (NULL == pMessage)
-				continue;
+			OT_ASSERT(NULL != pMessage);
 			
 			// Now theMessage contains the Contact_InternalPB from the list...
 			// -----------------------
 			
 			Contact_InternalPB * pInternal = dynamic_cast<Contact_InternalPB *>(pMessage);
 			
-			if (NULL == pInternal)
-				continue;
+			OT_ASSERT(NULL != pInternal);
 			
 			// -----------------------
 			
 			Contact_InternalPB * pNewInternal = __pb_obj.add_contacts();
-			if (NULL == pNewInternal)
-				continue;
+			OT_ASSERT(NULL != pNewInternal);
 			
 			// -----------------------
 			
@@ -2243,7 +2207,7 @@ bool scope Add##name(name & disownObject) \
 			
 			pNewInternal->CopyFrom(*pInternal);
 			
-			//		(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
+//			(*pNewInternal) = (*pInternal);  // HERE IS THE COPY. Now the serialized object corresponds to the list object.
 		}
 		// ----------------------------------------------------
 		// Now when __pb_obj is serialized, it's up to date!	
@@ -2269,29 +2233,21 @@ bool scope Add##name(name & disownObject) \
 			
 			::google::protobuf::Message * pMessage = pNewWrapper->getPBMessage();
 			
-			if (NULL == pMessage)
-			{
-				delete pNewWrapper;
-				continue;	
-			}
+			OT_ASSERT(NULL != pMessage);
 			
 			// Now theMessage contains the Contact_InternalPB for the new object we just created.... (and wish to populate)
 			// -----------------------
 			
 			Contact_InternalPB * pInternal = dynamic_cast<Contact_InternalPB *>(pMessage);
 			
-			if (NULL == pInternal)
-			{
-				delete pNewWrapper;
-				continue;	
-			}
+			OT_ASSERT(NULL != pInternal);
 			
 			// now pInternal is the new object's Contact_InternalPB, and theInternal is 
 			// the __pb_obj data I want... nothing to do now but copy it over...
 			
 			pInternal->CopyFrom(theInternal);
 			
-			//		(*pInternal) = theInternal;  // COPYING THE DATA
+//			(*pInternal) = theInternal;  // COPYING THE DATA
 			
 			pNewWrapper->hookAfterUnpack(); // Give new wrapper a chance to unpack itself, now that its internal data is set.
 			
@@ -2615,14 +2571,26 @@ bool scope Add##name(name & disownObject) \
 		OTPacker * pPacker = GetPacker();
 		
 		if (NULL == pPacker)
+		{
+			OTLog::Error("No packer allocated in Storage::StoreObject\n");
 			return false;
+		}
 		// ---------------------------
 		PackedBuffer * pBuffer = pPacker->Pack(theContents);
 		
 		if (NULL == pBuffer)
+		{
+			OTLog::Error("Packing failed in Storage::StoreObject\n");
 			return false;
+		}
 		// ---------------------------
 		bool bSuccess = onStorePackedBuffer(*pBuffer, strFolder, oneStr, twoStr, threeStr);
+		
+		if (false == bSuccess)
+		{
+			OTLog::Error("Storing failed in Storage::StoreObject (calling onStorePackedBuffer) \n");
+			return false;
+		}
 		
 		// Don't want any leaks here, do we?
 		delete pBuffer;

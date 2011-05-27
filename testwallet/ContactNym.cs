@@ -110,8 +110,8 @@ public class ContactNym : Displayable {
     return ret;
   }
 
-  public bool RemoveServerInfo(uint nIndexToRemove) {
-    bool ret = otapiPINVOKE.ContactNym_RemoveServerInfo(swigCPtr, nIndexToRemove);
+  public bool RemoveServerInfo(uint nIndexServerInfo) {
+    bool ret = otapiPINVOKE.ContactNym_RemoveServerInfo(swigCPtr, nIndexServerInfo);
     return ret;
   }
 

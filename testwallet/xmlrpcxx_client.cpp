@@ -455,9 +455,11 @@ int main(int argc, char* argv[])
 					pAcct->bitcoin_acct_name	= "Read-Only Label (Bitcoin Internal acct)";
 					pAcct->gui_label			= "Editable Label (Moneychanger)";
 					
-					pWallet->AddBitcoinAcct(*pAcct);
+					pWallet->AddBitcoinAcct(*pAcct);  // MAKES HIS OWN COPY... (make sure to delete mine.)
+						
+					bool bProtoStored = pStorage->StoreObject(*pWallet, "temp", "protobuf-obj.tst");
 					
-					bSuccessStore = pStorage->StoreObject(*pWallet, "temp", "protobuf-obj.tst");
+					OTLog::vOutput(0, "Storing wallet: %s\n", (bProtoStored ? "SUCCESS" : "FAILURE"));
 					
 					// --------------------------
 					

@@ -50,8 +50,8 @@ public class WalletData : Storable {
     return ret;
   }
 
-  public bool RemoveBitcoinServer(uint nIndexToRemove) {
-    bool ret = otapiPINVOKE.WalletData_RemoveBitcoinServer(swigCPtr, nIndexToRemove);
+  public bool RemoveBitcoinServer(uint nIndexBitcoinServer) {
+    bool ret = otapiPINVOKE.WalletData_RemoveBitcoinServer(swigCPtr, nIndexBitcoinServer);
     return ret;
   }
 
@@ -72,8 +72,8 @@ public class WalletData : Storable {
     return ret;
   }
 
-  public bool RemoveBitcoinAcct(uint nIndexToRemove) {
-    bool ret = otapiPINVOKE.WalletData_RemoveBitcoinAcct(swigCPtr, nIndexToRemove);
+  public bool RemoveBitcoinAcct(uint nIndexBitcoinAcct) {
+    bool ret = otapiPINVOKE.WalletData_RemoveBitcoinAcct(swigCPtr, nIndexBitcoinAcct);
     return ret;
   }
 
