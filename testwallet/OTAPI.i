@@ -22,6 +22,7 @@
 %typemap("javapackage") Storage, Storage *, Storage & "com.wrapper.core.jni";
 %typemap("javapackage") Storable, Storable *, Storable & "com.wrapper.core.jni";
 
+%typemap("javapackage") Blob, Blob *, Blob & "com.wrapper.core.jni";
 %typemap("javapackage") StringMap, StringMap *, StringMap & "com.wrapper.core.jni";
 %typemap("javapackage") BitcoinAcct, BitcoinAcct *, BitcoinAcct & "com.wrapper.core.jni";
 %typemap("javapackage") BitcoinServer, BitcoinServer *, BitcoinServer & "com.wrapper.core.jni";
@@ -186,13 +187,12 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
  
  // NOTE: these are supposed to be here, so that the Java garbage collector
  // can clean up any memory it's finished with (from OT.)
- // Unfortunately I've got crashes going on due to double-deleted memory.
- // Until I can solve that in SWIG, I'd rather have the memory leak.
  //
  // SWIG people: PLEASE update your documentation a bit. I've had to figure out
  // this crap through trial-and-error. I thought SWIG was supposed to make things easier?
  // If newobject is support, then delobject should be supported to. Especially for JAVA,
- // of all languages!!
+ // of all languages!! Also, if I have the custom code handlers for Java, Python, etc then
+ // why have SWIG at all?
  
 %newobject CreateObject(StoredObjectType eType);
 
@@ -204,9 +204,10 @@ bool OT_API_Set_PasswordCallback(OTCaller & theCaller);
 
 %newobject CreateStorageContext(StorageType eStoreType, PackType ePackType=OTDB_DEFAULT_PACKER);
 
-
+// ----------------------------------------------------
 
 // Use this inside the class definition itself, farther down below.
+// (Wherever you want to have a list of elements inside a container.)
 //
 %define OT_SWIG_DECLARE_GET_ADD_REMOVE(name)
 	protected:
@@ -302,6 +303,7 @@ public int hashCode() {
 
 // -------------------------------------------------------------------------------
 
+// This code is now added in the classes themselves, since it's presumed useful.
 
 %define OT_AFTER_STORABLE_TYPE(STORABLE_TYPE_B) // C++ CODE
 //%extend OTDB::STORABLE_TYPE_B {
@@ -316,25 +318,6 @@ public int hashCode() {
 
 // -------------------------------------------------------------------------------
 
-// Put this: inside the %typemap(javacode) for the STORABLE_TYPE (near the top of it.)
-//
-/* Will try this soon
- 
-%define OT_STORABLE_TYPE_MEMBERS
-#ifdef SWIGJAVA
-
-public static Storable OT_DYNAMIC_CAST
-
-#endif
-%enddef
-*/
-// ----------------------------
-
-
-
-
-// -------------------------------------------------------------------------------
-
 // Put this: inside the %typemap(javacode) for the CONTAINER_TYPE (near the top of it.)
 //
 // Any container stores a list of references to its elements,
@@ -342,24 +325,11 @@ public static Storable OT_DYNAMIC_CAST
 // that none of its elements are erased out from under it by the Java Garbage Collector.
 //
 %define OT_CONTAINER_TYPE_MEMBERS 
-private List elementList = new ArrayList();
+	private List elementList = new ArrayList();
 %enddef
 
 // ----------------------------
 
-
-
-// FOR REFERENCE ONLY.
-/*
-%define JAVA_TYPEMAP(_ctype, _jtype, _jnitype)
-%typemap(jstype) _ctype #_jtype
-%typemap(jtype) _ctype #_jtype
-%typemap(jni) _ctype #_jnitype
-%typemap(out) _ctype %{ $result = (_jnitype)$1; %}
-%typemap(javain) _ctype "$javainput"
-%typemap(javaout) _ctype { return $jnicall; }
-%enddef
-*/
 
 // If a class is meant to be used as an element inside a container, then use this
 // macro to create the necessary typemap for that class's GET method.
@@ -416,6 +386,13 @@ private List elementList = new ArrayList();
 
 // -------------------------------------------------------------------------------
 
+// You might wonder, why did I use THE_ELEMENT_TYPE_A and then THE_ELEMENT_TYPE_B,
+// etc?  Because I didn't want to risk one define somehow overlapping another and
+// substituting the wrong name because they both happened to use the same token
+// for substitution. Therefore I made sure they all had different token naming.
+// (FYI.)
+
+
 // The CONTAINER_TYPE (WalletData) uses this for *EACH* Get/Add/Remove item within.
 // So this macro appears multiple times, if there are multiple deques. (Like a contact
 // has nyms AND accounts inside of it.)
@@ -426,7 +403,7 @@ private List elementList = new ArrayList();
 // as the underlying C++ class stores a shallow copy
 
 // Altered the SWIG example so that we store a list of these references, instead
-// of only the latest one. None of them should go out of scope until this object does.
+// of only the latest one. (None of them should go out of scope until this object does.)
 
 %define OT_ADD_ELEMENT(THE_ELEMENT_TYPE_B)  // THIS BLOCK CONTAINS JAVA CODE.
 private long removeRef##THE_ELEMENT_TYPE_B(long lIndex) {
@@ -504,6 +481,16 @@ OT_BEFORE_STORABLE_TYPE(OTDB::OTDBString)
 OT_IS_ELEMENT_TYPE(OTDBString)
 
 %typemap(javacode,noblock=1) OTDB::OTDBString {
+	// ------------------------
+}
+
+// *******************************
+
+
+OT_BEFORE_STORABLE_TYPE(OTDB::Blob)
+OT_IS_ELEMENT_TYPE(Blob)
+
+%typemap(javacode,noblock=1) OTDB::Blob {
 	// ------------------------
 }
 
@@ -635,13 +622,14 @@ namespace OTDB {
 	enum StorageType  // STORAGE TYPE
 	{
 		STORE_FILESYSTEM = 0,	// Filesystem
-		//	STORE_COUCH_DB,			// Couch DB (not yet supported)
+//		STORE_COUCH_DB,			// Couch DB (not yet supported)
 		STORE_TYPE_SUBCLASS		// (Subclass provided by API client via SWIG.)
 	};
 	
 	enum StoredObjectType
 	{
 		STORED_OBJ_STRING=0,		// Just a string.
+		STORED_OBJ_BLOB,			// Binary bytes, of arbitrary size.
 		STORED_OBJ_STRING_MAP,		// A StringMap is a list of Key/Value pairs, useful for storing nearly anything.
 		STORED_OBJ_WALLET_DATA,		// The GUI wallet's stored data
 		STORED_OBJ_BITCOIN_ACCT,	// The GUI wallet's stored data about a Bitcoin acct
@@ -658,9 +646,20 @@ namespace OTDB {
 	
 	// ----------------------------------------------------
 	
-	class IStorable;
+	// Since Storable is the common base for the "pure data" hierarchy,
+	// IStorable serves as the common base for the Packing infrastructure.
+	// There are subclasses for the various packers (IStorableMsgpack, IStorablePB, etc)
+	// Although external users of this will only see, for example, a "WalletData" object,
+	// They are actually using, behind the scenes, a WalletDataPB object, which subclasses
+	// WalletData, AND implements IStorablePB.
+	// The API user doesn't care about all this -- it happens behind the scenes automatically
+	// based on whatever storage/packer system is chosen. He just knows that he wants to
+	// Store or Query a WalletData, and no more.
 	
-	class Storable
+	class IStorable; // This forward declaration is all we see of this implementation detail
+	// -------------------------------
+	
+	class Storable // <===== Storable is the actual interface that coders using the OT API will care about.
 	{
 		friend class Storage; // for instantiation of storable objects by their storage context.
 		
@@ -677,7 +676,7 @@ namespace OTDB {
 		DEFINE_OT_SWIG_DYNAMIC_CAST(Storable)
 	};
 	
-	
+	// -------------------------------------------------------
 	
 	class Storage
 	{
@@ -703,8 +702,17 @@ namespace OTDB {
 		// This is called once, in the factory.
 		void SetPacker(OTPacker & thePacker) { OT_ASSERT(NULL == m_pPacker); m_pPacker =  &thePacker; }
 		
-		// -------------------------------------
+		// ********************************************************
 		// OVERRIDABLES
+		//
+		// If you wish to MAKE YOUR OWN subclass of Storage (to provide your own storage system)
+		// then just subclass OTDB::Storage, and override the below methods. For an example of how
+		// it's done, see StorageFS (filesystem), which is included below and in OTStorage.cpp.
+		//
+		// NOTE: This should be possible even in other languages! I'm using SWIG directors, meaning
+		// that you can make a Java subclass of OTDB::Storage, or a Python subclass, etc. This isn't
+		// possible with the other classes in OTStorage (yet), which must be subclassed in C++. But
+		// for this class, it is.
 		//
 		virtual bool onStorePackedBuffer(PackedBuffer & theBuffer, std::string strFolder, std::string oneStr="", 
 										 std::string twoStr="", std::string threeStr="")=0;
@@ -720,9 +728,7 @@ namespace OTDB {
 		
 		// -------------------------------------
 		
-	public:
-		virtual ~Storage() { if (NULL != m_pPacker) delete m_pPacker; }
-		
+	public:		
 		virtual bool Init(std::string oneStr="", std::string twoStr="", std::string threeStr="", 
 						  std::string fourStr="", std::string fiveStr="", std::string sixStr="")=0;
 		
@@ -731,6 +737,10 @@ namespace OTDB {
 		virtual bool Exists(std::string strFolder, 
 							std::string oneStr="", std::string twoStr="", std::string threeStr="")=0;
 		
+		// ********************************************************
+
+		virtual ~Storage() { if (NULL != m_pPacker) delete m_pPacker;  m_pPacker = NULL; }
+
 		// -----------------------------------------
 		// Store/Retrieve a string.
 		
@@ -800,16 +810,18 @@ namespace OTDB {
 	// bool bSuccess = StoreString(strMint,  "mints", SERVER_ID, ASSET_ID);
 	// bool bSuccess = StoreString(strPurse, "purse", SERVER_ID, USER_ID, ASSET_ID);
 	
-	// BELOW FUNCTIONS use the DEFAULT Storage context for the OTDB Namespace
-	
+	// BELOW FUNCTIONS will use the DEFAULT Storage context for the OTDB Namespace
+	// (If you don't want to specifically create and manage a context, then you just
+	// use the default context, which the rest of the OT library will also use.)
+	//
 	// --------
-	// See if the file is there.
+	// Let's see if the file is there...
 	//
 	bool Exists(std::string strFolder, 
 				std::string oneStr="", std::string twoStr="", std::string threeStr="");
 	
 	// --------
-	// Store/Retrieve a string.
+	// Store/Retrieve a string. (Packing it first.)
 	//
 	bool StoreString(std::string strContents, std::string strFolder, 
 					 std::string oneStr="", std::string twoStr="", std::string threeStr="");
@@ -817,6 +829,10 @@ namespace OTDB {
 	std::string QueryString(std::string strFolder, std::string oneStr="",
 							std::string twoStr="", std::string threeStr="");
 	
+	// ---------------------------------
+	// Store/Retrieve a plain string (no packing--the plain string goes directly to storage.)
+	// Many existing OT datafiles are this way, so this function is used a lot in the OT lib.
+	//
 	bool StorePlainString(std::string strContents, std::string strFolder, 
 						  std::string oneStr="", std::string twoStr="", std::string threeStr="");
 	
@@ -855,6 +871,23 @@ namespace OTDB {
 		std::string m_string;
 	
 		DEFINE_OT_SWIG_DYNAMIC_CAST(OTDBString)
+	};
+	
+	// ------------------------------------------------
+	
+	class Blob : public Storable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through the factory.
+	protected:
+		Blob() : Storable() { m_Type = "Blob"; }
+		
+	public:
+		virtual ~Blob() { }
+		
+		std::vector<unsigned char> m_memBuffer; // Where the actual binary data is stored, before packing.
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(Blob)
 	};
 	
 	// ------------------------------------------------
@@ -1158,6 +1191,7 @@ namespace OTDB {
 //
 
 OT_AFTER_STORABLE_TYPE(OTDBString)
+OT_AFTER_STORABLE_TYPE(Blob)
 OT_AFTER_STORABLE_TYPE(StringMap)
 OT_AFTER_STORABLE_TYPE(BitcoinAcct)
 

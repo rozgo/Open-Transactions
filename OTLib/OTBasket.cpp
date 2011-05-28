@@ -131,6 +131,8 @@
 
 #include <cstring>
 
+#include "OTStorage.h"
+
 
 #include "OTBasket.h"
 #include "OTLog.h"

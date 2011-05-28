@@ -129,6 +129,9 @@
  **************************************************************/
 
 
+#include "OTStorage.h"
+
+
 #include "OTSignature.h"
 
 OTSignature::OTSignature() : OTASCIIArmor()

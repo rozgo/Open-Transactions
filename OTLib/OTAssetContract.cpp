@@ -142,6 +142,7 @@
 using namespace irr;
 using namespace io;
 
+#include "OTStorage.h"
 
 #include "OTAssetContract.h"
 #include "OTStringXML.h"

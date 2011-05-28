@@ -13,3 +13,8 @@ message StringMap_InternalPB {
   repeated KeyValue_InternalPB node = 1;
 }
 
+message Blob_InternalPB {
+  optional bytes value = 1;
+}
+
+

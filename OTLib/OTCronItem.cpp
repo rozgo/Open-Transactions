@@ -138,6 +138,7 @@
 using namespace irr;
 using namespace io;
 
+#include "OTStorage.h"
 
 
 #include "OTCronItem.h"
@@ -146,7 +147,6 @@ using namespace io;
 #include "OTTrade.h"
 #include "OTLog.h"
 
-#include "OTStorage.h"
 
 // Base class for OTTrade and OTAgreement and OTPaymentPlan.
 // OTCron contains lists of these for regular processing.

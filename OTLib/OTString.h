@@ -358,7 +358,7 @@ public:
    virtual void Release(void);
 
    // Internal properties
-private:
+protected:
    uint32_t  m_lLength;
    uint32_t  m_lPosition;
    char * m_strBuffer;

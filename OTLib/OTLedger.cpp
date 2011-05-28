@@ -143,6 +143,8 @@ using namespace irr;
 using namespace io;
 
 
+#include "OTStorage.h"
+
 #include "OTData.h"
 #include "OTIdentifier.h"
 #include "OTAccount.h"
@@ -157,7 +159,6 @@ using namespace io;
 #include "OTPseudonym.h"
 #include "OTLog.h"
 
-#include "OTStorage.h"
 
 
 
@@ -285,8 +286,6 @@ bool OTLedger::SaveGeneric(OTLedger::ledgerType theType)
 	
 	m_strFoldername = pszFolder;
 	m_strFilename = strID.Get();
-	
-	OTLog::vError("DEBUG OTLedger::SaveGeneric: folder: %s  file: %s \n", m_strFoldername.Get(), m_strFilename.Get());
 	
 	OT_ASSERT(m_strFoldername.GetLength() > 2);
 	OT_ASSERT(m_strFilename.GetLength() > 2);

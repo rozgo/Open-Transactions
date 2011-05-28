@@ -92,6 +92,8 @@ extern "C"
 
 #include <ctime>
 
+#include "OTStorage.h"
+
 #include "OTString.h"
 #include "OTIdentifier.h"
 #include "OTPseudonym.h"
@@ -99,7 +101,6 @@ extern "C"
 #include "OTMint.h"
 
 #include "OTLog.h"
-//#include "OTStorage.h"
 
 
 // run this program from inside the transaction directory (it's a tool for creating mints for the server.)
@@ -123,6 +124,12 @@ int main (int argc, char * const argv[])
 	SSL_library_init();
 	SSL_load_error_strings();
 
+	std::string strDataFolderPath("."), 
+//	std::string strDataFolderPath("/Users/REDACTED/Projects/Open-Transactions/testwallet/data_folder"), 
+	strWalletFile("wallet.xml");
+	bool bSuccessInitDefault = OTDB::InitDefaultStorage(OTDB_DEFAULT_STORAGE, 
+														OTDB_DEFAULT_PACKER, strDataFolderPath, strWalletFile);
+	
 	OTString strServerID(argv[1]), strAssetTypeID(argv[2]);
 	OTIdentifier ASSET_TYPE_ID(strAssetTypeID);
 	

@@ -2796,14 +2796,6 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_Storable_ot_dynamic_cast(void * jarg1) {
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_delete_Storage(void * jarg1) {
-  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  
-  arg1 = (OTDB::Storage *)jarg1; 
-  delete arg1;
-}
-
-
 SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Storage_Init__SWIG_0(void * jarg1, char * jarg2, char * jarg3, char * jarg4, char * jarg5, char * jarg6, char * jarg7) {
   unsigned int jresult ;
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
@@ -3119,6 +3111,14 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Storage_Exists__SWIG_3(void * jarg1, 
   result = (bool)(arg1)->Exists(arg2);
   jresult = result; 
   return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_Storage(void * jarg1) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  
+  arg1 = (OTDB::Storage *)jarg1; 
+  delete arg1;
 }
 
 
@@ -4989,6 +4989,54 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_OTDBString_ot_dynamic_cast(void * jarg1) {
 }
 
 
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_Blob(void * jarg1) {
+  OTDB::Blob *arg1 = (OTDB::Blob *) 0 ;
+  
+  arg1 = (OTDB::Blob *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Blob_m_memBuffer_set(void * jarg1, void * jarg2) {
+  OTDB::Blob *arg1 = (OTDB::Blob *) 0 ;
+  std::vector< unsigned char > arg2 ;
+  std::vector< unsigned char > *argp2 ;
+  
+  arg1 = (OTDB::Blob *)jarg1; 
+  argp2 = (std::vector< unsigned char > *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null std::vector< unsigned char >", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->m_memBuffer = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_Blob_m_memBuffer_get(void * jarg1) {
+  void * jresult ;
+  OTDB::Blob *arg1 = (OTDB::Blob *) 0 ;
+  std::vector< unsigned char > result;
+  
+  arg1 = (OTDB::Blob *)jarg1; 
+  result =  ((arg1)->m_memBuffer);
+  jresult = new std::vector< unsigned char >((const std::vector< unsigned char > &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_Blob_ot_dynamic_cast(void * jarg1) {
+  void * jresult ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  OTDB::Blob *result = 0 ;
+  
+  arg1 = (OTDB::Storable *)jarg1; 
+  result = (OTDB::Blob *)OTDB::Blob::ot_dynamic_cast(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_delete_StringMap(void * jarg1) {
   OTDB::StringMap *arg1 = (OTDB::StringMap *) 0 ;
   
@@ -6748,6 +6796,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_AddressBook_ot_dynamic_cast(void * jarg1) {
 
 
 SWIGEXPORT OTDB::Storable * SWIGSTDCALL CSharp_OTDBString_SWIGUpcast(OTDB::OTDBString *jarg1) {
+    return (OTDB::Storable *)jarg1;
+}
+
+SWIGEXPORT OTDB::Storable * SWIGSTDCALL CSharp_Blob_SWIGUpcast(OTDB::Blob *jarg1) {
     return (OTDB::Storable *)jarg1;
 }
 

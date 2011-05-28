@@ -337,6 +337,8 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 @ISA = qw( otapi );
 %OWNER = ();
 %ITERATORS = ();
+*Init = *otapic::Storage_Init;
+*Exists = *otapic::Storage_Exists;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
     my $self = tied(%{$_[0]});
@@ -348,8 +350,6 @@ sub DESTROY {
     }
 }
 
-*Init = *otapic::Storage_Init;
-*Exists = *otapic::Storage_Exists;
 *StoreString = *otapic::Storage_StoreString;
 *QueryString = *otapic::Storage_QueryString;
 *StorePlainString = *otapic::Storage_StorePlainString;
@@ -393,6 +393,40 @@ sub DESTROY {
 *swig_m_string_get = *otapic::OTDBString_m_string_get;
 *swig_m_string_set = *otapic::OTDBString_m_string_set;
 *ot_dynamic_cast = *otapic::OTDBString_ot_dynamic_cast;
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : otapi::Blob ##############
+
+package otapi::Blob;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( otapi::Storable otapi );
+%OWNER = ();
+%ITERATORS = ();
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        otapic::delete_Blob($self);
+        delete $OWNER{$self};
+    }
+}
+
+*swig_m_memBuffer_get = *otapic::Blob_m_memBuffer_get;
+*swig_m_memBuffer_set = *otapic::Blob_m_memBuffer_set;
+*ot_dynamic_cast = *otapic::Blob_ot_dynamic_cast;
 sub DISOWN {
     my $self = shift;
     my $ptr = tied(%$self);
@@ -910,6 +944,7 @@ package otapi;
 *STORE_FILESYSTEM = *otapic::STORE_FILESYSTEM;
 *STORE_TYPE_SUBCLASS = *otapic::STORE_TYPE_SUBCLASS;
 *STORED_OBJ_STRING = *otapic::STORED_OBJ_STRING;
+*STORED_OBJ_BLOB = *otapic::STORED_OBJ_BLOB;
 *STORED_OBJ_STRING_MAP = *otapic::STORED_OBJ_STRING_MAP;
 *STORED_OBJ_WALLET_DATA = *otapic::STORED_OBJ_WALLET_DATA;
 *STORED_OBJ_BITCOIN_ACCT = *otapic::STORED_OBJ_BITCOIN_ACCT;

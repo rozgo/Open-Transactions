@@ -141,17 +141,23 @@
 
 #include "OTData.h"
 #include "OTString.h"
+//#include "OTStorage.h"
+
 
 class OTEnvelope;
+
+class OTDB::OTPacker;
 
 // The natural state of OTASCIIArmor is in compressed and base64-encoded, string form.
 // It is derived from OTString. The Get() method returns a base64-encoded string.
 // The Set() method assumes that you are PASSING IN a base64-encoded string.
 // The constructors assume that you are passing in a base64-encoded string.
 class OTASCIIArmor : public OTString
-{
-	
+{	
 public:
+	static OTDB::OTPacker * GetPacker();
+	static OTDB::OTPacker * s_pPacker;
+	
 	OTASCIIArmor();
 	OTASCIIArmor(const char * szValue);
 	OTASCIIArmor(const OTString & strValue);
@@ -173,11 +179,13 @@ public:
 	// and return them as BINARY in theData
 	// Should be called "Get From Internal String Into Data"
 	bool GetData(OTData & theData, bool bLineBreaks=true) const;
+	bool GetAndUnpackData(OTData & theData, bool bLineBreaks=true) const;
 	
 	// This function will base64 ENCODE theData,
 	// and then Set() that as the string contents.
 	// Should be called "Encode Data And Set As Internal String"
 	bool SetData(const OTData & theData, bool bLineBreaks=true);
+	bool SetAndPackData(const OTData & theData, bool bLineBreaks=true);
 	
 	// This function will base64 DECODE the string contents
 	// and return them as a STRING in theData
@@ -186,6 +194,10 @@ public:
 	// This function will base64 ENCODE the STRING stored in theData,
 	// and then Set() that as this string contents.
 	bool SetString(const OTString & theData, bool bLineBreaks=true);
+	
+	// For a straight-across, exact-size copy of bytes that you KNOW
+	// are base64-encoded properly by an OTASCIIArmor.
+	bool MemSet(const char * pMem, uint32_t theSize);
 };
 
 typedef std::map <long, OTASCIIArmor *> mapOfArmor;

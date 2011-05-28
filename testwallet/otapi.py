@@ -741,6 +741,7 @@ PACK_TYPE_ERROR = _otapi.PACK_TYPE_ERROR
 STORE_FILESYSTEM = _otapi.STORE_FILESYSTEM
 STORE_TYPE_SUBCLASS = _otapi.STORE_TYPE_SUBCLASS
 STORED_OBJ_STRING = _otapi.STORED_OBJ_STRING
+STORED_OBJ_BLOB = _otapi.STORED_OBJ_BLOB
 STORED_OBJ_STRING_MAP = _otapi.STORED_OBJ_STRING_MAP
 STORED_OBJ_WALLET_DATA = _otapi.STORED_OBJ_WALLET_DATA
 STORED_OBJ_BITCOIN_ACCT = _otapi.STORED_OBJ_BITCOIN_ACCT
@@ -782,11 +783,11 @@ class Storage(_object):
     __getattr__ = lambda self, name: _swig_getattr(self, Storage, name)
     def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined - class is abstract")
     __repr__ = _swig_repr
-    __swig_destroy__ = _otapi.delete_Storage
-    __del__ = lambda self : None;
     def Init(self, oneStr = "", twoStr = "", threeStr = "", fourStr = "", 
     fiveStr = "", sixStr = ""): return _otapi.Storage_Init(self, oneStr, twoStr, threeStr, fourStr, fiveStr, sixStr)
     def Exists(self, *args): return _otapi.Storage_Exists(self, *args)
+    __swig_destroy__ = _otapi.delete_Storage
+    __del__ = lambda self : None;
     def StoreString(self, *args): return _otapi.Storage_StoreString(self, *args)
     def QueryString(self, *args): return _otapi.Storage_QueryString(self, *args)
     def StorePlainString(self, *args): return _otapi.Storage_StorePlainString(self, *args)
@@ -870,6 +871,29 @@ QueryObject = _otapi.QueryObject
 def OTDBString_ot_dynamic_cast(*args):
   return _otapi.OTDBString_ot_dynamic_cast(*args)
 OTDBString_ot_dynamic_cast = _otapi.OTDBString_ot_dynamic_cast
+
+class Blob(Storable):
+    __swig_setmethods__ = {}
+    for _s in [Storable]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Blob, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Storable]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, Blob, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _otapi.delete_Blob
+    __del__ = lambda self : None;
+    __swig_setmethods__["m_memBuffer"] = _otapi.Blob_m_memBuffer_set
+    __swig_getmethods__["m_memBuffer"] = _otapi.Blob_m_memBuffer_get
+    if _newclass:m_memBuffer = _swig_property(_otapi.Blob_m_memBuffer_get, _otapi.Blob_m_memBuffer_set)
+    __swig_getmethods__["ot_dynamic_cast"] = lambda x: _otapi.Blob_ot_dynamic_cast
+    if _newclass:ot_dynamic_cast = staticmethod(_otapi.Blob_ot_dynamic_cast)
+Blob_swigregister = _otapi.Blob_swigregister
+Blob_swigregister(Blob)
+
+def Blob_ot_dynamic_cast(*args):
+  return _otapi.Blob_ot_dynamic_cast(*args)
+Blob_ot_dynamic_cast = _otapi.Blob_ot_dynamic_cast
 
 class StringMap(Storable):
     __swig_setmethods__ = {}

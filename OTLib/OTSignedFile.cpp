@@ -137,11 +137,14 @@
 using namespace irr;
 using namespace io;
 
+
+#include "OTStorage.h"
+
+
 #include "OTSignedFile.h"
 #include "OTPseudonym.h"
 #include "OTLog.h"
 
-#include "OTStorage.h"
 
 
 void OTSignedFile::UpdateContents()
@@ -281,6 +284,8 @@ bool OTSignedFile::SaveFile()
 // Assumes SetFilename() has already been set.
 bool OTSignedFile::LoadFile()
 {
+	OTLog::vOutput(0, "DEBUG LoadFile (Signed) folder: %s file: %s \n", m_strFoldername.Get(), m_strFilename.Get());
+	
 	if (OTDB::Exists(m_strFoldername.Get(), m_strFilename.Get()))
 		return LoadContract();
 

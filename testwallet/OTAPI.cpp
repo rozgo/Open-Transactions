@@ -139,6 +139,7 @@
 #include <zmq.hpp>
 #endif
 
+#include "OTStorage.h"
 
 #include "OTIdentifier.h"
 #include "OTString.h"
@@ -167,7 +168,6 @@
 #include "OTAPI_funcdef.h"  // Trying to compile as C++ now, due to the new Password Callback, which requires it.
 
 #include "OTLog.h"
-#include "OTStorage.h"
 
 
 // These functions are in C, so they can't return bool. But they can return BOOL!
@@ -2387,8 +2387,6 @@ const char * OT_API_LoadPubkey(const char * USER_ID) // returns NULL, or a publi
 {
 	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
 	
-	OTLog::Error("DEBUG OT_API_LoadPubkey 0 \n");
-
 	OTString strPubkey; // For the output
 	
 	// ---------------------------------------------------------
@@ -2401,19 +2399,13 @@ const char * OT_API_LoadPubkey(const char * USER_ID) // returns NULL, or a publi
 	
 	if (NULL == pNym) // If he's not in the "address book" then let's see if this is a private Nym.
 	{
-		OTLog::Error("DEBUG OT_API_LoadPubkey 1 \n");
-
 		pNym = g_OT_API.LoadPrivateNym(NYM_ID);
 	}
 
 	// ---------------------------------------------------------
 	
-	OTLog::Error("DEBUG OT_API_LoadPubkey 2 \n");
-
 	if (NULL == pNym)
 	{
-		OTLog::Error("DEBUG OT_API_LoadPubkey 3 \n");
-
 		pNym = new OTPseudonym(NYM_ID);
 		
 		OT_ASSERT_MSG(NULL != pNym, "Error allocating memory in the OT API.");
@@ -2421,8 +2413,6 @@ const char * OT_API_LoadPubkey(const char * USER_ID) // returns NULL, or a publi
 		// First load the public key
 		if (false == pNym->LoadPublicKey())
 		{
-			OTLog::Error("DEBUG OT_API_LoadPubkey 4 \n");
-
 			OTString strNymID(NYM_ID);
 			OTLog::vError("Failure loading Nym public key in OT_API_LoadPubkey: %s\n", 
 						  strNymID.Get());
@@ -2431,8 +2421,6 @@ const char * OT_API_LoadPubkey(const char * USER_ID) // returns NULL, or a publi
 		}
 		else if (false == pNym->VerifyPseudonym())
 		{
-			OTLog::Error("DEBUG OT_API_LoadPubkey 5 \n");
-
 			OTString strNymID(NYM_ID);
 			OTLog::vError("Failure verifying Nym public key in OT_API_LoadPubkey: %s\n", 
 						  strNymID.Get());
@@ -2441,8 +2429,6 @@ const char * OT_API_LoadPubkey(const char * USER_ID) // returns NULL, or a publi
 		}
 	}
 	
-	OTLog::Error("DEBUG OT_API_LoadPubkey 6 \n");
-
 	// ---------------------------------------------------------
 	
 	// Make sure it gets cleaned up when this goes out of scope.
@@ -2450,24 +2436,18 @@ const char * OT_API_LoadPubkey(const char * USER_ID) // returns NULL, or a publi
 	
 	if (NULL == pNym)
 	{
-		OTLog::Error("DEBUG OT_API_LoadPubkey 7 \n");
-
 		OTString strNymID(NYM_ID);
 		OTLog::vOutput(0, "Failure in OT_API_LoadPubkey: %s\n",
 					   strNymID.Get());
 	}
 	else if (false == pNym->GetPublicKey().GetPublicKey(strPubkey))
 	{	
-		OTLog::Error("DEBUG OT_API_LoadPubkey 8 \n");
-
 		OTString strNymID(NYM_ID);
 		OTLog::vOutput(0, "Failure retrieving pubkey from Nym in OT_API_LoadPubkey: %s\n",
 					   strNymID.Get());
 	}
 	else // success
 	{
-		OTLog::Error("DEBUG OT_API_LoadPubkey 9 \n");
-
 		const char * pBuf = strPubkey.Get();
 		
 #ifdef _WIN32

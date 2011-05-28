@@ -144,12 +144,13 @@ extern "C"
 #include <cstring>
 #include <cmath>
 
+#include "OTStorage.h"
+
 #include "OTData.h"
 #include "OTString.h"
 #include "OTAsymmetricKey.h"
 #include "OTPayload.h"
 #include "OTASCIIArmor.h"
-#include "OTStorage.h"
 #include "OTLog.h"
 
 
@@ -1284,8 +1285,6 @@ bool OTAsymmetricKey::LoadPublicKey(const OTString & strFoldername, const OTStri
 {
 	Release();
 	
-	OTLog::Error("DEBUG OTAsymmetricKey 0 \n");
-
 	// This doesn't use assert on the arguments, but theArmor.LoadFromFile DOES.
 	
 	// -----------------------
@@ -1294,36 +1293,24 @@ bool OTAsymmetricKey::LoadPublicKey(const OTString & strFoldername, const OTStri
 	
 	if (theArmor.LoadFromFile(strFoldername, strFilename))
 	{
-		OTLog::Error("DEBUG OTAsymmetricKey 1 \n");
-
 		if (SetPublicKey(theArmor))
 		{
-			OTLog::Error("DEBUG OTAsymmetricKey 2 \n");
-
 			OTLog::Output(4, "Success setting public key from OTASCIIArmor in OTAsymmetricKey::LoadPublicKey.\n"); 
 			return true; 			
 		}
 		else
 		{
-			OTLog::Error("DEBUG OTAsymmetricKey 3 \n");
-
 			OTLog::vError("Unable to convert from OTASCIIArmor to public key in "
 					 "OTAsymmetricKey::LoadPublicKey: %s\n",
 					 strFilename.Get()); 
 			return false; 			
 		}
-		OTLog::Error("DEBUG OTAsymmetricKey 4 \n");
-
 	}
 	else 
 	{
-		OTLog::Error("DEBUG OTAsymmetricKey 5 \n");
-
 		OTLog::vError("Unable to read pubkey file in OTAsymmetricKey::LoadPublicKey: %s\n", strFilename.Get()); 
 		return false; 
 	}
-
-	OTLog::Error("DEBUG OTAsymmetricKey 6 \n");
 
 	return false;
 }

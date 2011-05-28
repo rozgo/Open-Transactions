@@ -141,6 +141,8 @@
 
 #include "irrxml/irrXML.h"
 
+#include "OTStorage.h"
+
 #include "OTServerContract.h"
 #include "OTStringXML.h"
 #include "OTLog.h"

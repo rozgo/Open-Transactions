@@ -142,6 +142,8 @@ using namespace irr;
 using namespace io;
 
 
+#include "OTStorage.h"
+
 #include "OTPseudonym.h"
 #include "OTCron.h"
 

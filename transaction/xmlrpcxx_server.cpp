@@ -191,6 +191,8 @@ extern "C"
 
 //#include "XmlRpc.h"
 
+#include "OTStorage.h"
+
 #include "main.h"
 
 #include "OTMessage.h"
@@ -552,22 +554,41 @@ void ProcessMessage_ZMQ(const std::string & str_Message, std::string & str_Reply
 {
 	OT_ASSERT(NULL != g_pServer);
 	
+	if (str_Message.size() < 1)
+		return;
+	
+	// --------------------
+	
 	// return value.
 	std::string resultString = ""; // Whatever we put in this string is what will get returned.
 	
 	// First we grab the client's message
-	OTASCIIArmor ascMessage = str_Message.c_str();
+	OTASCIIArmor ascMessage;
+	ascMessage.MemSet(str_Message.data(), str_Message.size());
+	
+	// ------------------
+//	
+//	OTPayload thePayload;
+//	thePayload.SetPayloadSize(str_Message.size());	
+//	memcpy((void*)thePayload.GetPayloadPointer(), str_Message.data(), str_Message.size());
 	
 	// ----------------------------------------------------------------------
 	
+	OTLog::vError("Envelope: \n%s\n Size: %ld\n", ascMessage.Get(), ascMessage.GetLength());
+	
 	OTMessage theMsg, theReply; // we'll need these in a sec...
 	
-	OTEnvelope theEnvelope(ascMessage); // Now the base64 is decoded and the envelope is in binary form again.
-	if (ascMessage.Exists())
+//	OTEnvelope theEnvelope(ascMessage); // Now the base64 is decoded and unpacked, and the envelope is in binary form again.
+	OTEnvelope theEnvelope; // Now the base64 is decoded and the envelope is in binary form again.
+	
+	if (theEnvelope.SetAsciiArmoredData(ascMessage))
 	{
 		OTLog::Output(2, "Successfully retrieved envelope from ZMQ message...\n");
 		
 		OTString strEnvelopeContents;
+		
+		OTString strPubkeyPath("TESTPUBKEY.txt");
+		g_pServer->GetServerNym().SavePublicKey(strPubkeyPath);
 		
 		// Decrypt the Envelope.    
 		if (theEnvelope.Open(g_pServer->GetServerNym(), strEnvelopeContents)) // now strEnvelopeContents contains the decoded message.
@@ -602,8 +623,15 @@ void ProcessMessage_ZMQ(const std::string & str_Message, std::string & str_Reply
 					
 					if (bSealed)
 					{
-						OTASCIIArmor ascReply(theRecipientEnvelope);
-						resultString = ascReply.Get();
+//						OTPayload theReplyPayload;
+//						theReplyPayload.SetEnvelope(theRecipientEnvelope);
+//						
+//						resultString = ascReply.Get();
+//						resultString.assign(theReplyPayload.GetPayloadPointer(), theReplyPayload.GetPayloadSize());
+						
+						OTASCIIArmor ascReply;
+						if (theRecipientEnvelope.GetAsciiArmoredData(ascReply));
+							resultString.assign(ascReply.Get(), ascReply.GetLength());
 					}
 					else
 						OTLog::Output(0, "Unable to seal envelope in ProcessMessage_ZMQ.\n");

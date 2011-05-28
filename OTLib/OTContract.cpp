@@ -159,6 +159,9 @@ using namespace io;
 
 #include "OTStringXML.h"
 
+
+#include "OTStorage.h"
+
 #include "OTPseudonym.h"
 #include "OTContract.h"
 #include "OTLog.h"
@@ -179,8 +182,6 @@ using namespace io;
 #include "OTToken.h"
 #include "OTServerContract.h"
 #include "OTAssetContract.h"
-
-#include "OTStorage.h"
 
 
 // Factory (though rarely used; was just added recently for the API.)
@@ -1524,14 +1525,8 @@ bool OTContract::SaveContract(const char * szFoldername, const char * szFilename
 	OT_ASSERT_MSG(NULL != szFilename, "Null filename sent to OTContract::SaveContract\n");
 	OT_ASSERT_MSG(NULL != szFoldername, "Null foldername sent to OTContract::SaveContract\n");
 	
-	OTLog::vError("DEBUG: OTContract::SaveContract: folder: %s  file: %s \n", szFoldername,
-				  szFilename);
-
 	m_strFoldername.Set(szFoldername);
 	m_strFilename.Set(szFilename);
-	
-	OTLog::vError("DEBUG: OTContract::SaveContract: folder: %s  file: %s \n", m_strFoldername.Get(),
-				  m_strFilename.Get());
 	
 	OT_ASSERT(m_strFoldername.GetLength() > 2);
 	OT_ASSERT(m_strFilename.GetLength() > 2);

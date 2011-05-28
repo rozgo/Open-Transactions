@@ -3,6 +3,12 @@ NOTES on the Version:
 
 // --------------------------------------------------------------------
 
+   0.64 --- Added default packing (currently protobuf) to all binary
+            to base64 encoding. I had a recent complaint about binary
+            incompatibility across platform, and this is either the
+            complete fix, or at least a strong beginning of a drive to
+            insure binary compatibility across all platforms.
+
    0.63 --- Open Transactions has entirely been converted to the NEW
             STORAGE CLASS. (This means you can easily switch to different
             storage systems, instead of using the filesystem, just by sub-

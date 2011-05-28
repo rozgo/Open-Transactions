@@ -35,10 +35,10 @@ public class AddressBook extends Storable {
     super.delete();
   }
 // ------------------------
-	/*@SWIG:OTAPI.i,344,OT_CONTAINER_TYPE_MEMBERS@*/
-private List elementList = new ArrayList();
+	/*@SWIG:OTAPI.i,327,OT_CONTAINER_TYPE_MEMBERS@*/
+	private List elementList = new ArrayList();
 /*@SWIG@*/
-	/*@SWIG:OTAPI.i,431,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
+	/*@SWIG:OTAPI.i,408,OT_ADD_ELEMENT@*/  // THIS BLOCK CONTAINS JAVA CODE.
 private long removeRefContact(long lIndex) {
 	// 
 	// loop through the elements in the actual container, in order to find the one

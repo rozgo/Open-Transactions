@@ -130,6 +130,7 @@
 #include <iostream>
 #include <string>
 #include <deque>
+#include <vector>
 #include <map>
 
 // credit:stlplus library.
@@ -158,6 +159,7 @@ extern "C"
 #endif
 }
 
+#include "OTData.h"
 
 #include "OTLog.h"
 
@@ -202,12 +204,10 @@ extern "C"
 #define DeclareInterface(name) Interface name { \
 public: \
 virtual ~name() {}
-//virtual name* clone(void) const { std::cout << "NEVER SHOULD HAPPEN!!" << std::endl; return NULL;}
 
 #define DeclareBasedInterface(name, base) class name : public base { \
 public: \
 virtual ~name() {}
-//virtual base* clone(void) const { std::cout << "NEVER SHOULD HAPPEN!!" << std::endl; return NULL;}
 
 #define EndInterface };
 
@@ -254,6 +254,7 @@ namespace OTDB
 	enum StoredObjectType
 	{
 		STORED_OBJ_STRING=0,		// Just a string.
+		STORED_OBJ_BLOB,			// Used for storing binary data. Bytes of arbitrary length.
 		STORED_OBJ_STRING_MAP,		// A StringMap is a list of Key/Value pairs, useful for storing nearly anything.
 		STORED_OBJ_WALLET_DATA,		// The GUI wallet's stored data
 		STORED_OBJ_BITCOIN_ACCT,	// The GUI wallet's stored data about a Bitcoin acct
@@ -287,11 +288,15 @@ namespace OTDB
 	class Storage;		// A storage context (database, filesystem, cloud, etc. Swappable.)
 	class PackedBuffer;	// A buffer for containing a PACKED STORABLE. (On its way to/from storage.)
 	
-	
+	// As far as the USERS of the Storage API are concerned, the above classes are nearly everything.
+	// (In addition to the "Pure Data" classes such as ContactNym, BitcoinAcct, etc.)
+	// Behind the scenes, in OTStorage, there is the IStorable interface, with its progeny, the various
+	// subclasses based on specific packers, such as ContactNymMsgpack, or WalletDataProtobuf. But these
+	// are hidden, and are not seen outside of OTStorage in its actual USE.
 	
 	// ------------------------------------------------
 	//
-	// OTDB Namespace internal types
+	// OTDB Namespace internal typedefs
 	//
 	// In short:
 	// - InstantiateFunc (function pointer type.)
@@ -301,9 +306,9 @@ namespace OTDB
 	// Resulting in: pFunctionMap (Instance of mapOfFunctions, created in the OTDB constructor.)
 	//
 	typedef Storable * (InstantiateFunc)(); // Each storable has one of these as a static method.
-	typedef std::pair<PackType, StoredObjectType> InstantiateFuncKey; // Those methods are stored as function pointers here, and they are
-	// indexed by Pack Type and Stored Object Type. So if you know "LoomAcct" and
-	// "protocol buffers", those form the KEY for looking up the LoomAcctPB instantiator.
+	typedef std::pair<PackType, StoredObjectType> InstantiateFuncKey;	// Those methods are stored as function pointers here, and they are
+																		// indexed by Pack Type and Stored Object Type. So if you know "LoomAcct" and
+																		// "protocol buffers", those form the KEY for looking up the LoomAcctPB instantiator.
 	typedef std::map<InstantiateFuncKey, InstantiateFunc*> mapOfFunctions; //...basically implementing my own vtable, eh?
 	
 	
@@ -325,34 +330,36 @@ namespace OTDB
 	
 	// ----------------------------------------------------
 	
-	// All of the class hierarchy under Storable is based on OT data design. (Not packing.)
+	// All of the class hierarchy under Storable is based on OT data design. (Not packing and such implementation details.)
 	// So when we need to add custom behavior that's common to groups of the final subclasses,
-	// we use Interfaces to do it. 
+	// we use **Interfaces** to do it. 
 	
-	// ===> That way, the Storable hierarchy can focus on DATA,
-	// ===> while the IStorable hierarchy focuses on PACKING.
-	// ===> Things are more elegant that way.
+	// ===> That way, the Storable hierarchy can focus on DATA, (and form the external interface for OTStorage.)
+	// ===> while the IStorable hierarchy focuses on PACKING.   (and is hidden INSIDE OTStorage.)
+	// ===> (Things are more elegant this way.)
 	
 	//
 	//
 	// Interface:    IStorable
 	//
-	// Each Packer library (MsgPack, etc) must provide an interface derived from IStorable.
-	// (They're all listed below this.)
+	// Each specific Packer library (MsgPack, Protobuf, etc) must provide an interface
+	// derived from IStorable (They're all listed somewhere below.)
 	//
 	DeclareInterface(IStorable)
-	virtual bool onPack(PackedBuffer& theBuffer, Storable& inObj) = 0; // buffer is output, inObj is input.
-	virtual bool onUnpack(PackedBuffer& theBuffer, Storable& outObj) = 0; // buffer is input, outObj is output.
-	// ------------------------------------------
-	virtual void hookBeforePack() {} // This is called just before packing a storable. (Opportunity to copy values...)
-	virtual void hookAfterUnpack() {} // This is called just after unpacking a storable. (Opportunity to copy values...)
+		virtual bool onPack(PackedBuffer& theBuffer, Storable& inObj) = 0; // buffer is output, inObj is input.
+		virtual bool onUnpack(PackedBuffer& theBuffer, Storable& outObj) = 0; // buffer is input, outObj is output.
+		// ------------------------------------------
+		virtual void hookBeforePack() {} // This is called just before packing a storable. (Opportunity to copy values...)
+		virtual void hookAfterUnpack() {} // This is called just after unpacking a storable. (Opportunity to copy values...)
 	EndInterface
 	
 	
 	
 	
 	// ********************************************************************
+	//
 	// use this without a semicolon:
+	//
 #define DEFINE_OT_DYNAMIC_CAST(CLASS_NAME) \
 	virtual CLASS_NAME * clone () const { OT_ASSERT(false); std::cout << "********* THIS SHOULD NEVER HAPPEN!!!!! *****************" << std::endl; return NULL; } \
 	static CLASS_NAME *			ot_dynamic_cast(		Storable *pObject) { return dynamic_cast<CLASS_NAME *>(pObject); }
@@ -402,6 +409,11 @@ namespace OTDB
 		
 		virtual bool ReadFromIStream(std::istream &inStream, long lFilesize)=0;
 		virtual bool WriteToOStream(std::ostream &outStream)=0;
+		
+		virtual const	unsigned char *	GetData()=0;
+		virtual			size_t			GetSize()=0;
+		
+		virtual	void SetData(const unsigned char * pData, size_t theSize)=0;
 	};
 	
 	// --------------------------------
@@ -410,7 +422,10 @@ namespace OTDB
 	//
 	//	typedef PackedBufferSubclass<PackerMsgpack, IStorableMsgpack,	msgpack::sbuffer>	BufferMsgpack;
 	//	typedef PackedBufferSubclass<PackerPB,		IStorablePB,		std::string>		BufferPB;
-	
+	//
+	// Coming soon:
+	//	typedef PackedBufferSubclass<PackerJSON,	IStorableJSON,		std::string>		BufferJSON;
+	//
 	// They're all based on this template:
 	//
 #define DECLARE_PACKED_BUFFER_SUBCLASS(theNewType, thePackerType, theInterfaceType, theInternalType) \
@@ -426,6 +441,9 @@ public: \
 	virtual bool UnpackString(std::string& theString); \
 	virtual bool ReadFromIStream(std::istream &inStream, long lFilesize); \
 	virtual bool WriteToOStream(std::ostream &outStream); \
+	virtual const	unsigned char *	GetData(); \
+	virtual			size_t			GetSize(); \
+	virtual	void SetData(const unsigned char * pData, size_t theSize); \
 	theInternalType & GetBuffer() { return m_buffer; } \
 }
 	
@@ -450,7 +468,7 @@ public: \
 	class OTPacker 
 	{
 	protected:
-		OTPacker() { }
+		OTPacker() { }  // To instantiate: OTPacker * pPacker = OTPacker::Create(OTDB_DEFAULT_PACKER);
 		
 	public:
 		virtual ~OTPacker() {}
@@ -495,7 +513,10 @@ public: \
 	//
 	//	typedef PackerSubclass<BufferMsgpack>	PackerMsgpack;
 	//	typedef PackerSubclass<BufferPB>		PackerPB;
-	
+	//
+	// Coming soon:
+	//	typedef PackerSubclass<BufferJSON>		PackerJSON;
+	//
 	// ********************************************************************
 	
 	
@@ -523,19 +544,29 @@ public: \
 		// Use GetPacker() to access the Packer, throughout duration of this Storage object.
 		// If it doesn't exist yet, this function will create it on the first call. (The 
 		// parameter allows you the choose what type will be created, other than default.)
+		//
 		// This way, whenever using an OT Storage, you KNOW the packer is always the right
 		// one, and that you don't have to fiddle with it at all. You can also therefore use
 		// it for creating instances of various Storables and PackedBuffers, and knowing
-		// that the right types will be instantiated, with the buffer being the appropriate
-		// subclass for the packer.
+		// that the right types will be instantiated automatically, with the buffer being
+		// the appropriate subclass for the packer.
 		//
-		OTPacker * GetPacker(PackType ePackType=OTDB_DEFAULT_PACKER);
+		OTPacker * GetPacker(PackType ePackType = OTDB_DEFAULT_PACKER);
 		
 		// This is called once, in the factory.
 		void SetPacker(OTPacker & thePacker) { OT_ASSERT(NULL == m_pPacker); m_pPacker =  &thePacker; }
 		
-		// -------------------------------------
+		// ********************************************************
 		// OVERRIDABLES
+		//
+		// If you wish to MAKE YOUR OWN subclass of Storage (to provide your own storage system)
+		// then just subclass OTDB::Storage, and override the below methods. For an example of how
+		// it's done, see StorageFS (filesystem), which is included below and in OTStorage.cpp.
+		//
+		// NOTE: This should be possible even in other languages! I'm using SWIG directors, meaning
+		// that you can make a Java subclass of OTDB::Storage, or a Python subclass, etc. This isn't
+		// possible with the other classes in OTStorage (yet), which must be subclassed in C++. But
+		// for this class, it is.
 		//
 		virtual bool onStorePackedBuffer(PackedBuffer & theBuffer, std::string strFolder, std::string oneStr="", 
 										 std::string twoStr="", std::string threeStr="")=0;
@@ -552,8 +583,6 @@ public: \
 		// -------------------------------------
 		
 	public:
-		virtual ~Storage() { if (NULL != m_pPacker) delete m_pPacker; m_pPacker = NULL; }
-		
 		virtual bool Init(std::string oneStr="", std::string twoStr="", std::string threeStr="", 
 						  std::string fourStr="", std::string fiveStr="", std::string sixStr="")=0;
 		
@@ -561,6 +590,10 @@ public: \
 		// See if the file is there.
 		virtual bool Exists(std::string strFolder, 
 							std::string oneStr="", std::string twoStr="", std::string threeStr="")=0;
+		
+		// ********************************************************
+		
+		virtual ~Storage() { if (NULL != m_pPacker) delete m_pPacker; m_pPacker = NULL; }
 		
 		// -----------------------------------------
 		// Store/Retrieve a string.
@@ -601,7 +634,7 @@ public: \
 		// --------------------------
 		
 		// Factory for Storage itself.  %ignore this in OTAPI.i  (It's accessed through 
-		// a namespace-level function.)
+		// a namespace-level function, whereas this is for internal purposes.)
 		//
 		static Storage * Create(StorageType eStorageType, PackType ePackType); // FACTORY
 		
@@ -678,11 +711,7 @@ public: \
 		return dynamic_cast<const T *>(pObject);
 	}
 	*/
-	
-	// Invoke:
-		
-	
-	
+			
 	// Serialized types...
 	//
 	// Here the entire hierarchy focuses on the OT data itself.
@@ -695,7 +724,7 @@ public: \
 		// Therefore, I don't allow you to access the constructor except through the factory.
 	protected:
 		OTDBString() : Storable() { m_Type = "OTDBString"; }
-		OTDBString(const std::string& rhs) : Storable(), m_string(rhs) { m_Type = "OTDBString"; }
+		OTDBString(const std::string& rhs) : Storable(), m_string(rhs) { m_Type = "OTDBString"; } // This is an abstract base class...so will this call ever actually happen?
 		
 	public:
 		virtual ~OTDBString() { }
@@ -703,6 +732,24 @@ public: \
 		std::string m_string;
 		
 		DEFINE_OT_DYNAMIC_CAST(OTDBString)
+	};
+	
+	// ------------------------------------------------
+	
+	
+	class Blob : public Storable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through the factory.
+	protected:
+		Blob() : Storable() { m_Type = "Blob"; }
+		
+	public:
+		virtual ~Blob() { }
+		
+		std::vector<unsigned char> m_memBuffer; // Where the actual binary data is stored, before packing.
+		
+		DEFINE_OT_DYNAMIC_CAST(Blob)
 	};
 	
 	// ------------------------------------------------
@@ -1016,10 +1063,18 @@ namespace OTDB
 		std::string m_strWalletFile;
 		
 	protected:
-		StorageFS();	// You have to use the factory to instantiate (so it can create the Packer also.)
-		// But from there, however you Init, Store, Query, etc is entirely up to you.
+		StorageFS();// You have to use the factory to instantiate (so it can create the Packer also.)
+					// But from there, however you Init, Store, Query, etc is entirely up to you.
 		
-		// -----------------------------------------------------
+		long ConstructAndConfirmPath(std::string & strOutput,
+									 const std::string& strFolder, const std::string& oneStr="",  
+									 const std::string& twoStr="",  const std::string& threeStr="");
+		
+		// **********************************************************
+
+		// If you wish to make your own subclass of OTDB::Storage, then use StorageFS as an example.
+		// The below 6 methods are the only overrides you need to copy.
+		//
 		virtual bool onStorePackedBuffer(PackedBuffer & theBuffer, std::string strFolder, std::string oneStr="", 
 										 std::string twoStr="", std::string threeStr="");
 		
@@ -1034,14 +1089,7 @@ namespace OTDB
 		
 		// -----------------------------------------------------
 		
-		long ConstructAndConfirmPath(std::string & strOutput,
-									 const std::string& strFolder, const std::string& oneStr="",  
-									 const std::string& twoStr="",  const std::string& threeStr="");
 	public:
-		static StorageFS * Instantiate() { return new StorageFS; }
-		
-		virtual ~StorageFS();
-		
 		virtual bool Init(std::string oneStr="", std::string twoStr="", std::string threeStr="", 
 						  std::string fourStr="", std::string fiveStr="", std::string sixStr="");
 		
@@ -1050,6 +1098,11 @@ namespace OTDB
 		virtual bool Exists(std::string strFolder, 
 							std::string oneStr="", std::string twoStr="", std::string threeStr="");
 		
+		// **********************************************************
+		
+		static StorageFS * Instantiate() { return new StorageFS; }
+		
+		virtual ~StorageFS();
 		
 		// -----------------------------------------
 		// lower level calls.
@@ -1069,21 +1122,27 @@ namespace OTDB
 		 // Store/Retrieve a string.
 		 
 		 bool StoreString(std::string strContents, std::string strFolder, 
-		 std::string oneStr="", std::string twoStr="", std::string threeStr="");
+			std::string oneStr="", std::string twoStr="", std::string threeStr="");
 		 
 		 std::string QueryString(std::string strFolder, std::string oneStr="",
-		 std::string twoStr="", std::string threeStr="");
+			std::string twoStr="", std::string threeStr="");
+		 
+		 bool StorePlainString(std::string strContents, std::string strFolder, 
+			std::string oneStr="", std::string twoStr="", std::string threeStr="");
+		 
+		 std::string QueryPlainString(std::string strFolder, std::string oneStr="",
+			std::string twoStr="", std::string threeStr="");
 		 
 		 // -----------------------------------------
 		 // Store/Retrieve an object. (Storable.)
 		 
 		 bool StoreObject(Storable & theContents, std::string strFolder, 
-		 std::string oneStr="", std::string twoStr="", std::string threeStr="");
+			 std::string oneStr="", std::string twoStr="", std::string threeStr="");
 		 
 		 // Use %newobject OTDB::Storage::Query();
 		 Storable * QueryObject(StoredObjectType theObjectType,
-		 std::string strFolder, std::string oneStr="",
-		 std::string twoStr="", std::string threeStr="");
+			 std::string strFolder, std::string oneStr="",
+			 std::string twoStr="", std::string threeStr="");
 		 */
 	};
 	
@@ -1106,8 +1165,6 @@ namespace OTDB
 
 
 
-
-
 // IStorable-derived types...
 //
 //
@@ -1119,10 +1176,8 @@ namespace OTDB
 //
 
 #define OT_USING_ISTORABLE_HOOKS \
-using IStorable::hookBeforePack; \
-using IStorable::hookAfterUnpack
-
-
+	using IStorable::hookBeforePack; \
+	using IStorable::hookAfterUnpack
 
 
 
@@ -1214,6 +1269,8 @@ virtual ~theType() { } \
 		msgpack::unpack(theBuffer.GetBuffer().data(), theBuffer.GetBuffer().size(), NULL, &z, &obj); if (msgpack::UNPACK_SUCCESS == ret) \
 		{ obj.convert(const_cast<theType*>(this)); return true; } return false; }
 
+#define OT_MSGPACK_END  } 
+
 // ----- Next go these:
 //	OT_USING_ISTORABLE_HOOKS;
 //	MSGPACK_DEFINE(gui_label, server_id, server_type, asset_type_id, acct_id, nym_id, memo, public_key);
@@ -1230,6 +1287,7 @@ virtual ~theType() { } \
 // That means when I copy these objects, only the WalletDataMsgpack data members are being copied,
 // not the 
 
+// Deprecated:
 // !!!!! This bottom part MUST be directly before the OT_MSGPACK_END!!!!!!!!!
 // Notice I declare an op=, so the compiler won't define a default one. Why?
 // Because the default one will call the base class op= as well, and copy over the
@@ -1259,7 +1317,7 @@ virtual ~theType() { } \
 
 // Finishing with this, and semicolon after.
 //#define OT_MSGPACK_END  } }
-#define OT_MSGPACK_END  } 
+
 
 
 // ----------------------------------------------
@@ -1272,10 +1330,10 @@ namespace OTDB
 	// Interface:	IStorableMsgpack
 	//
 	DeclareBasedInterface(IStorableMsgpack, IStorable)
-	virtual bool onPack(PackedBuffer& theBuffer, Storable& inObj);
-	virtual bool onUnpack(PackedBuffer& theBuffer, Storable& outObj);
-	virtual bool PerformPack(BufferMsgpack& theBuffer)=0;
-	virtual bool PerformUnpack(BufferMsgpack& theBuffer)=0;
+		virtual bool onPack(PackedBuffer& theBuffer, Storable& inObj);
+		virtual bool onUnpack(PackedBuffer& theBuffer, Storable& outObj);
+		virtual bool PerformPack(BufferMsgpack& theBuffer) = 0;
+		virtual bool PerformUnpack(BufferMsgpack& theBuffer) = 0;
 	OT_USING_ISTORABLE_HOOKS;
 	EndInterface
 	
@@ -1299,115 +1357,122 @@ namespace OTDB
 	// DO put a semicolon after the OT_MSGPACK_END macro.
 	
 	// -------------------------------------------------------
+	OT_MSGPACK_BEGIN(BlobMsgpack, Blob, STORED_OBJ_BLOB)
+		OT_USING_ISTORABLE_HOOKS;
+		MSGPACK_DEFINE(m_memBuffer);
+//		OT_MSGPACK_BEGIN_SWAP(BlobMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(m_memBuffer);
+	OT_MSGPACK_END;	
+	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(StringMsgpack, OTDBString, STORED_OBJ_STRING)
-	StringMsgpack(const std::string& rhs) : OTDBString(rhs), IStorableMsgpack() { }
-	OT_USING_ISTORABLE_HOOKS;
-	MSGPACK_DEFINE(m_string);
-	//		OT_MSGPACK_BEGIN_SWAP(MsgpackStringWrapper)
-	//		OT_MSGPACK_SWAP_MEMBER(m_string);
+		StringMsgpack(const std::string& rhs) : OTDBString(rhs), IStorableMsgpack() { }
+		OT_USING_ISTORABLE_HOOKS;
+		MSGPACK_DEFINE(m_string);
+//		OT_MSGPACK_BEGIN_SWAP(StringMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(m_string);
 	OT_MSGPACK_END;	
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(StringMapMsgpack, StringMap, STORED_OBJ_STRING_MAP)
-	OT_USING_ISTORABLE_HOOKS;
-	MSGPACK_DEFINE(the_map);
-	//		OT_MSGPACK_BEGIN_SWAP(StringMapMsgpack)
-	//		OT_MSGPACK_SWAP_MEMBER(the_map);
+		OT_USING_ISTORABLE_HOOKS;
+		MSGPACK_DEFINE(the_map);
+//		OT_MSGPACK_BEGIN_SWAP(StringMapMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(the_map);
 	OT_MSGPACK_END;	
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(ServerInfoMsgpack, ServerInfo, STORED_OBJ_SERVER_INFO)
-	OT_USING_ISTORABLE_HOOKS;
-	MSGPACK_DEFINE(gui_label, server_id, server_type);
-	//		OT_MSGPACK_BEGIN_SWAP(ServerInfoMsgpack)
-	//		OT_MSGPACK_SWAP_MEMBER(gui_label);
-	//		OT_MSGPACK_SWAP_MEMBER(server_id);
-	//		OT_MSGPACK_SWAP_MEMBER(server_type);
+		OT_USING_ISTORABLE_HOOKS;
+		MSGPACK_DEFINE(gui_label, server_id, server_type);
+//		OT_MSGPACK_BEGIN_SWAP(ServerInfoMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(gui_label);
+//		OT_MSGPACK_SWAP_MEMBER(server_id);
+//		OT_MSGPACK_SWAP_MEMBER(server_type);
 	OT_MSGPACK_END;	
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(BitcoinAcctMsgpack, BitcoinAcct, STORED_OBJ_BITCOIN_ACCT)
-	OT_USING_ISTORABLE_HOOKS;
-	MSGPACK_DEFINE(gui_label, acct_id, server_id, bitcoin_acct_name);
-	//		OT_MSGPACK_BEGIN_SWAP(BitcoinAcctMsgpack)
-	//		OT_MSGPACK_SWAP_MEMBER(gui_label);
-	//		OT_MSGPACK_SWAP_MEMBER(acct_id);
-	//		OT_MSGPACK_SWAP_MEMBER(server_id);
-	//		OT_MSGPACK_SWAP_MEMBER(bitcoin_acct_name);
+		OT_USING_ISTORABLE_HOOKS;
+		MSGPACK_DEFINE(gui_label, acct_id, server_id, bitcoin_acct_name);
+//		OT_MSGPACK_BEGIN_SWAP(BitcoinAcctMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(gui_label);
+//		OT_MSGPACK_SWAP_MEMBER(acct_id);
+//		OT_MSGPACK_SWAP_MEMBER(server_id);
+//		OT_MSGPACK_SWAP_MEMBER(bitcoin_acct_name);
 	OT_MSGPACK_END;
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(BitcoinServerMsgpack, BitcoinServer, STORED_OBJ_BITCOIN_SERVER)
-	OT_USING_ISTORABLE_HOOKS;
-	MSGPACK_DEFINE(gui_label, server_id, server_type, server_host, server_port, bitcoin_username, bitcoin_password);
-	//		OT_MSGPACK_BEGIN_SWAP(BitcoinServerMsgpack)
-	//		OT_MSGPACK_SWAP_MEMBER(gui_label);
-	//		OT_MSGPACK_SWAP_MEMBER(server_id);
-	//		OT_MSGPACK_SWAP_MEMBER(server_type);
-	//		OT_MSGPACK_SWAP_MEMBER(server_host);
-	//		OT_MSGPACK_SWAP_MEMBER(server_port);
-	//		OT_MSGPACK_SWAP_MEMBER(bitcoin_username);
-	//		OT_MSGPACK_SWAP_MEMBER(bitcoin_password);
+		OT_USING_ISTORABLE_HOOKS;
+		MSGPACK_DEFINE(gui_label, server_id, server_type, server_host, server_port, bitcoin_username, bitcoin_password);
+//		OT_MSGPACK_BEGIN_SWAP(BitcoinServerMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(gui_label);
+//		OT_MSGPACK_SWAP_MEMBER(server_id);
+//		OT_MSGPACK_SWAP_MEMBER(server_type);
+//		OT_MSGPACK_SWAP_MEMBER(server_host);
+//		OT_MSGPACK_SWAP_MEMBER(server_port);
+//		OT_MSGPACK_SWAP_MEMBER(bitcoin_username);
+//		OT_MSGPACK_SWAP_MEMBER(bitcoin_password);
 	OT_MSGPACK_END;
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(ContactAcctMsgpack, ContactAcct, STORED_OBJ_CONTACT_ACCT)
-	OT_USING_ISTORABLE_HOOKS;
-	MSGPACK_DEFINE(gui_label, server_id, server_type, asset_type_id, acct_id, nym_id, memo, public_key);
-	//		OT_MSGPACK_BEGIN_SWAP(ContactAcctMsgpack)
-	//		OT_MSGPACK_SWAP_MEMBER(gui_label);
-	//		OT_MSGPACK_SWAP_MEMBER(server_id);
-	//		OT_MSGPACK_SWAP_MEMBER(server_type);
-	//		OT_MSGPACK_SWAP_MEMBER(asset_type_id);
-	//		OT_MSGPACK_SWAP_MEMBER(acct_id);
-	//		OT_MSGPACK_SWAP_MEMBER(nym_id);
-	//		OT_MSGPACK_SWAP_MEMBER(memo);
-	//		OT_MSGPACK_SWAP_MEMBER(public_key);
+		OT_USING_ISTORABLE_HOOKS;
+		MSGPACK_DEFINE(gui_label, server_id, server_type, asset_type_id, acct_id, nym_id, memo, public_key);
+//		OT_MSGPACK_BEGIN_SWAP(ContactAcctMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(gui_label);
+//		OT_MSGPACK_SWAP_MEMBER(server_id);
+//		OT_MSGPACK_SWAP_MEMBER(server_type);
+//		OT_MSGPACK_SWAP_MEMBER(asset_type_id);
+//		OT_MSGPACK_SWAP_MEMBER(acct_id);
+//		OT_MSGPACK_SWAP_MEMBER(nym_id);
+//		OT_MSGPACK_SWAP_MEMBER(memo);
+//		OT_MSGPACK_SWAP_MEMBER(public_key);
 	OT_MSGPACK_END;
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(ContactNymMsgpack, ContactNym, STORED_OBJ_CONTACT_NYM)
-	virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
-	virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
-	std::deque<ServerInfoMsgpack>	deque_ServerInfos;
-	MSGPACK_DEFINE(gui_label, nym_id, nym_type, public_key, memo, deque_ServerInfos);
-	//		OT_MSGPACK_BEGIN_SWAP(ContactNymMsgpack)
-	//		OT_MSGPACK_SWAP_MEMBER(gui_label);
-	//		OT_MSGPACK_SWAP_MEMBER(nym_id);
-	//		OT_MSGPACK_SWAP_MEMBER(nym_type);
-	//		OT_MSGPACK_SWAP_MEMBER(public_key);
-	//		OT_MSGPACK_SWAP_MEMBER(memo);
-	//		OT_MSGPACK_SWAP_MEMBER(deque_ServerInfos);
+		virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
+		virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
+		std::deque<ServerInfoMsgpack>	deque_ServerInfos;
+		MSGPACK_DEFINE(gui_label, nym_id, nym_type, public_key, memo, deque_ServerInfos);
+//		OT_MSGPACK_BEGIN_SWAP(ContactNymMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(gui_label);
+//		OT_MSGPACK_SWAP_MEMBER(nym_id);
+//		OT_MSGPACK_SWAP_MEMBER(nym_type);
+//		OT_MSGPACK_SWAP_MEMBER(public_key);
+//		OT_MSGPACK_SWAP_MEMBER(memo);
+//		OT_MSGPACK_SWAP_MEMBER(deque_ServerInfos);
 	OT_MSGPACK_END;	
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(ContactMsgpack, Contact, STORED_OBJ_CONTACT)
-	virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
-	virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
-	std::deque<ContactNymMsgpack>	deque_Nyms;
-	std::deque<ContactAcctMsgpack>	deque_Accounts;
-	MSGPACK_DEFINE(gui_label, contact_id, email, public_key, memo, deque_Nyms, deque_Accounts);
-	//		OT_MSGPACK_BEGIN_SWAP(ContactMsgpack)
-	//		OT_MSGPACK_SWAP_MEMBER(gui_label);
-	//		OT_MSGPACK_SWAP_MEMBER(contact_id);
-	//		OT_MSGPACK_SWAP_MEMBER(email);
-	//		OT_MSGPACK_SWAP_MEMBER(public_key);
-	//		OT_MSGPACK_SWAP_MEMBER(memo);
-	//		OT_MSGPACK_SWAP_MEMBER(deque_Nyms);
-	//		OT_MSGPACK_SWAP_MEMBER(deque_Accounts);
+		virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
+		virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
+		std::deque<ContactNymMsgpack>	deque_Nyms;
+		std::deque<ContactAcctMsgpack>	deque_Accounts;
+		MSGPACK_DEFINE(gui_label, contact_id, email, public_key, memo, deque_Nyms, deque_Accounts);
+//		OT_MSGPACK_BEGIN_SWAP(ContactMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(gui_label);
+//		OT_MSGPACK_SWAP_MEMBER(contact_id);
+//		OT_MSGPACK_SWAP_MEMBER(email);
+//		OT_MSGPACK_SWAP_MEMBER(public_key);
+//		OT_MSGPACK_SWAP_MEMBER(memo);
+//		OT_MSGPACK_SWAP_MEMBER(deque_Nyms);
+//		OT_MSGPACK_SWAP_MEMBER(deque_Accounts);
 	OT_MSGPACK_END;	
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(AddressBookMsgpack, AddressBook, STORED_OBJ_ADDRESS_BOOK)
-	virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
-	virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
-	std::deque<ContactMsgpack>	deque_Contacts;
-	MSGPACK_DEFINE(deque_Contacts);
-	//		OT_MSGPACK_BEGIN_SWAP(AddressBookMsgpack)
-	//		OT_MSGPACK_SWAP_MEMBER(deque_Contacts);
+		virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
+		virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
+		std::deque<ContactMsgpack>	deque_Contacts;
+		MSGPACK_DEFINE(deque_Contacts);
+//		OT_MSGPACK_BEGIN_SWAP(AddressBookMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(deque_Contacts);
 	OT_MSGPACK_END;	
 	// -------------------------------------------------------
 	OT_MSGPACK_BEGIN(WalletDataMsgpack, WalletData, STORED_OBJ_WALLET_DATA)
-	virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
-	virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
-	std::deque<BitcoinServerMsgpack>	deque_BitcoinServers;
-	std::deque<BitcoinAcctMsgpack>		deque_BitcoinAccts;
-	MSGPACK_DEFINE(deque_BitcoinServers, deque_BitcoinAccts);
-	//		OT_MSGPACK_BEGIN_SWAP(WalletDataMsgpack)
-	//		OT_MSGPACK_SWAP_MEMBER(deque_BitcoinServers);
-	//		OT_MSGPACK_SWAP_MEMBER(deque_BitcoinAccts);
+		virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
+		virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
+		std::deque<BitcoinServerMsgpack>	deque_BitcoinServers;
+		std::deque<BitcoinAcctMsgpack>		deque_BitcoinAccts;
+		MSGPACK_DEFINE(deque_BitcoinServers, deque_BitcoinAccts);
+//		OT_MSGPACK_BEGIN_SWAP(WalletDataMsgpack)
+//		OT_MSGPACK_SWAP_MEMBER(deque_BitcoinServers);
+//		OT_MSGPACK_SWAP_MEMBER(deque_BitcoinAccts);
 	OT_MSGPACK_END;
 	// -------------------------------------------------------
 	
@@ -1493,9 +1558,9 @@ namespace OTDB
 	// Interface:    IStorablePB
 	//
 	DeclareBasedInterface(IStorablePB, IStorable)
-	virtual ::google::protobuf::Message * getPBMessage();
-	virtual bool onPack(PackedBuffer& theBuffer, Storable& inObj);
-	virtual bool onUnpack(PackedBuffer& theBuffer, Storable& outObj);
+		virtual ::google::protobuf::Message * getPBMessage();
+		virtual bool onPack(PackedBuffer& theBuffer, Storable& inObj);
+		virtual bool onUnpack(PackedBuffer& theBuffer, Storable& outObj);
 	OT_USING_ISTORABLE_HOOKS;
 	EndInterface
 	
@@ -1515,6 +1580,7 @@ namespace OTDB
 	 const char * StoredObjectTypeStrings
 	 {
 	 "OTDBString",		// Just a string.
+	 "Blob",			// Binary memory of arbitrary size.
 	 "StringMap",		// A StringMap is a list of Key/Value pairs, useful for storing nearly anything.
 	 "WalletData",		// The GUI wallet's stored data
 	 "BitcoinAcct",		// The GUI wallet's stored data about a Bitcoin acct
@@ -1527,6 +1593,7 @@ namespace OTDB
 	 "StoredObjError"	// (Should never be.)
 	 };	 
 	 */
+	
 	// ----------------------------------------------------
 	// Used for subclassing IStorablePB:
 	//
@@ -1582,6 +1649,7 @@ namespace OTDB
 	// THE ACTUAL SUBCLASSES: 
 	
 	DECLARE_PROTOBUF_SUBCLASS(OTDBString,	String_InternalPB,			StringPB,			STORED_OBJ_STRING);
+	DECLARE_PROTOBUF_SUBCLASS(Blob,			Blob_InternalPB,			BlobPB,				STORED_OBJ_BLOB);
 	DECLARE_PROTOBUF_SUBCLASS(StringMap,	StringMap_InternalPB,		StringMapPB,		STORED_OBJ_STRING_MAP);
 	DECLARE_PROTOBUF_SUBCLASS(BitcoinAcct,	BitcoinAcct_InternalPB,		BitcoinAcctPB,		STORED_OBJ_BITCOIN_ACCT);
 	DECLARE_PROTOBUF_SUBCLASS(BitcoinServer,BitcoinServer_InternalPB,	BitcoinServerPB,	STORED_OBJ_BITCOIN_SERVER);
@@ -1591,26 +1659,6 @@ namespace OTDB
 	DECLARE_PROTOBUF_SUBCLASS(Contact,		Contact_InternalPB,			ContactPB,			STORED_OBJ_CONTACT);
 	DECLARE_PROTOBUF_SUBCLASS(AddressBook,	AddressBook_InternalPB,		AddressBookPB,		STORED_OBJ_ADDRESS_BOOK);
 	DECLARE_PROTOBUF_SUBCLASS(WalletData,	WalletData_InternalPB,		WalletDataPB,		STORED_OBJ_WALLET_DATA);
-	
-	/*
-	 typedef ProtobufSubclass<Storable, String_InternalPB>					StringPB;
-	 
-	 typedef ProtobufSubclass<StringMap, StringMap_InternalPB>::Type			StringMapPB;
-	 
-	 typedef ProtobufSubclass<BitcoinAcct, BitcoinAcct_InternalPB>::Type		BitcoinAcctPB;
-	 typedef ProtobufSubclass<BitcoinServer, BitcoinServer_InternalPB>::Type	BitcoinServerPB;
-	 
-	 
-	 typedef ProtobufSubclass<ServerInfo, ServerInfo_InternalPB>::Type		ServerInfoPB;
-	 
-	 typedef ProtobufSubclass<ContactAcct, ContactAcct_InternalPB>::Type		ContactAcctPB;
-	 typedef ProtobufSubclass<ContactNym, ContactNym_InternalPB>::Type		ContactNymPB;
-	 typedef ProtobufSubclass<Contact, Contact_InternalPB>::Type				ContactPB;
-	 
-	 typedef ProtobufSubclass<AddressBook, AddressBook_InternalPB>::Type		AddressBookPB;
-	 
-	 typedef ProtobufSubclass<WalletData, WalletData_InternalPB>::Type		WalletDataPB;
-	 */
 	
 	
 	// !! ALL OF THESE have to provide implementations for hookBeforePack() and hookAfterUnpack().

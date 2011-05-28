@@ -242,6 +242,9 @@ void OT_API::TransportCallback(OTServerContract & theServerContract, OTEnvelope 
 		OTString strConnectPath; strConnectPath.Format("tcp://%s:%d", strServerHostname.Get(), nServerPort);
 		socket.connect(strConnectPath.Get());
 
+//		OTPayload thePayload;
+//		thePayload.SetEnvelope(theEnvelope);
+		
 		zmq::message_t request(ascEnvelope.GetLength());
 		memcpy((void*)request.data(), ascEnvelope.Get(), ascEnvelope.GetLength());
 		socket.send(request);
@@ -269,30 +272,39 @@ void OT_API::TransportCallback(OTServerContract & theServerContract, OTEnvelope 
 			zmq::message_t reply;
 			socket.recv(&reply);
 
-			std::string str_Result;
-			str_Result.reserve(reply.size());
-			str_Result.append(static_cast<const char *>(reply.data()), reply.size());
-			OTASCIIArmor ascServerReply = str_Result.c_str();
+//			std::string str_Result;
+//			str_Result.reserve(reply.size());
+//			str_Result.append(static_cast<const char *>(reply.data()), reply.size());
+			OTASCIIArmor ascServerReply;
+			ascServerReply.MemSet(static_cast<const char*>(reply.data()), reply.size());
 		
-			OTEnvelope theServerEnvelope(ascServerReply);
+//			OTPayload theRecvPayload;
+//			theRecvPayload.SetPayloadSize(reply.size());			
+//			memcpy((void*)theRecvPayload.GetPayloadPointer(), reply.data(), reply.size());
+			
+			// --------------------------
+			
 			OTString	strServerReply;
+			OTEnvelope theServerEnvelope;
 			
-			bool bOpened = theServerEnvelope.Open(*(g_OT_API.GetClient()->m_pConnection->GetNym()), strServerReply);
-			
-			OTMessage * pServerReply = new OTMessage;
-			
-			OT_ASSERT_MSG(NULL != pServerReply, "Error allocating memory in the OT API.");
+			if (theServerEnvelope.SetAsciiArmoredData(ascServerReply))
+			{	
+				bool bOpened = theServerEnvelope.Open(*(g_OT_API.GetClient()->m_pConnection->GetNym()), strServerReply);
+				
+				OTMessage * pServerReply = new OTMessage;
+				OT_ASSERT_MSG(NULL != pServerReply, "Error allocating memory in the OT API.");
 
-			if (bOpened && strServerReply.Exists() && pServerReply->LoadContractFromString(strServerReply))
-			{
-				// Now the fully-loaded message object (from the server, this time) can be processed by the OT library...
-				g_OT_API.GetClient()->ProcessServerReply(*pServerReply); // the Client takes ownership and will handle cleanup.
-			}
-			else
-			{
-				delete pServerReply;
-				pServerReply = NULL;
-				OTLog::Error("Error loading server reply from string after call to 'OT_API::TransportCallback'\n");
+				if (bOpened && strServerReply.Exists() && pServerReply->LoadContractFromString(strServerReply))
+				{
+					// Now the fully-loaded message object (from the server, this time) can be processed by the OT library...
+					g_OT_API.GetClient()->ProcessServerReply(*pServerReply); // the Client takes ownership and will handle cleanup.
+				}
+				else
+				{
+					delete pServerReply;
+					pServerReply = NULL;
+					OTLog::Error("Error loading server reply from string after call to 'OT_API::TransportCallback'\n");
+				}
 			}
 		}
 //		else
@@ -847,19 +859,12 @@ OTPseudonym * OT_API::LoadPrivateNym(const OTIdentifier & NYM_ID)
 	
 	OT_ASSERT_MSG(NULL != pNym, "Error allocating memory in the OT API.");
 	
-	OTLog::Error("DEBUG OT_API::LoadPrivateNym  0  \n");
-
 	if (pNym->Loadx509CertAndPrivateKey())
 	{
-		OTLog::Error("DEBUG OT_API::LoadPrivateNym  1  \n");
 		if (pNym->VerifyPseudonym()) 
 		{
-			OTLog::Error("DEBUG OT_API::LoadPrivateNym  2  \n");
-
 			if (pNym->LoadSignedNymfile(*pNym)) 
 			{
-				OTLog::Error("DEBUG OT_API::LoadPrivateNym  3  \n");
-
 				return pNym;
 			}
 			else 

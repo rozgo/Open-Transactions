@@ -11,6 +11,8 @@ extern "C"
 #include <string>
 
 
+#include "OTStorage.h"
+
 #include "OTString.h"
 #include "OTIdentifier.h"
 #include "OTPseudonym.h"
@@ -18,7 +20,6 @@ extern "C"
 #include "OTServerContract.h"
 #include "OTSignedFile.h"
 #include "OTLog.h"
-//#include "OTStorage.h"
 
 
 // Run this program from inside the testwallet directory.
@@ -38,6 +39,13 @@ int main (int argc, char * const argv[])
 	SSL_library_init();
 	SSL_load_error_strings();
 	
+//	std::string strDataFolderPath("/Users/Chris/Projects/Open-Transactions/testwallet/data_folder"), 
+	std::string strDataFolderPath("."), 
+				strWalletFile("wallet.xml");
+	bool bSuccessInitDefault = OTDB::InitDefaultStorage(OTDB_DEFAULT_STORAGE, 
+														OTDB_DEFAULT_PACKER, strDataFolderPath, strWalletFile);
+
+	
 	bool bIsServerContract = (*(argv[1]) == 's') ? true : false;
 	
 	OTString strNymID(argv[2]), strContractFile(argv[3]);
@@ -49,9 +57,14 @@ int main (int argc, char * const argv[])
 	OTPseudonym theNym(NymName, NymFile, strNymID);
 	
 	OTSignedFile theFile("nyms", strNymID.Get());
+
+	// ---------------------------------
+	
+	
+	// --------------------------------
 	
 	if (theFile.LoadFile())
-	{
+	{		
 		OTString strFileContents(theFile.GetFilePayload());
 		
 		if (theNym.Loadx509CertAndPrivateKey() && theNym.VerifyPseudonym()) 

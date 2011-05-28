@@ -184,6 +184,8 @@ extern "C"
 //#include "cryptopp/files.h"
 //#include "cryptopp/channels.h"
 
+#include "OTStorage.h"
+
 #include "OTData.h"
 #include "OTString.h"
 

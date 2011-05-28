@@ -704,9 +704,6 @@ class otapiPINVOKE {
   [DllImport("otapi", EntryPoint="CSharp_Storable_ot_dynamic_cast")]
   public static extern IntPtr Storable_ot_dynamic_cast(HandleRef jarg1);
 
-  [DllImport("otapi", EntryPoint="CSharp_delete_Storage")]
-  public static extern void delete_Storage(HandleRef jarg1);
-
   [DllImport("otapi", EntryPoint="CSharp_Storage_Init__SWIG_0")]
   public static extern bool Storage_Init__SWIG_0(HandleRef jarg1, string jarg2, string jarg3, string jarg4, string jarg5, string jarg6, string jarg7);
 
@@ -739,6 +736,9 @@ class otapiPINVOKE {
 
   [DllImport("otapi", EntryPoint="CSharp_Storage_Exists__SWIG_3")]
   public static extern bool Storage_Exists__SWIG_3(HandleRef jarg1, string jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_delete_Storage")]
+  public static extern void delete_Storage(HandleRef jarg1);
 
   [DllImport("otapi", EntryPoint="CSharp_Storage_StoreString__SWIG_0")]
   public static extern bool Storage_StoreString__SWIG_0(HandleRef jarg1, string jarg2, string jarg3, string jarg4, string jarg5, string jarg6);
@@ -949,6 +949,18 @@ class otapiPINVOKE {
 
   [DllImport("otapi", EntryPoint="CSharp_OTDBString_ot_dynamic_cast")]
   public static extern IntPtr OTDBString_ot_dynamic_cast(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_delete_Blob")]
+  public static extern void delete_Blob(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_Blob_m_memBuffer_set")]
+  public static extern void Blob_m_memBuffer_set(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("otapi", EntryPoint="CSharp_Blob_m_memBuffer_get")]
+  public static extern IntPtr Blob_m_memBuffer_get(HandleRef jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_Blob_ot_dynamic_cast")]
+  public static extern IntPtr Blob_ot_dynamic_cast(HandleRef jarg1);
 
   [DllImport("otapi", EntryPoint="CSharp_delete_StringMap")]
   public static extern void delete_StringMap(HandleRef jarg1);
@@ -1354,6 +1366,9 @@ class otapiPINVOKE {
 
   [DllImport("otapi", EntryPoint="CSharp_OTDBString_SWIGUpcast")]
   public static extern IntPtr OTDBString_SWIGUpcast(IntPtr jarg1);
+
+  [DllImport("otapi", EntryPoint="CSharp_Blob_SWIGUpcast")]
+  public static extern IntPtr Blob_SWIGUpcast(IntPtr jarg1);
 
   [DllImport("otapi", EntryPoint="CSharp_StringMap_SWIGUpcast")]
   public static extern IntPtr StringMap_SWIGUpcast(IntPtr jarg1);

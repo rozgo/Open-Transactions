@@ -136,6 +136,8 @@
 
 #include "irrxml/irrXML.h"
 
+#include "OTStorage.h"
+
 #include "OTData.h"
 #include "OTString.h"
 #include "OTIdentifier.h"

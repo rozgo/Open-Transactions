@@ -655,6 +655,8 @@ abstract class otapi {
 
 	const STORED_OBJ_STRING = 0;
 
+	const STORED_OBJ_BLOB = STORED_OBJ_BLOB;
+
 	const STORED_OBJ_STRING_MAP = STORED_OBJ_STRING_MAP;
 
 	const STORED_OBJ_WALLET_DATA = STORED_OBJ_WALLET_DATA;
@@ -1098,6 +1100,49 @@ class OTDBString extends Storable {
 			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
 			if (!class_exists($c)) {
 				return new OTDBString($r);
+			}
+			return new $c($r);
+		}
+		return $r;
+	}
+}
+
+class Blob extends Storable {
+	public $_cPtr=null;
+
+	function __set($var,$value) {
+		if ($var === 'm_memBuffer') return Blob_m_memBuffer_set($this->_cPtr,$value);
+		if ($var === 'thisown') return swig_otapi_alter_newobject($this->_cPtr,$value);
+		Storable::__set($var,$value);
+	}
+
+	function __isset($var) {
+		if (function_exists('Blob_'.$var.'_set')) return true;
+		if ($var === 'thisown') return true;
+		return Storable::__isset($var);
+	}
+
+	function __get($var) {
+		$func = 'Blob_'.$var.'_get';
+		if (function_exists($func)) {
+			$r = call_user_func($func,$this->_cPtr);
+			if (!is_resource($r)) return $r;
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			return new $c($r);
+		}
+		if ($var === 'thisown') return swig_otapi_get_newobject($this->_cPtr);
+		return Storable::__get($var);
+	}
+	function __construct($h) {
+		$this->_cPtr=$h;
+	}
+
+	static function ot_dynamic_cast($pObject) {
+		$r=Blob_ot_dynamic_cast($pObject);
+		if (is_resource($r)) {
+			$c=substr(get_resource_type($r), (strpos(get_resource_type($r), '__') ? strpos(get_resource_type($r), '__') + 2 : 3));
+			if (!class_exists($c)) {
+				return new Blob($r);
 			}
 			return new $c($r);
 		}

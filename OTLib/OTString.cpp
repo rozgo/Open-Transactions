@@ -139,6 +139,8 @@
 #include <string> // The C++ one 
 #include <fstream> // The C++ one 
 
+#include "OTStorage.h"
+
 #include "OTString.h"
 #include "OTIdentifier.h"
 #include "OTContract.h"

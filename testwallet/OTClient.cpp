@@ -140,6 +140,7 @@ extern "C"
 	
 }
 
+#include "OTStorage.h"
 
 #include "OTString.h"
 #include "OTIdentifier.h"
@@ -169,7 +170,6 @@ extern "C"
 #include "OTClient.h"
 #include "OTLog.h"
 
-#include "OTStorage.h"
 
 
 

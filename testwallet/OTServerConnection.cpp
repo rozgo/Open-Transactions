@@ -144,6 +144,7 @@ extern "C"
 #include "SSL-Example/SFSocket.h"
 }
 
+#include "OTStorage.h"
 
 #include "OTServerConnection.h"
 

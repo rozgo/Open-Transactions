@@ -185,6 +185,7 @@ public class otapiJNI {
   public final static native int STORE_FILESYSTEM_get();
   public final static native int STORE_TYPE_SUBCLASS_get();
   public final static native int STORED_OBJ_STRING_get();
+  public final static native int STORED_OBJ_BLOB_get();
   public final static native int STORED_OBJ_STRING_MAP_get();
   public final static native int STORED_OBJ_WALLET_DATA_get();
   public final static native int STORED_OBJ_BITCOIN_ACCT_get();
@@ -198,7 +199,6 @@ public class otapiJNI {
   public final static native void delete_Storable(long jarg1);
   public final static native long Storable_Create(int jarg1, int jarg2);
   public final static native long Storable_ot_dynamic_cast(long jarg1, Storable jarg1_);
-  public final static native void delete_Storage(long jarg1);
   public final static native boolean Storage_Init__SWIG_0(long jarg1, Storage jarg1_, String jarg2, String jarg3, String jarg4, String jarg5, String jarg6, String jarg7);
   public final static native boolean Storage_Init__SWIG_1(long jarg1, Storage jarg1_, String jarg2, String jarg3, String jarg4, String jarg5, String jarg6);
   public final static native boolean Storage_Init__SWIG_2(long jarg1, Storage jarg1_, String jarg2, String jarg3, String jarg4, String jarg5);
@@ -210,6 +210,7 @@ public class otapiJNI {
   public final static native boolean Storage_Exists__SWIG_1(long jarg1, Storage jarg1_, String jarg2, String jarg3, String jarg4);
   public final static native boolean Storage_Exists__SWIG_2(long jarg1, Storage jarg1_, String jarg2, String jarg3);
   public final static native boolean Storage_Exists__SWIG_3(long jarg1, Storage jarg1_, String jarg2);
+  public final static native void delete_Storage(long jarg1);
   public final static native boolean Storage_StoreString__SWIG_0(long jarg1, Storage jarg1_, String jarg2, String jarg3, String jarg4, String jarg5, String jarg6);
   public final static native boolean Storage_StoreString__SWIG_1(long jarg1, Storage jarg1_, String jarg2, String jarg3, String jarg4, String jarg5);
   public final static native boolean Storage_StoreString__SWIG_2(long jarg1, Storage jarg1_, String jarg2, String jarg3, String jarg4);
@@ -280,6 +281,10 @@ public class otapiJNI {
   public final static native void OTDBString_m_string_set(long jarg1, OTDBString jarg1_, String jarg2);
   public final static native String OTDBString_m_string_get(long jarg1, OTDBString jarg1_);
   public final static native long OTDBString_ot_dynamic_cast(long jarg1, Storable jarg1_);
+  public final static native void delete_Blob(long jarg1);
+  public final static native void Blob_m_memBuffer_set(long jarg1, Blob jarg1_, long jarg2);
+  public final static native long Blob_m_memBuffer_get(long jarg1, Blob jarg1_);
+  public final static native long Blob_ot_dynamic_cast(long jarg1, Storable jarg1_);
   public final static native void delete_StringMap(long jarg1);
   public final static native void StringMap_the_map_set(long jarg1, StringMap jarg1_, long jarg2);
   public final static native long StringMap_the_map_get(long jarg1, StringMap jarg1_);
@@ -415,6 +420,7 @@ public class otapiJNI {
   public final static native boolean AddressBook_AddContact(long jarg1, AddressBook jarg1_, long jarg2, Contact jarg2_);
   public final static native long AddressBook_ot_dynamic_cast(long jarg1, Storable jarg1_);
   public final static native long OTDBString_SWIGUpcast(long jarg1);
+  public final static native long Blob_SWIGUpcast(long jarg1);
   public final static native long StringMap_SWIGUpcast(long jarg1);
   public final static native long Displayable_SWIGUpcast(long jarg1);
   public final static native long Acct_SWIGUpcast(long jarg1);

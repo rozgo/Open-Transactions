@@ -1017,20 +1017,22 @@ static void SWIG_Php_SetModule(swig_module_info *pointer) {
 #define SWIGTYPE_p_OTDB__AddressBook swig_types[4]
 #define SWIGTYPE_p_OTDB__BitcoinAcct swig_types[5]
 #define SWIGTYPE_p_OTDB__BitcoinServer swig_types[6]
-#define SWIGTYPE_p_OTDB__Contact swig_types[7]
-#define SWIGTYPE_p_OTDB__ContactAcct swig_types[8]
-#define SWIGTYPE_p_OTDB__ContactNym swig_types[9]
-#define SWIGTYPE_p_OTDB__Displayable swig_types[10]
-#define SWIGTYPE_p_OTDB__OTDBString swig_types[11]
-#define SWIGTYPE_p_OTDB__Server swig_types[12]
-#define SWIGTYPE_p_OTDB__ServerInfo swig_types[13]
-#define SWIGTYPE_p_OTDB__Storable swig_types[14]
-#define SWIGTYPE_p_OTDB__Storage swig_types[15]
-#define SWIGTYPE_p_OTDB__StringMap swig_types[16]
-#define SWIGTYPE_p_OTDB__WalletData swig_types[17]
-#define SWIGTYPE_p_std__mapT_std__string_std__string_t swig_types[18]
-static swig_type_info *swig_types[20];
-static swig_module_info swig_module = {swig_types, 19, 0, 0, 0, 0};
+#define SWIGTYPE_p_OTDB__Blob swig_types[7]
+#define SWIGTYPE_p_OTDB__Contact swig_types[8]
+#define SWIGTYPE_p_OTDB__ContactAcct swig_types[9]
+#define SWIGTYPE_p_OTDB__ContactNym swig_types[10]
+#define SWIGTYPE_p_OTDB__Displayable swig_types[11]
+#define SWIGTYPE_p_OTDB__OTDBString swig_types[12]
+#define SWIGTYPE_p_OTDB__Server swig_types[13]
+#define SWIGTYPE_p_OTDB__ServerInfo swig_types[14]
+#define SWIGTYPE_p_OTDB__Storable swig_types[15]
+#define SWIGTYPE_p_OTDB__Storage swig_types[16]
+#define SWIGTYPE_p_OTDB__StringMap swig_types[17]
+#define SWIGTYPE_p_OTDB__WalletData swig_types[18]
+#define SWIGTYPE_p_std__mapT_std__string_std__string_t swig_types[19]
+#define SWIGTYPE_p_std__vectorT_unsigned_char_t swig_types[20]
+static swig_type_info *swig_types[22];
+static swig_module_info swig_module = {swig_types, 21, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1357,44 +1359,47 @@ static void *_p_OTDB__ServerInfoTo_p_OTDB__Displayable(void *x, int *SWIGUNUSEDP
 static void *_p_OTDB__ContactAcctTo_p_OTDB__Displayable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OTDB::Displayable *)  ((OTDB::ContactAcct *) x));
 }
-static void *_p_OTDB__AddressBookTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((OTDB::Storable *)  ((OTDB::AddressBook *) x));
-}
-static void *_p_OTDB__BitcoinAcctTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((OTDB::Storable *) (OTDB::Displayable *)(OTDB::Acct *) ((OTDB::BitcoinAcct *) x));
-}
-static void *_p_OTDB__ServerTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((OTDB::Storable *) (OTDB::Displayable *)(OTDB::ServerInfo *) ((OTDB::Server *) x));
-}
-static void *_p_OTDB__BitcoinServerTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((OTDB::Storable *) (OTDB::Displayable *)(OTDB::ServerInfo *)(OTDB::Server *) ((OTDB::BitcoinServer *) x));
-}
-static void *_p_OTDB__AcctTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((OTDB::Storable *) (OTDB::Displayable *) ((OTDB::Acct *) x));
-}
-static void *_p_OTDB__WalletDataTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((OTDB::Storable *)  ((OTDB::WalletData *) x));
-}
-static void *_p_OTDB__OTDBStringTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((OTDB::Storable *)  ((OTDB::OTDBString *) x));
-}
-static void *_p_OTDB__DisplayableTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((OTDB::Storable *)  ((OTDB::Displayable *) x));
-}
 static void *_p_OTDB__ContactNymTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OTDB::Storable *) (OTDB::Displayable *) ((OTDB::ContactNym *) x));
-}
-static void *_p_OTDB__ContactTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((OTDB::Storable *) (OTDB::Displayable *) ((OTDB::Contact *) x));
 }
 static void *_p_OTDB__StringMapTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OTDB::Storable *)  ((OTDB::StringMap *) x));
 }
-static void *_p_OTDB__ServerInfoTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((OTDB::Storable *) (OTDB::Displayable *) ((OTDB::ServerInfo *) x));
+static void *_p_OTDB__BitcoinServerTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *) (OTDB::Displayable *)(OTDB::ServerInfo *)(OTDB::Server *) ((OTDB::BitcoinServer *) x));
+}
+static void *_p_OTDB__ServerTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *) (OTDB::Displayable *)(OTDB::ServerInfo *) ((OTDB::Server *) x));
+}
+static void *_p_OTDB__AcctTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *) (OTDB::Displayable *) ((OTDB::Acct *) x));
 }
 static void *_p_OTDB__ContactAcctTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OTDB::Storable *) (OTDB::Displayable *) ((OTDB::ContactAcct *) x));
+}
+static void *_p_OTDB__DisplayableTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *)  ((OTDB::Displayable *) x));
+}
+static void *_p_OTDB__WalletDataTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *)  ((OTDB::WalletData *) x));
+}
+static void *_p_OTDB__BlobTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *)  ((OTDB::Blob *) x));
+}
+static void *_p_OTDB__BitcoinAcctTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *) (OTDB::Displayable *)(OTDB::Acct *) ((OTDB::BitcoinAcct *) x));
+}
+static void *_p_OTDB__OTDBStringTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *)  ((OTDB::OTDBString *) x));
+}
+static void *_p_OTDB__ServerInfoTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *) (OTDB::Displayable *) ((OTDB::ServerInfo *) x));
+}
+static void *_p_OTDB__ContactTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *) (OTDB::Displayable *) ((OTDB::Contact *) x));
+}
+static void *_p_OTDB__AddressBookTo_p_OTDB__Storable(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((OTDB::Storable *)  ((OTDB::AddressBook *) x));
 }
 static void *_p_OTDB__ServerTo_p_OTDB__ServerInfo(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((OTDB::ServerInfo *)  ((OTDB::Server *) x));
@@ -1409,6 +1414,7 @@ static swig_type_info _swigt__p_OTDB__Acct = {"_p_OTDB__Acct", "OTDB::Acct *", 0
 static swig_type_info _swigt__p_OTDB__AddressBook = {"_p_OTDB__AddressBook", "OTDB::AddressBook *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTDB__BitcoinAcct = {"_p_OTDB__BitcoinAcct", "OTDB::BitcoinAcct *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTDB__BitcoinServer = {"_p_OTDB__BitcoinServer", "OTDB::BitcoinServer *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_OTDB__Blob = {"_p_OTDB__Blob", "OTDB::Blob *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTDB__Contact = {"_p_OTDB__Contact", "OTDB::Contact *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTDB__ContactAcct = {"_p_OTDB__ContactAcct", "OTDB::ContactAcct *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTDB__ContactNym = {"_p_OTDB__ContactNym", "OTDB::ContactNym *", 0, 0, (void*)0, 0};
@@ -1421,6 +1427,7 @@ static swig_type_info _swigt__p_OTDB__Storage = {"_p_OTDB__Storage", "OTDB::Stor
 static swig_type_info _swigt__p_OTDB__StringMap = {"_p_OTDB__StringMap", "OTDB::StringMap *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_OTDB__WalletData = {"_p_OTDB__WalletData", "OTDB::WalletData *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__mapT_std__string_std__string_t = {"_p_std__mapT_std__string_std__string_t", "std::map< std::string,std::string > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__vectorT_unsigned_char_t = {"_p_std__vectorT_unsigned_char_t", "std::vector< unsigned char > *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__int,
@@ -1430,6 +1437,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_OTDB__AddressBook,
   &_swigt__p_OTDB__BitcoinAcct,
   &_swigt__p_OTDB__BitcoinServer,
+  &_swigt__p_OTDB__Blob,
   &_swigt__p_OTDB__Contact,
   &_swigt__p_OTDB__ContactAcct,
   &_swigt__p_OTDB__ContactNym,
@@ -1442,6 +1450,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_OTDB__StringMap,
   &_swigt__p_OTDB__WalletData,
   &_swigt__p_std__mapT_std__string_std__string_t,
+  &_swigt__p_std__vectorT_unsigned_char_t,
 };
 
 static swig_cast_info _swigc__int[] = {  {&_swigt__int, 0, 0, 0},{0, 0, 0, 0}};
@@ -1451,6 +1460,7 @@ static swig_cast_info _swigc__p_OTDB__Acct[] = {  {&_swigt__p_OTDB__BitcoinAcct,
 static swig_cast_info _swigc__p_OTDB__AddressBook[] = {  {&_swigt__p_OTDB__AddressBook, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__BitcoinAcct[] = {  {&_swigt__p_OTDB__BitcoinAcct, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__BitcoinServer[] = {  {&_swigt__p_OTDB__BitcoinServer, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__Blob[] = {  {&_swigt__p_OTDB__Blob, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__Contact[] = {  {&_swigt__p_OTDB__Contact, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__ContactAcct[] = {  {&_swigt__p_OTDB__ContactAcct, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__ContactNym[] = {  {&_swigt__p_OTDB__ContactNym, 0, 0, 0},{0, 0, 0, 0}};
@@ -1458,11 +1468,12 @@ static swig_cast_info _swigc__p_OTDB__Displayable[] = {  {&_swigt__p_OTDB__Bitco
 static swig_cast_info _swigc__p_OTDB__OTDBString[] = {  {&_swigt__p_OTDB__OTDBString, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__Server[] = {  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Server, 0, 0},  {&_swigt__p_OTDB__Server, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__ServerInfo[] = {  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__ServerInfo, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__ServerInfo, 0, 0},  {&_swigt__p_OTDB__ServerInfo, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_OTDB__Storable[] = {  {&_swigt__p_OTDB__ContactNym, _p_OTDB__ContactNymTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__StringMap, _p_OTDB__StringMapTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__ContactAcct, _p_OTDB__ContactAcctTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Displayable, _p_OTDB__DisplayableTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__WalletData, _p_OTDB__WalletDataTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Storable, 0, 0, 0},  {&_swigt__p_OTDB__BitcoinAcct, _p_OTDB__BitcoinAcctTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__OTDBString, _p_OTDB__OTDBStringTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__ServerInfo, _p_OTDB__ServerInfoTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Contact, _p_OTDB__ContactTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__AddressBook, _p_OTDB__AddressBookTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Acct, _p_OTDB__AcctTo_p_OTDB__Storable, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_OTDB__Storable[] = {  {&_swigt__p_OTDB__ContactNym, _p_OTDB__ContactNymTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Server, _p_OTDB__ServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Blob, _p_OTDB__BlobTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__StringMap, _p_OTDB__StringMapTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__BitcoinServer, _p_OTDB__BitcoinServerTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__ContactAcct, _p_OTDB__ContactAcctTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Displayable, _p_OTDB__DisplayableTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__WalletData, _p_OTDB__WalletDataTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Storable, 0, 0, 0},  {&_swigt__p_OTDB__BitcoinAcct, _p_OTDB__BitcoinAcctTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__OTDBString, _p_OTDB__OTDBStringTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__ServerInfo, _p_OTDB__ServerInfoTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Contact, _p_OTDB__ContactTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__AddressBook, _p_OTDB__AddressBookTo_p_OTDB__Storable, 0, 0},  {&_swigt__p_OTDB__Acct, _p_OTDB__AcctTo_p_OTDB__Storable, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__Storage[] = {  {&_swigt__p_OTDB__Storage, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__StringMap[] = {  {&_swigt__p_OTDB__StringMap, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_OTDB__WalletData[] = {  {&_swigt__p_OTDB__WalletData, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_std__mapT_std__string_std__string_t[] = {  {&_swigt__p_std__mapT_std__string_std__string_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__vectorT_unsigned_char_t[] = {  {&_swigt__p_std__vectorT_unsigned_char_t, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__int,
@@ -1472,6 +1483,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_OTDB__AddressBook,
   _swigc__p_OTDB__BitcoinAcct,
   _swigc__p_OTDB__BitcoinServer,
+  _swigc__p_OTDB__Blob,
   _swigc__p_OTDB__Contact,
   _swigc__p_OTDB__ContactAcct,
   _swigc__p_OTDB__ContactNym,
@@ -1484,6 +1496,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_OTDB__StringMap,
   _swigc__p_OTDB__WalletData,
   _swigc__p_std__mapT_std__string_std__string_t,
+  _swigc__p_std__vectorT_unsigned_char_t,
 };
 
 
@@ -1551,7 +1564,9 @@ fail:
 /* vdecl subsection */
 static int le_swig__p_OTDB__Server=0; /* handle for Server */
 static int le_swig__p_OTDB__ContactNym=0; /* handle for ContactNym */
+static int le_swig__p_std__vectorT_unsigned_char_t=0; /* handle for _p_std__vectorT_unsigned_char_t */
 static int le_swig__p_OTCaller=0; /* handle for OTCaller */
+static int le_swig__p_OTDB__Blob=0; /* handle for Blob */
 static int le_swig__p_OTDB__StringMap=0; /* handle for StringMap */
 static int le_swig__p_OTDB__BitcoinServer=0; /* handle for BitcoinServer */
 static int le_swig__p_OTCallback=0; /* handle for OTCallback */
@@ -9242,25 +9257,6 @@ fail:
 }
 
 
-/* This function is designed to be called by the zend list destructors */
-/* to typecast and do the actual destruction */
-static void __wrap_delete_Storage(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
-  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
-  void *ptr=value->ptr ;
-  int newobject=value->newobject ;
-  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  
-  efree(value);
-  if (! newobject) return; /* can't delete it! */
-  arg1 = (OTDB::Storage *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_OTDB__Storage TSRMLS_CC);
-  if (! arg1) zend_error(E_ERROR, "OTDB::Storage resource already free'd");
-  delete arg1;
-  return;
-fail:
-  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
 ZEND_NAMED_FUNCTION(_wrap_Storage_Init__SWIG_0) {
   OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
   std::string arg2 ;
@@ -9958,6 +9954,25 @@ ZEND_NAMED_FUNCTION(_wrap_Storage_Exists) {
   
   SWIG_ErrorCode() = E_ERROR;
   SWIG_ErrorMsg() = "No matching function for overloaded 'Storage_Exists'";
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
+static void __wrap_delete_Storage(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (OTDB::Storage *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_OTDB__Storage TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "OTDB::Storage resource already free'd");
+  delete arg1;
+  return;
+fail:
   zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
 }
 
@@ -13980,6 +13995,108 @@ fail:
 
 /* This function is designed to be called by the zend list destructors */
 /* to typecast and do the actual destruction */
+static void __wrap_delete_Blob(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  OTDB::Blob *arg1 = (OTDB::Blob *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (OTDB::Blob *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_OTDB__Blob TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "OTDB::Blob resource already free'd");
+  delete arg1;
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Blob_m_memBuffer_set) {
+  OTDB::Blob *arg1 = (OTDB::Blob *) 0 ;
+  std::vector< unsigned char > arg2 ;
+  std::vector< unsigned char > *tmp2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Blob, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Blob_m_memBuffer_set. Expected SWIGTYPE_p_OTDB__Blob");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_std__vectorT_unsigned_char_t, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of Blob_m_memBuffer_set. Expected SWIGTYPE_p_std__vectorT_unsigned_char_t");
+    }
+    arg2 = *tmp2;
+  }
+  if (arg1) (arg1)->m_memBuffer = arg2;
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Blob_m_memBuffer_get) {
+  OTDB::Blob *arg1 = (OTDB::Blob *) 0 ;
+  zval **args[1];
+  std::vector< unsigned char > result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Blob, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Blob_m_memBuffer_get. Expected SWIGTYPE_p_OTDB__Blob");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result =  ((arg1)->m_memBuffer);
+  {
+    std::vector< unsigned char > * resultobj = new std::vector< unsigned char >((const std::vector< unsigned char > &) result);
+    SWIG_SetPointerZval(return_value, (void *)resultobj, SWIGTYPE_p_std__vectorT_unsigned_char_t, 1);
+  }
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_Blob_ot_dynamic_cast) {
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  zval **args[1];
+  OTDB::Blob *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_OTDB__Storable, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of Blob_ot_dynamic_cast. Expected SWIGTYPE_p_OTDB__Storable");
+    }
+  }
+  result = (OTDB::Blob *)OTDB::Blob::ot_dynamic_cast(arg1);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_OTDB__Blob, 0);
+  
+  return;
+fail:
+  zend_error(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
 static void __wrap_delete_StringMap(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
   swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
   void *ptr=value->ptr ;
@@ -17721,8 +17838,15 @@ static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTDB__Server) {
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTDB__ContactNym) {
   __wrap_delete_ContactNym(rsrc, SWIGTYPE_p_OTDB__ContactNym->name TSRMLS_CC);
 }
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_std__vectorT_unsigned_char_t) {
+  /* No destructor for simple type _p_std__vectorT_unsigned_char_t */
+  efree(rsrc->ptr);
+}
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTCaller) {
   __wrap_delete_OTCaller(rsrc, SWIGTYPE_p_OTCaller->name TSRMLS_CC);
+}
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTDB__Blob) {
+  __wrap_delete_Blob(rsrc, SWIGTYPE_p_OTDB__Blob->name TSRMLS_CC);
 }
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_OTDB__StringMap) {
   __wrap_delete_StringMap(rsrc, SWIGTYPE_p_OTDB__StringMap->name TSRMLS_CC);
@@ -17972,6 +18096,9 @@ static zend_function_entry otapi_functions[] = {
  SWIG_ZEND_NAMED_FE(otdbstring_m_string_set,_wrap_OTDBString_m_string_set,NULL)
  SWIG_ZEND_NAMED_FE(otdbstring_m_string_get,_wrap_OTDBString_m_string_get,NULL)
  SWIG_ZEND_NAMED_FE(otdbstring_ot_dynamic_cast,_wrap_OTDBString_ot_dynamic_cast,NULL)
+ SWIG_ZEND_NAMED_FE(blob_m_membuffer_set,_wrap_Blob_m_memBuffer_set,NULL)
+ SWIG_ZEND_NAMED_FE(blob_m_membuffer_get,_wrap_Blob_m_memBuffer_get,NULL)
+ SWIG_ZEND_NAMED_FE(blob_ot_dynamic_cast,_wrap_Blob_ot_dynamic_cast,NULL)
  SWIG_ZEND_NAMED_FE(stringmap_the_map_set,_wrap_StringMap_the_map_set,NULL)
  SWIG_ZEND_NAMED_FE(stringmap_the_map_get,_wrap_StringMap_the_map_get,NULL)
  SWIG_ZEND_NAMED_FE(stringmap_setvalue,_wrap_StringMap_SetValue,NULL)
@@ -18380,8 +18507,12 @@ le_swig__p_OTDB__Server=zend_register_list_destructors_ex(_wrap_destroy_p_OTDB__
 SWIG_TypeClientData(SWIGTYPE_p_OTDB__Server,&le_swig__p_OTDB__Server);
 le_swig__p_OTDB__ContactNym=zend_register_list_destructors_ex(_wrap_destroy_p_OTDB__ContactNym,NULL,(char *)(SWIGTYPE_p_OTDB__ContactNym->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_OTDB__ContactNym,&le_swig__p_OTDB__ContactNym);
+le_swig__p_std__vectorT_unsigned_char_t=zend_register_list_destructors_ex(_wrap_destroy_p_std__vectorT_unsigned_char_t,NULL,(char *)(SWIGTYPE_p_std__vectorT_unsigned_char_t->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_std__vectorT_unsigned_char_t,&le_swig__p_std__vectorT_unsigned_char_t);
 le_swig__p_OTCaller=zend_register_list_destructors_ex(_wrap_destroy_p_OTCaller,NULL,(char *)(SWIGTYPE_p_OTCaller->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_OTCaller,&le_swig__p_OTCaller);
+le_swig__p_OTDB__Blob=zend_register_list_destructors_ex(_wrap_destroy_p_OTDB__Blob,NULL,(char *)(SWIGTYPE_p_OTDB__Blob->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_OTDB__Blob,&le_swig__p_OTDB__Blob);
 le_swig__p_OTDB__StringMap=zend_register_list_destructors_ex(_wrap_destroy_p_OTDB__StringMap,NULL,(char *)(SWIGTYPE_p_OTDB__StringMap->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_OTDB__StringMap,&le_swig__p_OTDB__StringMap);
 le_swig__p_OTDB__BitcoinServer=zend_register_list_destructors_ex(_wrap_destroy_p_OTDB__BitcoinServer,NULL,(char *)(SWIGTYPE_p_OTDB__BitcoinServer->name),module_number);
@@ -18424,6 +18555,7 @@ SWIG_LONG_CONSTANT(PACK_TYPE_ERROR, OTDB::PACK_TYPE_ERROR);
 SWIG_LONG_CONSTANT(STORE_FILESYSTEM, OTDB::STORE_FILESYSTEM);
 SWIG_LONG_CONSTANT(STORE_TYPE_SUBCLASS, OTDB::STORE_TYPE_SUBCLASS);
 SWIG_LONG_CONSTANT(STORED_OBJ_STRING, OTDB::STORED_OBJ_STRING);
+SWIG_LONG_CONSTANT(STORED_OBJ_BLOB, OTDB::STORED_OBJ_BLOB);
 SWIG_LONG_CONSTANT(STORED_OBJ_STRING_MAP, OTDB::STORED_OBJ_STRING_MAP);
 SWIG_LONG_CONSTANT(STORED_OBJ_WALLET_DATA, OTDB::STORED_OBJ_WALLET_DATA);
 SWIG_LONG_CONSTANT(STORED_OBJ_BITCOIN_ACCT, OTDB::STORED_OBJ_BITCOIN_ACCT);

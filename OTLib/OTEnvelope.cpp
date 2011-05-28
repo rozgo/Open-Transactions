@@ -148,6 +148,8 @@ extern "C"
 #endif
 }
 
+#include "OTStorage.h"
+
 #include "OTAsymmetricKey.h"
 #include "OTASCIIArmor.h"
 #include "OTPseudonym.h"

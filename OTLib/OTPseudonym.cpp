@@ -174,6 +174,8 @@ extern "C"
 using namespace irr;
 using namespace io;
 
+#include "OTStorage.h"
+
 #include "OTString.h"
 #include "OTStringXML.h"
 #include "OTIdentifier.h"
@@ -187,7 +189,6 @@ using namespace io;
 #include "OTMessage.h"
 
 #include "OTLog.h"
-#include "OTStorage.h"
 
 
 
@@ -1816,8 +1817,6 @@ bool OTPseudonym::LoadPublicKey()
 {	
 	// ------------------------------------
 	
-	OTLog::Error("DEBUG OTPseudonym 0 \n");
-
 	OTString strID;
 	GetIdentifier(strID);
 	
@@ -1825,8 +1824,6 @@ bool OTPseudonym::LoadPublicKey()
 	const char * szFilename		= strID.Get();
 
 	// --------------------------------------------------------------------
-	OTLog::Error("DEBUG OTPseudonym 1 \n");
-	
 	if (false == OTDB::Exists(szFoldername, szFilename))
 	{
 		// Code will call this in order to see if there is a PublicKey to be loaded.
@@ -1837,8 +1834,6 @@ bool OTPseudonym::LoadPublicKey()
 		return false;
 	}
 	
-	OTLog::Error("DEBUG OTPseudonym 2 \n");
-
 	// --------------------------------------------------------------------
 	
 	const OTString strFoldername(szFoldername), strFilename(szFilename);
@@ -1848,13 +1843,9 @@ bool OTPseudonym::LoadPublicKey()
 	// On the server side, it's just the public key. 
 	bool bLoadKeyFile = m_ascCert.LoadFromFile(strFoldername, strFilename);
 	
-	OTLog::Error("DEBUG OTPseudonym 3 \n");
-
 	// If successful, I load the same file again, but this time using OpenSSL
 	if (bLoadKeyFile)
 	{
-		OTLog::Error("DEBUG OTPseudonym 4 \n");
-
 		// Unlike above, where I'm merely reading a text file into a memory buffer,
 		// this time we are actually trying to use OpenSSL to really extract the
 		// public key from that same file.
@@ -1864,23 +1855,17 @@ bool OTPseudonym::LoadPublicKey()
 		
 		if (!bLoadPublicKey)
 		{
-			OTLog::Error("DEBUG OTPseudonym 5 \n");
-
 			OTLog::vError("Although the ascii-armored file (%s%s%s) was read, LoadPublicKey "
 						  "returned false.\n", szFoldername, OTLog::PathSeparator(), szFilename);
 			return false;
 		}
 		else
 		{
-			OTLog::Error("DEBUG OTPseudonym 5 \n");
-
 			OTLog::vOutput(4, "Successfully loaded public key from file: %s%s%s\n", 
 						   szFoldername, OTLog::PathSeparator(), szFilename);
 		}		
 		return true;	
 	}
-
-	OTLog::Error("DEBUG OTPseudonym 7 \n");
 
 	OTLog::Output(2, "Failure in OTPseudonym::LoadPublicKey.\n");
 	return false;
@@ -2326,8 +2311,8 @@ bool OTPseudonym::LoadSignedNymfile(OTPseudonym & SIGNER_NYM)
 	// 2. That the local subdir and filename match the versions inside the file.
 	// 3. That the signature matches for the signer nym who was passed in.
 	//
-	if (						// Also see OTWallet.cpp where it says:   //pNym->SaveSignedNymfile(*pNym); // Uncomment this if you want to generate a new nym by hand. NORMALLY LEAVE IT COMMENTED OUT!!!! IT'S DANGEROUS!!!
-			theNymfile.VerifyFile()			// TODO TEMP TEMPORARY RESUME  (These two lines can be commented out to allow you to load a nymfile with no sig.
+	if (	true					// Also see OTWallet.cpp where it says:   //pNym->SaveSignedNymfile(*pNym); // Uncomment this if you want to generate a new nym by hand. NORMALLY LEAVE IT COMMENTED OUT!!!! IT'S DANGEROUS!!!
+		&&	theNymfile.VerifyFile()			// TODO TEMP TEMPORARY RESUME  (These two lines can be commented out to allow you to load a nymfile with no sig.
 		&&	theNymfile.VerifySignature(SIGNER_NYM)	// These are ONLY commented-out so I can reload a bad nymfile. UNCOMMENT THESE IF YOU SEE THIS.
 		)
 	{
@@ -2599,8 +2584,6 @@ bool OTPseudonym::Loadx509CertAndPrivateKey()
 	
 	// --------------------------------------------------------------------
 
-	OTLog::Error("DEBUG OTPseudonym::Loadx509CertAndPrivateKey  0  \n");
-	
 	const OTString strFoldername(szFoldername);
 	const OTString strFilename(szFilename);
 	
@@ -2611,8 +2594,6 @@ bool OTPseudonym::Loadx509CertAndPrivateKey()
 	// Later we will use this to create a hash and verify against the NymID that was in the wallet.
 	bool bRetVal = m_ascCert.LoadFromFile(strFoldername, strFilename);
 	
-	OTLog::Error("DEBUG OTPseudonym::Loadx509CertAndPrivateKey  1  \n");
-
 	// I load the same file again, but this time using OpenSSL functions to read the public
 	// key and private key (if necessary) from the same file.
 	if (bRetVal)
@@ -2620,17 +2601,10 @@ bool OTPseudonym::Loadx509CertAndPrivateKey()
 		bool bPublic  = false;
 		bool bPrivate = false;
 		
-		OTLog::Error("DEBUG OTPseudonym::Loadx509CertAndPrivateKey  2  \n");
-
 		bPublic  = m_pkeyPublic->LoadPublicKeyFromCertFile(strFoldername, strFilename);
 		
-		OTLog::vError("DEBUG OTPseudonym::Loadx509CertAndPrivateKey  3  folder: %s file: %s\n",
-					 strFoldername.Get(), strFilename.Get());
-
 		bPrivate = m_pkeyPrivate->LoadPrivateKey(strFoldername, strFilename);
 		
-		OTLog::Error("DEBUG OTPseudonym::Loadx509CertAndPrivateKey  4  \n");
-
 //		bPrivate = true;
 		
 		if (!bPublic)

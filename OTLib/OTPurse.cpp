@@ -140,14 +140,15 @@ using namespace irr;
 using namespace io;
 
 
+
+#include "OTStorage.h"
+
 #include "OTToken.h"
 #include "OTPurse.h"
 #include "OTPseudonym.h"
 #include "OTEnvelope.h"
 #include "OTASCIIArmor.h"
 #include "OTLog.h"
-
-#include "OTStorage.h"
 
 
 

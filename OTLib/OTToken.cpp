@@ -148,6 +148,9 @@ using namespace irr;
 using namespace io;
 
 
+#include "OTStorage.h"
+
+
 #include "OTToken.h"
 #include "OTEnvelope.h"
 #include "OTMint.h"
@@ -155,7 +158,6 @@ using namespace io;
 #include "OTPurse.h"
 #include "OTLog.h"
 
-#include "OTStorage.h"
 
 
 #include "Lucre/bank.h"  // Lucre

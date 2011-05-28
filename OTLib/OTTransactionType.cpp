@@ -129,6 +129,7 @@
  **************************************************************/
 
 
+#include "OTStorage.h"
 
 #include "OTTransactionType.h"
 #include "OTLog.h"

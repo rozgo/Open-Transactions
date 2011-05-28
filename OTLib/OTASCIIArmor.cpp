@@ -149,17 +149,35 @@ extern "C"
 // I'm avoiding that since it won't be as easy. Ha.
 #include "easyzlib.h"
 
-#include "OTLog.h"
 #include "OTStorage.h"
 
-
 #include "OTString.h"
-#include "OTASCIIArmor.h"
 #include "OTEnvelope.h"
 
+#include "OTLog.h"
+
+#include "OTASCIIArmor.h"
 
 
 
+
+OTCleanup<OTDB::OTPacker> g_thePackerAngel; // Make sure the pointer below gets cleaned up properly at shutdown.
+
+OTDB::OTPacker * OTASCIIArmor::s_pPacker = NULL;
+
+
+OTDB::OTPacker * OTASCIIArmor::GetPacker() 
+{
+	if (NULL == s_pPacker)
+	{				// WARNING: Do not change OTDB_DEFAULT_PACKER below unless you also change SetAndPackData() since it ASSUMES this.
+		s_pPacker = OTDB::OTPacker::Create(OTDB_DEFAULT_PACKER); // Protobuf is the only one that works on all platforms right now.
+		OT_ASSERT(NULL != s_pPacker);
+		
+		g_thePackerAngel.SetCleanupTargetPointer(s_pPacker);
+	}
+	
+	return s_pPacker;
+}
 
 
 // initializes blank.
@@ -362,6 +380,67 @@ uint8_t* OT_base64_decode(const char *input, size_t* out_len, int bLineBreaks)
 // store the results, 
 #define DEFAULT_BUFFER_SIZE_EASYZLIB	16384
 
+
+
+// This function will base64 DECODE the string contents
+// and return them as binary in theData
+// Additionally it will decompress and unpack the data!
+//
+bool OTASCIIArmor::GetAndUnpackData(OTData & theData, bool bLineBreaks) const //linebreaks=true
+{	
+	size_t		outSize	= 0;
+	uint8_t *	pData	= NULL;
+	
+	theData.Release();
+	
+	if (GetLength() < 1)
+		return true;
+	
+	pData = OT_base64_decode(Get(), &outSize, (bLineBreaks ? 1 : 0));
+	
+	if (pData)
+	{
+		// --------------------------------------------------------
+		
+		OTDB::OTPacker * pPacker = OTASCIIArmor::GetPacker(); // No need to check for failure, since this already ASSERTS. No need to cleanup either.
+		
+		OTDB::PackedBuffer * pBuffer = pPacker->CreateBuffer(); // Need to clean this up.
+		OT_ASSERT(NULL != pBuffer);
+		OTCleanup<OTDB::PackedBuffer> theBufferAngel(*pBuffer); // make sure buffer is deleted.
+		
+		pBuffer->SetData(static_cast<const unsigned char*>(pData), outSize);
+		delete [] pData; pData=NULL; 
+		// -----------------------------
+		
+		OTDB::Blob * pBlob = dynamic_cast<OTDB::Blob *>(OTDB::CreateObject(OTDB::STORED_OBJ_BLOB));
+		OT_ASSERT(NULL != pBlob);
+		OTCleanup<OTDB::Blob> theBlobAngel(*pBlob); // clean up this blob.
+		
+		bool bUnpacked = pPacker->Unpack(*pBuffer, *pBlob);
+		
+		// ----------------------
+		
+		if (false == bUnpacked)
+		{
+			OTLog::Error("Failed unpacking data in OTASCIIArmor::GetAndUnpackData.\n");
+			delete [] pData; pData=NULL;
+			return false;
+		}
+		
+		// --------------------------------------------------------
+		
+		theData.Assign(pBlob->m_memBuffer.data(), pBlob->m_memBuffer.size());
+		delete [] pData; pData=NULL;
+		return true;
+	}
+	else 
+	{
+		OTLog::Error("Error while base64_decoding in OTASCIIArmor::GetAndUnpackData.\n");
+		return false;
+	}
+}
+
+
 // This function will base64 DECODE the string contents
 // and return them as a string in theData
 // It also handles uncompression afterwards.
@@ -381,22 +460,22 @@ bool OTASCIIArmor::GetString(OTString & theData, bool bLineBreaks) const //bLine
 	
 	if (pData)
 	{
-		 long nDestLen = DEFAULT_BUFFER_SIZE_EASYZLIB; // todo stop hardcoding numbers (but this one is OK I think.)
-		 unsigned char* pDest = new unsigned char [nDestLen+10]; // For safety.
-		 
+		long nDestLen = DEFAULT_BUFFER_SIZE_EASYZLIB; // todo stop hardcoding numbers (but this one is OK I think.)
+		unsigned char* pDest = new unsigned char [nDestLen+10]; // For safety.
+		
 		OT_ASSERT(NULL != pDest);
 		
-		 int nErr = ezuncompress( pDest, &nDestLen, pData, outSize );
-		 if ( nErr == EZ_BUF_ERROR )
-		 {
-			 delete [] pDest;
-			 pDest = new unsigned char [nDestLen]; // enough room now
-			 
-			 OT_ASSERT(NULL != pDest);
-			 
-			 nErr = ezuncompress( pDest, &nDestLen, pData, outSize );
-		 }
-		 
+		int nErr = ezuncompress( pDest, &nDestLen, pData, outSize );
+		if ( nErr == EZ_BUF_ERROR )
+		{
+			delete [] pDest;
+			pDest = new unsigned char [nDestLen]; // enough room now
+			
+			OT_ASSERT(NULL != pDest);
+			
+			nErr = ezuncompress( pDest, &nDestLen, pData, outSize );
+		}
+		
 		// Now we're done with this memory, let's free it.
 		delete [] pData; pData=NULL;
 		
@@ -439,8 +518,8 @@ bool OTASCIIArmor::GetString(OTString & theData, bool bLineBreaks) const //bLine
 		}
 		
 		// This enforces the null termination. (using the extra parameter nDestLen as nEnforcedMaxLength)
-		 theData.Set((const char*)pDest, nDestLen);
-	
+		theData.Set((const char*)pDest, nDestLen);
+		
 		delete [] pDest; pDest=NULL; 
 		return true;
 	}
@@ -450,7 +529,6 @@ bool OTASCIIArmor::GetString(OTString & theData, bool bLineBreaks) const //bLine
 		return false;
 	}
 }
-
 
 
 /*
@@ -503,14 +581,99 @@ bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) // =tru
 
 
 
+
+bool OTASCIIArmor::MemSet(const char * pMem, uint32_t theSize)
+{
+	Release();
+	
+	if ((NULL == pMem) || (theSize < 1))
+		return true;
+	
+	// -------------------
+	
+	char * str_new = new char [theSize + 1];
+	OT_ASSERT(NULL != str_new);
+	
+	memcpy((void*)str_new, pMem, theSize);
+	
+	str_new[theSize] = 0; // add null-terminator. (I deliberately made this buffer 1 byte larger so I could put the 0 at the end.)
+	
+	m_lLength	= theSize; // the length doesn't count the 0.
+	m_strBuffer	= str_new;
+	
+	return true;
+}
+
+
+
+// This function will base64 ENCODE theData,
+// and then Set() that as the string contents.
+// Additionally it will pack and compress the data!
+//
+bool OTASCIIArmor::SetAndPackData(const OTData & theData, bool bLineBreaks/*=true*/)
+{
+	char *	pString	= NULL;
+	
+	Release();
+	
+	if (theData.GetSize() < 1)
+		return true;
+	
+	// --------------------------------------------------------
+	
+	OTDB::OTPacker * pPacker = OTASCIIArmor::GetPacker(); // No need to check for failure, since this already ASSERTS. No need to cleanup either.
+	
+	// Here I use the default storage context to create the object (the blob.)
+	// I also originally created OTASCIIArmor::GetPacker() using OTDB_DEFAULT_PACKER,
+	// so I know everything is compatible.
+	//
+	OTDB::Blob * pBlob = dynamic_cast<OTDB::Blob *>(OTDB::CreateObject(OTDB::STORED_OBJ_BLOB));
+	
+	OT_ASSERT(NULL != pBlob); // Beyond this point, responsible to delete pBlob.
+	OTCleanup<OTDB::Blob> theBlobAngel(*pBlob); // make sure memory is cleaned up.
+
+	// -----------------------------
+	
+	pBlob->m_memBuffer.assign(static_cast<const unsigned char *>(theData.GetPointer()), 
+							  static_cast<const unsigned char *>(theData.GetPointer())+theData.GetSize());
+		
+	OTDB::PackedBuffer * pBuffer = pPacker->Pack(*pBlob); // Now we PACK our data before compressing/encoding it.
+	
+	if (NULL == pBuffer)
+	{
+		OTLog::Error("Failed packing data in OTASCIIArmor::SetAndPackData. \n");
+		return false;
+	}
+	
+	OTCleanup<OTDB::PackedBuffer> theBufferAngel(*pBuffer); // make sure memory is cleaned up.
+	
+	// --------------------------------------------------------
+	
+	pString = OT_base64_encode((const uint8_t*)pBuffer->GetData(), pBuffer->GetSize(), (bLineBreaks ? 1 : 0));
+	
+	if (pString)
+	{
+		Set(pString);
+		delete [] pString; pString=NULL;
+		return true;
+	}
+	else 
+	{
+		OTLog::Error("Error while base64_encoding in OTASCIIArmor::SetAndPackData.\n");
+		return false;
+	}
+}
+
+
+
 // This version is fully functional, and performs compression in addition to base64-encoding.
 // I have currently deactivated it in order to use a version that only supports encoding, but doesn't
 // support compression.
 
 
- bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) //=true
+bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) //=true
 {
-//	OTLog::vError("DEBUGGING OTASCIIARMOR::SETSTRING, INPUT:  --------->%s<---------", theData.Get());
+	//	OTLog::vError("DEBUGGING OTASCIIARMOR::SETSTRING, INPUT:  --------->%s<---------", theData.Get());
 	
 	Release();
 	
@@ -549,7 +712,7 @@ bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) // =tru
 	// Clean this up...
 	delete [] pSource;
 	pSource = NULL;
-
+	
 	// Still errors?
 	if ( nErr == EZ_BUF_ERROR )
 	{
@@ -563,7 +726,7 @@ bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) // =tru
 	{
 		delete [] pDest;
 		pDest = NULL;	
-
+		
 		OT_ASSERT_MSG(false, "pDest is NULL in OTASCIIArmor::SetString\n");
 		return false; // not really necessary but just making sure.
 	}
@@ -571,7 +734,7 @@ bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) // =tru
 	{
 		delete [] pDest;
 		pDest = NULL;	
-
+		
 		OT_ASSERT_MSG(false, "corrupted pSrc passed to ezuncompress OTASCIIArmor::SetString\n");
 		return false; // not really necessary but just making sure.
 	}
@@ -579,7 +742,7 @@ bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) // =tru
 	{
 		delete [] pDest;	
 		pDest = NULL;
-
+		
 		OT_ASSERT_MSG(false, "Out of memory in OTASCIIArmor::SetString\n");
 		return false; // not really necessary but just making sure.
 	}
@@ -592,7 +755,7 @@ bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) // =tru
 	{
 		// Now let's base-64 encode it...
 		pString = OT_base64_encode((const uint8_t*)pDest, nDestLen, (bLineBreaks ? 1 : 0));
-	//	pString = OT_base64_encode((const uint8_t*)theData.Get(), theData.GetLength()+1, (bLineBreaks ? 1 : 0)); // this was before we used compression.
+		//	pString = OT_base64_encode((const uint8_t*)theData.Get(), theData.GetLength()+1, (bLineBreaks ? 1 : 0)); // this was before we used compression.
 		
 		delete [] pDest;
 		pDest = NULL;
@@ -615,7 +778,7 @@ bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) // =tru
 	
 	if (pDest)
 		delete [] pDest;
-
+	
 	pDest = NULL;
 	
 	return false;
@@ -623,10 +786,16 @@ bool OTASCIIArmor::SetString(const OTString & theData, bool bLineBreaks) // =tru
 
 
 
+
+
 // This function will base64 DECODE the string contents
 // and return them as binary in theData
 bool OTASCIIArmor::GetData(OTData & theData, bool bLineBreaks) const //linebreaks=true
 {	
+	return GetAndUnpackData(theData, bLineBreaks);
+	
+	
+	
 	size_t		outSize	= 0;
 	uint8_t *	pData	= NULL;
 	
@@ -654,6 +823,10 @@ bool OTASCIIArmor::GetData(OTData & theData, bool bLineBreaks) const //linebreak
 // and then Set() that as the string contents.
 bool OTASCIIArmor::SetData(const OTData & theData, bool bLineBreaks/*=true*/)
 {
+	return SetAndPackData(theData, bLineBreaks);
+	
+	
+	
 	char *	pString	= NULL;
 	
 	Release();
@@ -697,16 +870,13 @@ bool OTASCIIArmor::LoadFromFile(const OTString & foldername, const OTString & fi
 	
 	// --------------------------------------------------------------------
 	
-	OTLog::Error("DEBUG OTASCIIArmor 0 \n");
-	
 	if (false == OTDB::Exists(foldername.Get(), filename.Get()))
 	{
 		OTLog::vError("OTASCIIArmor::LoadFromFile: File does not exist: %s%s%s\n", 
 					  foldername.Get(), OTLog::PathSeparator(), filename.Get());
 		return false;
 	}
-	OTLog::Error("DEBUG OTASCIIArmor 1 \n");
-	
+
 	// --------------------------------------------------------------------
 	//
 	OTString strFileContents(OTDB::QueryPlainString(foldername.Get(), filename.Get())); // <=== LOADING FROM DATA STORE.
@@ -717,7 +887,6 @@ bool OTASCIIArmor::LoadFromFile(const OTString & foldername, const OTString & fi
 					  foldername.Get(), OTLog::PathSeparator(), filename.Get());
 		return false;
 	}
-	OTLog::Error("DEBUG OTASCIIArmor 2 \n");
 
 	// --------------------------------------------------------------------
 	

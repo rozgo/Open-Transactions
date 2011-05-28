@@ -5128,6 +5128,18 @@ SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_STORED_1OBJ_1STRING_1
 }
 
 
+SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_STORED_1OBJ_1BLOB_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  OTDB::StoredObjectType result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (OTDB::StoredObjectType)OTDB::STORED_OBJ_BLOB;
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT jint JNICALL Java_com_wrapper_core_jni_otapiJNI_STORED_1OBJ_1STRING_1MAP_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   OTDB::StoredObjectType result;
@@ -5286,16 +5298,6 @@ SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Storable_1ot_1dynami
   result = (OTDB::Storable *)OTDB::Storable::ot_dynamic_cast(arg1);
   *(OTDB::Storable **)&jresult = result; 
   return jresult;
-}
-
-
-SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1Storage(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  arg1 = *(OTDB::Storage **)&jarg1; 
-  delete arg1;
 }
 
 
@@ -5740,6 +5742,16 @@ SWIGEXPORT jboolean JNICALL Java_com_wrapper_core_jni_otapiJNI_Storage_1Exists_1
   result = (bool)(arg1)->Exists(arg2);
   jresult = (jboolean)result; 
   return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1Storage(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  OTDB::Storage *arg1 = (OTDB::Storage *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(OTDB::Storage **)&jarg1; 
+  delete arg1;
 }
 
 
@@ -8291,6 +8303,65 @@ SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_OTDBString_1ot_1dyna
 }
 
 
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1Blob(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  OTDB::Blob *arg1 = (OTDB::Blob *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(OTDB::Blob **)&jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_Blob_1m_1memBuffer_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+  OTDB::Blob *arg1 = (OTDB::Blob *) 0 ;
+  std::vector< unsigned char > arg2 ;
+  std::vector< unsigned char > *argp2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::Blob **)&jarg1; 
+  argp2 = *(std::vector< unsigned char > **)&jarg2; 
+  if (!argp2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null std::vector< unsigned char >");
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->m_memBuffer = arg2;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Blob_1m_1memBuffer_1get(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  OTDB::Blob *arg1 = (OTDB::Blob *) 0 ;
+  std::vector< unsigned char > result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::Blob **)&jarg1; 
+  result =  ((arg1)->m_memBuffer);
+  *(std::vector< unsigned char > **)&jresult = new std::vector< unsigned char >((const std::vector< unsigned char > &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Blob_1ot_1dynamic_1cast(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  OTDB::Storable *arg1 = (OTDB::Storable *) 0 ;
+  OTDB::Blob *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(OTDB::Storable **)&jarg1; 
+  result = (OTDB::Blob *)OTDB::Blob::ot_dynamic_cast(arg1);
+  *(OTDB::Blob **)&jresult = result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void JNICALL Java_com_wrapper_core_jni_otapiJNI_delete_1StringMap(JNIEnv *jenv, jclass jcls, jlong jarg1) {
   OTDB::StringMap *arg1 = (OTDB::StringMap *) 0 ;
   
@@ -10582,6 +10653,14 @@ SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_OTDBString_1SWIGUpca
     (void)jenv;
     (void)jcls;
     *(OTDB::Storable **)&baseptr = *(OTDB::OTDBString **)&jarg1;
+    return baseptr;
+}
+
+SWIGEXPORT jlong JNICALL Java_com_wrapper_core_jni_otapiJNI_Blob_1SWIGUpcast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+    jlong baseptr = 0;
+    (void)jenv;
+    (void)jcls;
+    *(OTDB::Storable **)&baseptr = *(OTDB::Blob **)&jarg1;
     return baseptr;
 }
 

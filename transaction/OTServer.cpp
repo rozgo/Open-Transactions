@@ -144,6 +144,9 @@ using namespace irr;
 using namespace io;
 using namespace std;
 
+
+#include "OTStorage.h"
+
 #include "OTData.h"
 
 #include "OTString.h"
@@ -177,7 +180,6 @@ using namespace std;
 #include "OTOffer.h"
 #include "OTPaymentPlan.h"
 #include "OTLog.h"
-#include "OTStorage.h"
 
 #include "OTCron.h"
 
@@ -971,8 +973,9 @@ bool OTServer::LoadMainFile()
 						// This file will be saved during the course of operation
 						// Just making sure it is loaded up first.
 						OT_ASSERT(m_nymServer.LoadSignedNymfile(m_nymServer));
+				
 						
-					//	m_nymServer.SaveSignedNymfile(m_nymServer); // Uncomment this if you want to create the file. NORMALLY LEAVE IT OUT!!!! DANGEROUS!!!
+//						m_nymServer.SaveSignedNymfile(m_nymServer); // Uncomment this if you want to create the file. NORMALLY LEAVE IT OUT!!!! DANGEROUS!!!
 						
 						OTLog::Output(0, "Loaded server certificate and keys. Next loading Cron...\n");
 						

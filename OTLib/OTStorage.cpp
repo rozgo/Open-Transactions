@@ -137,14 +137,16 @@
 /*
  
  // We want to store EXISTING OT OBJECTS (Usually signed contracts)
- // These have an EXISTING OT path, such as "inbox/<acct_id>".
- // These are always in the form of a STRING.
+ // These have an EXISTING OT path, such as "inbox/acct_id".
+ // These files are always in the form of a STRING.
  // The easiest way for me to store/retrieve those strings is:
+ 
  
  using namespace OTDB;
  
  bool bSuccessStore = StoreString(strContents, strFolder, strFilename);
  bool bSuccessQuery = QueryString(strRetrieved, strFolder, strFilename);
+ 
  
  // -------
  // Internal to the above functions, the default Packing/Buffer is
@@ -162,6 +164,8 @@
  bool bSuccessStore = pStorage->StoreString(strContents, strFolder, strFilename);
  bool bSuccessQuery = pStorage->QueryString(strRetrieved, strFolder, strFilename);
  
+ 
+ 
  // -------
  // So if I wanted to create my OWN instance of storage, instead of using the
  // default one, it would be similar:
@@ -173,9 +177,11 @@
  
  if (bSuccessInit)
  {
- bool bSuccessStore = pStorage->StoreString(strContents, strFolder, strFilename);
- bool bSuccessQuery = pStorage->QueryString(strRetrieved, strFolder, strFilename);
+	bool bSuccessStore = pStorage->StoreString(strContents, strFolder, strFilename);
+	bool bSuccessQuery = pStorage->QueryString(strRetrieved, strFolder, strFilename);
  }
+
+ 
  
  // Creating like above is also how the default storage context gets instantiated
  // (internally) when you first start storing and querying.
@@ -200,25 +206,28 @@
  
  etc.
  
+ 
+ 
  // --------------------
  // So what if I want to use the default, but I want that DEFAULT to be CouchDB and Google?
  // Just do this (near the beginning of the execution of the application):
  
  bool bInit = InitDefaultStorage(STORE_COUCHDB, PACK_PROTOCOL_BUFFERS, 
- "IP ADDRESS", "PORT", "USERNAME", "PASSWORD", "DB NAME");
+					"IP ADDRESS", "PORT", "USERNAME", "PASSWORD", "DB NAME");
  
  if (true == bInit)
  {
- // Then do this as normal:
+	// Then do this as normal:
  
- Storage * pStorage = GetDefaultStorage();
- OT_ASSERT(NULL!=pStorage);
+	Storage * pStorage = GetDefaultStorage();
+	OT_ASSERT(NULL!=pStorage);
  
- bool bSuccessStore = pStorage->StoreString(strContents, strFolder, strFilename);
- bool bSuccessQuery = pStorage->QueryString(strRetrieved, strFolder, strFilename);
+	bool bSuccessStore = pStorage->StoreString(strContents, strFolder, strFilename);
+	bool bSuccessQuery = pStorage->QueryString(strRetrieved, strFolder, strFilename);
  }
  
  // -----------------------------------------------------------
+ 
  
  // What if you want to store an OBJECT in that location instead of a string?
  // The object must be instantiated by the Storage Context...
@@ -226,9 +235,11 @@
  BitcoinAcct * pAcct = pStorage->CreateObject(STORED_OBJ_BITCOIN_ACCT);
  OT_ASSERT(NULL != pAcct);
  
- pAcct->acct_id			= "jkhsdf987345kjhf8lkjhwef987345";
+ pAcct->acct_id				= "jkhsdf987345kjhf8lkjhwef987345";
  pAcct->bitcoin_acct_name	= "Read-Only Label (Bitcoin Internal acct)";
  pAcct->gui_label			= "Editable Label (Moneychanger)";
+ 
+ 
  
  // -----------------------------------------------------------
  // Perhaps you want to load up a Wallet and add this BitcoinAcct to it...
@@ -238,20 +249,31 @@
  
  if (NULL != pWalletData) // It loaded.
  {
- if (pWalletData->AddBitcoinAcct(*pAcct))
- bool bSuccessStore = pStorage->StoreObject(*pWalletData, "moneychanger", strFilename);
- else
- delete pAcct;
+	if (pWalletData->AddBitcoinAcct(*pAcct))
+		bool bSuccessStore = pStorage->StoreObject(*pWalletData, "moneychanger", strFilename);
+	else
+		delete pAcct;
  
- delete pWalletData;
+	delete pWalletData;
  }
  
  // Voila! The above code creates a BitcoinAcct (data object, not the real thing)
  // and then loads up the Moneychanger WalletData object, adds the BitcoinAcct to
  // it, and then stores it again.
  
- // --------------------------------------------------------------
+ // SIMPLE, RIGHT?
  
+ // Through this mechanism:
+ //
+ // 1) You can store your objects using the same storage context as the rest of OT.
+ // 2) You can dictate a different storage context, just for yourself, or for the entire OT library as well.
+ // 3) You can subclass OTDB::Storage and thus invent new storage methods.
+ // 4) You can easily store and load objects and strings.
+ // 5) You can swap out the packing code (msgpack, protobuf, json, etc) with no change to any other code.
+ // 6) It's consistent and easy-to-use for all object types.
+ // 7) For generic objects, there is a Blob type, a String type, and a StringMap type.
+ //
+ // --------------------------------------------------------------
  */
 
 OTDB::Storage * OTDB::details::s_pStorage= NULL;
@@ -262,6 +284,7 @@ OTDB::mapOfFunctions * OTDB::details::pFunctionMap=NULL; // This is a pointer so
 const char * OTDB::StoredObjectTypeStrings[] = 
 {
 	"OTDBString",		// Just a string.
+	"Blob",				// Binary data of arbitrary size.
 	"StringMap",		// A StringMap is a list of Key/Value pairs, useful for storing nearly anything.
 	"WalletData",		// The GUI wallet's stored data
 	"BitcoinAcct",		// The GUI wallet's stored data about a Bitcoin acct
@@ -309,6 +332,7 @@ namespace OTDB
 		
 #if defined (OTDB_MESSAGE_PACK)
 		theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_STRING)]		= &StringMsgpack::Instantiate;
+		theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_BLOB)]			= &BlobMsgpack::Instantiate;
 		theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_STRING_MAP)]	= &StringMapMsgpack::Instantiate;
 		theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_WALLET_DATA)]	= &WalletDataMsgpack::Instantiate;
 		theMap[std::make_pair(PACK_MESSAGE_PACK, STORED_OBJ_BITCOIN_ACCT)]	= &BitcoinAcctMsgpack::Instantiate;
@@ -323,6 +347,7 @@ namespace OTDB
 #if defined (OTDB_PROTOCOL_BUFFERS)
 		GOOGLE_PROTOBUF_VERIFY_VERSION; 
 		theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_STRING)]		= &StringPB::Instantiate;
+		theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_BLOB)]			= &BlobPB::Instantiate;
 		theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_STRING_MAP)]	= &StringMapPB::Instantiate;
 		theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_WALLET_DATA)]	= &WalletDataPB::Instantiate;
 		theMap[std::make_pair(PACK_PROTOCOL_BUFFERS, STORED_OBJ_BITCOIN_ACCT)]	= &BitcoinAcctPB::Instantiate;
@@ -467,10 +492,6 @@ namespace OTDB
 	{
 		Storage * pStorage = details::s_pStorage;
 		
-		
-		// TEMP DEBUG
-		OTLog::vError("DEBUG StorePlainString: folder: %s  file: %s \n", strFolder.c_str(), oneStr.c_str());
-		
 		OT_ASSERT((strFolder.length() > 3) || (0 == strFolder.compare(0, 1, ".")));
 		
 		OT_ASSERT((oneStr.length() < 1) || (oneStr.length() > 3));
@@ -487,10 +508,6 @@ namespace OTDB
 								 std::string threeStr/*=""*/)
 	{
 		Storage * pStorage = details::s_pStorage;
-		
-		
-		// TEMP DEBUG
-		OTLog::vError("DEBUG QueryPlainString: folder: %s  file: %s \n", strFolder.c_str(), oneStr.c_str());
 		
 		
 		OT_ASSERT((strFolder.length() > 3) || (0 == strFolder.compare(0, 1, ".")));
@@ -738,23 +755,7 @@ namespace OTDB
 	
 	
 	// ---------------------------------------------
-	
-	/*
-	 #define CPPCAT3(X,Y) X##Y
-	 #define CPPCAT2(X,Y)  CPPCAT3(X,Y)
-	 #define CPPCAT(X,Y)  CPPCAT2(X,Y)
-	 
-	 #define IMPLEMENT_GET_ADD_REMOVE(scope, name) \
-	 int  scope CPPCAT2(CPPCAT3(Get,name),Count)() { return CPPCAT2(list_,CPPCAT3(name,s)).size() } \
-	 name * scope CPPCAT2(Get,name)(int nIndex) \
-	 { if ((nIndex >= 0) && (nIndex < CPPCAT(list_,CPPCAT3(name,s)).size())) \
-	 return dynamic_cast<name *>(CPPCAT(list_,CPPCAT3(name,s)).at(nIndex)); return NULL; } \
-	 bool scope CPPCAT3(Remove,name)(int nIndex) \
-	 { if ((nIndex >= 0) && (nIndex < CPPCAT(list_,CPPCAT3(name,s)).size())) \
-	 { name * pData = CPPCAT(list_,CPPCAT3(name,s)).at(nIndex); delete pData; \
-	 CPPCAT(list_,CPPCAT3(name,s)).erase(CPPCAT(list_,CPPCAT3(name,s)).begin() + nIndex); return true; } return false; } \
-	 bool scope CPPCAT3(Add,name)(name & theDataObject) { CPPCAT(list_,CPPCAT3(name,s)).push_back(&theDataObject); return true; }
-	 */
+
 	
 #define IMPLEMENT_GET_ADD_REMOVE(scope, name) \
 	\
@@ -929,7 +930,24 @@ namespace OTDB
 		return bSuccess;
 	}
 	
+	// ----------------------------------------------------------
 	
+	const unsigned char * BufferMsgpack::GetData()
+	{
+		return reinterpret_cast<const unsigned char *>(m_buffer.data());
+	}
+	
+	size_t BufferMsgpack::GetSize()
+	{
+		return m_buffer.size();
+	}
+	
+	void BufferMsgpack::SetData(const unsigned char * pData, size_t theSize)
+	{
+		m_buffer.write(reinterpret_cast<const char*>(pData), static_cast<unsigned int>(theSize));
+	}
+	
+
 	bool BufferMsgpack::PackString(std::string& theString)
 	{
 		StringMsgpack theWrapper(theString);
@@ -1457,8 +1475,8 @@ namespace OTDB
 	//
 	// --------------------------------------------
 	// Protocol Buffers packer.
+	//
 #if defined (OTDB_PROTOCOL_BUFFERS)
-	
 	
 	
 	::google::protobuf::Message * IStorablePB::getPBMessage() // This is really only here so it can be overridden. Only subclasses of IStorablePB will actually exist.
@@ -1622,6 +1640,24 @@ namespace OTDB
 		return false;
 		//m_buffer.SerializeToOstream(&outStream);
 	}
+	
+	const unsigned char * BufferPB::GetData()
+	{
+		return reinterpret_cast<const unsigned char *>(m_buffer.c_str());
+	}
+	
+	size_t BufferPB::GetSize()
+	{
+		return m_buffer.size();
+	}
+		
+	void BufferPB::SetData(const unsigned char * pData, size_t theSize)
+	{
+		m_buffer.assign(reinterpret_cast<const char*>(pData), theSize);
+	}
+	
+	
+	
 	
 	// !! All of these have to provide implementations for the hookBeforePack and hookAfterUnpack methods.
 	// In .cpp file:
@@ -1868,6 +1904,24 @@ namespace OTDB
 		// (But if you used it like the others, it would work, since this function is here.)
 	}
 	// ---------------------------------------------
+	
+	template<> 
+	void BlobPB::hookBeforePack()
+	{
+		if (m_memBuffer.size() > 0)
+			__pb_obj.set_value(m_memBuffer.data(), m_memBuffer.size());
+	}
+	template<> 
+	void BlobPB::hookAfterUnpack()
+	{ 
+		if (__pb_obj.has_value())
+		{
+			std::string strTemp = __pb_obj.value();
+			m_memBuffer.assign(strTemp.begin(), strTemp.end());
+		}
+	}
+	// ---------------------------------------------
+	
 	
 	
 	template<> 
@@ -2667,8 +2721,10 @@ namespace OTDB
 	
 	// *****************************************************************************
 	
+	// STORAGE FS  (OTDB::StorageFS is the filesystem version of OTDB::Storage.)
 	
 	
+	// ConfirmOrCreateFolder()
 	// Used for making sure that certain necessary folders actually exist. (Creates them otherwise.)
 	//
 	// If you pass in "spent", then this function will make sure that "<path>/spent" actually exists, 
@@ -2689,6 +2745,8 @@ namespace OTDB
 		
 		OTString strPath;
 		strPath.Format("%s%s%s", GetFullPath(), PathSeparator(), szFolderName);
+		
+//		OTLog::vError("DEBUG Full path, separate, and szFolderName, all together: %s \n", strPath.Get());
 		
 		bool bDirIsPresent = (0 == stat(strPath.Get(), pst));
 		
@@ -2768,6 +2826,10 @@ namespace OTDB
 											const std::string& twoStr/*=""*/,  const std::string& threeStr/*=""*/)
 	{		
 		struct stat st;
+		
+//		OTLog::vError("DEBUG StorageFS::ConstructAndConfirmPath: m_strFullPath is %s and %s \n", m_strFullPath.c_str(), GetFullPath());
+
+//		OTLog::vOutput(0, "DEBUG STORAGEFS 1: %s  and  %s \n", strFolder.c_str(), oneStr.c_str());
 		
 		if (strFolder.length() < 1)
 		{
@@ -3084,7 +3146,8 @@ namespace OTDB
 		
 		if ((oneStr.length() < 1) || (twoStr.length() < 1))
 		{
-			OTLog::vError("Expected a data_folder path, and a wallet filename. But got this: %s%s%s\n",
+			OTLog::vError("Expected a data_folder path, and a wallet filename, but got this: %s%s%s\n"
+						  "Make sure to call LoadWallet.\n",
 						  oneStr.c_str(), PathSeparator(), twoStr.c_str());
 			return false;
 		}
@@ -3113,6 +3176,9 @@ namespace OTDB
 		// -----------------------------------
 		
 		m_strFullPath	= oneStr;
+		
+//		OTLog::vError("DEBUG StorageFS::Init: m_strFullPath is %s and %s \n", m_strFullPath.c_str(), GetFullPath());
+		
 		m_strWalletFile	= twoStr;
 		
 		return true;
@@ -3121,6 +3187,7 @@ namespace OTDB
 	
 	// -----------------------------------------
 	// See if the file is there.
+	
 	bool StorageFS::Exists(std::string strFolder, std::string oneStr/*=""*/,  
 						   std::string twoStr/*=""*/,  std::string threeStr/*=""*/)
 	{
@@ -3135,4 +3202,11 @@ namespace OTDB
 	
 	
 } // namespace OTDB
+
+
+
+
+
+
+
 

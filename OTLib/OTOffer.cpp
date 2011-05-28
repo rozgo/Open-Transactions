@@ -138,6 +138,7 @@ using namespace irr;
 using namespace io;
 
 
+#include "OTStorage.h"
 
 #include "OTOffer.h"
 #include "OTLog.h"

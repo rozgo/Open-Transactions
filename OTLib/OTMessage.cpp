@@ -142,6 +142,8 @@
 using namespace irr;
 using namespace io;
 
+#include "OTStorage.h"
+
 #include "OTMessage.h"
 #include "OTString.h"
 #include "OTStringXML.h"
@@ -1186,7 +1188,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 			return (-1); // error condition
 		}
 		
-		m_strNymPublicKey = ascTextExpected;
+		m_strNymPublicKey.Set(ascTextExpected);
 		
 		// -----------------------------------------------------
 		
@@ -1240,7 +1242,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 			return (-1); // error condition
 		}
 		
-		m_strNymPublicKey = ascTextExpected;
+		m_strNymPublicKey.Set(ascTextExpected);
 		
 		// -----------------------------------------------------
 		
@@ -1466,7 +1468,7 @@ int OTMessage::ProcessXMLNode(IrrXMLReader*& xml)
 		}
 		
 		if (m_bSuccess)
-			m_strNymPublicKey = ascTextExpected;
+			m_strNymPublicKey.Set(ascTextExpected);
 		else
 			m_ascInReferenceTo = ascTextExpected;				
 

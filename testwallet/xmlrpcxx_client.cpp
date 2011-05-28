@@ -193,7 +193,10 @@ void OT_Sleep(int nMS);
 
 // ---------------------------------------------------------------------------
 
+#include "OTStorage.h"
+
 #include "OTString.h"
+#include "OTASCIIArmor.h"
 #include "OTClient.h"
 #include "OTServerConnection.h"
 #include "OTMessage.h"
@@ -205,7 +208,6 @@ void OT_Sleep(int nMS);
 #include "OpenTransactions.h"
 #include "OTPaymentPlan.h"
 #include "OTLog.h"
-#include "OTStorage.h"
 
 // ---------------------------------------------------------------------------
 
@@ -371,7 +373,71 @@ int main(int argc, char* argv[])
 		}
 		else if (strLine.compare(0,4,"test") == 0)
 		{
+			const char * szBlah = "Transaction processor featuring Untraceable Digital Cash, "
+			"Anonymous Numbered Accounts, Triple-Signed Receipts, Basket Currencies, and Signed "
+			"XML Contracts. Also supports cheques, invoices, payment plans, markets with trades, "
+			"and other instruments... it's like PGP for Money.... Uses OpenSSL and Lucre blinded tokens.\n";
+			
+			OTIdentifier	SERVER_ID;
+			OTString		SERVER_NAME;
+			
+			OTServerContract * pServerContract = NULL;
+			
+			if (NULL == g_OT_API.GetWallet())
 			{
+				OTLog::Output(0, "The wallet object is still NULL, somehow. Please load it.\n");
+				continue;
+			}	// Here, for testing, I'm just grabbing the first server in the wallet...
+			else if (false == g_OT_API.GetWallet()->GetServer(0, SERVER_ID, SERVER_NAME))
+			{
+				OTLog::Output(0, "There are no server contracts in the wallet. Try 'load'.\n");
+				continue;
+			}
+
+			OTMessage theMessage;
+			
+			if (g_OT_API.GetClient()->ProcessUserCommand(OTClient::checkServerID, theMessage, 
+														*g_pTemporaryNym, *(g_OT_API.GetWallet()->GetServerContract(SERVER_ID)),
+														NULL)) // NULL pAccount on this command.
+			{
+				OTString strEnvelopeContents(theMessage);
+				
+				OTEnvelope theEnvelope;
+				// Seal the string up into an encrypted Envelope
+				theEnvelope.Seal(*g_pTemporaryNym, strEnvelopeContents);
+				
+				OTASCIIArmor ascEnvelope(theEnvelope); // ascEnvelope now contains the base64-encoded string of the sealed envelope contents.
+				
+				if (ascEnvelope.Exists())
+				{
+					OTEnvelope	theNewEnvelope(ascEnvelope);
+					OTString	strDecodedText;
+					
+					theNewEnvelope.Open(*g_pTemporaryNym, strDecodedText);
+					
+					OTLog::vOutput(0, "\n\nDECRYPTED TEXT:\n\n%s\n\n", strDecodedText.Get());
+				}
+			}
+			
+			/*
+			
+			
+			OTData theData(szBlah, strlen(szBlah)+1);
+			
+//			OTString strBlah(szBlah);
+			OTASCIIArmor ascTest;
+			
+			ascTest.SetData(theData);
+			
+			OTLog::vOutput(0, "Armored version:\n\n%s\n", ascTest.Get());
+			
+			OTData theTest;
+			
+			bool bSuccess = ascTest.GetData(theTest);
+			
+			OTLog::vOutput(0, "Status: %s \n", (bSuccess ? "TRUE" : "FALSE"));
+			*/
+			/*{
 				OTDB::Storage * pStorage = OTDB::CreateStorageContext(OTDB::STORE_FILESYSTEM, OTDB::PACK_MESSAGE_PACK);
 				OT_ASSERT(NULL!=pStorage);
 				
@@ -423,8 +489,8 @@ int main(int argc, char* argv[])
 				}
 				
 				delete pStorage;
-			}
-			{
+			}*/
+			/*{
 				OTDB::Storage * pStorage = OTDB::CreateStorageContext(OTDB::STORE_FILESYSTEM, OTDB::PACK_PROTOCOL_BUFFERS);
 				OT_ASSERT(NULL!=pStorage);
 				
@@ -432,6 +498,7 @@ int main(int argc, char* argv[])
 				
 				if (bSuccessInit)
 				{
+					
 					std::string strContents("JUST TESTING OUT THE NEW Protobuf CODE!!!!");
 					std::string strRetrieved("");
 					bool bSuccessStore = pStorage->StoreString(strContents, "temp", "protobuf.tst");
@@ -475,11 +542,23 @@ int main(int argc, char* argv[])
 								   (pAcct2 != NULL) ? "TRUE" : "FALSE", 
 								   (pAcct2 != NULL) ? pAcct->acct_id.c_str() : "FALSE", 
 								   (pAcct2 != NULL) ? pAcct->bitcoin_acct_name.c_str() : "FALSE", 
-								   (pAcct2 != NULL) ? pAcct->gui_label.c_str() : "FALSE");					
+								   (pAcct2 != NULL) ? pAcct->gui_label.c_str() : "FALSE");	
+					 
+					OTDB::Contact * pContact = NULL;
+					
+					OTDB::Storable * pStorable = pStorage->CreateObject(OTDB::STORED_OBJ_CONTACT);
+					
+					OT_ASSERT (NULL != pStorable);
+					
+					pContact = OTDB::Contact::ot_dynamic_cast(pStorable);
+					
+					OT_ASSERT (NULL != pContact); // Will Assert() out here if cast failed.
+					
+					OTLog::Output(0, "Dynamic cast success!\n");
 				}
 				
 				delete pStorage;
-			}
+			}*/
 			continue;
 		}			
 		else if (strLine.compare(0,5,"clear") == 0)
@@ -1705,25 +1784,57 @@ int main(int argc, char* argv[])
 		
 		const OTPseudonym * pServerNym = pServerContract->GetContractPublicNym();
 		
+		pServerNym->VerifyPseudonym();
+		
+		OTString strExtra1("TESTPUBKEYCLI.txt"), strExtra2(*pServerContract);
+		
+		(const_cast<OTPseudonym *>(pServerNym))->SavePublicKey(strExtra1);
+		
 		if (bSendCommand && (NULL != pServerNym))
 		{
-			OTString strEnvelopeContents;
+			OTString strEnvelopeContents(theMessage), strEnvelopeContents2(theMessage);
 			// Save the ready-to-go message into a string.
-			theMessage.SaveContract(strEnvelopeContents);
+//			theMessage.SaveContract(strEnvelopeContents);
 			
-			OTEnvelope theEnvelope;
+			OTEnvelope theEnvelope, theEnvelope2;
 			// Seal the string up into an encrypted Envelope
 			theEnvelope.Seal(*pServerNym, strEnvelopeContents);
+			theEnvelope2.Seal(*g_pTemporaryNym, strEnvelopeContents2);
+							  
+			// temp remove debug
+			OTIdentifier theTestID;
+			pServerNym->GetIdentifier(theTestID);
+			OTString theIDString(theTestID);
+			// -----------------------------------
 			
 			OTASCIIArmor ascEnvelope(theEnvelope); // ascEnvelope now contains the base64-encoded string of the sealed envelope contents.
+			OTASCIIArmor ascEnvelope2(theEnvelope2);
 			
 			if (ascEnvelope.Exists())
 			{
+				OTLog::vError("DEBUG Envelope addressed to Nym ID: %s. Contents: \n%s\n Size: %ld, Nym: \n%s\n Server Contract:\n%s\n", 
+							  theIDString.Get(), ascEnvelope.Get(),ascEnvelope.GetLength(), strExtra1.Get(), strExtra2.Get());
+				
+				OTEnvelope theTestEnvelope(ascEnvelope2);
+				OTString strTestOutput2;
+				bool bOpened2 = theTestEnvelope.Open(*g_pTemporaryNym, strTestOutput2);
+				
+				OTLog::vError("DEBUG Opening a similar envelope... Contents: \n%s\n", strTestOutput2.Get());
+
+				
 				zmq::socket_t socket(context, ZMQ_REQ);
 				
 				OTString strConnectPath; strConnectPath.Format("tcp://%s:%d", strServerHostname.Get(), nServerPort);
 				socket.connect(strConnectPath.Get());
 				
+				// --------------------------------
+//				OTPayload thePayload;
+//				bool bSetEnvelope = thePayload.SetEnvelope(theEnvelope);
+				
+//				bool GetEnvelope(OTEnvelope & theEnvelope) const; // Envelope retrieved from payload.
+//				bool SetEnvelope(const OTEnvelope & theEnvelope); // Envelope copied into payload to prepare for sending.
+				
+
 				zmq::message_t request(ascEnvelope.GetLength());
 				memcpy((void*)request.data(), ascEnvelope.Get(), ascEnvelope.GetLength());
 				socket.send(request);
@@ -1750,17 +1861,27 @@ int main(int argc, char* argv[])
 					zmq::message_t reply;
 					socket.recv(&reply);
 
-					std::string str_Result;
-					str_Result.reserve(reply.size());
-					str_Result.append(static_cast<const char*>(reply.data()), reply.size());
-					OTASCIIArmor ascServerReply = str_Result.c_str();
+//					OTPayload theRecvPayload;
+					
+//					std::string str_Result;
+//					str_Result.reserve(reply.size());
+//					str_Result.append(static_cast<const char*>(reply.data()), reply.size());
+					
+					OTASCIIArmor ascServerReply;
+					ascServerReply.MemSet(static_cast<const char*>(reply.data()), reply.size());
+					
+//					theRecvPayload.SetPayloadSize(reply.size());
+//					memcpy((void*)theRecvPayload.GetPayloadPointer(), reply.data(), reply.size());
 
+					//OTEnvelope theServerEnvelope;
 					OTEnvelope theServerEnvelope(ascServerReply);
+					
+//					bool bGetEnvelope = theRecvPayload.GetEnvelope(theServerEnvelope);
+					
 					OTString	strServerReply;				// Maybe should use g_OT_API.GetClient()->GetNym or some such...
 					bool bOpened = theServerEnvelope.Open(*g_pTemporaryNym, strServerReply);
 
 					OTMessage * pServerReply = new OTMessage;
-
 					OT_ASSERT(NULL != pServerReply);
 
 					if (bOpened && strServerReply.Exists() && pServerReply->LoadContractFromString(strServerReply))

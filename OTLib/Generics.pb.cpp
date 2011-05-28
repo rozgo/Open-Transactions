@@ -26,6 +26,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* StringMap_InternalPB_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   StringMap_InternalPB_reflection_ = NULL;
+const ::google::protobuf::Descriptor* Blob_InternalPB_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  Blob_InternalPB_reflection_ = NULL;
 
 }  // namespace
 
@@ -82,6 +85,21 @@ void protobuf_AssignDesc_Generics_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(StringMap_InternalPB));
+  Blob_InternalPB_descriptor_ = file->message_type(3);
+  static const int Blob_InternalPB_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Blob_InternalPB, value_),
+  };
+  Blob_InternalPB_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      Blob_InternalPB_descriptor_,
+      Blob_InternalPB::default_instance_,
+      Blob_InternalPB_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Blob_InternalPB, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Blob_InternalPB, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(Blob_InternalPB));
 }
 
 namespace {
@@ -100,6 +118,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
     KeyValue_InternalPB_descriptor_, &KeyValue_InternalPB::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     StringMap_InternalPB_descriptor_, &StringMap_InternalPB::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    Blob_InternalPB_descriptor_, &Blob_InternalPB::default_instance());
 }
 
 }  // namespace
@@ -111,6 +131,8 @@ void protobuf_ShutdownFile_Generics_2eproto() {
   delete KeyValue_InternalPB_reflection_;
   delete StringMap_InternalPB::default_instance_;
   delete StringMap_InternalPB_reflection_;
+  delete Blob_InternalPB::default_instance_;
+  delete Blob_InternalPB_reflection_;
 }
 
 void protobuf_AddDesc_Generics_2eproto() {
@@ -124,15 +146,18 @@ void protobuf_AddDesc_Generics_2eproto() {
     "lPB\022\r\n\005value\030\001 \001(\t\"1\n\023KeyValue_InternalP"
     "B\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\?\n\024StringM"
     "ap_InternalPB\022\'\n\004node\030\001 \003(\0132\031.OTDB.KeyVa"
-    "lue_InternalPB", 174);
+    "lue_InternalPB\" \n\017Blob_InternalPB\022\r\n\005val"
+    "ue\030\001 \001(\014", 208);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Generics.proto", &protobuf_RegisterTypes);
   String_InternalPB::default_instance_ = new String_InternalPB();
   KeyValue_InternalPB::default_instance_ = new KeyValue_InternalPB();
   StringMap_InternalPB::default_instance_ = new StringMap_InternalPB();
+  Blob_InternalPB::default_instance_ = new Blob_InternalPB();
   String_InternalPB::default_instance_->InitAsDefaultInstance();
   KeyValue_InternalPB::default_instance_->InitAsDefaultInstance();
   StringMap_InternalPB::default_instance_->InitAsDefaultInstance();
+  Blob_InternalPB::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_Generics_2eproto);
 }
 
@@ -847,6 +872,221 @@ void StringMap_InternalPB::Swap(StringMap_InternalPB* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = StringMap_InternalPB_descriptor_;
   metadata.reflection = StringMap_InternalPB_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int Blob_InternalPB::kValueFieldNumber;
+#endif  // !_MSC_VER
+
+Blob_InternalPB::Blob_InternalPB()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void Blob_InternalPB::InitAsDefaultInstance() {
+}
+
+Blob_InternalPB::Blob_InternalPB(const Blob_InternalPB& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void Blob_InternalPB::SharedCtor() {
+  _cached_size_ = 0;
+  value_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+Blob_InternalPB::~Blob_InternalPB() {
+  SharedDtor();
+}
+
+void Blob_InternalPB::SharedDtor() {
+  if (value_ != &::google::protobuf::internal::kEmptyString) {
+    delete value_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void Blob_InternalPB::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* Blob_InternalPB::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return Blob_InternalPB_descriptor_;
+}
+
+const Blob_InternalPB& Blob_InternalPB::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Generics_2eproto();  return *default_instance_;
+}
+
+Blob_InternalPB* Blob_InternalPB::default_instance_ = NULL;
+
+Blob_InternalPB* Blob_InternalPB::New() const {
+  return new Blob_InternalPB;
+}
+
+void Blob_InternalPB::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_value()) {
+      if (value_ != &::google::protobuf::internal::kEmptyString) {
+        value_->clear();
+      }
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool Blob_InternalPB::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional bytes value = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+                input, this->mutable_value()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void Blob_InternalPB::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // optional bytes value = 1;
+  if (has_value()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBytes(
+      1, this->value(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* Blob_InternalPB::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // optional bytes value = 1;
+  if (has_value()) {
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+        1, this->value(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int Blob_InternalPB::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional bytes value = 1;
+    if (has_value()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::BytesSize(
+          this->value());
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Blob_InternalPB::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const Blob_InternalPB* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const Blob_InternalPB*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void Blob_InternalPB::MergeFrom(const Blob_InternalPB& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_value()) {
+      set_value(from.value());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void Blob_InternalPB::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void Blob_InternalPB::CopyFrom(const Blob_InternalPB& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Blob_InternalPB::IsInitialized() const {
+  
+  return true;
+}
+
+void Blob_InternalPB::Swap(Blob_InternalPB* other) {
+  if (other != this) {
+    std::swap(value_, other->value_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata Blob_InternalPB::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = Blob_InternalPB_descriptor_;
+  metadata.reflection = Blob_InternalPB_reflection_;
   return metadata;
 }
 

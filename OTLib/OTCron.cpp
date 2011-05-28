@@ -144,6 +144,8 @@ using namespace io;
 
 using namespace std;
 
+#include "OTStorage.h"
+
 
 #include "OTLog.h"
 

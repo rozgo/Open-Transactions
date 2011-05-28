@@ -174,6 +174,8 @@ int gettimeofday
 using namespace irr;
 using namespace io;
 
+#include "OTStorage.h"
+
 
 #include "OTIdentifier.h"
 #include "OTAccount.h"
@@ -183,7 +185,6 @@ using namespace io;
 #include "OTStringXML.h"
 #include "OTPseudonym.h"
 #include "OTLog.h"
-#include "OTStorage.h"
 
 
 

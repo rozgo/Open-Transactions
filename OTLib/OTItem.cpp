@@ -141,6 +141,7 @@
 using namespace irr;
 using namespace io;
 
+#include "OTStorage.h"
 
 #include "OTIdentifier.h"
 #include "OTAccount.h"
