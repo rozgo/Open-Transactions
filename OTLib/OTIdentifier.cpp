@@ -227,7 +227,7 @@ OTIdentifier::OTIdentifier(const char * szStr) : OTData()
 
 OTIdentifier::OTIdentifier(const OTString & theStr) : OTData()
 {
-	SetString(const_cast<OTString&>(theStr));
+	SetString(theStr);
 }
 
 OTIdentifier::OTIdentifier(const OTContract &theContract)  : OTData() // Get the contract's ID into this identifier.
@@ -274,6 +274,7 @@ void OTIdentifier::SetString(const char * szString)
 	OT_ASSERT(NULL != szString);
 	
 	const OTString theStr(szString);
+	
 	SetString(theStr);
 }
 
@@ -884,10 +885,14 @@ void OTIdentifier::SetString(const OTString & theStr)
 {	
 	Release();
 	
-	if (!theStr.GetLength())
+	if (theStr.GetLength() < 3) // todo stop hardcoding.
 		return;
 		
 	const std::string strINPUT = theStr.Get();
+	
+	
+//	std::cerr << "OTIdentifier::SetString DEBUG: " << strINPUT << std::endl;
+	
 	
 	// Todo there are try/catches in here, so need to handle those at some point.	
 	BigInteger bigIntFromBase62 = stringToBigIntegerBase62(strINPUT);

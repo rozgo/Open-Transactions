@@ -454,26 +454,22 @@ OTMint * OTServer::GetMint(const OTIdentifier & ASSET_TYPE_ID, int nSeries) // E
 			return pMint;							// return the pointer right here, we're done.
 	}
 	
+	// --------------------------------------------------------------------
+	
 	// The mint isn't in memory for the series requested.
 	const OTString ASSET_ID_STR(ASSET_TYPE_ID);
-	OTString	strMintFilename; strMintFilename.Format("%s%s%d", ASSET_ID_STR.Get(), ".", nSeries);
+	
+	OTString	strMintFilename; 
+	strMintFilename.Format("%s%s%s%s%d", 
+						   m_strServerID.Get(), OTLog::PathSeparator(), 
+						   ASSET_ID_STR.Get(), ".", nSeries);
 	
 	const char * szFoldername	= OTLog::MintFolder();
 	const char * szFilename		= strMintFilename.Get();
 	
 	// --------------------------------------------------------------------
-	
-	if (false == OTDB::Exists(szFoldername, szFilename))
-	{
-		OTLog::vError("OTServer::GetMint: File does not exist: %s%s%s\n", 
-					  szFoldername, OTLog::PathSeparator(), szFilename);
-		return NULL;
-	}
-	
-	// --------------------------------------------------------------------
-	//
-	
-	pMint = new OTMint(m_strServerID, ASSET_ID_STR);
+		
+	pMint = new OTMint(m_strServerID, m_strServerUserID, ASSET_ID_STR);
 
 	// You cannot hash the Mint to get its ID. (The ID is a hash of the asset contract.)
 	// Instead, you must READ the ID from the Mint file, and then compare it to the one expected
@@ -481,13 +477,16 @@ OTMint * OTServer::GetMint(const OTIdentifier & ASSET_TYPE_ID, int nSeries) // E
 
 	OT_ASSERT_MSG(NULL != pMint, "Error allocating memory for Mint in OTServer::GetMint");
 	
-	if (pMint->OTContract::LoadContract(szFoldername, szFilename)) // Notice I don't call LoadMint() here since it is more like the client side.
+	OTString strSeries; strSeries.Format("%s%d", ".", nSeries);
+	//
+	if (pMint->LoadMint(strSeries.Get()))
 	{
 		if (pMint->VerifyMint(m_nymServer)) // I don't verify the Mint's expiration date here, just its signature, ID, etc.
 		{									// (Expiry dates are enforced on tokens during deposit--and checked against mint-- 
 											// but expiry dates are only enforced on the Mint itself during a withdrawal.)
 			// It's a multimap now...
 			//m_mapMints[ASSET_ID_STR.Get()] = pMint;
+			
 			m_mapMints.insert ( pair<std::string, OTMint *>(ASSET_ID_STR.Get(), pMint) );
 			
 			return pMint;
@@ -3719,37 +3718,58 @@ void OTServer::NotarizeDeposit(OTPseudonym & theNym, OTAccount & theAccount, OTT
 					// This way I don't have to worry about cleaning up pToken or leaking memory.
 					OTCleanup<OTToken> theTokenGuardian(*pToken);
 					
-					if ((pMint = GetMint(ASSET_TYPE_ID, pToken->GetSeries())) &&
-						(pMintCashReserveAcct = pMint->GetCashReserveAccount()))
+					pMint = GetMint(ASSET_TYPE_ID, pToken->GetSeries());
+					
+					if (NULL == pMint)
 					{
-						//				OTString DEBUG_STR(*pToken);
-						//				OTLog::vError("\n**************\nEXTRACTED TOKEN FROM PURSE:\n%s\n", DEBUG_STR.Get());
+						OTLog::Error("Unable to get or load Mint in OTServer::NotarizeDeposit.\n");
+						break;
+					}
+					else if (pMintCashReserveAcct = pMint->GetCashReserveAccount())
+					{
+//						OTString DEBUG_STR(*pToken);
+//						OTLog::vError("\n**************\nEXTRACTED TOKEN FROM PURSE:\n%s\n", DEBUG_STR.Get());
 						
 						OTString	strSpendableToken;
 						bool bToken = pToken->GetSpendableString(m_nymServer, strSpendableToken);
-						//				OTLog::vError("\n**************\nSPENDABLE STRING:\n%s\n", strSpendableToken.Get());
+//						OTLog::vError("\n**************\nSPENDABLE STRING:\n%s\n", strSpendableToken.Get());
 						
-
-						if (!bToken ||  // if failure getting the spendable token data from the token object
-							
-							!(pToken->GetAssetID() == ASSET_TYPE_ID) || // or if failure verifying asset type
-							
-							!(pToken->GetServerID() == SERVER_ID) ||	// or if failure verifying server ID
-							
-							// This call to VerifyToken verifies the token's Series and From/To dates against the
-							// mint's, and also verifies that the CURRENT date is inside that valid date range.
-							//
-							// It also verifies the Lucre coin data itself against the key for that series and
-							// denomination. (The signed and unblinded Lucre coin is finally verified in Lucre
-							// using the appropriate Mint private key.)
-							!(pMint->VerifyToken(m_nymServer, strSpendableToken, pToken->GetDenomination())) ||
-							
-							// Lookup the token in the SPENT TOKEN DATABASE, and make sure
-							// that it hasn't already been spent...
-							pToken->IsTokenAlreadySpent(strSpendableToken)) 
+						if (!bToken)  // if failure getting the spendable token data from the token object
 						{
 							bSuccess = false;
-							OTLog::vOutput(0, "ERROR verifying token in OTServer::NotarizeDeposit\n");
+							OTLog::vOutput(0, "ERROR verifying token in OTServer::NotarizeDeposit: Failure retrieving token data. \n");
+							break;
+						}
+						else if (!(pToken->GetAssetID() == ASSET_TYPE_ID)) // or if failure verifying asset type
+						{
+							bSuccess = false;
+							OTLog::vOutput(0, "ERROR verifying token in OTServer::NotarizeDeposit: Wrong asset type. \n");
+							break;
+						}
+						else if (!(pToken->GetServerID() == SERVER_ID))	// or if failure verifying server ID
+						{
+							bSuccess = false;
+							OTLog::vOutput(0, "ERROR verifying token in OTServer::NotarizeDeposit: Wrong server ID. \n");
+							break;
+						}
+						// This call to VerifyToken verifies the token's Series and From/To dates against the
+						// mint's, and also verifies that the CURRENT date is inside that valid date range.
+						//
+						// It also verifies the Lucre coin data itself against the key for that series and
+						// denomination. (The signed and unblinded Lucre coin is finally verified in Lucre
+						// using the appropriate Mint private key.)						
+						else if (!(pMint->VerifyToken(m_nymServer, strSpendableToken, pToken->GetDenomination())))
+						{
+							bSuccess = false;
+							OTLog::vOutput(0, "ERROR verifying token in OTServer::NotarizeDeposit: Token verification failed. \n");
+							break;
+						}
+						// Lookup the token in the SPENT TOKEN DATABASE, and make sure
+						// that it hasn't already been spent...
+						else if (pToken->IsTokenAlreadySpent(strSpendableToken))
+						{
+							bSuccess = false;
+							OTLog::vOutput(0, "ERROR verifying token in OTServer::NotarizeDeposit: Token was already spent. \n");
 							break;
 						}
 						else
@@ -3798,7 +3818,7 @@ void OTServer::NotarizeDeposit(OTPseudonym & theNym, OTAccount & theAccount, OTT
 					}
 					else 
 					{
-						OTLog::Error("Unable to get pointer to Mint or cash reserve account for Mint in OTServer::NotarizeDeposit.\n");
+						OTLog::Error("Unable to get cash reserve account for Mint in OTServer::NotarizeDeposit.\n");
 						break;
 					}
 					
@@ -4877,53 +4897,21 @@ void OTServer::UserCmdGetMint(OTPseudonym & theNym, OTMessage & MsgIn, OTMessage
 	
 	const OTIdentifier ASSET_TYPE_ID(MsgIn.m_strAssetID);	
 	const OTString ASSET_ID_STR(ASSET_TYPE_ID);
-	OTString strMintFilename; strMintFilename.Format("%s%sPUBLIC", ASSET_ID_STR.Get(), ".");
-	
-	const char * szFoldername	= OTLog::MintFolder();
-	const char * szFilename		= strMintFilename.Get();
-
-	OTString strMint;
 	
 	// --------------------------------------------------------------------
+
 	bool bSuccessLoadingMint = false;
 	
-	if (false == OTDB::Exists(szFoldername, szFilename))
-	{
-		OTLog::vError("OTServer::UserCmdGetMint: File does not exist: %s%s%s\n", 
-					  szFoldername, OTLog::PathSeparator(), szFilename);
-	}
-	else 
-	{
-		// --------------------------------------------------------------------
-		//
-		std::string strFileContents(OTDB::QueryPlainString(szFoldername, szFilename)); // <=== LOADING FROM DATA STORE.
-		
-		if (strFileContents.length() < 2)
-		{
-			OTLog::vError("OTServer::UserCmdGetMint: Error reading file: %s%s%s\n", 
-						  szFoldername, OTLog::PathSeparator(), szFilename);
-		}
-		// --------------------------------------------------------------------
-		else
-		{
-			bSuccessLoadingMint = true;
-			strMint.Set(strFileContents.c_str());
-		}
-	}
-
 	OTMint theMint(m_strServerID, ASSET_ID_STR);
 
-	if (bSuccessLoadingMint)
+	if (true == (bSuccessLoadingMint = theMint.LoadMint(".PUBLIC")))
 	{
-		// You cannot hash the Mint to get its ID. (The ID is a hash of the asset contract.)
+		// You cannot hash the Mint to get its ID. 
+		// (The ID is a hash of the asset contract, not the mint contract.)
 		// Instead, you must READ the ID from the Mint file, and then compare it to the one expected
 		// to see if they match (similar to how Account IDs are verified.)
 		
-		//	bool bSuccessLoadingMint = theMint.LoadContract();
-		bSuccessLoadingMint = theMint.LoadContractFromString(strMint);
-		
-		if (bSuccessLoadingMint)
-			bSuccessLoadingMint = theMint.VerifyMint(m_nymServer);
+		bSuccessLoadingMint = theMint.VerifyMint(m_nymServer);
 		
 		// Yup the asset contract exists.
 		if (bSuccessLoadingMint)

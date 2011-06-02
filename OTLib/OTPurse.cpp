@@ -481,7 +481,7 @@ int OTPurse::ProcessXMLNode(irr::io::IrrXMLReader*& xml)
 		if (strTotalValue.Exists() && (atol(strTotalValue.Get()) > 0))
 			m_lTotalValue = atol(strTotalValue.Get());
 			
-		OTLog::vOutput(0, "Loaded purse...\n ServerID:\n%s\n UserID: %s\n Asset ID: %s\n----------\n", strServerID.Get(),
+		OTLog::vOutput(0, "Loaded purse...\n ServerID: %s\n UserID: %s\n Asset ID: %s\n----------\n", strServerID.Get(),
 				strUserID.Get(), strAssetID.Get());
 		
 		return 1;

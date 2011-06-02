@@ -137,6 +137,7 @@ using namespace io;
 #include "OTStorage.h"
 
 
+#include "OTContract.h"
 #include "OTToken.h"
 #include "OTMint.h"
 #include "OTPseudonym.h"
@@ -215,17 +216,30 @@ void OTMint::Release()
 	InitMint();
 }
 
-OTMint::OTMint(const OTString & strServerID, const OTString & strAssetTypeID)
-: OTContract(strAssetTypeID, strServerID, strServerID, strAssetTypeID)
+OTMint::OTMint(const OTString & strServerID, const OTString & strServerNymID, const OTString & strAssetTypeID)
+	: OTContract(strAssetTypeID), 
+	m_ServerID(strServerID), 
+	m_ServerNymID(strServerNymID), 
+	m_AssetID(strAssetTypeID)
 {
-	m_strFoldername = OTLog::MintFolder();
+	m_strFoldername.Set(OTLog::MintFolder());
 	m_strFilename.Format("%s%s%s", strServerID.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
-
-	m_ServerID.SetString(strServerID);
-	m_AssetID.SetString(strAssetTypeID);
 	
 	InitMint();
 }
+
+
+OTMint::OTMint(const OTString & strServerID, const OTString & strAssetTypeID)
+	: OTContract(strAssetTypeID), 
+	m_ServerID(strServerID), 
+	m_AssetID(strAssetTypeID)
+{
+	m_strFoldername.Set(OTLog::MintFolder());
+	m_strFilename.Format("%s%s%s", strServerID.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
+	
+	InitMint();
+}
+
 
 OTMint::OTMint() : OTContract()
 {
@@ -339,8 +353,13 @@ bool OTMint::SaveMint(const char * szAppend/*=NULL*/)
 	
 	if (!bSaved)
 	{
-		OTLog::vError("OTMint::SaveMint: Error writing to file: %s%s%s%s%s\n", szFolder1name,
-					  OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), szFilename);
+		if (NULL != szAppend) 
+			OTLog::vError("OTMint::SaveMint: Error writing to file: %s%s%s%s%s%s\n", szFolder1name,
+					  OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), szFilename, szAppend);
+		else
+			OTLog::vError("OTMint::SaveMint: Error writing to file: %s%s%s%s%s\n", szFolder1name,
+						  OTLog::PathSeparator(), szFolder2name, OTLog::PathSeparator(), szFilename);	
+
 		return false;
 	}
 	// --------------------------------------------------------------------
@@ -583,8 +602,8 @@ bool OTMint::AddDenomination(OTPseudonym & theNotary, long lDenomination, int nP
 		m_mapPublic[lDenomination]	= pPublic;
 		m_mapPrivate[lDenomination]	= pPrivate;
 		
-		// Grab the Server ID and save it with this Mint
-		theNotary.GetIdentifier(m_ServerID);
+		// Grab the Server Nym ID and save it with this Mint
+		theNotary.GetIdentifier(m_ServerNymID);
 		
 		// Grab the Server's public key and save it with this Mint
 		// OTAsymmetricKey op= only copies the public key, FYI.
@@ -615,7 +634,8 @@ bool OTMint::AddDenomination(OTPseudonym & theNotary, long lDenomination, int nP
 // If the server needs to save the private keys, then call SetSavePrivateKeys() first.
 void OTMint::UpdateContents()
 {
-	OTString SERVER_ID(m_ServerID), ASSET_ID(m_AssetID), CASH_ACCOUNT_ID(m_CashAccountID);
+	OTString	SERVER_ID(m_ServerID), SERVER_NYM_ID(m_ServerNymID), 
+				ASSET_ID(m_AssetID), CASH_ACCOUNT_ID(m_CashAccountID);
 	
 	long lFrom = m_VALID_FROM, lTo = m_VALID_TO, lExpiration = m_EXPIRATION;
 	
@@ -624,14 +644,20 @@ void OTMint::UpdateContents()
 	
 	m_xmlUnsigned.Concatenate("<?xml version=\"%s\"?>\n\n", "1.0");		
 	
-	m_xmlUnsigned.Concatenate("<mint version=\"%s\"\n serverID=\"%s\"\n assetTypeID=\"%s\"\n"
+	m_xmlUnsigned.Concatenate("<mint version=\"%s\"\n"
+							  " serverID=\"%s\"\n"
+							  " serverNymID=\"%s\"\n"
+							  " assetTypeID=\"%s\"\n"
 							  " cashAcctID=\"%s\"\n"
 							  " series=\"%d\"\n"
 							  " expiration=\"%ld\"\n"
 							  " validFrom=\"%ld\"\n"
 							  " validTo=\"%ld\""
 							  " >\n\n", 
-							  m_strVersion.Get(), SERVER_ID.Get(), ASSET_ID.Get(),
+							  m_strVersion.Get(), 
+							  SERVER_ID.Get(), 
+							  SERVER_NYM_ID.Get(), 
+							  ASSET_ID.Get(),
 							  CASH_ACCOUNT_ID.Get(),
 							  m_nSeries, lExpiration, lFrom, lTo );
 	
@@ -691,10 +717,11 @@ int OTMint::ProcessXMLNode(IrrXMLReader*& xml)
 	
 	if (!strcmp("mint", xml->getNodeName())) 
 	{
-		OTString strServerID, strAssetID, strCashAcctID;
+		OTString strServerID, strServerNymID, strAssetID, strCashAcctID;
 		
 		m_strVersion	= xml->getAttributeValue("version");					
 		strServerID		= xml->getAttributeValue("serverID");
+		strServerNymID	= xml->getAttributeValue("serverNymID");
 		strAssetID		= xml->getAttributeValue("assetTypeID");
 		strCashAcctID	= xml->getAttributeValue("cashAcctID");
 		
@@ -704,6 +731,7 @@ int OTMint::ProcessXMLNode(IrrXMLReader*& xml)
 		m_VALID_TO		= atol(xml->getAttributeValue("validTo"));
 		
 		m_ServerID.SetString(strServerID);
+		m_ServerNymID.SetString(strServerNymID);
 		m_AssetID.SetString(strAssetID);
 		m_CashAccountID.SetString(strCashAcctID);
 				
@@ -1060,31 +1088,38 @@ bool OTMint::VerifyToken(OTPseudonym & theNotary, OTString & theCleartextToken, 
 // Make sure the issuer here has a private key
 // theMint.GenerateNewMint(nSeries, VALID_FROM, VALID_TO, ASSET_ID, m_nymServer, 1, 5, 10, 20, 50, 100, 500, 1000, 10000, 100000);
 void OTMint::GenerateNewMint(int nSeries, time_t VALID_FROM, time_t VALID_TO, time_t MINT_EXPIRATION,
-							 const OTIdentifier & theAssetID, OTPseudonym & theNotary, 
+							 const OTIdentifier & theAssetID, const OTIdentifier & theServerID, 
+							 OTPseudonym & theNotary, 
 							 long nDenom1, long nDenom2, long nDenom3, long nDenom4, long nDenom5,
 							 long nDenom6, long nDenom7, long nDenom8, long nDenom9, long nDenom10)
 {
 	Release();
 	
 	m_AssetID		= theAssetID;
+	m_ServerID		= theServerID;
 	
+	OTIdentifier SERVER_NYM_ID(theNotary);
+	m_ServerNymID	= SERVER_NYM_ID;
+
 	m_nSeries		= nSeries;
 	m_VALID_FROM	= VALID_FROM;
 	m_VALID_TO		= VALID_TO;
 	m_EXPIRATION	= MINT_EXPIRATION;
 	
-	
-	OTIdentifier SERVER_ID(theNotary);
-	
 	// Normally asset accounts are created based on an incoming message, 
 	// so I'm just simulating that in order to make sure it gets its
 	// necessary input values, such as asset type, server ID, etc.
 	OTMessage theMessage;
-	SERVER_ID.GetString(theMessage.m_strNymID);
-	theAssetID.GetString(theMessage.m_strAssetID);
-	SERVER_ID.GetString(theMessage.m_strServerID);
+	SERVER_NYM_ID.GetString(theMessage.m_strNymID);
+	theAssetID.GetString(	theMessage.m_strAssetID);
+	theServerID.GetString(	theMessage.m_strServerID);
 	 
-	m_pReserveAcct	= OTAccount::GenerateNewAccount(SERVER_ID, SERVER_ID, theNotary, theMessage);
+	/* OTAccount::
+	 GenerateNewAccount(const OTIdentifier & theUserID, const OTIdentifier & theServerID, 
+						const OTPseudonym & theServerNym, const OTMessage & theMessage,
+						const AccountType eAcctType=simple);
+	 */
+	m_pReserveAcct	= OTAccount::GenerateNewAccount(SERVER_NYM_ID, theServerID, theNotary, theMessage);
 
 	if (m_pReserveAcct)
 	{

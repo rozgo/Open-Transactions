@@ -153,7 +153,9 @@ protected:
 	mapOfArmor		m_mapPublic;	// An Ascii-armored string of the mint Public information. Base64-encoded only.
 	
 	
-	OTIdentifier	m_ServerID;		// The Nym ID of the Server, whose public key is m_keyPublic
+	OTIdentifier	m_ServerID;		// The Server ID, (a hash of the server contract whose public key is m_keyPublic)
+	OTIdentifier	m_ServerNymID;	// The Nym ID of the Server, whose public key is m_keyPublic
+	
 	OTAsymmetricKey m_keyPublic;	// The server's public key.
 	
 	OTIdentifier	m_AssetID;		// Each Asset type has its own mint.
@@ -198,6 +200,7 @@ public:
 	
 	OTMint();
 	OTMint(const OTString & strServerID, const OTString & strAssetTypeID);
+	OTMint(const OTString & strServerID, const OTString & strServerNymID, const OTString & strAssetTypeID);
 	virtual ~OTMint();
 	virtual void Release();
 	void ReleaseDenominations();
@@ -231,7 +234,8 @@ public:
 	
 	// Lucre step 1: generate new mint
 	void GenerateNewMint(int nSeries, time_t VALID_FROM, time_t VALID_TO,  time_t MINT_EXPIRATION, 
-						 const OTIdentifier & theAssetID, OTPseudonym & theNotary, 
+						 const OTIdentifier & theAssetID, const OTIdentifier & theServerID, 
+						 OTPseudonym & theNotary, 
 						 long nDenom1=0, long nDenom2=0, long nDenom3=0, long nDenom4=0, long nDenom5=0,
 						 long nDenom6=0, long nDenom7=0, long nDenom8=0, long nDenom9=0, long nDenom10=0);
 

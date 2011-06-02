@@ -585,10 +585,8 @@ bool OTAccount::GenerateNewAccount(const OTPseudonym & theServer, const OTMessag
 
 	m_AcctAssetTypeID.SetString(theMessage.m_strAssetID);
 	
-	OTString TEMPstr(m_AcctAssetTypeID);
-
-	OTLog::vOutput(3, "Creating new account, type:\n%s\nChanged to ID then back to string:\n%s\n", 
-				   theMessage.m_strAssetID.Get(), TEMPstr.Get());
+	OTLog::vOutput(3, "Creating new account, type:\n%s\n", 
+				   theMessage.m_strAssetID.Get());
 	
 	OTIdentifier SERVER_ID(theMessage.m_strServerID);	
 	SetRealServerID(SERVER_ID);			// todo this assumes the serverID on the message is correct. It's vetted, but still...

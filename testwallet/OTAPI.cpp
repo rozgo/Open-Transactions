@@ -1862,17 +1862,30 @@ const char * OT_API_GetAccountWallet_Type(const char * THE_ID)
 /// (Which is a hash of the contract used to issue the asset type.)
 const char * OT_API_GetAccountWallet_AssetTypeID(const char * THE_ID)
 {
+//	OTLog::Error("DEBUG 1 \n");
+	
 	OT_ASSERT_MSG(NULL != THE_ID, "Null THE_ID passed in.");
 	
 	OTIdentifier	theID(THE_ID);
 	
+//	OTLog::vError("DEBUG 2: ID: %s \n", THE_ID);
+
 	OTAccount * pContract = g_OT_API.GetAccount(theID);
 	
+//	OTLog::Error("DEBUG 3 \n");
+
 	if (NULL != pContract)
 	{		
+//		OTLog::Error("DEBUG 4 \n");
+
 		OTIdentifier theAssetID(pContract->GetAssetTypeID());
+		
+//		OTLog::Error("DEBUG 5 \n");
+
 		OTString strAssetTypeID(theAssetID);
 		
+//		OTLog::vError("DEBUG 6: strAssetTypeID: %s \n", strAssetTypeID.Get());
+
 		const char * pBuf = strAssetTypeID.Get(); 
 		
 #ifdef _WIN32

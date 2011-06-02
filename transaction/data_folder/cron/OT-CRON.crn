@@ -7,53 +7,53 @@ Hash: SAMY
  version="1.0"
  serverID="8dlRJnGCjqU5jw7bZaw2AF112UrCZiFfBS9CnJrMWSp" >
 
-<transactionNum value="1914" />
+<transactionNum value="1934" />
 
-<transactionNum value="1915" />
+<transactionNum value="1935" />
 
-<transactionNum value="1916" />
+<transactionNum value="1936" />
 
-<transactionNum value="1917" />
+<transactionNum value="1937" />
 
-<transactionNum value="1918" />
+<transactionNum value="1938" />
 
-<transactionNum value="1919" />
+<transactionNum value="1939" />
 
-<transactionNum value="1920" />
+<transactionNum value="1940" />
 
-<transactionNum value="1921" />
+<transactionNum value="1941" />
 
-<transactionNum value="1922" />
+<transactionNum value="1942" />
 
-<transactionNum value="1923" />
+<transactionNum value="1943" />
 
-<transactionNum value="1924" />
+<transactionNum value="1944" />
 
-<transactionNum value="1925" />
+<transactionNum value="1945" />
 
-<transactionNum value="1926" />
+<transactionNum value="1946" />
 
-<transactionNum value="1927" />
+<transactionNum value="1947" />
 
-<transactionNum value="1928" />
+<transactionNum value="1948" />
 
-<transactionNum value="1929" />
+<transactionNum value="1949" />
 
-<transactionNum value="1930" />
+<transactionNum value="1950" />
 
-<transactionNum value="1931" />
+<transactionNum value="1951" />
 
-<transactionNum value="1932" />
+<transactionNum value="1952" />
 
-<transactionNum value="1933" />
+<transactionNum value="1953" />
 
 </cron>
 -----BEGIN CRON SIGNATURE-----
-Version: Open Transactions 0.63
+Version: Open Transactions 0.64
 Comment: http://github.com/FellowTraveler/Open-Transactions/wiki
 
-CoABsUYXUIKJduAD9uPmkcVt6gAebNydHWYpzBZddRVUG95zrndGBa1IWcyUZiDA
-6/wzYayzJ0pxPxCFiiBRBpmU40+rr2Ggs0sQdpdtmSSM7tKJRYBnuX80lBOOkywM
-Ds85VRmnnFBtVxCBptdX7HG7zTScdBtyYZd2UlX6yk1vaj4=
+CoABrQRjm9eAoQe6RJoti9/mUdccOedjGY31tWIrcztU7e7was0eFDrhd1tje3fP
+9r7IVXh/VV+p8aAE5qJIagK2CrtuTw7tio/SPUIqMzN7oyh0NzHYY+ksglKPmmOA
+ZULZT0sik14DpeCj/+dOrYk5X60uNKkEc7bWdxKU09vNyZ4=
 -----END CRON SIGNATURE-----
 

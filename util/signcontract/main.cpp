@@ -27,12 +27,10 @@ extern "C"
 int main (int argc, char * const argv[])
 {
 	
-	if (argc < 3)
+	if (argc < 5)
 	{
-		printf("Usage:  signcontract  s|a  nym_id  contract_file\n"
-			   "Current path: %s\n"
-			   "Use 's' when signing a server contract, and 'a' for an asset contract.\n\n",
-			   OTLog::Path());
+		printf("Usage:  signcontract  s|a  signer_nym_id  path/to/data_folder  path/to/unsigned/contract_file\n"
+			   "Use 's' when signing a server contract, and 'a' for an asset contract.\n\n");
 		exit(1);
 	}
 	
@@ -40,18 +38,20 @@ int main (int argc, char * const argv[])
 	SSL_load_error_strings();
 	
 //	std::string strDataFolderPath("/Users/Chris/Projects/Open-Transactions/testwallet/data_folder"), 
-	std::string strDataFolderPath("."), 
-				strWalletFile("wallet.xml");
+	
+	std::string strDataFolderPath(argv[3]), 
+	strWalletFile("wallet.xml");
 	bool bSuccessInitDefault = OTDB::InitDefaultStorage(OTDB_DEFAULT_STORAGE, 
 														OTDB_DEFAULT_PACKER, strDataFolderPath, strWalletFile);
 
-	
 	bool bIsServerContract = (*(argv[1]) == 's') ? true : false;
 	
-	OTString strNymID(argv[2]), strContractFile(argv[3]);
+	OTString strNymID(argv[2]), strContractFile(argv[4]);
 	OTString NymName(strNymID), NymFile;
 	
-	NymFile.Format("%s%snyms%s%s", OTLog::Path(), OTLog::PathSeparator(),
+	NymFile.Format("%s%s%s%s%s", OTLog::Path(), 
+				   OTLog::PathSeparator(), 
+				   OTLog::NymFolder(),
 				   OTLog::PathSeparator(), strNymID.Get());
 	
 	OTPseudonym theNym(NymName, NymFile, strNymID);

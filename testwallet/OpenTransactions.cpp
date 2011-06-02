@@ -1429,8 +1429,8 @@ OTMint * OT_API::LoadMint(const OTIdentifier & SERVER_ID,
 {	
 	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
 	
-	const OTString strAssetTypeID(ASSET_ID);
 	const OTString strServerID(SERVER_ID);
+	const OTString strAssetTypeID(ASSET_ID);
 
 	// -----------------------------------------------------------------
 	
@@ -3051,7 +3051,7 @@ void OT_API::notarizeWithdrawal(OTIdentifier	& SERVER_ID,
 		
 		// -----------------------------------------------------------------
 
-		if (pServerNym && 
+		if ((NULL != pServerNym) && 
 			theMint.LoadMint() && 
 			theMint.VerifyMint((OTPseudonym&)*pServerNym))
 		{

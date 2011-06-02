@@ -185,7 +185,7 @@ public:
 	bool GenerateNewAccount(const OTPseudonym & theServer, const OTMessage & theMessage, const AccountType eAcctType=simple);
 
 	// Let's say you don't have or know the UserID, and you just want to load the damn thing up.
-	// Then call this function. It will set userID and server ID for you.
+	// Then call this function. It will set userID for you.
 	static OTAccount * LoadExistingAccount(const OTIdentifier & theAccountID, const OTIdentifier & theServerID);
 
 	
