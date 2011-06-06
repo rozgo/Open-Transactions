@@ -383,10 +383,16 @@ OTString::OTString(const char * new_string) : m_lLength(0), m_lPosition(0), m_st
 	LowLevelSet(new_string, 0);
 }
 
+OTString::OTString(const char * new_string, size_t sizeLength) : m_lLength(0), m_lPosition(0), m_strBuffer(NULL)
+{
+//	Initialize();
+	LowLevelSet(new_string, sizeLength);
+}
+
 OTString::OTString(const std::string& new_string) : m_lLength(0), m_lPosition(0), m_strBuffer(NULL)
 {
 //	Initialize();
-	LowLevelSet(new_string.c_str(), 0);
+	LowLevelSet(new_string.c_str(), new_string.length());
 }
 
 void OTString::Release(void)
@@ -403,16 +409,63 @@ void OTString::Release(void)
 }
 
 
+static size_t strnlen(const char *s, size_t max) 
+{
+    register const char *p;
+    for(p = s; *p && max--; ++p);
+    return(p - s);
+}
+
+
+
+// If 10 is passed in, then 11 will be allocated,
+// then the data is copied, and then the result[10] (11th element)
+// is set to 0. This way the original 10-length string is untouched.
+//
+char *str_dup2(const char *str, uint32_t length)
+{
+	char * str_new = new char [length + 1]; // CREATE EXTRA BYTE OF SPACE FOR \0 (NOT PART OF LENGTH)
+	
+	OT_ASSERT(NULL != str_new);
+	
+#ifdef _WIN32
+	strncpy_s(str_new, length+1, str, length);
+#else
+	strncpy(str_new, str, length);
+#endif
+	
+	// INITIALIZE EXTRA BYTE OF SPACE
+	//
+	// If length is 10, then buffer is created with 11 elements, 
+	// indexed from 0 (first element) through 10 (11th element).
+	// 
+	// Therefore str_new[length==10] is the 11th element, which was
+	// the extra one created on our buffer, to store the \0 null terminator.
+	//
+	// This way I know I'm never cutting off data that was in the string itself.
+	// Rather, I am only setting to 0 an EXTRA byte that I created myself, AFTER
+	// the string's length itself.
+	//
+	str_new[length] = '\0'; 
+	
+	return str_new;
+}
+
 void OTString::LowLevelSetStr(const OTString & strBuf)
 { 
 	OT_ASSERT(NULL == m_strBuffer); // otherwise memory leak.
 	
 	if (strBuf.Exists()) 
 	{ 
-		m_lLength = strBuf.m_lLength; 
+		m_lLength = (MAX_STRING_LENGTH > strBuf.m_lLength) ?
+			strBuf.m_lLength
+		  : 
+			(MAX_STRING_LENGTH-1); 
+		
 		m_strBuffer = str_dup2(strBuf.m_strBuffer, m_lLength); 
 	} 
 }
+
 
 void OTString::LowLevelSet(const char * new_string, uint32_t nEnforcedMaxLength)
 {
@@ -420,20 +473,21 @@ void OTString::LowLevelSet(const char * new_string, uint32_t nEnforcedMaxLength)
 	
 	if (NULL != new_string)
 	{
-		if (nEnforcedMaxLength > 0)	// Enforce the max length before calling strlen. If Max length is 10, then buf[9] is zero'd out.
-			((char *)new_string)[nEnforcedMaxLength-1] = '\0'; 
-		
-		// Now this can never be larger than nEnforcedMaxLength
-		// If there was already a NULL terminator, the strlen will stop there first.
-		// Otherwise, worst case, it will be stopped by the one that I set above.
-		uint32_t nLength = strlen(new_string); // TODO Security: use something more secure than strlen
-		
+		uint32_t nLength = (nEnforcedMaxLength > 0) ?
+			strnlen(new_string, nEnforcedMaxLength)
+		  : 
+			strnlen(new_string, MAX_STRING_LENGTH-1);
+
 		// don't bother allocating memory for a 0 length string.
 		if (0 == nLength)
 			return;
 
-		m_lLength = nLength;
-		m_strBuffer = str_dup2(new_string, nLength);	
+		m_strBuffer = str_dup2(new_string, nLength);
+		
+		if (NULL != m_strBuffer)
+			m_lLength = nLength;
+		else
+			m_lLength = 0;
 	}
 }
 
@@ -907,23 +961,6 @@ char *str_dup1(const char *str)
 #endif
 
   return str_new;
-}
-
-char *str_dup2(const char *str, uint32_t length)
-{
-	char * str_new = new char [length + 1];
-
-	OT_ASSERT(NULL != str_new);
-
-#ifdef _WIN32
-	strncpy_s(str_new, length+1, str, length);
-#else
-	strncpy(str_new, str, length);
-#endif
-
-	str_new[length] = 0;
-  
-	return str_new;
 }
 
 // true  == there are more lines to read.

@@ -3,18 +3,33 @@ NOTES on the Version:
 
 // --------------------------------------------------------------------
 
+   0.65 --- THE SAMPLE DATA WAS ALL RE-GENERATED... So grab it, plus the
+            latest version of the code. What all changed?
+ 
+            I added default packing to all OTASCIIArmor strings. I think
+            OT should now be binary compatible across all platforms, but
+            we'll see. Oh and, due to this, re-generated all sample data.
+
+            ===> Also added bindings for **the D programming language**
+                 http://www.digitalmars.com/d/2.0/overview.html
+
+            ===> Also added .ot_ini files! (What sorts of options would 
+                 YOU like to see in the configuration files for OT?)
+
+            Also did some bug fixes in OTString, OTMint, and createmint.
+
    0.64 --- Added default packing (currently protobuf) to all binary
             to base64 encoding. I had a recent complaint about binary
             incompatibility across platform, and this is either the
             complete fix, or at least a strong beginning of a drive to
-            insure binary compatibility across all platforms.
+            ensure binary compatibility across all platforms.
 
    0.63 --- Open Transactions has entirely been converted to the NEW
             STORAGE CLASS. (This means you can easily switch to different
             storage systems, instead of using the filesystem, just by sub-
             classing the OTDB::Storage class and overriding a few methods.)
 
-            IN OTHER NEWS: OT now uses the ZeroMQ library for transport!
+            ==> IN OTHER NEWS: OT now uses the ZeroMQ library for transport!
             To learn more about OT's new transport capabilities, check out
             this guide:  http://zguide.zeromq.org/page:all
 

@@ -284,7 +284,7 @@ bool OTSignedFile::SaveFile()
 // Assumes SetFilename() has already been set.
 bool OTSignedFile::LoadFile()
 {
-	OTLog::vOutput(0, "DEBUG LoadFile (Signed) folder: %s file: %s \n", m_strFoldername.Get(), m_strFilename.Get());
+//	OTLog::vOutput(0, "DEBUG LoadFile (Signed) folder: %s file: %s \n", m_strFoldername.Get(), m_strFilename.Get());
 	
 	if (OTDB::Exists(m_strFoldername.Get(), m_strFilename.Get()))
 		return LoadContract();

@@ -190,11 +190,13 @@ public:
 	// This function will base64 DECODE the string contents
 	// and return them as a STRING in theData
 	bool GetString(OTString & theData, bool bLineBreaks=true) const;
-	
+	bool GetAndUnpackString(OTString & theData, bool bLineBreaks=true) const;
+
 	// This function will base64 ENCODE the STRING stored in theData,
 	// and then Set() that as this string contents.
 	bool SetString(const OTString & theData, bool bLineBreaks=true);
-	
+	bool SetAndPackString(const OTString & theData, bool bLineBreaks=true);
+
 	// For a straight-across, exact-size copy of bytes that you KNOW
 	// are base64-encoded properly by an OTASCIIArmor.
 	bool MemSet(const char * pMem, uint32_t theSize);

@@ -187,12 +187,12 @@ extern "C"
 // (Or right here.)
 
 #if defined (DSP)					   
-int OTLog::__CurrentLogLevel = -1;	// If you build with DSP=1, it assumes a special location for OpenSSL,
+int OTLog::__CurrentLogLevel = 3;	// If you build with DSP=1, it assumes a special location for OpenSSL,
 #else								// and it turns off all the output.
 int OTLog::__CurrentLogLevel = 3;
 #endif
 
-OTString OTLog::__Version = "0.64";
+OTString OTLog::__Version = "0.65";
 
 
 

@@ -825,10 +825,10 @@ public: \
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		BitcoinAcct() : Acct() {  m_Type = "BitcoinAcct"; std::cout << "BitcoinAcct constructor" << std::endl; }
+		BitcoinAcct() : Acct() {  m_Type = "BitcoinAcct"; }
 		
 	public:
-		virtual ~BitcoinAcct() { std::cout << "BitcoinAcct destructor" << std::endl; }
+		virtual ~BitcoinAcct() { }
 		
 		using Displayable::gui_label;  // The label that appears in the GUI
 		
@@ -892,10 +892,10 @@ public: \
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		BitcoinServer() : Server() {  m_Type = "BitcoinServer"; std::cout << "BitcoinServer constructor" << std::endl; }
+		BitcoinServer() : Server() {  m_Type = "BitcoinServer";  }
 		
 	public:
-		virtual ~BitcoinServer() {  std::cout << "BitcoinServer destructor" << std::endl; }
+		virtual ~BitcoinServer() {  }
 		
 		using Displayable::gui_label;  // The label that appears in the GUI
 		
@@ -953,7 +953,7 @@ public: \
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		WalletData() : Storable() { m_Type = "WalletData"; std::cout << "WalletData constructor" << std::endl; }
+		WalletData() : Storable() { m_Type = "WalletData"; }
 		
 	public:
 		virtual ~WalletData() {  std::cout << "WalletData destructor" << std::endl; }
@@ -1241,10 +1241,9 @@ public: \
 	static Storable * Instantiate() { return dynamic_cast<Storable *>(new theType); } \
 \
 	theType() : theBaseType(), IStorableMsgpack() { m_Type = StoredObjectTypeStrings[static_cast<int>(theObjectType)]; m_Type += "Msgpack"; \
-		std::cout << m_Type.c_str() << " -- Constructor" << std::endl; } \
+	} \
 \
 	theType(const theType & rhs) : theBaseType(), IStorableMsgpack() { m_Type = StoredObjectTypeStrings[static_cast<int>(theObjectType)]; m_Type += "Msgpack"; \
-		std::cout << m_Type.c_str() << " -- Copy Constructor" << std::endl; \
 	(const_cast<theType &>(rhs)).CopyToObject(const_cast<theType&>(*this)); } \
 \
 	void CopyToObject(theType & theNewStorable) const { \
@@ -1257,7 +1256,8 @@ public: \
 		const_cast<theType &>(rhs).CopyToObject(const_cast<theType&>(*this)); \
 		return *this; } \
 \
-	virtual theBaseType *clone(void) const { std::cout << "Cloning a " << m_Type.c_str() << std::endl; return dynamic_cast<theBaseType *>(do_clone()); } \
+	virtual theBaseType *clone(void) const { \
+		return dynamic_cast<theBaseType *>(do_clone()); } \
 \
 	IStorable * do_clone(void) const {  Storable * pNewStorable = Storable::Create(theObjectType, PACK_MESSAGE_PACK); \
 		OT_ASSERT(NULL != pNewStorable); (const_cast<theType&>(*this)).CopyToObject(dynamic_cast<theType&>(*pNewStorable)); \
@@ -1607,10 +1607,12 @@ namespace OTDB
 		static Storable * Instantiate() 
 		{ return dynamic_cast<Storable *>(new ProtobufSubclass<theBaseType, theInternalType, theObjectType>); } 
 		
-		ProtobufSubclass() : theBaseType(), IStorablePB() { m_Type = StoredObjectTypeStrings[static_cast<int>(theObjectType)]; m_Type += "PB"; std::cout << m_Type.c_str() << " -- Constructor" << std::endl; } 
+		ProtobufSubclass() : theBaseType(), IStorablePB() { m_Type = StoredObjectTypeStrings[static_cast<int>(theObjectType)]; m_Type += "PB"; 
+			/*std::cout << m_Type.c_str() << " -- Constructor" << std::endl;*/ } 
 		
 		ProtobufSubclass(const ProtobufSubclass<theBaseType,theInternalType,theObjectType> & rhs) : theBaseType(), IStorablePB() 
-		{ m_Type = StoredObjectTypeStrings[static_cast<int>(theObjectType)]; m_Type += "PB"; std::cout << m_Type.c_str() << " -- Copy Constructor" << std::endl; rhs.CopyToObject(*this); } 
+		{ m_Type = StoredObjectTypeStrings[static_cast<int>(theObjectType)]; m_Type += "PB"; 
+			/*std::cout << m_Type.c_str() << " -- Copy Constructor" << std::endl; */ rhs.CopyToObject(*this); } 
 		
 		ProtobufSubclass<theBaseType,theInternalType,theObjectType> & 
 		operator= (const ProtobufSubclass<theBaseType,theInternalType,theObjectType> & rhs)
@@ -1627,7 +1629,8 @@ namespace OTDB
 //		IStorable * clone(void) const 
 //			{return dynamic_cast<IStorable *>(new ProtobufSubclass<theBaseType, theInternalType, theObjectType>(*this));}
 		
-		virtual theBaseType * clone(void) const {  std::cout << "Cloning a " << m_Type.c_str() << std::endl; return dynamic_cast<theBaseType *>(do_clone()); }
+		virtual theBaseType * clone(void) const 
+		{  /*std::cout << "Cloning a " << m_Type.c_str() << std::endl;*/ return dynamic_cast<theBaseType *>(do_clone()); }
 		
 		IStorable * do_clone(void) const
 		{  Storable * pNewStorable = Storable::Create(theObjectType, PACK_PROTOCOL_BUFFERS);

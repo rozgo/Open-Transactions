@@ -1,4 +1,6 @@
 #
+# Open-Transactions server
+#
 # The PROGRAM macro defines the name of the program or project.  It
 # allows the program name to be changed by editing in only one
 # location
@@ -67,15 +69,13 @@ OT_INCLUDEDIRS = \
 	-I../OTLib/irrxml \
 	-I../OTLib \
 	-I./SSL-Example \
+	-I../OTLib/simpleini \
 	-I.
 
 
 OT_LIBDIRS = \
 	-L../OTLib
 
-
-PLATFORM_LIBDIRS = #empty
-PLATFORM_INCLUDEDIRS = #empty
 
 API_CSOURCES = SSL-Example/SFSocket.c
 API_CXXSOURCES = # empty
@@ -128,20 +128,15 @@ endif
 
 # ---------------------------------------------------------------------
 
-
 ifeq ($(DSP), 1)
-SSL_INCLUDEDIRS = -I../openssl/include
-SSL_LIBDIRS = -L../openssl
+PLATFORM_LIBDIRS = -L../openssl
+PLATFORM_INCLUDEDIRS = -I../openssl/include
+else
+PLATFORM_LIBDIRS =  #empty
+PLATFORM_INCLUDEDIRS = #empty
 endif
 
 # ---------------------------------------------------------------------
-
-PLATFORM_INCLUDEDIRS += $(SSL_INCLUDEDIRS)
-PLATFORM_LIBDIRS += $(SSL_LIBDIRS)
-
-
-# ---------------------------------------------------------------------
-
 
 
 #
@@ -203,11 +198,9 @@ endif
 
 
 
+INCLUDEDIRS = $(PLATFORM_INCLUDEDIRS) $(SSL_INCLUDEDIRS) $(OT_INCLUDEDIRS)
 
-
-INCLUDEDIRS = $(PLATFORM_INCLUDEDIRS) $(OT_INCLUDEDIRS)
-
-LIBDIRS = $(PLATFORM_LIBDIRS) $(OT_LIBDIRS)
+LIBDIRS = $(PLATFORM_LIBDIRS)  $(SSL_LIBDIRS) $(OT_LIBDIRS)
 
 
 CSOURCES = $(API_CSOURCES)

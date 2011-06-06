@@ -2035,11 +2035,11 @@ bool OTClient::ProcessServerReply(OTMessage & theReply)
 		
 		// TEMP DEBUG
 		
-		OTString strTemp1(USER_ID);
-		OTString strTemp2(ACCOUNT_ID);
-		OTString strTemp3(SERVER_ID);
-		
-		OTLog::vError("@getInbox:  USER: %s  ACCT: %s  SERVER: %s \n", strTemp1.Get(), strTemp2.Get(), strTemp3.Get());
+//		OTString strTemp1(USER_ID);
+//		OTString strTemp2(ACCOUNT_ID);
+//		OTString strTemp3(SERVER_ID);
+//		
+//		OTLog::vError("@getInbox:  USER: %s  ACCT: %s  SERVER: %s \n", strTemp1.Get(), strTemp2.Get(), strTemp3.Get());
 		
 		// I receive the inbox, verify the server's signature, then RE-SIGN IT WITH MY OWN
 		// SIGNATURE, then SAVE it to local storage.  So any FUTURE checks of this inbox
@@ -3293,14 +3293,26 @@ bool OTClient::ProcessUserCommand(OTClient::OT_CLIENT_CMD_TYPE requestedCommand,
 			
 			OTString strOldName(pTargetNym->GetNymName()); // just in case.
 			
+//			std::cout << "DEBUG 1 " << std::endl;
+			
 			pTargetNym->SetNymName(strNewName);
 			
+//			std::cout << "DEBUG 2 " << std::endl;
+
 			if (pTargetNym->SaveSignedNymfile(theNym)) // theNym is signer on this file.
 			{
+
+//				std::cout << "DEBUG 3 " << std::endl;
+
 				m_pWallet->SaveWallet(); // Only 'cause the nym's name is stored here, too.
+//				std::cout << "DEBUG 4 " << std::endl;
+
 			}
 			else
 				pTargetNym->SetNymName(strOldName);
+			
+//			std::cout << "DEBUG 5 " << std::endl;
+
 		}
 		else 
 		{

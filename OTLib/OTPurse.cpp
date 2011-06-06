@@ -423,6 +423,8 @@ bool OTPurse::SavePurse(const char * szServerID/*=NULL*/, const char * szUserID/
 							 strUserID.Get(), OTLog::PathSeparator(), strAssetTypeID.Get());
 	}
 	
+	// --------------------------------------------------------------------
+	
 	const char * szFolder1name	= OTLog::PurseFolder();
 	const char * szFolder2name	= strServerID.Get();
 	const char * szFolder3name	= strUserID.Get();

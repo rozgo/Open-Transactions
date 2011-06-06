@@ -1553,6 +1553,30 @@ bool OTPseudonym::LoadPseudonym()
  */
 
 
+bool OTPseudonym::SetIdentifierByPubkey()
+{
+	OTString strPublicKey;
+	bool bGotPublicKey = GetPublicKey().GetPublicKey(strPublicKey);
+	
+	if (!bGotPublicKey)
+	{
+		OTLog::Error("Error getting public key in OTPseudonym::SetIdentifierByPubkey.\n");
+		return false;	
+	}
+	
+	OTIdentifier newID;
+	bool bSuccessCalculateDigest = newID.CalculateDigest(strPublicKey);
+	
+	if (!bSuccessCalculateDigest)
+	{
+		OTLog::Error("Error calculating digest in SetIdentifierByPubkey.\n");
+		return false;	
+	}
+	
+	m_nymID = newID;
+	
+	return true;
+}
 
 bool OTPseudonym::VerifyPseudonym() const
 {
@@ -1571,7 +1595,7 @@ bool OTPseudonym::VerifyPseudonym() const
 	
 	if (!bSuccessCalculateDigest)
 	{
-		OTLog::Error("Error calculating Certificate digest.\n");
+		OTLog::Error("Error calculating pubkey digest.\n");
 		return false;	
 	}
 	
@@ -1587,6 +1611,11 @@ bool OTPseudonym::VerifyPseudonym() const
 		OTString str1(m_nymID), str2(newID);
 		OTLog::vError("\nHashes do NOT match in OTPseudonym::VerifyPseudonym!\n%s\n%s\n",
 				str1.Get(), str2.Get());
+		
+		
+		OT_ASSERT(false);// temp remove. debugging.
+		
+		
 		return false;
 	}
 	else {

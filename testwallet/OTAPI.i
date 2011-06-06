@@ -961,10 +961,10 @@ namespace OTDB {
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		BitcoinAcct() : Acct() {  m_Type = "BitcoinAcct"; std::cout << "BitcoinAcct constructor" << std::endl; }
+		BitcoinAcct() : Acct() {  m_Type = "BitcoinAcct";  }
 		
 	public:
-		virtual ~BitcoinAcct() { std::cout << "BitcoinAcct destructor" << std::endl; }
+		virtual ~BitcoinAcct() {  }
 		
 		using Displayable::gui_label;  // The label that appears in the GUI
 		
@@ -1028,10 +1028,10 @@ namespace OTDB {
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		BitcoinServer() : Server() {  m_Type = "BitcoinServer"; std::cout << "BitcoinServer constructor" << std::endl; }
+		BitcoinServer() : Server() {  m_Type = "BitcoinServer"; }
 		
 	public:
-		virtual ~BitcoinServer() {  std::cout << "BitcoinServer destructor" << std::endl; }
+		virtual ~BitcoinServer() {  }
 		
 		using Displayable::gui_label;  // The label that appears in the GUI
 		
@@ -1082,10 +1082,10 @@ namespace OTDB {
 		// You never actually get an instance of this, only its subclasses.
 		// Therefore, I don't allow you to access the constructor except through factory.
 	protected:
-		WalletData() : Storable() { m_Type = "WalletData"; std::cout << "WalletData constructor" << std::endl; }
+		WalletData() : Storable() { m_Type = "WalletData"; }
 		
 	public:
-		virtual ~WalletData() { std::cout << "WalletData destructor" << std::endl; }
+		virtual ~WalletData() {  }
 		
 		// List of Bitcoin servers
 		// List of Bitcoin accounts

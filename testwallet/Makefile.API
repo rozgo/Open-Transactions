@@ -1,4 +1,6 @@
 #
+# Open-Transactions:  Makefile for dynamic libs (Python, Java, Ruby, etc)
+#
 # IMPORTANT:  WHEN USING THIS MAKEFILE, YOU *MUST* USE THE OPTIONS. EXAMPLE:
 #
 # So you have to do: 
@@ -11,7 +13,7 @@
 #
 # Platform options are darwin, linux and freebsd (untested)
 #
-# Language options are c, csharp, java, ruby, python, perl5, php5, tcl, and lisp. 
+# Language options are c, d, csharp, java, ruby, python, perl5, php5, tcl, and lisp. 
 #
 
 PROGRAM = libOTAPI.a
@@ -73,6 +75,7 @@ OT_INCLUDEDIRS = \
 	-I../OTLib/irrxml \
 	-I../OTLib \
 	-I./SSL-Example \
+	-I../OTLib/simpleini \
 	-I.
 
 
@@ -82,8 +85,6 @@ OT_INCLUDEDIRS = \
 OT_LIBDIRS = \
 	-L../OTLib
 
-PLATFORM_LIBDIRS = # empty
-PLATFORM_INCLUDEDIRS = #empty
 
 API_CSOURCES = ./SSL-Example/SFSocket.c
 API_CPPSOURCES = #empty
@@ -140,22 +141,20 @@ endif
 
 # ---------------------------------------------------------------------
 
+
+OT_EXTRA_INCLUDEDIRS = #empty
+OT_EXTRA_LIBDIRS = #empty
+
+
 ifeq ($(DSP), 1)
-SSL_INCLUDEDIRS = -I../openssl/include
-SSL_LIBDIRS = -L../openssl
+PLATFORM_INCLUDEDIRS = -I../openssl/include 
+PLATFORM_LIBDIRS = -L../openssl 
+else
+PLATFORM_INCLUDEDIRS = #empty
+PLATFORM_LIBDIRS = #empty
 endif
 
 # ---------------------------------------------------------------------
-
-
-
-# Eventually other platform-specific stuff, like 64-bit, can go here.
-
-PLATFORM_INCLUDEDIRS += \
-	$(SSL_INCLUDEDIRS)
-
-PLATFORM_LIBDIRS += \
-	$(SSL_LIBDIRS)
 
 
 
@@ -181,6 +180,12 @@ LISP_LDFLAGS = -dynamiclib
 CSHARP_PROGRAM = libotapi.so  
 CSHARP_DEBUG_PROGRAM = libotapid.so
 CSHARP_LDFLAGS = -dynamiclib
+
+
+# --- D (D Language)
+D_PROGRAM = libotapi.so  
+D_DEBUG_PROGRAM = libotapid.so
+D_LDFLAGS = -dynamiclib -bundle
 
 
 # --- JAVA
@@ -265,6 +270,11 @@ LISP_LDFLAGS = -shared
 CSHARP_PROGRAM = libotapi.so  
 CSHARP_DEBUG_PROGRAM = libotapid.so
 CSHARP_LDFLAGS = -shared
+
+# --- D (D Language)
+D_PROGRAM = libotapi.so  
+D_DEBUG_PROGRAM = libotapid.so
+D_LDFLAGS = -shared
 
 # --- JAVA
 JAVA_PROGRAM = libotapi.so
@@ -354,6 +364,11 @@ LISP_LDFLAGS = -shared
 CSHARP_PROGRAM = libotapi.so  
 CSHARP_DEBUG_PROGRAM = libotapid.so
 CSHARP_LDFLAGS = -shared
+
+# --- D (D Language)
+D_PROGRAM = libotapi.so  
+D_DEBUG_PROGRAM = libotapid.so
+D_LDFLAGS = -shared
 
 # --- JAVA
 JAVA_PROGRAM = libotapi.so
@@ -454,6 +469,17 @@ API_LDFLAGS += $(LISP_LDFLAGS)
 BOOL_DYNAMIC_OTLIB = 1
 endif
 
+
+# --- D (D Language)
+ifeq ($(LANGUAGE), d)
+PROGRAM = $(D_PROGRAM)  
+DEBUG_PROGRAM = $(D_DEBUG_PROGRAM) 
+API_CPPSOURCES += OTAPI_d.cpp
+API_LDFLAGS += $(D_LDFLAGS)
+BOOL_DYNAMIC_OTLIB = 1
+endif
+
+
 # --- C# (C-Sharp)
 ifeq ($(LANGUAGE), csharp)
 PROGRAM = $(CSHARP_PROGRAM)  
@@ -469,7 +495,7 @@ ifeq ($(LANGUAGE), java)
 PROGRAM = $(JAVA_PROGRAM)  
 DEBUG_PROGRAM = $(JAVA_DEBUG_PROGRAM) 
 API_CPPSOURCES += OTAPI_java.cpp
-PLATFORM_INCLUDEDIRS += $(JAVA_INCLUDEDIRS)
+OT_EXTRA_INCLUDEDIRS += $(JAVA_INCLUDEDIRS)
 API_LDFLAGS += $(JAVA_LDFLAGS)
 BOOL_DYNAMIC_OTLIB = 1
 endif
@@ -480,7 +506,7 @@ endif
 ifeq ($(LANGUAGE), perl5)
 PROGRAM = $(PERL5_PROGRAM) 
 DEBUG_PROGRAM = $(PERL5_DEBUG_PROGRAM) 
-PLATFORM_INCLUDEDIRS += $(PERL5_INCLUDEDIRS)
+OT_EXTRA_INCLUDEDIRS += $(PERL5_INCLUDEDIRS)
 API_CPPSOURCES += OTAPI_perl5.cpp
 API_CFLAGS += $(PERL5_CFLAGS)
 API_LDFLAGS += $(PERL5_LDFLAGS)
@@ -491,7 +517,7 @@ endif
 # --- PHP5
 ifeq ($(LANGUAGE), php5)
 API_CPPSOURCES += OTAPI_php.cpp
-PLATFORM_INCLUDEDIRS += $(PHP5_INCLUDEDIRS) 
+OT_EXTRA_INCLUDEDIRS += $(PHP5_INCLUDEDIRS) 
 PROGRAM = $(PHP5_PROGRAM)
 DEBUG_PROGRAM = $(PHP5_DEBUG_PROGRAM)
 API_LDFLAGS += $(PHP5_LDFLAGS)
@@ -503,8 +529,8 @@ endif
 ifeq ($(LANGUAGE), python)
 PROGRAM = $(PYTHON_PROGRAM)
 DEBUG_PROGRAM = $(PYTHON_DEBUG_PROGRAM)
-PLATFORM_INCLUDEDIRS += $(PYTHON_INCLUDEDIRS)
-PLATFORM_LIBDIRS += $(PYTHON_LIBDIRS)
+OT_EXTRA_INCLUDEDIRS += $(PYTHON_INCLUDEDIRS)
+OT_EXTRA_LIBDIRS += $(PYTHON_LIBDIRS)
 API_CPPSOURCES += OTAPI_python.cpp
 API_LDFLAGS += $(PYTHON_LDFLAGS)
 BOOL_DYNAMIC_OTLIB = 1
@@ -514,7 +540,7 @@ endif
 # --- RUBY!
 ifeq ($(LANGUAGE), ruby)
 API_CPPSOURCES += OTAPI_ruby.cpp
-PLATFORM_INCLUDEDIRS += $(RUBY_INCLUDEDIRS)
+OT_EXTRA_INCLUDEDIRS += $(RUBY_INCLUDEDIRS)
 PROGRAM = $(RUBY_PROGRAM)
 DEBUG_PROGRAM = $(RUBY_DEBUG_PROGRAM)
 API_LDFLAGS += $(RUBY_LDFLAGS)
@@ -527,7 +553,7 @@ ifeq ($(LANGUAGE), tcl)
 API_CPPSOURCES += OTAPI_tcl.cpp
 PROGRAM = $(TCL_PROGRAM)
 DEBUG_PROGRAM = $(TCL_DEBUG_PROGRAM)
-PLATFORM_INCLUDEDIRS += $(TCL_INCLUDEDIRS)
+OT_EXTRA_INCLUDEDIRS += $(TCL_INCLUDEDIRS)
 API_LDFLAGS += $(TCL_LDFLAGS)
 BOOL_DYNAMIC_OTLIB = 1
 endif
@@ -552,10 +578,10 @@ endif
 
 ifeq ($(TRANSPORT), ZMQ)
 API_CFLAGS += -DOT_ZMQ_MODE
-#PLATFORM_INCLUDEDIRS += $(XMLRPCPP_INCLUDEDIR)
+#OT_EXTRA_INCLUDEDIRS += $(XMLRPCPP_INCLUDEDIR)
 
 #API_LDFLAGS += -lXmlRpc
-#PLATFORM_LIBDIRS += $(XMLRPCPP_LIBDIR)
+#OT_EXTRA_LIBDIRS += $(XMLRPCPP_LIBDIR)
 endif
 
 
@@ -581,10 +607,10 @@ endif
 # directory information to be passed to the linker.
 #
 
-INCLUDEDIRS = $(PLATFORM_INCLUDEDIRS) $(OT_INCLUDEDIRS)
+INCLUDEDIRS = $(PLATFORM_INCLUDEDIRS) $(OT_EXTRA_INCLUDEDIRS) $(SSL_INCLUDEDIRS) $(OT_INCLUDEDIRS)
 
 
-LIBDIRS = $(PLATFORM_LIBDIRS) $(OT_LIBDIRS)
+LIBDIRS = $(PLATFORM_LIBDIRS) $(OT_EXTRA_LIBDIRS) $(SSL_LIBDIRS) $(OT_LIBDIRS)
 
 CSOURCES = $(API_CSOURCES)
 
@@ -708,6 +734,9 @@ OTAPI_csharp.o: OTAPI_csharp.cpp
 	cp OTAPI_csharp.h OTAPI_wrap.h
 	$(CXX) $(CFLAGS) -o OTAPI_csharp.o OTAPI_csharp.cpp
 
+OTAPI_d.o: OTAPI_d.cpp 
+	cp OTAPI_d.h OTAPI_wrap.h
+	$(CXX) $(CFLAGS) -o OTAPI_d.o OTAPI_d.cpp
 
 OTAPI_java.o: OTAPI_java.cpp
 	cp OTAPI_java.h OTAPI_wrap.h

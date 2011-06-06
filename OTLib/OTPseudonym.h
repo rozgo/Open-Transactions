@@ -274,6 +274,8 @@ public:
 //	bool SavePseudonym(FILE * fl);
 	bool SavePseudonym(std::ofstream & ofs);
 
+	bool SetIdentifierByPubkey();
+	
 	void GetIdentifier(OTIdentifier & theIdentifier) const;
 	void SetIdentifier(const OTIdentifier & theIdentifier);
 	

@@ -146,7 +146,7 @@
 
 #else
 
-#define SERVER_PATH_DEFAULT	"/Users/REDACTED/Projects/Open-Transactions/transaction/data_folder"
+#define SERVER_PATH_DEFAULT	"./data_folder"
 #define CA_FILE             "certs/special/ca.crt"
 #define DH_FILE             "certs/special/dh_param_1024.pem"
 #define KEY_FILE            "certs/special/server.pem"
@@ -188,6 +188,14 @@ extern "C"
 #include <openssl/err.h>
 #include <openssl/ssl.h>
 }
+
+// ------------------------------------
+
+
+#include "SimpleIni.h"
+
+
+// ------------------------------------
 
 //#include "XmlRpc.h"
 
@@ -314,7 +322,7 @@ public:
 } theOTXmlRpc(&theXmlRpcServer);
 */
 
-
+	
 
 // ----------------------------------------------------------------------
 
@@ -345,7 +353,37 @@ int main(int argc, char* argv[])
 	OT_ASSERT_MSG(NULL != g_pServer, "Unable to instantiate OT server...\n");
 	
 	// -----------------------------------------------------------------------
+	// The beginnings of an INI file!!
 	
+	OTString strPath(SERVER_PATH_DEFAULT);
+	
+	{
+		CSimpleIniA ini; // We're assuming this file is on the path.
+		SI_Error rc = ini.LoadFile("./.ot_ini"); // todo: stop hardcoding. 
+		
+		if (rc >=0)
+		{
+			const char * pVal = ini.GetValue("paths", "server_path", strPath.Get()); // todo stop hardcoding.
+			
+			if (NULL != pVal)
+			{
+				strPath.Set(pVal);
+				OTLog::vOutput(0, "Loaded Server data path from ini file: %s \n", strPath.Get());
+			}
+			else
+			{
+				strPath.Set(SERVER_PATH_DEFAULT);
+				OTLog::vOutput(0, "Error reading Server data path from ini file. Has been set to: %s \n", strPath.Get());
+			}
+		}
+		else 
+		{
+			strPath.Set(SERVER_PATH_DEFAULT);
+			OTLog::vOutput(0, "Error loading ini file. Server data path has been set to: %s \n", strPath.Get());
+		}
+	}
+	// -----------------------------------------------------------------------
+
 	OTString strCAFile, strDHFile, strKeyFile, strSSLPassword;
 	
 	if (argc < 2)
@@ -360,13 +398,13 @@ int main(int argc, char* argv[])
 					   "\n\n", argv[0]
 #if defined (FELLOW_TRAVELER)					   
 					   , KEY_PASSWORD, 
-					   SERVER_PATH_DEFAULT
+					   strPath.Get()
 #endif					   
 					   );
 		
 #if defined (FELLOW_TRAVELER)
 		strSSLPassword.Set(KEY_PASSWORD);
-		OTLog::SetMainPath(SERVER_PATH_DEFAULT);
+		OTLog::SetMainPath(strPath.Get());
 #else
 		exit(1);
 #endif
@@ -379,13 +417,13 @@ int main(int argc, char* argv[])
 #endif
 					   "\n\n", argv[0]
 #if defined (FELLOW_TRAVELER)
-					   , SERVER_PATH_DEFAULT
+					   , strPath.Get()
 #endif
 					   );
 		
 #if defined (FELLOW_TRAVELER)					   
 		strSSLPassword.Set(argv[1]);
-		OTLog::SetMainPath(SERVER_PATH_DEFAULT);
+		OTLog::SetMainPath(strPath.Get());
 #else
 		exit(1);
 #endif
@@ -395,6 +433,8 @@ int main(int argc, char* argv[])
 		strSSLPassword.Set(argv[1]);
 		OTLog::SetMainPath(argv[2]);
 	}	
+	
+	OTLog::vOutput(0, "Using as path to data folder:  %s\n", OTLog::Path());
 	
 	strCAFile. Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), CA_FILE);
 	strDHFile. Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), DH_FILE);
@@ -574,7 +614,7 @@ void ProcessMessage_ZMQ(const std::string & str_Message, std::string & str_Reply
 	
 	// ----------------------------------------------------------------------
 	
-	OTLog::vError("Envelope: \n%s\n Size: %ld\n", ascMessage.Get(), ascMessage.GetLength());
+//	OTLog::vError("Envelope: \n%s\n Size: %ld\n", ascMessage.Get(), ascMessage.GetLength());
 	
 	OTMessage theMsg, theReply; // we'll need these in a sec...
 	
@@ -587,8 +627,8 @@ void ProcessMessage_ZMQ(const std::string & str_Message, std::string & str_Reply
 		
 		OTString strEnvelopeContents;
 		
-		OTString strPubkeyPath("TESTPUBKEY.txt");
-		g_pServer->GetServerNym().SavePublicKey(strPubkeyPath);
+//		OTString strPubkeyPath("TESTPUBKEY.txt");
+//		g_pServer->GetServerNym().SavePublicKey(strPubkeyPath);
 		
 		// Decrypt the Envelope.    
 		if (theEnvelope.Open(g_pServer->GetServerNym(), strEnvelopeContents)) // now strEnvelopeContents contains the decoded message.

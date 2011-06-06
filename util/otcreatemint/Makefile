@@ -63,6 +63,7 @@ PLATFORM = $(OT_PLATFORM)
 
 OT_INCLUDEDIRS = \
 	-I../../OTLib/irrxml \
+	-I../../OTLib/simpleini \
 	-I../../OTLib \
 	-I./
 
@@ -70,8 +71,6 @@ OT_INCLUDEDIRS = \
 OT_LIBDIRS = \
 	-L../../OTLib
 
-PLATFORM_LIBDIRS = #empty
-PLATFORM_INCLUDEDIRS = #empty
 
 API_CXXSOURCES = # empty
 API_CFLAGS = # empty
@@ -117,12 +116,11 @@ endif
 
 
 ifeq ($(DSP), 1)
-PLATFORM_INCLUDEDIRS += -I../../openssl/include
-PLATFORM_LIBDIRS += -L../../openssl
+OT_UTIL_PLATFORM_INCLUDEDIRS = -I../../openssl/include
+OT_UTIL_PLATFORM_LIBDIRS = -L../../openssl
 else
-PLATFORM_INCLUDEDIRS += $(SSL_INCLUDEDIRS)
-PLATFORM_LIBDIRS += $(SSL_LIBDIRS)
-
+OT_UTIL_PLATFORM_INCLUDEDIRS = #empty
+OT_UTIL_PLATFORM_LIBDIRS = #empty
 endif
 
 # ---------------------------------------------------------------------
@@ -170,9 +168,9 @@ endif
 
 
 
-INCLUDEDIRS = $(PLATFORM_INCLUDEDIRS) $(OT_INCLUDEDIRS)
+INCLUDEDIRS = $(OT_UTIL_PLATFORM_INCLUDEDIRS)  $(SSL_INCLUDEDIRS) $(OT_INCLUDEDIRS)
 
-LIBDIRS = $(PLATFORM_LIBDIRS) $(OT_LIBDIRS)
+LIBDIRS = $(OT_UTIL_PLATFORM_LIBDIRS)  $(SSL_LIBDIRS) $(OT_LIBDIRS)
 
 
 CXXSOURCES = \

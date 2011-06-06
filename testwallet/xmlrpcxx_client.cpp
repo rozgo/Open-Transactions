@@ -140,7 +140,7 @@
 
 #else
 
-#define SERVER_PATH_DEFAULT	"/Users/REDACTED/Projects/Open-Transactions/testwallet/data_folder"
+#define SERVER_PATH_DEFAULT	"./data_folder"
 //#define SERVER_PATH_DEFAULT	"/home/ben/git-work/Open-Transactions/testwallet/data_folder"
 #define CA_FILE             "certs/special/ca.crt"
 #define KEY_FILE            "certs/special/client.pem"
@@ -168,6 +168,12 @@ extern "C"
 #endif
 }
 
+
+
+#include "SimpleIni.h"
+
+
+
 // ---------------------------------------------------------------------------
 
 #if defined(OT_ZMQ_MODE)
@@ -192,6 +198,7 @@ void OT_Sleep(int nMS);
 #endif
 
 // ---------------------------------------------------------------------------
+
 
 #include "OTStorage.h"
 
@@ -235,6 +242,30 @@ int main(int argc, char* argv[])
 	OT_API::InitOTAPI();
 	
 	// -----------------------------------------------------------------------
+	// The beginnings of an INI file!!
+	
+	OTString strPath(SERVER_PATH_DEFAULT);
+	
+	{
+		CSimpleIniA ini; // We're assuming this file is on the path.
+		SI_Error rc = ini.LoadFile("./.ot_ini"); // todo: stop hardcoding. 
+		
+		if (rc >=0)
+		{
+			const char * pVal = ini.GetValue("paths", "client_path", SERVER_PATH_DEFAULT); // todo stop hardcoding.
+			
+			if (NULL != pVal)
+				strPath.Set(pVal);
+			else
+				strPath.Set(SERVER_PATH_DEFAULT);
+		}
+		else 
+		{
+			strPath.Set(SERVER_PATH_DEFAULT);
+		}
+	}
+
+	// -----------------------------------------------------------------------
 	
 	
 	OTString strCAFile, strKeyFile, strSSLPassword;
@@ -251,14 +282,14 @@ int main(int argc, char* argv[])
 					   "\n\n", argv[0]
 #if defined (FELLOW_TRAVELER)					   
 					   , KEY_PASSWORD, 
-					   SERVER_PATH_DEFAULT
+					   strPath.Get()
 #endif					   
 					   );
 		
 #if defined (FELLOW_TRAVELER)
 		strSSLPassword.Set(KEY_PASSWORD);
 		
-		OTString strClientPath(SERVER_PATH_DEFAULT);
+		OTString strClientPath(strPath.Get());
         g_OT_API.Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
 #else
 		exit(1);
@@ -272,14 +303,14 @@ int main(int argc, char* argv[])
 #endif
 					   "\n\n", argv[0]
 #if defined (FELLOW_TRAVELER)
-					   , SERVER_PATH_DEFAULT
+					   , strPath.Get()
 #endif
 					   );
 		
 #if defined (FELLOW_TRAVELER)					   
 		strSSLPassword.Set(argv[1]);
 		
-		OTString strClientPath(SERVER_PATH_DEFAULT);
+		OTString strClientPath(strPath.Get());
         g_OT_API.Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
 #else
 		exit(1);
@@ -293,6 +324,8 @@ int main(int argc, char* argv[])
         g_OT_API.Init(strClientPath);  // SSL gets initialized in here, before any keys are loaded.
 	}	
 	
+	OTLog::vOutput(0, "Using as path to data folder:  %s\n", OTLog::Path());
+
 	strCAFile. Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), CA_FILE);
 	strKeyFile.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), KEY_FILE);
 	
@@ -319,7 +352,7 @@ int main(int argc, char* argv[])
 	int nExpectResponse = 0;
 	
 	OTLog::Output(0, "\nYou may wish to 'load' then 'stat'.\n");
-	OTLog::vOutput(4, "Starting client loop. u_header size in C code is %d.\n", OT_CMD_HEADER_SIZE);
+	OTLog::vOutput(4, "Starting client loop.\n", OT_CMD_HEADER_SIZE);
 	
 	
 	// Set the logging level for the network transport code.
@@ -378,6 +411,17 @@ int main(int argc, char* argv[])
 			"XML Contracts. Also supports cheques, invoices, payment plans, markets with trades, "
 			"and other instruments... it's like PGP for Money.... Uses OpenSSL and Lucre blinded tokens.\n";
 			
+			
+			OTASCIIArmor theArmoredText(szBlah);
+			
+			OTLog::vOutput(0, "Armored text:\n%s\n", theArmoredText.Get());
+			
+			
+			OTString theFixedText(theArmoredText);
+			
+			OTLog::vOutput(0, "Uncompressed, etc text:\n%s\n", theFixedText.Get());
+
+			/*
 			OTIdentifier	SERVER_ID;
 			OTString		SERVER_NAME;
 			
@@ -418,10 +462,10 @@ int main(int argc, char* argv[])
 					OTLog::vOutput(0, "\n\nDECRYPTED TEXT:\n\n%s\n\n", strDecodedText.Get());
 				}
 			}
+			*/
+			
 			
 			/*
-			
-			
 			OTData theData(szBlah, strlen(szBlah)+1);
 			
 //			OTString strBlah(szBlah);
@@ -1786,9 +1830,9 @@ int main(int argc, char* argv[])
 		
 		pServerNym->VerifyPseudonym();
 		
-		OTString strExtra1("TESTPUBKEYCLI.txt"), strExtra2(*pServerContract);
+//		OTString strExtra1("TESTPUBKEYCLI.txt"), strExtra2(*pServerContract);
 		
-		(const_cast<OTPseudonym *>(pServerNym))->SavePublicKey(strExtra1);
+//		(const_cast<OTPseudonym *>(pServerNym))->SavePublicKey(strExtra1);
 		
 		if (bSendCommand && (NULL != pServerNym))
 		{
@@ -1796,30 +1840,30 @@ int main(int argc, char* argv[])
 			// Save the ready-to-go message into a string.
 //			theMessage.SaveContract(strEnvelopeContents);
 			
-			OTEnvelope theEnvelope, theEnvelope2;
+			OTEnvelope theEnvelope;//, theEnvelope2;
 			// Seal the string up into an encrypted Envelope
 			theEnvelope.Seal(*pServerNym, strEnvelopeContents);
-			theEnvelope2.Seal(*g_pTemporaryNym, strEnvelopeContents2);
+//			theEnvelope2.Seal(*g_pTemporaryNym, strEnvelopeContents2);
 							  
 			// temp remove debug
-			OTIdentifier theTestID;
-			pServerNym->GetIdentifier(theTestID);
-			OTString theIDString(theTestID);
+//			OTIdentifier theTestID;
+//			pServerNym->GetIdentifier(theTestID);
+//			OTString theIDString(theTestID);
 			// -----------------------------------
 			
 			OTASCIIArmor ascEnvelope(theEnvelope); // ascEnvelope now contains the base64-encoded string of the sealed envelope contents.
-			OTASCIIArmor ascEnvelope2(theEnvelope2);
+//			OTASCIIArmor ascEnvelope2(theEnvelope2);
 			
 			if (ascEnvelope.Exists())
 			{
-				OTLog::vError("DEBUG Envelope addressed to Nym ID: %s. Contents: \n%s\n Size: %ld, Nym: \n%s\n Server Contract:\n%s\n", 
-							  theIDString.Get(), ascEnvelope.Get(),ascEnvelope.GetLength(), strExtra1.Get(), strExtra2.Get());
-				
-				OTEnvelope theTestEnvelope(ascEnvelope2);
-				OTString strTestOutput2;
-				bool bOpened2 = theTestEnvelope.Open(*g_pTemporaryNym, strTestOutput2);
-				
-				OTLog::vError("DEBUG Opening a similar envelope... Contents: \n%s\n", strTestOutput2.Get());
+//				OTLog::vError("DEBUG Envelope addressed to Nym ID: %s. Contents: \n%s\n Size: %ld, Nym: \n%s\n Server Contract:\n%s\n", 
+//							  theIDString.Get(), ascEnvelope.Get(),ascEnvelope.GetLength(), strExtra1.Get(), strExtra2.Get());
+//				
+//				OTEnvelope theTestEnvelope(ascEnvelope2);
+//				OTString strTestOutput2;
+//				bool bOpened2 = theTestEnvelope.Open(*g_pTemporaryNym, strTestOutput2);
+//
+//				OTLog::vError("DEBUG Opening a similar envelope... Contents: \n%s\n", strTestOutput2.Get());
 
 				
 				zmq::socket_t socket(context, ZMQ_REQ);

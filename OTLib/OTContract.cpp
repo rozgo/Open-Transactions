@@ -751,7 +751,7 @@ bool OTContract::SignContractDefaultHash(const EVP_PKEY * pkey, OTSignature & th
 	
 	
 	// Here, we convert the EVP_PKEY that was passed in, to an RSA key for signing.
-	pRsaKey = EVP_PKEY_get1_RSA((EVP_PKEY*)pkey);
+	pRsaKey = EVP_PKEY_get1_RSA(const_cast< EVP_PKEY* > (pkey));
 	
 	if (!pRsaKey)
 	{
@@ -2202,13 +2202,15 @@ bool OTContract::InsertNym(const OTString & strKeyName, const OTString & strKeyV
 	// This is the version of SetCertificate that handles escaped bookends. ( - -----BEGIN CERTIFICATE-----)
 	if (strKeyValue.Contains("CERTIFICATE") && pNym->SetCertificate(strKeyValue, true)) // it also defaults to true, FYI.
 	{											
-		m_mapNyms[strKeyName.Get()] = pNym;	
+		m_mapNyms[strKeyName.Get()] = pNym;
+		bool bSuccessSetID = pNym->SetIdentifierByPubkey();
 		OTLog::vOutput(1, "---- Loaded certificate \"%s\"\n", strKeyName.Get());
 		bResult = true;
 	}			
 	else if (strKeyValue.Contains("PUBLIC KEY") && pNym->SetPublicKey(strKeyValue, true)) // it also defaults to true, FYI.
 	{											
 		m_mapNyms[strKeyName.Get()] = pNym;	
+		bool bSuccessSetID = pNym->SetIdentifierByPubkey();
 		OTLog::vOutput(1, "---- Loaded public key \"%s\"\n", strKeyName.Get());
 		bResult = true;
 	}	

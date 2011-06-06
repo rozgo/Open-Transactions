@@ -66,15 +66,12 @@ OT_INCLUDEDIRS = \
 	-I./irrxml \
 	-I./Lucre \
 	-I./bigint \
+	-I./simpleini \
 	-I./
 
 
 OT_LIBDIRS = \
 	-L./
-
-
-PLATFORM_INCLUDEDIRS = # empty
-PLATFORM_LIBDIRS = # empty
 
 
 # -----------------------------------------
@@ -104,7 +101,7 @@ endif
 ifeq ($(OT_PLATFORM), freebsd)
 SSL_INCLUDEDIRS = -I/usr/local/include
 SSL_LIBDIRS = -L/usr/local/lib
-#SSL_LIBDIRS = -L/usr/ports/security/openssl/work/openssl-1.0.0c
+#SSL_LIBDIRS = -L/usr/ports/security/openssl/work/openssl-1.0.0d
 endif
 
 
@@ -112,8 +109,11 @@ endif
 
 
 ifeq ($(DSP), 1)
-SSL_INCLUDEDIRS = -I../openssl/include
-SSL_LIBDIRS = -L../openssl
+PLATFORM_INCLUDEDIRS = -I../openssl/include
+PLATFORM_LIBDIRS = -L../openssl
+else
+PLATFORM_INCLUDEDIRS = #empty
+PLATFORM_LIBDIRS = #empty
 endif
 
 # -----------------------------------------
@@ -153,7 +153,7 @@ LUCRESOURCES = Lucre/bankimp.cpp
 
 IRRXMLSOURCES = irrxml/irrXML.cpp      
 
-CSOURCES = easyzlib.c mkcert.c
+CSOURCES = easyzlib.c mkcert.c simpleini/ConvertUTF.c
 
 CXXSOURCES = $(BIGINTSOURCES) $(LUCRESOURCES) $(IRRXMLSOURCES) \
 			 OTData.cpp \

@@ -944,7 +944,8 @@ namespace OTDB
 	
 	void BufferMsgpack::SetData(const unsigned char * pData, size_t theSize)
 	{
-		m_buffer.write(reinterpret_cast<const char*>(pData), static_cast<unsigned int>(theSize));
+		unsigned int nSize = theSize;
+		m_buffer.write(reinterpret_cast<const char*>(pData), nSize);
 	}
 	
 
@@ -1628,7 +1629,7 @@ namespace OTDB
 		
 		if (m_buffer.length() > 0)
 		{
-			outStream.write(m_buffer.data(), m_buffer.length());		
+			outStream.write(m_buffer.c_str(), m_buffer.length());		
 			return outStream.good() ? true : false;
 		}
 		else 

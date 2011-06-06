@@ -1125,7 +1125,7 @@ bool OTWallet::LoadWallet(const char * szFilename)
 					{
 						if (pNym->VerifyPseudonym()) 
 						{
-						//	pNym->LoadSignedNymfile(*pNym); // Uncomment this line to generate a new Nym by hand.
+//							pNym->LoadSignedNymfile(*pNym); // Uncomment this line to generate a new Nym by hand.
  							if (pNym->LoadSignedNymfile(*pNym))  // (Uncomment) Comment OUT this line to generate a new nym by hand.
 							{
 //	    pNym->SaveSignedNymfile(*pNym); // Uncomment this if you want to generate a new nym by hand. NORMALLY LEAVE IT COMMENTED OUT!!!! IT'S DANGEROUS!!!

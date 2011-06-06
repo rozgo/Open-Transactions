@@ -792,12 +792,12 @@ bool OTToken::GenerateTokenRequest(const OTPseudonym & theNym, OTMint & theMint,
 	
 	theMint.GetPublic(ascPublicMint, lDenomination);
 	
-	OTLog::vError("DEBUG: OTToken  public asc: \n%s\n", ascPublicMint.Get());
+//	OTLog::vError("DEBUG: OTToken  public asc: \n%s\n", ascPublicMint.Get());
 
 	
 	OTString strPublicMint(ascPublicMint);
 
-	OTLog::vError("DEBUG: OTToken  public str: \n%s\n", strPublicMint.Get());
+//	OTLog::vError("DEBUG: OTToken  public str: \n%s\n", strPublicMint.Get());
 	
 
 	// Get the bank's public key (now decoded in strPublicMint)

@@ -146,6 +146,12 @@ extern "C"
 #include "SSL-Example/SFSocket.h"
 }
 
+
+
+#include "SimpleIni.h"
+
+
+
 #include "OTLog.h"
 
 
@@ -166,7 +172,7 @@ extern "C"
 
 #else
 
-#define SERVER_PATH_DEFAULT	"/Users/REDACTED/Projects/Open-Transactions/transaction/data_folder"
+#define SERVER_PATH_DEFAULT	"./data_folder"
 #define CA_FILE             "certs/special/ca.crt"
 #define DH_FILE             "certs/special/dh_param_1024.pem"
 #define KEY_FILE            "certs/special/server.pem"
@@ -236,6 +242,29 @@ int main (int argc, char **argv)
 	OTLog::vOutput(0, "\n\nWelcome to Open Transactions, version %s.\n\n", OTLog::Version());
 	
 	// -----------------------------------------------------------------------
+	// The beginnings of an INI file!!
+	
+	OTString strPath;
+	
+	{
+		CSimpleIniA ini; // We're assuming this file is on the path.
+		SI_Error rc = ini.LoadFile("./.ot_ini"); // todo: stop hardcoding. 
+		
+		if (rc >=0)
+		{
+			const char * pVal = ini.GetValue("paths", "server_path", SERVER_PATH_DEFAULT); // todo stop hardcoding.
+			
+			if (NULL != pVal)
+				strPath.Set(pVal);
+			else
+				strPath.Set(SERVER_PATH_DEFAULT);
+		}
+		else 
+		{
+			strPath.Set(SERVER_PATH_DEFAULT);
+		}
+	}
+	// -----------------------------------------------------------------------
 
 	OTString strCAFile, strDHFile, strKeyFile, strSSLPassword;
 	
@@ -251,13 +280,13 @@ int main (int argc, char **argv)
 					   "\n\n", argv[0]
 #if defined (FELLOW_TRAVELER)					   
 					   , KEY_PASSWORD, 
-					   SERVER_PATH_DEFAULT
+					   strPath.Get()
 #endif					   
 					   );
 		
 #if defined (FELLOW_TRAVELER)
 		strSSLPassword.Set(KEY_PASSWORD);
-		OTLog::SetMainPath(SERVER_PATH_DEFAULT);
+		OTLog::SetMainPath(strPath.Get());
 #else
 		exit(1);
 #endif
@@ -270,13 +299,13 @@ int main (int argc, char **argv)
 #endif
 					   "\n\n", argv[0]
 #if defined (FELLOW_TRAVELER)
-					   , SERVER_PATH_DEFAULT
+					   , strPath.Get()
 #endif
 					   );
 		
 #if defined (FELLOW_TRAVELER)					   
 		strSSLPassword.Set(argv[1]);
-		OTLog::SetMainPath(SERVER_PATH_DEFAULT);
+		OTLog::SetMainPath(strPath.Get());
 #else
 		exit(1);
 #endif
@@ -287,6 +316,8 @@ int main (int argc, char **argv)
 		OTLog::SetMainPath(argv[2]);
 	}	
 	
+	OTLog::vOutput::(0, "Using as path to data folder:  %s\n", OTLog::Path());
+
 	strCAFile. Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), CA_FILE);
 	strDHFile. Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), DH_FILE);
 	strKeyFile.Format("%s%s%s", OTLog::Path(), OTLog::PathSeparator(), KEY_FILE);

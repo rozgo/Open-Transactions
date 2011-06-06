@@ -669,7 +669,7 @@ OT_BOOL	OT_API_Wallet_RemoveAssetType(const char * ASSET_ID)
 ///
 OT_BOOL	OT_API_Wallet_CanRemoveNym(const char * NYM_ID)
 {
-	OTLog::Error("Debug 0\n");
+//	OTLog::Error("Debug 0\n");
 	
 	OT_ASSERT_MSG(g_OT_API.IsInitialized(), "Not initialized; call OT_API::Init first.");
 
@@ -677,7 +677,7 @@ OT_BOOL	OT_API_Wallet_CanRemoveNym(const char * NYM_ID)
 	
 	OTIdentifier theID(NYM_ID);
 	
-	OTLog::vError("Debug start: %s\n", NYM_ID);
+//	OTLog::vError("Debug start: %s\n", NYM_ID);
 
 	// ------------------------------------------
 	
@@ -699,11 +699,11 @@ OT_BOOL	OT_API_Wallet_CanRemoveNym(const char * NYM_ID)
 			return OT_FALSE;
 		}
 		
-		OTLog::vError("Debug 1: %s\n", NYM_ID);
+//		OTLog::vError("Debug 1: %s\n", NYM_ID);
 		
 		OTIdentifier theCompareID(pID);
 		
-		OTLog::vError("Debug end: %s\n", NYM_ID);
+//		OTLog::vError("Debug end: %s\n", NYM_ID);
 		
 
 		if (theID == theCompareID)
@@ -1862,7 +1862,7 @@ const char * OT_API_GetAccountWallet_Type(const char * THE_ID)
 /// (Which is a hash of the contract used to issue the asset type.)
 const char * OT_API_GetAccountWallet_AssetTypeID(const char * THE_ID)
 {
-//	OTLog::Error("DEBUG 1 \n");
+//	OTLog::vError("DEBUG START --OT_API_GetAccountWallet_AssetTypeID-- ID is: %s\n", THE_ID);
 	
 	OT_ASSERT_MSG(NULL != THE_ID, "Null THE_ID passed in.");
 	
@@ -1894,6 +1894,8 @@ const char * OT_API_GetAccountWallet_AssetTypeID(const char * THE_ID)
 		strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
 #endif
 		
+//		OTLog::vError("DEBUG OT_API_GetAccountWallet_AssetTypeID  %s \n ", g_tempBuf);
+
 		return g_tempBuf;
 	}
 	
@@ -5384,6 +5386,8 @@ const char * OT_API_CreatePurse(const char * SERVER_ID,
 	OT_ASSERT_MSG(NULL != ASSET_TYPE_ID, "Null ASSET_TYPE_ID passed in.");
 //	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in."); // optional
 	
+//	OTLog::vError("DEBUG OT_API_CreatePurse: SERVER_ID: %s\n ASSET_TYPE_ID: %s\n USER_ID: %s\n ", SERVER_ID, ASSET_TYPE_ID, USER_ID);
+	
 	const OTIdentifier theServerID(SERVER_ID), theAssetTypeID(ASSET_TYPE_ID);
 	OTIdentifier theUserID;
 	
@@ -5396,6 +5400,8 @@ const char * OT_API_CreatePurse(const char * SERVER_ID,
 	
 	// -----------------------------------------------------
 	
+//	OTLog::Error("DEBUG OT_API_CreatePurse  1 \n ");
+	
 	OTWallet * pWallet = g_OT_API.GetWallet();
 	
 	if (NULL == pWallet)
@@ -5406,7 +5412,8 @@ const char * OT_API_CreatePurse(const char * SERVER_ID,
 	
 	// By this point, pWallet is a good pointer.  (No need to cleanup.)
 	
-	
+//	OTLog::Error("DEBUG OT_API_CreatePurse  2 \n ");
+
 	// -----------------------------------------------------
 	
 	OTPseudonym * pNym = pWallet->GetNymByID(theUserID); // TODO we won't do this if using a dummy Nym.
@@ -5424,7 +5431,8 @@ const char * OT_API_CreatePurse(const char * SERVER_ID,
 		
 		pWallet->AddNym(*pNym);
 	}
-	
+//	OTLog::Error("DEBUG OT_API_CreatePurse  3 \n ");
+
 	// By this point, pNym is a good pointer, and is on the wallet.
 	//  (No need to cleanup.)
 	// -----------------------------------------------------
@@ -5435,7 +5443,8 @@ const char * OT_API_CreatePurse(const char * SERVER_ID,
 	thePurse.SaveContract();
 
 	// -------------
-	
+//	OTLog::Error("DEBUG OT_API_CreatePurse  4 \n ");
+
 	OTString strOutput(thePurse);
 	
 	const char * pBuf = strOutput.Get();
@@ -5446,6 +5455,8 @@ const char * OT_API_CreatePurse(const char * SERVER_ID,
 	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
 #endif
 	
+//	OTLog::vError("DEBUG OT_API_CreatePurse  %s \n ", g_tempBuf);
+
 	return g_tempBuf;				
 }
 
@@ -5742,6 +5753,15 @@ const char * OT_API_Purse_Push(const char * SERVER_ID,
 	OT_ASSERT_MSG(NULL != THE_PURSE, "Null THE_PURSE passed in."); 
 	OT_ASSERT_MSG(NULL != THE_TOKEN, "Null THE_TOKEN passed in."); 
 	
+	
+	OTLog::vError("Purse Push SERVER_ID: %s \n", SERVER_ID);
+	OTLog::vError("Purse Push ASSET_TYPE_ID: %s \n", ASSET_TYPE_ID);
+	OTLog::vError("Purse Push USER_ID: %s \n", USER_ID); 
+	OTLog::vError("Purse Push THE_PURSE: %s \n", THE_PURSE); 
+	OTLog::vError("Purse Push THE_TOKEN: %s \n", THE_TOKEN); 
+	
+	
+	
 	const OTIdentifier theServerID(SERVER_ID), theAssetTypeID(ASSET_TYPE_ID), theUserID(USER_ID);
 	
 	const OTString strPurse(THE_PURSE), strToken(THE_TOKEN);
@@ -5780,8 +5800,14 @@ const char * OT_API_Purse_Push(const char * SERVER_ID,
 	//  (No need to cleanup.)
 	// -----------------------------------------------------
 	
-	if (!strPurse.Exists() || !strToken.Exists())
+	if (!strPurse.Exists())
 	{
+		OTLog::Output(0, "OT_API_Purse_Push: Purse does not exist.\n");
+		return NULL;
+	}
+	else if (!strToken.Exists())
+	{
+		OTLog::Output(0, "OT_API_Purse_Push: Token does not exist.\n");
 		return NULL;
 	}
 	
@@ -5821,6 +5847,8 @@ const char * OT_API_Purse_Push(const char * SERVER_ID,
 	strlcpy(g_tempBuf, pBuf, MAX_STRING_LENGTH);
 #endif
 	
+	OTLog::vError("Purse Push: %s \n", g_tempBuf); 
+
 	return g_tempBuf;	
 }
 
@@ -5842,14 +5870,14 @@ OT_BOOL OT_API_Wallet_ImportPurse(const char * SERVER_ID,
 	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in."); 
 	OT_ASSERT_MSG(NULL != THE_PURSE, "Null THE_PURSE passed in."); 
 	
-	OTLog::vError("Debug start\nServerID: %s\nAsset ID: %s\n User ID: %s\nNew Purse:\n%s\n",
-				  SERVER_ID, ASSET_TYPE_ID, USER_ID, THE_PURSE);
+//	OTLog::vError("Debug start\nServerID: %s\nAsset ID: %s\n User ID: %s\nNew Purse:\n%s\n",
+//				  SERVER_ID, ASSET_TYPE_ID, USER_ID, THE_PURSE);
 	
 	const OTIdentifier theServerID(SERVER_ID), theAssetTypeID(ASSET_TYPE_ID), theUserID(USER_ID);
 	
 	const OTString strNewPurse(THE_PURSE);
 	
-	OTLog::Error("Debug end\n");
+//	OTLog::Error("Debug end\n");
 	// -----------------------------------------------------
 	
 	OTWallet * pWallet = g_OT_API.GetWallet();
@@ -7008,6 +7036,10 @@ void OT_API_notarizeDeposit(const char * SERVER_ID,
 	OT_ASSERT_MSG(NULL != ACCT_ID, "Null ACCT_ID passed in.");
 	OT_ASSERT_MSG(NULL != THE_PURSE, "Null THE_PURSE passed in.");
 
+	// REMOVE TEMP DEBUG
+//	OTLog::vError("DEBUG: SERVER_ID: %s \n USER_ID: %s \n ACCT_ID: %s \n THE_PURSE: %s\n", 
+//				  SERVER_ID, USER_ID, ACCT_ID, THE_PURSE);
+	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAcctID(ACCT_ID);
 	OTString strPurse(THE_PURSE);
 
@@ -7090,8 +7122,25 @@ void OT_API_processInbox(const char * SERVER_ID,
 	OT_ASSERT_MSG(NULL != ACCT_ID, "Null ACCT_ID passed in.");
 	OT_ASSERT_MSG(NULL != ACCT_LEDGER, "NULL ACCT_LEDGER passed in.");
 	
+	OTLog::vOutput(0, 
+				   "SERVER_ID: %s \n"
+				   "USER_ID: %s \n"
+				   "ACCT_ID: %s \n"
+				   "ACCT_LEDGER: %s \n",
+				   SERVER_ID, USER_ID, ACCT_ID, ACCT_LEDGER);
+	
 	OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theAcctID(ACCT_ID);
 	OTString strLedger(ACCT_LEDGER);
+	
+	OTString temp1(SERVER_ID), temp2(USER_ID), temp3(ACCT_ID), temp4(ACCT_LEDGER);
+	OTLog::vOutput(0, 
+				   "SERVER_ID: %s \n"
+				   "USER_ID: %s \n"
+				   "ACCT_ID: %s \n"
+				   "ACCT_LEDGER: %s \n",
+				   temp1.Get(), temp2.Get(), temp3.Get(), temp4.Get());
+	
+
 	
 	g_OT_API.processInbox(theServerID, theUserID, theAcctID, strLedger);
 }

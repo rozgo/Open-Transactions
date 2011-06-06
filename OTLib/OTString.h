@@ -276,6 +276,7 @@ public:
 	OTString(const OTIdentifier & theValue);
 	OTString(OTPseudonym & theValue);
 	OTString(const char * new_string);
+	OTString(const char * new_string, size_t sizeLength);
 	OTString(const std::string & new_string);
    
 	virtual ~OTString();

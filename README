@@ -8,6 +8,9 @@ Radio Interview:
 Part 1: http://agoristradio.com/?p=234
 Part 2: http://agoristradio.com/?p=246
 
+Mailing list:
+open-transactions-subscribe@rayservers.com
+
 Java GUI: 
 https://github.com/FellowTraveler/Moneychanger
 
@@ -26,11 +29,11 @@ Featuring:
     -- Basket Currencies            (10 "baskets" == 5 gold, 3 silver)
     -- Markets with Trades          (stop, fill-or-kill, limit orders...)
     -- Payment Plans
-    -- Native API for Java, Ruby, Python, PHP, Perl, C, 
+    -- Native API for Java, Ruby, Python, PHP, Perl, C, D,
        C++, Objective-C, C#, Tcl, and LISP
-    -- XmlRpc/HTTP transport layer (build option)
+    -- ZeroMQ transport layer. Customizable storage layer.
     -- Soon: Stocks that pay dividends, Bonds that pay interest,
-       and even Collateralized Debt Obligations.
+       Real Bills, and even Collateralized Debt Obligations.
     -- Soon: 2-D Barcodes to make possible 'Any screen a cash
        register' and 'Any camera phone a customer.'
 
@@ -90,6 +93,13 @@ without the need to store any transaction history (beyond the
 last receipt itself.) See Bill St. Clair's excellent Truledger
 (http://truledger.com/) for another example of this concept.
 
+-- The server cannot forge your signature, and thus cannot change
+your balance without your signed permission, nor falsify any receipt.
+The server is likewise on the hook with the issuer, for the same
+reason. (This is because the receipt IS the account, and because the
+server cannot sign the receipt until you have signed it first--and
+the server cannot forge your signature.)
+
 -- Open Transactions also features MARKETS. Any two asset types can
 be traded against each other. The markets are full-featured and
 include LIMIT ORDERS, STOP ORDERS, FILL-or-KILL orders, DAY orders
@@ -138,7 +148,7 @@ relevant parties including the server.
 
 -- Open Transactions is open-source, written in C++,
 object-oriented, and includes a high-level API in Java, Ruby,
-Python, C, C++, Obj-C, C#, Lisp, Perl, PHP, and Tcl. (Also
+Python, C, D, C++, Obj-C, C#, Lisp, Perl, PHP, and Tcl. (Also
 supporting JRuby, Jython, and any other language available on the
 JVM.)
 
@@ -151,7 +161,7 @@ neutral, and could be utilized across a variety of different
 transfer protocols and storage systems. The current test server and
 client use the ZeroMQ library for messages, and a storage abstraction
 is employed to make it easy for you to swap in any storage method
-you need. (Default is the filesystem.) 
+you need. (Default is the filesystem, but you can store anywhere.)
 
 The intention is for this software to be integrated as many places
 as possible... Games, digital cash wallets, distributed data stores,

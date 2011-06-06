@@ -12,8 +12,9 @@ https://github.com/FellowTraveler/Open-Transactions/wiki/Install
 GETTING STARTED:
 
 
-1) For most, assuming you have all the necessary libraries installed already, (OpenSSL 1.0.0, MsgPack, Protocol Buffers, and ZeroMQ) then
-you just type this to build:
+1) For most, assuming you have all the necessary libraries installed already, 
+   (OpenSSL 1.0.0, MsgPack, Protocol Buffers, and ZeroMQ) then you just type  
+   this to build:
    
     make
 
@@ -92,6 +93,8 @@ INSTALL: ZeroMQ (transport library)
 Available here: 
 http://www.zeromq.org/intro:get-the-software
 
+port install zmq
+
 ---------------------------------------------------------------
 
 DOWNLOAD OPEN TRANSACTIONS
@@ -103,7 +106,7 @@ https://github.com/FellowTraveler/Open-Transactions
 
 ----------------------------------------------------------------
 
-BUILD THE TEST CLIENT
+BUILD OPEN TRANSACTIONS
 
 cd Open-Transactions && make clean && make
 
@@ -124,6 +127,7 @@ make php5
 make perl5
 make ruby
 make c
+make d
 
 Etc. Use "make clean" between builds.
 
