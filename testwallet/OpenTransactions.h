@@ -527,6 +527,15 @@ public:
 						  const long			& PRICE_LIMIT,		// Per Minimum Increment...
 						  const bool			bBuyingOrSelling);	//  BUYING == false, SELLING == true.
 	
+	void getMarketList(const OTIdentifier & SERVER_ID, const OTIdentifier & USER_ID);
+	void getMarketOffers(const OTIdentifier & SERVER_ID, const OTIdentifier & USER_ID, 
+						 const OTIdentifier & MARKET_ID, const long & lDepth);
+	void getMarketRecentTrades(const OTIdentifier & SERVER_ID, const OTIdentifier & USER_ID, 
+							   const OTIdentifier & MARKET_ID, const long & lDepth);
+	void getNym_MarketOffers(const OTIdentifier & SERVER_ID, const OTIdentifier & USER_ID);
+	void cancelNymMarketOffer(const OTIdentifier & SERVER_ID, const OTIdentifier & USER_ID, const long & lTransactionNum);
+	void getOffer_Trades(const OTIdentifier & SERVER_ID, const OTIdentifier & USER_ID, const long & lTransactionNum);
+
 };
 		
 

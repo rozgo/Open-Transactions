@@ -152,8 +152,9 @@ protected:
 //	virtual bool SaveContractWallet(FILE * fl);
 	virtual int ProcessXMLNode(IrrXMLReader*& xml);
 
-	bool SignContract(const EVP_PKEY * pkey, OTSignature & theSignature,
-							  const OTString & strHashType);
+	bool SignContract(const EVP_PKEY * pkey, 
+					  OTSignature & theSignature,
+					  const OTString & strHashType);
 	virtual void UpdateContents();
 
 	bool m_bIsSigned;
@@ -172,7 +173,7 @@ public:
 	OTString	m_strCommand;		// perhaps @register is the string for "reply to register" a-ha
 	OTString	m_strServerID;		// This is sent with every message for security reasons.
 	OTString	m_strNymID;			// The hash of the user's public key... or x509 cert.
-	OTString	m_strNymID2;		// If the user requests public key of another user.
+	OTString	m_strNymID2;		// If the user requests public key of another user. ALSO used for MARKET ID sometimes.
 	OTString	m_strNymPublicKey;  // The user's public key... or x509 cert.
 	OTString	m_strAssetID;		// The hash of the contract for whatever digital asset is referenced.
 	OTString	m_strAcctID;		// The unique ID of an asset account.
@@ -186,7 +187,9 @@ public:
 									// or a message envelope or request from another user etc) then
 									// it can be put here in ascii-armored format.
 
-
+	long		m_lDepth;			// For Market-related messages...
+	long		m_lTransactionNum;	// For Market-related messages...
+	
 	bool		m_bSuccess;			// When the server replies to the client, this may be true or false
 	bool		m_bBool;			// Some commands need to send a bool. This variable is for those.
 };

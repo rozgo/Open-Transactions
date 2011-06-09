@@ -33,6 +33,17 @@
 %typemap("javapackage") AddressBook, AddressBook *, AddressBook & "com.wrapper.core.jni";
 %typemap("javapackage") WalletData, WalletData *, WalletData & "com.wrapper.core.jni";
 
+%typemap("javapackage") MarketData, MarketData *, MarketData & "com.wrapper.core.jni";
+%typemap("javapackage") MarketList, MarketList *, MarketList & "com.wrapper.core.jni";
+%typemap("javapackage") OfferDataMarket, OfferDataMarket *, OfferDataMarket & "com.wrapper.core.jni";
+%typemap("javapackage") OfferListMarket, OfferListMarket *, OfferListMarket & "com.wrapper.core.jni";
+%typemap("javapackage") TradeDataMarket, TradeDataMarket *, TradeDataMarket & "com.wrapper.core.jni";
+%typemap("javapackage") TradeListMarket, TradeListMarket *, TradeListMarket & "com.wrapper.core.jni";
+%typemap("javapackage") OfferDataNym, OfferDataNym *, OfferDataNym & "com.wrapper.core.jni";
+%typemap("javapackage") OfferListNym, OfferListNym *, OfferListNym & "com.wrapper.core.jni";
+%typemap("javapackage") TradeDataNym, TradeDataNym *, TradeDataNym & "com.wrapper.core.jni";
+%typemap("javapackage") TradeListNym, TradeListNym *, TradeListNym & "com.wrapper.core.jni";
+
 %typemap("javapackage") InitDefaultStorage "com.wrapper.core.jni";
 %typemap("javapackage") GetDefaultStorage "com.wrapper.core.jni";
 %typemap("javapackage") CreateStorageContext "com.wrapper.core.jni";
@@ -48,7 +59,6 @@
 %typemap("javapackage") PackType "com.wrapper.core.jni";
 %typemap("javapackage") StorageType "com.wrapper.core.jni";
 %typemap("javapackage") StoredObjectType "com.wrapper.core.jni";
-
 
 
 // I found this GEM in the Berekeley DB code!
@@ -558,8 +568,6 @@ OT_IS_ELEMENT_TYPE(ContactAcct)
 
 // *******************************
 
-
-
 OT_BEFORE_STORABLE_TYPE(OTDB::WalletData)
 OT_IS_ELEMENT_TYPE(WalletData)
 
@@ -594,8 +602,121 @@ OT_IS_ELEMENT_TYPE(AddressBook)
 	OT_ADD_ELEMENT(Contact)
 }
 
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::MarketData)
+OT_IS_ELEMENT_TYPE(MarketData)
+
+%typemap(javacode,noblock=1) OTDB::MarketData {
+	OT_CAN_BE_CONTAINED_BY(MarketList)
+	// ------------------------
+}
+
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::MarketList)
+OT_IS_ELEMENT_TYPE(MarketList)
+
+%typemap(javacode,noblock=1) OTDB::MarketList {
+	// ------------------------
+	OT_CONTAINER_TYPE_MEMBERS
+	OT_ADD_ELEMENT(MarketData)
+}
+
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::OfferDataMarket)
+OT_IS_ELEMENT_TYPE(BidData)
+OT_IS_ELEMENT_TYPE(AskData)
+
+%typemap(javacode,noblock=1) OTDB::OfferDataMarket {
+	OT_CAN_BE_CONTAINED_BY(OfferListMarket)
+	// ------------------------
+}
+
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::OfferListMarket)
+OT_IS_ELEMENT_TYPE(OfferListMarket)
+
+%typemap(javacode,noblock=1) OTDB::OfferListMarket {
+	// ------------------------
+	OT_CONTAINER_TYPE_MEMBERS
+	OT_ADD_ELEMENT(BidData)
+	OT_ADD_ELEMENT(AskData)
+}
+
+
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::TradeDataMarket)
+OT_IS_ELEMENT_TYPE(TradeDataMarket)
+
+%typemap(javacode,noblock=1) OTDB::TradeDataMarket {
+	OT_CAN_BE_CONTAINED_BY(TradeListMarket)
+	// ------------------------
+}
+
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::TradeListMarket)
+OT_IS_ELEMENT_TYPE(TradeListMarket)
+
+%typemap(javacode,noblock=1) OTDB::TradeListMarket {
+	// ------------------------
+	OT_CONTAINER_TYPE_MEMBERS
+	OT_ADD_ELEMENT(TradeDataMarket)
+}
+
+
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::OfferDataNym)
+OT_IS_ELEMENT_TYPE(OfferDataNym)
+
+%typemap(javacode,noblock=1) OTDB::OfferDataNym {
+	OT_CAN_BE_CONTAINED_BY(OfferListNym)
+	// ------------------------
+}
+
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::OfferListNym)
+OT_IS_ELEMENT_TYPE(OfferListNym)
+
+%typemap(javacode,noblock=1) OTDB::OfferListNym {
+	// ------------------------
+	OT_CONTAINER_TYPE_MEMBERS
+	OT_ADD_ELEMENT(OfferDataNym)
+}
+
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::TradeDataNym)
+OT_IS_ELEMENT_TYPE(TradeDataNym)
+
+%typemap(javacode,noblock=1) OTDB::TradeDataNym {
+	OT_CAN_BE_CONTAINED_BY(TradeListNym)
+	// ------------------------
+}
+
+// *******************************
+
+OT_BEFORE_STORABLE_TYPE(OTDB::TradeListNym)
+OT_IS_ELEMENT_TYPE(TradeListNym)
+
+%typemap(javacode,noblock=1) OTDB::TradeListNym {
+	// ------------------------
+	OT_CONTAINER_TYPE_MEMBERS
+	OT_ADD_ELEMENT(TradeDataNym)
+}
+
+
+
 // ------------------------------------------------------------
 #endif
+
+
 
 
 
@@ -629,7 +750,7 @@ namespace OTDB {
 	enum StoredObjectType
 	{
 		STORED_OBJ_STRING=0,		// Just a string.
-		STORED_OBJ_BLOB,			// Binary bytes, of arbitrary size.
+		STORED_OBJ_BLOB,			// Used for storing binary data. Bytes of arbitrary length.
 		STORED_OBJ_STRING_MAP,		// A StringMap is a list of Key/Value pairs, useful for storing nearly anything.
 		STORED_OBJ_WALLET_DATA,		// The GUI wallet's stored data
 		STORED_OBJ_BITCOIN_ACCT,	// The GUI wallet's stored data about a Bitcoin acct
@@ -639,10 +760,18 @@ namespace OTDB {
 		STORED_OBJ_CONTACT_ACCT,	// This is an account record inside a contact of your address book.
 		STORED_OBJ_CONTACT,			// Your address book has a list of these.
 		STORED_OBJ_ADDRESS_BOOK,	// Your address book.
+		STORED_OBJ_MARKET_DATA,		// The description data for any given Market ID.
+		STORED_OBJ_MARKET_LIST,		// A list of MarketDatas.
+		STORED_OBJ_OFFER_DATA_MARKET,	// Offer details (doesn't contain private details)
+		STORED_OBJ_OFFER_LIST_MARKET,	// A list of offer details, for a specific market.
+		STORED_OBJ_TRADE_DATA_MARKET,	// Trade details (doesn't contain private data)
+		STORED_OBJ_TRADE_LIST_MARKET,	// A list of trade details, for a specific market.
+		STORED_OBJ_OFFER_DATA_NYM,		// Private offer details for a particular Nym and Offer.
+		STORED_OBJ_OFFER_LIST_NYM,		// A list of private offer details for a particular Nym.
+		STORED_OBJ_TRADE_DATA_NYM,		// Private trade details for a particular Nym and Trade.
+		STORED_OBJ_TRADE_LIST_NYM,		// A list of private trade details for a particular Nym and Offer.
 		STORED_OBJ_ERROR			// (Should never be.)
 	};
-	
-	
 	
 	// ----------------------------------------------------
 	
@@ -931,6 +1060,276 @@ namespace OTDB {
 		
 		DEFINE_OT_SWIG_DYNAMIC_CAST(Displayable)
 	};
+	// *************************************************
+	
+	class MarketData : public Displayable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		MarketData() : Displayable(), 
+		scale(0), total_assets(0), number_bids(0), last_sale_price(0),
+		current_bid(0), current_ask(0), 
+		volume_trades(0), volume_assets(0), volume_currency(0),
+		recent_highest_bid(0), recent_lowest_ask(0)
+		{ m_Type = "MarketData"; }
+		
+	public:
+		virtual ~MarketData() { }
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		std::string server_id;
+		
+		std::string asset_type_id;
+		std::string currency_type_id;
+		
+		uint32_t scale;	// the Market scale. (A trade in any particular asset is measured in X units of SCALE.)
+		// IOW, if the scale is 5000 on the gold market, that means "3 units" is 15000 gold
+		
+		uint64_t total_assets;		// total amount of assets available on market for purchase.
+		
+		uint32_t number_bids;		// number of bids that are currently on the market.
+		uint32_t number_asks;		// number of asks that are currently on the market.
+		
+		uint64_t last_sale_price;	// The price at which the most recent trade occurred on this market.
+		uint64_t current_bid;		// The highest bid currently on the market.
+		uint64_t current_ask;		// The lowest ask price currently available on the market.
+		
+		uint32_t volume_trades;		// 24-hour period, number of trades.
+		
+		uint64_t volume_assets;		// 24-hour volume, amount of assets traded.
+		uint64_t volume_currency;	// 24-hour volume, amount of currency paid for assets traded.
+		
+		uint64_t recent_highest_bid;// in a 24hour period, the highest bid to hit the market.
+		uint64_t recent_lowest_ask;	// in a 24hour period, the lowest ask to hit the market.
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(MarketData)
+	};
+	
+	// ------------------------------------------------------
+	
+	class MarketList : public Storable {
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		MarketList() : Storable() { m_Type = "MarketList"; }
+		
+	public:
+		virtual ~MarketList() {}
+		
+		OT_SWIG_DECLARE_GET_ADD_REMOVE(MarketData);
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(MarketList)
+	};
+	
+	
+	// ******************************************************
+	
+	class OfferDataMarket : public Displayable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		OfferDataMarket() : Displayable(), 
+		transaction_id(0), price_per_scale(1), available_assets(0), minimum_increment(1)
+		{ m_Type = "OfferDataMarket"; }
+		
+	public:
+		virtual ~OfferDataMarket() { }
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		uint64_t transaction_id;
+		uint64_t price_per_scale;
+		
+//		uint64_t total_assets;
+//		uint64_t finished_so_far;
+		uint64_t available_assets;
+		
+		// Each sale or purchase against (total_assets - finished_so_far) must be in minimum increments.
+		// Minimum Increment must be evenly divisible by scale. 
+		// (This effectively becomes a "FILL OR KILL" order if set to the same value as total_assets. Also, MUST be 1
+		// or greater. CANNOT be zero. Enforce this at class level. You cannot sell something in minimum increments of 0.)
+		
+		uint64_t minimum_increment;  	
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(OfferDataMarket)
+	};
+	
+	// ------------------------------------------------------
+	
+	typedef OfferDataMarket BidData;
+	typedef OfferDataMarket AskData;
+	
+	// ------------------------------------------------------
+	
+	class OfferListMarket : public Storable {
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		OfferListMarket() : Storable() { m_Type = "OfferListMarket"; }
+		
+	public:
+		virtual ~OfferListMarket() {}
+		
+		OT_SWIG_DECLARE_GET_ADD_REMOVE(BidData);
+		OT_SWIG_DECLARE_GET_ADD_REMOVE(AskData);
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(OfferListMarket)
+	};
+	
+	// ******************************************************
+	
+	class TradeDataMarket : public Displayable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		TradeDataMarket() : Displayable(), 
+		transaction_id(0), date(0), 
+		price(0), amount_sold(0)
+		{ m_Type = "TradeDataMarket"; }
+		
+	public:
+		virtual ~TradeDataMarket() { }
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		uint64_t transaction_id;	// (transaction number for this trade.)
+		uint32_t date;				// (The date of this trade's execution)
+		uint64_t price;				// (The price this trade executed at.)
+		uint64_t amount_sold;		// (Amount of asset sold for that price.)	
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(TradeDataMarket)
+	};
+	
+	// ------------------------------------------------------
+	
+	class TradeListMarket : public Storable {
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		TradeListMarket() : Storable() { m_Type = "TradeListMarket"; }
+		
+	public:
+		virtual ~TradeListMarket() {}
+		
+		OT_SWIG_DECLARE_GET_ADD_REMOVE(TradeDataMarket);
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(TradeListMarket)
+	};
+	
+	// ******************************************************
+	
+	class OfferDataNym : public Displayable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		OfferDataNym() : Displayable(), 
+		valid_from(0), valid_to(0), 
+		selling(false), scale(1), price_per_scale(1),
+		transaction_id(0), 
+		total_assets(1), finished_so_far(0), 
+		minimum_increment(1), stop_price(0)
+		{ m_Type = "OfferDataNym"; }
+		
+	public:
+		virtual ~OfferDataNym() { }
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		uint32_t valid_from;
+		uint32_t valid_to;
+		
+		std::string server_id;
+		std::string asset_type_id;		// the asset type on offer.
+		std::string currency_type_id;	// the currency being used to purchase the asset.
+		
+		bool selling;			// true for ask, false for bid.
+		
+		uint32_t scale;	// 1oz market? 100oz market? 10,000oz market? This determines size and granularity.
+		uint64_t price_per_scale;
+		
+		uint64_t transaction_id;
+		
+		uint64_t total_assets;
+		uint64_t finished_so_far;
+		
+		
+		// Each sale or purchase against (total_assets - finished_so_far) must be in minimum increments.
+		// Minimum Increment must be evenly divisible by scale. 
+		// (This effectively becomes a "FILL OR KILL" order if set to the same value as total_assets. Also, MUST be 1
+		// or greater. CANNOT be zero. Enforce this at class level. You cannot sell something in minimum increments of 0.)
+		
+		uint64_t minimum_increment;  	
+		
+		std::string stop_sign;  // If this is a stop order, this will contain '<' or '>'.
+		uint64_t stop_price;	// The price at which the stop order activates (less than X or greater than X, based on sign.)
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(OfferDataNym)
+	};
+	
+	// ------------------------------------------------------
+	
+	class OfferListNym : public Storable {
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		OfferListNym() : Storable() { m_Type = "OfferListNym"; }
+		
+	public:
+		virtual ~OfferListNym() {}
+		
+		OT_SWIG_DECLARE_GET_ADD_REMOVE(OfferDataNym);
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(OfferListNym)
+	};
+	
+	// ******************************************************
+	
+	class TradeDataNym : public Displayable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		TradeDataNym() : Displayable(), 
+		transaction_id(0),
+		completed_count(0), date(0), 
+		price(0), amount_sold(0)
+		{ m_Type = "TradeDataNym"; }
+		
+	public:
+		virtual ~TradeDataNym() { }
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		uint64_t transaction_id;	// (transaction number for this trade.)
+		
+		uint32_t completed_count;	// (How many trades have processed for the associated offer? We keep count for each trade.)
+		uint32_t date;				// (The date of this trade's execution)
+		uint64_t price;				// (The price this trade executed at.)
+		uint64_t amount_sold;		// (Amount of asset sold for that price.)	
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(TradeDataNym)
+	};
+	
+	// ------------------------------------------------------
+	
+	class TradeListNym : public Storable {
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		TradeListNym() : Storable() { m_Type = "TradeListNym"; }
+		
+	public:
+		virtual ~TradeListNym() {}
+		
+		OT_SWIG_DECLARE_GET_ADD_REMOVE(TradeDataNym);
+		
+		DEFINE_OT_SWIG_DYNAMIC_CAST(TradeListNym)
+	};
 	
 	// *************************************************
 	
@@ -1164,11 +1563,6 @@ namespace OTDB {
 	};
 	
 	// ----------------------------
-	
-	
-	
-	
-	
 
 } // namespace OTDB 
 
@@ -1189,7 +1583,8 @@ namespace OTDB {
 
 // These have to go AFTER the class definitions.
 //
-
+/* UNUSED
+ 
 OT_AFTER_STORABLE_TYPE(OTDBString)
 OT_AFTER_STORABLE_TYPE(Blob)
 OT_AFTER_STORABLE_TYPE(StringMap)
@@ -1205,6 +1600,9 @@ OT_AFTER_STORABLE_TYPE(WalletData)
 OT_AFTER_STORABLE_TYPE(Contact)
 
 OT_AFTER_STORABLE_TYPE(AddressBook)
+*/
+
+
 
 
 

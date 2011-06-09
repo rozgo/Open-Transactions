@@ -7281,6 +7281,98 @@ void OT_API_issueMarketOffer(const char * SERVER_ID,
 
 
 
+void OT_API_getMarketList(const char * SERVER_ID,
+						  const char * USER_ID) 
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	
+	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID);
+	
+	g_OT_API.getMarketList(theServerID, theUserID);
+}
+
+void OT_API_getMarketOffers(const char * SERVER_ID,
+							const char * USER_ID,
+							const char * MARKET_ID, 
+							const char * MAX_DEPTH) 
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != MARKET_ID, "Null MARKET_ID passed in.");
+//	OT_ASSERT_MSG(NULL != MAX_DEPTH, "Null MAX_DEPTH passed in.");
+	
+	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theMarketID(MARKET_ID);
+	
+	const long lDepth = (NULL != MAX_DEPTH) ? atol(MAX_DEPTH) : 0;
+	OT_ASSERT_MSG(lDepth >= 0, "Bad depth passed in (negative value).");
+	
+	g_OT_API.getMarketOffers(theServerID, theUserID, theMarketID, lDepth);
+}
+
+void OT_API_getMarketRecentTrades(const char * SERVER_ID,
+								  const char * USER_ID,
+								  const char * MARKET_ID, 
+								  const char * MAX_DEPTH) 
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != MARKET_ID, "Null MARKET_ID passed in.");
+//	OT_ASSERT_MSG(NULL != MAX_DEPTH, "Null MAX_DEPTH passed in.");
+
+	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID), theMarketID(MARKET_ID);
+	
+	const long lDepth = (NULL != MAX_DEPTH) ? atol(MAX_DEPTH) : 0;
+	OT_ASSERT_MSG(lDepth >= 0, "Bad depth passed in (negative value).");
+	
+	g_OT_API.getMarketRecentTrades(theServerID, theUserID, theMarketID, lDepth);
+}
+
+void OT_API_getNym_MarketOffers(const char * SERVER_ID,
+								const char * USER_ID) 
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	
+	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID);
+	
+	g_OT_API.getNym_MarketOffers(theServerID, theUserID);
+}
+
+void OT_API_cancelNymMarketOffer(const char * SERVER_ID, 
+								 const char * USER_ID, 
+								 const char * TRANSACTION_NUMBER)
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != TRANSACTION_NUMBER, "NULL TRANSACTION_NUMBER passed in.");
+	
+	const long lTransactionNumber = atol(TRANSACTION_NUMBER);
+	OT_ASSERT_MSG(lTransactionNumber >= 0, "Bad transaction number passed in (negative value).");
+	
+	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID);
+	
+	g_OT_API.cancelNymMarketOffer(theServerID, theUserID, lTransactionNumber);	
+}
+
+void OT_API_getOffer_Trades(const char * SERVER_ID,
+							const char * USER_ID,
+							const char * TRANSACTION_NUMBER) 
+{
+	OT_ASSERT_MSG(NULL != SERVER_ID, "Null SERVER_ID passed in.");
+	OT_ASSERT_MSG(NULL != USER_ID, "Null USER_ID passed in.");
+	OT_ASSERT_MSG(NULL != TRANSACTION_NUMBER, "NULL TRANSACTION_NUMBER passed in.");
+	
+	const long lTransactionNumber = atol(TRANSACTION_NUMBER);
+	OT_ASSERT_MSG(lTransactionNumber >= 0, "Bad transaction number passed in (negative value).");
+	
+	const OTIdentifier theServerID(SERVER_ID), theUserID(USER_ID);
+	
+	g_OT_API.getOffer_Trades(theServerID, theUserID, lTransactionNumber);
+}
+
+
+
 
 // -----------------------------------------------------------
 // POP MESSAGE BUFFER

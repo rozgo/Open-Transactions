@@ -4363,8 +4363,520 @@ void OT_API::issueMarketOffer(const OTIdentifier	& SERVER_ID,
 
 
 
+// -----------------------------------
+/// GET MARKET LIST
+///
+/// Connect to a specific server, as a specific Nym, and request the list of markets.
+/// (Flush the buffer before calling this. Then after you make this call, wait 50 ms
+/// and then pop the buffer and check the server reply for success. From there you can 
+/// either read the reply data directly out of the reply message, or you can load it from
+/// storage (OT will probably auto-store the reply to storage, for your convenience.)
+///
+void OT_API::getMarketList(const OTIdentifier & SERVER_ID, const OTIdentifier & USER_ID)
+{
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------------------
+
+	OTServerContract * pServer = pWallet->GetServerContract(SERVER_ID);
+	
+	if (!pServer)
+	{
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
+		
+		return;
+	}
+	
+	OTMessage theMessage;
+	
+	OTString strServerID(SERVER_ID);
+	
+	// -----------------------------------------------------
+	// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+	long lRequestNumber = 0;
+	pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
+	theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+	pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
+	
+	OTString strNymID(USER_ID);
+
+	// (1) Set up member variables 
+	theMessage.m_strCommand			= "getMarketList";
+	theMessage.m_strNymID			= strNymID;
+	theMessage.m_strServerID		= strServerID;
+	
+	// (2) Sign the Message 
+	theMessage.SignContract(*pNym);		
+	
+	// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+	theMessage.SaveContract();
+	
+	// (Send it)
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
+#endif	
+	m_pClient->ProcessMessageOut(theMessage);		
+}
 
 
+
+
+// -----------------------------------------------------
+/// GET ALL THE OFFERS ON A SPECIFIC MARKET
+///
+/// A specific Nym is requesting the Server to send a list of the offers on a specific
+/// Market ID-- the bid/ask, and prices/amounts, basically--(up to lDepth or server Max) 
+/// 
+void OT_API::getMarketOffers(const OTIdentifier & SERVER_ID, const OTIdentifier & USER_ID, 
+							 const OTIdentifier & MARKET_ID, const long & lDepth)
+{
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------------------
+	
+	OTServerContract * pServer = pWallet->GetServerContract(SERVER_ID);
+	
+	if (!pServer)
+	{
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
+		
+		return;
+	}
+	
+	OTMessage theMessage;
+	
+	OTString strServerID(SERVER_ID), strMarketID(MARKET_ID);
+	
+	// -----------------------------------------------------
+	// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+	long lRequestNumber = 0;
+	pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
+	theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+	pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
+	
+	OTString strNymID(USER_ID);
+	// (1) Set up member variables 
+	theMessage.m_strCommand			= "getMarketOffers";
+	theMessage.m_strNymID			= strNymID;
+	theMessage.m_strServerID		= strServerID;
+	theMessage.m_strNymID2			= strMarketID;
+	theMessage.m_lDepth				= lDepth;
+	
+	// (2) Sign the Message 
+	theMessage.SignContract(*pNym);		
+	
+	// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+	theMessage.SaveContract();
+	
+	// (Send it)
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
+#endif	
+	m_pClient->ProcessMessageOut(theMessage);					
+}
+
+///-------------------------------------------------------
+/// GET RECENT TRADES FOR A SPECIFIC MARKET ID
+/// 
+/// Most likely, ticker data will be made available through a separate ZMQ instance,
+/// which will use the publisher/subscriber model to distribute ticker data. From there,
+/// those privileged subscribers can distribute it via RSS, store it for future analysis,
+/// display charts, etc.
+///
+/// (So this function is not here to usurp that purpose.)
+///
+void OT_API::getMarketRecentTrades(const OTIdentifier & SERVER_ID, const OTIdentifier & USER_ID, 
+								   const OTIdentifier & MARKET_ID, const long & lDepth)
+{
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------------------
+	
+	OTServerContract * pServer = pWallet->GetServerContract(SERVER_ID);
+	
+	if (!pServer)
+	{
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
+		
+		return;
+	}
+	
+	OTMessage theMessage;
+	
+	OTString strServerID(SERVER_ID), strMarketID(MARKET_ID);
+	
+	// -----------------------------------------------------
+	// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+	long lRequestNumber = 0;
+	pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
+	theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+	pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
+	
+	OTString strNymID(USER_ID);
+	// (1) Set up member variables 
+	theMessage.m_strCommand			= "getMarketRecentTrades";
+	theMessage.m_strNymID			= strNymID;
+	theMessage.m_strServerID		= strServerID;
+	theMessage.m_strNymID2			= strMarketID;
+	theMessage.m_lDepth				= lDepth;
+	
+	// (2) Sign the Message 
+	theMessage.SignContract(*pNym);		
+	
+	// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+	theMessage.SaveContract();
+	
+	// (Send it)
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
+#endif	
+	m_pClient->ProcessMessageOut(theMessage);					
+}
+
+///-------------------------------------------------------
+/// GET ALL THE ACTIVE (in Cron) MARKET OFFERS FOR A SPECIFIC NYM. 
+/// (ON A SPECIFIC SERVER, OBVIOUSLY.) Remember to use Flush/Call/Wait/Pop
+/// to check the server reply for success or fail.
+/// Hmm for size reasons, this really will have to return a list of transaction #s,
+/// and then I request them one-by-one after that...
+///
+void OT_API::getNym_MarketOffers(const OTIdentifier & SERVER_ID, const OTIdentifier & USER_ID)
+{
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------------------
+	
+	OTServerContract * pServer = pWallet->GetServerContract(SERVER_ID);
+	
+	if (!pServer)
+	{
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
+		
+		return;
+	}
+	
+	OTMessage theMessage;
+	
+	OTString strServerID(SERVER_ID);
+	
+	// -----------------------------------------------------
+	// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+	long lRequestNumber = 0;
+	pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
+	theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+	pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
+
+	OTString strNymID(USER_ID);
+
+	// (1) Set up member variables 
+	theMessage.m_strCommand			= "getNym_MarketOffers";
+	theMessage.m_strNymID			= strNymID;
+	theMessage.m_strServerID		= strServerID;
+	
+	// (2) Sign the Message 
+	theMessage.SignContract(*pNym);		
+	
+	// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+	theMessage.SaveContract();
+	
+	// (Send it)
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
+#endif	
+	m_pClient->ProcessMessageOut(theMessage);			
+}
+
+
+///-------------------------------------------------------
+/// CANCEL A SPECIFIC OFFER (THAT SAME NYM PLACED PREVIOUSLY ON SAME SERVER.)
+/// By transaction number as key.
+///
+void OT_API::cancelNymMarketOffer(const OTIdentifier & SERVER_ID, const OTIdentifier & USER_ID, 
+								  const long & lTransactionNum) // so the server can lookup the offer in Cron.
+{
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------------------
+	
+	OTServerContract * pServer = pWallet->GetServerContract(SERVER_ID);
+	
+	if (!pServer)
+	{
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
+		
+		return;
+	}
+	
+	OTMessage theMessage;
+	
+	OTString strServerID(SERVER_ID);
+	
+	// -----------------------------------------------------
+	// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+	long lRequestNumber = 0;
+	pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
+	theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+	pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
+	
+	OTString strNymID(USER_ID);
+
+	// (1) Set up member variables 
+	theMessage.m_strCommand			= "cancelNymMarketOffer";
+	theMessage.m_strNymID			= strNymID;
+	theMessage.m_strServerID		= strServerID;
+	theMessage.m_lTransactionNum	= lTransactionNum;
+	
+	// (2) Sign the Message 
+	theMessage.SignContract(*pNym);		
+	
+	// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+	theMessage.SaveContract();
+	
+	// (Send it)
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
+#endif	
+	m_pClient->ProcessMessageOut(theMessage);				
+}
+
+
+
+
+///-------------------------------------------------------
+/// GET LIST OF TRADES AVAILABALE FOR THIS OFFER (by Transaction ID)
+///
+void OT_API::getOffer_Trades(const OTIdentifier & SERVER_ID, const OTIdentifier & USER_ID, 
+							 const long & lTransactionNum) // so the server can lookup the offer in Cron.
+{
+	OT_ASSERT_MSG(m_bInitialized, "Not initialized; call OT_API::Init first.");
+	
+	// -----------------------------------------------------
+	
+	OTWallet * pWallet = GetWallet();
+	
+	if (NULL == pWallet)
+	{
+		OTLog::Output(0, "The Wallet is not loaded.\n");
+		return;
+	}
+	
+	// By this point, pWallet is a good pointer.  (No need to cleanup.)
+	
+	// -----------------------------------------------------
+	
+	OTPseudonym * pNym = pWallet->GetNymByID(USER_ID);
+	
+	if (NULL == pNym) // Wasn't already in the wallet.
+	{
+		OTLog::Output(0, "There's no User already loaded with that ID. Loading...\n");
+		
+		pNym = this->LoadPrivateNym(USER_ID);
+		
+		if (NULL == pNym) // LoadPrivateNym has plenty of error logging already.	
+			return;
+		
+		pWallet->AddNym(*pNym);
+	}
+	
+	// By this point, pNym is a good pointer, and is on the wallet.
+	//  (No need to cleanup.)
+	// -----------------------------------------------------------------
+	
+	OTServerContract * pServer = pWallet->GetServerContract(SERVER_ID);
+	
+	if (!pServer)
+	{
+		OTLog::Output(0, "That server contract is not available in the wallet.\n");
+		
+		return;
+	}
+	
+	OTMessage theMessage;
+	
+	OTString strServerID(SERVER_ID);
+	
+	// -----------------------------------------------------
+	// (0) Set up the REQUEST NUMBER and then INCREMENT IT
+	long lRequestNumber = 0;
+	pNym->GetCurrentRequestNum(strServerID, lRequestNumber);
+	theMessage.m_strRequestNum.Format("%ld", lRequestNumber); // Always have to send this.
+	pNym->IncrementRequestNum(*pNym, strServerID); // since I used it for a server request, I have to increment it
+	
+	OTString strNymID(USER_ID);
+	// (1) Set up member variables 
+	theMessage.m_strCommand			= "getOffer_Trades";
+	theMessage.m_strNymID			= strNymID;
+	theMessage.m_strServerID		= strServerID;
+	theMessage.m_lTransactionNum	= lTransactionNum;
+
+	// (2) Sign the Message 
+	theMessage.SignContract(*pNym);		
+	
+	// (3) Save the Message (with signatures and all, back to its internal member m_strRawFile.)
+	theMessage.SaveContract();
+	
+	// (Send it)
+#if defined(OT_ZMQ_MODE)
+	m_pClient->SetFocusToServerAndNym(*pServer, *pNym, &OT_API::TransportCallback);
+#endif	
+	m_pClient->ProcessMessageOut(theMessage);				
+}
+
+
+
+
+
+// ===============================================================
 
 
 

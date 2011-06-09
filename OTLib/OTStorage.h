@@ -264,6 +264,16 @@ namespace OTDB
 		STORED_OBJ_CONTACT_ACCT,	// This is an account record inside a contact of your address book.
 		STORED_OBJ_CONTACT,			// Your address book has a list of these.
 		STORED_OBJ_ADDRESS_BOOK,	// Your address book.
+		STORED_OBJ_MARKET_DATA,		// The description data for any given Market ID.
+		STORED_OBJ_MARKET_LIST,		// A list of MarketDatas.
+		STORED_OBJ_OFFER_DATA_MARKET,	// Offer details (doesn't contain private details)
+		STORED_OBJ_OFFER_LIST_MARKET,	// A list of offer details, for a specific market.
+		STORED_OBJ_TRADE_DATA_MARKET,	// Trade details (doesn't contain private data)
+		STORED_OBJ_TRADE_LIST_MARKET,	// A list of trade details, for a specific market.
+		STORED_OBJ_OFFER_DATA_NYM,		// Private offer details for a particular Nym and Offer.
+		STORED_OBJ_OFFER_LIST_NYM,		// A list of private offer details for a particular Nym.
+		STORED_OBJ_TRADE_DATA_NYM,		// Private trade details for a particular Nym and Trade.
+		STORED_OBJ_TRADE_LIST_NYM,		// A list of private trade details for a particular Nym and Offer.
 		STORED_OBJ_ERROR			// (Should never be.)
 	};
 	
@@ -712,6 +722,20 @@ public: \
 	}
 	*/
 			
+	
+	
+	
+#define DECLARE_GET_ADD_REMOVE(name) \
+protected: \
+	std::deque< stlplus::simple_ptr_clone<name> > list_##name##s; \
+public: \
+	size_t Get##name##Count(); \
+	name * Get##name(size_t nIndex); \
+	bool Remove##name(size_t nIndex##name); \
+	bool Add##name(name & disownObject)
+	
+	
+	
 	// Serialized types...
 	//
 	// Here the entire hierarchy focuses on the OT data itself.
@@ -794,6 +818,277 @@ public: \
 		std::string gui_label;  // The label that appears in the GUI
 
 		DEFINE_OT_DYNAMIC_CAST(Displayable)
+	};
+	
+	// *************************************************
+	
+	class MarketData : public Displayable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		MarketData() : Displayable(), 
+			scale(0), total_assets(0), number_bids(0), last_sale_price(0),
+			current_bid(0), current_ask(0), 
+			volume_trades(0), volume_assets(0), volume_currency(0),
+			recent_highest_bid(0), recent_lowest_ask(0)
+			{ m_Type = "MarketData"; }
+		
+	public:
+		virtual ~MarketData() { }
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		std::string server_id;
+
+		std::string asset_type_id;
+		std::string currency_type_id;
+		
+		uint32_t scale;	// the Market scale. (A trade in any particular asset is measured in X units of SCALE.)
+						// IOW, if the scale is 5000 on the gold market, that means "3 units" is 15000 gold
+				
+		uint64_t total_assets;		// total amount of assets available on market for purchase.
+		
+		uint32_t number_bids;		// number of bids that are currently on the market.
+		uint32_t number_asks;		// number of asks that are currently on the market.
+		
+		uint64_t last_sale_price;	// The price at which the most recent trade occurred on this market.
+		uint64_t current_bid;		// The highest bid currently on the market.
+		uint64_t current_ask;		// The lowest ask price currently available on the market.
+		
+		uint32_t volume_trades;		// 24-hour period, number of trades.
+		
+		uint64_t volume_assets;		// 24-hour volume, amount of assets traded.
+		uint64_t volume_currency;	// 24-hour volume, amount of currency paid for assets traded.
+		
+		uint64_t recent_highest_bid;// in a 24hour period, the highest bid to hit the market.
+		uint64_t recent_lowest_ask;	// in a 24hour period, the lowest ask to hit the market.
+		
+		DEFINE_OT_DYNAMIC_CAST(MarketData)
+	};
+
+	// ------------------------------------------------------
+
+	class MarketList : public Storable {
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		MarketList() : Storable() { m_Type = "MarketList"; }
+		
+	public:
+		virtual ~MarketList() {}
+		
+		DECLARE_GET_ADD_REMOVE(MarketData);
+		
+		DEFINE_OT_DYNAMIC_CAST(MarketList)
+	};
+	
+	
+	// ******************************************************
+	
+	class OfferDataMarket : public Displayable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		OfferDataMarket() : Displayable(), 
+		transaction_id(0), price_per_scale(1), available_assets(0), minimum_increment(1)
+		{ m_Type = "OfferDataMarket"; }
+		
+	public:
+		virtual ~OfferDataMarket() { }
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+				
+		uint64_t transaction_id;
+		uint64_t price_per_scale;
+		
+//		uint64_t total_assets;
+//		uint64_t finished_so_far;
+		uint64_t available_assets;
+
+		// Each sale or purchase against (total_assets - finished_so_far) must be in minimum increments.
+		// Minimum Increment must be evenly divisible by scale. 
+		// (This effectively becomes a "FILL OR KILL" order if set to the same value as total_assets. Also, MUST be 1
+		// or greater. CANNOT be zero. Enforce this at class level. You cannot sell something in minimum increments of 0.)
+		
+		uint64_t minimum_increment;  	
+		
+		DEFINE_OT_DYNAMIC_CAST(OfferDataMarket)
+	};
+	
+	// ------------------------------------------------------
+	
+	typedef OfferDataMarket BidData;
+	typedef OfferDataMarket AskData;
+	
+	// ------------------------------------------------------
+
+	class OfferListMarket : public Storable {
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		OfferListMarket() : Storable() { m_Type = "OfferListMarket"; }
+		
+	public:
+		virtual ~OfferListMarket() {}
+		
+		DECLARE_GET_ADD_REMOVE(BidData);
+		DECLARE_GET_ADD_REMOVE(AskData);
+		
+		DEFINE_OT_DYNAMIC_CAST(OfferListMarket)
+	};
+	
+	// ******************************************************
+	
+	class TradeDataMarket : public Displayable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		TradeDataMarket() : Displayable(), 
+		transaction_id(0), date(0), 
+		price(0), amount_sold(0)
+		{ m_Type = "TradeDataMarket"; }
+		
+	public:
+		virtual ~TradeDataMarket() { }
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		uint64_t transaction_id;	// (transaction number for this trade.)
+		uint32_t date;				// (The date of this trade's execution)
+		uint64_t price;				// (The price this trade executed at.)
+		uint64_t amount_sold;		// (Amount of asset sold for that price.)	
+		
+		DEFINE_OT_DYNAMIC_CAST(TradeDataMarket)
+	};
+	
+	// ------------------------------------------------------
+	
+	class TradeListMarket : public Storable {
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		TradeListMarket() : Storable() { m_Type = "TradeListMarket"; }
+		
+	public:
+		virtual ~TradeListMarket() {}
+		
+		DECLARE_GET_ADD_REMOVE(TradeDataMarket);
+		
+		DEFINE_OT_DYNAMIC_CAST(TradeListMarket)
+	};
+	
+	// ******************************************************
+	
+	class OfferDataNym : public Displayable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		OfferDataNym() : Displayable(), 
+		valid_from(0), valid_to(0), 
+		selling(false), scale(1), price_per_scale(1),
+		transaction_id(0), 
+		total_assets(1), finished_so_far(0), 
+		minimum_increment(1), stop_price(0)
+		{ m_Type = "OfferDataNym"; }
+		
+	public:
+		virtual ~OfferDataNym() { }
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		uint32_t valid_from;
+		uint32_t valid_to;
+		
+		std::string server_id;
+		std::string asset_type_id;		// the asset type on offer.
+		std::string currency_type_id;	// the currency being used to purchase the asset.
+		
+		bool selling;			// true for ask, false for bid.
+		
+		uint32_t scale;	// 1oz market? 100oz market? 10,000oz market? This determines size and granularity.
+		uint64_t price_per_scale;
+		
+		uint64_t transaction_id;
+		
+		uint64_t total_assets;
+		uint64_t finished_so_far;
+		
+		
+		// Each sale or purchase against (total_assets - finished_so_far) must be in minimum increments.
+		// Minimum Increment must be evenly divisible by scale. 
+		// (This effectively becomes a "FILL OR KILL" order if set to the same value as total_assets. Also, MUST be 1
+		// or greater. CANNOT be zero. Enforce this at class level. You cannot sell something in minimum increments of 0.)
+		
+		uint64_t minimum_increment;  	
+		
+		std::string stop_sign;  // If this is a stop order, this will contain '<' or '>'.
+		uint64_t stop_price;	// The price at which the stop order activates (less than X or greater than X, based on sign.)
+		
+		DEFINE_OT_DYNAMIC_CAST(OfferDataNym)
+	};
+		
+	// ------------------------------------------------------
+	
+	class OfferListNym : public Storable {
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		OfferListNym() : Storable() { m_Type = "OfferListNym"; }
+		
+	public:
+		virtual ~OfferListNym() {}
+		
+		DECLARE_GET_ADD_REMOVE(OfferDataNym);
+		
+		DEFINE_OT_DYNAMIC_CAST(OfferListNym)
+	};
+		
+	// ******************************************************
+	
+	class TradeDataNym : public Displayable
+	{
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		TradeDataNym() : Displayable(), 
+		transaction_id(0),
+		completed_count(0), date(0), 
+		price(0), amount_sold(0)
+		{ m_Type = "TradeDataNym"; }
+		
+	public:
+		virtual ~TradeDataNym() { }
+		
+		using Displayable::gui_label;  // The label that appears in the GUI
+		
+		uint64_t transaction_id;	// (transaction number for this trade.)
+
+		uint32_t completed_count;	// (How many trades have processed for the associated offer? We keep count for each trade.)
+		uint32_t date;				// (The date of this trade's execution)
+		uint64_t price;				// (The price this trade executed at.)
+		uint64_t amount_sold;		// (Amount of asset sold for that price.)	
+		
+		DEFINE_OT_DYNAMIC_CAST(TradeDataNym)
+	};
+	
+	// ------------------------------------------------------
+	
+	class TradeListNym : public Storable {
+		// You never actually get an instance of this, only its subclasses.
+		// Therefore, I don't allow you to access the constructor except through factory.
+	protected:
+		TradeListNym() : Storable() { m_Type = "TradeListNym"; }
+		
+	public:
+		virtual ~TradeListNym() {}
+		
+		DECLARE_GET_ADD_REMOVE(TradeDataNym);
+		
+		DEFINE_OT_DYNAMIC_CAST(TradeListNym)
 	};
 	
 	// *************************************************
@@ -912,17 +1207,7 @@ public: \
 	};
 	
 	// ----------------------------
-	
-#define DECLARE_GET_ADD_REMOVE(name) \
-protected: \
-	std::deque< stlplus::simple_ptr_clone<name> > list_##name##s; \
-public: \
-	size_t Get##name##Count(); \
-	name * Get##name(size_t nIndex); \
-	bool Remove##name(size_t nIndex##name); \
-	bool Add##name(name & disownObject)
-	
-	
+
 	class ContactNym : public Displayable
 	{
 		// You never actually get an instance of this, only its subclasses.
@@ -1475,12 +1760,93 @@ namespace OTDB
 //		OT_MSGPACK_SWAP_MEMBER(deque_BitcoinAccts);
 	OT_MSGPACK_END;
 	// -------------------------------------------------------
-	
+
 	// You might ask, why did I code the "copy and swap" idiom above, and then comment it out?
 	// Because I'm now storing smart pointers instead of regular pointers, in the lists of the
 	// objects above. Therefore I'm not so worried about the copy constructor, operator=, etc.
 	// The deques will copy over exactly, and the lists will copy the smart pointers, so I don't
 	// have to worry about the lists double-deleting anymore.
+	
+	// -------------------------------------------------------
+	OT_MSGPACK_BEGIN(MarketDataMsgpack, MarketData, STORED_OBJ_MARKET_DATA)
+		OT_USING_ISTORABLE_HOOKS;
+		MSGPACK_DEFINE(gui_label, server_id, asset_type_id, currency_type_id, 
+				   scale, total_assets, number_bids, number_asks, 
+				   last_sale_price, current_bid, current_ask, 
+				   volume_trades, volume_assets, volume_currency, 
+				   recent_highest_bid, recent_lowest_ask);
+	OT_MSGPACK_END;
+	// -------------------------------------------------------
+	OT_MSGPACK_BEGIN(MarketListMsgpack, MarketList, STORED_OBJ_MARKET_LIST)
+		virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
+		virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
+		std::deque<MarketDataMsgpack>	deque_Markets;
+		MSGPACK_DEFINE(deque_Markets);
+	OT_MSGPACK_END;
+	// -------------------------------------------------------
+	
+	OT_MSGPACK_BEGIN(OfferDataMarketMsgpack, OfferDataMarket, STORED_OBJ_OFFER_DATA_MARKET)
+		OT_USING_ISTORABLE_HOOKS;
+	MSGPACK_DEFINE(gui_label, transaction_id, price_per_scale, available_assets, minimum_increment);
+	OT_MSGPACK_END;
+	// -------------------------------------------------------
+	
+	typedef OfferDataMarketMsgpack BidDataMsgpack;
+	typedef OfferDataMarketMsgpack AskDataMsgpack;
+	
+	// -------------------------------------------------------
+	OT_MSGPACK_BEGIN(OfferListMarketMsgpack, OfferListMarket, STORED_OBJ_OFFER_LIST_MARKET)
+		virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
+		virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
+		std::deque<BidDataMsgpack>	deque_Bids;
+		std::deque<AskDataMsgpack>	deque_Asks;
+	MSGPACK_DEFINE(deque_Bids, deque_Asks);
+	OT_MSGPACK_END;
+	// -------------------------------------------------------
+	
+	OT_MSGPACK_BEGIN(TradeDataMarketMsgpack, TradeDataMarket, STORED_OBJ_TRADE_DATA_MARKET)
+		OT_USING_ISTORABLE_HOOKS;
+		MSGPACK_DEFINE(gui_label, transaction_id, date, price, amount_sold);
+	OT_MSGPACK_END;
+	// -------------------------------------------------------
+	OT_MSGPACK_BEGIN(TradeListMarketMsgpack, TradeListMarket, STORED_OBJ_TRADE_LIST_MARKET)
+		virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
+		virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
+		std::deque<TradeDataMarketMsgpack>	deque_Trades;
+		MSGPACK_DEFINE(deque_Trades);
+	OT_MSGPACK_END;
+	// -------------------------------------------------------
+	
+	OT_MSGPACK_BEGIN(OfferDataNymMsgpack, OfferDataNym, STORED_OBJ_OFFER_DATA_NYM)
+	OT_USING_ISTORABLE_HOOKS;
+	MSGPACK_DEFINE(gui_label, valid_from, valid_to, server_id, 
+				   asset_type_id, currency_type_id, 
+				   selling, scale, price_per_scale, transaction_id, 
+				   total_assets, finished_so_far, minimum_increment, 
+				   stop_sign, stop_price);
+	OT_MSGPACK_END;
+	// -------------------------------------------------------
+	OT_MSGPACK_BEGIN(OfferListNymMsgpack, OfferListNym, STORED_OBJ_OFFER_LIST_NYM)
+		virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
+		virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
+		std::deque<OfferDataNymMsgpack>	deque_Offers;
+		MSGPACK_DEFINE(deque_Offers);
+	OT_MSGPACK_END;
+	// -------------------------------------------------------
+
+	OT_MSGPACK_BEGIN(TradeDataNymMsgpack, TradeDataNym, STORED_OBJ_TRADE_DATA_NYM)
+		OT_USING_ISTORABLE_HOOKS;
+		MSGPACK_DEFINE(gui_label, transaction_id, completed_count, date, 
+					   price, amount_sold);
+	OT_MSGPACK_END;
+	// -------------------------------------------------------
+	OT_MSGPACK_BEGIN(TradeListNymMsgpack, TradeListNym, STORED_OBJ_TRADE_LIST_NYM)
+		virtual void hookBeforePack(); // This is called just before packing a storable. (Opportunity to copy values...)
+		virtual void hookAfterUnpack(); // This is called just after unpacking a storable. (Opportunity to copy values...)
+		std::deque<TradeDataNymMsgpack>	deque_Trades;
+		MSGPACK_DEFINE(deque_Trades);
+	OT_MSGPACK_END;
+	// -------------------------------------------------------
 	
 } // namespace OTDB
 
@@ -1496,10 +1862,13 @@ namespace OTDB
 
 
 
+
+
 // *******************************************************************************************
 
 #if defined(OTDB_PROTOCOL_BUFFERS)
 #include "Generics.pb.h"
+#include "Markets.pb.h"
 #include "Bitcoin.pb.h"
 #include "Moneychanger.pb.h"
 // To make subclasses of the various data objects (for Protocol Buffers):
@@ -1576,24 +1945,6 @@ namespace OTDB
 	//
 	typedef PackerSubclass<BufferPB> PackerPB;
 	
-	/*
-	 const char * StoredObjectTypeStrings
-	 {
-	 "OTDBString",		// Just a string.
-	 "Blob",			// Binary memory of arbitrary size.
-	 "StringMap",		// A StringMap is a list of Key/Value pairs, useful for storing nearly anything.
-	 "WalletData",		// The GUI wallet's stored data
-	 "BitcoinAcct",		// The GUI wallet's stored data about a Bitcoin acct
-	 "BitcoinServer",	// The GUI wallet's stored data about a Bitcoin RPC port.
-	 "ServerInfo",		// A Nym has a list of these.
-	 "ContactNym",		// This is a Nym record inside a contact of your address book.
-	 "ContactAcct",		// This is an account record inside a contact of your address book.
-	 "Contact",			// Your address book has a list of these.
-	 "AddressBook",		// Your address book.
-	 "StoredObjError"	// (Should never be.)
-	 };	 
-	 */
-	
 	// ----------------------------------------------------
 	// Used for subclassing IStorablePB:
 	//
@@ -1662,7 +2013,23 @@ namespace OTDB
 	DECLARE_PROTOBUF_SUBCLASS(Contact,		Contact_InternalPB,			ContactPB,			STORED_OBJ_CONTACT);
 	DECLARE_PROTOBUF_SUBCLASS(AddressBook,	AddressBook_InternalPB,		AddressBookPB,		STORED_OBJ_ADDRESS_BOOK);
 	DECLARE_PROTOBUF_SUBCLASS(WalletData,	WalletData_InternalPB,		WalletDataPB,		STORED_OBJ_WALLET_DATA);
+	DECLARE_PROTOBUF_SUBCLASS(MarketData,	MarketData_InternalPB,		MarketDataPB,		STORED_OBJ_MARKET_DATA);
+	DECLARE_PROTOBUF_SUBCLASS(MarketList,	MarketList_InternalPB,		MarketListPB,		STORED_OBJ_MARKET_LIST);
 	
+	DECLARE_PROTOBUF_SUBCLASS(OfferDataMarket,	OfferDataMarket_InternalPB,	OfferDataMarketPB,	STORED_OBJ_OFFER_DATA_MARKET);
+	DECLARE_PROTOBUF_SUBCLASS(OfferListMarket,	OfferListMarket_InternalPB,	OfferListMarketPB,	STORED_OBJ_OFFER_LIST_MARKET);
+	DECLARE_PROTOBUF_SUBCLASS(TradeDataMarket,	TradeDataMarket_InternalPB,	TradeDataMarketPB,	STORED_OBJ_TRADE_DATA_MARKET);
+	DECLARE_PROTOBUF_SUBCLASS(TradeListMarket,	TradeListMarket_InternalPB,	TradeListMarketPB,	STORED_OBJ_TRADE_LIST_MARKET);
+	DECLARE_PROTOBUF_SUBCLASS(OfferDataNym,		OfferDataNym_InternalPB,	OfferDataNymPB,		STORED_OBJ_OFFER_DATA_NYM);
+	DECLARE_PROTOBUF_SUBCLASS(OfferListNym,		OfferListNym_InternalPB,	OfferListNymPB,		STORED_OBJ_OFFER_LIST_NYM);
+	DECLARE_PROTOBUF_SUBCLASS(TradeDataNym,		TradeDataNym_InternalPB,	TradeDataNymPB,		STORED_OBJ_TRADE_DATA_NYM);
+	DECLARE_PROTOBUF_SUBCLASS(TradeListNym,		TradeListNym_InternalPB,	TradeListNymPB,		STORED_OBJ_TRADE_LIST_NYM);
+	
+	typedef OfferDataMarketPB BidDataPB;
+	typedef OfferDataMarketPB AskDataPB;
+	
+	typedef OfferDataMarket_InternalPB BidData_InternalPB;
+	typedef OfferDataMarket_InternalPB AskData_InternalPB;
 	
 	// !! ALL OF THESE have to provide implementations for hookBeforePack() and hookAfterUnpack().
 	// In .cpp file:
@@ -1683,6 +2050,8 @@ namespace OTDB
 
 #endif // defined(OTDB_PROTOCOL_BUFFERS)
 // *******************************************************************************************
+
+
 
 
 

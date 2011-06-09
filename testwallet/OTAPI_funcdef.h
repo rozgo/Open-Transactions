@@ -1766,6 +1766,60 @@ void OT_API_issueMarketOffer(const char * SERVER_ID,
 
 
 
+/*
+ 
+ What objects are actually stored in local storage after a successful server call?
+ 
+ A "MarketList", which contains a list of Market Datas. Load this up and you can get 
+ pointers to the elements as needed. THERE IS ONLY ONE OF THESE.
+ 
+ An "OfferList" which contains "all" offers for a specific Market ID. There may be
+ many markets, so this should be saved by Server / Asset / User the same as Purses.
+ If you load this object, you can loop through its offers. I don't think a sub-object
+ is necessary here since the data is so simple.
+ 
+ A "TradeList" which contains "all" trades for a specific Market ID. There many be
+ many markets, so this should be saved Server/Asset/User the same as purses.
+ If you load this object you can loop through the trades, which again, no sub-object
+ needed since the data here is so simple. But we shall see!
+ 
+ A "NymOfferList" which contains all offers for a specific nym. Unlike the above offers,
+ these offers are full-featured and should contain a LOT more details.
+ 
+ 
+ A "NymTradeList" DO THIS LAST -- I'm not sure how this will work. Perhaps the wallet
+ will be responsible for taking care of this. I will figure it out along the way.
+ 
+ */
+
+
+// Retrieves details for each market.
+//
+void OT_API_getMarketList(const char * SERVER_ID, const char * USER_ID);
+
+// Gets all offers for a specific market and their details (up until maximum depth)
+void OT_API_getMarketOffers(const char * SERVER_ID, const char * USER_ID, 
+							const char * MARKET_ID, const char * MAX_DEPTH); // Market Depth
+
+// Gets all recent trades (up until maximum depth)
+void OT_API_getMarketRecentTrades(const char * SERVER_ID, const char * USER_ID, 
+								  const char * MARKET_ID, const char * MAX_DEPTH); // Market Trades
+
+// This "Market Offer" data is a lot more detailed than the OT_API_Market_GetOffers() call, which seems similar otherwise.
+void OT_API_getNym_MarketOffers(const char * SERVER_ID, const char * USER_ID); // Offers this Nym has out on market.
+// These may just be the Cron Receipts...
+
+void OT_API_cancelNymMarketOffer(const char * SERVER_ID, const char * USER_ID, const char * TRANSACTION_NUMBER);
+
+
+// Trade details for all trades associated with this offer.	
+//
+void OT_API_getOffer_Trades(const char * SERVER_ID, const char * USER_ID, const char * TRANSACTION_NUMBER); 
+
+
+
+
+
 
 
 
@@ -1862,6 +1916,8 @@ const char * OT_API_Message_GetNewIssuerAcctID(const char * THE_MESSAGE);
 const char * OT_API_Message_GetNewAcctID(const char * THE_MESSAGE);
 
 
+// ------------------------------------------------------------
+
 
 
 
@@ -1871,14 +1927,14 @@ const char * OT_API_Message_GetNewAcctID(const char * THE_MESSAGE);
 // --------------------------------------------------------------------
 /// CONNECT TO SERVER, and PROCESS SOCKETS
 ///
-/// NOTE: These two functions are NOT NECESSARY in XmlRpc mode!
+/// NOTE: These two functions are NOT NECESSARY in ZMQ mode!
 /// They are only useful in TCP/SSL mode. --Otherwise IGNORE THEM.--
 ///
 /// actually returns BOOL  // Not necessary in HTTP mode.
 int OT_API_ConnectServer(const char * SERVER_ID, const char * USER_ID, 
 						 const char * szCA_FILE, const char * szKEY_FILE, 
 						 const char * szKEY_PASSWORD);
-int OT_API_ProcessSockets(void);	// Probably not necessary in HTTP mode.
+int OT_API_ProcessSockets(void);	// Not necessary in ZMQ mode.
 // --------------------------------------------------------------------
 
 

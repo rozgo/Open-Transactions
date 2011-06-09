@@ -196,6 +196,7 @@ CXXSOURCES = $(BIGINTSOURCES) $(LUCRESOURCES) $(IRRXMLSOURCES) \
 			 OTStorage.cpp \
 			 OTDataCheck.cpp \
 			 Generics.pb.cpp \
+			 Markets.pb.cpp \
 			 Bitcoin.pb.cpp \
 			 Moneychanger.pb.cpp
 
@@ -346,6 +347,8 @@ OTStorage.o: OTStorage.cpp OTStorage.h
 	$(CXX) $(CXXFLAGS) -c -o OTStorage.o OTStorage.cpp
 Generics.pb.o: Generics.pb.cpp Generics.pb.h
 	$(CXX) $(CXXFLAGS) -c -o Generics.pb.o Generics.pb.cpp
+Markets.pb.o: Markets.pb.cpp Markets.pb.h
+	$(CXX) $(CXXFLAGS) -c -o Markets.pb.o Markets.pb.cpp
 Bitcoin.pb.o: Bitcoin.pb.cpp Bitcoin.pb.h
 	$(CXX) $(CXXFLAGS) -c -o Bitcoin.pb.o Bitcoin.pb.cpp
 Moneychanger.pb.o: Moneychanger.pb.cpp Moneychanger.pb.h
