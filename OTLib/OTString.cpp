@@ -408,13 +408,14 @@ void OTString::Release(void)
 	m_lLength  = 0;
 }
 
-
+#ifndef linux
 static size_t strnlen(const char *s, size_t max) 
 {
     register const char *p;
     for(p = s; *p && max--; ++p);
     return(p - s);
 }
+#endif
 
 
 
