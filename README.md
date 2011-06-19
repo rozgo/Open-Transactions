@@ -1,8 +1,31 @@
 
 WHAT IS 'Open Transactions' ?
+====================================
 
-It's a solid, easy-to-use, FINANCIAL CRYPTO and DIGITAL CASH LIBRARY.
-Including an operational API, SERVER and CLIENT.
+## DESCRIPTION
+
+Open-Transactions is a solid, easy-to-use, FINANCIAL CRYPTO and DIGITAL CASH LIBRARY, including an operational API, SERVER and CLIENT.
+
+WHAT DOES IT DO?
+
+	Open-Transactions allows users to issue and manipulate digital assets. Users may create many pseudonyms (public keys), each of which may own asset accounts of various types. Users can transfer digital assets securely between accounts (even a server cannot change balances or forge transactions.) Users can also operate "cash-only" (without accounts) for maximum anonymity.
+	
+	Open-Transactions supports a range of financial instruments, such as cheques, vouchers, and untraceable digital cash. These are all analogous to the same financial instruments that we all use at normal banks today. Everyone already has an intuitive understanding of these financial instruments, because we use them regularly in our normal daily lives.
+	
+	Open-Transactions also implements higher-level, contract-based transactions such as payment plans and markets with trades. The markets on Open-Transactions support market orders, limit orders, fill-or-kill orders, day orders, stop orders, and stop limits, just like trading on a real market. OT also supports basket currencies.
+	
+	All of this is accomplished in such a way that all parties are able to prove, at all times, which transactions have cleared and which instruments are authorized, without having to store their entire transaction history, but instead by merely keeping the last signed receipt. 
+	
+	Without the special mechanism that makes this possible, all parties would otherwise be forced to store all receipts forever, just to prove their story in the event of a dispute. (Any system where parties cannot “prove their story” will eventually break down and fail.) Thankfully, this is not a problem in Open-Transactions, which proves everything using only the last signed receipt.
+
+The real beauty of Open-Transactions is the as-yet-unwritten future of new ideas that you can build with it, and the future liberty and security of your children that you can help to protect by doing so—in a very real and tangible way.
+
+IS IT CENTRALIZED?
+
+	The vision is not of a central server that you must trust.
+	Rather, the vision is of federated servers you don’t have to trust.
+
+====================================
 
 Radio Interview:
 Part 1: http://agoristradio.com/?p=234
@@ -18,6 +41,8 @@ Diagrams:
 Architecture Overview: http://opentransact.nevermeta.com/OT%20Diagram.jpg
 Fully-Anonymous (cash only): http://opentransact.nevermeta.com/OT-Anon-CashOnly.jpg
 Pseudo-Anonymous (using accounts): http://opentransact.nevermeta.com/OT-Pseudonym-Instruments.jpg
+
+====================================
 
 Featuring: 
     -- Untraceable Digital Cash     (real blinded tokens)
@@ -37,27 +62,33 @@ Featuring:
     -- Soon: 2-D Barcodes to make possible 'Any screen a cash
        register' and 'Any camera phone a customer.'
 
-Please see the Project page:
+====================================
+
+Please see the [project page](http://github.com/FellowTraveler/Open-Transactions/wiki):
 http://github.com/FellowTraveler/Open-Transactions/wiki
 
-Use Cases:
+[Use cases](http://github.com/FellowTraveler/Open-Transactions/wiki/Use-Cases):
 http://github.com/FellowTraveler/Open-Transactions/wiki/Use-Cases
 
-FAQ:
+[FAQ](http://github.com/FellowTraveler/Open-Transactions/wiki/FAQ):
 http://github.com/FellowTraveler/Open-Transactions/wiki/FAQ
 
-Business Cases:
+[Business cases](http://github.com/FellowTraveler/Open-Transactions/wiki/Business-Cases):
 http://github.com/FellowTraveler/Open-Transactions/wiki/Business-Cases
 
-Release Notes:
+[Release notes](http://github.com/FellowTraveler/Open-Transactions/wiki/Release-Notes):
 http://github.com/FellowTraveler/Open-Transactions/wiki/Release-Notes
+
+
+THIS IS ONLY EXPERIMENTAL SOFTWARE AND IS NOT YET READY FOR PRIME TIME.
 
 
 "Seeking developers to contribute by writing client software and
 doing other integrations!  I will support you on the OT API. Let's
 make this happen!" -Fellow Traveler
 
---------------------------------------------------------------------
+
+====================================
 
 
 The server itself is a transaction processor in the cypherpunk
@@ -94,11 +125,11 @@ last receipt itself.) See Bill St. Clair's excellent Truledger
 (http://truledger.com/) for another example of this concept.
 
 -- The server cannot forge your signature, and thus cannot change
-your balance without your signed permission, nor falsify any receipt.
-The server is likewise on the hook with the issuer, for the same
-reason. (This is because the receipt IS the account, and because the
-server cannot sign the receipt until you have signed it first--and
-the server cannot forge your signature.)
+your balance without your signed permission, (since it can't falsify
+any receipt.) The server is likewise on the hook with the issuer, for
+the same reason. This is because the receipt IS the account, and
+because the server cannot sign the receipt until you have signed it
+first--and the server cannot forge your signature.
 
 -- Open Transactions also features MARKETS. Any two asset types can
 be traded against each other. The markets are full-featured and
@@ -127,12 +158,12 @@ serialize to a string.
 -- The philosophy of the software is based around the SEPARATION OF
 POWERS (issuers and transaction servers being separate entities --
 See Loom for another example of this.) as well as the DISTRIBUTION
-OF RISK. For example, Asset accounts can be distributed across
-multiple servers, and asset types can be distributed across multiple
-issuers (via baskets.)
+OF RISK. For example, assets of a single type can be distributed
+across many many servers, AND a certain asset type can also be
+distributed across multiple issuers (via basket currencies.)
 
 -- Future (possible or planned) instruments include:
-interest-bearing bonds, dividend-paying stocks, real bills, and 
+Interest-bearing bonds, dividend-paying stocks, real bills, and 
 collateralized debt obligations. The CDOs work by grouping a tranch
 of payment plans together so that the payments flow into an internal
 server backing account (for a new issuer account, to issue the shares
@@ -161,12 +192,16 @@ neutral, and could be utilized across a variety of different
 transfer protocols and storage systems. The current test server and
 client use the ZeroMQ library for messages, and a storage abstraction
 is employed to make it easy for you to swap in any storage method
-you need. (Default is the filesystem, but you can store anywhere.)
+you need. (Filesystem by default, but you can store anywhere.)
 
 The intention is for this software to be integrated as many places
 as possible... Games, digital cash wallets, distributed data stores,
 secure voip apps, anonymous bit torrent networks, mixnets,
 remailers, nym servers, etc. There are many other potential uses.
+
+IT IS ONLY BY MAKING THIS SORT OF SOFTWARE PART OF THE FABRIC OF
+OUR INFRASTRUCTURE ITSELF, THAT WE FINALLY ACCOMPLISH ASSURANCE FOR
+OUR POSTERITY. BE WARNED: THE TIME IS SHORT.
 
 This product includes software developed by Ben Laurie for use in
 the Lucre project.
