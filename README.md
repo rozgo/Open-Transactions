@@ -2,30 +2,26 @@
 WHAT IS 'Open Transactions' ?
 ====================================
 
-## DESCRIPTION
-
 Open-Transactions is a solid, easy-to-use, FINANCIAL CRYPTO and DIGITAL CASH LIBRARY, including an operational API, SERVER and CLIENT.
 
-WHAT DOES IT DO?
+## WHAT DOES IT DO?
 
-	Open-Transactions allows users to issue and manipulate digital assets. Users may create many pseudonyms (public keys), each of which may own asset accounts of various types. Users can transfer digital assets securely between accounts (even a server cannot change balances or forge transactions.) Users can also operate "cash-only" (without accounts) for maximum anonymity.
-	
-	Open-Transactions supports a range of financial instruments, such as cheques, vouchers, and untraceable digital cash. These are all analogous to the same financial instruments that we all use at normal banks today. Everyone already has an intuitive understanding of these financial instruments, because we use them regularly in our normal daily lives.
-	
-	Open-Transactions also implements higher-level, contract-based transactions such as payment plans and markets with trades. The markets on Open-Transactions support market orders, limit orders, fill-or-kill orders, day orders, stop orders, and stop limits, just like trading on a real market. OT also supports basket currencies.
-	
-	All of this is accomplished in such a way that all parties are able to prove, at all times, which transactions have cleared and which instruments are authorized, without having to store their entire transaction history, but instead by merely keeping the last signed receipt. 
-	
-	Without the special mechanism that makes this possible, all parties would otherwise be forced to store all receipts forever, just to prove their story in the event of a dispute. (Any system where parties cannot “prove their story” will eventually break down and fail.) Thankfully, this is not a problem in Open-Transactions, which proves everything using only the last signed receipt.
+ * Open-Transactions allows users to issue and manipulate digital assets. Users may create many pseudonyms (public keys), each of which may own asset accounts of various types. Users can transfer digital assets securely between accounts (even a server cannot change balances or forge transactions.) Users can also operate "cash-only" (without accounts) for maximum anonymity.
+ * Open-Transactions supports a range of financial instruments, such as cheques, vouchers, and untraceable digital cash. These are all analogous to the same financial instruments that we all use at normal banks today. Everyone already has an intuitive understanding of these financial instruments, because we use them regularly in our normal daily lives.
+ * Open-Transactions also implements higher-level, contract-based transactions such as payment plans and markets with trades. The markets on Open-Transactions support market orders, limit orders, fill-or-kill orders, day orders, stop orders, and stop limits, just like trading on a real market. OT also supports basket currencies.
+ * All of this is accomplished in such a way that all parties are able to prove, at all times, which transactions have cleared and which instruments are authorized, without having to store their entire transaction history, but instead by merely keeping the last signed receipt. 
+ * Without the special mechanism that makes this possible, all parties would otherwise be forced to store all receipts forever, just to prove their story in the event of a dispute. (Any system where parties cannot "prove their story" will eventually break down and fail.) Thankfully, this is not a problem in Open-Transactions, which proves everything using only the last signed receipt.
 
-The real beauty of Open-Transactions is the as-yet-unwritten future of new ideas that you can build with it, and the future liberty and security of your children that you can help to protect by doing so—in a very real and tangible way.
+The real beauty of Open-Transactions is the as-yet-unwritten future of new ideas that you can build with it, and the future liberty and security of your children that you can help to protect by doing so, in a very real and tangible way.
 
-IS IT CENTRALIZED?
+## IS IT CENTRALIZED?
 
 	The vision is not of a central server that you must trust.
-	Rather, the vision is of federated servers you don’t have to trust.
+	Rather, the vision is of federated servers you don't have to trust.
 
 ====================================
+
+## RESOURCES
 
 Radio Interview:
 Part 1: http://agoristradio.com/?p=234
@@ -34,49 +30,31 @@ Part 2: http://agoristradio.com/?p=246
 Mailing list:
 open-transactions-subscribe@rayservers.com
 
-Java GUI: 
+Java GUI:
 https://github.com/FellowTraveler/Moneychanger
 
-Diagrams:  
+Diagrams:
 Architecture Overview: http://opentransact.nevermeta.com/OT%20Diagram.jpg
+
 Fully-Anonymous (cash only): http://opentransact.nevermeta.com/OT-Anon-CashOnly.jpg
+
 Pseudo-Anonymous (using accounts): http://opentransact.nevermeta.com/OT-Pseudonym-Instruments.jpg
 
 ====================================
 
-Featuring: 
-    -- Untraceable Digital Cash     (real blinded tokens)
-    -- Anyone An Issuer             (Ricardian-style Contracts) 
-    -- Bearer-only, Fully-Anonymous (when used cash-only)
-    -- Pseudonymous User Accounts   (user account == PGP key)
-    -- No Account History           (asset account == the last receipt)
-    -- Many Financial Instruments   (cheques, cash, vouchers, invoices...)
-    -- Basket Currencies            (10 "baskets" == 5 gold, 3 silver)
-    -- Markets with Trades          (stop, fill-or-kill, limit orders...)
-    -- Payment Plans
-    -- Native API for Java, Ruby, Python, PHP, Perl, C, D,
-       C++, Objective-C, C#, Tcl, and LISP
-    -- ZeroMQ transport layer. Customizable storage layer.
-    -- Soon: Stocks that pay dividends, Bonds that pay interest,
-       Real Bills, and even Collateralized Debt Obligations.
-    -- Soon: 2-D Barcodes to make possible 'Any screen a cash
-       register' and 'Any camera phone a customer.'
-
-====================================
-
-Please see the [project page](http://github.com/FellowTraveler/Open-Transactions/wiki):
+Please see the project page:
 http://github.com/FellowTraveler/Open-Transactions/wiki
 
-[Use cases](http://github.com/FellowTraveler/Open-Transactions/wiki/Use-Cases):
+Use cases:
 http://github.com/FellowTraveler/Open-Transactions/wiki/Use-Cases
 
-[FAQ](http://github.com/FellowTraveler/Open-Transactions/wiki/FAQ):
+FAQ:
 http://github.com/FellowTraveler/Open-Transactions/wiki/FAQ
 
-[Business cases](http://github.com/FellowTraveler/Open-Transactions/wiki/Business-Cases):
+Business cases:
 http://github.com/FellowTraveler/Open-Transactions/wiki/Business-Cases
 
-[Release notes](http://github.com/FellowTraveler/Open-Transactions/wiki/Release-Notes):
+Release notes:
 http://github.com/FellowTraveler/Open-Transactions/wiki/Release-Notes
 
 
